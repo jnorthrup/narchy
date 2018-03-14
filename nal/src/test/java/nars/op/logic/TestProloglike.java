@@ -46,7 +46,7 @@ public class TestProloglike {
                 "car(vw_beatle)", "car(ford_escort)", "bike(harley_davidson)", "red(vw_beatle)", "blue(ford_escort)", "blue(harley_davidson)"
         );
         //n.log();
-        n.DEFAULT_QUESTION_PRIORITY = 0.99f;
+        n.questionPriDefault.set(0.99f);
         n.question("fun(?x)", ETERNAL, (q, a) -> {
             //System.out.println(a.term() + " " + a.truth());
             System.out.println(a.proof());

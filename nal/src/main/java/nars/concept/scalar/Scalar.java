@@ -36,7 +36,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         sensor.pri(() -> n.priDefault(BELIEF));
     }
 
-    Scalar(Term c, ConceptBuilder b, FloatSupplier signal) {
+    private Scalar(Term c, ConceptBuilder b, FloatSupplier signal) {
         super(c, b);
 
         this.sensor = new ScalarSignal(c, this, ()->Scalar.this.resolution.asFloat()) {

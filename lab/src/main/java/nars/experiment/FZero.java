@@ -7,6 +7,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
+import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
@@ -30,7 +31,7 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 10;
+    float fwdSpeed = 4;
     float rotSpeed = 0.35f/3f;
     static float fps = 30f;
     final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
@@ -134,7 +135,7 @@ public class FZero extends NAgentX {
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
         Scalar dAngVel = senseNumberDifference($.the("angVel"), () -> (float) fz.playerAngle).resolution(0.02f);
         Scalar dAccel = senseNumberDifference($.the("accel"), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        @NotNull DigitizedScalar ang = senseNumber(level->$.p($.the("ang"), $.the(level)), () ->
+        DemultiplexedScalar ang = senseNumber(level -> $.p($.the("ang"), $.the(level)), () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 5,
                 DigitizedScalar.FuzzyNeedle
@@ -323,9 +324,11 @@ public class FZero extends NAgentX {
     }
     private void initTankContinuous() {
 
+        float res = 0.1f;
+
         final float[] left = new float[1];
         final float[] right = new float[1];
-        actionUnipolar($.the("left"), (x) -> {
+        actionUnipolar($.the("left"), false, (x)->Util.lerp(0.1f, x, 0.5f), (x) -> {
             float power = unitize(Math.max(x, 0.5f) - 0.5f)*2f;
             left[0] = power;
             fz.playerAngle += Math.max(0,(power - right[0])) * rotSpeed;
@@ -335,8 +338,8 @@ public class FZero extends NAgentX {
                     //Util.or(left[0], right[0])
                             * fwdSpeed/2f;
             return x;
-        });
-        actionUnipolar($.the("right"), (x) -> {
+        }).resolution.set(res);
+        actionUnipolar($.the("right"), false, (x)->Util.lerp(0.1f, x, 0.5f), (x) -> {
             float power = unitize(Math.max(x, 0.5f) - 0.5f)*2f;
             right[0] = power;
             fz.playerAngle -= Math.max(0,(power - left[0])) * rotSpeed;
@@ -346,7 +349,7 @@ public class FZero extends NAgentX {
                     //Util.or(left[0], right[0])
                             * fwdSpeed/2f;
             return x;
-        });
+        }).resolution.set(res);
 
     }
 
@@ -366,7 +369,7 @@ public class FZero extends NAgentX {
 //            return a;
 //        });
         final float[] _a = {0}, _r = {0};
-        actionUnipolar($.inh(id,"fwd"), true, false, (a0) -> {
+        actionUnipolar($.inh(id,"fwd"), true, (x)->0f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a > 0.5f) {
                 float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas

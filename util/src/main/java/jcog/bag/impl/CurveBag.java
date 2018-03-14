@@ -1,14 +1,9 @@
 package jcog.bag.impl;
 
 import jcog.Util;
-import jcog.bag.Bag;
-import jcog.decide.Roulette;
-import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.op.PriMerge;
-import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Map;
 import java.util.Random;
@@ -53,122 +48,122 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
         }
     }
 
-    @Override
-    public Bag<X, X> sample(Random rng, BagCursor<? super X> each) {
-        return sample(rng, each, this::pri);
-    }
-
-    public Bag<X, X> sample(Random random, BagCursor<? super X> each, FloatFunction<X> pri) {
-
-
-        restart:
-        while (true) {
-            final Object[] ii = this.items.list;
-            final int s = Math.min(size(), ii.length);
-            if (s <= 0)
-                return this;
-
-
-
-
-            int windowCap = Math.min(s, SAMPLE_WINDOW_SIZE); //ESTIMATE HUERISTIC
-            float[] wPri = new float[windowCap];
-            Object[] wVal = new Object[windowCap];
-
-            /** emergency null counter, in case map becomes totally null avoids infinite loop*/
-            int nulls = 0;
-
-            //0. seek to some non-null item
-            int prefilled = 0;
-            int i =
-                //random.nextInt(s);
-                sampleStart(random, s);
-
-            boolean direction = random.nextBoolean();
-            while ((nulls+prefilled) < s && size() > 0) {
-                X v = (X) ii[i];
-
-                //move ahead now in case it terminates on the first try, it wont remain on the same value when the next phase starts
-                if (direction) {
-                    if (++i == s) i = 0;
-                } else {
-                    if (--i == -1) i = s - 1;
-                }
-
-                if (v != null) {
-                    wVal[windowCap - 1 - prefilled] = v;
-                    wPri[windowCap - 1 - prefilled] = pri.floatValueOf(v);
-                    if (++prefilled >= windowCap)
-                        break;
-                } else {
-                    nulls++;
-                }
-
-            }
-
-
-            //2. slide window, roulette sampling from it as it changes
-
-            nulls = 0;
-            while (nulls < s && size() > 0) {
-                X v0 = (X) ii[i];
-                float p;
-                if (v0 == null) {
-                    nulls++;
-                } else  if ((p = pri.floatValueOf(v0)) == p /* not deleted*/) {
-                    nulls=0; //reset contiguous null counter
-
-                    //shift window down, erasing value (if any) in position 0
-                    System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
-                    wVal[windowCap - 1] = v0;
-                    System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
-                    wPri[windowCap - 1] = Util.max(p, Pri.EPSILON); //to differentiate from absolute zero
-
-                    int which = Roulette.decideRoulette(windowCap, (r) -> wPri[r], random);
-                    X v = (X) wVal[which];
-                    if (v == null)
-                        continue; //shouldnt happen but just in case
-
-                    BagSample next = each.next(v);
-                    if (next.remove) {
-                        remove(key(v));
-                    }
-
-                    if (next.stop) {
-                        break;
-                    } else if (next.remove) {
-
-                        //prevent the removed item from further selection
-                        if (which==windowCap-1) {
-                            //if it's in the last place, it will be replaced in next cycle anyway
-                            wVal[which] = null;
-                            wPri[which] = 0;
-                        } else if (wVal[0] != null) {
-                            //otherwise swap a non-null value in the 0th place with it, because it will be removed in the next shift
-                            ArrayUtils.swap(wVal, 0, which);
-                            ArrayUtils.swap(wPri, 0, which);
-                        }
-                    }
-                } else {
-                    //deleted
-                     remove(key(v0));
-                }
-
-
-                if (ii != this.items.list)
-                    continue restart;
-
-                if (direction) {
-                    if (++i == s) i = 0;
-                } else {
-                    if (--i == -1) i = s - 1;
-                }
-            }
-
-            return this;
-        }
-
-    }
+//    @Override
+//    public Bag<X, X> sample(Random rng, BagCursor<? super X> each) {
+//        return sample(rng, each, this::pri);
+//    }
+//
+//    private Bag<X, X> sample(Random random, BagCursor<? super X> each, FloatFunction<X> pri) {
+//
+//
+//        restart:
+//        while (true) {
+//            final Object[] ii = this.items.list;
+//            final int s = Math.min(size(), ii.length);
+//            if (s <= 0)
+//                return this;
+//
+//
+//
+//
+//            int windowCap = Math.min(s, SAMPLE_WINDOW_SIZE); //ESTIMATE HUERISTIC
+//            float[] wPri = new float[windowCap];
+//            Object[] wVal = new Object[windowCap];
+//
+//            /** emergency null counter, in case map becomes totally null avoids infinite loop*/
+//            int nulls = 0;
+//
+//            //0. seek to some non-null item
+//            int prefilled = 0;
+//            int i =
+//                //random.nextInt(s);
+//                sampleStart(random, s);
+//
+//            boolean direction = random.nextBoolean();
+//            while ((nulls+prefilled) < s && size() > 0) {
+//                X v = (X) ii[i];
+//
+//                //move ahead now in case it terminates on the first try, it wont remain on the same value when the next phase starts
+//                if (direction) {
+//                    if (++i == s) i = 0;
+//                } else {
+//                    if (--i == -1) i = s - 1;
+//                }
+//
+//                if (v != null) {
+//                    wVal[windowCap - 1 - prefilled] = v;
+//                    wPri[windowCap - 1 - prefilled] = pri.floatValueOf(v);
+//                    if (++prefilled >= windowCap)
+//                        break;
+//                } else {
+//                    nulls++;
+//                }
+//
+//            }
+//
+//
+//            //2. slide window, roulette sampling from it as it changes
+//
+//            nulls = 0;
+//            while (nulls < s && size() > 0) {
+//                X v0 = (X) ii[i];
+//                float p;
+//                if (v0 == null) {
+//                    nulls++;
+//                } else  if ((p = pri.floatValueOf(v0)) == p /* not deleted*/) {
+//                    nulls=0; //reset contiguous null counter
+//
+//                    //shift window down, erasing value (if any) in position 0
+//                    System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
+//                    wVal[windowCap - 1] = v0;
+//                    System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
+//                    wPri[windowCap - 1] = Util.max(p, Pri.EPSILON); //to differentiate from absolute zero
+//
+//                    int which = Roulette.decideRoulette(windowCap, (r) -> wPri[r], random);
+//                    X v = (X) wVal[which];
+//                    if (v == null)
+//                        continue; //shouldnt happen but just in case
+//
+//                    BagSample next = each.next(v);
+//                    if (next.remove) {
+//                        remove(key(v));
+//                    }
+//
+//                    if (next.stop) {
+//                        break;
+//                    } else if (next.remove) {
+//
+//                        //prevent the removed item from further selection
+//                        if (which==windowCap-1) {
+//                            //if it's in the last place, it will be replaced in next cycle anyway
+//                            wVal[which] = null;
+//                            wPri[which] = 0;
+//                        } else if (wVal[0] != null) {
+//                            //otherwise swap a non-null value in the 0th place with it, because it will be removed in the next shift
+//                            ArrayUtils.swap(wVal, 0, which);
+//                            ArrayUtils.swap(wPri, 0, which);
+//                        }
+//                    }
+//                } else {
+//                    //deleted
+//                     remove(key(v0));
+//                }
+//
+//
+//                if (ii != this.items.list)
+//                    continue restart;
+//
+//                if (direction) {
+//                    if (++i == s) i = 0;
+//                } else {
+//                    if (--i == -1) i = s - 1;
+//                }
+//            }
+//
+//            return this;
+//        }
+//
+//    }
 
 
 

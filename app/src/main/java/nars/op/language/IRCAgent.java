@@ -211,12 +211,6 @@ public class IRCAgent extends IRC {
         @NotNull NAR n = NARchy.ui(); //NARS.realtime().get();
                 //newRealtimeNAR(1024, 25, 2);
 
-
-        float priFactor = 0.5f;
-        n.DEFAULT_BELIEF_PRIORITY = 0.5f * priFactor;
-        n.DEFAULT_GOAL_PRIORITY = 0.5f * priFactor;
-        n.DEFAULT_QUESTION_PRIORITY = 0.5f * priFactor;
-        n.DEFAULT_QUEST_PRIORITY = 0.5f * priFactor;
         n.termVolumeMax.set(20);
 
 

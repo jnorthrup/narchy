@@ -91,7 +91,10 @@ public class BoolTest {
 
             //raw
             assertReduction(False, "(x" + diff + "x)");
-            assertReduction("(x" + diff + "(--,x))", "(x" + diff + "(--,x))");  //unchanged
+            assertReduction(
+                    //"(x" + diff + "(--,x))",
+                    True,
+                    "(x" + diff + "(--,x))");  //unchanged
 
             //subj
             assertReduction(Null, "((x" + diff + "x)-->y)");

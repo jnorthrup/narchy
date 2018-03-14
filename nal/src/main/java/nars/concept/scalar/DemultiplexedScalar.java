@@ -26,7 +26,9 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
 
     public final FloatSupplier input;
 
-    final FloatFloatToObjectFunction<Truth> truther;
+    private final FloatFloatToObjectFunction<Truth> truther;
+
+    public final Term term;
 
     @Override
     public final float asFloat() {
@@ -36,10 +38,11 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
     protected DemultiplexedScalar(FloatSupplier input, @Nullable Term id, NAR nar) {
         super(id);
 
+        this.term = id;
+
         this.input = input;
         this.in = nar.newCauseChannel(id);
-        truther = (prev,next) -> $.t(next, nar.confDefault(BELIEF));
-
+        this.truther = (prev,next) -> $.t(next, nar.confDefault(BELIEF));
     }
 
     public DemultiplexedScalar resolution(float r) {

@@ -20,6 +20,7 @@
  */
 package nars.concept;
 
+import com.google.common.collect.Iterators;
 import jcog.bag.Bag;
 import jcog.data.map.MetaMap;
 import jcog.pri.PriReference;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -43,7 +45,7 @@ import java.util.stream.Stream;
 import static jcog.Texts.n4;
 import static nars.Op.*;
 
-public interface Concept extends Termed, MetaMap {
+public interface Concept extends Termed, MetaMap, Iterable<Concept> {
 
 
 //    Concept[] EmptyArray = new Concept[0];
@@ -74,6 +76,12 @@ public interface Concept extends Termed, MetaMap {
         StringBuilder sb = new StringBuilder(1024);
         print(sb);
         return sb.toString();
+    }
+
+
+    @Override
+    default Iterator<Concept> iterator() {
+        return Iterators.singletonIterator(this);
     }
 
     default <A extends Appendable> A print(@NotNull A out) {

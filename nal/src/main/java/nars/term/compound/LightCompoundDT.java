@@ -1,10 +1,12 @@
-package nars.term;
+package nars.term.compound;
 
 import jcog.Util;
 import nars.Op;
 import nars.Param;
 import nars.derive.PatternCompound;
 import nars.subterm.Subterms;
+import nars.term.Compound;
+import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
@@ -19,7 +21,7 @@ import static nars.time.Tense.XTERNAL;
  * referring to the base for all other details.
  * TODO a CachedCompound version of this
  */
-public class CompoundDTLight implements CompoundDT {
+public class LightCompoundDT implements Compound {
 
     /**
      * numeric (term or "dt" temporal relation)
@@ -28,11 +30,11 @@ public class CompoundDTLight implements CompoundDT {
     private final int hashDT;
     private final Compound ref;
 
-    public CompoundDTLight(Compound base, int dt) {
+    public LightCompoundDT(Compound base, int dt) {
 
         Op op = base.op();
 
-        assert(!(base instanceof CompoundDT) && ((op.temporal && dt!=DTERNAL) || this instanceof PatternCompound));
+        assert(base.dt()==DTERNAL & ((op.temporal && dt!=DTERNAL) || this instanceof PatternCompound));
 
         Subterms s = base.subterms();
 
@@ -43,7 +45,7 @@ public class CompoundDTLight implements CompoundDT {
 
         if (Param.DEBUG_EXTRA) {
 
-            assert (getClass() != CompoundDTLight.class /* a subclass */ || dt != DTERNAL);
+            assert (getClass() != LightCompoundDT.class /* a subclass */ || dt != DTERNAL);
 
 
             Subterms subterms = s;
@@ -67,11 +69,12 @@ public class CompoundDTLight implements CompoundDT {
         }
 
 
-        this.dt = dt;
 
         assert dt != DTERNAL || this instanceof PatternCompound : "use GenericCompound if dt==DTERNAL";
 
         assert dt == DTERNAL || dt == XTERNAL || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
+
+        this.dt = dt;
 
         int baseHash = base.hashCode();
         this.hashDT = dt != DTERNAL ? Util.hashCombine(baseHash, dt) : baseHash;
@@ -184,8 +187,8 @@ public class CompoundDTLight implements CompoundDT {
         if (!(that instanceof Compound) || (hashDT != that.hashCode()))
             return false;
 
-        if (that instanceof CompoundDTLight) {
-            CompoundDTLight cthat = (CompoundDTLight) that;
+        if (that instanceof LightCompoundDT) {
+            LightCompoundDT cthat = (LightCompoundDT) that;
             Compound thatRef = cthat.ref;
             Compound myRef = this.ref;
 

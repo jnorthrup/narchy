@@ -1,14 +1,14 @@
 package nars;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.event.On;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
-import jcog.math.FloatNormalized;
-import jcog.math.FloatRange;
-import nars.concept.action.ActionConcept;
+import jcog.math.*;
 import nars.concept.Concept;
+import nars.concept.action.ActionConcept;
+import nars.concept.scalar.ChronicScalar;
+import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.control.CauseChannel;
@@ -21,7 +21,6 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.var.Variable;
 import nars.truth.DiscreteTruth;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import org.apache.commons.lang3.ArrayUtils;
@@ -39,8 +38,10 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static jcog.Texts.n2;
+import static jcog.Util.compose;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * explicit management of sensor concepts and motor functions
@@ -82,7 +83,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
 
-    public Scalar happy;
+    public DemultiplexedScalar happy;
 
     public boolean trace;
 
@@ -92,7 +93,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     /**
      * range: -1..+1
      */
-    public float reward;
+    public volatile float reward;
 
     public NAR nar = null;
     private CauseChannel<ITask> in = null;
@@ -127,14 +128,29 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     protected NAgent(@Nullable Term id) {
         this(id, null);
-
-
     }
 
-    public NALTask alwaysWant(Termed x, float conf) {
+    @Deprecated public void alwaysWant(Iterable<Termed> x, float conf) {
+        x.forEach(xx -> alwaysWant(xx, conf));
+    }
+
+    @Deprecated public NALTask alwaysWant(Termed x, float conf) {
         NALTask t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
-                Stamp.UNSTAMPED);
+                //Stamp.UNSTAMPED
+                nar().time.nextInputStamp()
+        );
+
+        always.add(t);
+        return t;
+    }
+
+    @Deprecated public NALTask alwaysQuestion(Termed x) {
+        NALTask t = new NALTask(x.term(), QUESTION, null, now,
+                ETERNAL, ETERNAL,
+                //Stamp.UNSTAMPED
+                nar().time.nextInputStamp()
+        );
 
         always.add(t);
         return t;
@@ -213,6 +229,10 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     @Override
     protected void start(NAR nar) {
         synchronized (this) {
+
+            assert(this.nar == null || this.nar == nar);
+            this.nar = nar;
+
             super.start(nar);
 
             motivation.set(nar.priDefault(GOAL));
@@ -222,50 +242,83 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     $.inh(id, $.the("happy")); //happy in this environment
                     //$.prop(id, $.the("happy")); //happiness of this environment
 
-            FloatNormalized happyValue =
-                    new FloatNormalized(
-                    //new FloatPolarNormalized(
-                    //new FloatHighPass(
-                    () -> reward
-                    //)
-            ) {
-                        @Override
-                        public float asFloat() {
-                            float f = super.asFloat();
-                            if (f!=f) return Float.NaN;
-                            else {
-                                f = Util.unitize(f);
-
-                                //assert(f >= 0 && f <= 1f);
-
-                                //depression curve and offset
-                                return Util.max(0,f - depress.floatValue());
-                            }
-                        }
-                        //                        @Override
-//                        public float min() {
-//                            return Util.lerp(depress.floatValue(), super.max(), super.min());
-//                        }
-//
+//            FloatSupplier happyValue = new FloatCached(
+//                    new FloatNormalized(
+//                    //new FloatPolarNormalized(
+//                    //new FloatHighPass(
+//                    () -> reward
+//                    //)
+//            ) {
 //                        @Override
-//                        public float max() {
-//                            //decrease the max toward min in proportion to the depression setting
-//                            return Util.lerp(depress.floatValue(), super.max(), super.min());
+//                        public float asFloat() {
+//                            float f = super.asFloat();
+//                            if (f!=f) return Float.NaN;
+//                            else {
+//                                f = Util.unitize(f);
+//
+//                                //assert(f >= 0 && f <= 1f);
+//
+//                                //depression curve and offset
+//                                return Util.max(0,f - depress.floatValue());
+//                            }
 //                        }
-                    }.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
+//                        //                        @Override
+////                        public float min() {
+////                            return Util.lerp(depress.floatValue(), super.max(), super.min());
+////                        }
+////
+////                        @Override
+////                        public float max() {
+////                            //decrease the max toward min in proportion to the depression setting
+////                            return Util.lerp(depress.floatValue(), super.max(), super.min());
+////                        }
+//                    }.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+//                nar::time);
 
-            assert(this.nar == null || this.nar == nar);
-            this.nar = nar;
+            FloatSupplier happyValue = new FloatCached(
+                    () -> reward - depress.floatValue(),
+                    nar::time
+            );
+
+
+
+
+
+            this.happy =
+                    //new ActionInfluencingScalar(happyTerm, happyValue);
+                    ChronicScalar.filter(
+                            happyTerm,
+                            happyValue,
+                            nar,
+
+                            //happiness (raw)
+                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+
+                            //long-term happiness
+                            compose(
+
+                                    new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+                                    new FloatExpMovingAverage(0.02f)
+                            ),
+
+                            //joy
+                            compose(
+                                new FloatExpMovingAverage(0.1f, false),
+                                new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
+                            )
+                    );
+
+            onFrame(happy);
+
+            alwaysWant((Iterable)happy, nar.confDefault(GOAL));
+
+            actions.keySet().forEach(a ->
+                    //alwaysQuest(a)
+                    alwaysQuestion(Op.IMPL.the(happy.term, XTERNAL, a.term))
+            );
 
             this.in = nar.newCauseChannel(this);
             this.now = nar.time();
-
-
-            this.happy = new ActionInfluencingScalar(happyTerm, happyValue);
-
-
-
-            alwaysWant(happy, nar.confDefault(GOAL));
 
             //finally:
             enabled.set(true);
@@ -311,7 +364,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             sc.getValue().input(sc.getKey().update(truther, now, dur, nar));
         });
 
-        always(motivation.floatValue());
+        always(motivation.floatValue() );
 
         //HACK TODO compile this to re-used array on init like before
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);

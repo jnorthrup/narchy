@@ -73,11 +73,14 @@ public final class Conclusion extends AbstractPred<Derivation> {
         Term c2;
         if (d.temporal) {
 
-            boolean s = d.single;
-            DeriveTime dt = s ? d.dtSingle : d.dtDouble;
+            boolean singleTime =
+                    d.task.isEternal() ? d.belief == null : d.single;
+                    //d.single;
+
+            DeriveTime dt = singleTime ? d.dtSingle : d.dtDouble;
             if (dt == null) {
-                dt = new DeriveTime(d, s);
-                if (s)
+                dt = new DeriveTime(d, singleTime);
+                if (singleTime)
                     d.dtSingle = dt;
                 else
                     d.dtDouble = dt;

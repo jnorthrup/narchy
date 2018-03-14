@@ -1,12 +1,16 @@
 package jcog.tree.rtree;
 
+import jcog.list.FasterList;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
+import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
 
 import java.util.function.Function;
 
 public class Spatialization<T> {
+
+    public static final double EPSILON = Float.MIN_NORMAL*2;
 
     public final Split<T> split;
     public final Function<T, HyperRegion> bounds;
@@ -53,36 +57,15 @@ public class Spatialization<T> {
 
     }
 
-    public final Leaf<T> transfer(Leaf<T> leaf, HyperRegion[] sortedMbr, int from, int to) {
+    public final Leaf<T> transfer(Leaf<T> leaf, FasterList<IntDoublePair> sortedMbr, int from, int to) {
         Leaf<T> l = newLeaf();
-        transfer(leaf, sortedMbr, l, from, to);
+        for (int i = from; i < to; i++)
+            ((Node<T, ?>) l).add(leaf.data[sortedMbr.get(i).getOne()], leaf, this, new boolean[] { false });
         return l;
     }
 
-    public void transfer(Leaf<T> leaf, HyperRegion[] sortedSrc, Node<T, ?> target, int from, int to) {
-
-        boolean[] dummy = new boolean[1];
-
-        for (int j = 0; j < leaf.size; j++) {
-            T jd = leaf.data[j];
-            HyperRegion jr = bounds(jd);
-
-            for (int i = from; i < to; i++) {
-                HyperRegion si = sortedSrc[i];
-
-                if (si!=null && jr.equals(si)) {
-
-                    dummy[0] = false;
-                    target.add(jd, leaf, this, dummy);
-                    sortedSrc[i] = null;
-                    break;
-                }
-            }
-        }
-    }
-
     public double epsilon() {
-        return RTree.EPSILON;
+        return EPSILON;
     }
 
 

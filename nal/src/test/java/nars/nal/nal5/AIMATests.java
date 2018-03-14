@@ -11,8 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-import static nars.Op.BELIEF;
-import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -48,8 +46,8 @@ public class AIMATests {
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
 //        n.confMin.set(0.02f);
-        n.priDefault(QUESTION, 0.9f);
-        n.priDefault(BELIEF, 0.7f);
+        n.questionPriDefault.set(0.9f);
+        n.beliefPriDefault.set(0.7f);
         n.termVolumeMax.set(40);
         //n.conceptActivation.set(0.5f);
 

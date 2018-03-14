@@ -6,7 +6,6 @@ import nars.Narsese;
 import nars.Task;
 import nars.task.util.InvalidTaskException;
 import nars.term.Compound;
-import nars.term.InvalidTermException;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.truth.Truth;
@@ -38,7 +37,7 @@ public class NarseseTest {
                 } else {
                     fail(s + " should not be parseable but got: " + e); //must throw exception
                 }
-            } catch (Narsese.NarseseException | InvalidTermException e) {
+            } catch (Narsese.NarseseException | Term.InvalidTermException e) {
                 assertTrue(true);
             }
         }

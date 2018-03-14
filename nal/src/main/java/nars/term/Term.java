@@ -42,6 +42,7 @@ import nars.term.transform.TermTransform;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.Variable;
 import nars.time.Tense;
+import nars.util.SoftException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -59,6 +60,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -876,5 +878,50 @@ public interface Term extends Termed, Comparable<Termed> {
             throw new RuntimeException(getClass() + " needs to impl the()");
     }
 
+    /**
+     * Created by me on 2/26/16.
+     */
+    final class InvalidTermException extends SoftException {
+
+        @NotNull private final Op op;
+        private final int dt;
+        @NotNull private final Term[] args;
+        @NotNull private final String reason;
+
+
+        public InvalidTermException(/*@NotNull*/ Op op, @NotNull Term[] args, @NotNull String reason) {
+            this(op, DTERNAL, reason, args);
+        }
+
+        public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull Term[] args, @NotNull String reason) {
+            this(op, dt, reason, args);
+        }
+
+        public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull Subterms args, @NotNull String reason) {
+            this(op, dt, reason, args.arrayShared());
+        }
+
+        public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull String reason, @NotNull Term... args) {
+            this.op = op;
+            this.dt = dt;
+            this.args = args;
+            this.reason = reason;
+        }
+
+        public InvalidTermException(String s, @NotNull Compound c) {
+            this(c.op(), c.dt(), c.subterms(), s);
+        }
+
+        @NotNull
+        @Override
+        public String getMessage() {
+            return getClass().getSimpleName() + ": " + reason + " {" +
+                    op +
+                    ", dt=" + dt +
+                    ", args=" + Arrays.toString(args) +
+                    '}';
+        }
+
+    }
 }
 

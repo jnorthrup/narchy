@@ -11,7 +11,6 @@ import jcog.pri.Prioritized;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Compound;
-import nars.term.InvalidTermException;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
@@ -366,7 +365,7 @@ public class IO {
         for (int i = 0; i < siz; i++) {
             Term read = (s[i] = readTerm(in));
             if (read == null || read instanceof Bool)
-                throw new InvalidTermException(Op.PROD /* consider the termvector as a product */, s, "invalid");
+                throw new Term.InvalidTermException(Op.PROD /* consider the termvector as a product */, s, "invalid");
         }
 
         return s;
@@ -391,7 +390,7 @@ public class IO {
 
         Term y = o.the(dt, v);
         if (y instanceof Bool)
-            throw new InvalidTermException(o, dt, v, "invalid term");
+            throw new Term.InvalidTermException(o, dt, v, "invalid term");
 
 //        if (key == null)
 //            throw new UnsupportedOperationException();
@@ -504,7 +503,7 @@ public class IO {
             return IO.readTerm(input(b));
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (InvalidTermException ignored) {
+        } catch (Term.InvalidTermException ignored) {
             return null;
         }
     }

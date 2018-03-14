@@ -20,10 +20,11 @@ package jcog.tree.rtree.split;
  * #L%
  */
 
+import jcog.list.FasterList;
 import jcog.tree.rtree.*;
+import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Fast RTree split suggested by Yufei Tao taoyf@cse.cuhk.edu.hk
@@ -59,16 +60,21 @@ public final class AxialSplitLeaf<T> implements Split<T> {
         final int splitDimension = axis;
 
         short size = leaf.size;
-        final HyperRegion[] sortedMbr = HyperRegion.toArray(leaf.data, size, model.bounds);
-        Arrays.sort(sortedMbr, Comparator.comparingDouble(o -> o.center(splitDimension)));
+        FasterList<IntDoublePair> sorted = new FasterList(size);
+        for (int i = 0; i < size; i++)
+            sorted.add(pair(i, model.bounds(leaf.data[i]).center(splitDimension)));
+        sorted.sortThisByDouble(IntDoublePair::getTwo);
+
+//        final HyperRegion[] sortedMbr = HyperRegion.toArray(leaf.data, size, model.bounds);
+//        Arrays.sort(sortedMbr, Comparator.comparingDouble(o -> o.center(splitDimension)));
 
         // divide sorted leafs
-        final Leaf<T> l1Node = model.transfer(leaf, sortedMbr, 0, size/2);
-        final Leaf<T> l2Node = model.transfer(leaf, sortedMbr, size / 2, size);
+        final Leaf<T> l1Node = model.transfer(leaf, sorted, 0, size/2);
+        final Leaf<T> l2Node = model.transfer(leaf, sorted, size / 2, size);
 
         if ((l1Node.size()+l2Node.size() != size))
             throw new RuntimeException("fix: leaf.contains(t)=" + leaf.contains(t, model.bounds(t), model));
-        assert (l1Node.size()+l2Node.size() == size);
+        //assert (l1Node.size()+l2Node.size() == size);
 
         leaf.transfer(l1Node, l2Node, t, model);
 

@@ -4,6 +4,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SortedSetMultimap;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
+import jcog.math.Longerval;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
@@ -27,6 +28,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -805,12 +807,15 @@ public class DeriveTime extends TimeGraph {
      */
     private Term solveRaw(Term x) {
         long s, e;
-        if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
+        /*if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
             //inherit question's specific time directly
             s = task.start();
             e = task.end();
-        } else {
-            boolean taskEvent = !task.term().op().temporal;
+        } else*/ {
+            boolean taskEvent =
+                    //!task.term().op().temporal;
+                    !(task.term().op()==CONJ);
+
             if (task.isEternal()) {
                 if (belief == null || belief.isEternal()) {
                     //entirely eternal
@@ -829,6 +834,7 @@ public class DeriveTime extends TimeGraph {
                     //inherit task time
                     s = task.start();
                     e = task.end();
+
                 } else if (belief.isEternal()) {
                     if (!task.isEternal()) {
                         //inherit task time
@@ -849,10 +855,16 @@ public class DeriveTime extends TimeGraph {
                     //                    }
                     //                }
                 } else {
-                    EviDensity density = new EviDensity(task, belief);
-                    s = density.unionStart;
-                    e = density.unionEnd;
-                    d.concEviFactor *= density.factor();
+                    if (!task.isQuestOrQuestion() && !belief.isQuestOrQuestion()) {
+                        EviDensity density = new EviDensity(task, belief);
+                        s = density.unionStart;
+                        e = density.unionEnd;
+                        d.concEviFactor *= density.factor();
+                    } else {
+                        Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
+                        s = u.start();
+                        e = u.end();
+                    }
                 }
             }
         }

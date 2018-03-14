@@ -3,7 +3,7 @@ package jcog.tree.rtree.rect;
 import jcog.TODO;
 import jcog.Util;
 import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.RTree;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.point.Float2D;
 
 
@@ -131,7 +131,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
 
     @Override
     public boolean equals(Object o) {
-        return equals(o, (float) RTree.EPSILON);
+        return equals(o, (float) Spatialization.EPSILON);
     }
 
     public boolean equals(Object o, float epsilon) {

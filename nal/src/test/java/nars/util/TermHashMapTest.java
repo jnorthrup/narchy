@@ -1,4 +1,4 @@
-package nars.term;
+package nars.util;
 
 import nars.$;
 import org.junit.jupiter.api.Test;

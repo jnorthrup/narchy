@@ -392,6 +392,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (toAdd != null) {
             _onAdded(toAdd);
 
+            int size = size();
             if (attemptRegrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
                 //the insert has regrown the map so try reinserting this displaced item
                 if (toRemove != null) {
@@ -407,7 +408,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         if (mode == PUT && toAdd == null) {
 
-            if (attemptRegrowForSize(size + 1)) {
+            if (attemptRegrowForSize(size() + 1)) {
                 return update(k, incoming, PUT, overflowing); //try once more
             }
 
@@ -548,7 +549,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public HijackBag<K, V> sample(/*@NotNull*/ Random random, BagCursor<? super V> each) {
-        final int s = size;
+        final int s = size();
         if (s <= 0)
             return this;
 
@@ -576,7 +577,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             //0. seek to some non-null item
             int prefilled = 0;
-            while ((nulls+prefilled) < c && size > 0) {
+            while ((nulls+prefilled) < c /*&& size > 0*/) {
                 V v = map
                         .get(i);
                         //.getPlain(i);
@@ -603,7 +604,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             //2. slide window, roulette sampling from it as it changes
 
             nulls = 0;
-            while (nulls < c && size > 0) {
+            while (nulls < c/* && size > 0*/) {
                 V v0 = map
                         .get(i);
                         //.getPlain(i);
@@ -669,7 +670,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public int size() {
-        return Math.max(0, size);
+        return Math.max(0, sizeUpdater.get(this));
     }
 
     @Override

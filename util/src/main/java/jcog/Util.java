@@ -22,6 +22,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.Frequency;
 import org.eclipse.collections.api.block.function.primitive.DoubleToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
@@ -2271,6 +2272,13 @@ public enum Util {
             s[i++] = (short)xx;
         }
         return s;
+    }
+
+    public static FloatToFloatFunction compose(FloatToFloatFunction f, FloatToFloatFunction g) {
+        return (x) -> {
+            float fx = f.valueOf(x);
+            return g.valueOf(fx);
+        };
     }
 
 

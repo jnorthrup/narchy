@@ -194,10 +194,10 @@ public class RTreeNDTest {
             Arrays.sort(results);
             // If the order of nodes in the tree changes, this test may fail while returning the correct results.
             for (int i = 0; i < resultCount; i++) {
-                assertTrue(Util.equals(results[i].min.x, (double) (i + 5), RTree.EPSILON) &&
-                                Util.equals(results[i].min.y, (double) (i + 5), RTree.EPSILON) &&
-                                Util.equals(results[i].max.x, (double) (i + 8), RTree.EPSILON) &&
-                                Util.equals(results[i].max.y, (double) (i + 8), RTree.EPSILON),
+                assertTrue(Util.equals(results[i].min.x, (double) (i + 5), Spatialization.EPSILON) &&
+                                Util.equals(results[i].min.y, (double) (i + 5), Spatialization.EPSILON) &&
+                                Util.equals(results[i].max.x, (double) (i + 8), Spatialization.EPSILON) &&
+                                Util.equals(results[i].max.y, (double) (i + 8), Spatialization.EPSILON),
                         "Unexpected result found:" + results[i]);
             }
         }
@@ -235,10 +235,10 @@ public class RTreeNDTest {
 
             // If the order of nodes in the tree changes, this test may fail while returning the correct results.
             for (int i = 0; i < resultCount; i++) {
-                assertTrue(Util.equals(results.get(i).min.x, (double) (i + 2), RTree.EPSILON) &&
-                                Util.equals(results.get(i).min.y, (double) (i + 2), RTree.EPSILON) &&
-                                Util.equals(results.get(i).max.x, (double) (i + 5), RTree.EPSILON) &&
-                                Util.equals(results.get(i).max.y, (double) (i + 5), RTree.EPSILON),
+                assertTrue(Util.equals(results.get(i).min.x, (double) (i + 2), Spatialization.EPSILON) &&
+                                Util.equals(results.get(i).min.y, (double) (i + 2), Spatialization.EPSILON) &&
+                                Util.equals(results.get(i).max.x, (double) (i + 5), Spatialization.EPSILON) &&
+                                Util.equals(results.get(i).max.y, (double) (i + 5), Spatialization.EPSILON),
                         "Unexpected result found");
             }
         }
@@ -383,7 +383,7 @@ public class RTreeNDTest {
         assertEquals(rTree.size(), rects.length);
 
         for (int i = 0; i < rects.length; i++) {
-            assertFalse(rTree.containedAsSet(rects[i]).isEmpty());
+            assertFalse(rTree.containedToSet(rects[i]).isEmpty());
         }
     }
 
@@ -405,15 +405,15 @@ public class RTreeNDTest {
 
         assertEquals(1, rTree.size());
 
-        assertFalse(rTree.containedAsSet(rects[0]).isEmpty(), "Missing hyperRect that should  be found " + rects[0]);
+        assertFalse(rTree.containedToSet(rects[0]).isEmpty(), "Missing hyperRect that should  be found " + rects[0]);
 
         for (int i = 1; i < rects.length; i++) {
-            assertTrue(rTree.containedAsSet(rects[i]).isEmpty(), "Found hyperRect that should have been removed on search " + rects[i]);
+            assertTrue(rTree.containedToSet(rects[i]).isEmpty(), "Found hyperRect that should have been removed on search " + rects[i]);
         }
 
         final RectDouble2D hr = new RectDouble2D(0, 0, 5, 5);
         rTree.add(hr);
-        assertFalse(rTree.containedAsSet(hr).isEmpty());
+        assertFalse(rTree.containedToSet(hr).isEmpty());
         assertTrue(rTree.size() != 0, "Found hyperRect that should have been removed on search");
     }
 
@@ -459,7 +459,7 @@ public class RTreeNDTest {
         assertEquals(0, rTree.size());
 
         for (int i = 0; i < rect.length; i++) {
-            assertTrue(rTree.containedAsSet(rect[i]).isEmpty(), "Found hyperRect that should have been removed " + rect[i]);
+            assertTrue(rTree.containedToSet(rect[i]).isEmpty(), "Found hyperRect that should have been removed " + rect[i]);
         }
     }
 
@@ -484,7 +484,7 @@ public class RTreeNDTest {
         assertEquals(0, rTree.size());
 
         for (int i = 0; i < N; i++) {
-            assertTrue(rTree.containedAsSet(rect[i]).isEmpty(), "#" + i + " of " + rect.length + ": Found hyperRect that should have been removed" + rect[i]);
+            assertTrue(rTree.containedToSet(rect[i]).isEmpty(), "#" + i + " of " + rect.length + ": Found hyperRect that should have been removed" + rect[i]);
         }
 
         assertFalse(rTree.size() > 0, "Found hyperRect that should have been removed on search ");

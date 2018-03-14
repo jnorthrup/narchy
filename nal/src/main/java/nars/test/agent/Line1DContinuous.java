@@ -187,8 +187,8 @@ public class Line1DContinuous extends NAgent {
         nar.termVolumeMax.set(32);
 
 
-        nar.beliefConfidence(0.9f);
-        nar.goalConfidence(0.9f);
+        nar.beliefConfDefault.set(0.9f);
+        nar.goalConfDefault.set(0.9f);
 
 
         Line1DContinuous l = new Line1DContinuous(nar, 6,

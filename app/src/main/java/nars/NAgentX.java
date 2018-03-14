@@ -1,8 +1,6 @@
 package nars;
 
 import jcog.exe.Loop;
-import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatPolarNormalized;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.exe.Focus;
@@ -50,7 +48,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$safe;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.container.Gridding.col;
 import static spacegraph.container.Gridding.grid;
 import static spacegraph.render.JoglPhysics.window;
@@ -63,28 +60,9 @@ import static spacegraph.render.JoglPhysics.window;
  */
 abstract public class NAgentX extends NAgent {
 
-
-//    @Override
-//    public Set<Termed> concepts() {
-//        Set<Termed> s = super.concepts();
-////        for (CameraSensor c : cam)
-////            s.add(c.root);
-//        return s;
-//    }
-
     public NAgentX(String id, NAR nar) {
         super(id, nar);
 
-        ActionInfluencingScalar joy = new ActionInfluencingScalar(
-                id != null ?
-                        //$.prop($.the(id), $.the("joy"))
-                        $.inh($.the(id), $.the("joy"))
-                        :
-                        $.the("joy"),
-                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
-                        () -> reward)).relax(0.01f));
-        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
-        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
 
         if (Param.DEBUG) {
 //            nar.onTask(x -> {
@@ -105,6 +83,25 @@ abstract public class NAgentX extends NAgent {
 
         }
     }
+
+    @Override
+    protected void start(NAR nar) {
+        super.start(nar);
+
+//        ActionInfluencingScalar joy = new ActionInfluencingScalar(
+//                id != null ?
+//                        //$.prop($.the(id), $.the("joy"))
+//                        $.inh($.the(id), $.the("joy"))
+//                        :
+//                        $.the("joy"),
+//                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
+//                        () -> reward)).relax(0.01f));
+        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
+//        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
+
+
+    }
+
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
@@ -202,7 +199,6 @@ abstract public class NAgentX extends NAgent {
 
         //n.defaultWants();
 
-        n.conceptActivation.set(1f);
 
         //n.dtMergeOrChoose.set(true);
         n.dtDither(
@@ -215,15 +211,17 @@ abstract public class NAgentX extends NAgent {
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(32);
 
-        n.beliefConfidence(0.98f);
-        n.goalConfidence(0.9f);
+        n.beliefConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.9f);
 
 
-        float priFactor = 0.1f;
-        n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
-        n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
-        n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
-        n.DEFAULT_QUEST_PRIORITY = 1f * priFactor;
+        float priFactor = 0.2f;
+        n.beliefPriDefault.set(1f * priFactor);
+        n.goalPriDefault.set(1f * priFactor);
+        n.questionPriDefault.set(1f * priFactor);
+        n.questPriDefault.set(1f * priFactor);
+
+        n.conceptActivation.set(0.5f);
 
         NAgent a = init.apply(n);
 

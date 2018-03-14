@@ -2,7 +2,6 @@ package nars.task.util;
 
 import nars.*;
 import nars.term.Compound;
-import nars.term.InvalidTermException;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.subst.Unify;
@@ -86,7 +85,7 @@ public class TaskRule extends TaskMatch {
 
             try {
                 match.unify(input, x.term(), true);
-            } catch (InvalidTermException | InvalidTaskException e) {
+            } catch (Term.InvalidTermException | InvalidTaskException e) {
                 onError(e);
             }
 

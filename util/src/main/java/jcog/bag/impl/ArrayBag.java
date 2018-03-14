@@ -121,17 +121,15 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * may include the item being added
      */
     @Nullable
-    private FasterList<Y> update(@Nullable Y toAdd, @Nullable Consumer<Y> update, boolean commit) {
+    private void update(@Nullable Y toAdd, @Nullable Consumer<Y> update, boolean commit, final FasterList<Y> trash) {
 
-        FasterList<Y> trash;
         int s = size();
         if (s == 0) {
             mass.set(this, 0);
             if (toAdd == null)
-                return null;
-            trash = null;
+                return;
         } else {
-            s = update(toAdd != null, s, trash = new FasterList(1), update,
+            s = update(toAdd != null, s, trash, update,
                     commit || (s == capacity) && top() instanceof PLinkUntilDeleted);
         }
 
@@ -171,8 +169,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             }
         }
 
-        boolean trashEmpty = trash==null || trash.isEmpty();
-        return trashEmpty ? null : trash;
     }
 
 
@@ -455,7 +451,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         X key = key(incoming);
 
-        final @Nullable FasterList<Y>[] trash = new FasterList[1];
+        final @Nullable FasterList<Y> trash = new FasterList(1);
 
         Y inserted;
 
@@ -481,24 +477,20 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 return v;
             });
 
+            //clear the entries from the map right away
+            //this should be done in a synchronized block along with what happens above
+            trash.forEach(x -> {
+                if (x != incoming)
+                    mapRemove(x);
+            });
 
-            if (trash[0] != null) {
-                //clear the entries from the map right away
-                //this should be done in a synchronized block along with what happens above
-                trash[0].forEach(x -> {
-                    if (x != incoming)
-                        mapRemove(x);
-                });
-            }
         }
 
         //this can be done outside critical section
-        if (trash[0] != null) {
-            trash[0].forEach(x -> {
-                if (x != incoming)
-                    onRemove(x);
-            });
-        }
+        trash.forEach(x -> {
+            if (x != incoming)
+                onRemove(x);
+        });
 
         if (inserted == null) {
             onReject(incoming);
@@ -566,17 +558,16 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
 
 
-    private boolean insert(/*@NotNull*/ Y incoming, @Nullable FasterList<Y>[] trash) {
+    private boolean insert(/*@NotNull*/ Y incoming, FasterList<Y> trash) {
 
 //        pressurize(p);
 
         if (size() == capacity) {
 
-            @Nullable FasterList<Y> trsh = update(incoming, null, false);
-            if (trsh != null) {
-                trash[0] = trsh; //what was displaced
-                if (trsh.getLast() == incoming)
-                    return false; //rejected this one
+            update(incoming, null, false, trash);
+            if (trash.remove(incoming))  {
+                //rejected this one
+                return false;
             }
 
             //sort(); //<- shouldnt need sorted
@@ -685,20 +676,16 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int s = size();
         if ((update!=null && s > 0) || (update == null && (s > capacity))) {
-            @Nullable List<Y> trash = null;
+            @Nullable FasterList<Y> trash = new FasterList(1);
             synchronized (items) {
 
-                trash = update(null, update, true);
+                update(null, update, true, trash);
 
-                if (trash != null) {
-                    trash.forEach(this::mapRemove);
-                }
+                trash.forEach(this::mapRemove);
             }
 
             //then outside the synch:
-            if (trash != null) {
-                trash.forEach(this::onRemove);
-            }
+            trash.forEach(this::onRemove);
         }
 
         return this;

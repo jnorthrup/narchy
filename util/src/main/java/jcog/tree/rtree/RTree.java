@@ -25,8 +25,10 @@ import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -42,14 +44,17 @@ import java.util.stream.Stream;
  * Created by jcairns on 4/30/15.</p>
  */
 public class RTree<T> implements Space<T> {
-    public static final double EPSILON = Float.MIN_NORMAL;
 
+    private static final AtomicIntegerFieldUpdater size = AtomicIntegerFieldUpdater.newUpdater(RTree.class, "_size");
 
-    /*@NotNull*/
-    private Node<T, ?> root;
-    private int size;
+    private volatile Node<T, ?> root;
+
+    /** size counter
+     *  volatile for concurrent implementations
+     */
+    private volatile int _size;
+
     public final Spatialization<T> model;
-
 
     public RTree(@Nullable Function<T, HyperRegion> spatialize, final int mMin, final int mMax, final Spatialization.DefaultSplits splitType) {
         this(new Spatialization<>(spatialize, splitType, mMin, mMax));
@@ -72,8 +77,11 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public final void clear() {
-        this.size = 0;
-        this.root = model.newLeaf();
+        this.size.updateAndGet(this, (sizeBeforeClear)->{
+            if (sizeBeforeClear > 0 || root == null)
+                this.root = model.newLeaf();
+            return 0;
+        });
     }
 
     /**
@@ -81,14 +89,14 @@ public class RTree<T> implements Space<T> {
      */
     @Override
     public boolean add(/*@NotNull*/ final T t) {
-        int before = size;
+//        int before = size;
 
         boolean[] added = new boolean[1];
         Node<T, ?> nextRoot = root.add(t, this, model, added);
         if (nextRoot != null) {
             this.root = nextRoot;
             if (added[0]) {
-                this.size++;
+                this.size.incrementAndGet(this);
                 return true;
             }
         }
@@ -106,13 +114,13 @@ public class RTree<T> implements Space<T> {
      */
     @Override
     public boolean remove(final T x) {
-        int before = size;
+        int before = _size;
         if (before == 0)
             return false;
         boolean[] removed = new boolean[1];
         root = root.remove(x, model.bounds(x), model, removed);
         if (removed[0]) {
-            size--;
+            size.decrementAndGet(this);
             return true;
         }
         return false;
@@ -144,7 +152,7 @@ public class RTree<T> implements Space<T> {
      */
     @Override
     public int size() {
-        return size;
+        return size.get(this);
     }
 
 //    static boolean isEqual(final double a, final double b, final double eps) {
@@ -158,14 +166,12 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public void whileEachIntersecting(HyperRegion rect, Predicate<T> t) {
-        if (size > 0)
-            root.intersecting(rect, t, model);
+        root.intersecting(rect, t, model);
     }
 
     @Override
     public void whileEachContaining(HyperRegion rect, final Predicate<T> t) {
-        if (size > 0)
-            root.containing(rect, t, model);
+        root.containing(rect, t, model);
     }
 
     /**
@@ -181,8 +187,14 @@ public class RTree<T> implements Space<T> {
         return i[0];
     }
 
-    public Set<T> containedAsSet(HyperRegion rect) {
-        return root.containedSet(rect, model);
+    public Set<T> containedToSet(HyperRegion rect) {
+        int s = size();
+        Set<T> t = new HashSet(s);
+        root.containing(rect, x -> {
+            t.add(x);
+            return true;
+        }, model);
+        return t;
     }
 
 

@@ -8,7 +8,7 @@ import nars.derive.mutate.Choose2;
 import nars.derive.mutate.CommutivePermutations;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.CompoundDTLight;
+import nars.term.compound.LightCompoundDT;
 import nars.term.Term;
 import nars.term.subst.Unify;
 
@@ -20,7 +20,7 @@ import static nars.time.Tense.XTERNAL;
 
 
 @Deprecated
-abstract public class PatternCompound extends CompoundDTLight {
+abstract public class PatternCompound extends LightCompoundDT {
 
 //    final int sizeCached;
 //    final int structureNecessary;

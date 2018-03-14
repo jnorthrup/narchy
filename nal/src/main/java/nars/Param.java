@@ -130,8 +130,8 @@ public abstract class Param {
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-    //        Util::and;
-            Util::or;
+            Util::and;
+    //        Util::or;
     //UtilityFunctions::aveAri;
     //Math::max;
 
@@ -160,6 +160,7 @@ public abstract class Param {
      * TODO verify this is applied based on time, not iterations
      */
     public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.00001f;
+    public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0005f;
 
     /**
      * 'time to live', unification steps until unification is stopped
@@ -352,7 +353,7 @@ public abstract class Param {
     public static final boolean DEBUG_TASK_LOG = true; //false disables task history completely
 
 
-    private float defaultGoalConf, defaultBeliefConf;
+
 
 
     /**
@@ -455,10 +456,10 @@ public abstract class Param {
 
         switch (punctuation) {
             case BELIEF:
-                return defaultBeliefConf;
+                return beliefConfDefault.floatValue();
 
             case GOAL:
-                return defaultGoalConf;
+                return goalConfDefault.floatValue();
 
             default:
                 throw new RuntimeException("Invalid punctuation " + punctuation + " for a TruthValue");
@@ -473,89 +474,47 @@ public abstract class Param {
     /**
      * Default priority of input judgment
      */
-    public float DEFAULT_BELIEF_PRIORITY = 0.5f;
+    public final FloatRange beliefPriDefault = new FloatRange(0.5f, 0, 1f);
 
     /**
      * Default priority of input question
      */
-    public float DEFAULT_QUESTION_PRIORITY = 0.5f;
-
+    public final FloatRange questionPriDefault = new FloatRange(0.5f, 0, 1f);
 
     /**
      * Default priority of input judgment
      */
-    public float DEFAULT_GOAL_PRIORITY = 0.5f;
+    public final FloatRange goalPriDefault = new FloatRange(0.5f, 0, 1f);
 
     /**
      * Default priority of input question
      */
-    public float DEFAULT_QUEST_PRIORITY = 0.5f;
+    public final FloatRange questPriDefault = new FloatRange(0.5f, 0, 1f);
 
 
     public float priDefault(byte punctuation) {
         switch (punctuation) {
             case BELIEF:
-                return DEFAULT_BELIEF_PRIORITY;
+                return beliefPriDefault.floatValue();
 
             case QUEST:
-                return DEFAULT_QUEST_PRIORITY;
+                return questPriDefault.floatValue();
 
             case QUESTION:
-                return DEFAULT_QUESTION_PRIORITY;
+                return questionPriDefault.floatValue();
 
             case GOAL:
-                return DEFAULT_GOAL_PRIORITY;
+                return goalPriDefault.floatValue();
 
             case COMMAND:
-                return 0;
+                return 1;
         }
         throw new RuntimeException("Unknown punctuation: " + punctuation);
     }
 
-    public void priDefault(byte punctuation, float pri) {
-        switch (punctuation) {
-            case BELIEF:
-                DEFAULT_BELIEF_PRIORITY = pri;
-                break;
 
-            case QUEST:
-                DEFAULT_QUEST_PRIORITY = pri;
-                break;
-
-            case QUESTION:
-                DEFAULT_QUESTION_PRIORITY = pri;
-                break;
-
-            case GOAL:
-                DEFAULT_GOAL_PRIORITY = pri;
-                break;
-
-            default:
-                throw new RuntimeException("Unknown punctuation: " + punctuation);
-
-        }
-    }
-
-
-    Param() {
-
-        beliefConfidence(0.9f);
-        goalConfidence(0.9f);
-    }
-
-    /**
-     * sets the default input goal confidence
-     */
-    public void goalConfidence(float c) {
-        defaultGoalConf = c;
-    }
-
-    /**
-     * sets the default input belief confidence
-     */
-    public void beliefConfidence(float c) {
-        defaultBeliefConf = c;
-    }
+    public final FloatRange beliefConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f-Param.TRUTH_EPSILON);
+    public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f-Param.TRUTH_EPSILON);
 
 
     /** returns evidence factor corresponding to the amount of overlap */

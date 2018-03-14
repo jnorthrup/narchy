@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class QuestionTest {
 
-    final int withinCycles = 256;
+    final int withinCycles = 512;
 
     @Test
     public void whQuestionUnifyQueryVar() throws Narsese.NarseseException {
@@ -52,7 +52,7 @@ public class QuestionTest {
 
         NAR nar = NARS.tmp();
         //nar.nal(1);
-        //nar.log();
+        nar.log();
 
         nar
                 .believe(belief, 1.0f, 0.9f)
@@ -63,6 +63,8 @@ public class QuestionTest {
 
 
         nar.run(cycles);
+
+        //nar.conceptsActive().forEach(System.out::println);
 
         assertTrue( ok.get() > 0);
 

@@ -17,7 +17,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
-import nars.term.CompoundLight;
+import nars.term.compound.CompoundLight;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;

@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import jcog.Util;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -33,20 +34,22 @@ abstract public class CachedCompound implements Compound, The {
     private final int _structure;
 
     public static CachedCompound the(/*@NotNull*/ Op op, Subterms subterms) {
+        return the(op, DTERNAL, subterms);
+    }
+
+    public static CachedCompound the(/*@NotNull*/ Op op, int dt, Subterms subterms) {
         //HACK predict if compound will differ from its root
-        if (!op.temporal && !subterms.hasAny(Op.Temporal)) { //TODO there are more cases
+        if (dt == DTERNAL && !op.temporal && !subterms.hasAny(Op.Temporal)) { //TODO there are more cases
             return new CachedNontemporalCompound(op, subterms);
         } else {
-            return new CachedUnrootedCompound(op, subterms);
+            return new CachedUnrootedCompound(op, dt, subterms);
         }
     }
 
-//    private static final AtomicInteger SERIAL = new AtomicInteger();
-//    public final int serial = SERIAL.getAndIncrement();
-
     private static class CachedNontemporalCompound extends CachedCompound {
+
         CachedNontemporalCompound(Op op, Subterms subterms) {
-            super(op, subterms);
+            super(op, DTERNAL, subterms);
         }
 
         @Override
@@ -83,15 +86,22 @@ abstract public class CachedCompound implements Compound, The {
     }
 
     /** caches a reference to the root for use in terms that are inequal to their root */
-    private static class CachedUnrootedCompound extends CachedCompound {
+    private static class CachedUnrootedCompound extends CachedCompound  {
         private transient Term rooted = null;
         private transient Term concepted = null;
+        final int dt;
 
-        CachedUnrootedCompound(Op op, Subterms subterms) {
-            super(op, subterms);
+        private CachedUnrootedCompound(Op op, int dt, Subterms subterms) {
+            super(op, dt, subterms);
+            this.dt = dt;
         }
 
-//        @Override
+        @Override
+        public int dt() {
+            return dt;
+        }
+
+        //        @Override
 //        protected void equivalent(CachedUnrootedCompound them) {
 //
 //            if (them.rooted != null && this.rooted != this) this.rooted = them.rooted;
@@ -116,14 +126,24 @@ abstract public class CachedCompound implements Compound, The {
 
     }
 
+    private static class CachedCompoundDT extends CachedUnrootedCompound {
 
-    private CachedCompound(/*@NotNull*/ Op op, Subterms subterms) {
+        CachedCompoundDT(Op op, int dt, Subterms subterms) {
+            super(op, dt, subterms);
+
+        }
+    }
+
+
+    private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
 
         assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
 
         this.op = op;
 
-        this.hash = (this.subterms = subterms).hashWith(op);
+        int h = (this.subterms = subterms).hashWith(op);
+        this.hash = (dt == DTERNAL) ? h : Util.hashCombine(h, dt);
+
 
         this._structure = subterms.structure() | op.bit;
         this._volume = subterms.volume();
@@ -163,7 +183,7 @@ abstract public class CachedCompound implements Compound, The {
 
 
     @Override
-    public final int dt() {
+    public int dt() {
         return DTERNAL;
     }
 

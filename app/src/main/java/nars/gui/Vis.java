@@ -11,6 +11,7 @@ import nars.concept.Concept;
 import nars.control.DurService;
 import nars.term.Termed;
 import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.container.Gridding;
 import spacegraph.container.Stacking;
@@ -358,12 +359,16 @@ public class Vis {
             plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar.dur()), 0f, 1f);
             plot1.add("Dex+4", () -> a.dexterity(a.now + 4 * a.nar.dur()), 0f, 1f);
 
-            plot3.add("Hpy", () -> {
-                return a.happy.beliefs().freq(a.now, a.nar);
-            }, 0, 1f);
-            plot3.add("WantHpy", () -> {
-                return a.happy.goals().freq(a.now, a.nar);
-            }, 0, 1f);
+            a.happy.forEach(h -> {
+                @Nullable Concept hc = nar.concept(h);
+                plot3.add(h.toString(), () -> {
+                    return hc.beliefs().freq(a.now, a.nar);
+                }, 0, 1f);
+//                plot3.add("WantHpy", () -> {
+//                    return hc.goals().freq(a.now, a.nar);
+//                }, 0, 1f);
+            });
+
 //            plot4.add("Sad", () -> {
 //                return a.sad.beliefs().freq(a.now, a.nar);
 //            }, 0, 1f);

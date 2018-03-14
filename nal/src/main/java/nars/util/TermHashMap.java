@@ -1,8 +1,9 @@
-package nars.term;
+package nars.util;
 
 import com.google.common.collect.Iterators;
 import jcog.TODO;
 import jcog.data.UnenforcedConcatSet;
+import nars.term.Term;
 import nars.term.anon.AnonID;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;

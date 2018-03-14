@@ -236,7 +236,7 @@ public class PatrickTests extends NALTest {
          */
 
         NAR n = NARS.tmp();
-        n.DEFAULT_BELIEF_PRIORITY = 0.01f;
+        n.beliefPriDefault.set(0.01f);
         n.termVolumeMax.set(16);
 
 
@@ -278,8 +278,8 @@ public class PatrickTests extends NALTest {
         //n.log();
         //n.truthResolution.setValue(0.05f);
         n.termVolumeMax.set(60);
-        n.DEFAULT_BELIEF_PRIORITY = 0.05f;
-        n.DEFAULT_QUESTION_PRIORITY = 0.9f;
+        n.beliefPriDefault.set(0.05f);
+        n.questionPriDefault.set(0.9f);
 
         n.input("<#x --> P>. %0.0;0.25%"); //assume that unless pixel isnt specified then it's black
 

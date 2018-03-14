@@ -924,7 +924,7 @@ public class TermTest {
             Term recv = o.get();
             if (recv!=Null) //False also signals invalid reduction
                 fail(recv + " was not null");
-        } catch (InvalidTermException e) {
+        } catch (Term.InvalidTermException e) {
             //correct if happens here
         }
     }

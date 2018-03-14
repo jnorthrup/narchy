@@ -14,7 +14,9 @@ import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
-import nars.term.*;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -1510,19 +1512,19 @@ public enum Op {
                     return False;
 
 //                //true tautology - the difference of something with its negation will always be everything, ie. freq==1 : True
-//                if (et1.neg().equals(et0))
-//                    return True;
-
-                if (et0 == True && et1 == False) //TRUE - FALSE
+                if (et1.neg().equals(et0))
                     return True;
+
+//                if (et0 == True && et1 == False) //TRUE - FALSE
+//                    return True;
 
                 //null tautology - incomputable comparisons with truth
                 if (isTrueOrFalse(et0) || isTrueOrFalse(et1))
                     return Null;
 
 
-                if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
-                        || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
+                if (et0.containsRecursively(et1, false, recursiveCommonalityDelimeterWeak)
+                        || et1.containsRecursively(et0, false, recursiveCommonalityDelimeterWeak))
                     return Null; //TODO handle this better, there may be detectable or iteratively simplified reductions
 
                 if (op == DIFFe && et0 instanceof Int.IntRange && et1.op() == INT) {
@@ -1539,7 +1541,7 @@ public enum Op {
 
         }
 
-        throw new InvalidTermException(op, t, "diff requires 2 terms");
+        throw new Term.InvalidTermException(op, t, "diff requires 2 terms");
 
     }
 
@@ -1623,22 +1625,17 @@ public enum Op {
      * no reductions or validatios applied
      * use with caution
      */
-    public static Term instance(Op op, int dt, Term... subterms) {
-        return instance(dt, instance(op, subterms));
+    public static Term instance(Op op, Term... subterms) {
+        return instance(op, DTERNAL, subterms);
     }
 
-    public static Term instance(int dt, Term c) {
-        return ((dt != DTERNAL) && (c instanceof Compound)) ?
-                new CompoundDTLight((Compound) c, dt) :
-                c;
-    }
 
     /**
      * direct constructor
      * no reductions or validatios applied
      * use with caution
      */
-    public static Term instance(Op o, Term... u) {
+    public static Term instance(Op o, int dt, Term... u) {
         assert (!o.atomic) : o + " is atomic, with subterms: " + (u);
 
         boolean hasEllipsis = false;
@@ -1680,7 +1677,7 @@ public enum Op {
             ss = Subterms.subtermsInstance(u);
         }
 
-        return CachedCompound.the(o, ss);
+        return CachedCompound.the(o, dt, ss);
     }
 
 

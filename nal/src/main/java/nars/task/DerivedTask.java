@@ -20,6 +20,10 @@ public class DerivedTask extends NALTask {
     public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
         super(tc, punct, truth, d.time, start, end, d.single ? d.evidenceSingle() : d.evidenceDouble());
 
+//        if (stamp.length==0) {
+//            throw new RuntimeException();
+//        }
+
         eternalizability = !d.single ?
                 eternalizability(d._task.eternalizability(), d._belief.eternalizability()) :
                 d._task.eternalizability();

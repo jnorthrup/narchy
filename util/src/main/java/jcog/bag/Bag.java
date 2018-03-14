@@ -556,16 +556,16 @@ public interface Bag<K, V> extends Table<K, V> {
     }
 
 
-    default float depressurize(float frac) {
-        frac = Util.unitize(frac);
-        float p = depressurize();
-        float pF = frac * p;
-        if (pF >= Prioritized.EPSILON) {
-            pressurize(p - pF);
-            return pF;
-        }
-        return 0;
-    }
+//    default float depressurize(float frac) {
+//        frac = Util.unitize(frac);
+//        float p = depressurize();
+//        float pF = frac * p;
+//        if (pF >= Prioritized.EPSILON) {
+//            pressurize(p - pF);
+//            return pF;
+//        }
+//        return 0;
+//    }
 
     default float depressurize() {
         return 0f; //TODO

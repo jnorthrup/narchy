@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.List;
 
-import static nars.Op.BELIEF;
 import static nars.Op.SETe;
 
 /**
@@ -40,7 +39,7 @@ public class DigitizedScalar extends DemultiplexedScalar {
     public final List<Scalar> sensors;
 
 
-    float conf;
+//    float conf;
 
 
     @Override
@@ -151,7 +150,7 @@ public class DigitizedScalar extends DemultiplexedScalar {
                 $.quote(Util.toString(input)), $.the(freqer.getClass().getSimpleName())
         ), nar);
 
-        this.conf = nar.confDefault(BELIEF);
+//        this.conf = nar.confDefault(BELIEF);
 
 
         assert (states.length > 1);
@@ -210,11 +209,11 @@ public class DigitizedScalar extends DemultiplexedScalar {
 //        return this;
 //    }
 
-    @NotNull
-    public DigitizedScalar conf(float c) {
-        this.conf = c;
-        return this;
-    }
+//    @NotNull
+//    public DigitizedScalar conf(float c) {
+//        this.conf = c;
+//        return this;
+//    }
 
 
 //    @NotNull

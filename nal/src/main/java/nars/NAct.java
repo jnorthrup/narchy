@@ -330,7 +330,7 @@ public interface NAct {
 
     }
 
-    default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
+    default void actionPushReleaseButton(@NotNull Term t, @NotNull BooleanProcedure on) {
 
         float thresh = 0.1f; // + nar().freqResolution.get()
         action(t, (b, g) -> {
@@ -345,11 +345,14 @@ public interface NAct {
             on.value(positive);
             return $.t(positive ? 1 : 0, nar().confDefault(BELIEF));
         });
-        /*actionUnipolar(t, (f) -> {
-            boolean positive = f >= 0.5f + nar().freqResolution.get();
+    }
+    default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
+        float thresh = nar().freqResolution.get();
+        actionUnipolar(t, false, (x)->0, (f) -> {
+            boolean positive = f >= 0.5f + thresh;
             on.value(positive);
             return positive ? 1f : 0f;
-        });*/
+        });
 
 //        float thresh =
 //                //0.5f + Param.TRUTH_EPSILON;
@@ -727,23 +730,21 @@ public interface NAct {
     }
 
     default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
-        return actionUnipolar(s, false, false, update);
+        return actionUnipolar(s, false, (x)->Float.NaN, update);
     }
 
-    default GoalActionConcept actionUnipolarfreq(@NotNull Term s, @NotNull FloatToFloatFunction update) {
-        return actionUnipolar(s, true, false, update);
-    }
 
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency
      */
-    default GoalActionConcept actionUnipolar(@NotNull Term s, boolean freqOrExp, boolean latch, @NotNull FloatToFloatFunction update) {
+    default GoalActionConcept actionUnipolar(@NotNull Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, @NotNull FloatToFloatFunction update) {
+
 
 
         final float[] lastF = {0.5f};
         return action(s, (b, g) -> {
             float gg = (g != null) ?
-                    (freqOrExp ? g.freq() : g.expectation()) : (latch ? lastF[0] : Float.NaN);
+                    (freqOrExp ? g.freq() : g.expectation()) : ifGoalMissing.valueOf(lastF[0]);
 
             lastF[0] = gg;
 

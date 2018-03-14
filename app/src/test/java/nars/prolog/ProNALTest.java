@@ -30,8 +30,8 @@ public class ProNALTest {
         );
         Param.DEBUG = true;
         NAR n = NARS.tmp(6);
-        n.DEFAULT_QUEST_PRIORITY = 1f;
-        n.DEFAULT_BELIEF_PRIORITY = 0.5f;
+        n.questPriDefault = 1f;
+        n.beliefPriDefault = 0.5f;
         //n.log();
         Set<String> answers = new TreeSet();
         for (nars.term.Term xx : PrologToNAL.N(t)) {

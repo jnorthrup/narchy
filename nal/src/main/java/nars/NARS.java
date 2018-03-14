@@ -271,9 +271,10 @@ public class NARS {
             nar.termVolumeMax.set(35);
             //nar.confMin.setValue(0.05f);
 
-            nar.DEFAULT_BELIEF_PRIORITY = 0.5f;
-            nar.DEFAULT_GOAL_PRIORITY = 0.5f;
-            nar.DEFAULT_QUEST_PRIORITY = nar.DEFAULT_QUESTION_PRIORITY = 0.5f;
+            nar.beliefPriDefault.set(0.5f);
+            nar.questionPriDefault.set(0.5f);
+            nar.goalPriDefault.set(0.5f);
+            nar.questPriDefault.set(0.5f);
 
 //            nar.emotion.want(Perceive, -0.1f);
 

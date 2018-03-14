@@ -7,7 +7,7 @@ import jcog.tree.rtree.HyperPoint;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static jcog.tree.rtree.RTree.EPSILON;
+import static jcog.tree.rtree.Spatialization.EPSILON;
 
 
 /**

@@ -47,7 +47,7 @@ public class DigitizedScalarTest {
         NAR n = NARS.shell();
         MutableFloat m = new MutableFloat(0f);
 
-        FloatPolarNormalized range = new FloatPolarNormalized(() -> m.floatValue(), 1f);
+        FloatNormalized range = new FloatPolarNormalized(() -> m.floatValue(), 1f);
         DigitizedScalar f = new DigitizedScalar(range, DigitizedScalar.FuzzyNeedle, n,
                 $.p("low"), $.p("mid"), $.p("hih"));
 

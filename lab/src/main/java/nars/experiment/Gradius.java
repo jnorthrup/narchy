@@ -51,11 +51,11 @@ public class Gradius extends NAgentX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        DigitizedScalar yPos = senseNumber((level)->$.inh($.p($.the("Y"), $.the(level)), id),
+        senseNumber((level)->$.inh($.p($.the("Y"), $.the(level)), id),
                 ()->g.player[OBJ_Y] / height,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
-        DigitizedScalar xPos = senseNumber((level)->$.inh($.p($.the("X"), $.the(level)), id),
+        senseNumber((level)->$.inh($.p($.the("X"), $.the(level)), id),
                 ()->g.player[OBJ_X] / width,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
@@ -108,8 +108,8 @@ public class Gradius extends NAgentX {
         actionPushButton($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
-        //initBipolar();
-        initToggle();
+        initBipolar();
+        //initToggle();
 
 //        actionTriState($.p(Atomic.the("dx")), (dh) -> {
 //            g.keys[Gradius4K.VK_LEFT] = false;
@@ -153,7 +153,7 @@ public class Gradius extends NAgentX {
 
     void initBipolar() {
         //TODO use actionTriState
-        float thresh = 0.25f;
+        float thresh = 0.1f;
         actionBipolar($.p($.the("y"), id), (dy) -> {
             if (dy < -thresh) {
                 g.keys[VK_UP] = false; g.keys[VK_DOWN] = true;

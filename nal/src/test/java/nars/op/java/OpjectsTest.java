@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -134,9 +133,10 @@ public class OpjectsTest {
         final SimpleClass x = objs.a("x", SimpleClass.class);
 
 
-        n.priDefault(BELIEF, 0.05f);
-        n.priDefault(QUESTION, 0.05f);
-        n.priDefault(QUEST, 0.05f);
+
+        n.beliefPriDefault.set(0.05f);
+        n.questionPriDefault.set(0.05f);
+        n.questPriDefault.set(0.05f);
         n.freqResolution.set(0.1f);
         n.time.dur(10);
         n.termVolumeMax.set(30);

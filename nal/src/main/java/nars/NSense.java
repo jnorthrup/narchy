@@ -1,10 +1,7 @@
 package nars;
 
 import jcog.Util;
-import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatNormalized;
-import jcog.math.FloatPolarNormalized;
-import jcog.math.FloatSupplier;
+import jcog.math.*;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.control.CauseChannel;
@@ -208,7 +205,8 @@ public interface NSense {
         assert(states.length > 1);
 
         DigitizedScalar fs = new DigitizedScalar(
-               v, model, nar(),
+                new FloatCached(v, nar()::time),
+                model, nar(),
                 states
         );
 

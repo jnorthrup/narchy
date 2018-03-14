@@ -45,8 +45,8 @@
 
 
     //NAL3 single premise decompose
-    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralReduction, Goal:StructuralReduction)
-    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralReduction, Goal:StructuralReduction)
+    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     (S --> (B - G)), B |- (S --> B), (Belief:StructuralReduction, Goal:StructuralReduction)
         (S --> (B - G)), G |- --(S --> G), (Belief:StructuralReduction, Goal:StructuralReduction)
@@ -58,15 +58,15 @@
             (B ~ G), G |- --G, (Belief:StructuralReduction, Goal:StructuralReduction)
 
 
-        //if X <= Y, then goal X && --Y to cause (X ~ Y)
+        //if want X > Y ie. (X ~ Y), then to the extent that X == Y, decrease Y while increasing X
         S:(X ~ Y), S:(X ~ Y), task("!") |- (S:X && (--,S:Y)), (Goal:StrongPN)
         (X - Y):S, (X - Y):S, task("!") |- (X:S && (--,Y:S)), (Goal:StrongPN)
         (X ~ Y), (X ~ Y), task("!") |- (X && --Y), (Goal:StrongPN)
 
-        //if X <= Y, then goal --X && Y to cause --(X ~ Y)
-        S:(X ~ Y), S:(X ~ Y), task("!") |- (S:Y && (--,S:X)), (Goal:StrongNN)
-        (X - Y):S, (X - Y):S, task("!") |- (Y:S && (--,X:S)), (Goal:StrongNN)
-        (X ~ Y), (X ~ Y), task("!") |- (Y && --X), (Goal:StrongNN)
+        //if want X == Y ie. --(X ~ Y), then to the extent that X > Y, increase Y while decreasing X
+        S:(X ~ Y), S:(X ~ Y), task("!") |- (S:Y && (--,S:X)), (Goal:StrongN)
+        (X - Y):S, (X - Y):S, task("!") |- (Y:S && (--,X:S)), (Goal:StrongN)
+        (X ~ Y), (X ~ Y), task("!") |- (Y && --X), (Goal:StrongN)
 
 
         //1D:

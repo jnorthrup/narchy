@@ -45,7 +45,7 @@ public class Gradius4K extends GamePanel {
     public static final int VK_SHOOT = 0x42;
     public int score;
     public int playerDead = 1;
-    public int SPEED = 2;
+    public int SPEED = 8;
     public float cameraX;
     public float[] player = new float[256];
 
@@ -98,6 +98,8 @@ public class Gradius4K extends GamePanel {
         f.setContentPane(this);
         f.setSize(500, 500);
         f.setVisible(true);
+        f.setIgnoreRepaint(true);
+        f.setResizable(false);
 
         image = new BufferedImage(256, 256, 1);
 

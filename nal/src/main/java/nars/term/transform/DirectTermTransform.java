@@ -27,7 +27,7 @@ public interface DirectTermTransform extends TermTransform {
 
         @Override
         public Term the(Op op, int dt, TermList t) {
-            return Op.instance(dt, built.apply(pair(op, t)));
+            return Op.instance(op, dt, built.apply(pair(op, t)));
         }
 
         public void resize(int s) {

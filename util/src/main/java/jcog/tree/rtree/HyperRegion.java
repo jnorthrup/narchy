@@ -21,8 +21,6 @@ package jcog.tree.rtree;
          */
 
 
-import jcog.Util;
-
 import java.util.function.Function;
 
 /**
@@ -189,9 +187,9 @@ public interface HyperRegion<X> {
         return p;
     }
 
-    static <T> HyperRegion[] toArray(T[] data, int size, Function<T, HyperRegion> builder) {
-        return Util.map(builder::apply, new HyperRegion[size], data);
-    }
+//    static <T> HyperRegion[] toArray(T[] data, int size, Function<T, HyperRegion> builder) {
+//        return Util.map(builder::apply, new HyperRegion[size], data);
+//    }
 
     /**
      * gets the distance along a certain dimension from this region's to another's extrema

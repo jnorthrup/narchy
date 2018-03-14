@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
-public class ProxyTerm<T extends Term> implements Term, CompoundDT {
+public class ProxyTerm<T extends Term> implements Term, Compound {
 
     public final /*HACK make unpublic */ T ref;
 

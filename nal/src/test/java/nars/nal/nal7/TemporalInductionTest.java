@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -254,7 +253,7 @@ public class TemporalInductionTest {
     @Test public void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() throws FileNotFoundException {
         NAR n = NARS.tmp();
 
-        n.priDefault(BELIEF, 0.1f);
+        n.beliefPriDefault.set(0.1f);
         n.deep.set(1f);
         n.log();
 

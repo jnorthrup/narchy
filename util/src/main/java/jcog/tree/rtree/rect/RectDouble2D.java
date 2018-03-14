@@ -22,7 +22,7 @@ package jcog.tree.rtree.rect;
 
 import jcog.Util;
 import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.RTree;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.point.Double2D;
 import org.jetbrains.annotations.NotNull;
 
@@ -167,10 +167,10 @@ public class RectDouble2D implements HyperRegion<Double2D>, Comparable<RectDoubl
 
         RectDouble2D rect2D = (RectDouble2D) o;
 
-        return Util.equals(min.x, rect2D.min.x, RTree.EPSILON) &&
-                Util.equals(max.x, rect2D.max.x, RTree.EPSILON) &&
-                Util.equals(min.y, rect2D.min.y, RTree.EPSILON) &&
-                Util.equals(max.y, rect2D.max.y, RTree.EPSILON);
+        return Util.equals(min.x, rect2D.min.x, Spatialization.EPSILON) &&
+                Util.equals(max.x, rect2D.max.x, Spatialization.EPSILON) &&
+                Util.equals(min.y, rect2D.min.y, Spatialization.EPSILON) &&
+                Util.equals(max.y, rect2D.max.y, Spatialization.EPSILON);
     }
 
     @Override

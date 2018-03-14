@@ -9,7 +9,6 @@ import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 import nars.*;
-import nars.concept.action.ActionConcept;
 import nars.concept.Concept;
 import nars.control.CauseChannel;
 import nars.control.DurService;
@@ -17,6 +16,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.TruthAccumulator;
@@ -27,7 +27,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -83,8 +86,12 @@ public class Implier extends DurService {
     public Implier(float everyDurs, NAgent a, float... relativeTargetDurs) {
         this(everyDurs, a.nar,
                 Iterables.concat(
-                        Iterables.transform(a.actions.keySet(), ActionConcept::term),
-                        Collections.singleton(a.happy.term)
+                        Iterables.transform(
+                                a.actions.keySet(), Termed::term
+                        ),
+                        Iterables.transform(
+                                a.happy, Termed::term
+                        )
                 ),
                 relativeTargetDurs
         );

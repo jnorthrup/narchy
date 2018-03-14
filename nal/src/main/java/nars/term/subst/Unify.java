@@ -14,7 +14,7 @@ import nars.Param;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.mutate.Termutator;
 import nars.term.Term;
-import nars.term.TermHashMap;
+import nars.util.TermHashMap;
 import nars.term.Termlike;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;

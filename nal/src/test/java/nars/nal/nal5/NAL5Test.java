@@ -68,15 +68,15 @@ public class NAL5Test extends NALTest {
 
     }
 
-    @Test
-    public void inductionNegNeg() {
-        TestNAR tester = test;
-        tester.believe("<<robin --> bird> ==> --<robin --> cyborg>>"); //.en("If robin is a type of bird then robin is not of type cyborg.");
-        tester.believe("<<robin --> [flying]> ==> --<robin --> cyborg>>", 0.8f, 0.9f); //.en("If robin can fly then robin is probably not of type cyborg.");
-        tester.mustBelieve(cycles, "<<robin --> bird> ==> <robin --> [flying]>>", 1.00f, 0.39f); //.en("I guess if robin is a type of bird then robin can fly.");
-        tester.mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> bird>>", 0.80f, 0.45f); //.en("I guess if robin can fly then robin is a type of bird.");
-
-    }
+//    @Test
+//    public void inductionNegNeg() {
+//        TestNAR tester = test;
+//        tester.believe("<<robin --> bird> ==> --<robin --> cyborg>>"); //.en("If robin is a type of bird then robin is not of type cyborg.");
+//        tester.believe("<<robin --> [flying]> ==> --<robin --> cyborg>>", 0.8f, 0.9f); //.en("If robin can fly then robin is probably not of type cyborg.");
+//        tester.mustBelieve(cycles, "<<robin --> bird> ==> <robin --> [flying]>>", 1.00f, 0.39f); //.en("I guess if robin is a type of bird then robin can fly.");
+//        tester.mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> bird>>", 0.80f, 0.45f); //.en("I guess if robin can fly then robin is a type of bird.");
+//
+//    }
 
     @Test
     public void abduction() {

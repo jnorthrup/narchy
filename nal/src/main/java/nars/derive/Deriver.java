@@ -150,8 +150,9 @@ public class Deriver extends Causable {
                 );
             }
 
-            //optional: prefer polarized
-            //c *= (1f + p * (0.5f - Math.abs(t.freq()-0.5f)));
+            //opinionation: preference for polarized beliefs/goals
+            float polarizationPreference = 0.5f;
+            discount *= Util.lerp(polarizationPreference, 1, (2 * Math.abs(derivedTruth.freq()-0.5f)));
         }
 
         return discount * d.pri;
@@ -308,6 +309,8 @@ public class Deriver extends Causable {
         int[] conceptsRemain = new int[] { 2 * (int) Math.ceil(premisesMax / ((float)(termLinksPerTaskLink*termLinksPerTaskLink))) };
 
         this.concepts.accept(a -> {
+
+            //System.out.println(nar.time() + " " + a);
 
             perConceptRemain[0] = premisesPerConcept;
 

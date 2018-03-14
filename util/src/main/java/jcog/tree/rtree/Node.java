@@ -24,9 +24,6 @@ import jcog.list.FasterList;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
@@ -136,17 +133,7 @@ public interface Node<L, V> extends Nodelike<L> {
 
     boolean containing(HyperRegion rect, Predicate<L> t, Spatialization<L> model);
 
-    default Collection<L> containing(HyperRegion rect, Collection t, Spatialization<L> model) {
-        containing(rect, x -> {
-            t.add(x);
-            return true;
-        }, model);
-        return t;
-    }
 
-    default Set<L> containedSet(HyperRegion rect, Spatialization<L> model) {
-        return (Set<L>) containing(rect, new HashSet(), model);
-    }
 
 //    void intersectingNodes(HyperRegion rect, Predicate<Node<L, ?>> t, Spatialization<L> model);
 
