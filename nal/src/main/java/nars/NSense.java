@@ -48,21 +48,20 @@ public interface NSense {
 
     @NotNull
     default Scalar sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        Scalar s = new Scalar(term, nar(), value);
+        Scalar s = new Scalar(term, value, nar());
         addSensor(s);
         return s;
     }
     @NotNull
     default Scalar sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        Scalar s = new Scalar(term, nar(), value);
+        Scalar s = new Scalar(term, value, nar());
         addSensor(s, c);
         return s;
     }
 
-    default void addSensor(Scalar c, CauseChannel cause) {
-        CauseChannel<ITask> existing = sensors().put(c, cause);
+    default void addSensor(Scalar s, CauseChannel cause) {
+        CauseChannel<ITask> existing = sensors().put(s, cause);
         assert(existing == null);
-        nar().on(c);
     }
 
     default void addSensor(Scalar c) {
@@ -193,7 +192,7 @@ public interface NSense {
     }
 
     default Scalar senseNumber(Term id, FloatSupplier v) {
-        Scalar c = new Scalar(id, nar(), v
+        Scalar c = new Scalar(id, v, nar()
         );
         addSensor(c);
         return c;

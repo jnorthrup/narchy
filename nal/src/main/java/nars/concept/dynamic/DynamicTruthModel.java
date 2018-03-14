@@ -12,22 +12,23 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
-import static nars.truth.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Created by me on 12/4/16.
  */
-abstract public class DynamicTruthModel {
+abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth> {
 
 
     @Nullable
@@ -115,10 +116,6 @@ abstract public class DynamicTruthModel {
     }
 
 
-    /**
-     * override for postprocessing
-     */
-    abstract public Truth truth(DynTruth d, NAR n);
 
     abstract public Term[] components(Term superterm);
 
@@ -220,7 +217,7 @@ abstract public class DynamicTruthModel {
 
 
         @Override
-        public Truth truth(DynTruth l, NAR nar) {
+        public Truth apply(DynTruth l, NAR nar) {
 
             //compute the lazy computed truth, if possible
             int n = l.size();
@@ -285,7 +282,7 @@ abstract public class DynamicTruthModel {
                 }
             }
 
-            return Truth.the(f(f), c2wSafe(c), nar);
+            return new PreciseTruth(f(f), c);
         }
 
         protected float f(float freq) {
@@ -346,7 +343,7 @@ abstract public class DynamicTruthModel {
         }
 
         @Override
-        public Truth truth(DynTruth d, NAR n) {
+        public Truth apply(DynTruth d, NAR n) {
             assert (d.size() == 2);
             TaskRegion a = d.get(0);
             if (((Task)a).truth()==null)
@@ -355,9 +352,8 @@ abstract public class DynamicTruthModel {
             if (((Task)b).truth()==null)
                 return null;
             float conf = a.confMin() * b.confMin();
-            float evi = c2wSafe(conf);
             float freq = a.freqMean() * (1f - b.freqMean());
-            return Truth.the(freq, evi, n);
+            return new PreciseTruth(freq, conf);
         }
     }
 

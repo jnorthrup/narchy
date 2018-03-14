@@ -1,34 +1,26 @@
 package nars.util.signal;
 
 import jcog.math.FloatSupplier;
-import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.task.signal.*;
+import nars.task.signal.LinearTruthlet;
+import nars.task.signal.SignalTask;
+import nars.task.signal.SustainTruthlet;
+import nars.task.signal.TruthletTask;
 import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 import java.util.function.LongSupplier;
 
 /**
  * Manages the creation of a stream of tasks for a changing Truth value
  * input signal
  */
-public class Signal {
+@Deprecated public class Signal {
 
-
-    /** update directly with next value */
-    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> SET = (conf)->
-            ((p,n) -> n==n ? $.t(n, conf.asFloat()) : null);
-
-    /** first order difference */
-    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> DIFF = (conf)->
-            ((p,n) -> (n==n) ? ((p==p) ? $.t((n-p)/2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
 
     private FloatSupplier pri;
 

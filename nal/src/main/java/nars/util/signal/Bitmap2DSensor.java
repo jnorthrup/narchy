@@ -43,11 +43,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
         /** modes */
         SET = (p, v) ->
-                Signal.SET.apply(() ->
+                Scalar.SET.apply(() ->
                         nar.confDefault(BELIEF)).value(p, v);
 
         DIFF = (p, v) ->
-                Signal.DIFF.apply(() ->
+                Scalar.DIFF.apply(() ->
                         nar.confDefault(BELIEF)).value(p, v);
 
     }
@@ -202,7 +202,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
             in = n.newCauseChannel(Bitmap2DSensor.this);
             pixelsProcessed = new DescriptiveStatistics(8);
             conf = n.confDefault(BELIEF);
-            mode = (p, v) -> Signal.SET.apply(() -> conf).value(p, v);
+            mode = (p, v) -> Scalar.SET.apply(() -> conf).value(p, v);
         }
 
         @Override

@@ -185,6 +185,8 @@ public class Inperience extends LeakBack {
     @Override
     protected float leak(Task x) {
 
+        float xPri = x.priElseZero();
+
         Term c = reify(x, nar.self());
         if (c == null || !c.op().conceptualizable)
             return 0;
@@ -211,7 +213,7 @@ public class Inperience extends LeakBack {
         );
         y.causeMerge(x);
 
-        feedback(y.log("Inperience").pri(x.priElseZero() * priFactor));
+        feedback(y.log("Inperience").pri(xPri * priFactor));
 
         return 1;
     }

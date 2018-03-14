@@ -94,8 +94,8 @@ public class MIDI {
             nar.on(c);
 
             //c.beliefs().capacity(1, c.beliefs().capacity());
-            c.add(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.time.nextInputStamp()), nar);
-            c.add(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.time.nextInputStamp()), nar);
+            c.add(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()), nar);
+            c.add(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()), nar);
             nar.onCycle(n -> {
 
                 float v = volume[finalI];
@@ -107,7 +107,8 @@ public class MIDI {
                 //TODO
                 //n.input(c.feedbackGoal.set(c.term(), v == v ? $.t(v, nar.confDefault(GOAL)) : null, n.time::nextStamp, n));
 
-                n.input(c.update(n.time(), n.dur(), n));
+                int dur = n.dur();
+                n.input(c.update(n.time(), n.time()+ dur, dur, n));
             });
 
 

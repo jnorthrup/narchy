@@ -29,20 +29,15 @@ public class NALTask extends Pri implements Task {
 
     private final long creation, start, end;
 
-    public final long[] stamp;
+    private final long[] stamp;
 
-//    /** cause zero is reserved for unknown causes, as a catch-all */
-//    public static final short[] UnknownCause = { 0 };
-
-    public short[] cause =
-            ArrayUtils.EMPTY_SHORT_ARRAY;
-            //UnknownCause;
+    public volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
 
     final int hash;
 
-    public final CompactArrayMap<String,Object> meta;
-    private boolean cyclic;
+    private final CompactArrayMap<String,Object> meta;
 
+    private volatile boolean cyclic;
 
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
         super();

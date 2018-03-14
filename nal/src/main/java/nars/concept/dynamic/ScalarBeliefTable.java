@@ -1,204 +1,235 @@
 package nars.concept.dynamic;
 
-import com.google.common.collect.Iterables;
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.TaskConcept;
+import nars.concept.Concept;
+import nars.concept.util.ConceptBuilder;
+import nars.link.Tasklinks;
 import nars.table.TemporalBeliefTable;
+import nars.task.ITask;
+import nars.task.TruthPolation;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.factory.Sets;
-import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
+import nars.truth.Truthed;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.NavigableMap;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-import static nars.time.Tense.ETERNAL;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
-
-/** dynamically computes matching truths and tasks according to
+/**
+ * dynamically computes matching truths and tasks according to
  * a lossy 1-D wave updated directly by a signal input
  */
 public class ScalarBeliefTable extends DynamicBeliefTable {
 
-    /** prioritizes generated tasks */
+    /**
+     * prioritizes generated tasks
+     */
     private FloatSupplier pri;
 
-    /** shared stamp for the entire curve */
-    final long[] stamp;
+    private FloatSupplier res;
 
-    static interface TimeSeries {
 
-        void add(long time, Truth value);
 
-        PreciseTruth truth(long start, long end, long dur);
+    interface TimeSeries {
+
+        void add(long time, Task value);
+
+        DynTruth truth(long start, long end, long dur, NAR nar);
+
+        int size();
+
+        void forEach(long minT, long maxT, Consumer<? super Task> x);
+
+        void clear();
+
+        Stream<Task> stream();
     }
 
-    /** naive implementation using a NavigableMap of indxed time points. not too smart since it cant represent mergeable flat ranges */
+    /**
+     * naive implementation using a NavigableMap of indxed time points. not too smart since it cant represent mergeable flat ranges
+     */
     static class DefaultTimeSeries implements TimeSeries {
 
-        final NavigableMap<Long, Truth> at;
+        /**
+         * tasks are indexed by their midpoint. since the series
+         * is guaranteed to be ordered and non-overlapping, two entries
+         * should not have the same mid-point even if they overlap
+         * slightly.
+         */
+        final NavigableMap<Long, Task> at;
         private final int cap;
+        final AtomicBoolean compressing = new AtomicBoolean();
 
-        DefaultTimeSeries(NavigableMap<Long, Truth> at, int cap) {
+        DefaultTimeSeries(NavigableMap<Long, Task> at, int cap) {
             this.at = at;
             this.cap = cap;
         }
 
         @Override
-        public void add(long time, Truth value) {
-            synchronized (at) {
-                while (at.size()+1 > cap)
-                    at.remove(at.firstKey());
-
-                at.put(time, value);
-            }
+        public int size() {
+            return at.size();
         }
 
         @Override
-        public PreciseTruth truth(long start, long end, long dur) {
-            //TruthPolation p = new TruthPolation(start, end, 1,
+        public Stream<Task> stream() {
+            return at.values().stream();
+        }
 
-            if (at.isEmpty())
+        @Override
+        public void clear() {
+            at.clear();
+        }
+
+        @Override
+        public void forEach(long minT, long maxT, Consumer<? super Task> x) {
+            at.subMap(minT, maxT).values().forEach(x);
+        }
+
+        @Override
+        public void add(long time, Task value) {
+
+            at.put(time, value);
+
+            compress();
+
+        }
+
+        void compress() {
+            if (!compressing.compareAndSet(false, true))
+                return;
+
+            try {
+
+                //TODO add better lossy merging etc
+                while (at.size() > cap) {
+                    at.remove(at.firstKey()).delete();
+                }
+
+            } finally {
+                compressing.set(false);
+            }
+        }
+
+        final static int SELECT_ALL_THRESHOLD = 3;
+        final static int MAX_TASKS_TRUTHPOLATED = Param.STAMP_CAPACITY - 1;
+
+        @Override
+        public DynTruth truth(long start, long end, long dur, NAR nar) {
+
+            int size = size();
+            if (size == 0)
                 return null;
 
-            final float[] freqSum = {0};
-            final float[] confSum = {0};
-            final int[] ccount = {0};
-            at.subMap(start, end).values().forEach(t -> {
-                //TODO weight frequency by evi/conf
-                freqSum[0] += t.freq();
-                confSum[0] += t.conf();
-                ccount[0]++;
-            });
-
-            int count = ccount[0];
-            if (count > 0) {
-                return new PreciseTruth(freqSum[0] / count, confSum[0] / count);
+            DynTruth d = new DynTruth(Math.min(size + 1 /* just in case extra appears while processing */, MAX_TASKS_TRUTHPOLATED));
+            if (size <= SELECT_ALL_THRESHOLD) {
+                at.values().forEach(d::add);
             } else {
-                //TODO optimize for start==end
 
-                Set<Long> s = Sets.mutable.of(
-                        at.ceilingKey(start), at.floorKey(start),
-                        at.ceilingKey(end), at.floorKey(end)
-                );
-                s.remove(null); //HACK
+                SortedMap<Long, Task> range = at.subMap(start, end);
 
-                if (s.isEmpty()) return null;
-
-                LongObjectPair<Truth> b;
-                if (s.size()==1) {
-                    long bl = s.iterator().next();
-                    Truth y = at.get(bl);
-                    if (y!=null) // in case removed while calculating
-                        b = pair(bl, y);
-                    else
-                        b = null;
+                Collection<Task> inner = range.values();
+                if (inner.size() < MAX_TASKS_TRUTHPOLATED) {
+                    d.addAll(inner);
                 } else {
-                    FasterList<LongObjectPair<Truth>> l = new FasterList<>(
-                            Iterables.transform(s, x -> {
-                                Truth y = at.get(x);
-                                if (y!=null) // in case removed while calculating
-                                    return pair(x, y);
-                                else
-                                    return null;
-                            }
-                    ));
-                    b = l.max((c1, c2) -> {
-                        long d1, d2;
-                        if (c1 == null) d1 = Long.MAX_VALUE;
-                        else {
-                            long d1s = Math.abs(start - c1.getOne());
-                            long d1e = Math.abs(end - c1.getOne());
-                            d1 = Math.min(d1s, d1e);
-                        }
-
-                        if (c2 == null) d2 = Long.MAX_VALUE;
-                        else {
-                            long d2s = Math.abs(start - c2.getOne());
-                            long d2e = Math.abs(end - c2.getOne());
-                            d2 = Math.min(d2s, d2e);
-                        }
-
-                        return Long.compare(d2, d1); //reverse
-                    });
+                    //HACK sample random subset
+                    FasterList<Task> all = new FasterList(inner);
+                    int toRemove = all.size() - MAX_TASKS_TRUTHPOLATED;
+                    Random rng = nar.random();
+                    for (int i = 0; i < toRemove; i++) {
+                        all.removeFast(rng.nextInt(all.size()));
+                    }
+                    d.addAll(all);
                 }
-                if (b == null)
-                    return null;
 
-                long be = b.getOne();
-                long dist = Math.min(Math.abs(be-start), Math.abs(be-end));
-                Truth bt = b.getTwo();
-                return bt.withEvi((float) Param.evi(bt.evi(), dist, dur ));
+                if (d.size() < MAX_TASKS_TRUTHPOLATED) {
+                    Map.Entry<Long, Task> above = at.higherEntry(end);
+                    if (above != null) d.add(above.getValue());
 
+                    if (d.size() < MAX_TASKS_TRUTHPOLATED) {
+                        Map.Entry<Long, Task> below = at.lowerEntry(start);
+                        if (below != null) d.add(below.getValue());
+                    }
+                }
             }
+
+            return d;
         }
     }
 
-    final TimeSeries series = new DefaultTimeSeries(new ConcurrentSkipListMap<>(), 512);
+    final TimeSeries series;
 
-    public ScalarBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t, long stamp) {
+    public ScalarBeliefTable(Term term, boolean beliefOrGoal, ConceptBuilder conceptBuilder) {
+        this(term, beliefOrGoal, conceptBuilder.newTemporalTable(term));
+    }
+
+    public ScalarBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
+        this(c, beliefOrGoal,
+                new DefaultTimeSeries(new ConcurrentSkipListMap<>()
+                        , /*@Deprecated*/ 512),
+                t);
+    }
+
+    ScalarBeliefTable(Term c, boolean beliefOrGoal, TimeSeries series, TemporalBeliefTable t) {
         super(c, beliefOrGoal, t);
-        this.stamp = new long[] { stamp };
+        this.series = series;
     }
 
     @Override
-    public boolean add(Task input, TaskConcept concept, NAR nar) {
+    public int size() {
+        return super.size() + series.size();
+    }
 
-        long start = input.start();
-        if (start!=ETERNAL) {
-            //any truth stored in the history here is more or less considered the ultimate authority on this sensor
-            Truth override = truthDynamic(start, input.end(), nar);
-            if (override != null) {
-                //TODO feedback absorb
-                return false;
-            }
-        }
 
-        return super.add(input, concept, nar);
+    protected Truthed eval(boolean taskOrJustTruth, long start, long end, NAR nar) {
+        int dur = nar.dur();
+        DynTruth d = series.truth(start, end, dur, nar);
+        if (d == null)
+            return null;
+
+        TruthPolation p = new TruthPolation(start, end, dur, d);
+        Truth pp = p.truth(false);
+        if (pp == null)
+            return null;
+
+        float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
+        float confRes =
+                0; //nar.confResolution.floatValue();
+        float eviMin = 0;
+        return d.eval(term, (dd, n) -> pp, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
     }
 
     @Override
-    public Task matchDynamic(long start, long end, Term template, NAR nar) {
-        Truth t = truthDynamic(start, end, nar);
-        return t!=null ?
-                new DynTruth.DynTruthTask(term, beliefOrGoal, t, nar, start, end, stamp(start, end, Param.STAMP_CAPACITY))
-                    .pri(pri.asFloat())
-                : null;
+    public void clear() {
+        super.clear();
+        series.clear();
     }
 
-    /** time units per stamp, must/should be absolute */
-    static final int stampResolution = 8;
+    @Override
+    public Stream<Task> streamTasks() {
+        return Stream.concat(super.streamTasks(), series.stream());
+    }
+    @Override
+    public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
+        super.forEachTask(includeEternal, minT, maxT, x);
+        series.forEach(minT, maxT, x);
+    }
 
-    private long[] stamp(long start, long end, int stampCapacity) {
-        long sstart = stamp[0] + (start / stampResolution);
-        long send = stamp[0] + (end / stampResolution);
-        if (sstart == send)
-            return new long[] { sstart };
-
-        long x = Util.round(sstart, stampResolution);
-        long range = end - start;
-        int inc = Math.max(stampResolution, (int) Util.round(range / (stampCapacity * stampResolution), stampResolution));
-        LongArrayList l = new LongArrayList((int)(1 + range/inc)); //TODO try to make exact capacity size
-        do {
-            l.add(x);
-            x += inc;
-        } while (x <= send);
-        assert(l.size() <= stampCapacity);
-        return l.toArray();
+    @Override
+    public Task taskDynamic(long start, long end, Term template, NAR nar) {
+        return (Task) (eval(true, start, end, nar));
     }
 
     @Override
     protected @Nullable Truth truthDynamic(long start, long end, NAR nar) {
-        return series.truth(start, end, nar.dur());
+        return (Truth) (eval(false, start, end, nar));
     }
 
     @Override
@@ -206,11 +237,50 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         return term;
     }
 
+
+
     public void pri(FloatSupplier pri) {
         this.pri = pri;
     }
+    public void res(FloatSupplier res) {
+        this.res = res;
+    }
 
-    public void update(Truth value, long time, int dur) {
-        series.add(time, value);
+    public SignalTask add(Truth value, long start, long end, long stamp) {
+        SignalTask t = new ScalarSignalTask(
+                term,
+                punc(),
+                value,
+                start, end,
+                stamp);
+
+        float p = pri.asFloat();
+        t.pri(p);
+
+        series.add((start + end) / 2L, t);
+
+        return t;
+    }
+
+
+    static class ScalarSignalTask extends SignalTask {
+
+        public ScalarSignalTask(Term term, byte punc, Truth value, long start, long end, long stamp) {
+            super(term, punc, value, start, end, stamp);
+        }
+
+        @Override
+        public ITask run(NAR n) {
+
+            n.emotion.onInput(this, n);
+
+            //just activate
+            Concept c = n.concept(term);
+            if (c!=null) //shouldnt be null, ever
+                Tasklinks.linkTask(this, pri, c, n);
+
+            return null;
+        }
+
     }
 }

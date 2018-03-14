@@ -103,7 +103,7 @@ public class TrackXY extends NAgent {
         }));
 
 
-        n.time.synch(n);
+        n.synch();
 
 
         window(Vis.top(n), 800, 250);

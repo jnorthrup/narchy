@@ -9,20 +9,18 @@ import com.google.common.base.Strings;
 import com.google.common.escape.Escapers;
 import jcog.Util;
 import jcog.list.FasterList;
-import jcog.pri.Pri;
-import jcog.pri.Prioritized;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import nars.derive.LambdaPred;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
-import nars.term.compound.CompoundLight;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
+import nars.term.compound.CompoundLight;
 import nars.term.obj.JsonTerm;
 import nars.term.pred.PrediTerm;
 import nars.term.var.NormalizedVariable;
@@ -544,9 +542,6 @@ public enum $ {
         return new PreciseTruth(f, c);
     }
 
-    public static Prioritized b(float p) {
-        return new Pri(p);
-    }
 
     /**
      * negates each entry in the array

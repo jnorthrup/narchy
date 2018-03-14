@@ -338,6 +338,8 @@ public class BeliefTableChart extends Widget {
             for (boolean freqOrExp : new boolean[] { true, false }) {
                 TruthWave pwave = beliefOrGoal ? beliefProj : goalProj;
 
+                if (beliefOrGoal && !freqOrExp) continue; //HACK dont show expectation for beliefs
+
                 Colorize colorize;
                 if (freqOrExp) {
                     colorize = beliefOrGoal ?
@@ -363,6 +365,8 @@ public class BeliefTableChart extends Widget {
                 FloatFloatToFloatFunction y =
                     freqOrExp ? (frq, cnf) -> frq : TruthFunctions::expectation;
 
+                gl.glLineWidth( (freqOrExp && !beliefOrGoal) ? 2f : 4f); //HACK show goal freq in thinner line
+
                 renderWaveLine(nowX, minT, maxT, gl, pwave, y, colorize);
             }
         }
@@ -384,12 +388,12 @@ public class BeliefTableChart extends Widget {
                 this.goalTheta += dTheta;
                 theta = goalTheta;
 
-                //freq
-                gl.glColor4f(0f, 1f, 0, 0.2f + 0.8f * conf);
-                drawCrossHair(gl, nowX, chSize, bc.freq(), conf, theta);
+//                //freq
+//                gl.glColor4f(0f, 1f, 0, 0.2f + 0.8f * conf);
+//                drawCrossHair(gl, nowX, chSize, bc.freq(), conf, theta);
 
                 //expectation
-                gl.glColor4f(1f, 1f, 0, 0.2f + 0.8f * conf);
+                gl.glColor4f(0f, 1f, 0, 0.2f + 0.8f * conf);
                 drawCrossHair(gl, nowX, chSize, expectation, expectation, theta);
 
             }
@@ -457,7 +461,7 @@ public class BeliefTableChart extends Widget {
      */
     private static void renderWaveLine(float nowX, long minT, long maxT, GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
 
-        gl.glLineWidth(3.0f);
+
         gl.glBegin(GL2.GL_LINE_STRIP);
 
         wave.forEach((freq, conf, start, end) -> {

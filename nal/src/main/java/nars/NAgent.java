@@ -87,7 +87,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public boolean trace;
 
-    public long now = ETERNAL; //not started
+    public long now = ETERNAL, last = ETERNAL; //not started
 
 
     /**
@@ -138,7 +138,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         NALTask t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
                 //Stamp.UNSTAMPED
-                nar().time.nextInputStamp()
+                nar().time.nextStampArray()
         );
 
         always.add(t);
@@ -149,7 +149,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         NALTask t = new NALTask(x.term(), QUESTION, null, now,
                 ETERNAL, ETERNAL,
                 //Stamp.UNSTAMPED
-                nar().time.nextInputStamp()
+                nar().time.nextStampArray()
         );
 
         always.add(t);
@@ -308,7 +308,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                             )
                     );
 
-            onFrame(happy);
+            //onFrame(happy);
 
             alwaysWant((Iterable)happy, nar.confDefault(GOAL));
 
@@ -318,7 +318,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             );
 
             this.in = nar.newCauseChannel(this);
+            this.dur = nar.dur();
             this.now = nar.time();
+            this.last = now - dur; //head-start
 
             //finally:
             enabled.set(true);
@@ -349,19 +351,24 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
     @Override
-    public void run() {
+    public synchronized void run() {
         if (!enabled.get())
             return;
 
-        this.dur = nar.dur();
+        this.last = this.now;
         this.now = nar.time();
+        if (now == last)
+            return;
+
+        this.dur = nar.dur();
 
         reward = act();
 
+        happy.update(last, now, nar);
 
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
         sensors.entrySet().forEach( (sc) -> {
-            sc.getValue().input(sc.getKey().update(truther, now, dur, nar));
+            sc.getValue().input(sc.getKey().update(last, now, truther, nar));
         });
 
         always(motivation.floatValue() );
@@ -370,14 +377,14 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
         ArrayUtils.shuffle(aa, random()); //fair chance of ordering to all motors
         for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
-            Stream<ITask> s = ac.getKey().update(now, dur, NAgent.this.nar);
+            Stream<ITask> s = ac.getKey().update(last, now, dur, NAgent.this.nar);
             if (s != null)
                 ac.getValue().input(s);
         }
 
-        Truth happynowT = nar.beliefTruth(happy, now);
+        Truth happynowT = nar.beliefTruth(happy, last, now);
         float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;
-        nar.emotion.happy(motivation.floatValue() * dexterity(now, now) * happynow /* /nar.confDefault(GOAL) */);
+        nar.emotion.happy(motivation.floatValue() * dexterity(last, now) * happynow /* /nar.confDefault(GOAL) */);
 
         if (trace)
             logger.info(summary());
@@ -773,7 +780,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         List<Termed> templatesPlusActions;
 
         public ActionInfluencingScalar(Term id, FloatNormalized value) {
-            super(id, NAgent.this.nar(), value);
+            super(id, value, NAgent.this.nar());
             templatesPlusActions = null;
 
 

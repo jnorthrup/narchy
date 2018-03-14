@@ -17,7 +17,7 @@ public class NARSpeakTest {
             b.append(n.time() + ":" + w + " ");
         });
 
-        n.time.synch(n); //activate the service HACK
+        n.synch(); //activate the service HACK
 
         s.speak($.the("x"), 1, $.t(1f, 0.9f));
         s.speak($.the("not_x"), 1, $.t(0f, 0.9f));

@@ -16,22 +16,20 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 
 public abstract class ActionConcept extends Sensor {
 
     protected ActionConcept(@NotNull Term term, @NotNull NAR n) {
         super(term,
-                new ScalarBeliefTable(term, true, n.conceptBuilder.newTemporalTable(term), n.random().nextLong()),
-                new ScalarBeliefTable(term, false, n.conceptBuilder.newTemporalTable(term), n.random().nextLong()),
+                new ScalarBeliefTable(term, true, n.conceptBuilder),
+                n.conceptBuilder.newTable(term, false),
                 n.conceptBuilder);
         ((ScalarBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
-        ((ScalarBeliefTable)goals()).pri(() -> n.priDefault(GOAL));
+        ((ScalarBeliefTable)beliefs()).res(resolution);
     }
 
-    @Nullable
-    abstract public Stream<ITask> update(long now, int dur, NAR nar);
+    abstract public Stream<ITask> update(long start, long end, int dur, NAR nar);
 
     @Override
     public void value(Task t, float activation, NAR n) {

@@ -190,7 +190,7 @@ public interface Truth extends Truthed {
             return a;
         if (a == null)
             return b;
-        return a.conf() >= b.conf() ? a : b;
+        return a.evi() >= b.evi() ? a : b;
     }
 
     static float freq(float f, NAR n) {
@@ -212,6 +212,9 @@ public interface Truth extends Truthed {
     }
 
     static float confSafe(float c, float epsilon) {
+        if (epsilon == 0)
+            return c; //unchanged
+
         return clamp(
                 //ceil(c, epsilon), //optimistic
                 round(c, epsilon), //semi-optimistic: adds evidence when rounding up, loses evidence when rounding down
@@ -224,9 +227,16 @@ public interface Truth extends Truthed {
         return theDithered(freq(), conf(), nar);
     }
 
-    public static PreciseTruth theDithered(float f, float c, NAR nar) {
-        return the(freq(f, nar), conf(c, nar), nar);
+    @Nullable public static PreciseTruth theDithered(float f, float c, NAR nar) {
+        float cc = conf(c, nar);
+        return cc > nar.confMin.floatValue() ? new PreciseTruth(freq(f, nar), cc) : null;
     }
+
+    @Nullable static PreciseTruth theDithered(float f, float fRes, float evi, float cRes, float confMin) {
+        float c = w2cDithered(evi, cRes);
+        return c >= confMin ? new PreciseTruth(freq(f, fRes), c) : null;
+    }
+
     @Nullable default PreciseTruth dither(NAR nar, float eviGain) {
         return dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), nar.confMin.floatValue(), eviGain);
     }
@@ -240,6 +250,10 @@ public interface Truth extends Truthed {
         return ditherDiscrete(nar.freqResolution.asFloat(), nar.confResolution.asFloat(), nar.confMin.asFloat(), evi());
     }
 
+    @Nullable default DiscreteTruth ditherDiscrete(float freqRes, float confRes, float confMin) {
+        float c = w2cDithered(evi(), confRes);
+        return c < confMin ? null : new DiscreteTruth(freq(freq(), freqRes), c);
+    }
 
     @Nullable default DiscreteTruth ditherDiscrete(float freqRes, float confRes, float confMin, float newEvi) {
         float c = w2cDithered(newEvi, confRes);
@@ -247,14 +261,7 @@ public interface Truth extends Truthed {
     }
 
 
-    /** warning: not dithered */
-    @Nullable static PreciseTruth the(float freq, float evi, NAR nar) {
-        float confMin = nar.confMin.floatValue();
-        float c = w2cSafe(evi); //w2cDithered(evi, nar.confResolution.floatValue());
-        if (c < confMin)
-            return null;
-        return new PreciseTruth(freq /*freq(freq, nar.freqResolution.floatValue())*/, c);
-    }
+
 
     static float w2cDithered(float evi, float confRes) {
         return confSafe(w2cSafe(evi), confRes);
@@ -281,9 +288,7 @@ public interface Truth extends Truthed {
 
     /** dithers */
     @Nullable static DiscreteTruth theDiscrete(float freq, float e, NAR nar) {
-        if (e < Float.MIN_NORMAL)
-            return null; //wtf
-        float c = conf(w2cSafe(e), nar.confResolution.asFloat());
+        float c = w2cDithered(e, nar.confResolution.asFloat());
         if (c < nar.confMin.asFloat())
             return null;
         else

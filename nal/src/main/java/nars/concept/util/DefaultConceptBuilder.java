@@ -267,7 +267,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
     @Override
-    public BeliefTable beliefTable(Term c, boolean beliefOrGoal) {
+    public BeliefTable newTable(Term c, boolean beliefOrGoal) {
         //TemporalBeliefTable newTemporalTable(final int tCap, NAR nar) {
         //return new HijackTemporalBeliefTable(tCap);
         //return new RTreeBeliefTable(tCap);

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Iterator;
 
+/** TODO optionally skip nulls */
 public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     private final E[] array;

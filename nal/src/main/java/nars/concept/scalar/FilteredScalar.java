@@ -52,9 +52,9 @@ public class FilteredScalar extends DemultiplexedScalar {
         //public float goal; //relative priority of generated goals
 
         Filter(Term id, FloatSupplier input, FloatToFloatFunction f, NAR nar) {
-            super(id, nar,
-                    () -> f.valueOf(input.asFloat()));
-
+            super(id,
+                () -> f.valueOf(input.asFloat()),
+                nar);
         }
     }
 }

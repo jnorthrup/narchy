@@ -97,7 +97,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         return this;
     }
 
-    public Truth get(boolean filterCyclic/*float eviFactor, float eviMin*/) {
+    public Truth truth(boolean filterCyclic/*float eviFactor, float eviMin*/) {
 
         if (isEmpty()) return null;
 
@@ -182,9 +182,9 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
     /**
      * blends any result with an eternal "background" contribution
      */
-    public Truth get(@Nullable Task eternalTask) {
+    public Truth truth(@Nullable Task eternalTask) {
 
-        Truth temporal = get(true);
+        Truth temporal = truth(true);
         Truth eternal = eternalTask != null ? eternalTask.truth() : null;
         if (eternal == null)
             return temporal;

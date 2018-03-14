@@ -536,7 +536,9 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     public void testEmbeddedConjNormalizationB() {
-        assertReduction("(((--,noid(0,5)) &&+- noid(11,2)) &&+- (noid(11,2) &&+- noid(11,2)))", "((((--,noid(0,5)) &&+- noid(11,2)) &&+- noid(11,2)) &&+- noid(11,2))");
+        assertReduction(
+                "(((--,noid(0,5)) &&+- noid(11,2)) &&+- (noid(11,2) &&+- noid(11,2)))",
+                "((((--,noid(0,5)) &&+- noid(11,2)) &&+- noid(11,2)) &&+- noid(11,2))");
     }
 
     @Test

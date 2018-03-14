@@ -68,11 +68,11 @@ public class ConceptSurface extends TabPane {
                     return new Gridding(
                             new PushButton("gOAL tRUE").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(id, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.time.nextInputStamp()).pri(n.priDefault(GOAL)));
+                                n.input(new NALTask(id, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.time.nextStampArray()).pri(n.priDefault(GOAL)));
                             }),
                             new PushButton("gOAL fALSE").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(id, GOAL, $.t(0f, n.confDefault(GOAL)), now, now, now + n.dur(), n.time.nextInputStamp()).pri(n.priDefault(GOAL)));
+                                n.input(new NALTask(id, GOAL, $.t(0f, n.confDefault(GOAL)), now, now, now + n.dur(), n.time.nextStampArray()).pri(n.priDefault(GOAL)));
                             })
                     );
                 },
@@ -80,15 +80,15 @@ public class ConceptSurface extends TabPane {
                     return new Gridding(
                             new PushButton("What +1").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(id, QUESTION, null, now, now, now + n.dur(), n.time.nextInputStamp()).pri(n.priDefault(QUESTION)));
+                                n.input(new NALTask(id, QUESTION, null, now, now, now + n.dur(), n.time.nextStampArray()).pri(n.priDefault(QUESTION)));
                             }),
                             new PushButton("What +4").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(id, QUESTION, null, now, now + n.dur() * 3, now + n.dur() * 4, n.time.nextInputStamp()).pri(n.priDefault(QUESTION)));
+                                n.input(new NALTask(id, QUESTION, null, now, now + n.dur() * 3, now + n.dur() * 4, n.time.nextStampArray()).pri(n.priDefault(QUESTION)));
                             }),
                             new PushButton("How +1").click((b) -> {
                                 long now = n.time();
-                                n.input(new NALTask(id, QUEST, null, now, now, now + n.dur(), n.time.nextInputStamp()).pri(n.priDefault(QUEST)));
+                                n.input(new NALTask(id, QUEST, null, now, now, now + n.dur(), n.time.nextStampArray()).pri(n.priDefault(QUEST)));
                             })
                     );
                 }

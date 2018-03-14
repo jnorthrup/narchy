@@ -184,11 +184,11 @@ public class DynamicTruthBeliefTableTest {
         assertNotNull(xt);
         //assertTrue($.t(1f, 0.81f).equals(xt.truth(n), 0.1f), xt.truth(n).toString());
 
-        assertEquals(0.81f, xtable.matchDynamic(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f); //best match to the input
-        assertEquals(0.74f, xtable.matchDynamic(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.matchDynamic(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.matchDynamic(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
-        assertEquals(0.62f, xtable.matchDynamic(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
+        assertEquals(0.81f, xtable.taskDynamic(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f); //best match to the input
+        assertEquals(0.74f, xtable.taskDynamic(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.taskDynamic(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.taskDynamic(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.taskDynamic(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
 
 
     }

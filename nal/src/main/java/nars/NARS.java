@@ -44,9 +44,9 @@ public class NARS {
         NAR n = new NAR(index.get(), exe.get(), time, rng.get(), concepts.get());
         init(n);
         derivers.forEach(d -> d.apply(n));
-        n.time.synch(n);
+        n.synch();
         postInit.forEach(x -> x.accept(n));
-        n.time.synch(n);
+        n.synch();
         return n;
     }
 

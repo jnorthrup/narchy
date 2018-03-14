@@ -31,7 +31,7 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 4;
+    float fwdSpeed = 16;
     float rotSpeed = 0.35f/3f;
     static float fps = 30f;
     final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
@@ -324,7 +324,7 @@ public class FZero extends NAgentX {
     }
     private void initTankContinuous() {
 
-        float res = 0.1f;
+        float res = 0.02f;
 
         final float[] left = new float[1];
         final float[] right = new float[1];

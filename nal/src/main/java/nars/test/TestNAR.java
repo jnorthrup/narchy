@@ -239,7 +239,7 @@ public class TestNAR {
 
 
         //preinit
-        nar.time.synch(nar);
+        nar.synch();
 
         //try {
         int frames = Math.max(0,(int) (finalCycle - time()));
@@ -247,7 +247,7 @@ public class TestNAR {
             nar.run();
 
         //finish anything pending
-        nar.time.synch(nar);
+        nar.synch();
 
         /*}
         catch (Exception e) {

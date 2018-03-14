@@ -44,6 +44,7 @@ public class ConjClustering extends Causable {
     protected final BagClustering<Task> bag;
     private final byte punc;
     private long now;
+    private int dur;
     private float confMin;
     private int volMax;
     private int ditherTime;
@@ -51,6 +52,8 @@ public class ConjClustering extends Causable {
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
+
+        dur = nar.dur();
 
         this.ConjClusterModel = new BagClustering.Dimensionalize<>(4) {
 
@@ -65,12 +68,12 @@ public class ConjClustering extends Causable {
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return (1 + Math.abs(a[0] - b[0]) /nar.dur())    //d(time)/dur
+                return (1 + Math.abs(a[0] - b[0]) / dur)    //d(time)/dur
                         *
                         (
                           Math.abs(a[1] - b[1])  //d(freq_polarity)
                         + Math.abs(a[2] - b[2])  //d(conf)
-                        + Math.abs(a[3] - b[3])  //d(pri)
+                        + Math.abs(a[3] - b[3])*0.1f  //d(pri)
                         );
             }
         };
@@ -102,6 +105,7 @@ public class ConjClustering extends Causable {
             return -1; //done for cycle
 
         this.now = nar.time();
+        this.dur = nar.dur();
         this.ditherTime = nar.dtDitherCycles();
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
@@ -312,7 +316,7 @@ public class ConjClustering extends Causable {
                                 float p =
                                         //priMax;
                                         priMin;
-                                        //(priMin + priMax) / 2f;
+                                //(priMin + priMax) / 2f;
 
                                 //complexity deduction
                                 //  how much more complex the conjunction is than the most complex of its ingredients

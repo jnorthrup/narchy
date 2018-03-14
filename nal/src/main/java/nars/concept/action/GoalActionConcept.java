@@ -55,16 +55,16 @@ public class GoalActionConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long now, int dur, NAR nar) {
+    public Stream<ITask> update(long pStart, long pEnd, int dur, NAR nar) {
 
 
-        long pStart =
-                //now;
-                now - dur / 2;
-        long pEnd =
-                //now;
-                now + dur / 2;
-                //now + dur;
+//        long pStart =
+//                //now;
+//                start - dur / 2;
+//        long pEnd =
+//                //now;
+//                start + dur / 2;
+//                //now + dur;
 
 
         float cur = curiosity.floatValue();
@@ -79,13 +79,14 @@ public class GoalActionConcept extends ActionConcept {
 //            // curiosity override
 //
             float curiConf =
-                    //nar.confDefault(GOAL);
+                    nar.confDefault(GOAL); //<- to max out expectation-driven action
+
                     //nar.confMin.floatValue() * 2;
 //                    Math.max(goal != null ? goal.conf() : 0, //match goal conf
 //                            //nar.confMin.floatValue() * 2
 //                            nar.confDefault(GOAL)
 //                    );
-                    nar.confMin.floatValue() * 4;
+                    //nar.confMin.floatValue() * 4;
 
             curi = true;
             //nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR;
@@ -145,22 +146,15 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth feedback = this.motor.apply(belief, goal);
 
-        this.feedback.update(feedback, now, dur);
+        Task feedbackBelief = this.feedback.add(feedback, pStart, pEnd, nar.time.nextStamp());
 
-        //HACK
-        Task feedbackBelief = this.feedback.matchDynamic(now-dur/2, now+dur/2, term, nar);
-
-                //this.feedback.set(this, feedback, nar.time::nextStamp, now, dur, nar);
-
-        Task curiosityGoal;
+        Task curiosityGoal = null;
         if (curi && feedbackBelief!=null) {
-            long curiosityStamp = nar.time.nextStamp();
-            curiosityGoal = this.curiosity(nar,
-                    //goal,
-                    Truth.theDiscrete(feedbackBelief.freqMean(dur, pStart, pEnd), goal.conf(), nar),
-                    term, pStart, pEnd, curiosityStamp);
-        } else {
-            curiosityGoal = null;
+//            long curiosityStamp = nar.time.nextStamp();
+//            curiosityGoal = this.curiosity(nar,
+//                    //goal,
+//                    Truth.theDiscrete(feedbackBelief.freqMean(dur, pStart, pEnd), goal.evi(), nar),
+//                    term, pStart, pEnd, curiosityStamp);
         }
 
         return Stream.of(feedbackBelief, (ITask)curiosityGoal).filter(Objects::nonNull);
@@ -171,7 +165,6 @@ public class GoalActionConcept extends ActionConcept {
 
     static SignalTask curiosity(NAR nar, Truth goal, Term term, long pStart, long pEnd, long curiosityStamp) {
         long now = nar.time();
-        int dur = nar.dur();
 
         SignalTask curiosity = new SignalTask(term, GOAL, goal, now, pStart, pEnd, curiosityStamp);
         //curiosity.setCyclic(true);

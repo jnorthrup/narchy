@@ -32,10 +32,10 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
     }
 
     @Override
-    protected Task matchDynamic(long start, long end, final Term template, NAR nar) {
+    protected Task taskDynamic(long start, long end, final Term template, NAR nar) {
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
-            return (Task) (yy.truth(term, model, true, beliefOrGoal, nar));
+            return yy.task(term, model, beliefOrGoal, nar);
         } else {
             return null;
         }
@@ -93,7 +93,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
     protected @Nullable Truth truthDynamic(long start, long end, NAR nar) {
         DynTruth d = model.eval(term, beliefOrGoal, start, end, nar);
         if (d!=null)
-            return (Truth) (d.truth(term, model, false, beliefOrGoal, nar));
+            return d.truth(term, model, beliefOrGoal, nar);
         else
             return null;
     }

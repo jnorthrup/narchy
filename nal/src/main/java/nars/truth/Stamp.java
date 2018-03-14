@@ -440,10 +440,14 @@ public interface Stamp {
      * returns pair: (stamp, % overlapping)
      */
     static ObjectFloatPair<long[]> zip(List<? extends Stamp> s, int maxLen) {
+
         int S = s.size();
         assert (S > 0);
         if (S == 1) {
             return pair(s.get(0).stamp(), 0f);
+        } else if (S > maxLen) {
+            //too many stamps, not enough to sample one evidence from any
+            throw new RuntimeException("stamp overflow (capacity=" + maxLen + "): " + s);
         }
 
         LongHashSet l = new LongHashSet(maxLen);
@@ -452,6 +456,7 @@ public interface Stamp {
         int repeats = 0;
 
         int totalEvidence = 0;
+
         byte[] ptr = new byte[S]; //assumes stamps are < 127 in length
         for (int i = 0, sSize = s.size(); i < sSize; i++) {
             Stamp si = s.get(i);
@@ -497,7 +502,7 @@ public interface Stamp {
                 int rr = ptr[i];
                 if (rr >= 0) {
                     long[] ss = s.get(i).stamp();
-                    for (int j = 0; j <= rr; j++) {
+                    for (int j = 0; j < rr; j++) {
                         if (l.contains(ss[j]))
                             repeats++;
                     }

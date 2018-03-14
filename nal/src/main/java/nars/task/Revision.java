@@ -891,7 +891,7 @@ public class Revision {
         int dur = nar.dur();
 
 
-        Truth truth = new TruthPolation(start, end, dur, tt).get(true);
+        Truth truth = new TruthPolation(start, end, dur, tt).truth(true);
         if (truth == null) return first;
         float factor = densityFactor * overlapFactor;
         float eAdjusted = truth.evi() * factor;

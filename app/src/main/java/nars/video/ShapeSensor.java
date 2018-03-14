@@ -328,7 +328,7 @@ public class ShapeSensor implements Runnable {
 
     private void believe(long now, Term term, Truth truth) {
         float pri = nar.priDefault(BELIEF);
-        in.input(new NALTask(term, BELIEF, truth, now, now, now, nar.time.nextInputStamp()).pri(pri));
+        in.input(new NALTask(term, BELIEF, truth, now, now, now, nar.time.nextStampArray()).pri(pri));
     }
 
 

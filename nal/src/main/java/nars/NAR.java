@@ -590,13 +590,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
                     b = (Prioritized) ((Pair) v).getOne();
                 }
             }
-            return b != null && b.pri() > priThresh;
+            return b != null && b.priElseZero() > priThresh;
         });
     }
 
     public NAR logWhen(Appendable out, boolean past, boolean present, boolean future) {
 
-        if (past == true && present == true && future == true)
+        if (past && present && future)
             return log(out);
 
         return log(out, v -> {
@@ -623,12 +623,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             case 0:
                 break;
             case 1:
-                exe.execute(t[0]);
+                ITask t0 = t[0];
+                if (t0!=null) {
+                    exe.execute(t0);
+                }
                 break;
             default:
                 exe.execute((Iterator) new ArrayIterator<>(t));
                 break;
-
         }
     }
 
@@ -787,7 +789,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             loop.stop();
 
-            time.synch(this);
+            synch();
 
             exe.stop();
 
@@ -1554,4 +1556,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
 
+    /** invokes any pending tasks without advancing the clock */
+    public final void synch() {
+        synchronized (exe) {
+            time.synch(this);
+        }
+    }
 }

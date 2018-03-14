@@ -158,10 +158,9 @@ public class DigitizedScalar extends DemultiplexedScalar {
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
-            Scalar sc = new Scalar(s, nar,
-                    () -> freqer.truth(asFloat(), ii, states.length)
-            );
-            nar.on(sc);
+            Scalar sc = new Scalar(s,
+                () -> freqer.truth(asFloat(), ii, states.length),
+                nar);
             sensors.add(sc);
         }
 

@@ -43,9 +43,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     @Override
     public Term[] arrayClone() {
-        compact();
-        return items.clone();
-        //return toArray(new Term[size()]);
+        return toArray(new Term[size()]);
     }
 
     /** creates an immutable instance of this */

@@ -26,8 +26,6 @@ public class FasterList<X> extends FastList<X> {
     private static final int INITIAL_SIZE_IF_GROWING_FROM_EMPTY = 8;
 
 
-
-
     public FasterList() {
         super();
     }
@@ -39,47 +37,48 @@ public class FasterList<X> extends FastList<X> {
     public FasterList(Object instance, String methodName, Object... mappedThru) {
         super(mappedThru.length);
         for (Object o : mappedThru) {
-            if (o!=null)
-                add( (X)Invoker.invoke(instance, methodName, o ) );
+            if (o != null)
+                add((X) Invoker.invoke(instance, methodName, o));
         }
     }
+
     public FasterList(Object instance, String methodName, Iterable<Object> mappedThru) {
         super();
         for (Object o : mappedThru) {
-            if (o!=null)
-                add( (X)Invoker.invoke(instance, methodName, o ) );
+            if (o != null)
+                add((X) Invoker.invoke(instance, methodName, o));
         }
     }
 
     public FasterList(Object instance, String methodName, Collection<Object> mappedThru) {
         super(mappedThru.size());
         for (Object o : mappedThru) {
-            if (o!=null)
-                add( (X)Invoker.invoke(instance, methodName, o ) );
+            if (o != null)
+                add((X) Invoker.invoke(instance, methodName, o));
         }
     }
 
     public FasterList(Class<?> cls, String staticMethodName, Object... mappedThru) {
         super(mappedThru.length);
         for (Object o : mappedThru) {
-            if (o!=null)
-                add( (X)Invoker.invoke(cls,staticMethodName, o ) );
+            if (o != null)
+                add((X) Invoker.invoke(cls, staticMethodName, o));
         }
     }
 
     public FasterList(Class<?> cls, String staticMethodName, Iterable<Object> mappedThru) {
         super();
         for (Object o : mappedThru) {
-            if (o!=null)
-                add( (X)Invoker.invoke(cls,staticMethodName, o ) );
+            if (o != null)
+                add((X) Invoker.invoke(cls, staticMethodName, o));
         }
     }
 
     public FasterList(Class<?> cls, String staticMethodName, Collection<Object> mappedThru) {
         super(mappedThru.size());
         for (Object o : mappedThru) {
-            if (o!=null)
-                add( (X)Invoker.invoke(cls,staticMethodName, o ) );
+            if (o != null)
+                add((X) Invoker.invoke(cls, staticMethodName, o));
         }
     }
 
@@ -174,8 +173,10 @@ public class FasterList<X> extends FastList<X> {
     public X get(Random random) {
         int s = this.size;
         switch (s) {
-            case 0: throw new UnsupportedOperationException();
-            case 1: return items[0];
+            case 0:
+                throw new UnsupportedOperationException();
+            case 1:
+                return items[0];
             default:
                 return items[random.nextInt(s)];
         }
@@ -567,9 +568,81 @@ public class FasterList<X> extends FastList<X> {
 
     public void removeFast(int index) {
         X[] ii = items;
-        System.arraycopy(ii, index + 1, ii, index, size - index - 1);
+        int totalOffset = this.size - index - 1;
+        if (totalOffset > 0)
+            System.arraycopy(ii, index + 1, ii, index, totalOffset);
         ii[--size] = null;
     }
+
+    @Override
+    public X remove(int index) {
+        //when you dont need the returned item, use removeFast
+        return super.remove(index);
+    }
+
+    @Override
+    public boolean remove(Object object) {
+        int index = this.indexOf(object);
+        if (index >= 0) {
+            this.removeFast(index);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Iterator<X> iterator() {
+        switch (size) {
+            case 0:
+                return Collections.emptyIterator();
+            //case 1: return Iterators.singletonIterator(items[0]); //dont use this because it wont support Iterator.remove
+            default:
+                return new FasterListIterator<>(this);
+        }
+    }
+
+    /**
+     * modified from MutableIterator
+     */
+    static class FasterListIterator<T> implements Iterator<T> {
+        protected int currentIndex;
+
+        protected int lastIndex = -1;
+        protected final FasterList<T> list;
+
+        public FasterListIterator(FasterList<T> list) {
+            this.list = list;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return this.currentIndex != this.list.size;
+        }
+
+        @Override
+        public T next() {
+            //try {
+            T next = this.list.get(this.currentIndex);
+            this.lastIndex = this.currentIndex++;
+            return next;
+//            } catch (IndexOutOfBoundsException ignored) {
+//                throw new NoSuchElementException();
+//            }
+        }
+
+        @Override
+        public void remove() {
+            if (this.lastIndex == -1) {
+                throw new IllegalStateException();
+            }
+            this.list.removeFast(this.lastIndex);
+            if (this.lastIndex < this.currentIndex) {
+                this.currentIndex--;
+            }
+            this.lastIndex = -1;
+        }
+    }
+
 
     public void removeBelow(int index) {
         if (size <= index)

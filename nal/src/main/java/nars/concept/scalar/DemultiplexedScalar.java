@@ -53,14 +53,16 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
 
     @Override
     public void accept(NAR n) {
-        update(n.time(), n.dur(), n);
+        long now = n.time();
+        int dur = n.dur();
+        update(now-dur/2, now+dur/2, n);
     }
 
-    public void update(long now, int dur, NAR n) {
+    public void update(long start, long end, NAR n) {
 
         value.set(input.asFloat());
 
-        in.input(Iterables.transform(this, x -> x.update(truther, now, dur, n)));
+        in.input(Iterables.transform(this, x -> x.update(start, end, truther, n)));
     }
 
 }

@@ -49,6 +49,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     /**
      * max allowed truths to be truthpolated in one test
+     * must be less than or equal to Stamp.CAPACITY otherwise stamp overflow
      */
     private static final int TRUTHPOLATION_LIMIT = 8;
 
@@ -154,7 +155,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     .scan(this, start - dur, end + dur);
 
             if (!tt.isEmpty()) {
-                return new TruthPolation(start, end, dur, tt).get(ete);
+                return new TruthPolation(start, end, dur, tt).truth(ete);
 //                PreciseTruth pt = Param.truth(null, start, end, dur, tt);
 //                if (pt!=null && (ete == null || (pt.evi() >= ete.evi())))
 //                    return pt;
@@ -457,7 +458,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return; //deleted already somehow
 
         float xc = x.conf();
-        float c = w2cSafe(x.eviEternalized((1 / xc) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */));
+        float e = x.eviEternalized((1 / xc) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */);
+        float c = w2cSafe(e);
 
         if (c >= nar.confMin.floatValue()) {
 
@@ -465,7 +467,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 //        if (x.op().temporal) { //==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
                 //            //experimental eternalize
 
-                Task eternalized = Task.clone(x, x.term(), Truth.theDiscrete(x.freq(), c, nar),
+                Task eternalized = Task.clone(x, x.term(),
+                        Truth.theDiscrete(x.freq(), e, nar),
                         x.punc(), x.creation(), ETERNAL, ETERNAL
                 );
 

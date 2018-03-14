@@ -15,7 +15,6 @@ import nars.task.DerivedTask;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
-import nars.task.signal.SignalTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
@@ -116,10 +115,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     default float freqMax() {
         return freq();
     }
+
     @Override
     default float confMin() {
         return conf();
     }
+
     @Override
     default float confMax() {
         return conf();
@@ -275,7 +276,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                                     return true; //skip the input term
 
                                 if (indepVarOrStatement.op() == VAR_INDEP) {
-                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), ()->new FasterList(1)).add(
+                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), () -> new FasterList(1)).add(
                                             path.toImmutable()
                                     );
                                 } else {
@@ -380,7 +381,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     @Nullable
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
-        return clone(x, newContent, newTruth,newPunc, x.creation(), x.start(), x.end());
+        return clone(x, newContent, newTruth, newPunc, x.creation(), x.start(), x.end());
     }
 
     @Nullable
@@ -427,7 +428,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     @Nullable
     static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> res) {
-        if ((punc==BELIEF || punc==GOAL) && tr.conf()<Param.TRUTH_EPSILON)
+        if ((punc == BELIEF || punc == GOAL) && tr.conf() < Param.TRUTH_EPSILON)
             return null;
 
         ObjectBooleanPair<Term> x = tryContent(t, punc, true);
@@ -826,12 +827,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * or if its origin has been forgotten or never known
      */
     default boolean isInput() {
-        if (!isCyclic()) {
-            long[] s = stamp();
-            return s.length <= 1;
-        } else {
-            return false;
-        }
+        return stamp().length <=1 && !isCyclic();
 
         //return evidence().length <= 1;
         //return (getParentTask() == null);
@@ -841,26 +837,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     default boolean isEternal() {
         return start() == ETERNAL;
     }
-
-//    @Deprecated
-//    default String getTense(long currentTime) {
-//
-//        long ot = start();
-//
-//        if (ot == ETERNAL) {
-//            return "";
-//        }
-//
-//        switch (Tense.order(currentTime, ot, 1)) {
-//            case 1:
-//                return Op.TENSE_FUTURE;
-//            case -1:
-//                return Op.TENSE_PAST;
-//            default:
-//                return Op.TENSE_PRESENT;
-//        }
-//    }
-
 
     default int dt() {
         return term().dt();
@@ -971,17 +947,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return proof(sb).toString();
     }
 
-    //    default Task eternalized() {
-//        if (isEternal()) {
-//            return this;
-//        } else {
-//            Truth t = truth();
-//            ImmutableTask y = ImmutableTask.Eternal(term(), punc(), t!=null ? t.eternalized() : null, creation(), stamp());
-//            y.budgetSafe(budget());
-//            return y;
-//        }
-//    }
-
     default StringBuilder proof(/*@NotNull*/StringBuilder temporary) {
         temporary.setLength(0);
         proof(this, 0, temporary);
@@ -995,28 +960,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return budget(1f, nar);
     }
 
-    //    /**
-//     * returns the time separating this task from a target time. if the target occurrs
-//     * during this task, the distance is zero. if this task is eternal, then ETERNAL is returned
-//     */
-//    default long timeDistance(long t) {
-//        long s = start();
-//        if (s == ETERNAL) return ETERNAL;
-//        long e = end();
-//        if ((t >= s) || (t <= e)) return 0;
-//        else if (t > e) return t - e;
-//        else return s - t;
-//    }
-
     default Task budget(float factor, NAR nar) {
         priMax(factor * nar.priDefault(punc()));
         return this;
     }
-
-//    default boolean during(long a, long b) {
-//        return distanceTo(a, b) == 0;
-//    }
-
 
     @Override
     default float expectation() {
@@ -1025,93 +972,85 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     default ITask run(NAR n) {
 
+
         n.emotion.onInput(this, n);
 
-        //invoke possible functor and apply aliases
 
         Term x = term();
 
-        boolean cmd = isCommand();
+        //invoke dynamic functors and apply aliases
+        Term y = x.eval(n.concepts.functors);
 
-        if (this instanceof SignalTask) {
-            //HACK - fast track insertion, expect no evaluation surprises, etc.
+        if (!x.equals(y)) {
 
-        } else {
-            Term y = x.eval(n.concepts.resolveFunctors);
+            //clone a new task because it has changed
 
-            if (!x.equals(y)) {
+            Task result;
+            if (y instanceof Bool && isQuestOrQuestion()) {
+                //convert to final implicit answer
+                byte p = isQuestion() ? BELIEF : GOAL;
 
-                //clone a new task because it has changed
+                @Nullable NALTask finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
 
-                Task result;
-                if (y instanceof Bool && isQuestOrQuestion()) {
-                    //convert to final implicit answer
-                    byte p = isQuestion() ? BELIEF : GOAL;
+                delete();
 
-                    @Nullable NALTask finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
-
-                    delete();
-
-                    if (finalResult!=null) {
-                        return new TaskAdd(finalResult);
-                    } else {
-                        //TODO maybe print error, at least in debug mode
-                        return null;
-                    }
-
+                if (finalResult != null) {
+                    return new TaskAdd(finalResult);
                 } else {
-                    if (y.op() == Op.BOOL)
-                        return null;
+                    //TODO maybe print error, at least in debug mode
+                    return null;
+                }
 
-                    @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(), !isInput() || !Param.DEBUG_EXTRA);
+            } else {
+                if (y.op() == Op.BOOL)
+                    return null;
+
+                @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(), !isInput() || !Param.DEBUG_EXTRA);
                         /* the evaluated result here acts as a memoization of possibly many results
                            depending on whether the functor is purely static in which case
                            it would be the only one.
                          */
-                        //TODO see if a TaskProxy would work here
-                    result = yy != null ? clone(this, yy.getOne().negIf(yy.getTwo())) : null;
-                }
-
-                delete(); //delete intermediate
-
-                return result;
+                //TODO see if a TaskProxy would work here
+                result = yy != null ? clone(this, yy.getOne().negIf(yy.getTwo())) : null;
             }
 
-            //invoke possible Operation
+            delete(); //delete intermediate
 
-            if (cmd || (isGoal() && !isEternal())) {
-                //resolve possible functor in goal or command
-                //TODO question functors
-                //the eval step producing 'y' above will have a reference to any resolved functor concept
-                Pair<Operator, Term> o = Op.functor(y, (i) -> {
-                    Concept operation = n.concept(i);
-                    return operation instanceof Operator ? (Operator) operation : null;
-                });
-                if (o != null) {
-                    try {
-                        //TODO add a pre-test guard here to avoid executing a task which will be inconsequential anyway
-                        Task yy = o.getOne().execute.apply(this, n);
-                        if (yy != null && !this.equals(yy)) {
-                            return yy;
-                        }
-                    } catch (Throwable xtt) {
-                        //n.logger.error("{} {}", this, t);
-                        return Operator.error(this, xtt, n.time());
+            return result;
+        }
+
+        //invoke possible Operation
+
+        boolean cmd = isCommand();
+        if (cmd || (isGoal() && !isEternal())) {
+            //resolve possible functor in goal or command
+            //TODO question functors
+            //the eval step producing 'y' above will have a reference to any resolved functor concept
+            Pair<Operator, Term> o = Op.functor(y, (i) -> {
+                Concept operation = n.concept(i);
+                return operation instanceof Operator ? (Operator) operation : null;
+            });
+            if (o != null) {
+                try {
+                    //TODO add a pre-test guard here to avoid executing a task which will be inconsequential anyway
+                    Task yy = o.getOne().execute.apply(this, n);
+                    if (yy != null && !this.equals(yy)) {
+                        return yy;
                     }
-                    if (cmd) {
-                        n.eventTask.emit(this);
-                        return null;
-                    }
-                    //otherwise: allow processing goal
+                } catch (Throwable xtt) {
+                    //n.logger.error("{} {}", this, t);
+                    return Operator.error(this, xtt, n.time());
                 }
+                if (cmd) {
+                    n.eventTask.emit(this);
+                    return null;
+                }
+                //otherwise: allow processing goal
             }
         }
 
-
         if (!cmd) {
-
             return new TaskAdd(this);
-
         } else {
             //default: Echo
             n.out(term());
@@ -1148,7 +1087,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     short[] cause();
 
-    /** creates lazily computing proxy task which facades the task to the target time range */
+    /**
+     * creates lazily computing proxy task which facades the task to the target time range
+     */
     static Task project(@Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
         if (!negated && t.contains(subStart, subEnd))
             return t;
@@ -1157,7 +1098,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
         return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () ->
-            t.truth(subStart, subEnd, dur, Float.MIN_NORMAL)
+                t.truth(subStart, subEnd, dur, Float.MIN_NORMAL)
         );
     }
 
@@ -1177,20 +1118,21 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     default float freq(long w, int dur) {
         Truth x = truth(w, dur);
-        if (x!=null)
+        if (x != null)
             return x.freq();
         else
             return Float.NaN;
     }
+
     default float freqMean(int dur, long... when) {
 
-        assert(when.length > 1);
+        assert (when.length > 1);
 
         float fSum = 0;
         int num = 0;
         for (long w : when) {
             float tf = freq(w, dur);
-            if (tf==tf) {
+            if (tf == tf) {
                 fSum += tf;
                 num++;
             }

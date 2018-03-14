@@ -346,6 +346,7 @@ public enum Op {
                                 Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
                             }
                         }
+
                     }
 
                     switch (u.length) {
@@ -1155,10 +1156,10 @@ public enum Op {
             default:
                 events.sortThisByLong(LongObjectPair::getOne);
 
-                LongHashSet times = new LongHashSet(events.size()); //TODO lazy alloc only after a duplicate sequence time has been detected
+                LongHashSet times = new LongHashSet(ee); //TODO lazy alloc only after a duplicate sequence time has been detected
                 LongByteHashMap collides = null;
 
-                for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
+                for (int i = 0; i < ee; i++) {
                     LongObjectPair<Term> p = events.get(i);
                     long pt = p.getOne();
                     if (!times.add(pt)) {

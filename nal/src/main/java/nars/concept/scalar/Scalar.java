@@ -1,12 +1,13 @@
 package nars.concept.scalar;
 
 import jcog.math.FloatSupplier;
+import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Sensor;
 import nars.concept.dynamic.ScalarBeliefTable;
 import nars.concept.util.ConceptBuilder;
-import nars.task.DerivedTask;
+import nars.control.DurService;
 import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
@@ -15,10 +16,10 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
 import java.util.function.LongSupplier;
 
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 
 /**
@@ -26,40 +27,45 @@ import static nars.Op.GOAL;
  */
 public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier {
 
-//    public final ScalarSignal sensor;
-
-    @Deprecated public final ScalarBeliefTable sensor;
-    //@Deprecated public final ScalarBeliefTable goal;
-
+    /** update directly with next value */
+    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> SET = (conf)->
+            ((p,n) -> n==n ? $.t(n, conf.asFloat()) : null);
+    /** first order difference */
+    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> DIFF = (conf)->
+            ((p,n) -> (n==n) ? ((p==p) ? $.t((n-p)/2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
     public FloatSupplier signal;
 
     private volatile float currentValue = Float.NaN;
 
     private transient short cause = -1;
 
-    public Scalar(Term c, NAR n, FloatSupplier signal) {
-        this(c, n.conceptBuilder, signal, n.random()::nextLong);
-        ((ScalarBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
-        ((ScalarBeliefTable)goals()).pri(() -> n.priDefault(GOAL));
+    public Scalar(Term c, FloatSupplier signal, NAR n) {
+        this(c, signal, n.conceptBuilder);
+        pri(() -> n.priDefault(BELIEF));
+        ((ScalarBeliefTable)beliefs()).res(resolution);
+        n.on(this);
     }
 
-    private Scalar(Term c, ConceptBuilder b, FloatSupplier signal, LongSupplier stamp) {
-        super(c,
-                new ScalarBeliefTable(c, true, b.newTemporalTable(c), stamp.getAsLong()),
-                new ScalarBeliefTable(c, false, b.newTemporalTable(c), stamp.getAsLong()),
+    private Scalar(Term term, FloatSupplier signal, ConceptBuilder b) {
+        super(term,
+                new ScalarBeliefTable(term, true, b),
+                b.newTable(term, false),
                 b);
-
-        this.sensor = ((ScalarBeliefTable)beliefs());
-
-//        this.sensor = new ScalarSignal(c, this, ()->Scalar.this.resolution.asFloat()) {
-//            @Override
-//            protected LongSupplier stamp(Truth currentBelief,  NAR nar) {
-//                return Scalar.this.nextStamp(nar);
-//            }
-//        };
 
         this.signal = signal;
 
+    }
+
+    public final DurService auto(NAR n) {
+        return auto(n, 1);
+    }
+
+    public DurService auto(NAR n, float durs) {
+        FloatFloatToObjectFunction<Truth> truther =
+            (prev, next) -> $.t(next, n.confDefault(BELIEF));
+
+        return DurService.on(n, nn->
+                nn.input(update(truther, n))).durs(durs);
     }
 
     /**
@@ -89,13 +95,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         //feedback prefilter non-signal beliefs
 
         if (cause >= 0) { //HACK wait for the cause id to come from a task
-            if (t instanceof DerivedTask) { //TODO should not apply to: SignalTask, RevisionTask for now just apply to Derived
-                if (t.isBelief()) {
-                    PredictionFeedback.feedbackNewBelief(cause, t, beliefs, n);
-                    if (t.isDeleted())
-                        return false;
-                }
-            }
+
         } else {
             //HACK snoop this concept's cause channel from a signal task inserted to it
             if (t instanceof SignalTask) {
@@ -108,19 +108,24 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         return super.add(t, n);
     }
 
+    public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
+        return update(truther, n.time(), n.dur(), n);
+    }
+
     @Nullable
-    public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
-//        Task x = sensor.update(this, truther, n, time, dur);
-//
-//        PredictionFeedback.feedbackNewSignal(
-//                sensor.get() /* get() again in case x is stretched it will be null */, beliefs, n);
-//
-//        return x;
+    @Deprecated public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
+        return update(time-dur/2, time+dur/2, truther, n);
+    }
 
-        sensor.update(truther.value(currentValue, floatValueOf(term)), time, dur);
+    @Nullable
+    public Task update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
 
-        return sensor.matchDynamic(time-dur/2, time+dur/2, null, n);
-        //return null;
+        SignalTask x = ((ScalarBeliefTable)beliefs()).add(truther.value(currentValue, floatValueOf(term)),
+                start, end, n.time.nextStamp());
+
+        PredictionFeedback.feedbackNewSignal(x, beliefs, n);
+
+        return x;
     }
 
 
@@ -130,7 +135,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
     }
 
     public Scalar pri(FloatSupplier pri) {
-        sensor.pri(pri);
+        ((ScalarBeliefTable)beliefs()).pri(pri);
         return this;
     }
 

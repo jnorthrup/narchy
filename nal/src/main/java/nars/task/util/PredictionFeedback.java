@@ -59,19 +59,18 @@ public class PredictionFeedback {
     /**
      * TODO handle stretched tasks
      */
-    public static void feedbackNewBelief(short cause, Task y, BeliefTable table, NAR nar) {
+    public static void feedbackNewBelief(Task y, BeliefTable table, NAR nar) {
 
         long start = y.start();
         long end = y.end();
         int dur = nar.dur();
 
-        List<Task> signals = new FasterList(0);
-        ((DefaultBeliefTable) table).temporal.whileEach(start, end, (existing) -> {
+        List<Task> signals = new FasterList<>(8);
+        table.forEachTask(false, start, end, (existing) -> {
             //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
-            if (signalOrRevisedSignalAbsorbs(cause, existing, y)) {
+            if (existing instanceof SignalTask) {
                 signals.add(existing);
             }
-            return true;
         });
         if (signals.isEmpty())
             return;
@@ -83,27 +82,29 @@ public class PredictionFeedback {
         }
     }
 
-    private static boolean signalOrRevisedSignalAbsorbs(short cause, Task existing, Task y) {
-        if (existing instanceof SignalTask)
-            return true;
-        if (existing.isCyclic())
-            return false;
-        if (existing.confMax() < y.confMin() || existing.originality() < y.originality())
-            return false;
-
-        short[] cc = existing.cause();
-        int n = cc.length;
-        switch (n) {
-            case 0: return false;
-            case 1: return cc[0] == cause;
-            default:
-                return false;
-//                for (short x : cc)
-//                    if (x != cause)
-//                        return false;
-//                return true;
-        }
-    }
+//    private static boolean signalOrRevisedSignalAbsorbs(Task existing, Task y) {
+//        if (existing instanceof SignalTask)
+//            return true;
+//        if (existing.isCyclic())
+//            return false;
+//        if (existing.confMax() < y.confMin() || existing.originality() < y.originality())
+//            return false;
+//
+//        return true;
+//
+////        short[] cc = existing.cause();
+////        int n = cc.length;
+////        switch (n) {
+////            case 0: return false;
+////            case 1: return cc[0] == cause;
+////            default:
+////                return false;
+//////                for (short x : cc)
+//////                    if (x != cause)
+//////                        return false;
+//////                return true;
+////        }
+//    }
 
 //    /** true if next is stronger than current */
 //    private static float strength(Task x, long start, long end, int dur) {

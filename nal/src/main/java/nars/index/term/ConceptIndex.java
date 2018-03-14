@@ -28,7 +28,7 @@ public abstract class ConceptIndex {
 
     public NAR nar;
 
-    public final TermContext resolveFunctors = new Functor.FunctorResolver() {
+    public final TermContext functors = new Functor.FunctorResolver() {
         @Override
         public final Termed apply(Term term) {
             return get(term, false);

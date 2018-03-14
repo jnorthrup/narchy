@@ -146,7 +146,7 @@ public class reflect {
         @Override
         protected float leak(Task next) {
             Term x = next.term().concept();
-            Term r = $.func(REFLECT_OP, x).eval(n.concepts.resolveFunctors).normalize();
+            Term r = $.func(REFLECT_OP, x).eval(n.concepts.functors).normalize();
             if (x.equals(r)) //can happen
                 return 0f;
             if ((r != null && r.subs() > 0)) {
@@ -203,7 +203,7 @@ public class reflect {
 
 
             Term x = next.term().concept();
-            Term reflectionSim = $.sim($.func(REFLECT_OP, x), x).eval(n.concepts.resolveFunctors).normalize();
+            Term reflectionSim = $.sim($.func(REFLECT_OP, x), x).eval(n.concepts.functors).normalize();
             if ((reflectionSim != null && reflectionSim.subs() > 0)) {
                 int rvol = reflectionSim.volume();
                 if (rvol <= n.termVolumeMax.intValue()) {
@@ -212,7 +212,7 @@ public class reflect {
                             n.confDefault(BELIEF) :
                             n.confMin.floatValue(); //if there is a variable, avoid becoming overconfident about linking across it. maybe this is too extreme of a conf discount
 
-                    NALTask t = new NALTask(reflectionSim, BELIEF, $.t(1f, c), n.time(), ETERNAL, ETERNAL, n.time.nextInputStamp());
+                    NALTask t = new NALTask(reflectionSim, BELIEF, $.t(1f, c), n.time(), ETERNAL, ETERNAL, n.time.nextStampArray());
                     t.pri(next.priElseZero() * Util.unitize(x.term().volume() / ((float)rvol)));
                     feedback(t);
                     logger.info("+ {}", reflectionSim);

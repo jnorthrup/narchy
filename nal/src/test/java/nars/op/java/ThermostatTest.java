@@ -134,7 +134,7 @@ public class ThermostatTest {
             protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
                 if (training[0]) {
-                    n.time.synch(n);
+                    n.synch();
                     //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
                 }
 

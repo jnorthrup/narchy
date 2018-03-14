@@ -19,22 +19,6 @@ import java.util.function.Consumer;
  */
 public abstract class Time implements Clock, Serializable {
 
-//    //TODO write this to replace LongObjectPair and cache the object's hash
-//    public static class Scheduled extends LinkedList<Runnable> implements Comparable<Scheduled> {
-//        long when;
-//        public Scheduled(Runnable r) {
-//            super();
-//            super.add(r);
-//        }
-//
-//        @Override
-//        public boolean add(Runnable runnable) {
-//            synchronized (getFirst()) {
-//                return super.add(runnable);
-//            }
-//        }
-//
-//    }
 
 
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
@@ -119,7 +103,7 @@ public abstract class Time implements Clock, Serializable {
 
 
     @Nullable
-    public List<SchedTask> exeScheduled() {
+    private List<SchedTask> exeScheduled() {
 
         //        now = now();
 //        SchedTask firstQuick = scheduled.peek(); //it's safe to call this outside synchronized block for speed
@@ -139,7 +123,7 @@ public abstract class Time implements Clock, Serializable {
 
             List<SchedTask> pending =
                     //new LinkedList();
-                    new FasterList(0);
+                    new FasterList(8);
 
             int s = 0;
             SchedTask p;
@@ -188,7 +172,7 @@ public abstract class Time implements Clock, Serializable {
             n.input(l);
     }
 
-    public long[] nextInputStamp() {
+    public long[] nextStampArray() {
         return new long[]{nextStamp()};
     }
 

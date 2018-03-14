@@ -54,10 +54,10 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
 
                 FloatSupplier f = () -> Util.unitize(src.brightness(xx, yy));
 
-                Scalar sss = new Scalar(pixelTerm.get(x, y), n, f)
+                Scalar sss = new Scalar(pixelTerm.get(x, y), f, n)
                         .pri(pixelPri);
 
-                n.on(matrix[x][y] = sss);
+                matrix[x][y] = sss;
             }
         }
 

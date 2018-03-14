@@ -110,9 +110,11 @@ public interface Compound extends Term, IPair, Subterms {
         return subterms().hashCode();
     }
 
+
     @Override
     default int opX() {
-        return Term.opX(op(), subs());
+        //return Term.opX(op(), (short)subs());
+        return Term.opX(op(), (short)volume());
     }
 
     @Override
@@ -410,13 +412,14 @@ public interface Compound extends Term, IPair, Subterms {
             switch (dt) {
                 case 0:
                 case DTERNAL:
-                    return (subs() > 1);
+                    return true;
+                    //return (subs() > 1);
                 case XTERNAL:
                 default:
                     return false;
             }
         } else
-            return op.commutative && subs() > 1;
+            return op.commutative;// && subs() > 1;
     }
 
 

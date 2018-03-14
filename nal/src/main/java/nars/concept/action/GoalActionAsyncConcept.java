@@ -1,23 +1,20 @@
 package nars.concept.action;
 
-import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.NAct;
 import nars.Task;
+import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.CauseChannel;
 import nars.task.ITask;
+import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
-import java.util.function.LongSupplier;
 import java.util.stream.Stream;
-
-import static nars.Op.BELIEF;
 
 
 /**
@@ -25,49 +22,30 @@ import static nars.Op.BELIEF;
  */
 public class GoalActionAsyncConcept extends ActionConcept {
 
-    public final Signal feedBelief;
-
     private final BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor;
-    final CauseChannel<ITask> in;
 
-    //private final long curiosityStamp;
+    final CauseChannel<ITask> in;
 
     public GoalActionAsyncConcept(@NotNull Term c, @NotNull NAct act, CauseChannel<ITask> cause, @NotNull BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor) {
         super(c, act.nar());
 
-        NAR n = act.nar();
-
-//        this.action = new Signal(GOAL, n.truthResolution).pri(() -> n.priDefault(GOAL));
-        //((SensorBeliefTable) goals).sensor = action;
-
         this.in = cause;
         //curiosityStamp = n.time.nextStamp();
 
-        //for dynamic change
-        final FloatSupplier myResolution = () -> this.resolution.asFloat();
-
-        this.feedBelief = new Signal(BELIEF, myResolution).pri(() -> n.priDefault(BELIEF));
-        //((SensorBeliefTable) beliefs).sensor = feedback;
-
-//        this.feedGoal = new Signal(GOAL, myResolution).pri(() -> n.priDefault(GOAL));
-
         this.motor = motor;
-        //this.goals = newBeliefTable(nar, false); //pre-create
-
     }
 
 
-
     @Override
-    public Stream<ITask> update(long now, int dur, NAR nar) {
+    public Stream<ITask> update(long pStart, long pEnd, int dur, NAR nar) {
 
-        long pStart =
-                //now;
-                now - dur/2;
-        long pEnd =
-                //now;
-                now + dur/2;
-                //now + dur;
+//        long pStart =
+//                //now;
+//                start - dur/2;
+//        long pEnd =
+//                //now;
+//                start + dur/2;
+//                //now + dur;
 
         Truth goal = this.goals().truth(pStart, pEnd, nar);
 
@@ -100,14 +78,13 @@ public class GoalActionAsyncConcept extends ActionConcept {
         int dur = nar.dur();
 
 
-        Task fg;
-//        long goalTime =
-//                now;
-//                //now-dur/2;
-        long beliefTime =
-                now;
-                //now+dur/2;
+        long start =
+                now - dur/2;
+        long end =
+                now + dur/2;
 
+
+        Task fg;
         if (g!=null) {
 //            //fg = feedGoal.task(term, g, goalTime-dur, goalTime, nar.time.nextStamp()); //allow the feedback goal (Ex: curiosity) to override, otherwise use the current goal
 //            fg = feedGoal.set(this, g, stamper, goalTime, dur, nar);
@@ -117,15 +94,14 @@ public class GoalActionAsyncConcept extends ActionConcept {
         else
             fg = null;
 
-        LongSupplier stamper = nar.time::nextStamp;
+        SignalTask fb = ((ScalarBeliefTable)beliefs()).add(f, start, end, nar.time.nextStamp());
 
         in.input(
             fg,
-            feedBelief.set(this, f, stamper, beliefTime, dur, nar)
+            fb
         );
 
-        PredictionFeedback.feedbackNewSignal(feedBelief.get() /* in case stretched */, beliefs,
-                nar);
+        PredictionFeedback.feedbackNewSignal(fb /* in case stretched */, beliefs, nar);
     }
 
     //not working yet:

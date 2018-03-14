@@ -5,7 +5,10 @@ import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
-import nars.*;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
+import nars.Task;
 import nars.control.Cause;
 import nars.task.EviDensity;
 import nars.task.NALTask;
@@ -13,6 +16,7 @@ import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.time.Tense;
+import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -21,11 +25,13 @@ import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Created by me on 12/4/16.
@@ -58,7 +64,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         }
     }
 
-    private static float pri(LongInterval x) {
+    private static float pri(TaskRegion x) {
         if (x instanceof Prioritized)
             return ((Prioritized) x).priElseZero();
 
@@ -89,46 +95,24 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         throw new TODO();
     }
 
+    /** TODO make Task truth dithering optional */
+    public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
 
-    List<Stamp> evidence() {
-        List<Stamp> s = $.newArrayList();
-        for (LongInterval x : this) {
-            Stamp ss = stamp(x);
-            if (ss != null)
-                s.add(ss);
-        }
-        return s;
-    }
-
-    @Deprecated
-    public static Stamp stamp(LongInterval x) {
-        if (x instanceof Task)
-            return ((Task) x);
-//        } else if (x instanceof DynTruth) {
-//            return ((DynTruth)x).stamp();
-//        }
-        return null;
-    }
-
-    @Nullable
-    public Truthed truth(Term superterm, DynamicTruthModel m, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
-
-
-        Truth t = m.truth(this, nar);
+        Truth t = truthModel.apply(this, nar);
         if (t == null)
             return null;
 
-
         float evi = t.evi();
-        float eviMin = c2wSafe(nar.confMin.floatValue());
         if (evi < eviMin)
             return null;
 
-        //TODO compute max valid overlap to terminate the zip early
-        ObjectFloatPair<long[]> ss = Stamp.zip(evidence(), Param.STAMP_CAPACITY);
-        evi = evi * Param.overlapFactor(ss.getTwo());
-        if (evi < eviMin)
-            return null;
+        //this may have already been done in truth calculation
+//        //TODO compute max valid overlap to terminate the zip early
+        ObjectFloatPair<long[]> ss = Stamp.zip((List) this, Param.STAMP_CAPACITY);
+
+//        evi = evi * Param.overlapFactor(ss.getTwo());
+//        if (evi < eviMin)
+//            return null;
 
         float freq = t.freq();
 
@@ -186,33 +170,36 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             f = freq;
         }
 
-        Truth tr = Truth.theDiscrete(f, evi, nar);
-        if (tr == null)
-            return null;
+
         if (!taskOrJustTruth)
-            return tr;
+            return Truth.theDithered(f, freqRes, evi, confRes, w2cSafe(eviMin));
 
-        float priority = pri();
-
-
+        //undithered until final step for max precision
+        PreciseTruth tr = new PreciseTruth(f, evi, false);
 
         // then if the term is valid, see if it is valid for a task
         @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
-                m.construct(superterm, this),
+                //if dynamic truth model, construct the appropriate term
+                //otherwise consider the superterm argument as the task content
+                truthModel instanceof DynamicTruthModel ?
+                        ((DynamicTruthModel)truthModel).construct(superterm, this) :
+                        superterm,
                 beliefOrGoal ? BELIEF : GOAL, true);
         if (r == null)
             return null;
 
-        NALTask dyn = new DynTruthTask(
+        NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
-                tr.negIf(r.getTwo()), nar, start, end,
+                tr.negIf(r.getTwo())
+                        .ditherDiscrete(freqRes, confRes, w2cSafe(eviMin)), nar, start, end,
                 ss.getOne());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 
         dyn.cause = cause();
-        dyn.priSet(priority);
 
-        if (Param.DEBUG)
+        dyn.priSet(pri());
+
+        if (Param.DEBUG_EXTRA)
             dyn.log("Dynamic");
 
         return dyn;
@@ -227,6 +214,12 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     public void clear() {
         super.clear();
         evi.clear();
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends TaskRegion> source) {
+        source.forEach(this::add);
+        return true;
     }
 
     @Override
@@ -258,14 +251,22 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return true;
     }
 
-    public static class DynTruthTask extends NALTask {
+    public final Truth truth(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
+        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, 0, nar);
+    }
 
-        DynTruthTask(Term c, boolean beliefOrGoal, Truth tr, NAR nar, long start, long end, long[] stamp) throws InvalidTaskException {
+    public final Task task(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
+        return (Task) eval(term, o, true, beliefOrGoal, 0, 0, 0, nar);
+    }
+
+    public static class DynamicTruthTask extends NALTask {
+
+        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, NAR nar, long start, long end, long[] stamp) throws InvalidTaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, nar.time(), start, (start == Tense.ETERNAL || c.op().temporal) ? start : end, stamp);
         }
 
         @Override
-        public DynTruthTask pri(float p) {
+        public DynamicTruthTask pri(float p) {
             super.pri(p);
             return this;
         }

@@ -40,7 +40,7 @@ public class RevectionTest {
 
         //System.out.println( TruthPolation.truth(0, a, b) );
         assertEquals(Revision.revise(a, b),
-                new TruthPolation((long) 0, (long) 1, n.dur(), Lists.newArrayList(a.apply(n), b.apply(n))).get((Task) null));
+                new TruthPolation((long) 0, (long) 1, n.dur(), Lists.newArrayList(a.apply(n), b.apply(n))).truth((Task) null));
 
     }
 
@@ -53,7 +53,7 @@ public class RevectionTest {
         TaskBuilder b = t(0f, 0.5f, 4).evidence(2);
 
         int dur = 9;
-        Truth pt = new TruthPolation((long) 0, (long) 0, dur, Lists.newArrayList(a.apply(n), b.apply(n))).get((Task) null);
+        Truth pt = new TruthPolation((long) 0, (long) 0, dur, Lists.newArrayList(a.apply(n), b.apply(n))).truth((Task) null);
         @Nullable Truth rt = Revision.revise(a, b);
 
         assertEquals(pt.freq(), rt.freq(), 0.01f);
@@ -66,7 +66,7 @@ public class RevectionTest {
     public void testRevisionEquivalence2Instant() throws Narsese.NarseseException {
         TaskBuilder a = t(1f, 0.5f, 0);
         TaskBuilder b = t(0f, 0.5f, 0);
-        assertEquals( Revision.revise(a, b), new TruthPolation((long) 0, (long) 0, 1, Lists.newArrayList(a.apply(n), b.apply(n))).get((Task) null));
+        assertEquals( Revision.revise(a, b), new TruthPolation((long) 0, (long) 0, 1, Lists.newArrayList(a.apply(n), b.apply(n))).truth((Task) null));
     }
 
     @Test
@@ -78,19 +78,19 @@ public class RevectionTest {
         Task b = t(0f, 0.9f, 6).apply(n);
         for (int i = 0; i < 10; i++) {
             System.out.println(i + " " +
-                    new TruthPolation((long) i, (long) i, dur, Lists.newArrayList(a, b)).get((Task) null));
+                    new TruthPolation((long) i, (long) i, dur, Lists.newArrayList(a, b)).truth((Task) null));
         }
 
         System.out.println();
 
-        Truth ab2 = new TruthPolation((long) 3, (long) 3, dur, Lists.newArrayList(a, b)).get((Task) null);
+        Truth ab2 = new TruthPolation((long) 3, (long) 3, dur, Lists.newArrayList(a, b)).truth((Task) null);
         assertTrue( ab2.conf() >= 0.5f );
 
-        Truth abneg1 = new TruthPolation((long) 3, (long) 3, dur, Lists.newArrayList(a, b)).get((Task) null);
+        Truth abneg1 = new TruthPolation((long) 3, (long) 3, dur, Lists.newArrayList(a, b)).truth((Task) null);
         assertTrue( abneg1.freq() > 0.6f );
         assertTrue( abneg1.conf() >= 0.5f );
 
-        Truth ab5 = new TruthPolation((long) 6, (long) 6, dur, Lists.newArrayList(a, b)).get((Task) null);
+        Truth ab5 = new TruthPolation((long) 6, (long) 6, dur, Lists.newArrayList(a, b)).truth((Task) null);
         assertTrue( ab5.freq() < 0.35f );
         assertTrue( ab5.conf() >= 0.5f );
     }
@@ -104,7 +104,7 @@ public class RevectionTest {
         Task e = t(0f, 0.1f, 7).evidence(5).apply(n);
 
         for (int i = 0; i < 15; i++) {
-            System.out.println(i + " " + new TruthPolation((long) i, (long) i, 1, Lists.newArrayList(a, b, c, d, e)).get((Task) null));
+            System.out.println(i + " " + new TruthPolation((long) i, (long) i, 1, Lists.newArrayList(a, b, c, d, e)).truth((Task) null));
         }
 
     }
@@ -143,7 +143,7 @@ public class RevectionTest {
 
         System.out.println("TRUTHPOLATION");
         for (long d = start; d < end; d++) {
-            Truth a1 = new TruthPolation(d, d, 1, l).get((Task) null);
+            Truth a1 = new TruthPolation(d, d, 1, l).truth((Task) null);
             System.out.println(d + ": " + a1);
         }
     }

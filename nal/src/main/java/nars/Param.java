@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
 import jcog.math.IntRange;
 import jcog.math.Range;
-import jcog.pri.Pri;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.concept.util.ConceptBuilder;
@@ -43,12 +42,12 @@ public abstract class Param {
     public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
 
     /**
-     * pri threshold for emitting task activation events
+     * proportion of a total activation necessary for emitting task activation events
      */
     @Range(min=0, max=0.5f)
     public static float TASK_ACTIVATION_THRESHOLD =
             //0;
-            Pri.EPSILON*2;
+            0.5f;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
@@ -130,8 +129,8 @@ public abstract class Param {
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            Util::and;
-    //        Util::or;
+            //Util::and;
+            Util::or;
     //UtilityFunctions::aveAri;
     //Math::max;
 

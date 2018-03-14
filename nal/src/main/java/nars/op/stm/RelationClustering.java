@@ -84,7 +84,7 @@ public class RelationClustering extends ChainClustering {
 
                 long now = nar.time();
                 NALTask tt = new NALTask(t, BELIEF, tru, now, Math.min(tx.start(), ty.start()),
-                        Math.max(tx.end(), ty.end()), nar.time.nextInputStamp());
+                        Math.max(tx.end(), ty.end()), nar.time.nextStampArray());
                 tt.pri(tx.priElseZero() * ty.priElseZero());
                 in.input(tt);
             }

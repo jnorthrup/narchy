@@ -46,52 +46,42 @@ public class Tasklinks {
         }
     }
 
-    /**
-     * if NAR is null, then only inserts tasklink.  otherwise it proceeds with activation
-     */
-    public static void linkTask(Task t, float _pri, /*Task*/Concept cc, @Nullable NAR nar) {
 
-        final float priInput = Math.max(_pri, Pri.EPSILON);
+    public static void linkTask(Task t, final float _pri, /*Task*/Concept cc, @Nullable NAR nar) {
 
-        boolean activate = nar != null;
+        final float priCause = Math.max(_pri, Pri.EPSILON);
 
-        MutableFloat overflow = activate ? new MutableFloat() : null;
 
-        linkTask(t, priInput, cc.tasklinks(), overflow);
 
-        float o = overflow.floatValue();
-        assert (o >= 0);
+        MutableFloat overflow = new MutableFloat();
 
-        float priApplied = Math.max(0, priInput - o); //efective priority between 0 and pri
+        linkTask(t, priCause, cc.tasklinks(), overflow);
 
-//        if (priApplied > Pri.EPSILON)
-//            linkTaskTemplates(cc, t, priApplied, nar);
+        float priEffect = priCause - overflow.floatValue();
+        assert(priEffect >= 0);
 
-        if (activate) {
+        //adjust the experienced emotion according to the actual effect
+        nar.emotion.onActivate(t, priEffect);
 
-//            if (priApplied > Float.MIN_NORMAL) {
 
-                TermLinks.linkTemplates(cc, priApplied, nar.momentum.floatValue(), nar);
+        float conceptActivation = priEffect
+                //* nar.amp(t.cause())
+        ;
 
-                float conceptActivation = priApplied;
-                        //* nar.amp(t.cause());
-                //if (conceptActivation > 0) {
-                nar.activate(cc, conceptActivation);
+        TermLinks.linkTemplates(cc, priEffect, nar.momentum.floatValue(), nar);
 
-//            }
+        nar.activate(cc, conceptActivation);
 
-            //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
-            //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
-            float priFraction = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
-            if (priFraction >= Pri.EPSILON) {
-                ((TaskConcept) cc).value(t, priFraction, nar);
-                nar.emotion.onActivate(t, priFraction);
-            }
+        //adjust the cause values according to the input's actual demand
+        ((TaskConcept) cc).value(t, priCause, nar);
 
-            if (/*activation*/ priApplied >= Param.TASK_ACTIVATION_THRESHOLD)
-                nar.eventTask.emit(t);
 
-        }
+        //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
+        //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
+        float effectiveness = priEffect / priCause;
+        if (effectiveness >= Param.TASK_ACTIVATION_THRESHOLD)
+            nar.eventTask.emit(t);
+
     }
 
     public static void linkTaskTemplates(Concept c, Task t, float priApplied, NAR nar) {

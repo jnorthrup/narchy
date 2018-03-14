@@ -12,17 +12,26 @@ public class SignalTask extends NALTask {
         super(t, punct, truth, creation, start, end,
                 new long[]{stamp} /* TODO use an implementation which doenst need an array for this */);
     }
+
     public SignalTask(Term t, byte punct, Truth truth, long start, long end, long stamp) {
         this(t, punct, truth, start, start, end, stamp);
     }
+
     @Override
-    public boolean isEternal() {
+    public final boolean isInput() {
+        return true;
+    }
+
+    @Override
+    public final boolean isEternal() {
         return false;
     }
+
     @Override
-    public boolean isCyclic() {
+    public final boolean isCyclic() {
         return false;
     }
+
 //    @Override
 //    public float eternalizability() {
 //        //return punc == GOAL ? 0 : 1f; //dont eternalize goal

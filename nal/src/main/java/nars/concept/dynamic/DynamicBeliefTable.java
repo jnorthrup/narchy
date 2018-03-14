@@ -2,15 +2,15 @@ package nars.concept.dynamic;
 
 import jcog.decide.Roulette;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.link.Tasklinks;
 import nars.table.DefaultBeliefTable;
 import nars.table.TemporalBeliefTable;
+import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
@@ -35,7 +35,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     /** generates a dynamic matching task */
-    protected abstract Task matchDynamic(long start, long end, Term template, NAR nar);
+    protected abstract Task taskDynamic(long start, long end, Term template, NAR nar);
 
     @Override
     @Nullable public final Truth truth(long start, long end, NAR nar) {
@@ -50,49 +50,63 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     public boolean add(final Task input, TaskConcept concept, NAR nar) {
 
         if (Param.FILTER_DYNAMIC_MATCHES) {
-            if (!input.isInput()) {
+            if (!(input instanceof SignalTask) && input.punc()==punc()  && !input.isInput()) {
 
-                long start, end;
-
-                Term inputTerm = input.term();
-                long[] inputStamp = input.stamp();
-//                boolean[] foundEqual = new boolean[1];
-                Task matched = match(start = input.start(), end = input.end(), inputTerm, nar, (m) ->
-//                        (foundEqual[0] |= (m.equals(input)))
-//                                    ||
-                                (
-                        //one stamp is entirely contained within the other
-                        (inputStamp.length >= m.stamp().length && Stamp.overlapFraction(m.stamp(), inputStamp) >= 1f)
-                            &&
-                        m.term().equals(inputTerm) &&
-                        m.start() <= start &&
-                        m.end() >= end)
-                );
-
-                if (matched == input)
-                    return true; //duplicate
-
-                //must be _during_ the same time and same term, same stamp, then compare Truth
-                if (matched != null) {
-
-                    float inputPri = input.priElseZero();
-
-                    if (matched instanceof DynTruth.DynTruthTask &&
-                            PredictionFeedback.absorb(matched, input, start, end, nar.dur(), nar.freqResolution.floatValue(), nar)) {
-                        Tasklinks.linkTask(matched, inputPri, concept, nar);
+                    PredictionFeedback.feedbackNewBelief(input, this, nar);
+                    if (input.isDeleted())
                         return false;
-                    } else if (input.equals(matched)) {
-                        Tasklinks.linkTask(matched, inputPri, concept, nar);
-                        return true;
-                    }
 
-                    //otherwise it is unique (ex: frequency or conf)
-
-                }
             }
         }
 
+//        if (Param.FILTER_DYNAMIC_MATCHES) {
+//            if (!input.isInput()) {
+//
+//                long start, end;
+//
+//                Term inputTerm = input.term();
+//                long[] inputStamp = input.stamp();
+////                boolean[] foundEqual = new boolean[1];
+//                Task matched = match(start = input.start(), end = input.end(), inputTerm, nar, (m) ->
+////                        (foundEqual[0] |= (m.equals(input)))
+////                                    ||
+//                                (
+//                        //one stamp is entirely contained within the other
+////                        (inputStamp.length >= m.stamp().length && Stamp.overlapFraction(m.stamp(), inputStamp) >= 1f)
+////                            &&
+//                        m.term().equals(inputTerm) &&
+//                        m.start() <= start &&
+//                        m.end() >= end
+//                );
+//
+//                if (matched == input)
+//                    return true; //duplicate
+//
+//                //must be _during_ the same time and same term, same stamp, then compare Truth
+//                if (matched != null) {
+//
+//                    float inputPri = input.priElseZero();
+//
+//                    if (matched instanceof DynTruth.DynamicTruthTask &&
+//                            PredictionFeedback.absorb(matched, input, start, end, nar.dur(), nar.freqResolution.floatValue(), nar)) {
+//                        Tasklinks.linkTask(matched, inputPri, concept, nar);
+//                        return false;
+//                    } else if (input.equals(matched)) {
+//                        Tasklinks.linkTask(matched, inputPri, concept, nar);
+//                        return true;
+//                    }
+//
+//                    //otherwise it is unique (ex: frequency or conf)
+//
+//                }
+//            }
+//        }
+
         return super.add(input, concept, nar);
+    }
+
+    public final byte punc() {
+        return beliefOrGoal ? Op.BELIEF : Op.GOAL;
     }
 
 
@@ -143,7 +157,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
         Task x = super.match(start, end, template, nar, filter);
 
-        Task y = matchDynamic(start, end, template, nar);
+        Task y = taskDynamic(start, end, template, nar);
 
         if (y == null || y.equals(x))
             return x;

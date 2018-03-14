@@ -573,9 +573,9 @@ public interface Term extends Termed, Comparable<Termed> {
         Term y = _y.term();
         if (this == y) return 0;
 
-        //order first by volume. this is important for conjunctions which rely on volume-dependent ordering for balancing
-        //left should be heavier
-        //compareTo semantics state that a -1 value means left is less than right. we want the opposite
+//        //order first by volume. this is important for conjunctions which rely on volume-dependent ordering for balancing
+//        //left should be heavier
+//        //compareTo semantics state that a -1 value means left is less than right. we want the opposite
         int vc = Integer.compare(y.volume(), this.volume());
         if (vc != 0)
             return vc;
@@ -744,15 +744,16 @@ public interface Term extends Termed, Comparable<Termed> {
     /**
      * opX function
      */
-    private static int opX(Op o, byte subOp) {
-        return (o.id << 8) | subOp;
+    public static int opX(Op o, short subOp) {
+        return (o.id << 16) | (subOp);
     }
 
     /**
      * for convenience, delegates to the byte function
      */
-    static int opX(/*@NotNull*/ Op o, int subOp) {
-        return opX(o, (byte) subOp);
+    @Deprecated static int opX(/*@NotNull*/ Op o, int subOp) {
+        assert(subOp < Short.MAX_VALUE-1);
+        return opX(o, (short) subOp);
     }
 
 

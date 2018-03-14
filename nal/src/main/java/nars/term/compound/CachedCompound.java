@@ -189,11 +189,6 @@ abstract public class CachedCompound implements Compound, The {
 
 
     @Override
-    public boolean isCommutative() {
-        return op().commutative && subs() > 1;
-    }
-
-    @Override
     public final Op op() {
         return op;
     }

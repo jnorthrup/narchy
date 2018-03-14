@@ -699,14 +699,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
 
-        if (a==b || a.equals(b)) return 0;
+        if (a.equals(b)) return 0;
 
         int s;
         int diff;
         if ((diff = Integer.compare((s = a.subs()), b.subs())) != 0)
             return diff;
-        if ((diff = Integer.compare(a.volume(), b.volume())) != 0)
-            return diff;
+//        if ((diff = Integer.compare(a.volume(), b.volume())) != 0)
+//            return diff;
         if ((diff = Integer.compare(a.structure(), b.structure())) != 0)
             return diff;
 

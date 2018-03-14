@@ -53,7 +53,7 @@ public class BeliefPredict {
             for (int i = 0; i < predFreq.length; i++) {
 
                 float f = (float)Util.unitize(predFreq[i]);
-                PreciseTruth t = Truth.the(f, conf.floatValue(), nar);
+                PreciseTruth t = Truth.theDithered(f, conf.floatValue(), nar);
 
                 predict.input(
                     new SignalTask(outConcepts[i].term(), BELIEF,

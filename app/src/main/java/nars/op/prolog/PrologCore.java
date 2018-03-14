@@ -254,7 +254,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
             Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), (term, truth)->{
                 NALTask t = new NALTask(term, BELIEF, truth,
-                        nar.time(), ETERNAL, ETERNAL, nar.time.nextInputStamp());
+                        nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray());
                 t.pri(nar.priDefault(BELIEF));
                 t.log("Prolog Answer");
                 return t;
