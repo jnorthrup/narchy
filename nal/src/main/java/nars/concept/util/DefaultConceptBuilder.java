@@ -10,7 +10,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
-import nars.concept.dynamic.DynamicBeliefTable;
+import nars.concept.dynamic.DynamicTruthBeliefTable;
 import nars.concept.dynamic.DynamicTruthModel;
 import nars.link.TaskLinkCurveBag;
 import nars.subterm.Subterms;
@@ -86,9 +86,9 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         if (dmt != null) {
 
             return new TaskConcept(t,
-                    new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, true),
+                    new DynamicTruthBeliefTable(t, newTemporalTable(t), dmt, true),
                     goalable(t) ?
-                        new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, false) :
+                        new DynamicTruthBeliefTable(t, newTemporalTable(t), dmt, false) :
                         BeliefTable.Empty,
                     this);
 
@@ -272,14 +272,14 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         //return new HijackTemporalBeliefTable(tCap);
         //return new RTreeBeliefTable(tCap);
         if (!c.hasAny(Op.VAR_QUERY) && (beliefOrGoal ? c.op().beliefable : goalable(c))) {
-            return new DefaultBeliefTable(newTemporalBeliefTable(c));
+            return new DefaultBeliefTable(newTemporalTable(c));
         } else {
             return BeliefTable.Empty;
         }
     }
 
     @Override
-    public TemporalBeliefTable newTemporalBeliefTable(Term c) {
+    public TemporalBeliefTable newTemporalTable(Term c) {
 //        if (c.complexity() < 12) {
         return RTreeBeliefTable.build(c);
         //c.complexity() < 6 ? new DisruptorBlockingQueue() : new LinkedBlockingQueue<>()/

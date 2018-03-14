@@ -4,13 +4,13 @@ import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Sensor;
+import nars.concept.dynamic.ScalarBeliefTable;
 import nars.concept.util.ConceptBuilder;
 import nars.task.DerivedTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.signal.ScalarSignal;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.LongSupplier;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 
 /**
@@ -25,26 +26,37 @@ import static nars.Op.BELIEF;
  */
 public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier {
 
-    public final ScalarSignal sensor;
+//    public final ScalarSignal sensor;
+
+    @Deprecated public final ScalarBeliefTable sensor;
+    //@Deprecated public final ScalarBeliefTable goal;
+
     public FloatSupplier signal;
-    private float currentValue = Float.NaN;
+
+    private volatile float currentValue = Float.NaN;
 
     private transient short cause = -1;
 
     public Scalar(Term c, NAR n, FloatSupplier signal) {
-        this(c, n.conceptBuilder, signal);
-        sensor.pri(() -> n.priDefault(BELIEF));
+        this(c, n.conceptBuilder, signal, n.random()::nextLong);
+        ((ScalarBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
+        ((ScalarBeliefTable)goals()).pri(() -> n.priDefault(GOAL));
     }
 
-    private Scalar(Term c, ConceptBuilder b, FloatSupplier signal) {
-        super(c, b);
+    private Scalar(Term c, ConceptBuilder b, FloatSupplier signal, LongSupplier stamp) {
+        super(c,
+                new ScalarBeliefTable(c, true, b.newTemporalTable(c), stamp.getAsLong()),
+                new ScalarBeliefTable(c, false, b.newTemporalTable(c), stamp.getAsLong()),
+                b);
 
-        this.sensor = new ScalarSignal(c, this, ()->Scalar.this.resolution.asFloat()) {
-            @Override
-            protected LongSupplier stamp(Truth currentBelief,  NAR nar) {
-                return Scalar.this.nextStamp(nar);
-            }
-        };
+        this.sensor = ((ScalarBeliefTable)beliefs());
+
+//        this.sensor = new ScalarSignal(c, this, ()->Scalar.this.resolution.asFloat()) {
+//            @Override
+//            protected LongSupplier stamp(Truth currentBelief,  NAR nar) {
+//                return Scalar.this.nextStamp(nar);
+//            }
+//        };
 
         this.signal = signal;
 
@@ -57,11 +69,6 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         return nar.time::nextStamp;
     }
 
-
-    public Scalar signal(FloatSupplier signal) {
-        this.signal = signal;
-        return this;
-    }
 
 
     @Override
@@ -103,11 +110,17 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
 
     @Nullable
     public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
-        Task x = sensor.update(this, truther, n, time, dur);
+//        Task x = sensor.update(this, truther, n, time, dur);
+//
+//        PredictionFeedback.feedbackNewSignal(
+//                sensor.get() /* get() again in case x is stretched it will be null */, beliefs, n);
+//
+//        return x;
 
-        PredictionFeedback.feedbackNewSignal(sensor.get() /* get() again in case x is stretched it will be null */, beliefs, n);
+        sensor.update(truther.value(currentValue, floatValueOf(term)), time, dur);
 
-        return x;
+        return sensor.matchDynamic(time-dur/2, time+dur/2, null, n);
+        //return null;
     }
 
 

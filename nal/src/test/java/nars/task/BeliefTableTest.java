@@ -2,7 +2,7 @@ package nars.task;
 
 import nars.*;
 import nars.concept.TaskConcept;
-import nars.concept.dynamic.DynamicBeliefTable;
+import nars.concept.dynamic.DynamicTruthBeliefTable;
 import nars.table.BeliefTable;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
@@ -218,7 +218,7 @@ public class BeliefTableTest {
         assertNotNull(cc, c + " unconceptualized");
 
         List<Task> tt = cc.beliefs().streamTasks().collect(toList());
-        assertTrue(cc.beliefs() instanceof DynamicBeliefTable || !tt.isEmpty(), c + " not believed");
+        assertTrue(cc.beliefs() instanceof DynamicTruthBeliefTable || !tt.isEmpty(), c + " not believed");
 
         if (!tt.isEmpty()) {
             Task t = tt.get(0);

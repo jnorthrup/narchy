@@ -3,6 +3,7 @@ package nars.concept;
 import jcog.math.FloatRange;
 import nars.Param;
 import nars.concept.util.ConceptBuilder;
+import nars.table.BeliefTable;
 import nars.term.Term;
 
 /**
@@ -28,6 +29,10 @@ public class Sensor extends TaskConcept implements PermanentConcept {
 
     protected Sensor(Term term, ConceptBuilder b) {
         super(term, b);
+    }
+
+    protected Sensor(Term term, BeliefTable beliefs, BeliefTable goals, ConceptBuilder b) {
+        super(term, beliefs, goals, b);
     }
 
 }

@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Sensor;
+import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.MetaGoal;
 import nars.task.ITask;
 import nars.term.Term;
@@ -14,11 +15,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+
 
 public abstract class ActionConcept extends Sensor {
 
     protected ActionConcept(@NotNull Term term, @NotNull NAR n) {
-        super(term, n.conceptBuilder);
+        super(term,
+                new ScalarBeliefTable(term, true, n.conceptBuilder.newTemporalTable(term), n.random().nextLong()),
+                new ScalarBeliefTable(term, false, n.conceptBuilder.newTemporalTable(term), n.random().nextLong()),
+                n.conceptBuilder);
+        ((ScalarBeliefTable)beliefs()).pri(() -> n.priDefault(BELIEF));
+        ((ScalarBeliefTable)goals()).pri(() -> n.priDefault(GOAL));
     }
 
     @Nullable

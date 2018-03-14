@@ -2,7 +2,6 @@ package nars.concept.dynamic;
 
 import jcog.decide.Roulette;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
@@ -11,35 +10,41 @@ import nars.table.DefaultBeliefTable;
 import nars.table.TemporalBeliefTable;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
-import nars.term.atom.Bool;
+import nars.truth.Stamp;
 import nars.truth.Truth;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
+public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
-public class DynamicBeliefTable extends DefaultBeliefTable {
+    protected final boolean beliefOrGoal;
 
-    private final DynamicTruthModel model;
-    private final boolean beliefOrGoal;
-    private final Term term;
+    protected final Term term;
 
-
-    public DynamicBeliefTable(Term c, TemporalBeliefTable t, DynamicTruthModel model, boolean beliefOrGoal) {
+    public DynamicBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
         super(t);
-        this.term = c;
-        this.model = model;
         this.beliefOrGoal = beliefOrGoal;
+        this.term = c;
     }
+
+    /** generates a dynamic matching task */
+    protected abstract Task matchDynamic(long start, long end, Term template, NAR nar);
+
+    @Override
+    @Nullable public final Truth truth(long start, long end, NAR nar) {
+        Truth d = truthDynamic(start, end, nar);
+        return Truth.maxConf(d, truthStored(start, end, nar));
+    }
+
+    /** generates a dynamic matching truth */
+    @Nullable protected abstract Truth truthDynamic(long start, long end, NAR nar);
 
     @Override
     public boolean add(final Task input, TaskConcept concept, NAR nar) {
@@ -55,7 +60,10 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
                 Task matched = match(start = input.start(), end = input.end(), inputTerm, nar, (m) ->
 //                        (foundEqual[0] |= (m.equals(input)))
 //                                    ||
-                        (Arrays.equals(m.stamp(), inputStamp) &&
+                                (
+                        //one stamp is entirely contained within the other
+                        (inputStamp.length >= m.stamp().length && Stamp.overlapFraction(m.stamp(), inputStamp) >= 1f)
+                            &&
                         m.term().equals(inputTerm) &&
                         m.start() <= start &&
                         m.end() >= end)
@@ -87,169 +95,21 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         return super.add(input, concept, nar);
     }
 
-    @Nullable
-    protected Task generate(final Term template, long start, long end, NAR nar) {
-        DynTruth yy = truth(start, end, template, nar);
-        if (yy != null) {
-            return (Task) (yy.truth(term, model, true, beliefOrGoal, nar));
-        } else {
-            return null;
-        }
-    }
 
-    @Override
-    public Truth truth(long start, long end, NAR nar) {
-        DynTruth d = model.eval(term, beliefOrGoal, start, end, nar);
-        return Truth.maxConf(
-                d != null ? (Truth) (d.truth(term, model, false, beliefOrGoal, nar)) : null,
-                super.truth(start, end, nar));
+    public final Truth truthStored(long start, long end, NAR nar) {
+        return super.truth(start, end, nar);
     }
-
-//    /** prepare a term, if necessary, for use as template  */
-//    private Term template(Term template, long start, long end, NAR nar) {
-//        if (template.dt() == XTERNAL) {
-//            int newDT = matchDT(template, start, end);
-//            template = template.dt(newDT);
-//        }
-//
-//        //still XTERNAL ? try using start..end as a dt
-//        if (start!=DTERNAL && template.dt() == XTERNAL && template.subs()==2) {
-//            template = template.dt((int) (end-start));
-//        }
-//
-//        Retemporalize retemporalizeMode =
-//                template.subterms().OR(Term::isTemporal) ?
-//                    Retemporalize.retemporalizeXTERNALToZero  //dont unnecessarily attach DTERNALs to temporals
-//                        :
-//                    Retemporalize.retemporalizeXTERNALToDTERNAL //dont unnecessarily create temporals where DTERNAL could remain
-//        ;
-//        template = template.temporalize(retemporalizeMode);
-//        if (template == null)
-//            return null;
-//
-//
-//        if (!template.conceptual().equals(term))
-//            return null; //doesnt correspond to this concept anyway
-//
-//        return template;
-//
-////        if (t2 == null) {
-////
-////
-////
-////            //for some reason, retemporalizing to DTERNAL failed (ex: conj collision)
-////            //so as a backup plan, use dt=+/-1
-////            int dur = nar.dur();
-////            Random rng = nar.random();
-////            t2 = template.temporalize(new Retemporalize.RetemporalizeFromToFunc(XTERNAL,
-////                    () -> rng.nextBoolean() ? +dur : -dur));
-////        }
-//////        if (t2!=null && t2.dt()==XTERNAL) {
-//////            return template(t2, start, end ,nar);//temporary
-//////            //throw new RuntimeException("wtf xternal");
-//////        }
-////
-////        return t2;
-//    }
 
 
     @Nullable
-    protected DynTruth truth(long start, long end, @Nullable Term _template, NAR nar) {
-        Term template = template(start, end, (_template != null ? _template : term), nar);
-//        if (_template == null && !template.equals(term))
-//            return null;
-        return template != null ? model.eval(template, beliefOrGoal, start, end, nar) : null;
-
-    }
-
-    @Nullable
-    private Term template(long start, long end, Term template, NAR nar) {
-        if (this.term != null && template.op() != this.term.op())
-            return null; //template doesnt match this (quick op test)
-
-        int templateSubs = template.subs();
-        assert (templateSubs > 1);
-        boolean temporal = template.op().temporal;
-        if (temporal) {
-            int d = template.dt();
-            if (d == XTERNAL) {
-                int e = matchDT(start, end, templateSubs > 2, nar);
-                assert (e != XTERNAL);
-                Term next = template.dt(e);
-
-                if ((next.subs() < templateSubs || next.dt() == XTERNAL)) {
-
-                    /*if no dt can be calculated, return
-                              0 or some non-zero value (ex: 1, end-start, etc) in case of repeating subterms. */
-                    int artificialDT;
-
-
-                    if (templateSubs == 2) {
-                        if (start != end && end - start < Integer.MAX_VALUE) {
-                            if (end != start) {
-                                artificialDT = (int) (end - start);
-                            } else {
-                                artificialDT =
-                                        (template.sub(0).unneg().equals(template.sub(1).unneg())) ?
-                                                nar.dur() :
-                                                0; //ok for simultaneous
-                            }
-                        } else {
-                            artificialDT = nar.dur();
-                        }
-
-
-                    } else /*(if (templateSubs > 2)*/ {
-                        assert (templateSubs > 2);
-                        artificialDT = 0; //commutive conjunction
-                    }
-
-                    next = template.dt(artificialDT);
-
-                    if (next.subs() < templateSubs || next.dt() == XTERNAL) {
-                        next = template;
-                        if (next.subs() == 2) {
-
-                            //possibly pulled an internal XTERNAL to the outside, so try artificializing this as well
-                            int limit = 2;
-                            int nextDT = XTERNAL;
-                            do {
-                                next = next.dt(artificialDT);
-                                if (next instanceof Bool)
-                                    return null;
-                            } while (limit-- > 0 && (nextDT = next.dt()) == XTERNAL);
-
-                            if (nextDT == XTERNAL)
-                                return null; //give up
-
-                        } else {
-                            //create a random sequence of the terms, separated by artificial DT's
-                            assert (template.op() == CONJ);
-                            Term[] subs = template.subterms().arrayClone();
-                            ArrayUtils.shuffle(subs, nar.random());
-                            int dur = nar.dur();
-                            next = subs[0];
-                            for (int k = 1; k < subs.length; k++) {
-                                next = Op.conjMerge(next, 0, subs[k], dur);
-                                if (next instanceof Bool)
-                                    return null; //it is probably possible to find another solution with a different shuffle
-                            }
-                        }
-                    }
-                }
-
-                template = next;
-            }
-        }
-        return template;
-    }
+    protected abstract Term template(long start, long end, Term template, NAR nar);
 
     /**
      * returns an appropriate dt for the root term
      * of beliefs held in the table.  returns 0 if no other value can
      * be computed.
      */
-    private int matchDT(long start, long end, boolean commutive, NAR nar) {
+    protected int matchDT(long start, long end, boolean commutive, NAR nar) {
 
         int s = size();
         if (s == 0)
@@ -283,7 +143,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
         Task x = super.match(start, end, template, nar, filter);
 
-        Task y = generate(template, start, end, nar);
+        Task y = matchDynamic(start, end, template, nar);
 
         if (y == null || y.equals(x))
             return x;

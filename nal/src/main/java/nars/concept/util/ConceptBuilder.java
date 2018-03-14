@@ -22,7 +22,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
     QuestionTable questionTable(Term term, boolean questionOrQuest);
     BeliefTable beliefTable(Term t, boolean beliefOrGoal);
-    TemporalBeliefTable newTemporalBeliefTable(Term c);
+    TemporalBeliefTable newTemporalTable(Term c);
 
 
 
@@ -51,7 +51,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         }
 
         @Override
-        public TemporalBeliefTable newTemporalBeliefTable(Term c) {
+        public TemporalBeliefTable newTemporalTable(Term c) {
             return TemporalBeliefTable.Empty;
         }
 

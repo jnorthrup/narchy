@@ -41,6 +41,7 @@ public abstract class RealTime extends Time {
         return nextStamp.getAndIncrement();
     }
 
+
     @Override
     public void reset() {
         long rt = realtime();

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 10/27/16.
  */
-public class DynamicBeliefTableTest {
+public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicConjunction2() throws Narsese.NarseseException {
@@ -52,7 +52,7 @@ public class DynamicBeliefTableTest {
         n.believe("z:b", 0f, 0.9f);
         n.run(2);
         for (long now : new long[]{0, n.time() /* 2 */, ETERNAL}) {
-            assertTrue(n.conceptualize($("((x|y)-->a)")).beliefs() instanceof DynamicBeliefTable);
+            assertTrue(n.conceptualize($("((x|y)-->a)")).beliefs() instanceof DynamicTruthBeliefTable);
             assertEquals($.t(1f, 0.81f), n.beliefTruth("((x|y)-->a)", now));
             assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("((x|z)-->a)")), now));
             assertEquals($.t(1f, 0.90f), n.beliefTruth(n.conceptualize($("((x&z)-->a)")), now));
@@ -61,8 +61,8 @@ public class DynamicBeliefTableTest {
             assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x&z))")), now));
 
             Concept xIntNegY = n.conceptualize($("((x|--y)-->a)"));
-            assertTrue(xIntNegY.beliefs() instanceof DynamicBeliefTable);
-            assertTrue(xIntNegY.goals() instanceof DynamicBeliefTable);
+            assertTrue(xIntNegY.beliefs() instanceof DynamicTruthBeliefTable);
+            assertTrue(xIntNegY.goals() instanceof DynamicTruthBeliefTable);
             assertEquals($.t(0f, 0.90f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
             assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x|--z)-->a)")), now));
         }
@@ -95,7 +95,7 @@ public class DynamicBeliefTableTest {
         Term t12 = $.inh($.p(Int.the(1), Int.range(1, 2)), $.the("x"));
         assertEquals("x(1,1..2)", t12.toString());
         Concept x12 = n.conceptualize(t12);
-        assertTrue(x12.beliefs() instanceof DynamicBeliefTable);
+        assertTrue(x12.beliefs() instanceof DynamicTruthBeliefTable);
 
         Concept x23 = n.conceptualize($.inh($.p(Int.the(1), Int.range(2, 3)), $.the("x")));
         Concept x123 = n.conceptualize($.inh($.p(Int.the(1), Int.range(1, 3)), $.the("x")));
@@ -177,18 +177,18 @@ public class DynamicBeliefTableTest {
         n.time.dur(8);
         TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
 
-        DynamicBeliefTable xtable = (DynamicBeliefTable) cc.beliefs();
+        DynamicTruthBeliefTable xtable = (DynamicTruthBeliefTable) cc.beliefs();
         Compound template = $("((x) &&+4 (y))");
 
         DynTruth xt = xtable.truth(0, 0, template, n);
         assertNotNull(xt);
         //assertTrue($.t(1f, 0.81f).equals(xt.truth(n), 0.1f), xt.truth(n).toString());
 
-        assertEquals(0.81f, xtable.generate($("((x) &&+4 (y))"), 0, 0, n).conf(), 0.05f); //best match to the input
-        assertEquals(0.74f, xtable.generate($("((x) &&+6 (y))"), 0, 0, n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.generate($("((x) &&+2 (y))"), 0, 0, n).conf(), 0.07f);
-        assertEquals(0.75f, xtable.generate($("((x) &&+0 (y))"), 0, 0, n).conf(), 0.07f);
-        assertEquals(0.62f, xtable.generate($("((x) &&-32 (y))"), 0, 0, n).conf(), 0.2f);
+        assertEquals(0.81f, xtable.matchDynamic(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f); //best match to the input
+        assertEquals(0.74f, xtable.matchDynamic(0, 0, $("((x) &&+6 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.matchDynamic(0, 0, $("((x) &&+2 (y))"), n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.matchDynamic(0, 0, $("((x) &&+0 (y))"), n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.matchDynamic(0, 0, $("((x) &&-32 (y))"), n).conf(), 0.2f);
 
 
     }
@@ -309,8 +309,8 @@ public class DynamicBeliefTableTest {
                 "(--(y-->t) &&+1 --(t-->happy))",
         }) {
             Concept c = n.conceptualize($.$(s));
-            assertTrue(c.beliefs() instanceof DynamicBeliefTable);
-            assertTrue(c.goals() instanceof DynamicBeliefTable);
+            assertTrue(c.beliefs() instanceof DynamicTruthBeliefTable);
+            assertTrue(c.goals() instanceof DynamicTruthBeliefTable);
         }
 
     }
@@ -322,8 +322,8 @@ public class DynamicBeliefTableTest {
         n.run(1);
         Term xMinY = $("(x ~ y)");
         Term yMinX = $("(y ~ x)");
-        assertEquals( DynamicBeliefTable.class, n.conceptualize(xMinY).beliefs().getClass());
-        assertEquals( DynamicBeliefTable.class, n.conceptualize(yMinX).beliefs().getClass());
+        assertEquals( DynamicTruthBeliefTable.class, n.conceptualize(xMinY).beliefs().getClass());
+        assertEquals( DynamicTruthBeliefTable.class, n.conceptualize(yMinX).beliefs().getClass());
         assertEquals(
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );

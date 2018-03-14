@@ -4,17 +4,16 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.NAct;
 import nars.Task;
+import nars.concept.dynamic.ScalarBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
 
@@ -23,11 +22,13 @@ import static nars.Op.GOAL;
  */
 public class GoalActionConcept extends ActionConcept {
 
-    private final Signal feedback;
+    //private final Signal feedback;
+    private final ScalarBeliefTable feedback;
 
     private final FloatRange curiosity;
 
     private final MotorFunction motor;
+
 
     public GoalActionConcept(@NotNull Term c, @NotNull NAct act, @NotNull MotorFunction motor) {
         this(c, act.nar(), act.curiosity(), motor);
@@ -41,7 +42,8 @@ public class GoalActionConcept extends ActionConcept {
 //        this.action = new Signal(GOAL, n.freqResolution).pri(() -> n.priDefault(GOAL));
         //((SensorBeliefTable) goals).sensor = action;
 
-        this.feedback = new Signal(BELIEF, resolution).pri(() -> n.priDefault(BELIEF));
+        this.feedback = (ScalarBeliefTable)beliefs();
+        //this.feedback = new Signal(BELIEF, resolution).pri(() -> n.priDefault(BELIEF));
         //((SensorBeliefTable) beliefs).sensor = feedback;
 
 
@@ -143,7 +145,12 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth feedback = this.motor.apply(belief, goal);
 
-        Task feedbackBelief = this.feedback.set(this, feedback, nar.time::nextStamp, now, dur, nar);
+        this.feedback.update(feedback, now, dur);
+
+        //HACK
+        Task feedbackBelief = this.feedback.matchDynamic(now-dur/2, now+dur/2, term, nar);
+
+                //this.feedback.set(this, feedback, nar.time::nextStamp, now, dur, nar);
 
         Task curiosityGoal;
         if (curi && feedbackBelief!=null) {
