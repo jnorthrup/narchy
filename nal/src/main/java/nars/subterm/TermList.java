@@ -9,14 +9,13 @@ import java.util.List;
 /** mutable subterms, used in intermediate operations */
 public class TermList extends FasterList<Term> implements Subterms {
 
-//    @Nullable
-//    transient TermMetadata meta = null;
-    public TermList() {
-        super(4);
-    }
+
+//    public TermList() {
+//        this(4);
+//    }
 
     public TermList(int initialCapacity) {
-        super(initialCapacity);
+        super(0, new Term[initialCapacity]);
     }
 
     public TermList(Term[] direct) {
@@ -24,8 +23,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     public TermList(Collection<Term> copied) {
-        super(copied.size());
-        copied.forEach(this::addWithoutResizeCheck);
+        this(copied.toArray(Term.EmptyArray));
     }
 
     public TermList(Iterable<Term> copied) {
@@ -45,7 +43,9 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     @Override
     public Term[] arrayClone() {
-        return toArray(new Term[size()]);
+        compact();
+        return items.clone();
+        //return toArray(new Term[size()]);
     }
 
     /** creates an immutable instance of this */
@@ -99,4 +99,9 @@ public class TermList extends FasterList<Term> implements Subterms {
     public Term[] arraySharedSafe() {
         return toArrayRecycled(Term[]::new);
     }
+
+    @Override protected Term[] newArray(int newCapacity) {
+        return new Term[newCapacity];
+    }
+
 }

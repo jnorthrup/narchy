@@ -70,9 +70,9 @@ public class ScalarSignal extends Signal {
                 stamp(truth, nar),
                 now, dur, nar);
 
-        if (nextTask!=null) {
+        //if (nextTask!=null) {
             currentValue = next;
-        }
+        //}
 
         return nextTask;
     }

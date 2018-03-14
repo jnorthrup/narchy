@@ -451,7 +451,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         X key = key(incoming);
 
-        final @Nullable FasterList<Y> trash = new FasterList(1);
+        final @Nullable FasterList<Y> trash = new FasterList(4);
 
         Y inserted;
 
@@ -676,7 +676,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int s = size();
         if ((update!=null && s > 0) || (update == null && (s > capacity))) {
-            @Nullable FasterList<Y> trash = new FasterList(1);
+            @Nullable FasterList<Y> trash = new FasterList(Math.max(s/4, 4));
             synchronized (items) {
 
                 update(null, update, true, trash);

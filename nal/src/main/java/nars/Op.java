@@ -1879,13 +1879,13 @@ public enum Op {
 
             if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
-                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(1);
+                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(4);
                 subject.eventsWhile((w, t) -> {
                     se.add(PrimitiveTuples.pair(w, t));
                     return true;
                 }, 0, true, true, false, 0);
 
-                FasterList<LongObjectPair<Term>> pe = new FasterList(1);
+                FasterList<LongObjectPair<Term>> pe = new FasterList(4);
                 int pre = subject.dtRange();
                 boolean dtNotDternal = dt != DTERNAL;
                 int edt = pre + (dtNotDternal ? dt : 0);

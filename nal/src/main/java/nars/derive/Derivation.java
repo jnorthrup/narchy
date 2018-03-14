@@ -160,7 +160,7 @@ public class Derivation extends ProtoDerivation {
     /** temporary buffer for storing unique premises */
     public Set<Premise> premiseBurst =
             //new LinkedHashSet();
-            new ArrayHashSet<>();
+            new ArrayHashSet<>(512);
 
 ////    public final TopNUniquePremises premises = new TopNUniquePremises();
 //

@@ -9,6 +9,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.DurService;
+import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -137,12 +138,14 @@ public class BeliefTableChart extends Widget {
             if (cc != null) {
                 cp = 1f; /*nar.pri(cc);*/
 
-                beliefs.set(cc.beliefs(), now, dur, nar, minT, maxT);
                 long nowEnd = now + dur / 2;
                 long nowStart = now - dur / 2;
-                beliefs.current = nar.beliefTruth(cc, nowStart, nowEnd);
-                goals.set(cc.goals(), now, dur, nar, minT, maxT);
-                goals.current = nar.goalTruth(cc, nowStart, nowEnd);
+                BeliefTable ccb = cc.beliefs();
+                this.beliefs.set(ccb, now, dur, nar, minT, maxT);
+                this.beliefs.current = ccb.truth(nowStart, nowEnd, nar);
+                BeliefTable ccg = cc.goals();
+                this.goals.set(ccg, now, dur, nar, minT, maxT);
+                this.goals.current = ccg.truth(nowStart, nowEnd, nar);
 
                 if (projections > 0 && minT != maxT) {
                     beliefProj.project(cc, true, minT, maxT, dur, projections, nar);

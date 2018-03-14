@@ -152,7 +152,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     @Override
     default double cost() {
-        return timeCost() * freqCost() * confCost();
+        double x = timeCost() * freqCost() * confCost();
+        assert(x==x);
+        return x;
     }
 
     @Override

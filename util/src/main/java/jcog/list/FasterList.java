@@ -84,11 +84,15 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList(Iterable<X> copy) {
-        copy.forEach(this::add);
+        this(copy, 0);
     }
 
     public FasterList(Iterator<X> copy) {
-        super();
+        this(copy, INITIAL_SIZE_IF_GROWING_FROM_EMPTY);
+    }
+
+    public FasterList(Iterator<X> copy, int sizeEstimate) {
+        super(sizeEstimate);
         while (copy.hasNext()) {
             add(copy.next());
         }
@@ -101,6 +105,16 @@ public class FasterList<X> extends FastList<X> {
 
     public FasterList(Collection<X> copy) {
         super(copy);
+    }
+
+    public FasterList(Collection<X> copy, IntFunction<X[]> arrayBuilder) {
+        this(copy, arrayBuilder, 0);
+    }
+
+    public FasterList(Collection<X> copy, IntFunction<X[]> arrayBuilder, int extraCapacity) {
+        int size = copy.size();
+        this.items = copy.toArray(arrayBuilder.apply(size + extraCapacity));
+        this.size = size;
     }
 
 //    public FasterList(Collection<X> copy, X... extra) {
@@ -221,7 +235,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList<X> compact() {
-        Object[] i = items;
+        X[] i = items;
         int s = size;
         if (i.length != s) {
             items = Arrays.copyOf(items, size);
@@ -489,7 +503,7 @@ public class FasterList<X> extends FastList<X> {
     private void ensureCapacityForAdd() {
         this.items = (X[]) (
                 (this.items.length == 0) ?
-                        new Object[INITIAL_SIZE_IF_GROWING_FROM_EMPTY]
+                        newArray(INITIAL_SIZE_IF_GROWING_FROM_EMPTY)
                         :
                         this.copyItemsWithNewCapacity(sizePlusFiftyPercent(this.size))
         );
@@ -501,9 +515,13 @@ public class FasterList<X> extends FastList<X> {
     }
 
     private Object[] copyItemsWithNewCapacity(int newCapacity) {
-        Object[] newItems = new Object[newCapacity];
+        Object[] newItems = newArray(newCapacity);
         System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
         return newItems;
+    }
+
+    protected Object[] newArray(int newCapacity) {
+        return new Object[newCapacity];
     }
 
     public final boolean addIfNotNull(@Nullable Supplier<X> x) {
@@ -563,10 +581,10 @@ public class FasterList<X> extends FastList<X> {
         return items.length;
     }
 
-    public <E> E[] arrayClone(Class<? extends E> type) {
-        E[] array = (E[]) Array.newInstance(type, size);
-        return toArray(array);
-    }
+//    public <E> E[] arrayClone(Class<? extends E> type) {
+//        E[] array = (E[]) Array.newInstance(type, size);
+//        return toArray(array);
+//    }
 
     @Override
     public FasterList<X> clone() {

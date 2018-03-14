@@ -97,7 +97,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
         addCamera(
                 pixels = new Bitmap2DSensor<>((x, y)->
                     //$.func("cam", id, $.the(x), $.the(y))
-                    $.inh($.p(x,y), id) //<- wants to use the operator 'tetris' if reflecting
+                    $.p(id, $.the(x), $.the(y))
+                    //$.inh($.p(x,y), id) //<- wants to use the operator 'tetris' if reflecting
                     //$.p(x,y)
                 , this, nar)
                 //.resolution(0.1f)

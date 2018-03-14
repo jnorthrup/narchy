@@ -561,10 +561,10 @@ public enum Util {
     }
 
     public static float mean(float a, float b) {
-        return (a + b) * 0.5f;
+        return (a + b) / 2;
     }
     public static double mean(double a, double b) {
-        return (a + b) * 0.5;
+        return (a + b) / 2;
     }
 
 //

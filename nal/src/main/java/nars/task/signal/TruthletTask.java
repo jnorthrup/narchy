@@ -14,13 +14,14 @@ import java.util.function.Consumer;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.time.Tense.XTERNAL;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * TODO implement Task directly avoiding redudant fields that this overrides
  */
 public class TruthletTask extends SignalTask {
 
-    public Truthlet truthlet;
+    public volatile Truthlet truthlet;
 
     public TruthletTask(Term t, byte punct, Truthlet truth, NAR n) {
         this(t, punct, truth, n.time(), n.time.nextStamp());
@@ -40,7 +41,10 @@ public class TruthletTask extends SignalTask {
         if (nextStart == start() && nextEnd == end())
             return; //no change
         else
-            update(c, (tt)-> tt.truthlet.setTime(nextStart, nextEnd));
+            update(c, t-> {
+                Truthlet u = t.truthlet.stretch(nextStart, nextEnd);
+                t.truthlet = u;
+            });
     }
 
     public void update(NAR n, Consumer<TruthletTask> t) {
@@ -151,7 +155,7 @@ public class TruthletTask extends SignalTask {
 
     @Override
     public float conf() {
-        return truthlet.conf();
+        return w2cSafe(evi());
     }
 
     @Override
@@ -159,7 +163,10 @@ public class TruthletTask extends SignalTask {
         return truthlet.truth(when)[1];
     }
 
-
+    @Override
+    public float freq(long w, int durIgnored) {
+        return truthlet.freq(w);
+    }
 
     public void updateEnd(Concept c, long nextEnd) {
         updateTime(c, start(), nextEnd);

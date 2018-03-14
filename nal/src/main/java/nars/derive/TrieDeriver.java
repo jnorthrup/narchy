@@ -40,7 +40,7 @@ import java.util.stream.StreamSupport;
 public final class TrieDeriver {
 
     final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path;
-    final FasterList<ValueFork> postChoices = new FasterList();
+    final FasterList<ValueFork> postChoices = new FasterList(128);
 
     private TrieDeriver(PremiseRuleSet r) {
 
@@ -79,7 +79,7 @@ public final class TrieDeriver {
 
         post.forEach((k, v) -> {
 
-            FasterList<PrediTerm<Derivation>> path = new FasterList(k);
+            FasterList<PrediTerm<Derivation>> path = new FasterList(k, PrediTerm[]::new, +1);
             path.sort(sort);
 
             PrediTerm<Derivation>[] ll = StreamSupport.stream(v.spliterator(), false)
@@ -91,6 +91,7 @@ public final class TrieDeriver {
             this.path.put(path, cx);
         });
 
+        postChoices.compact();
     }
 
 
@@ -354,10 +355,9 @@ public final class TrieDeriver {
 //    }
 
     static <D extends ProtoDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, @Nullable PrediTerm<D>> each) {
-        List<PrediTerm<D>> bb = compile(trie.root);
-        PrediTerm<D>[] roots = bb.toArray(new PrediTerm[bb.size()]);
+        Collection<PrediTerm<D>> bb = compile(trie.root);
 
-        PrediTerm tf = Fork.fork(roots, Fork::new);
+        PrediTerm tf = Fork.fork(bb.toArray(new PrediTerm[bb.size()]), Fork::new);
         if (each != null)
             tf = tf.transform(each);
 
@@ -365,25 +365,23 @@ public final class TrieDeriver {
     }
 
 
-    static <D extends ProtoDerivation> List<PrediTerm<D>> compile(TrieNode<List<PrediTerm<D>>, PrediTerm<D>> node) {
+    @Nullable static <D extends ProtoDerivation> Collection<PrediTerm<D>> compile(TrieNode<List<PrediTerm<D>>, PrediTerm<D>> node) {
 
 
-        List<PrediTerm<D>> bb = $.newArrayList(node.childCount());
+        Set<PrediTerm<D>> bb = new TreeSet();
 //        assert(node.getKey()!=null);
 //        assert(node.getValue()!=null);
 
         node.forEach(n -> {
 
-            List<PrediTerm<D>> branches = compile(n);
+            Collection<PrediTerm<D>> branches = compile(n);
 
             int nStart = n.start();
             int nEnd = n.end();
             PrediTerm<D> branch = PrediTerm.compileAnd(
                     n.seq().stream().skip(nStart).limit(nEnd - nStart),
-                    !branches.isEmpty() ?
-                            factorFork(branches, Fork::new)
-//                            Fork.fork(branches.toArray(new PrediTerm[branches.size()]),
-//                                    x -> new Fork(x))
+                    branches!=null /* && !branches.isEmpty() */ ?
+                            factorFork(new FasterList(branches), Fork::new)
                             : null
             );
 
@@ -391,7 +389,10 @@ public final class TrieDeriver {
                 bb.add(branch);
         });
 
-        return compileSwitch(bb);
+        if (bb.isEmpty())
+            return null;
+        else
+            return compileSwitch(bb);
     }
 
 
@@ -499,16 +500,17 @@ public final class TrieDeriver {
     }
 
 
-    protected static <D extends ProtoDerivation> List<PrediTerm<D>> compileSwitch(List<PrediTerm<D>> bb) {
+    protected static <D extends ProtoDerivation> Collection<PrediTerm<D>> compileSwitch(Collection<PrediTerm<D>> branches) {
 
-        bb = factorSubOpToSwitch(bb, true, 2);
-        bb = factorSubOpToSwitch(bb, false, 2);
 
-        return bb;
+        branches = factorSubOpToSwitch(branches, true, 2);
+        branches = factorSubOpToSwitch(branches, false, 2);
+
+        return branches;
     }
 
     @NotNull
-    private static <D extends ProtoDerivation> List<PrediTerm<D>> factorSubOpToSwitch(List<PrediTerm<D>> bb, boolean taskOrBelief, int minToCreateSwitch) {
+    private static <D extends ProtoDerivation> Collection<PrediTerm<D>> factorSubOpToSwitch(Collection<PrediTerm<D>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
             Map<TaskBeliefOp, PrediTerm<D>> cases = $.newHashMap(8);
             List<PrediTerm<D>> removed = $.newArrayList(); //in order to undo

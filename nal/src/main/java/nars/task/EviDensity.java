@@ -97,6 +97,8 @@ public final class EviDensity {
     public void add(long xStart, long xEnd, float evi, float eviInteg) {
         if (sumEviIntegrals != sumEviIntegrals) {
             //first add
+            if (xStart > xEnd)
+                throw new RuntimeException("out of order interval");
             unionStart = xStart;
             unionEnd = xEnd;
             sumEviAvg = sumEviIntegrals = 0;

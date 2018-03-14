@@ -28,6 +28,11 @@ public class FastCoWList<X> extends FasterList<X> {
 
     }
 
+    @Override
+    protected Object[] newArray(int newCapacity) {
+        return arrayBuilder.apply(newCapacity);
+    }
+
     private final void commit() {
         this.copy = //(size == 0) ? null :
                 toArrayRecycled(arrayBuilder);

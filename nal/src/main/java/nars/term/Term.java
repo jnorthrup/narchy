@@ -681,14 +681,13 @@ public interface Term extends Termed, Comparable<Termed> {
     }
     /** sorted by time; decomposes inner parallel conj */
     default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither, boolean decomposeParallel, boolean decomposeEternal) {
-        FasterList<LongObjectPair<Term>> events = new FasterList(1);
+        FasterList<LongObjectPair<Term>> events = new FasterList(2);
         eventsWhile((w, t) -> {
             events.add(PrimitiveTuples.pair(
                     (dtDither > 1) ? Tense.dither(w, dtDither) : w,
                     t));
             return true; //continue
         }, offset, decomposeParallel, decomposeEternal, false, 0);
-        events.compact();
         if (events.size() > 1) {
             events.sortThisByLong(LongObjectPair::getOne);
         }

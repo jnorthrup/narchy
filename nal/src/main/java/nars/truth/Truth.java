@@ -38,6 +38,8 @@ import static nars.truth.TruthFunctions.w2cSafe;
 /** scalar (1D) truth value "frequency", stored as a floating point value */
 public interface Truth extends Truthed {
 
+
+
     @Override
     float freq();
 
@@ -69,7 +71,22 @@ public interface Truth extends Truthed {
 
 
 
+    /**
+     * A simplified String representation of a TruthValue, where each factor is
+     * accurate to 1%
+     */
+    static StringBuilder appendString(StringBuilder sb, int decimals, float freq, float conf) {
 
+        sb.ensureCapacity(3 + 2 * (2 + decimals) );
+
+        return sb
+                .append(Op.TRUTH_VALUE_MARK)
+                .append(Texts.n(freq, decimals))
+                .append(Op.VALUE_SEPARATOR)
+                .append(Texts.n(conf, decimals))
+                .append(Op.TRUTH_VALUE_MARK);
+
+    }
 
     @Nullable
     @Override
@@ -96,26 +113,9 @@ public interface Truth extends Truthed {
 
     @NotNull
     default StringBuilder appendString(@NotNull StringBuilder sb) {
-        return appendString(sb, 2);
+        return Truth.appendString(sb, 2, freq(), conf());
     }
 
-
-    /**
-     * A simplified String representation of a TruthValue, where each factor is
-     * accruate to 1%
-     */
-    @NotNull
-    default StringBuilder appendString(@NotNull StringBuilder sb, int decimals)  {
-
-        sb.ensureCapacity(3 + 2 * (2 + decimals) );
-
-        return sb
-            .append(Op.TRUTH_VALUE_MARK)
-            .append(Texts.n(freq(), decimals))
-            .append(Op.VALUE_SEPARATOR)
-            .append(Texts.n(conf(), decimals))
-            .append(Op.TRUTH_VALUE_MARK);
-    }
 
 
     default String _toString() {
@@ -193,9 +193,17 @@ public interface Truth extends Truthed {
         return a.conf() >= b.conf() ? a : b;
     }
 
+    static float freq(float f, NAR n) {
+        return freq(f, n.freqResolution.floatValue());
+    }
+
     static float freq(float f, float epsilon) {
         assert(f==f): "invalid freq: " + f;
         return unitize(round(f, epsilon));
+    }
+
+    static float conf(float c, NAR n) {
+        return freq(c, n.confResolution.floatValue());
     }
 
     static float conf(float c, float epsilon) {
@@ -213,9 +221,12 @@ public interface Truth extends Truthed {
 
 
     @Nullable default PreciseTruth dither(NAR nar) {
-        return dither(nar, 1f);
+        return theDithered(freq(), conf(), nar);
     }
 
+    public static PreciseTruth theDithered(float f, float c, NAR nar) {
+        return the(freq(f, nar), conf(c, nar), nar);
+    }
     @Nullable default PreciseTruth dither(NAR nar, float eviGain) {
         return dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), nar.confMin.floatValue(), eviGain);
     }

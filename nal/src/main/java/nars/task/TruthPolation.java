@@ -53,6 +53,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
     public TruthPolation(long start, long end, int dur, TaskRegion... tasks) {
         this(start, end, dur);
+        ensureCapacity(tasks.length);
         for (TaskRegion t : tasks) {
             if (t != null)
                 add(t);

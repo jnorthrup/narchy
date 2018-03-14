@@ -264,8 +264,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
                     //Trie<ByteList, ByteSet> m = new Trie(Tries.TRIE_SEQUENCER_BYTE_LIST);
-                    FasterList</* length, */ ByteList> statements = new FasterList<>();
-                    ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>();
+                    FasterList</* length, */ ByteList> statements = new FasterList<>(4);
+                    ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
 
                     t.pathsTo(
                             x -> (x.op().statement && x.varIndep() > 0) || (x.op() == VAR_INDEP) ? x : null,
@@ -275,7 +275,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                                     return true; //skip the input term
 
                                 if (indepVarOrStatement.op() == VAR_INDEP) {
-                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), FasterList::new).add(
+                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), ()->new FasterList(1)).add(
                                             path.toImmutable()
                                     );
                                 } else {
@@ -764,8 +764,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         int stringLength = contentName.length() + tenseString.length() + 1 + 1;
 
-        Truth tt = truth();
-        if (tt != null)
+        boolean hasTruth = isBeliefOrGoal();
+        if (hasTruth)
             stringLength += 11;
 
         if (showStamp)
@@ -804,9 +804,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if (tenseString.length() > 0)
             buffer.append(' ').append(tenseString);
 
-        if (tt != null) {
+        if (hasTruth) {
             buffer.append(' ');
-            tt.appendString(buffer, 2);
+            Truth.appendString(buffer, 2, freq(), conf());
+
         }
 
         if (showStamp) {
@@ -1173,4 +1174,30 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         priSet(p);
         return this;
     }
+
+    default float freq(long w, int dur) {
+        Truth x = truth(w, dur);
+        if (x!=null)
+            return x.freq();
+        else
+            return Float.NaN;
+    }
+    default float freqMean(int dur, long... when) {
+
+        assert(when.length > 1);
+
+        float fSum = 0;
+        int num = 0;
+        for (long w : when) {
+            float tf = freq(w, dur);
+            if (tf==tf) {
+                fSum += tf;
+                num++;
+            }
+        }
+        if (num == 0)
+            return Float.NaN;
+        return fSum / num;
+    }
+
 }

@@ -4,6 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
+import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
@@ -99,7 +100,7 @@ public interface TermTransform extends TermContext {
                 int xes = xe.subs();
 
                 if (y == null) {
-                    y = new TermList(s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
+                    y = new DisposableTermList(s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
                     if (i > 0) {
                         y.addAll(x, 0, i); //add previously skipped subterms
                     }
@@ -132,7 +133,7 @@ public interface TermTransform extends TermContext {
 //                    }
 
                     if (y == null) {
-                        y = new TermList(s);
+                        y = new DisposableTermList(s);
                         if (i > 0) y.addAll(x, 0, i); //add previously skipped subterms
                     }
                 }

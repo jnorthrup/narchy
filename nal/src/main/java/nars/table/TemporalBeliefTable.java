@@ -36,7 +36,11 @@ public interface TemporalBeliefTable extends TaskTable {
 //        //float fdur = dur;
 //        //float range = t.range();
         long dt = t.minDistanceTo(start, end);
-        float ee = t.eviInteg();
+
+        float ee =
+                t.eviInteg();
+                //t.evi();
+
         if (dt == 0)
             return ee; //full integral
         else {

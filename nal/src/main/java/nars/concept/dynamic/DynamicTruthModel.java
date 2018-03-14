@@ -45,9 +45,10 @@ abstract public class DynamicTruthModel {
         }
         assert (inputs.length > 0) : this + " yielded no dynamic components for superterm " + superterm;
 
-        DynTruth d = new DynTruth();
+        DynTruth d = new DynTruth(inputs.length);
 
         int odt = 0;
+
         for (int i = 0; i < inputs.length; i++) {
             Term it = inputs[i];
 

@@ -858,7 +858,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     FasterList<Term> popTerms(Op[] op /* hint */) {
 
-        FasterList tt = new FasterList(1);
+        FasterList tt = new FasterList(8);
 
         ArrayValueStack<Object> stack = (ArrayValueStack) getContext().getValueStack();
 

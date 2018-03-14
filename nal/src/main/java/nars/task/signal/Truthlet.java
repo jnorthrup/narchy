@@ -2,6 +2,7 @@ package nars.task.signal;
 
 import jcog.Paper;
 import jcog.Skill;
+import jcog.Util;
 import nars.truth.Truth;
 
 import static nars.time.Tense.ETERNAL;
@@ -22,16 +23,37 @@ abstract public class Truthlet implements Truth {
         return e - s;
     }
 
-    abstract public void setTime(long newStart, long newEnd);
+    public Truthlet stretch(long newStart, long newEnd) {
+        throw new UnsupportedOperationException();
+    }
 
     @Deprecated @Override public final float freq() {
-        return freq(mid()); //HACK
+
+        float fs = freq(start());
+        if (fs == fs) {
+            float fe = freq(end());
+            if (fe == fe) {
+                return Util.mean(fs, fe);
+            }
+        }
+
+        //fallback:
+        return freq(mid());
     }
     @Deprecated @Override public final float evi() {
-        return evi(mid()); //HACK
+        float es = evi(start());
+        if (es > 0) {
+            float ee = evi(end());
+            if (ee > 0) {
+                return Util.mean(es, ee);
+            }
+        }
+
+        //fallback:
+        return evi(mid());
     }
     @Deprecated @Override public final float conf() {
-        return conf(mid()); //HACK
+        return w2cSafe(evi());
     }
 
     @Deprecated public float freq(long when) {
@@ -42,7 +64,7 @@ abstract public class Truthlet implements Truth {
     }
 
     public final float conf(long when) {
-        return w2cSafe(truth(when)[1]);
+        return w2cSafe(evi(when));
     }
 
     public boolean intersects(long start, long end) {

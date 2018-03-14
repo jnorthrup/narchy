@@ -58,7 +58,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
-            1.5f;
+            //1.5f;
+            3f;
 
 
     private static final int SCAN_CONF_DIVISIONS_MAX = 2;
@@ -261,7 +262,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         int e = 0;
         while (treeRW.size() > cap) {
-            if (!compress(treeRW, e == 0 ? inputRegion : null /** only limit by inputRegion first */, taskStrength, added, cap,
+            if (!compress(treeRW, e == 0 ? inputRegion : null /** only limit by inputRegion first */,
+                    taskStrength, added, cap,
                     now, (long) (1 + tableDur()), perceptDur, nar))
                 return false;
             e++;
@@ -279,7 +281,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     /*@NotNull*/
     private boolean compress(Space<TaskRegion> tree, @Nullable Task inputRegion, FloatFunction<Task> taskStrength, Consumer<Tasked> added, int cap, long now, long tableDur, int perceptDur, NAR nar) {
 
-        FloatFunction<TaskRegion> weakestTask = (t -> -taskStrength.floatValueOf((Task) t));
+
 
         float inputStrength = inputRegion != null ? taskStrength.floatValueOf(inputRegion) : Float.POSITIVE_INFINITY;
 
@@ -287,6 +289,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 /*new CachedFloatFunction*/(regionWeakness(now, tableDur, perceptDur));
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
+
+        FloatFunction<TaskRegion> weakestTask =
+                (t -> 1f/(1f+taskStrength.floatValueOf((Task) t)));
 
         Top2<Leaf<TaskRegion>> mergeVictim = new Top2(leafWeakness);
 

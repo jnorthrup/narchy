@@ -22,10 +22,9 @@ package jcog.tree.rtree;
 
 
 import com.google.common.base.Joiner;
-import jcog.Util;
-import jcog.util.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
+import jcog.util.ArrayIterator;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -276,7 +275,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         Node<T, ?>[] cc = this.data;
         if (size > 0) {
             int bestNode = -1;
-            double tCost = Double.POSITIVE_INFINITY;
+            //double tCost = Double.POSITIVE_INFINITY;
             double leastEnlargement = Double.POSITIVE_INFINITY;
             double leastPerimeter = Double.POSITIVE_INFINITY;
 
@@ -284,12 +283,15 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             for (int i = 0; i < s; i++) {
                 HyperRegion cir = cc[i].bounds();
                 HyperRegion childMbr = tRect.mbr(cir);
-                final double nodeEnlargement = childMbr.cost() - (cir.cost() + tCost);
-                if (nodeEnlargement < leastEnlargement) {
+                final double nodeEnlargement =
+                        (cir!=childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
+                assert(nodeEnlargement==nodeEnlargement && nodeEnlargement >= 0);
+                int dc = Double.compare(nodeEnlargement, leastEnlargement);
+                if (dc == -1) { //(nodeEnlargement < leastEnlargement) {
                     leastEnlargement = nodeEnlargement;
                     leastPerimeter = childMbr.perimeter();
                     bestNode = i;
-                } else if (Util.equals(nodeEnlargement, leastEnlargement, model.epsilon())) {
+                } else if (dc == 0) {
                     double perimeter = childMbr.perimeter();
                     if (perimeter < leastPerimeter) {
                         leastEnlargement = nodeEnlargement;

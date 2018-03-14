@@ -3,9 +3,10 @@ package nars.concept.action;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.NAct;
+import nars.Task;
 import nars.task.ITask;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
@@ -68,21 +69,23 @@ public class GoalActionConcept extends ActionConcept {
 
 
         Truth goal;
-        @Deprecated ITask curiosityGoal;
 
         goal = this.goals().truth(pStart, pEnd, nar);
 
+        boolean curi;
         if (nar.random().nextFloat() < cur * (1f - (goal!=null ? goal.conf() : 0))) {
 //            // curiosity override
 //
             float curiConf =
                     //nar.confDefault(GOAL);
                     //nar.confMin.floatValue() * 2;
-                    Math.max(goal != null ? goal.conf() : 0, //match goal conf
-                            //nar.confMin.floatValue() * 2
-                            nar.confDefault(GOAL)
-                    );
+//                    Math.max(goal != null ? goal.conf() : 0, //match goal conf
+//                            //nar.confMin.floatValue() * 2
+//                            nar.confDefault(GOAL)
+//                    );
+                    nar.confMin.floatValue() * 4;
 
+            curi = true;
             //nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR;
 //                    Math.max(goal != null ? goal.conf() : 0,
 //                            nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR);
@@ -98,10 +101,8 @@ public class GoalActionConcept extends ActionConcept {
 ////                        hashCode() /* for phase shift */
 ////                            + now / (curiPeriod * (2 * Math.PI) * dur)) + 1f)/2f;
 //
-            goal = new PreciseTruth(nar.random().nextFloat(), curiConf);
-//            long curiosityStamp = nar.time.nextStamp();
-//            curiosityGoal = curiosity(nar, goal, term, curiosityStamp);
-            curiosityGoal = null;
+            goal = Truth.theDithered(nar.random().nextFloat(), curiConf, nar);
+            //curiosityGoal = null;
 
 //            curious = true;
 //
@@ -115,12 +116,11 @@ public class GoalActionConcept extends ActionConcept {
 ////                }
 
 
-        } else
-            {
+        } else {
+            curi = false;
 
             //action.set(term(), null, stamper, now, dur, nar);
 
-            curiosityGoal = null;
 
             //HACK EXPERIMENT combine belief and goal
             //if (belief!=null) {
@@ -143,25 +143,36 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth feedback = this.motor.apply(belief, goal);
 
-        ITask feedbackBelief = this.feedback.set(this, feedback, nar.time::nextStamp, now, dur, nar);
+        Task feedbackBelief = this.feedback.set(this, feedback, nar.time::nextStamp, now, dur, nar);
 
-        return Stream.of(feedbackBelief, curiosityGoal).filter(Objects::nonNull);
+        Task curiosityGoal;
+        if (curi && feedbackBelief!=null) {
+            long curiosityStamp = nar.time.nextStamp();
+            curiosityGoal = this.curiosity(nar,
+                    //goal,
+                    Truth.theDiscrete(feedbackBelief.freqMean(dur, pStart, pEnd), goal.conf(), nar),
+                    term, pStart, pEnd, curiosityStamp);
+        } else {
+            curiosityGoal = null;
+        }
+
+        return Stream.of(feedbackBelief, (ITask)curiosityGoal).filter(Objects::nonNull);
         //return Stream.of(fb, fg).filter(Objects::nonNull);
         //return Stream.of(fb).filter(Objects::nonNull);
     }
 
 
-//    static Task curiosity(NAR nar, Truth goal, Term term, long curiosityStamp) {
-//        long now = nar.time();
-//        int dur = nar.dur();
-//
-//        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, now, now + dur, curiosityStamp);
-//        //curiosity.setCyclic(true);
-//        //curiosity.pri(nar.priDefault(GOAL));
-//        curiosity.pri(0);
-//
-//        return curiosity;
-//    }
+    static SignalTask curiosity(NAR nar, Truth goal, Term term, long pStart, long pEnd, long curiosityStamp) {
+        long now = nar.time();
+        int dur = nar.dur();
+
+        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, pStart, pEnd, curiosityStamp);
+        //curiosity.setCyclic(true);
+        curiosity.pri(nar.priDefault(GOAL));
+        //curiosity.pri(0);
+
+        return curiosity;
+    }
 
 
     //    Truth[] linkTruth(long when, long now, float minConf) {

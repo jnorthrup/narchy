@@ -11,7 +11,6 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.transform.DirectTermTransform;
 import nars.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -50,8 +49,8 @@ public class Anon {
     };
 
     protected TermTransform newPut() {
-        //return new TermTransform() {
-        return new DirectTermTransform() {
+        return new TermTransform() {
+        //return new DirectTermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
                 return put(atomic);

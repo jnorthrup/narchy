@@ -54,7 +54,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
                 if (purelyAnon) {
                     if (!(x instanceof AnonID)) {
-                        if (/*t.length == 1 && */x.op()==NEG && x.unneg() instanceof AnonID) {
+                        Term ux = x.unneg();
+                        if (x != ux && ux instanceof AnonID) {
                             //allow anon here, but not t.length > 1 there is still some problem probably with commutives
                             //purelyAnon = true
                         } else {
@@ -67,6 +68,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (!purelyAnon) {
                 switch (t.length) {
                     case 0:
+                        throw new UnsupportedOperationException();
                     case 1:
                         //return new TermVector1(t[0]);
                         return new UnitSubterm(t[0]);

@@ -64,38 +64,33 @@ public class Tasklinks {
 
         float priApplied = Math.max(0, priInput - o); //efective priority between 0 and pri
 
-
-
 //        if (priApplied > Pri.EPSILON)
 //            linkTaskTemplates(cc, t, priApplied, nar);
 
         if (activate) {
 
+//            if (priApplied > Float.MIN_NORMAL) {
+
+                TermLinks.linkTemplates(cc, priApplied, nar.momentum.floatValue(), nar);
+
+                float conceptActivation = priApplied;
+                        //* nar.amp(t.cause());
+                //if (conceptActivation > 0) {
+                nar.activate(cc, conceptActivation);
+
+//            }
+
             //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
             //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
-            float activation = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
-
+            float priFraction = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
+            if (priFraction >= Pri.EPSILON) {
+                ((TaskConcept) cc).value(t, priFraction, nar);
+                nar.emotion.onActivate(t, priFraction);
+            }
 
             if (/*activation*/ priApplied >= Param.TASK_ACTIVATION_THRESHOLD)
                 nar.eventTask.emit(t);
 
-            if (activation > Float.MIN_NORMAL) {
-                ((TaskConcept) cc).value(t, activation, nar);
-                nar.emotion.onActivate(t, activation);
-            }
-
-            if (priApplied > Float.MIN_NORMAL) {
-                float conceptActivation = priApplied;
-                        //* nar.amp(t.cause());
-                if (conceptActivation > 0) {
-
-//                    BatchActivation ba = BatchActivation.get();
-//                    new Activate(cc, conceptActivation).activate(nar, ba);
-//                    ba.commit(nar);
-
-                    nar.activate(cc, conceptActivation);
-                }
-            }
         }
     }
 

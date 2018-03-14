@@ -2,13 +2,11 @@ package nars.control;
 
 import jcog.bag.Bag;
 import jcog.pri.PLink;
-import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.link.Tasklinks;
-import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
 
@@ -33,9 +31,7 @@ public class Activate extends PLink<Concept> implements Termed {
     /*@NotNull*/
     public void premises(NAR nar, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _tasklinks, int _termlinksPerTasklink) {
 
-
-        if (!isDeleted())
-            activateTemplates(nar);
+        nar.emotion.conceptFire.increment();
 
         final Bag tasklinks = id.tasklinks();
 
@@ -82,15 +78,6 @@ public class Activate extends PLink<Concept> implements Termed {
             return (ttl[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
         });
 
-    }
-
-
-    void activateTemplates(NAR nar) {
-        nar.emotion.conceptFire.increment();
-
-        float cost = TermLinks.linkTemplates(id, priElseZero(), nar.momentum.floatValue(), nar);
-        if (cost >= Pri.EPSILON)
-            priSub(cost);
     }
 
 

@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 public final class AndCondition<D> extends AbstractPred<D> {
 
-    public final PrediTerm<D>[] cond;
+    public final PrediTerm[] cond;
 
     @Override
     public final boolean test(Object m) {
@@ -27,7 +27,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
     }
 
     AndCondition(PrediTerm<D>[] p) {
-        super($.pFast((Term[]) p));
+        super($.p( p));
         assert (p.length >= 2) : "unnecessary use of AndCondition";
         this.cond = p;
     }
@@ -52,6 +52,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
                     for (Term c : cond) {
                         if (c instanceof AndCondition) {
                             needsFlat[0] = true;
+                            break;
                         }
                     }
                     if (needsFlat[0]) {

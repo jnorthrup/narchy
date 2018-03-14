@@ -24,8 +24,8 @@ public class ProxyTruthlet<T extends Truthlet> extends Truthlet {
     }
 
     @Override
-    public void setTime(long newStart, long newEnd) {
-       ref.setTime(newStart, newEnd);
+    public Truthlet stretch(long newStart, long newEnd) {
+       return ref.stretch(newStart, newEnd);
     }
 
     @Override

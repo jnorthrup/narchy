@@ -63,21 +63,20 @@ public class Signal {
 
     public Task set(Concept c, @Nullable Truth nextTruth, LongSupplier stamper, long now, int dur, NAR nar) {
 
-//        if (!busy.compareAndSet(false, true))
-//            return last;
-//        try {
 
+        @Nullable Truth tt =
+                //nextTruth;
+                nextTruth != null ? nextTruth.dither(nar) : null;
 
-            TruthletTask last = this.current.get();
+        final boolean[] keep = {false};
+        Task cur = current.updateAndGet((last)-> {
+
             if (last == null && nextTruth == null)
                 return null;
 
-            @Nullable Truth tt =
-                    //nextTruth;
-                    nextTruth != null ? nextTruth.dither(nar) : null;
-
 
             TruthletTask next;
+            int gapFillTolerance = dur * 2;
             if (tt == null) {
                 //no signal
                 next = null;
@@ -86,14 +85,15 @@ public class Signal {
 
                 if (last == null ||
                         last.isDeleted() ||
-                        (!last.truth(last.end()).equals(tt, nar) ||
+                        ((!tt.equals(last.truth(last.end()), nar) || (now - last.end() > gapFillTolerance /* fill gap up to n*dur tolerance */)) ||
                                 (Param.SIGNAL_LATCH_TIME_MAX != Integer.MAX_VALUE && now - last.start() >= dur * Param.SIGNAL_LATCH_TIME_MAX)
                         )) {
 
+                    long beforeNow = (last!=null && (now-last.end())<gapFillTolerance) ? last.end() : now;
                     //TODO move the task construction out of this critical update section?
                     next = taskStart(c, last,
                             tt,
-                            now, now + lookAheadDurs * dur,
+                            beforeNow, now + lookAheadDurs * dur,
                             stamper.getAsLong(), dur);
 
                 } else {
@@ -110,51 +110,53 @@ public class Signal {
                 if (last != null) {
                     last.pri(pri.asFloat());
                     last.updateEnd(c, now + lookAheadDurs * dur);
+                    keep[0] = true;
                 }
-                return null;  //dont re-input the task, just stretch it where it is in the temporal belief table
+                return last;  //dont re-input the task, just stretch it where it is in the temporal belief table
             } else {
-                if (current.compareAndSet(last, next)) {
-                    if (last != null) {
-                        last.updateEnd(c, Math.max(last.start(), (next!=null ? now-1 : now))); //one cycle ago so as not to overlap during the new task's start time
-                    }
-                    return next; //new or null input; stretch will be assigned on first insert to the belief table (if this happens)
-                } else
-                    return get(); //the next latest
+
+//                if (last != null && (now - last.end() <= gapFillTolerance)) {
+//                    last.updateEnd(c, now);
+//                            //next != null ? now - 1 : now); //one cycle ago so as not to overlap during the new task's start time
+//                }
+                return next; //new or null input; stretch will be assigned on first insert to the belief table (if this happens)
+
             }
 
 //        } finally {
 //            busy.set(false);
 //        }
-
+        });
+        return keep[0] ? null : cur;
     }
 
     public TruthletTask taskStart(Concept c, SignalTask last, Truth t, long start, long end, long stamp, int dur) {
 
-        boolean smooth = false;
+        //boolean smooth = false;
 
         float fNext = t.freq();
-        if (last != null) {
-            //use a sloped connector to the previous task if it happens soon enough again (no temporal gap between them) and if its range is right
-            long gap = Math.abs(last.end() - start);
-            if ((smooth || gap > 0) && (gap <= dur / 2f)) {
-                float lastTruth = last.truth(last.end(), dur).freq();
-                long r = last.range();
-                float fPrevEnd;
-                if (smooth && (r > dur && r < dur*2))
-                    fPrevEnd = fNext; //smoothing
-                else
-                    fPrevEnd = lastTruth;
-
-                if (gap > 0 || Math.abs(lastTruth-fPrevEnd) >= Param.TRUTH_EPSILON) {
-                    ((TruthletTask) last).update(c, (tt) -> {
-                        //((LinearTruthlet)tt.truthlet).freqEnd = fNext;
-                        LinearTruthlet l = (LinearTruthlet) ((((ProxyTruthlet) tt.truthlet)).ref);
-                        l.freqEnd = fPrevEnd;
-                        l.end = start;
-                    });
-                }
-            }
-        }
+//        if (last != null) {
+//            //use a sloped connector to the previous task if it happens soon enough again (no temporal gap between them) and if its range is right
+//            long gap = Math.abs(last.end() - start);
+//            if ((smooth || gap > 0) && (gap <= dur / 2f)) {
+//                float lastTruth = last.truth(last.end(), dur).freq();
+//                long r = last.range();
+//                float fPrevEnd;
+//                if (smooth && (r > dur && r < dur*2))
+//                    fPrevEnd = fNext; //smoothing
+//                else
+//                    fPrevEnd = lastTruth;
+//
+//                if (gap > 0 || Math.abs(lastTruth-fPrevEnd) >= Param.TRUTH_EPSILON) {
+//                    ((TruthletTask) last).update(c, (tt) -> {
+//                        //((LinearTruthlet)tt.truthlet).freqEnd = fNext;
+//                        LinearTruthlet l = (LinearTruthlet) ((((ProxyTruthlet) tt.truthlet)).ref);
+//                        l.freqEnd = fPrevEnd;
+//                        l.end = start;
+//                    });
+//                }
+//            }
+//        }
 
         TruthletTask s = new TruthletTask(c.term(), punc,
                 new SustainTruthlet(
@@ -168,46 +170,46 @@ public class Signal {
         return s;
     }
 
-    /** experimental */
-    public TruthletTask taskStartTruthlet(Concept c, SignalTask last, Truth t, long start, long end, long stamp, int dur) {
-
-        boolean smooth = false;
-
-        float fNext = t.freq();
-        if (last != null) {
-            //use a sloped connector to the previous task if it happens soon enough again (no temporal gap between them) and if its range is right
-            long gap = Math.abs(last.end() - start);
-            if ((smooth || gap > 0) && (gap <= dur / 2f)) {
-                float lastTruth = last.truth(last.end(), dur).freq();
-                long r = last.range();
-                float fPrevEnd;
-                if (smooth && (r > dur && r < dur*2))
-                    fPrevEnd = fNext; //smoothing
-                else
-                    fPrevEnd = lastTruth;
-
-                if (gap > 0 || Math.abs(lastTruth-fPrevEnd) >= Param.TRUTH_EPSILON) {
-                    ((TruthletTask) last).update(c, (tt) -> {
-                        //((LinearTruthlet)tt.truthlet).freqEnd = fNext;
-                        LinearTruthlet l = (LinearTruthlet) ((((ProxyTruthlet) tt.truthlet)).ref);
-                        l.freqEnd = fPrevEnd;
-                        l.end = start;
-                    });
-                }
-            }
-        }
-
-        TruthletTask s = new TruthletTask(c.term(), punc,
-                    new SustainTruthlet(
-                            new LinearTruthlet(start, fNext, end, fNext, t.evi()
-                            ), 1)
-                ,start,stamp
-        );
-
-
-        s.priMax(pri.asFloat());
-        return s;
-    }
+//    /** experimental */
+//    public TruthletTask taskStartTruthlet(Concept c, SignalTask last, Truth t, long start, long end, long stamp, int dur) {
+//
+//        boolean smooth = false;
+//
+//        float fNext = t.freq();
+//        if (last != null) {
+//            //use a sloped connector to the previous task if it happens soon enough again (no temporal gap between them) and if its range is right
+//            long gap = Math.abs(last.end() - start);
+//            if ((smooth || gap > 0) && (gap <= dur / 2f)) {
+//                float lastTruth = last.truth(last.end(), dur).freq();
+//                long r = last.range();
+//                float fPrevEnd;
+//                if (smooth && (r > dur && r < dur*2))
+//                    fPrevEnd = fNext; //smoothing
+//                else
+//                    fPrevEnd = lastTruth;
+//
+//                if (gap > 0 || Math.abs(lastTruth-fPrevEnd) >= Param.TRUTH_EPSILON) {
+//                    ((TruthletTask) last).update(c, (tt) -> {
+//                        //((LinearTruthlet)tt.truthlet).freqEnd = fNext;
+//                        LinearTruthlet l = (LinearTruthlet) ((((ProxyTruthlet) tt.truthlet)).ref);
+//                        l.freqEnd = fPrevEnd;
+//                        l.end = start;
+//                    });
+//                }
+//            }
+//        }
+//
+//        TruthletTask s = new TruthletTask(c.term(), punc,
+//                    new SustainTruthlet(
+//                            new LinearTruthlet(start, fNext, end, fNext, t.evi()
+//                            ), 1)
+//                ,start,stamp
+//        );
+//
+//
+//        s.priMax(pri.asFloat());
+//        return s;
+//    }
 
     public Signal pri(FloatSupplier p) {
         this.pri = p;

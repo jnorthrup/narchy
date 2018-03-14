@@ -139,14 +139,18 @@ public class TruthWave {
         long t = minT;
         float[] data = this.truth;
         int j = 0;
-        int idt = Math.round(dt);
+        int idt = (int) Math.ceil(dt);
         byte punc = beliefOrGoal ? BELIEF : GOAL;
+        BeliefTable table = (BeliefTable) c.table(punc);
         for (int i = 0; i < points; i++) {
             long u = t + idt;
             long mid = (t + u) / 2;
-            load(data, (j++) * ENTRY_SIZE, mid, mid,
-                    nar.truth(c, punc, mid, mid) //point
-                    //nar.truth(c, punc, t, u) //range
+            load(data, (j++) * ENTRY_SIZE,
+                    //mid, mid,
+                    //table.truth(mid, nar) //point
+                    t, u,
+                    table.truth(t, u, nar) //range
+
             );
             t = (long) (t + dt);
         }

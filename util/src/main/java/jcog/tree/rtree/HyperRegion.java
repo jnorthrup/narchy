@@ -170,6 +170,7 @@ public interface HyperRegion<X> {
         for (int d = 0; d < n; d++) {
             a *= rangeIfFinite(d, 0);
         }
+        assert(a==a);
         return a;
     }
 

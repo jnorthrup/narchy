@@ -119,8 +119,8 @@ public abstract class ConceptIndex {
                 Op yop = y.op();
                 if (!yop.conceptualizable || yop != x.op()) {
                     //x.term().conceptual(); //HACK for debugging
-                    //throw new RuntimeException("conceptualization fault: " + x + " -> " + y);
-                    return null;
+                    throw new RuntimeException("conceptualization fault: " + x + " -> " + y);
+                    //return null;
                 }
             } else {
                 return null;

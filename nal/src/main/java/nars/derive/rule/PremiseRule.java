@@ -63,8 +63,8 @@ public class PremiseRule {
 
 
     final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
-    final List<PrediTerm<ProtoDerivation>> pre = $.newArrayList();
-    final List<PrediTerm<Derivation>> post = $.newArrayList();
+    final List<PrediTerm<ProtoDerivation>> pre = new FasterList(8);
+    final List<PrediTerm<Derivation>> post = new FasterList(8);
 
     PremiseRule(Pair<PremiseRule, String> x) {
         this((Subterms) (x.getOne().id));
