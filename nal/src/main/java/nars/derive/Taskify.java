@@ -36,27 +36,27 @@ public class Taskify extends AbstractPred<Derivation> {
         this.channel = channel;
     }
 
-    @Override
-    public boolean test(Derivation d) {
+    /** note: the return value here shouldnt matter so just return true anyway */
+    @Override public boolean test(Derivation d) {
 
         Truth tru = d.concTruth;
         if (tru!=null) {
-            tru = tru.ditherDiscrete(d.freqRes, d.confRes, d.confMin,
-                    tru.evi() * d.concEviFactor
-            );
-            if (tru == null) {
-                d.nar.emotion.deriveFailTaskify.increment();
+            float finalEvi = tru.evi() * d.concEviFactor;
+            if (d.eviMin > finalEvi) {
+                d.use(Param.TTL_EVI_INSUFFICIENT);
                 return true;
             }
+
+            tru = tru.withEvi(finalEvi);
         }
 
         Term x0 = d.derivedTerm.get();
-        Term x = d.anon.get(x0);
-        if (x == null || !Conclusion.valid((x = x.normalize()))) {
-            d.nar.emotion.deriveFailTaskify.increment();
-            return true; //when the values were finally dereferenced, the result produced an invalid compound
-            //throw new RuntimeException("un-anonymizing " + x0 + " produced " + x);
-        }
+        Term x = d.anon.get(x0).normalize();
+//        if (x == null || !Termify.valid((x = x.normalize()))) {
+//            d.nar.emotion.deriveFailTaskify.increment();
+//            return true; //when the values were finally dereferenced, the result produced an invalid compound
+//            //throw new RuntimeException("un-anonymizing " + x0 + " produced " + x);
+//        }
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;

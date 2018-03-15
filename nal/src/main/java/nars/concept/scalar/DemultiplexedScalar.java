@@ -1,6 +1,7 @@
 package nars.concept.scalar;
 
 import com.google.common.collect.Iterables;
+import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.util.AtomicFloat;
 import nars.$;
@@ -42,7 +43,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
 
         this.input = input;
         this.in = nar.newCauseChannel(id);
-        this.truther = (prev,next) -> $.t(next, nar.confDefault(BELIEF));
+        this.truther = (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null;
     }
 
     public DemultiplexedScalar resolution(float r) {

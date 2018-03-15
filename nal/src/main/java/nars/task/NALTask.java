@@ -7,8 +7,6 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
-import nars.truth.DiscreteTruth;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
@@ -53,7 +51,7 @@ public class NALTask extends Pri implements Task {
 
         this.term = term;
 
-        this.truth = truth!=null ? truthify(truth.truth()) : null;
+        this.truth = truth!=null ? truth.truth() : null;
 
         this.punc = punc;
 
@@ -67,18 +65,6 @@ public class NALTask extends Pri implements Task {
 
         this.meta = new CompactArrayMap();
     }
-
-    /** get an appropriate representation of the truth for use as an instance in a new NALTask */
-    static Truth truthify(@Nullable Truth truth) {
-//        float c = truth.conf();
-//        if (c < Param.TRUTH_EPSILON)
-//            throw new RuntimeException("no evidence");
-        if (truth instanceof PreciseTruth)
-            return new DiscreteTruth(truth);
-        else
-            return truth; //already DiscreteTruth, or Truthlet
-    }
-
 
     @Override
     public final int hashCode() {

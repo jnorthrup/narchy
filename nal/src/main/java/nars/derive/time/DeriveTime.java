@@ -56,7 +56,9 @@ public class DeriveTime extends TimeGraph {
 
     private final Derivation d;
 
-    /** temporary set for filtering duplicates */
+    /**
+     * temporary set for filtering duplicates
+     */
     private final HashSet<Event> seen;
 
 
@@ -86,13 +88,15 @@ public class DeriveTime extends TimeGraph {
         //this.nodes...
 
         //for now, just do manual reconstruct
-        copy.byTerm.values().forEach(this::addNode); //add to byTerm AND graph
 
-        copy.byTerm.keySet().forEach(x -> {
+        copy.byTerm.forEach((x, event) -> {
+            addNode(event);
+
             Term y = x.eval(d);
             if (y != x && !y.equals(x) && y.op().conceptualizable) {
                 link(know(x), 0, know(y));
             }
+
         });
 
         //link all non-pattern var substitutions
@@ -122,17 +126,17 @@ public class DeriveTime extends TimeGraph {
         this.belief = !single ? d.belief : null;
 
         //determine whether to auto-neg
-        Term tt = (this.task=d.task).term();
+        Term tt = (this.task = d.task).term();
         Term bb = !single ? (belief).term() : null;
         //HACK autoNeg only the specific terms which appear as both
-        if (tt.hasAny(NEG) || (bb!=null && bb.hasAny(NEG) ) ) {
+        if (tt.hasAny(NEG) || (bb != null && bb.hasAny(NEG))) {
             ObjectByteHashMap<Term> events = new ObjectByteHashMap();
             eventPolarities(tt, events);
-            if (bb!=null)
+            if (bb != null)
                 eventPolarities(bb, events);
 
             Set<Term> mixed = new HashSet();
-            events.forEachKeyValue((k,v)->{
+            events.forEachKeyValue((k, v) -> {
                 if (v == 0) {
                     mixed.add(k);
                 }
@@ -161,7 +165,7 @@ public class DeriveTime extends TimeGraph {
 //                taskTime = true;
 //            } else
 
-                {
+            {
                 beliefTime = taskTime = true;
             }
 
@@ -188,17 +192,17 @@ public class DeriveTime extends TimeGraph {
 
     void eventPolarities(Term tt, ObjectByteHashMap<Term> events) {
 
-        tt.eventsWhile((w,t)->{
+        tt.eventsWhile((w, t) -> {
             byte polarity;
-            if (t.op()==NEG) {
+            if (t.op() == NEG) {
                 polarity = (byte) -1;
                 t = t.unneg();
             } else
-                polarity = (byte)+1;
+                polarity = (byte) +1;
             if (events.containsKey(t)) {
                 byte p = events.get(t);
-                if (p!=polarity) {
-                    events.put(t, (byte)0);
+                if (p != polarity) {
+                    events.put(t, (byte) 0);
                 }
             } else {
                 events.put(t, polarity);
@@ -364,12 +368,12 @@ public class DeriveTime extends TimeGraph {
 //    }
 
     public void know(Task t, Truth tr, long when) {
-        assert(when!=TIMELESS);
+        assert (when != TIMELESS);
         Term tt = t.term();
 
 
         int taken = 0;
-        if (when!=ETERNAL && (!t.isEternal() && t.range() > 1)) {
+        if (when != ETERNAL && (!t.isEternal() && t.range() > 1)) {
             LongHashSet sampled = new LongHashSet(3);
 
             //HACK all points in time where the task's truth (used in the derivation's truth calculation) is constant are eligible to be sampled
@@ -457,36 +461,36 @@ public class DeriveTime extends TimeGraph {
     }
 
 
-
     @Nullable
-    Function<long[],Term> solveMerged(ArrayHashSet<Event> solutions, int dur) {
+    Function<long[], Term> solveMerged(ArrayHashSet<Event> solutions, int dur) {
         int ss = solutions.size();
-        if (ss <=1) return null; //callee will use the only solution by default
+        if (ss <= 1) return null; //callee will use the only solution by default
         SortedSetMultimap<Term, LongLongPair> m = MultimapBuilder.hashKeys(ss).treeSetValues().build();
         solutions.forEach(x -> {
             long w = x.when();
             if (w != TIMELESS)
-                m.put(x.id, PrimitiveTuples.pair(w,w));
+                m.put(x.id, PrimitiveTuples.pair(w, w));
         });
         int ms = m.size();
         switch (ms) {
-            case 0: return null;
+            case 0:
+                return null;
             case 1:
                 Map.Entry<Term, LongLongPair> ee = m.entries().iterator().next();
                 LongLongPair ww = ee.getValue();
                 long s = ww.getOne();
                 long e = ww.getTwo();
-                return (w)->{
+                return (w) -> {
                     w[0] = s;
                     w[1] = e;
                     return ee.getKey();
                 };
 
         }
-        FasterList<Pair<Term,long[]>> choices = new FasterList(ms);
+        FasterList<Pair<Term, long[]>> choices = new FasterList(ms);
 
         //compact
-        m.asMap().forEach((t, cw)->{
+        m.asMap().forEach((t, cw) -> {
             int cws = cw.size();
             if (cws > 1) {
                 long[][] ct = new long[cws][2];
@@ -500,10 +504,11 @@ public class DeriveTime extends TimeGraph {
                 long[] prev = ct[0];
                 for (int j = 1; j < cws; j++) {
                     long[] next = ct[j];
-                    if (prev[0]==ETERNAL) {
-                        assert(j==1); assert(ct[0][0]==ETERNAL);
+                    if (prev[0] == ETERNAL) {
+                        assert (j == 1);
+                        assert (ct[0][0] == ETERNAL);
                         ct[0] = null; //ignore eternal solution amongst other temporal solutions
-                    } else  if (Math.abs(prev[1]- next[0]) < dur) {
+                    } else if (Math.abs(prev[1] - next[0]) < dur) {
                         prev[1] = next[1]; //stretch
                         ct[j] = null;
                         continue;
@@ -512,12 +517,12 @@ public class DeriveTime extends TimeGraph {
                 }
                 for (int j = 0; j < cws; j++) {
                     long[] nn = ct[j];
-                    if (nn!=null)
+                    if (nn != null)
                         choices.add(pair(t, nn));
                 }
             } else {
                 LongLongPair f = ((SortedSet<LongLongPair>) cw).first();
-                choices.add(pair(t, new long[] { f.getOne(), f.getTwo() }));
+                choices.add(pair(t, new long[]{f.getOne(), f.getTwo()}));
             }
         });
 
@@ -605,12 +610,12 @@ public class DeriveTime extends TimeGraph {
 //                if (first.op().temporal) {
 //                    occ[0] = occ[1] = min;
 //                } else {
-                    occ[0] = min;
-                    occ[1] = max;
+                occ[0] = min;
+                occ[1] = max;
 //                }
                 return first;
             }
-            if (eeternals!=null) {
+            if (eeternals != null) {
                 return null;
             }
             if (timeless && eeternals == null) {
@@ -747,7 +752,7 @@ public class DeriveTime extends TimeGraph {
 //                return y.neg();
 //            };
 //        } else {
-            return x;
+        return x;
 //        }
     }
 
@@ -758,7 +763,7 @@ public class DeriveTime extends TimeGraph {
         }
 
 
-        int timed = ((FasterList)solutions.list).count(t -> t instanceof Absolute);
+        int timed = ((FasterList) solutions.list).count(t -> t instanceof Absolute);
         if (timed > 0 && timed < ss) {
             if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
                 ss = solutions.size();
@@ -774,13 +779,13 @@ public class DeriveTime extends TimeGraph {
                 //return solveRandomOne(solutions);
                 //FasterList<Event> solutionsCopy = new FasterList(solutions.list);
 
-                Function<long[],Term> tt = solveMerged(solutions, d.dur);
+                Function<long[], Term> tt = solveMerged(solutions, d.dur);
                 if (tt == null) {
                     return () -> solveThe(solutions.get(random())); //choose one at random
                 } else {
                     long[] when = new long[]{TIMELESS, TIMELESS};
                     Term ttt = tt.apply(when);
-                    if (ttt==null || when[0]==TIMELESS)
+                    if (ttt == null || when[0] == TIMELESS)
                         return null;
                     return () -> {
                         d.concOcc[0] = when[0];
@@ -811,10 +816,11 @@ public class DeriveTime extends TimeGraph {
             //inherit question's specific time directly
             s = task.start();
             e = task.end();
-        } else*/ {
+        } else*/
+        {
             boolean taskEvent =
                     //!task.term().op().temporal;
-                    !(task.term().op()==CONJ);
+                    !(task.term().op() == CONJ);
 
             if (task.isEternal()) {
                 if (belief == null || belief.isEternal()) {

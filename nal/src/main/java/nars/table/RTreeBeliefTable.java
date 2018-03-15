@@ -468,7 +468,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 //            //experimental eternalize
 
                 Task eternalized = Task.clone(x, x.term(),
-                        Truth.theDiscrete(x.freq(), e, nar),
+                        Truth.theDithered(x.freq(), e, nar),
                         x.punc(), x.creation(), ETERNAL, ETERNAL
                 );
 

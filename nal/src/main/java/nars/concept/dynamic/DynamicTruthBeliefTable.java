@@ -32,61 +32,18 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
     }
 
     @Override
-    protected Task taskDynamic(long start, long end, final Term template, NAR nar) {
+    protected Task taskDynamic(long start, long end, final Term _template, NAR nar) {
+
+        Term template = template(start, end, _template, nar);
+
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
-            return yy.task(term, model, beliefOrGoal, nar);
+            return yy.task(template, model, beliefOrGoal, nar);
         } else {
             return null;
         }
     }
 
-    //    /** prepare a term, if necessary, for use as template  */
-//    private Term template(Term template, long start, long end, NAR nar) {
-//        if (template.dt() == XTERNAL) {
-//            int newDT = matchDT(template, start, end);
-//            template = template.dt(newDT);
-//        }
-//
-//        //still XTERNAL ? try using start..end as a dt
-//        if (start!=DTERNAL && template.dt() == XTERNAL && template.subs()==2) {
-//            template = template.dt((int) (end-start));
-//        }
-//
-//        Retemporalize retemporalizeMode =
-//                template.subterms().OR(Term::isTemporal) ?
-//                    Retemporalize.retemporalizeXTERNALToZero  //dont unnecessarily attach DTERNALs to temporals
-//                        :
-//                    Retemporalize.retemporalizeXTERNALToDTERNAL //dont unnecessarily create temporals where DTERNAL could remain
-//        ;
-//        template = template.temporalize(retemporalizeMode);
-//        if (template == null)
-//            return null;
-//
-//
-//        if (!template.conceptual().equals(term))
-//            return null; //doesnt correspond to this concept anyway
-//
-//        return template;
-//
-////        if (t2 == null) {
-////
-////
-////
-////            //for some reason, retemporalizing to DTERNAL failed (ex: conj collision)
-////            //so as a backup plan, use dt=+/-1
-////            int dur = nar.dur();
-////            Random rng = nar.random();
-////            t2 = template.temporalize(new Retemporalize.RetemporalizeFromToFunc(XTERNAL,
-////                    () -> rng.nextBoolean() ? +dur : -dur));
-////        }
-//////        if (t2!=null && t2.dt()==XTERNAL) {
-//////            return template(t2, start, end ,nar);//temporary
-//////            //throw new RuntimeException("wtf xternal");
-//////        }
-////
-////        return t2;
-//    }
 
 
     @Override
@@ -102,12 +59,13 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
     @Override
     @Nullable
     protected Term template(long start, long end, Term template, NAR nar) {
-        if (this.term != null && template.op() != this.term.op())
+        Op templateOp = template.op();
+        if (this.term != null && templateOp != this.term.op())
             return null; //template doesnt match this (quick op test)
 
         int templateSubs = template.subs();
         assert (templateSubs > 1);
-        boolean temporal = template.op().temporal;
+        boolean temporal = templateOp.temporal;
         if (temporal) {
             int d = template.dt();
             if (d == XTERNAL) {
@@ -162,7 +120,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 
                         } else {
                             //create a random sequence of the terms, separated by artificial DT's
-                            assert (template.op() == CONJ);
+                            assert (templateOp == CONJ);
                             Term[] subs = template.subterms().arrayClone();
                             ArrayUtils.shuffle(subs, nar.random());
                             int dur = nar.dur();
@@ -184,3 +142,49 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 
 
 }
+//    /** prepare a term, if necessary, for use as template  */
+//    private Term template(Term template, long start, long end, NAR nar) {
+//        if (template.dt() == XTERNAL) {
+//            int newDT = matchDT(template, start, end);
+//            template = template.dt(newDT);
+//        }
+//
+//        //still XTERNAL ? try using start..end as a dt
+//        if (start!=DTERNAL && template.dt() == XTERNAL && template.subs()==2) {
+//            template = template.dt((int) (end-start));
+//        }
+//
+//        Retemporalize retemporalizeMode =
+//                template.subterms().OR(Term::isTemporal) ?
+//                    Retemporalize.retemporalizeXTERNALToZero  //dont unnecessarily attach DTERNALs to temporals
+//                        :
+//                    Retemporalize.retemporalizeXTERNALToDTERNAL //dont unnecessarily create temporals where DTERNAL could remain
+//        ;
+//        template = template.temporalize(retemporalizeMode);
+//        if (template == null)
+//            return null;
+//
+//
+//        if (!template.conceptual().equals(term))
+//            return null; //doesnt correspond to this concept anyway
+//
+//        return template;
+//
+////        if (t2 == null) {
+////
+////
+////
+////            //for some reason, retemporalizing to DTERNAL failed (ex: conj collision)
+////            //so as a backup plan, use dt=+/-1
+////            int dur = nar.dur();
+////            Random rng = nar.random();
+////            t2 = template.temporalize(new Retemporalize.RetemporalizeFromToFunc(XTERNAL,
+////                    () -> rng.nextBoolean() ? +dur : -dur));
+////        }
+//////        if (t2!=null && t2.dt()==XTERNAL) {
+//////            return template(t2, start, end ,nar);//temporary
+//////            //throw new RuntimeException("wtf xternal");
+//////        }
+////
+////        return t2;
+//    }

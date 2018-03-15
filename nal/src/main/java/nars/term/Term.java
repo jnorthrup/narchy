@@ -878,6 +878,14 @@ public interface Term extends Termed, Comparable<Termed> {
             throw new RuntimeException(getClass() + " needs to impl the()");
     }
 
+    default boolean equalsNeg(Term t) {
+        if (t.op() == NEG) {
+            return equals(t.unneg());
+        } else {
+            return hasAny(NEG) && equals(t.neg());
+        }
+    }
+
     /**
      * Created by me on 2/26/16.
      */

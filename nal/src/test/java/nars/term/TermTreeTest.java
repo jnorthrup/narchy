@@ -1,8 +1,11 @@
-package nars.index.term;
+package nars.term;
 
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.index.term.TermKey;
+import nars.index.term.TermTree;
+import nars.index.term.TreeConceptIndex;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;

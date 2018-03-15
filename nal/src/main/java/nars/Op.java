@@ -22,6 +22,7 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
+import nars.term.compound.util.ConjEvents;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -226,7 +227,7 @@ public enum Op {
 
 
             if (cdt && u.length == 2) {
-                if (conegated(u[0], u[1])) //fast conegation check, rather than the exhaustive multi-term one ahead
+                if (u[0].equalsNeg(u[1])) //fast conegation check, rather than the exhaustive multi-term one ahead
                     return False;
             }
 
@@ -561,13 +562,6 @@ public enum Op {
 
     public final boolean indepVarParent;
     public final boolean depVarParent;
-
-    private static boolean conegated(Term a, Term b) {
-        return Math.abs(a.volume() - b.volume()) == 1
-                &&
-                (a.op() == NEG && a.unneg().equals(b)) ||
-                (b.op() == NEG && b.unneg().equals(a));
-    }
 
     public static final Compound ZeroProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
 
@@ -1140,14 +1134,25 @@ public enum Op {
 //
 //    }
 
+    public static Term conj(FasterList<LongObjectPair<Term>> events) {
+        ConjEvents ce = new ConjEvents();
+
+        for (LongObjectPair<Term> o : events) {
+            if (!ce.add(o.getTwo(), o.getOne())) {
+                break;
+            }
+        }
+
+        return ce.term();
+    }
 
     /**
      * constructs a correctly merged conjunction from a list of events
      * note: this modifies the event list
      */
-    public static Term conj(FasterList<LongObjectPair<Term>> events) {
+    public static Term conj0(FasterList<LongObjectPair<Term>> events) {
 
-        int ee = events.size();
+        final int ee = events.size();
         switch (ee) {
             case 0:
                 return True;
@@ -1269,94 +1274,13 @@ public enum Op {
                     case 1:
                         return events.get(0).getTwo();
                     default:
-                        return conjSeq(events, 0, e);
+                        return ConjEvents.conjSeq(events);
                 }
 
         }
     }
 
-    /**
-     * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
-     * assumes that all of the event terms have distinct occurrence times
-     */
-    private static Term conjSeq(List<LongObjectPair<Term>> events, int start, int end) {
 
-        LongObjectPair<Term> first = events.get(start);
-        int ee = end - start;
-        switch (ee) {
-            case 0:
-                throw new NullPointerException("should not be called with empty events list");
-            case 1:
-                return first.getTwo();
-            case 2:
-                LongObjectPair<Term> second = events.get(end - 1);
-                return conjSeqFinal(
-                        (int) (second.getOne() - first.getOne()),
-                        /* left */ first.getTwo(), /* right */ second.getTwo());
-        }
-
-        int center = start + (end - 1 - start) / 2;
-
-
-        Term left = conjSeq(events, start, center + 1);
-        if (left == Null) return Null;
-        if (left == False) return False; //early fail shortcut
-
-        Term right = conjSeq(events, center + 1, end);
-        if (right == Null) return Null;
-        if (right == False) return False; //early fail shortcut
-
-        int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.dtRange());
-
-        return conjSeqFinal(dt, left, right);
-    }
-
-
-    private static Term conjSeqFinal(int dt, Term left, Term right) {
-        assert (dt != XTERNAL);
-
-        if (left == False) return False;
-        if (left == Null) return Null;
-        if (left == True) return right;
-
-        if (right == False) return False;
-        if (right == Null) return Null;
-        if (right == True) return left;
-
-        if (dt == 0 || dt == DTERNAL) {
-            if (left.equals(right)) return left;
-            if (conegated(left, right)) return False;
-
-            //return CONJ.the(dt, left, right); //send through again
-        }
-
-
-        //System.out.println(left + " " + right + " " + left.compareTo(right));
-        //return CONJ.the(dt, left, right);
-        if (left.compareTo(right) > 0) {
-            //larger on left
-            dt = -dt;
-            Term t = right;
-            right = left;
-            left = t;
-        }
-
-        if (left.op() == CONJ && right.op() == CONJ) {
-            int ldt = left.dt(), rdt = right.dt();
-            if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
-                int ls = left.subs(), rs = right.subs();
-                if ((ls > 1 + rs) || (rs > ls)) {
-                    //seq imbalance; send through again
-                    return CONJ.the(dt, left, right);
-                }
-            }
-        }
-
-
-        return implInConjReduce(instance(CONJ, dt, left, right));
-        //return CONJ.the(dt, left, right);
-
-    }
 
 //    static private Term implInConjReduction(final Term conj /* possibly a conjunction */) {
 //        int cdt = conj.dt();
@@ -1369,7 +1293,8 @@ public enum Op {
     /**
      * precondition combiner: a combination nconjunction/implication reduction
      */
-    @Deprecated static private Term implInConjReduce(final Term conj /* possibly a conjunction */) {
+    @Deprecated
+    public static Term implInConjReduce(final Term conj /* possibly a conjunction */) {
         return conj;
     }
 //        if (conj.op() != CONJ)
@@ -2512,6 +2437,11 @@ public enum Op {
         }
 
         @Override
+        public boolean equalsNeg(Term t) {
+            return false;
+        }
+
+        @Override
         public Term unneg() {
             return this;
         }
@@ -2527,6 +2457,11 @@ public enum Op {
         @Override
         public final int opX() {
             return rankBoolFalse;
+        }
+
+        @Override
+        public boolean equalsNeg(Term t) {
+            return t == True;
         }
 
         @Override
@@ -2556,7 +2491,10 @@ public enum Op {
         public Term neg() {
             return False;
         }
-
+        @Override
+        public boolean equalsNeg(Term t) {
+            return t == False;
+        }
         @Override
         public Term unneg() {
             return True;

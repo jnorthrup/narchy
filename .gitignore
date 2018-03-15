@@ -47,3 +47,4 @@ log/
 gradle.properties
 gradlew
 gradlew.bat
+dumps/

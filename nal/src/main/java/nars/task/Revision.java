@@ -685,8 +685,8 @@ public class Revision {
                 }
 
 
-                ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), true);
-                if (ccp != null) {
+                ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), false);
+                /*if (ccp != null) */{
 
                     cc = ccp.getOne();
                     //assert (cc.isNormalized());

@@ -8,11 +8,11 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
 import jcog.exe.Cycler;
-import jcog.util.ArrayIterator;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
+import jcog.util.ArrayIterator;
 import jcog.util.TriConsumer;
 import nars.Narsese.NarseseException;
 import nars.concept.Concept;
@@ -35,7 +35,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.time.Time;
-import nars.truth.DiscreteTruth;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.Cycles;
 import org.HdrHistogram.Histogram;
@@ -43,7 +43,6 @@ import org.HdrHistogram.ShortCountsHistogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
@@ -536,20 +535,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @Nullable
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws InvalidTaskException {
 
-        ObjectBooleanPair<Term> b = Task.tryContent(term, punc, false);
+        PreciseTruth tr = Truth.theDithered(freq, conf, this);
+        @Nullable Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
+            Task y = new NALTask(c, punc, truth, time(), start, end, new long[]{time.nextStamp()});
+            y.priSet(pri);
+            return y;
+        });
 
-        term = b.getOne();
-        if (b.getTwo())
-            freq = 1f - freq;
+        if (z!=null)
+            input(z);
 
-        DiscreteTruth tr = new DiscreteTruth(freq, conf, confMin.floatValue());
-
-        Task y = new NALTask(term, punc, tr, time(), start, end, new long[]{time.nextStamp()});
-        y.priSet(pri);
-
-        input(y);
-
-        return y;
+        return z;
     }
 
     /**

@@ -1,7 +1,8 @@
-package nars.index.term;
+package nars.term;
 
 import jcog.tree.radix.MyConcurrentRadixTree;
 import nars.Narsese;
+import nars.index.term.TreeConceptIndex;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

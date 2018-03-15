@@ -349,7 +349,7 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testConjEvents2() throws Narsese.NarseseException {
         assertEquals(
-                "(((a &&+1 (&|,b1,b2,b3)) &&+1 c) &&+1 (d1&|d2))",
+                "((a &&+1 (&|,b1,b2,b3)) &&+1 (c &&+1 (d1&|d2)))",
                 Op.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),

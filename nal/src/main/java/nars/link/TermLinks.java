@@ -142,7 +142,28 @@ public enum TermLinks {
      * determines ability to structural transform, so those terms which have no structural transforms should not link to themselves
      */
     static boolean selfTermLink(Term b) {
-        return !(b.op().statement);
+        switch (b.op()) {
+            case INH:
+            case SIM:
+            case IMPL: //<- check if IMPL needs it
+                return false;
+            case PROD:
+                return false;
+
+            case SECTe:
+            case SECTi:
+            case SETe:
+            case SETi:
+            case DIFFi:
+            case DIFFe:
+                return true;
+
+            case CONJ:
+                return true;
+
+            default:
+                throw new UnsupportedOperationException("what case am i missing");
+        }
         //return false;
         //return b.isAny(Op.CONJ.bit | Op.SETe.bit | Op.SETi.bit  /* .. */);
         //return true;

@@ -1,12 +1,17 @@
 package nars.truth;
 
+import nars.$;
+import nars.task.NALTask;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
+import static nars.Op.QUESTION;
 import static nars.truth.Stamp.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -233,6 +238,17 @@ public class StampTest {
         //one is completely subsumed in another
         assertEquals(1f, Stamp.overlapFraction(a(1,2), a(2)), 0.01f);
         assertEquals(1f, Stamp.overlapFraction(a(1,2,3,4), a(2,3,4)), 0.01f);
+    }
+
+    @Test public void testDetectOverlapAfterZipOverflow() {
+        ObjectFloatPair<long[]> p = Stamp.zip(List.of(
+                new NALTask($.the(0), QUESTION, null, 0, 0, 0,
+                        new long[]{1, 2, 8, 9}),
+                new NALTask($.the(1), QUESTION, null, 0, 0, 0,
+                        new long[]{3, 4, 5, 8})
+        ), 2);
+        assertEquals("[8, 9]", Arrays.toString(p.getOne()));
+        assertEquals(1/8f, p.getTwo(), 0.01f);
     }
 
 }

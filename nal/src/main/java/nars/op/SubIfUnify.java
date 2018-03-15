@@ -1,5 +1,6 @@
 package nars.op;
 
+import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
@@ -7,7 +8,6 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.Bool;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,11 +62,13 @@ import static nars.Op.*;
  * <patham9_> and require at least one dep-var to be unified in dep-var unification.
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
  */
-abstract public class SubstUnified extends Functor {
+abstract public class SubIfUnify extends Functor {
 
 
+    final static Term INDEP_VAR = $.quote("$");
+    final static Term DEP_VAR = $.quote("#");
 
-    protected SubstUnified(Atom id) {
+    protected SubIfUnify(Atom id) {
         super(id);
     }
 
@@ -86,9 +88,9 @@ abstract public class SubstUnified extends Functor {
             Term ai = aa[i];
             if (ai.equals(Subst.STRICT))
                 strict = true;
-            else if (ai.equals(Subst.INDEP_VAR))
+            else if (ai.equals(INDEP_VAR))
                 op = VAR_INDEP;
-            else if (ai.equals(Subst.DEP_VAR))
+            else if (ai.equals(DEP_VAR))
                 op = VAR_DEP;
             else if (ai.equals(Subst.FORCE))
                 force = true;
@@ -138,12 +140,13 @@ abstract public class SubstUnified extends Functor {
             }
 
             if (output == null) {
-                if (force) {
-                    output = input.replace(x, y); //force: apply substitution even if un-unifiable
-                    if (output!=null && !(output instanceof Bool))
-                        parent.putXY(x, y);
-                } else
+                if (!force) {
                     return Null;
+                } else {
+                    output = input.replace(x, y); //force: apply substitution even if un-unifiable
+                    if (output == null)
+                        return Null;
+                }
             }
 
         }

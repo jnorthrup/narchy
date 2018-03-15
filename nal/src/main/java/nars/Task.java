@@ -391,16 +391,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         //Task.tryTask()
 
         if (end < start)
-            end = start; //HACK
+            throw new InvalidTaskException(x, "clone: wrong order of start/end occurrence");
 
         boolean negated = (newContent.op() == NEG);
         if (negated) {
             newContent = newContent.unneg();
         }
 
-        if (!Task.validTaskTerm(newContent, newPunc, true)) {
-            return null;
-        }
+        boolean valid = Task.validTaskTerm(newContent, newPunc, false);
+        assert(valid);
+//        if (!Task.validTaskTerm(newContent, newPunc, true)) {
+//            throw new InvalidTaskException(newContent, "clone: " + x + "\n\tcontent=" + newContent);
+//        }
 
         NALTask y = new NALTask(newContent, newPunc,
                 (newPunc == BELIEF || newPunc == GOAL) ? newTruth.negIf(negated) : null,
@@ -429,13 +431,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     @Nullable
     static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> res) {
         if ((punc == BELIEF || punc == GOAL) && tr.conf() < Param.TRUTH_EPSILON)
-            return null;
+            throw new InvalidTaskException(t, "insufficient evidence");
 
-        ObjectBooleanPair<Term> x = tryContent(t, punc, true);
-        if (x != null) {
+        ObjectBooleanPair<Term> x = tryContent(t, punc, false);
+        /*if (x != null)*/ {
             return res.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null);
         }
-        return null;
+        //return null;
     }
 
     /**
@@ -447,15 +449,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     @Nullable
     static ObjectBooleanPair<Term> tryContent(/*@NotNull*/Term t, byte punc, boolean safe) {
-        if (t == null)
-            return null; //wtf
 
-        boolean negated = false;
 
         Op o = t.op();
-        boolean reduced;
-        do {
-            reduced = true;
+
+        boolean negated = false;
+//        boolean reduced, negated;
+//        do {
+//            reduced = true;
 
 
             if (o == NEG) {
@@ -465,8 +466,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             }
 
             if (o.statement && t.hasAny(BOOL)) {
+                fail(t, "statement term containing boolean", safe);
                 return null;
             }
+
+//            if (!t.hasAny(ConstantAtomics)) {
+//                fail(t, "contains no constant atomics (ATOM | INT)", safe);
+//                return null;
+//            }
+
 //            if (o == INH && t.hasAny(BOOL)) {
 //                Term pred = t.sub(1);
 //                if (pred.op() == BOOL) {
@@ -485,8 +493,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //
 //                }
 //            }
-
-        } while (!reduced);
+//
+//        } while (!reduced);
 
         t = t.normalize().the();
 
@@ -1005,7 +1013,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 if (y.op() == Op.BOOL)
                     return null;
 
-                @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(), !isInput() || !Param.DEBUG_EXTRA);
+                @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(),
+                        false
+                        //!isInput() || !Param.DEBUG_EXTRA
+                );
                         /* the evaluated result here acts as a memoization of possibly many results
                            depending on whether the functor is purely static in which case
                            it would be the only one.

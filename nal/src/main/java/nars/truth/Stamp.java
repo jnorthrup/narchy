@@ -20,12 +20,12 @@
  */
 package nars.truth;
 
+import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
@@ -472,13 +472,16 @@ public interface Stamp {
             return pair(Stamp.UNSTAMPED_OVERLAPPING, 1f);
         }
 
+        List<long[]> stamps = Lists.transform(s, Stamp::stamp);
+
         int limit = maxLen;
+        int size = 0; //better than l.size()
         boolean halted = false;
         main:
-        while (done < S && l.size() < limit) {
+        while (done < S && size < limit) {
             done = 0;
             for (int i = 0; i < S; i++) {
-                long[] x = s.get(i).stamp();
+                long[] x = stamps.get(i);
 
                 int xi = --ptr[i];
                 if (xi < 0) {
@@ -487,9 +490,11 @@ public interface Stamp {
                 }
                 if (!l.add(x[xi])) {
                     repeats++;
+                } else {
+                    size++;
                 }
 
-                if (l.size() >= limit) {
+                if (size >= limit) {
                     halted = true;
                     break main;
                 }
@@ -501,7 +506,7 @@ public interface Stamp {
             for (int i = 0, ptrLength = ptr.length; i < ptrLength; i++) {
                 int rr = ptr[i];
                 if (rr >= 0) {
-                    long[] ss = s.get(i).stamp();
+                    long[] ss = stamps.get(i);
                     for (int j = 0; j < rr; j++) {
                         if (l.contains(ss[j]))
                             repeats++;
@@ -511,18 +516,20 @@ public interface Stamp {
         }
 
 
-        int ls = l.size();
-        assert (ls <= limit);
+        assert (size <= limit);
 
-        long[] e = new long[ls];
-        MutableLongIterator ll = l.longIterator();
-        int k = 0;
-        while (ll.hasNext()) {
-            e[k++] = ll.next();
-        }
+//        long[] e = new long[size];
+//        MutableLongIterator ll = l.longIterator();
+//        int k = 0;
+//        while (ll.hasNext()) {
+//            e[k++] = ll.next();
+//        }
+//
+//
+//        if (size > 1)
+//            Arrays.sort(e);
 
-        if (ls > 1)
-            Arrays.sort(e);
+        long[] e = l.toSortedArray();
 
         float overlap = ((float) repeats) / totalEvidence;
 //        //HACK count cyclic as part of the scalar returned, but this isnt an accurate value

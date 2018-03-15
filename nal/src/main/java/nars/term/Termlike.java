@@ -78,6 +78,12 @@ public interface Termlike {
     default boolean contains(Term t) {
         return !impossibleSubTerm(t) && OR(t::equals);
     }
+    default boolean containsNeg(Term t) {
+        if (t.op()==NEG)
+            return contains(t.unneg());
+        else
+            return hasAny(NEG) && contains(t.neg());
+    }
 
     /**
      * shouldnt need overrridden

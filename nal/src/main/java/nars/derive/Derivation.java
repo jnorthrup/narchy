@@ -11,7 +11,7 @@ import nars.control.Cause;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.op.Subst;
-import nars.op.SubstUnified;
+import nars.op.SubIfUnify;
 import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
@@ -32,12 +32,16 @@ import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 
 /**
@@ -88,7 +92,7 @@ public class Derivation extends ProtoDerivation {
      * cached values ==========================================
      */
     public int termVolMax;
-    public float confMin;
+    public float confMin, eviMin;
 
 
     public Task task;
@@ -413,6 +417,7 @@ public class Derivation extends ProtoDerivation {
             this.freqRes = nar.freqResolution.floatValue();
             this.confRes = nar.confResolution.floatValue();
             this.confMin = nar.confMin.floatValue();
+            this.eviMin = c2wSafe(confMin);
             this.termVolMax = nar.termVolumeMax.intValue();
             //transformsCache.cleanUp();
         }
@@ -725,24 +730,22 @@ public class Derivation extends ProtoDerivation {
     };
 
     final static Atom uniSubAnyFunc = (Atom) $.the("subIfUnifiesAny");
-    private static final SubstUnified uniSubAny = new SubstUnified(uniSubAnyFunc) {
+    private final SubIfUnify uniSubAny = new SubIfUnify(uniSubAnyFunc) {
         @Override
         public Term apply(Subterms xx) {
             Term y = super.apply(xx);
             if (y != null && !(y instanceof Bool)) {
                 Term a = xx.sub(1);
                 Term b = xx.sub(2);
-                Deriver.derivation.get().putXY(a, b);
-                //parent.putXY(b, a);
-//                if (!x.equals(y))
-//                    parent.putXY(x, y); //store the outer transformation
+                if (!a.equals(b))
+                    replaceXY(a, b);
             }
             return y;
         }
     };
 
 
-    private static final Subst uniSub = new Subst() {
+    private final Subst uniSub = new Subst() {
 
         @Override
         public @Nullable Term apply(Subterms xx) {
@@ -750,10 +753,8 @@ public class Derivation extends ProtoDerivation {
             if (y != null && !(y instanceof Bool)) {
                 Term a = xx.sub(1);
                 Term b = xx.sub(2);
-                Deriver.derivation.get().putXY(a, b);
-                //parent.putXY(b, a);
-//                if (!x.equals(y))
-//                    parent.putXY(x, y); //store the outer transformation
+                if (!a.equals(b))
+                    replaceXY(a, b);
             }
             return y;
         }

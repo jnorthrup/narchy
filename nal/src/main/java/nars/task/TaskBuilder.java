@@ -9,7 +9,6 @@ import nars.task.util.InvalidTaskException;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.jetbrains.annotations.NotNull;
@@ -222,9 +221,9 @@ import static nars.time.Tense.ETERNAL;
 //        }
 
 
-        DiscreteTruth tFinal;
+        Truth tFinal;
         if (truth!=null) {
-            tFinal = new DiscreteTruth(truth.freq(), truth.conf());
+            tFinal = Truth.theDithered(truth.freq(), truth.conf(), n);
         } else {
             tFinal = null;
         }

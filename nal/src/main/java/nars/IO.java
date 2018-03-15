@@ -18,9 +18,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.var.UnnormalizedVariable;
-import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
-import nars.truth.Truthed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -129,7 +127,8 @@ public class IO {
 
     @NotNull
     public static Truth readTruth(DataInput in) throws IOException {
-        return DiscreteTruth.intToTruth(in.readInt());
+        //return DiscreteTruth.intToTruth(in.readInt());
+        return Truth.read(in);
     }
 
 
@@ -150,7 +149,7 @@ public class IO {
         out.writeByte(p);
 
         if (hasTruth(p))
-            writeTruth(out, t);
+            Truth.write(t.truth(), out);
 
         out.writeLong(t.start());
         out.writeLong(t.end());
@@ -209,11 +208,6 @@ public class IO {
         out.writeByte(evil);
         for (int i = 0; i < evil; i++)
             out.writeLong(evi[i]);
-    }
-
-    public static void writeTruth(DataOutput out, Truthed t) throws IOException {
-        Truth tt = t.truth();
-        out.writeInt(DiscreteTruth.truthToInt(tt.freq(), tt.conf()));
     }
 
 

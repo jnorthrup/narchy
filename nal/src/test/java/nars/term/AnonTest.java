@@ -89,7 +89,7 @@ public class AnonTest {
 
         Term twoNeg = x[2];
         assertTrue(av.contains(twoNeg));
-        assertFalse(av.contains(twoNeg.neg()));
+        assertFalse(av.containsNeg(twoNeg));
         assertTrue(av.containsRecursively(twoNeg));
         assertTrue(av.containsRecursively(twoNeg.neg()), () -> av + " containsRecursively " + twoNeg.neg());
 

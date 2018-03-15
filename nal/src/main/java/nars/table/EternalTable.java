@@ -237,7 +237,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 if (yt == null)
                     continue;
 
-                yt = yt.ditherDiscrete(nar);
+                yt = yt.dither(nar);
                 if (yt == null || yt.equals(xt, nar) || yt.equals(newBeliefTruth, nar)) ////avoid a weak or duplicate truth
                     continue;
 

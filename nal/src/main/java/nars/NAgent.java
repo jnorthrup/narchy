@@ -20,7 +20,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.var.Variable;
-import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import org.apache.commons.lang3.ArrayUtils;
@@ -636,7 +635,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             return prediction(term, QUEST, null);
         }
 
-        Supplier<Task> prediction(@NotNull Term _term, byte punct, DiscreteTruth truth) {
+        Supplier<Task> prediction(@NotNull Term _term, byte punct, Truth truth) {
             Term term = _term.normalize();
 
             long now = nar.time();

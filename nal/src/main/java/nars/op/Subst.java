@@ -20,8 +20,6 @@ public class Subst extends Functor {
     //TODO use special symbol encoding to avoid collision with equivalent normal input
     final static Term STRICT = Atomic.the("strict");
     final static Term FORCE = Atomic.the("force");
-    final static Term INDEP_VAR = $.quote("$");
-    final static Term DEP_VAR = $.quote("#");
 
 
     final static Atom id = (Atom) $.the("substitute");

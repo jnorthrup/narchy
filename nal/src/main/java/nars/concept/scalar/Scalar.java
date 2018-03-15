@@ -120,12 +120,17 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
     @Nullable
     public Task update(long start, long end, FloatFloatToObjectFunction<Truth> truther, NAR n) {
 
-        SignalTask x = ((ScalarBeliefTable)beliefs()).add(truther.value(currentValue, floatValueOf(term)),
-                start, end, n.time.nextStamp());
+        Truth nextTruth = truther.value(currentValue, floatValueOf(term));
+        if (nextTruth!=null) {
+            SignalTask x = ((ScalarBeliefTable) beliefs()).add(nextTruth,
+                    start, end, n.time.nextStamp());
 
-        PredictionFeedback.feedbackNewSignal(x, beliefs, n);
+            PredictionFeedback.feedbackNewSignal(x, beliefs, n);
 
-        return x;
+            return x;
+        } else {
+            return null;
+        }
     }
 
 

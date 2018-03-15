@@ -16,7 +16,6 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.time.Tense;
-import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
@@ -292,7 +291,7 @@ public class ConjClustering extends Causable {
             float overlap = evidence.getTwo();
             float e = c2wSafe(conf) * Param.overlapFactor(overlap);
             if (e > 0) {
-                final DiscreteTruth t = Truth.theDiscrete(freq, e, nar);
+                final Truth t = Truth.theDithered(freq, e, nar);
                 if (t != null) {
 
                     Term cj = Op.conj(new FasterList(vv.keySet()));
@@ -304,8 +303,8 @@ public class ConjClustering extends Causable {
                         if (Math.abs(cj.dtRange() - (end - start)) < ditherTime) { //test if merge collapse occurred and occurrence time needs recalculated
 
 
-                            ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, true);
-                            if (cp != null) {
+                            ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, false);
+                            /*if (cp != null)*/ {
 
 
                                 NALTask m = new STMClusterTask(cp, t, start, start, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
@@ -327,9 +326,6 @@ public class ConjClustering extends Causable {
                                 m.priSet(Priority.fund(p * cmplFactor, true, uu));
                                 gen.add(m);
                                 centroidGen++;
-                            } else {
-                                //Task.tryContent(cj, punc, true);
-                                //logger.warn("{} failed", this);
                             }
                         } else {
                             //System.out.println("merge collapse, recalcu");

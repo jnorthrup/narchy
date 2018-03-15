@@ -22,13 +22,16 @@ package nars.truth;
 
 import jcog.Texts;
 import jcog.Util;
-import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 import static jcog.Util.*;
 import static nars.truth.TruthFunctions.w2c;
@@ -37,6 +40,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 /** scalar (1D) truth value "frequency", stored as a floating point value */
 public interface Truth extends Truthed {
+
 
 
 
@@ -159,17 +163,19 @@ public interface Truth extends Truthed {
         return new PreciseTruth(1f - freq(), conf());
     }
 
-    default boolean equals(@Nullable  Truthed x, float tolerance) {
+    default boolean equals(@Nullable  Truth x, float tolerance) {
         return x!=null
                 && Util.equals(conf(), x.conf(), tolerance)
                 && Util.equals(freq(), x.freq(), tolerance)
                 ;
     }
 
-    default boolean equals(@Nullable Truthed x, NAR nar) {
+    default boolean equals(@Nullable Truth x, NAR nar) {
         return this == x ||
-                (x!=null && (Util.equals(freq(), x.freq(), nar.freqResolution.floatValue()) &&
-                Util.equals(conf(), x.conf(), nar.confResolution.floatValue())));
+                //(x!=null &&
+                (
+                Util.equals(freq(), x.freq(), nar.freqResolution.floatValue()) &&
+                Util.equals(conf(), x.conf(), nar.confResolution.floatValue()));
     }
 
     default Truth negIf(boolean negate) {
@@ -246,19 +252,11 @@ public interface Truth extends Truthed {
         return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
     }
 
-    @Nullable default DiscreteTruth ditherDiscrete(NAR nar) {
-        return ditherDiscrete(nar.freqResolution.asFloat(), nar.confResolution.asFloat(), nar.confMin.asFloat(), evi());
-    }
-
-    @Nullable default DiscreteTruth ditherDiscrete(float freqRes, float confRes, float confMin) {
+    @Nullable default PreciseTruth dither(float freqRes, float confRes, float confMin) {
         float c = w2cDithered(evi(), confRes);
-        return c < confMin ? null : new DiscreteTruth(freq(freq(), freqRes), c);
+        return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
     }
 
-    @Nullable default DiscreteTruth ditherDiscrete(float freqRes, float confRes, float confMin, float newEvi) {
-        float c = w2cDithered(newEvi, confRes);
-        return c < confMin ? null : new DiscreteTruth(freq(freq(), freqRes), c);
-    }
 
 
 
@@ -277,7 +275,7 @@ public interface Truth extends Truthed {
     }
 
     default PreciseTruth withConf(float c) {
-        return $.t(freq(), c);
+        return new PreciseTruth(freq(), c);
     }
 
     default PreciseTruth withEvi(float e) {
@@ -286,14 +284,18 @@ public interface Truth extends Truthed {
         return new PreciseTruth(freq(), e, false);
     }
 
-    /** dithers */
-    @Nullable static DiscreteTruth theDiscrete(float freq, float e, NAR nar) {
-        float c = w2cDithered(e, nar.confResolution.asFloat());
-        if (c < nar.confMin.asFloat())
-            return null;
-        else
-            return new DiscreteTruth(freq(freq, nar.freqResolution.asFloat()), c);
+
+    static void write(Truth t, DataOutput out) throws IOException {
+        out.writeFloat(t.freq());
+        out.writeFloat(t.conf());
     }
+
+    static Truth read(DataInput in) throws IOException {
+        float f = in.readFloat();
+        float c = in.readFloat();
+        return new PreciseTruth(f, c);
+    }
+
 
 
 //    default Truth eternalized() {

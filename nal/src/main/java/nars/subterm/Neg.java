@@ -46,4 +46,8 @@ public final class Neg extends UnitCompound implements The {
         return sub;
     }
 
+    @Override
+    public final boolean equalsNeg(Term t) {
+        return sub.equals(t);
+    }
 }

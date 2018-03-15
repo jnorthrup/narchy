@@ -2,6 +2,7 @@ package nars.derive;
 
 import nars.NAR;
 import nars.Op;
+import nars.Task;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
@@ -12,7 +13,7 @@ import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 /**
- * Final conclusion step of the derivation process that produces a derived task
+ * Derivation term construction step of the derivation process that produces a derived task
  * <p>
  * Each rule corresponds to a unique instance of this
  * <p>
@@ -20,7 +21,7 @@ import static nars.time.Tense.ETERNAL;
  * a unique instance, assigned the appropriate cause id by the NAR
  * at initialization.
  */
-public final class Conclusion extends AbstractPred<Derivation> {
+public final class Termify extends AbstractPred<Derivation> {
 
 
     //private final static Logger logger = LoggerFactory.getLogger(Conclusion.class);
@@ -30,7 +31,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
     //    public final Set<Variable> uniqueVars;
     public final PremiseRule rule;
 
-    public Conclusion(Term id, Term pattern, PremiseRule rule) {
+    public Termify(Term id, Term pattern, PremiseRule rule) {
         super(id);
         this.rule = rule;
         this.pattern = pattern;
@@ -150,9 +151,15 @@ public final class Conclusion extends AbstractPred<Derivation> {
     }
 
     static boolean valid(Term x) {
-        return (x != null) &&
-                x.op().conceptualizable &&
-                !x.hasAny(VAR_PATTERN) && x.hasAny(ConstantAtomics);
+        if ((x != null) && x.op().conceptualizable) {
+
+            if (x.hasAny(VAR_PATTERN))
+                return false; //throw new RuntimeException("shouldnt happen");
+
+            return Task.validTaskTerm(x);
+        }
+
+        return false;
     }
 
 

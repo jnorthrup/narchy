@@ -150,7 +150,7 @@ public class TaskRule extends TaskMatch {
         y = y.normalize();
         if (y==null) return;
 
-        if (!Task.validTaskTerm(y, X.punc(), true))
+        if (!Task.validTaskTerm(y, X.punc(), false))
             return;
 
         Task Y = Task.clone(X, y);

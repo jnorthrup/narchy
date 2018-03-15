@@ -25,7 +25,6 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         super();
     }
 
-
     @Override
     public int size() {
         return (id != null ? id.size() : 0) + (other != null ? other.size() : 0);

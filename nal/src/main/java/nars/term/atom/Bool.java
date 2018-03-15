@@ -33,8 +33,6 @@ abstract public class Bool extends AtomicConst implements The {
         return BOOL;
     }
 
-
-
     @Override
     public String toString() {
         return id;
@@ -49,9 +47,10 @@ abstract public class Bool extends AtomicConst implements The {
         return u == this;
     }
 
+    @Override
+    abstract public boolean equalsNeg(Term t);
 
     @Override
-    @NotNull
     public final Term concept() {
         return Null;
     }

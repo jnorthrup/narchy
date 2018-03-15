@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
+import static java.lang.Float.floatToIntBits;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -50,17 +51,29 @@ public class PreciseTruth implements Truth {
 
     @Override
     public boolean equals(@Nullable Object that) {
-        return this == that ||  (that!=null && equals((Truthed) that, Param.TRUTH_EPSILON ));
-        //throw new UnsupportedOperationException();
+        if (this == that) return true;
+        if (!(that instanceof Truth)) return false;
+
+        Truth y = (Truth)that;
+        return Util.equals(e, y.evi(), Param.TRUTH_EPSILON)
+                &&
+               Util.equals(f, y.freq(), Param.TRUTH_EPSILON);
+        
+//        return
+//            floatToIntBits(f) == floatToIntBits(y.freq())
+//            &&
+//            floatToIntBits(e) == floatToIntBits(y.evi());
     }
+
+    /** equality test within a NAR's configured tolerances */
     public boolean equals(@Nullable Object that, NAR nar) {
-        return this == that ||  (that!=null && equals((Truthed) that, nar));
+        return this == that || (that!=null && equals((Truth)that, nar));
         //throw new UnsupportedOperationException();
     }
 
     @Override
     public int hashCode() {
-        throw new UnsupportedOperationException();
+        return floatToIntBits(f) & floatToIntBits(e);
     }
 
     @Override

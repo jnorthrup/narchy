@@ -2,10 +2,7 @@ package nars.op;
 
 import jcog.Util;
 import jcog.list.FasterList;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.bag.leak.LeakBack;
 import nars.term.Term;
 import nars.term.anon.Anom;
@@ -18,6 +15,8 @@ import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Random;
@@ -147,6 +146,7 @@ public class ArithmeticIntroduction extends LeakBack {
         return y;
     }
 
+    public static final Logger logger = LoggerFactory.getLogger(ArithmeticIntroduction.class);
 
     private final NAR nar;
 
@@ -164,12 +164,15 @@ public class ArithmeticIntroduction extends LeakBack {
     protected float leak(Task xx) {
         Term x = xx.term();
         Term y = apply(x, nar.random());
-        if (!y.equals(x)) {
+        if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
             if (yy!=null) {
                 out.input(yy);
                 return 1;
             }
+        } else {
+            if (Param.DEBUG)
+                logger.warn("fail: task={} result=", xx, y);
         }
 
         return 0;

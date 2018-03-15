@@ -309,7 +309,7 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * whether the op is assignable
      */
-    public final boolean matchType(/*@NotNull*/ Op oy) {
+    public final boolean matchType(Op oy) {
         Op t = this.type;
         return t == null ?
                 oy.var : //any variable
@@ -326,11 +326,13 @@ public abstract class Unify extends Versioning implements Subst {
      * returns true if the assignment was allowed, false otherwise
      * args should be non-null. the annotations are removed for perf reasons
      */
-    public final boolean putXY(final /*@NotNull*/ Term x, final /*@NotNull*/ Term y) {
+    public final boolean putXY(final Term x, final Term y) {
 //        assert(!x0.equals(y)): "attempted to explicitly create a cycle";
 
-        if (y.containsRecursively(x))
+        if (y.containsRecursively(x)) {
+            //TODO maybe create a common variable
             return false; //cyclic
+        }
 
         Term y0 = xy(x);
 
@@ -340,7 +342,7 @@ public abstract class Unify extends Versioning implements Subst {
 //            else
 
             //return y0.equals(y);// || unify(y0, y);
-            return y0.equalsRoot(y);
+            return y0.equals(y);
 
         } else /*if (matchType(x0))*/ {
 
@@ -348,6 +350,10 @@ public abstract class Unify extends Versioning implements Subst {
 
         }
 
+    }
+
+    public final boolean replaceXY(final Term x, final Term y) {
+        return xy.tryPut(x, y);
     }
 
     /**
@@ -424,17 +430,18 @@ public abstract class Unify extends Versioning implements Subst {
         public AbstractBytes snapshot() {
             List<RawBytes> pre = new FasterList<>(8);
             DynBytes b = new DynBytes(64);
-            xy.forEach((x,y)->{
+            xy.forEach((x, y) -> {
                 x.append((ByteArrayDataOutput) b);
                 b.writeByte(0); //separator
-                y.append((ByteArrayDataOutput)b);
+                y.append((ByteArrayDataOutput) b);
                 pre.add(b.rawCopy());
                 b.clear();
             });
 
             int s = pre.size();
             switch (s) {
-                case 0: return AbstractBytes.EMPTY;
+                case 0:
+                    return AbstractBytes.EMPTY;
                 case 1:
                     return pre.get(0);
                 default:
@@ -450,46 +457,18 @@ public abstract class Unify extends Versioning implements Subst {
 
     final class ConstrainedVersionedTerm extends Versioned<Term> {
 
-
         /**
-         * lazyily constructed
+         * lazily constructed
          */
         Versioned<MatchConstraint> constraints;
-
-//        /**
-//         * divide constraints into two classes: fast and slow,
-//         * fast ieally are checked first
-//         */
-//        Versioned<MatchConstraint> fastConstraints = null;
 
         ConstrainedVersionedTerm() {
             super(Unify.this, new Term[1]);
         }
 
-        @Override
-        public boolean add(Term newItem) {
-            if (this.size == 0) {
-                this.items[0] = newItem;
-                this.size = 1;
-                return true;
-            } else {
-                //assert(this.size > 0);
-                return this.items[0].equals(newItem);  //coalesce
-            }
-        }
-
-        @Override
-        public void pop() {
-            if (this.size != 0) {
-                //assert(this.size > 0);
-                this.size = 0;
-                this.items[0] = null;
-            }
-        }
-
         @Nullable
         @Override
-        public Versioned<Term> set(/*@NotNull*/ Term next) {
+        public Versioned<Term> set(Term next) {
             return valid(next) ? super.set(next) : null;
         }
 

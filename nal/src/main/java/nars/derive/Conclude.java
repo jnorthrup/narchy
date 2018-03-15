@@ -149,7 +149,7 @@ public final class Conclude {
         Taskify taskify = new Taskify(nar.newCause((s) -> new RuleCause(rule, s)));
 
         return AndCondition.the(
-                new Conclusion($.func("derive", pattern), pattern, rule),
+                new Termify($.func("derive", pattern), pattern, rule),
                 introVars ?
                         AndCondition.the(Conclude.introVars, taskify)
                         :

@@ -10,7 +10,6 @@ import jcog.util.FloatFloatToFloatFunction;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.term.atom.Atom;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -212,6 +211,10 @@ public abstract class Param {
     @Range(min=0, max=64)
     public static int TTL_DERIVE_TASK_SAME = 30;
 
+    /** cost of having insufficient evidence (according to NAR's confMin param) to derive task */
+    @Range(min=0, max=64)
+    public static int TTL_EVI_INSUFFICIENT = 30;
+
     /**
      * cost of a failed/aborted task derivation
      */
@@ -229,32 +232,16 @@ public abstract class Param {
     public final FloatRange conceptActivation = new FloatRange(1f, 0, 1f);
 
 
-//    protected void defaultWants() {
-//        float[] w = this.want;
-//
-//        //follows the pos/neg guidelines described in the comment of each MetaGoal
-//        Perceive.set(w, -0.005f);
-//        Believe.set(w, 0.01f);
-//        Desire.set(w, 0.1f);
-//        Accurate.set(w, 0.1f);
-//        Answer.set(w, 0.1f);
-//        Action.set(w, 1f);
-//    }
-
     /**
      * how many durations above which to dither dt relations to dt=0 (parallel)
      * set to zero to disable dithering.  typically the value will be 0..1.0.
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
-    private final MutableFloat dtDither = new MutableFloat(0.5f);
-
-
-    public void dtDither(float durations) {
-        dtDither.set(durations);
-    }
+    public final FloatRange dtDither = new FloatRange(0f, 0f, 8f);
 
     public int dtDitherCycles() {
-        return Math.max(1, Math.round(dtDither.floatValue() * dur()));
+        float dd = dtDither.floatValue();
+        return dd > 0 ? Math.max(1, Math.round(dd * dur())) : 1;
     }
 
     abstract int dur();

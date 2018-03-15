@@ -2,7 +2,6 @@ package nars.truth;
 
 import jcog.Util;
 import nars.Param;
-import org.jetbrains.annotations.NotNull;
 
 import static nars.truth.TruthFunctions.c2wSafe;
 
@@ -11,7 +10,7 @@ import static nars.truth.TruthFunctions.c2wSafe;
  * truth rounded to a fixed size precision
  * to support hashing and equality testing
  */
-public final class DiscreteTruth implements Truth {
+@Deprecated public final class DiscreteTruth implements Truth {
 
     /**
      * truth component resolution of a 16-bit encoding
@@ -66,13 +65,11 @@ public final class DiscreteTruth implements Truth {
     }
 
     @Override
-    public Truth neg() {
+    public PreciseTruth neg() {
         return new PreciseTruth(
-        //return new DiscreteTruth(
                 1f - freq(), conf());
     }
 
-    @NotNull
     public static Truth intToTruth(int h) {
         return new DiscreteTruth(
                 freq(h),
@@ -113,7 +110,7 @@ public final class DiscreteTruth implements Truth {
             (this == that)
                     ||
             ((that instanceof DiscreteTruth) ? (hash == ((DiscreteTruth)that).hash) :
-                    equals((Truthed) that, Param.TRUTH_EPSILON));
+                    equals((Truth) that, Param.TRUTH_EPSILON));
     }
 
     @Override

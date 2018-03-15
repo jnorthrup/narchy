@@ -16,7 +16,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
-import nars.truth.DiscreteTruth;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -254,7 +254,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         optional(TRUTH_VALUE_MARK), //tailing '%' is optional
 
-                        swap() && truth.set(new DiscreteTruth((float) pop(), (float) pop()))
+                        swap() && truth.set(new PreciseTruth((float) pop(), (float) pop()))
                 )
                         /*,
 
