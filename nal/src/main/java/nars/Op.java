@@ -29,10 +29,8 @@ import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.primitive.LongByteHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -47,9 +45,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
-import static nars.term.Terms.flatten;
 import static nars.term.Terms.sorted;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -225,107 +223,26 @@ public enum Op {
             }
 
 
-
-            if (cdt && u.length == 2) {
-                if (u[0].equalsNeg(u[1])) //fast conegation check, rather than the exhaustive multi-term one ahead
-                    return False;
-            }
-
-
             Term ci;
             switch (dt) {
-                case 0:
-                    boolean merge = false;
-                    for (Term v : u) {
-                        if (v.op() == CONJ && v.dtRange() > 0) {
-                            merge = true;
-                            break;
-                        }
-                    }
-                    if (merge) {
-                        //try {
-                        ci = conjMerge(u); //need to split into temporally separate components
-//                        } catch (StackOverflowError e) {
-//                            System.out.println(Arrays.toString(u));
-//                            throw new RuntimeException(e);
-//                        }
-                    } else {
-                        ci = junctionFlat(0, u);
-                    }
-//                    ci = null;
-//                    for (int i = 0; i < u.length; i++) {
-//
-////                    //PROMOTE DTERNAL to ZERO
-////                    if (u[i].op() == CONJ && u[i].dt() == DTERNAL) {
-////                        u[i] = u[i].dt(0);
-////                    }
-//
-//                        //HACK cut to prevent infinite recursion due to impl conj reduction
-////                    if (u[0].op() == IMPL && u[0].containsRecursively(u[1].unneg())) {
-////                        Term ui = u[0];
-////                        int id = ui.dt();
-////
-////                        {
-////                            Term uis = ui.sub(0);
-////                            if (uis.equals(u[1]))
-////                                continue; //already absorbed into the subject
-////                            if (uis.op() == CONJ) {
-////                                LongObjectHashMap<Term> uism = uis.eventMap(0);
-////                                Term uismNOW = uism.get(0);
-////                                if (uismNOW.equals(u[1]))
-////                                    return True;
-////                                if (uismNOW.unneg().equals(u[1]))
-////                                    return Null; //co-negation
-////                            }
-////                        }
-////
-////                        if (id == DTERNAL || id == 0) { //simultaneous with now
-////                            Term uip = ui.sub(1);
-////                            if (uip.equals(u[1]))
-////                                return True;
-////                            if (uip.op() == CONJ) {
-////                                LongObjectHashMap<Term> uipm = uip.eventMap(0);
-////                                Term uipmNOW = uipm.get(0);
-////                                if (uipmNOW.equals(u[1]))
-////                                    return True;
-////                                if (uipmNOW.unneg().equals(u[1]))
-////                                    return Null; //co-negation
-////                            }
-////                        }
-////                    }
-//
-//                        ci = i > 0 ? conjMerge(ci, 0, u[i], 0) : u[0];
-//                    }
-
-                    break;
                 case DTERNAL:
-
+                case 0:
+                    if (u.length == 2 && u[0].equalsNeg(u[1])) //fast conegation check, rather than the exhaustive multi-term one ahead
+                        return False;
                     ci = junctionFlat(dt, u);
                     break;
 
 
-                //sequence or xternal
-                //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
-
-                //rebalance and align
-                //convention: left align all sequences
-                //ex: (x &&+ (y &&+ z))
-                //      becomes
-                //    ((x &&+ y) &&+ z)
-
-
-//                int eventsLeft = a.eventCount();
-//                int eventsRight = b.eventCount();
-//                assert(eventsLeft > 0);
-//                assert(eventsRight > 0);
-//                boolean heavyLeft = (eventsLeft - eventsRight) > 1;
-//                boolean heavyRight = (eventsRight - eventsLeft) > 0; // notice the difference in 0, 1. if the # of events is odd, left gets it
-
 
                 case XTERNAL:
+                    //sequence or xternal
+                    //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
 
-                    //TODO junctionFlat any embedded XTERNAL CONJ subterms?
-
+                    //rebalance and align
+                    //convention: left align all sequences
+                    //ex: (x &&+ (y &&+ z))
+                    //      becomes
+                    //    ((x &&+ y) &&+ z)
 
                     int ul = u.length;
                     if (ul > 1) {
@@ -1831,7 +1748,7 @@ public enum Op {
                         pe.add(x);
                     }
                     return true;
-                }, edt, false, false, false, 0);
+                }, edt, true, true, false, 0);
 
                 if (contradiction)
                     return False;
@@ -1892,23 +1809,36 @@ public enum Op {
                 }
 
 
-                int pes = pe.size();
-                switch (pes) {
-                    case 0:
-                        return True;
-                    case 1:
+                if (pe.isEmpty())
+                    return True; //fully reduced
+
+//                int pes = pe.size();
+//                switch (pes) {
+//                    case 0:
+//                        return True;
+//                    case 1:
                         if (peChange[0]) {
                             //change occurred, duplicates were removed, reconstruct new predicate
                             int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
-                            return IMPL.the(ndt,
-                                    subject,
-                                    predicate.dt() == DTERNAL ?
-                                            CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo)) :
-                                            Op.conj(new FasterList<>(pe))
-                            );
+                            Term newPredicate;
+                            if (pe.size()==1) {
+                                newPredicate = pe.getOnly().getTwo();
+                            } else if (predicate.dt()==DTERNAL) {
+                                //construct && from the subterms since it was originally && otherwise below will construct &|
+                                ConjEvents c = new ConjEvents();
+                                for (int i = 0, peSize = pe.size(); i < peSize; i++) {
+                                    if (!c.add(pe.get(i).getTwo(), ETERNAL)) //override as ETERNAL
+                                        break;
+                                }
+                                newPredicate = c.term();
+                            } else {
+                                newPredicate = Op.conj(pe);
+                            }
+
+                            return IMPL.the(ndt, subject, newPredicate);
                         }
-                        break;
-                    default: {
+//                        break;
+//                    default: {
                         //TODO if pred has >1 events, and dt is temporal, pull all the events except the last into a conj for the subj then impl the final event
 
 //                        if (dt != DTERNAL) {
@@ -1938,8 +1868,8 @@ public enum Op {
 //                        }
 
 
-                    }
-                }
+//                    }
+//              }
 
             }
 
@@ -2525,71 +2455,45 @@ public enum Op {
 //            }
 
 
-        ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
+//        ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
+//
+//        Term uu = flatten(CONJ, u, dt, s);
+//        if (uu != null) {
+//            assert (uu instanceof Bool);
+//            return uu;
+//        }
+//
+//        int os = s.size();
+//        if (os == 0) {
+//            return True;  //? does this happen
+//        }
+//
+//        Set<Term> outer = os > 1 ? new HashSet(os) : null /* unnecessary for the one element case */;
+//
+//        for (ObjectBytePair<Term> xn : s.keyValuesView()) {
+//            Term oi = xn.getOne().negIf(xn.getTwo() < 0);
+//            if (os == 1)
+//                return oi; //was the only element
+//            else
+//                outer.add(oi);
+//        }
+//
+//
+//
+//        Term[] scs = sorted(outer);
+//        if (scs.length == 1) {
+//            return scs[0];
+//        } else {
+//            return instance(CONJ, dt, scs);
+//        }
 
-        Term uu = flatten(CONJ, u, dt, s);
-        if (uu != null) {
-            assert (uu instanceof Bool);
-            return uu;
+        ConjEvents c = new ConjEvents();
+        long sdt = dt==DTERNAL ? ETERNAL : 0;
+        for (Term x : u) {
+            if (!c.add(x, sdt))
+                break;
         }
-
-        int os = s.size();
-        if (os == 0) {
-            return True;  //? does this happen
-        } else {
-            Set<Term> outer = os > 1 ? new HashSet(os) : null /* unnecessary for the one element case */;
-
-            for (ObjectBytePair<Term> xn : s.keyValuesView()) {
-                Term oi = xn.getOne().negIf(xn.getTwo() < 0);
-                if (os == 1)
-                    return oi; //was the only element
-                else
-                    outer.add(oi);
-            }
-
-
-            //annihilate common terms inside and outside of disjunction
-            //      ex:
-            //          -X &&  ( X ||  Y)
-            //          -X && -(-X && -Y)  |-   -X && Y
-            Iterator<Term> oo = outer.iterator();
-            List<Term> csa = null;
-            while (oo.hasNext()) {
-                Term x = oo.next();
-                if (x.hasAll(NEG.bit | CONJ.bit)) {
-                    if (x.op() == NEG) {
-                        Term x0 = x.sub(0);
-                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
-                            Term disj = x.unneg();
-                            SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
-                            //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
-                            if (disjSubs.removeAll(outer)) {
-                                //reconstruct disj if changed
-                                oo.remove();
-
-                                if (!disjSubs.isEmpty()) {
-                                    if (csa == null)
-                                        csa = $.newArrayList(1);
-                                    csa.add(
-                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (csa != null)
-                outer.addAll(csa);
-
-            Term[] scs = sorted(outer);
-            if (scs.length == 1) {
-                return scs[0];
-            } else {
-                return instance(CONJ, dt, scs);
-            }
-
-        }
+        return c.term();
     }
 
 

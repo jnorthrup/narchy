@@ -489,7 +489,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     static Term TemporalRelationBuilder(Term pred, int cycles, Op o, Term subj) {
         if (subj == null || subj == Null || pred == null || pred == Null)
             return null;
-        return o.the(cycles, subj, pred);
+        else
+            return o.the(cycles, subj, pred);
     }
 
     public final static String invalidCycleDeltaString = Integer.toString(Integer.MIN_VALUE);

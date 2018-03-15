@@ -879,7 +879,9 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default boolean equalsNeg(Term t) {
-        if (t.op() == NEG) {
+        if (this == t) {
+            return false;
+        } else if (t.op() == NEG) {
             return equals(t.unneg());
         } else {
             return hasAny(NEG) && equals(t.neg());

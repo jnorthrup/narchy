@@ -2,7 +2,6 @@ package nars.derive;
 
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
@@ -49,7 +48,7 @@ public final class Termify extends AbstractPred<Derivation> {
 //        d.xyDyn.clear();
         Term c1 = pattern.eval(d);
 
-        if (!valid(c1)) {
+        if (!Taskify.valid(c1)) {
             Term c1e = c1;
             d.nar.emotion.deriveFailEval.increment(()->{
                 return rule + " |\n\t" + d.xy + "\n\t -> " + c1e;
@@ -94,7 +93,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
-            if ((c1!=c2 && !valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
+            if ((c1!=c2 && !Taskify.valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
                 Term c1e = c1;
                 d.nar.emotion.deriveFailTemporal.increment(()->{
                     return rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2;
@@ -138,7 +137,7 @@ public final class Termify extends AbstractPred<Derivation> {
         } else {
             if (d.concPunc == BELIEF || d.concPunc == GOAL) {
                 c2 = c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-                if (c1!=c2 && !valid(c2)) {
+                if (c1!=c2 && !Taskify.valid(c2)) {
                     d.nar.emotion.deriveFailTemporal.increment();
                     return false;
                 }
@@ -148,18 +147,6 @@ public final class Termify extends AbstractPred<Derivation> {
         }
 
         return d.derivedTerm.set(c2) != null;
-    }
-
-    static boolean valid(Term x) {
-        if ((x != null) && x.op().conceptualizable) {
-
-            if (x.hasAny(VAR_PATTERN))
-                return false; //throw new RuntimeException("shouldnt happen");
-
-            return Task.validTaskTerm(x);
-        }
-
-        return false;
     }
 
 

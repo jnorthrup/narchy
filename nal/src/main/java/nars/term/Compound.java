@@ -48,8 +48,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 
 /**
  * a compound term
@@ -646,7 +645,9 @@ public interface Compound extends Term, IPair, Subterms {
 
             if ((decomposeConjDTernal || dt != DTERNAL) && (decomposeConjParallel || dt != 0) && (decomposeXternal || dt != XTERNAL)) {
 
-                if (dt == DTERNAL || dt == XTERNAL)
+                if (dt == DTERNAL)
+                    dt = 0;
+                else if (dt == XTERNAL) //HACK
                     dt = 0;
 
                 Subterms tt = subterms();
@@ -655,13 +656,17 @@ public interface Compound extends Term, IPair, Subterms {
 
                 boolean reverse = dt < 0;
 
+                boolean changeDT = t!=ETERNAL && t!=TIMELESS;
+
                 for (int i = !reverse ? 0 : s - 1; reverse ? i >= 0 : i < s; i += (!reverse ? +1 : -1)) {
                     Term st = tt.sub(i);
                     if (!st.eventsWhile(events, t,
                             decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
                             level + 1)) //recurse
                         return false;
-                    t += (!reverse ? +1 : -1) * dt + st.dtRange();
+
+                    if (changeDT)
+                        t += (!reverse ? +1 : -1) * dt + st.dtRange();
                 }
                 return true;
             }

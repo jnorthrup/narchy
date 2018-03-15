@@ -15,6 +15,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static nars.Op.VAR_PATTERN;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
 
 public class Taskify extends AbstractPred<Derivation> {
@@ -34,6 +35,18 @@ public class Taskify extends AbstractPred<Derivation> {
                 $.the("taskify" + channel.id)
         );
         this.channel = channel;
+    }
+
+    public static boolean valid(Term x) {
+        if ((x != null) && x.op().conceptualizable) {
+
+            if (x.hasAny(VAR_PATTERN))
+                return false; //throw new RuntimeException("shouldnt happen");
+
+            return Task.validTaskTerm(x);
+        }
+
+        return false;
     }
 
     /** note: the return value here shouldnt matter so just return true anyway */

@@ -252,8 +252,7 @@ public class Inperience extends LeakBack {
         if (!xx.op().conceptualizable)
             return null;
 
-        Term ff = $.func(reify(s.punc()), self, xx);
-        return ff.negIf(false);
+        return $.func(reify(s.punc()), self, xx);
     }
 
 

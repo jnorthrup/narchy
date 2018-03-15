@@ -233,14 +233,15 @@ public final class Conclude {
             final Term y = xy.getOne();
 
             if (!y.op().conceptualizable ||
-                y.equals(x) /* keep only if it differs */ ||
-                !y.hasAny(Op.ConstantAtomics)  //entirely variablized
+                y.equals(x) || /* keep only if it differs */
+                //!y.hasAny(Op.ConstantAtomics) ||  //entirely variablized
+                !Taskify.valid(y)
             )
                 return false;
 
 
-            //Map<Term, Term> changes = xy.getTwo();
-            //p.xy.putAll(changes);
+            Map<Term, Term> changes = xy.getTwo();
+            changes.forEach(p::replaceXY);
             p.derivedTerm.set(y);
 
 //            //reduce evidence by a factor proportional to the number of variables introduced

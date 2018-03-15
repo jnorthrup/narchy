@@ -11,14 +11,15 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortByteHashMap;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.term.Terms.sorted;
+import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /** representation of events specified in one or more conjunctions,
@@ -150,6 +151,17 @@ public class ConjEvents {
         if (term!=null)
             throw new RuntimeException("already terminated");
 
+        if (t == True)
+            return true; //ignore
+        else if (t == False) {
+            this.term = False;
+            return false;
+        } else if (t == Null) {
+            this.term = Null;
+            return false;
+        }
+
+
         Op x = t.op();
         byte polarity;
         if (x == NEG) {
@@ -160,10 +172,13 @@ public class ConjEvents {
         }
 
         int dt;
-        if (x==CONJ && (dt=t.dt())!=XTERNAL && (dt!=DTERNAL || at==ETERNAL)) {
+        if (x==CONJ && (dt=t.dt())!=XTERNAL
+                && (dt!=DTERNAL || at==ETERNAL)
+                && (dt!=0 || at!=ETERNAL)) {
             return t.eventsWhile((w, e) -> add(e, w),
-                    at, true,
-                    (at==ETERNAL), //only decompose DTERNAL if in the ETERNAL context, otherwise they are embedded as events
+                    at,
+                    (at == 0),
+                    (at == ETERNAL), //only decompose DTERNAL if in the ETERNAL context, otherwise they are embedded as events
                     false, 0);
         } else {
 
@@ -183,6 +198,7 @@ public class ConjEvents {
     }
 
     private byte id(Term t) {
+        assert(t!=null && !(t instanceof Bool));
         return terms.computeIfAbsent(t, tt-> {
             int s = terms.size();
             termsIndex.add(tt);
@@ -266,9 +282,9 @@ public class ConjEvents {
         if (eternal!=null && numTimes == 1)
             return eternal; //done
 
-        MutableLongIterator ii = times.longIterator();
         int ti = 0;
         FasterList<LongObjectPair<Term>> events = new FasterList(numTimes - (eternal!=null? 1 : 0));
+        MutableLongIterator ii = times.longIterator();
         while (ii.hasNext()) {
             long w = ii.next();
             if (w!=ETERNAL) {
@@ -294,14 +310,21 @@ public class ConjEvents {
         }
         assert(!events.isEmpty());
 
-        if (events.size() > 1)
+        Term temporal;
+        if (events.size() > 1) {
             events.sortThisBy(LongObjectPair::getOne);
 
-        Term temporal = conjSeq(events);
-        if (temporal instanceof Bool)
-            return temporal;
+            temporal = conjSeq(events);
+            if (temporal instanceof Bool)
+                return temporal;
+        } else {
+            temporal = events.get(0).getTwo();
+        }
 
-        return eternal!=null ? CONJ.the(DTERNAL, eternal, temporal) : temporal;
+        return eternal!=null ?
+                Op.instance(CONJ, DTERNAL, sorted(eternal, temporal))
+                :
+                temporal;
     }
 
     public long shift() {
@@ -321,21 +344,64 @@ public class ConjEvents {
     Term termConj(int timeIndex) {
         long w = times.get(timeIndex);
 
+        final boolean[] negatives = {false};
         TreeSet<Term> t = new TreeSet();
         event.forEachKeyValue((s,b)->{
             if (timeIndex(s) == timeIndex) {
                 Term c = termsIndex.get(termIndex(s));
-                if (b==NEGATIVE)
+                if (b==NEGATIVE) {
                     c = c.neg();
+                    negatives[0] = true;
+                }
                 t.add(c);
             }
         });
 
-        switch (t.size()) {
+        if (negatives[0]) {
+            //annihilate common terms inside and outside of disjunction
+            //      ex:
+            //          -X &&  ( X ||  Y)
+            //          -X && -(-X && -Y)  |-   -X && Y
+            Iterator<Term> oo = t.iterator();
+            List<Term> csa = null;
+            while (oo.hasNext()) {
+                Term x = oo.next();
+                if (x.hasAll(NEG.bit | CONJ.bit)) {
+                    if (x.op() == NEG) {
+                        Term x0 = x.sub(0);
+                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
+                            Term disj = x.unneg();
+                            SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
+                            //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
+                            if (disjSubs.removeAll(t)) {
+                                //reconstruct disj if changed
+                                oo.remove();
+
+                                if (!disjSubs.isEmpty()) {
+                                    if (csa == null)
+                                        csa = new FasterList(1);
+                                    csa.add(
+                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (csa != null)
+                t.addAll(csa);
+        }
+
+        int ts = t.size();
+        switch (ts) {
             case 0: throw new RuntimeException("fault");
             case 1: return t.first();
             default:
-                return Op.CONJ.the(w == ETERNAL ? DTERNAL : 0, t);
+                return
+                    Op.instance(CONJ,
+                            w == ETERNAL ? DTERNAL : 0,
+                            sorted(t));
         }
 
     }

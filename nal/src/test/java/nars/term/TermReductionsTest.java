@@ -1026,8 +1026,8 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjNearIdentity() {
         assertReduction(True, "( (a&&b) ==> (a&|b) )");
 
-        assertReduction(//"(&|,(a&&b),a,b)",
-            "(a&|b)",
+        assertReduction("(&|,(a&&b),a,b)",
+            //"(a&|b)",
                 "( (a&&b) &| (a&|b) )");
 
         assertReduction("(&|,((X,x)&&#1),(X,x),#1)", "( ((X,x)&&#1) &| ((X,x)&|#1) )");
@@ -1035,7 +1035,14 @@ public class TermReductionsTest extends NarseseTest {
         assertReduction("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
     }
 
+    @Test
+    public void testConjInImplicationTautology() {
+        Term x0 = $.$safe("((x &&+2 x) ==>-2 x)");
+        assertEquals(True, x0);
 
+        Term x = $.$safe("((((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3))) ==>-2 ((_1,_2)&|(_1,_3)))");
+        assertEquals(True, x);
+    }
 
     @Test
     public void testCommutizeRepeatingConjunctions() throws Narsese.NarseseException {
@@ -1399,8 +1406,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testPromoteEternalToParallel() {
         String s = "(a&|(b && c))";
         assertReduction(
-                //"((b&&c)&|a)", // <- dont promote
-                "(&|,a,b,c)", // <- promote
+                "((b&&c)&|a)", // <- dont promote
                 s);
     }
 
@@ -1425,14 +1431,14 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals("((--,(y&&z))&&x)", $.$("((--,(&&,x,y,z)) && x)").toString()); //another reduction applies
     }
 
-    @Test
+    @Disabled @Test
     public void testCoNegatedConjunctionParallelEternal1() {
         //mix of parallel and eternal
         assertReduction(False,
                 "(((--,(z&&y))&&x)&|(--,x))");
     }
 
-    @Test
+    @Disabled @Test
     public void testCoNegatedConjunctionParallelEternal2() {
         assertReduction(False,
                 "(((--,(y&&z))&|x)&&(--,x))");
