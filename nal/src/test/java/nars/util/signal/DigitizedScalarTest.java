@@ -136,7 +136,7 @@ public class DigitizedScalarTest {
 
 
             x.set(v);
-            xc.update(n.time(), n.dur());
+            xc.update(n.time()-n.dur()/2, n.time()+n.dur()/2, n);
             n.run(1);
 
             System.out.println("\n" + n.time() + " x=" + x);
