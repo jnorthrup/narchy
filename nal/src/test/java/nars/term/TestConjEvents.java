@@ -23,8 +23,7 @@ public class TestConjEvents {
         c.add($.the("x"), ETERNAL);
         c.add($.the("y"), ETERNAL);
         assertEquals("(x&&y)", c.term().toString());
-        assertEquals(2, c.event.size());
-        assertEquals(1, c.times.size());
+        assertEquals(1, c.event.size());
     }
     @Test public void testSimpleEternalsNeg() {
         ConjEvents c = new ConjEvents();
@@ -40,7 +39,6 @@ public class TestConjEvents {
         assertEquals("(x &&+1 y)", c.term().toString());
         assertEquals(1, c.shift());
         assertEquals(2, c.event.size());
-        assertEquals(2, c.times.size());
     }
     @Test public void testSimpleEventsNeg() {
         ConjEvents c = new ConjEvents();
