@@ -2,7 +2,6 @@ package nars.term.compound.util;
 
 import jcog.list.FasterList;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.util.TermHashMap;
@@ -16,7 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 
 import static nars.Op.*;
 import static nars.term.Terms.sorted;
@@ -145,8 +144,8 @@ public class ConjEvents {
         } else {
             byte[] ii = (byte[]) what;
             if (indexOfZeroTerminated(ii, ((byte) -id)) == -1) {
-                int nextSlot = indexOfZeroTerminated(ii, (byte)0);
-                if (nextSlot!=-1) {
+                int nextSlot = indexOfZeroTerminated(ii, (byte) 0);
+                if (nextSlot != -1) {
                     ii[nextSlot] = (byte) id;
                 } else {
                     //upgrade to roaring and add
@@ -175,15 +174,15 @@ public class ConjEvents {
     }
 
 
-        private int id (Term t){
-            assert (t != null && !(t instanceof Bool));
-            return terms.computeIfAbsent(t, tt -> {
-                int s = terms.size();
-                termsIndex.add(tt);
-                assert (s < Byte.MAX_VALUE);
-                return (byte) s;
-            }) + 1;
-        }
+    private int id(Term t) {
+        assert (t != null && !(t instanceof Bool));
+        return terms.computeIfAbsent(t, tt -> {
+            int s = terms.size();
+            termsIndex.add(tt);
+            assert (s < Byte.MAX_VALUE);
+            return (byte) s;
+        }) + 1;
+    }
 
 //    private byte id(long w) {
 //
@@ -211,312 +210,306 @@ public class ConjEvents {
 //        return (byte) (s & 0xff);
 //    }
 
-        public Term term () {
-            if (term != null)
-                return term;
+    public Term term() {
+        if (term != null)
+            return term;
 
 
-            int numTimes = event.size();
-            switch (numTimes) {
-                case 0:
-                    return Null;
-                case 1:
-                    break;
-                default:
-                    break;
-            }
+        int numTimes = event.size();
+        switch (numTimes) {
+            case 0:
+                return Null;
+            case 1:
+                break;
+            default:
+                break;
+        }
 
-            event.compact();
+        event.compact();
 
 
-            Predicate<Term> eternalWrapValid = null;
-            Term eternal = termConj(ETERNAL);
-            if (eternal != null) {
+        IntPredicate validator = null;
+        Object eternalWhat = event.get(ETERNAL);
+        Term eternal = termConj(ETERNAL, eternalWhat);
+        if (eternal != null) {
 
-                if (eternal instanceof Bool)
-                    return this.term = eternal; //override and terminates
+            if (eternal instanceof Bool)
+                return this.term = eternal; //override and terminates
 
-                if (numTimes > 1) {
-                    //temporal components follow, so build the verifier
+            if (numTimes > 1) {
+                //temporal components follow, so build the verifier:
 
-                    if (eternal.op() == CONJ) {
-                        Subterms eteSub = eternal.subterms();
-                        eternalWrapValid = (t) -> {
-
-                            //top-level co-negation test
-                            if (eteSub.containsNeg(t))
-                                return false;
-
-                            return true;
-                        };
+                if (eternal.op() == CONJ) {
+                    //Subterms eteSub = eternal.subterms();
+                    if (eternalWhat instanceof byte[]) {
+                        byte[] b = (byte[])eternalWhat;
+                        validator = (i) -> indexOfZeroTerminated(b, (byte) -i) == -1;
                     } else {
-                        Term finalEternal = eternal;
-                        eternalWrapValid = (t) -> {
-                            return !finalEternal.equalsNeg(t);
-                        };
+                        RoaringBitmap b = (RoaringBitmap)eternalWhat;
+                        validator = (i) -> !b.contains(-i);
                     }
+                } else {
+                    Term finalEternal = eternal;
+                    validator = (t) -> !finalEternal.equalsNeg(termsIndex.get(Math.abs(t-1)).negIf(t<0));
                 }
             }
-
-            if (eternal != null && numTimes == 1)
-                return eternal; //done
-
-
-            FasterList<LongObjectPair<Term>> e = new FasterList(numTimes - (eternal != null ? 1 : 0));
-            Iterator<LongObjectPair<RoaringBitmap>> ii = event.keyValuesView().iterator();
-            while (ii.hasNext()) {
-                LongObjectPair<RoaringBitmap> next = ii.next();
-                long when = next.getOne();
-                if (when == ETERNAL)
-                    continue; //already handled above
-
-                Term wt = termConj(when, next.getTwo());
-
-                if (wt == True) {
-                    continue; //canceled out
-                } else if (wt == False) {
-                    return this.term = False; //short-circuit false
-                } else if (wt == Null) {
-                    return this.term = Null; //short-circuit null
-                }
-
-                if (eternalWrapValid != null) {
-                    //check for contradiction between ETERNAL and other events
-                    if (!eternalWrapValid.test(wt)) {
-                        return this.term = False;
-                    }
-                }
-                e.add(pair(when, wt));
-            }
-            assert (!e.isEmpty());
-
-            Term temporal;
-            if (e.size() > 1) {
-                e.sortThisBy(LongObjectPair::getOne);
-
-                temporal = conjSeq(e);
-                if (temporal instanceof Bool)
-                    return temporal;
-            } else {
-                temporal = e.get(0).getTwo();
-            }
-
-            return eternal != null ?
-                    //Op.instance(CONJ, DTERNAL, sorted(eternal, temporal))
-                    CONJ.the(DTERNAL, sorted(eternal, temporal))
-                    :
-                    temporal;
         }
 
-        public long shift () {
-            long min = Long.MAX_VALUE;
-            LongIterator ii = event.keysView().longIterator();
-            while (ii.hasNext()) {
-                long t = ii.next();
-                if (t != DTERNAL) {
-                    if (t < min)
-                        min = t;
-                }
+        if (eternal != null && numTimes == 1)
+            return eternal; //done
+
+
+        FasterList<LongObjectPair<Term>> e = new FasterList(numTimes - (eternal != null ? 1 : 0));
+        Iterator<LongObjectPair> ii = event.keyValuesView().iterator();
+        while (ii.hasNext()) {
+            LongObjectPair next = ii.next();
+            long when = next.getOne();
+            if (when == ETERNAL)
+                continue; //already handled above
+
+            Term wt = termConj(when, next.getTwo(), validator);
+
+            if (wt == True) {
+                continue; //canceled out
+            } else if (wt == False) {
+                return this.term = False; //short-circuit false
+            } else if (wt == Null) {
+                return this.term = Null; //short-circuit null
             }
-            return min;
+
+            e.add(pair(when, wt));
+        }
+        assert (!e.isEmpty());
+
+        Term temporal;
+        if (e.size() > 1) {
+            e.sortThisBy(LongObjectPair::getOne);
+
+            temporal = conjSeq(e);
+            if (temporal instanceof Bool)
+                return temporal;
+        } else {
+            temporal = e.get(0).getTwo();
         }
 
-        /** groups events occurring at the specified time index */
-        private Term termConj ( long w){
-            Object what = event.get(w);
-            if (what != null)
-                return termConj(w, what);
-            else
-                return null; //nothing at that time
+        return eternal != null ?
+                //Op.instance(CONJ, DTERNAL, sorted(eternal, temporal))
+                CONJ.the(DTERNAL, sorted(eternal, temporal))
+                :
+                temporal;
+    }
+
+    public long shift() {
+        long min = Long.MAX_VALUE;
+        LongIterator ii = event.keysView().longIterator();
+        while (ii.hasNext()) {
+            long t = ii.next();
+            if (t != DTERNAL) {
+                if (t < min)
+                    min = t;
+            }
+        }
+        return min;
+    }
+
+
+    private Term termConj(long w) {
+        return termConj(w, event.get(w), null);
+    }
+
+    private Term termConj(long w, Object what) {
+        return termConj(w, what, null);
+    }
+
+    private Term termConj(long w, Object what, IntPredicate validator) {
+
+        if (what == null) return null;
+
+        final RoaringBitmap rb;
+        final byte[] b;
+        int n;
+        if (what instanceof byte[]) {
+            b = (byte[]) what;
+            rb = null;
+            n = indexOfZeroTerminated(b, (byte) 0);
+            if (n == 1) {
+                //simplest case
+                return sub(b[0], null, validator);
+            }
+        } else {
+            rb = (RoaringBitmap) what;
+            b = null;
+            n = rb.getCardinality();
         }
 
 
-        private Term termConj ( long w, Object what){
-
-            final RoaringBitmap rb;
-            final byte[] b;
-            int n;
-            if (what instanceof byte[]) {
-                b = (byte[]) what; rb = null;
-                n = indexOfZeroTerminated(b, (byte)0);
-                if (n == 1) {
-                    //simplest case
-                    return sub(b[0], null);
-                }
-            } else {
-                rb = (RoaringBitmap) what;
-                b = null;
-                n = rb.getCardinality();
+        final boolean[] negatives = {false};
+        TreeSet<Term> t = new TreeSet();
+        if (b != null) {
+            for (byte x : b) {
+                if (x == 0)
+                    break; //done
+                t.add(sub(x, negatives, validator));
             }
+        } else {
+            rb.forEach((int termIndex) -> {
+                t.add(sub(termIndex, negatives, validator));
+            });
+        }
 
+        if (negatives[0] && n > 1) {
+            //annihilate common terms inside and outside of disjunction
+            //      ex:
+            //          -X &&  ( X ||  Y)
+            //          -X && -(-X && -Y)  |-   -X && Y
+            Iterator<Term> oo = t.iterator();
+            List<Term> csa = null;
+            while (oo.hasNext()) {
+                Term x = oo.next();
+                if (x.hasAll(NEG.bit | CONJ.bit)) {
+                    if (x.op() == NEG) {
+                        Term x0 = x.sub(0);
+                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
+                            Term disj = x.unneg();
+                            SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
+                            //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
+                            if (disjSubs.removeAll(t)) {
+                                //reconstruct disj if changed
+                                oo.remove();
 
-
-            final boolean[] negatives = {false};
-            TreeSet<Term> t = new TreeSet();
-            if (b!=null) {
-                for (byte x : b) {
-                    if (x == 0)
-                        break; //done
-                    t.add(sub(x, negatives));
-                }
-            } else {
-                rb.forEach((int termIndex) -> {
-                    t.add(sub(termIndex, negatives));
-                });
-            }
-
-            if (negatives[0] && n > 1) {
-                //annihilate common terms inside and outside of disjunction
-                //      ex:
-                //          -X &&  ( X ||  Y)
-                //          -X && -(-X && -Y)  |-   -X && Y
-                Iterator<Term> oo = t.iterator();
-                List<Term> csa = null;
-                while (oo.hasNext()) {
-                    Term x = oo.next();
-                    if (x.hasAll(NEG.bit | CONJ.bit)) {
-                        if (x.op() == NEG) {
-                            Term x0 = x.sub(0);
-                            if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
-                                Term disj = x.unneg();
-                                SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
-                                //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
-                                if (disjSubs.removeAll(t)) {
-                                    //reconstruct disj if changed
-                                    oo.remove();
-
-                                    if (!disjSubs.isEmpty()) {
-                                        if (csa == null)
-                                            csa = new FasterList(1);
-                                        csa.add(
-                                                CONJ.the(disj.dt(), sorted(disjSubs)).neg()
-                                        );
-                                    }
+                                if (!disjSubs.isEmpty()) {
+                                    if (csa == null)
+                                        csa = new FasterList(1);
+                                    csa.add(
+                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
+                                    );
                                 }
                             }
                         }
                     }
                 }
-                if (csa != null)
-                    t.addAll(csa);
             }
-
-            int ts = t.size();
-            switch (ts) {
-                case 0:
-                    throw new RuntimeException("fault");
-                case 1:
-                    return t.first();
-                default:
-                    return
-                            Op.instance(CONJ,
-                                    w == ETERNAL ? DTERNAL : 0,
-                                    sorted(t));
-            }
+            if (csa != null)
+                t.addAll(csa);
         }
 
-        private Term sub ( int termIndex, @Nullable boolean[] negatives){
-            assert (termIndex != 0);
+        int ts = t.size();
+        switch (ts) {
+            case 0:
+                throw new RuntimeException("fault");
+            case 1:
+                return t.first();
+            default:
+                return
+                        Op.instance(CONJ,
+                                w == ETERNAL ? DTERNAL : 0,
+                                sorted(t));
+        }
+    }
 
-            boolean polarity;
-            if (termIndex < 0) {
-                termIndex = -termIndex;
+    private Term sub(int termIndex, @Nullable boolean[] negatives, IntPredicate validator) {
+        assert (termIndex != 0);
 
-                if (negatives != null)
-                    negatives[0] = true;
-
-                polarity = false;
-            } else {
-                polarity = true;
-            }
-
-            Term c = termsIndex.get(termIndex - 1);
-            if (!polarity)
-                c = c.neg();
-            return c;
+        boolean neg = false;
+        if (termIndex < 0) {
+            termIndex = -termIndex;
+            neg = true;
         }
 
-        public static Term conjSeq (FasterList < LongObjectPair < Term >> events) {
-            return conjSeq(events, 0, events.size());
+        if (validator!=null && !validator.test(termIndex))
+            return False;
+
+        Term c = termsIndex.get(termIndex - 1);
+        if (neg) {
+            c = c.neg();
+            if (negatives != null)
+                negatives[0] = true;
+        }
+        return c;
+    }
+
+    public static Term conjSeq(FasterList<LongObjectPair<Term>> events) {
+        return conjSeq(events, 0, events.size());
+    }
+
+    /**
+     * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
+     * assumes that all of the event terms have distinct occurrence times
+     */
+    public static Term conjSeq(List<LongObjectPair<Term>> events, int start, int end) {
+
+        LongObjectPair<Term> first = events.get(start);
+        int ee = end - start;
+        switch (ee) {
+            case 0:
+                throw new NullPointerException("should not be called with empty events list");
+            case 1:
+                return first.getTwo();
+            case 2:
+                LongObjectPair<Term> second = events.get(end - 1);
+                return conjSeqFinal(
+                        (int) (second.getOne() - first.getOne()),
+                        /* left */ first.getTwo(), /* right */ second.getTwo());
         }
 
-        /**
-         * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
-         * assumes that all of the event terms have distinct occurrence times
-         */
-        public static Term conjSeq (List < LongObjectPair < Term >> events,int start, int end){
-
-            LongObjectPair<Term> first = events.get(start);
-            int ee = end - start;
-            switch (ee) {
-                case 0:
-                    throw new NullPointerException("should not be called with empty events list");
-                case 1:
-                    return first.getTwo();
-                case 2:
-                    LongObjectPair<Term> second = events.get(end - 1);
-                    return conjSeqFinal(
-                            (int) (second.getOne() - first.getOne()),
-                            /* left */ first.getTwo(), /* right */ second.getTwo());
-            }
-
-            int center = start + (end - 1 - start) / 2;
+        int center = start + (end - 1 - start) / 2;
 
 
-            Term left = conjSeq(events, start, center + 1);
-            if (left == Null) return Null;
-            if (left == False) return False; //early fail shortcut
+        Term left = conjSeq(events, start, center + 1);
+        if (left == Null) return Null;
+        if (left == False) return False; //early fail shortcut
 
-            Term right = conjSeq(events, center + 1, end);
-            if (right == Null) return Null;
-            if (right == False) return False; //early fail shortcut
+        Term right = conjSeq(events, center + 1, end);
+        if (right == Null) return Null;
+        if (right == False) return False; //early fail shortcut
 
-            int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.dtRange());
+        int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.dtRange());
 
-            return conjSeqFinal(dt, left, right);
+        return conjSeqFinal(dt, left, right);
+    }
+
+    private static Term conjSeqFinal(int dt, Term left, Term right) {
+        assert (dt != XTERNAL);
+
+        if (left == False) return False;
+        if (left == Null) return Null;
+        if (left == True) return right;
+
+        if (right == False) return False;
+        if (right == Null) return Null;
+        if (right == True) return left;
+
+        if (dt == 0 || dt == DTERNAL) {
+            if (left.equals(right)) return left;
+            if (left.equalsNeg(right)) return False;
+
+            //return CONJ.the(dt, left, right); //send through again
         }
-        private static Term conjSeqFinal ( int dt, Term left, Term right){
-            assert (dt != XTERNAL);
-
-            if (left == False) return False;
-            if (left == Null) return Null;
-            if (left == True) return right;
-
-            if (right == False) return False;
-            if (right == Null) return Null;
-            if (right == True) return left;
-
-            if (dt == 0 || dt == DTERNAL) {
-                if (left.equals(right)) return left;
-                if (left.equalsNeg(right)) return False;
-
-                //return CONJ.the(dt, left, right); //send through again
-            }
 
 
-            //System.out.println(left + " " + right + " " + left.compareTo(right));
-            //return CONJ.the(dt, left, right);
-            if (left.compareTo(right) > 0) {
-                //larger on left
-                dt = -dt;
-                Term t = right;
-                right = left;
-                left = t;
-            }
+        //System.out.println(left + " " + right + " " + left.compareTo(right));
+        //return CONJ.the(dt, left, right);
+        if (left.compareTo(right) > 0) {
+            //larger on left
+            dt = -dt;
+            Term t = right;
+            right = left;
+            left = t;
+        }
 
-            if (left.op() == CONJ && right.op() == CONJ) {
-                int ldt = left.dt(), rdt = right.dt();
-                if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
-                    int ls = left.subs(), rs = right.subs();
-                    if ((ls > 1 + rs) || (rs > ls)) {
-                        //seq imbalance; send through again
-                        return CONJ.the(dt, left, right);
-                    }
+        if (left.op() == CONJ && right.op() == CONJ) {
+            int ldt = left.dt(), rdt = right.dt();
+            if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
+                int ls = left.subs(), rs = right.subs();
+                if ((ls > 1 + rs) || (rs > ls)) {
+                    //seq imbalance; send through again
+                    return CONJ.the(dt, left, right);
                 }
             }
-
-
-            return Op.implInConjReduce(instance(CONJ, dt, left, right));
         }
 
+
+        return Op.implInConjReduce(instance(CONJ, dt, left, right));
     }
+
+}

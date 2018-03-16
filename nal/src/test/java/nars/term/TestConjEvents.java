@@ -67,7 +67,20 @@ public class TestConjEvents {
         assertFalse(c.add($.the("x").neg(), 1));
         assertEquals(False, c.term());
     }
-
+    @Test public void testEventContradictionAmongNonContradictions() {
+        ConjEvents c = new ConjEvents();
+        c.add($.the("x"), 1);
+        c.add($.the("y"), 1);
+        c.add($.the("z"), 1);
+        assertFalse(c.add($.the("x").neg(), 1));
+        assertEquals(False, c.term());
+    }
+    @Test public void testEventContradictionAmongNonContradictionsRoaring() {
+        ConjEvents c = new ConjEvents();
+        c.add($.$safe("(&&,a,b,c,d,e,f,g,h)"), ETERNAL);
+        boolean added = c.add($.the("a").neg(), 1);
+        assertEquals(False, c.term());
+    }
     @Test public void testEventContradictionWithEternal() {
         ConjEvents c = new ConjEvents();
         c.add($.the("x"), ETERNAL);
