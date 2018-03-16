@@ -7,6 +7,7 @@ import nars.Op;
 import nars.term.compound.util.ConjEvents;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.junit.jupiter.api.Test;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
 
@@ -24,7 +25,9 @@ public class TestConjEvents {
         c.add($.the("y"), ETERNAL);
         assertEquals("(x&&y)", c.term().toString());
         assertEquals(1, c.event.size());
+        assertEquals(byte[].class, c.event.get(ETERNAL).getClass());
     }
+
     @Test public void testSimpleEternalsNeg() {
         ConjEvents c = new ConjEvents();
         c.add($.the("x"), ETERNAL);
@@ -39,6 +42,17 @@ public class TestConjEvents {
         assertEquals("(x &&+1 y)", c.term().toString());
         assertEquals(1, c.shift());
         assertEquals(2, c.event.size());
+    }
+    @Test public void testRoaringBitmapNeededManyEventsAtSameTime() {
+        ConjEvents c = new ConjEvents();
+        c.add($.the("a"), 1);
+        c.add($.the("b"), 1);
+        c.add($.the("c"), 1);
+        c.add($.the("d"), 1);
+        c.add($.the("e"), 1);
+        assertEquals("(&|,a,b,c,d,e)", c.term().toString());
+        assertEquals(1, c.event.size());
+        assertEquals(RoaringBitmap.class, c.event.get(1).getClass());
     }
     @Test public void testSimpleEventsNeg() {
         ConjEvents c = new ConjEvents();
