@@ -145,11 +145,13 @@ public enum TermLinks {
         switch (b.op()) {
             case INH:
             case SIM:
-            case IMPL: //<- check if IMPL needs it
                 return false;
+
             case PROD:
                 return false;
 
+            case IMPL: //<- check if IMPL needs it
+                return true;
             case SECTe:
             case SECTi:
             case SETe:

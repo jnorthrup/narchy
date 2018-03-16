@@ -2,6 +2,7 @@ package nars.derive;
 
 import nars.NAR;
 import nars.Op;
+import nars.Task;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
@@ -146,7 +147,7 @@ public final class Termify extends AbstractPred<Derivation> {
             }
         }
 
-        return d.derivedTerm.set(c2) != null;
+        return Task.validTaskTerm(c2.unneg()) && d.derivedTerm.set(c2) != null;
     }
 
 

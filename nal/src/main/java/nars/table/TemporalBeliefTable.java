@@ -137,6 +137,11 @@ public interface TemporalBeliefTable extends TaskTable {
         }
 
         @Override
+        public @Nullable Task match(long when, Term t, NAR n) {
+            return null;
+        }
+
+        @Override
         public void forEachTask(Consumer<? super Task> x) {
 
         }

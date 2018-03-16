@@ -12,6 +12,7 @@ import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.concept.dynamic.DynamicTruthBeliefTable;
 import nars.concept.dynamic.DynamicTruthModel;
+import nars.link.TaskLink;
 import nars.link.TaskLinkCurveBag;
 import nars.subterm.Subterms;
 import nars.table.*;
@@ -66,7 +67,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
         Bag<Term, PriReference<Term>> termbag =
                 new CurveBag<>(Param.termlinkMerge, newBagMap(v), 0);
-        CurveBag<PriReference<Task>> taskbag =
+        CurveBag<TaskLink> taskbag =
                 new TaskLinkCurveBag(newBagMap(v));
 
         return new Bag[] {  termbag, taskbag };

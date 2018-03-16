@@ -3,10 +3,10 @@ package nars.util.graph;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import jcog.data.graph.AdjGraph;
-import jcog.pri.PriReference;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.transform.Retemporalize;
@@ -174,9 +174,9 @@ public enum TermGraph {
 
         //if (g.antinodes.contains())
 
-        Consumer<PriReference<? extends Termed>> each = ml -> {
+        Consumer<TaskLink> each = ml -> {
 
-            Termed termed = ml.get();
+            Termed termed = ml.get(nar);
             if (termed == null) return;
             Term term = termed.term();
             if (term == null) return;

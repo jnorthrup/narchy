@@ -11,6 +11,7 @@ import nars.control.Cause;
 import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -166,6 +167,9 @@ public class Revision {
                     Term bi = bb.sub(i);
                     if (!ai.equals(bi)) {
                         Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
+                        if (y instanceof Bool && (!(ai instanceof Bool)))
+                            return Null; //failure
+
                         if (!ai.equals(y)) {
                             change = true;
                             ai = y;
@@ -680,7 +684,7 @@ public class Revision {
                 } else {
                     long dt = bs - as;
                     t = intermpolate(at, dt, bt, aProp, nar);
-                    if (t == null || !t.op().conceptualizable)
+                    if (t == null || !t.unneg().op().conceptualizable)
                         continue;
                 }
 
@@ -880,8 +884,10 @@ public class Revision {
 
             float firstProp = e1/(e1+e2);
             content = intermpolate(first.term(), second.term(), firstProp, nar);
+
             //TODO apply a discount factor for the relative difference of the two intermpolated terms
-            if (content == null || !content.op().conceptualizable)
+
+            if (!Task.validTaskTerm(content))
                 return first;
 
         } else {
@@ -897,12 +903,6 @@ public class Revision {
         float eAdjusted = truth.evi() * factor;
         if ((eAdjusted * range) < minEviInteg)
             return first;
-
-        if (content.op()==NEG) {
-            content = content.unneg();
-            truth = truth.neg();
-        }
-
 
         Task t = Task.tryTask(content, first.punc(), truth, (c, tr)->{
             @Nullable PreciseTruth cTruth = tr.dither(nar, factor);

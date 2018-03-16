@@ -418,7 +418,7 @@ public interface Compound extends Term, IPair, Subterms {
                     return false;
             }
         } else
-            return op.commutative;// && subs() > 1;
+            return op.commutative && subs() > 1;
     }
 
 
@@ -929,10 +929,18 @@ public interface Compound extends Term, IPair, Subterms {
         if (this.equals(x))
             return true;
 
-        return
-                (opX() == x.opX() && structure() == x.structure() && volume() == x.volume()) //pre-test
+        //pre-test
+        if (
+                opX() == x.opX()
                         &&
-                        root().equals(x.root());
+                structure() == x.structure()
+                ) {
+
+            Term root = root();
+            return (root!=this && root.equals(x)) || root.equals(x.root());
+        }
+
+        return false;
     }
 
 

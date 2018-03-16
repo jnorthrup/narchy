@@ -41,33 +41,34 @@ import static nars.truth.TruthFunctions.w2cSafe;
 public class Deriver extends Causable {
 
 
-
     public final IntRange conceptsPerIteration = new IntRange(2, 1, 1024);
 
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
-    @Range(min=1, max=16)
+    @Range(min = 1, max = 16)
     public int premisesPerConcept = 3;
 
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
-    @Range(min=1, max=16)
+    @Range(min = 1, max = 16)
     public int termLinksPerTaskLink = 3;
 
 
-
-    @Range(min=1, max=1024)
+    @Range(min = 1, max = 1024)
     public int burstMax = 512;
 
 
-
-    /** source of concepts supplied to this for this deriver */
+    /**
+     * source of concepts supplied to this for this deriver
+     */
     private final Consumer<Predicate<Activate>> concepts;
 
-    /** list of conclusions that in which this deriver can result */
+    /**
+     * list of conclusions that in which this deriver can result
+     */
     private final Cause[] subCauses;
 
     /**
@@ -76,7 +77,6 @@ public class Deriver extends Causable {
     final Memoize<ProtoDerivation.PremiseKey, short[]> whats =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
                     32 * 1024, 4, false);
-
 
 
     transient private long now;
@@ -134,7 +134,7 @@ public class Deriver extends Causable {
 
             //absolute
             int max = d.termVolMax;
-            float headroomRemain = Util.unitize( 1f - (dCompl / max) * simplicity );
+            float headroomRemain = Util.unitize(1f - (dCompl / max) * simplicity);
             discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
         }
 
@@ -152,7 +152,7 @@ public class Deriver extends Causable {
 
             //opinionation: preference for polarized beliefs/goals
             float polarizationPreference = 0.5f;
-            discount *= Util.lerp(polarizationPreference, 1, (2 * Math.abs(derivedTruth.freq()-0.5f)));
+            discount *= Util.lerp(polarizationPreference, 1, (2 * Math.abs(derivedTruth.freq() - 0.5f)));
         }
 
         return discount * d.pri;
@@ -213,14 +213,13 @@ public class Deriver extends Causable {
 
             //SELECT
 
-            fired += selectPremises(burstSize, (tasklink, termlink)->{
-                Task t = tasklink.get();
-                if (t != null) {
-                    Premise premise = new Premise(t, termlink.get());
-                    if (!premiseBurst.add(premise)) {
-                        n.emotion.premiseBurstDuplicate.increment();
-                    }
+            fired += selectPremises(burstSize, (t, termlink) -> {
+
+                Premise premise = new Premise(t, termlink.get());
+                if (!premiseBurst.add(premise)) {
+                    n.emotion.premiseBurstDuplicate.increment();
                 }
+
                 return true;
 
 //                premise.priSet(Param.taskTermLinksToPremise.apply(
@@ -274,7 +273,7 @@ public class Deriver extends Causable {
 
         if (fired == 0) return 0;
         else
-            return (int) Math.ceil(fired/((float)iterMult)); //adjust for the workload to correspond with the demand units
+            return (int) Math.ceil(fired / ((float) iterMult)); //adjust for the workload to correspond with the demand units
     }
 
     protected void input(int premises, Collection<Task> x) {
@@ -294,19 +293,19 @@ public class Deriver extends Causable {
         nar.input(x);
     }
 
-    private int selectPremises(final int premisesMax, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
+    private int selectPremises(final int premisesMax, BiPredicate<Task, PriReference<Term>> each) {
 
         int premisesRemain[] = new int[]{premisesMax};
         int perConceptRemain[] = new int[1];
 
-        int tasklinks = (int) Math.ceil(premisesMax / ((float)termLinksPerTaskLink));
+        int tasklinks = (int) Math.ceil(premisesMax / ((float) termLinksPerTaskLink));
 
         //return false to stop the current concept but not the entire chain
-        BiPredicate<PriReference<Task>, PriReference<Term>> kontinue = (tasklink, termlink) ->
+        BiPredicate<Task, PriReference<Term>> kontinue = (tasklink, termlink) ->
                 (perConceptRemain[0]-- > 0) && each.test(tasklink, termlink) && (--premisesRemain[0] > 0);
 
         //for safety in case nothing is generated, this will limit the max # of concepts tried
-        int[] conceptsRemain = new int[] { 2 * (int) Math.ceil(premisesMax / ((float)(termLinksPerTaskLink*termLinksPerTaskLink))) };
+        int[] conceptsRemain = new int[]{2 * (int) Math.ceil(premisesMax / ((float) (termLinksPerTaskLink * termLinksPerTaskLink)))};
 
         this.concepts.accept(a -> {
 
@@ -447,7 +446,6 @@ public class Deriver extends Causable {
     }
 
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
-
 
 
 }

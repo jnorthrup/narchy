@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
@@ -182,8 +183,34 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     @Override
     public Y get(/*X*/Object key) {
-        Versioned<Y> v = map.get(key);
+        Versioned<Y> v = getVersioned(key);
         return v != null ? v.get() : null;
+    }
+
+    public Versioned<Y> getVersioned(/*X*/Object key) {
+        return map.get(key);
+    }
+
+    public boolean compute(/*X*/X key, Function<Y,Y> f) {
+        final boolean[] result = {false};
+        map.compute(key, (k, v)->{
+
+            Y prev, next;
+
+            prev = v == null ? null : v.get();
+
+            next = f.apply(prev);
+
+            if (next!=null) {
+                if (v == null)
+                    v = newEntry(k);
+                result[0] = v.set(next)!=null;
+            } else {
+                result[0] = false;
+            }
+            return v;
+        });
+        return result[0];
     }
 
 //    @Nullable

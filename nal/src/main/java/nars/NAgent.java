@@ -773,30 +773,30 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
 
-    /** adds the actions to its set of termlink templates */
-    protected class ActionInfluencingScalar extends Scalar {
-
-        List<Termed> templatesPlusActions;
-
-        public ActionInfluencingScalar(Term id, FloatNormalized value) {
-            super(id, value, NAgent.this.nar());
-            templatesPlusActions = null;
-
-
-            addSensor(this);
-        }
-
-        @Override
-        public List<Termed> templates() {
-            List<Termed> superTemplates = super.templates();
-            //HACK
-            if (templatesPlusActions == null || templatesPlusActions.size() != (superTemplates.size() + actions.size())) {
-                List<Termed> l = $.newArrayList(superTemplates.size() + actions.size());
-                l.addAll(superTemplates);
-                l.addAll(actions.keySet());
-                this.templatesPlusActions = l;
-            }
-            return templatesPlusActions;
-        }
-    }
+//    /** adds the actions to its set of termlink templates */
+//    protected class ActionInfluencingScalar extends Scalar {
+//
+//        List<Termed> templatesPlusActions;
+//
+//        public ActionInfluencingScalar(Term id, FloatNormalized value) {
+//            super(id, value, NAgent.this.nar());
+//            templatesPlusActions = null;
+//
+//
+//            addSensor(this);
+//        }
+//
+//        @Override
+//        public List<Termed> templates() {
+//            List<Termed> superTemplates = super.templates();
+//            //HACK
+//            if (templatesPlusActions == null || templatesPlusActions.size() != (superTemplates.size() + actions.size())) {
+//                List<Termed> l = $.newArrayList(superTemplates.size() + actions.size());
+//                l.addAll(superTemplates);
+//                l.addAll(actions.keySet());
+//                this.templatesPlusActions = l;
+//            }
+//            return templatesPlusActions;
+//        }
+//    }
 }

@@ -232,7 +232,7 @@ public final class Conclude {
 
             final Term y = xy.getOne();
 
-            if (!y.op().conceptualizable ||
+            if (!y.unneg().op().conceptualizable ||
                 y.equals(x) || /* keep only if it differs */
                 //!y.hasAny(Op.ConstantAtomics) ||  //entirely variablized
                 !Taskify.valid(y)

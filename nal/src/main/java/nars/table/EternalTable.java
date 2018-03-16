@@ -94,6 +94,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         return Streams.stream(iterator());
     }
 
+
+
     @Override
     protected Task[] newArray(int s) {
         return new Task[s];

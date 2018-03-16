@@ -9,6 +9,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
+import nars.link.TaskLink;
 import nars.link.TermLinks;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
@@ -25,7 +26,7 @@ import static nars.concept.util.ConceptState.New;
 public class NodeConcept implements Concept {
 
     public final Term term;
-    public final Bag<Task, PriReference<Task>> taskLinks;
+    public final Bag<?, TaskLink> taskLinks;
     public final Bag<Term, PriReference<Term>> termLinks;
     public transient ConceptState state = New;
     private final List<Termed> templates;
@@ -88,7 +89,7 @@ public class NodeConcept implements Concept {
 
 
     @Override
-    public Bag<Task, PriReference<Task>> tasklinks() {
+    public Bag<?, TaskLink> tasklinks() {
         return taskLinks;
     }
 

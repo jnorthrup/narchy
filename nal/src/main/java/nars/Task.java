@@ -387,27 +387,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     @Nullable
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long creation, long start, long end) {
 
-        //TODO:
-        //Task.tryTask()
-
-        if (end < start)
-            throw new InvalidTaskException(x, "clone: wrong order of start/end occurrence");
-
-        boolean negated = (newContent.op() == NEG);
-        if (negated) {
-            newContent = newContent.unneg();
-        }
-
-        boolean valid = Task.validTaskTerm(newContent, newPunc, false);
-        assert(valid);
-//        if (!Task.validTaskTerm(newContent, newPunc, true)) {
-//            throw new InvalidTaskException(newContent, "clone: " + x + "\n\tcontent=" + newContent);
-//        }
-
-        NALTask y = new NALTask(newContent, newPunc,
-                (newPunc == BELIEF || newPunc == GOAL) ? newTruth.negIf(negated) : null,
+        NALTask y = (NALTask) Task.tryTask(newContent, newPunc, newTruth, (c, t)->
+            new NALTask(c, newPunc,
+                t,
                 creation, start, end,
-                x.stamp());
+                x.stamp()));
+        if (y == null)
+            return null;
 
         float xp = x.pri();
         if (xp == xp)
@@ -433,7 +419,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if ((punc == BELIEF || punc == GOAL) && tr.conf() < Param.TRUTH_EPSILON)
             throw new InvalidTaskException(t, "insufficient evidence");
 
-        ObjectBooleanPair<Term> x = tryContent(t, punc, false);
+        ObjectBooleanPair<Term> x = tryContent(t, punc, Param.DEBUG_EXTRA);
         /*if (x != null)*/ {
             return res.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null);
         }

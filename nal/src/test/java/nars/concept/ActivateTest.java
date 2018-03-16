@@ -49,7 +49,7 @@ public class ActivateTest {
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
             cf.premises(nar, (task, term) -> {
-                Task ptask = task.get();
+                Task ptask = task;
                 Term pterm = term.get();
                 System.out.println("tasklink=" + ptask + " termlink=" + pterm);
                 if (pterm instanceof Atom || !A.equals(pterm.sub(0)))

@@ -24,9 +24,11 @@ import com.google.common.collect.Iterators;
 import jcog.bag.Bag;
 import jcog.data.map.MetaMap;
 import jcog.pri.PriReference;
+import jcog.pri.Priority;
 import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptState;
+import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TaskTable;
@@ -50,7 +52,7 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
 
 //    Concept[] EmptyArray = new Concept[0];
 
-    /*@NotNull*/ Bag<Task,PriReference<Task>> tasklinks();
+    /*@NotNull*/ Bag<?,TaskLink> tasklinks();
 
     /*@NotNull*/ Bag<Term,PriReference<Term>> termlinks();
 
@@ -116,10 +118,11 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
         try {
             out.append("concept: ").append(toString()).append('\t').append(getClass().toString()).append('\n');
 
-            Consumer<PriReference> printBagItem = b -> {
+            Consumer<Priority> printBagItem = b -> {
                 try {
                     out.append(printIndent);
-                    out.append(String.valueOf(b.get())).append(' ').append(b.toBudgetString());
+                    out.append(b.toString());
+                    //out.append(String.valueOf(b.get())).append(' ').append(b.toBudgetString());
                     out.append("\n");
                 } catch (IOException e) {
                     e.printStackTrace();

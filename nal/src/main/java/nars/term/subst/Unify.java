@@ -14,14 +14,17 @@ import nars.Param;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.mutate.Termutator;
 import nars.term.Term;
-import nars.util.TermHashMap;
 import nars.term.Termlike;
+import nars.util.TermHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 
 /* recurses a pair of compound term tree's subterms
@@ -327,29 +330,61 @@ public abstract class Unify extends Versioning implements Subst {
      * args should be non-null. the annotations are removed for perf reasons
      */
     public final boolean putXY(final Term x, final Term y) {
-//        assert(!x0.equals(y)): "attempted to explicitly create a cycle";
 
         if (y.containsRecursively(x)) {
             //TODO maybe create a common variable
             return false; //cyclic
         }
 
-        Term y0 = xy(x);
-
-        if (y0 != null) {
-//            if (y0.equals(x))
-//                return true;
+//        //TODO use a single Map.compute() function to avoid repeat hashmap gets
+//        return xy.compute(x, (y0) -> {
+//            if (y0 != null !replace(y0, y))
+//                return null; //no change //<- should return y0 if replace failed
 //            else
+//                return y;   //try set
+//        });
 
-            //return y0.equals(y);// || unify(y0, y);
-            return y0.equals(y);
+        Versioned<Term> y0Versioned = xy.getVersioned(x);
+        if (y0Versioned != null) {
+            Term y0 = y0Versioned.get();
+            if (y0 != null) {
+                if (y0.equals(y))
+                    return true;
 
-        } else /*if (matchType(x0))*/ {
+                if (!replace(y0, y))
+                    return false; //mismatch
+            }
 
+            return y0Versioned.set(y) != null;
+        } else {
             return xy.tryPut(x, y);
-
         }
+    }
 
+    /** whether to replace x with y */
+    protected boolean replace(Term x, Term y) {
+        //return !y0.equalsRoot(y);
+
+        if (x.equals(y)) {
+            return true;
+        } else {
+            //return y instanceof Compound
+            //y.moreSpecificThan(y0);
+            if (y.equalsRoot(x)) {
+//                return true;
+//            }
+//                //HACK compare first level DT only
+                int ydt = y.dt();
+                if (ydt!=XTERNAL) {
+                    int xdt = x.dt();
+                    if ((xdt == XTERNAL) || (xdt == DTERNAL && ydt!=DTERNAL)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
     }
 
     public final boolean replaceXY(final Term x, final Term y) {

@@ -199,7 +199,7 @@ public interface BeliefTable extends TaskTable {
         return match(start, end, template, nar, (each)->true);
     }
 
-    default Task match(long when, @Nullable Term template, NAR nar) {
+    @Override default Task match(long when, @Nullable Term template, NAR nar) {
         return match(when, when, template, nar);
     }
 

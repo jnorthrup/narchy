@@ -6,13 +6,13 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.link.TaskLink;
 import nars.link.Tasklinks;
 import nars.term.Term;
 import nars.term.Termed;
 
 import java.util.Random;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 
 /**
@@ -29,11 +29,11 @@ public class Activate extends PLink<Concept> implements Termed {
      * hypothesize premises, up to a max specified #
      */
     /*@NotNull*/
-    public void premises(NAR nar, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _tasklinks, int _termlinksPerTasklink) {
+    public void premises(NAR nar, BiPredicate<Task, PriReference<Term>> each, int _tasklinks, int _termlinksPerTasklink) {
 
         nar.emotion.conceptFire.increment();
 
-        final Bag tasklinks = id.tasklinks();
+        Bag<?, TaskLink> tasklinks = id.tasklinks();
 
         float linkForgetting = nar.forgetRate.floatValue();
         tasklinks.commit(tasklinks.forget(linkForgetting));
@@ -54,17 +54,16 @@ public class Activate extends PLink<Concept> implements Termed {
 
         Random rng = nar.random();
 
-        tasklinks.sample(rng, _tasklinks, (Predicate<PriReference<Task>>) tasklink -> {
+        tasklinks.sample(rng, _tasklinks, tasklink -> {
 
-
-            Task task = tasklink.get();
+            Task task = tasklink.get(nar);
             if (task != null) {
 
                 //if (priApplied > Pri.EPSILON)
                 Tasklinks.linkTaskTemplates(id, task, /*pri *  */ task.priElseZero(), nar);
 
                 termlinks.sample(rng, _termlinksPerTasklink, (termlink) -> {
-                    if (!each.test(tasklink, termlink)) {
+                    if (!each.test(task, termlink)) {
                         ttl[0] = 0;
                         return false;
                     } else {

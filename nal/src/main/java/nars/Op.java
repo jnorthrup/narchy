@@ -180,8 +180,6 @@ public enum Op {
 
             }
 
-            boolean cdt = concurrent(dt);
-
             int trues = 0; //# of trues to ignore
             for (Term t : u) {
                 if (t == Op.Null || t == False)
@@ -227,8 +225,19 @@ public enum Op {
             switch (dt) {
                 case DTERNAL:
                 case 0:
-                    if (u.length == 2 && u[0].equalsNeg(u[1])) //fast conegation check, rather than the exhaustive multi-term one ahead
-                        return False;
+                    if (u.length == 2) {
+                        //fast n=2 cases
+
+                        if (u[0].equals(u[1]))
+                            return u[0];
+
+                        if (u[0].equalsNeg(u[1]))
+                            return False;
+
+                        if (!u[0].unneg().op().temporal && !u[1].unneg().op().temporal)
+                            return Op.instance(CONJ, dt, Terms.sorted(u));
+                    }
+
                     ci = junctionFlat(dt, u);
                     break;
 
@@ -267,7 +276,7 @@ public enum Op {
 
                     }
 
-                    switch (u.length) {
+                    switch (ul) {
                         case 0:
                             return True;
 

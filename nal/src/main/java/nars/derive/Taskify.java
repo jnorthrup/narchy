@@ -15,6 +15,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static nars.Op.BOOL;
 import static nars.Op.VAR_PATTERN;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
 
@@ -37,13 +38,15 @@ public class Taskify extends AbstractPred<Derivation> {
         this.channel = channel;
     }
 
+    static final int PatternsOrBool = VAR_PATTERN.bit | BOOL.bit;
     public static boolean valid(Term x) {
-        if ((x != null) && x.op().conceptualizable) {
+        if ((x != null) && x.unneg().op().conceptualizable) {
 
-            if (x.hasAny(VAR_PATTERN))
+            if (x.hasAny(PatternsOrBool))
                 return false; //throw new RuntimeException("shouldnt happen");
 
-            return Task.validTaskTerm(x);
+            //return  Task.validTaskTerm(x);
+            return true;
         }
 
         return false;

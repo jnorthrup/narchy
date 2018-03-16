@@ -10,6 +10,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -56,20 +57,76 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         }
     }
 
+    @Override
+    public X compute(Term key, BiFunction<? super Term, ? super X, ? extends X> f) {
+        if (key instanceof AnonID) {
+            short a = ((AnonID) key).anonID();
+            if (id == null) {
+                X next = f.apply(key, null);
+                if (next!=null) {
+                    id = newIDMap();
+                    id.put(a, next);
+                }
+                return next;
+            } else {
+                return id.updateValue(a, ()->f.apply(key,null), (p)->
+                        f.apply(key, p));
+            }
+        } else {
+            //use the map's native computeIfAbsent..
+            if (other == null) {
+                X next = f.apply(key, null);
+                if (next!=null) {
+                    other = newOtherMap();
+                    other.put(key, next);
+                }
+                return next;
+            } else {
+                return other.compute(key, f);
+            }
+        }
+    }
+
     public X computeIfAbsent(Term key,
-                              Function<? super Term, ? extends X> mappingFunction) {
-//        if (key == null)
-//            throw new NullPointerException();
-        X v;
-        if ((v = get(key)) == null) {
-            X newValue;
-            if ((newValue = mappingFunction.apply(key)) != null) {
-                put(key, newValue);
-                return newValue;
+                             Function<? super Term, ? extends X> mappingFunction) {
+
+//        X v;
+//        if ((v = get(key)) == null) {
+//            X newValue;
+//            if ((newValue = mappingFunction.apply(key)) != null) {
+//                put(key, newValue);
+//                return newValue;
+//            }
+//        }
+//        return v;
+
+        if (key instanceof AnonID) {
+            short a = ((AnonID) key).anonID();
+            if (id == null) {
+                X next = mappingFunction.apply(key);
+                if (next!=null) {
+                    id = newIDMap();
+                    id.put(a, next);
+                }
+                return next;
+            } else {
+                return id.getIfAbsentPut(a, () ->
+                        mappingFunction.apply(key));
+            }
+        } else {
+            //use the map's native computeIfAbsent..
+            if (other == null) {
+                X next = mappingFunction.apply(key);
+                if (next!=null) {
+                    other = newOtherMap();
+                    other.put(key, next);
+                }
+                return next;
+            } else {
+                return other.computeIfAbsent(key, mappingFunction);
             }
         }
 
-        return v;
     }
 
     @Override

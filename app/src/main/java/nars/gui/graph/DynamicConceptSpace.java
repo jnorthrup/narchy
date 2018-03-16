@@ -12,11 +12,11 @@ import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
 import nars.NAR;
-import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.DurService;
 import nars.gui.ConceptSurface;
+import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -353,12 +353,18 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             float pri = link.priElseNeg1();
             if (pri < 0)
                 return;
+            accept(src, link.get().term(), pri, TERMLINK);
+        }
 
-            Termed ttt = link.get();
-            if (ttt == null)
+        public void accept(ConceptWidget src, TaskLink link) {
+            float pri = link.priElseNeg1();
+            if (pri < 0)
                 return;
+            accept(src, link.term(), pri, TASKLINK);
+        }
 
-            Term term = ttt.term();
+        public void accept(ConceptWidget src, Term term, float pri, int type) {
+
             if (term.op().conceptualizable) {
                 Term tt = term.concept();
                 if (!tt.equals(src.id.term())) {
@@ -369,8 +375,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                             //                Concept c = space.nar.concept(tt);
                             //                if (c != null) {
 
-                            int type;
-                            type = ttt instanceof Task ? TASKLINK : TERMLINK;
+
 
                             edges.putAsync(new ConceptWidget.EdgeComponent(src, tgt, type, pri * edgeBrightness.floatValue()));
                             //new PLinkUntilDeleted(ate, pri)

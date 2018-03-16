@@ -37,7 +37,7 @@ public class ArithmeticIntroduction extends LeakBack {
     }
 
     public static Term apply(Term x, @Nullable Anon anon, Random rng) {
-        if (x.complexity() < 3 || (anon==null && !x.hasAny(INT)))
+        if ((anon == null && !x.hasAny(INT)) || x.complexity() < 3)
             return x;
 
         //find all unique integer subterms
@@ -70,8 +70,8 @@ public class ArithmeticIntroduction extends LeakBack {
         IntObjectHashMap<List<Supplier<Term[]>>> mods = new IntObjectHashMap(ii.length);
 
         Variable v =
-                //$.varDep("x");
-                $.varIndep("x");
+                $.varDep("x");
+                //$.varIndep("x");
 
         //test arithmetic relationships
         for (int a = 0; a < ui; a++) {
@@ -136,9 +136,14 @@ public class ArithmeticIntroduction extends LeakBack {
         }
 
         Term y =
-                //CONJ.the(yy, SIM.the(baseTerm, v));
+                CONJ.the(yy, SIM.the(baseTerm, v));
                 //IMPL.the(SIM.the(baseTerm, v), yy);
-                IMPL.the(yy, SIM.the(baseTerm, v));
+                //IMPL.the(yy, SIM.the(baseTerm, v));
+
+        if (y.op()!=CONJ) {
+        //if (y.op()!=IMPL) {
+            return null; //something happened
+        }
 
         if (x.isNormalized()) {
             y = y.normalize();

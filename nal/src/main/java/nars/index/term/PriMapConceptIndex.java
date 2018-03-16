@@ -9,10 +9,10 @@ import jcog.pri.PriCache;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
 import nars.IO;
-import nars.Task;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.index.term.map.MaplikeConceptIndex;
+import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Variable;
@@ -188,14 +188,14 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
 
                 Set<Termed> neighbors = new HashSet<>();
 
-                Consumer<PriReference> victimCollector = (k) -> {
-                    Termed t = (Termed) k.get();
+                Consumer<PriReference<Term>> victimCollector = (k) -> {
+                    Term t = k.get();
                     if (t != null) {
                         neighbors.add(t);
                     }
                 };
 
-                concept.tasklinks().forEach(victimCollector);
+                //concept.tasklinks().forEach(victimCollector);
                 concept.termlinks().forEach(victimCollector);
 
                 super.remove(concept.term());
@@ -337,7 +337,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
         // (they are not divided like this)
         int complexity = c.complexity();
 
-        Bag<Task, PriReference<Task>> ta = c.tasklinks();
+        Bag<?, TaskLink> ta = c.tasklinks();
         score += (ta.size() / (1f + ta.capacity())) / complexity;
 
         Bag<Term, PriReference<Term>> te = c.termlinks();

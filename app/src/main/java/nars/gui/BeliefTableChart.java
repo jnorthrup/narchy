@@ -60,7 +60,7 @@ public class BeliefTableChart extends Widget {
      */
     int projections = 32;
 
-    private final boolean showTaskLinks = true;
+    private final boolean showTaskLinks = false;
     @Deprecated
     private final boolean showEternal = true;
 
@@ -168,7 +168,6 @@ public class BeliefTableChart extends Widget {
 
     protected void draw(Termed tt, Concept cc, GL2 gl, long minT, long maxT) {
 
-
         TruthWave beliefs = this.beliefs;
         //if (!beliefs.isEmpty()) {
         renderTable(cc, minT, maxT, now, gl, beliefs, true);
@@ -184,7 +183,7 @@ public class BeliefTableChart extends Widget {
             float nowX = xTime(minT, maxT, now);
             cc.tasklinks().forEach(tl -> {
                 if (tl != null) {
-                    Task x = tl.get();
+                    Task x = tl.get(nar);
                     if ((x != null) && (x.isBeliefOrGoal())) {
                         long o = x.start();
                         float tlx = o == ETERNAL ? nowX : xTime(minT, maxT, o);

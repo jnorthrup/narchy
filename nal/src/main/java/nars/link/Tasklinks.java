@@ -1,7 +1,6 @@
 package nars.link;
 
 import jcog.bag.Bag;
-import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriForget;
@@ -30,16 +29,20 @@ public class Tasklinks {
         linkTask(x, p, b, null);
     }
 
-    static void linkTask(Task x, float p, Bag<Task, PriReference<Task>> b, @Nullable MutableFloat overflow) {
-        PLinkUntilDeleted<Task> xx = new PLinkUntilDeleted<>(x, p);
+    static void linkTask(Task x, float p, Bag<?, TaskLink> b, @Nullable MutableFloat overflow) {
+        TaskLink xx =
+                //new TaskLink.DirectTaskLink(x, p);
+                new TaskLink.GeneralTaskLink(x, p);
+
         if (overflow != null) {
-            PriReference<Task> yy = b.put(xx, overflow);
+            TaskLink yy = b.put(xx, overflow);
             if (yy!=xx && yy!=null) {
-                //if the tasks are different, merge the priorities to the linked one
-                Task y = yy.get();
-                if (y!=null && y!=x) {
-                    Param.taskMerge.merge(y, x);
-                }
+//
+//                //if the tasks are different, merge the priorities to the linked one
+//                Task y = yy.get();
+//                if (y!=null && y!=x) {
+//                    Param.taskMerge.merge(y, x);
+//                }
             }
         } else {
             b.putAsync(xx);

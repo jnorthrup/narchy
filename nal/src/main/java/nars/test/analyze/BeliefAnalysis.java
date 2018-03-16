@@ -1,13 +1,12 @@
 package nars.test.analyze;
 
 import jcog.bag.Bag;
-import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
-import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
@@ -127,7 +126,7 @@ public class BeliefAnalysis implements Termed {
 	}
 
 	@NotNull
-    public Bag<Task,PriReference<Task>> tasklinks() {
+    public Bag<?,TaskLink> tasklinks() {
 		return concept().tasklinks();
 	}
 

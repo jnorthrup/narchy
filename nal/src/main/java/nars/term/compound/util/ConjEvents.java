@@ -175,11 +175,17 @@ public class ConjEvents {
         if (x==CONJ && (dt=t.dt())!=XTERNAL
                 && (dt!=DTERNAL || at==ETERNAL)
                 && (dt!=0 || at!=ETERNAL)) {
-            return t.eventsWhile((w, e) -> add(e, w),
-                    at,
-                    (at == 0),
-                    (at == ETERNAL), //only decompose DTERNAL if in the ETERNAL context, otherwise they are embedded as events
-                    false, 0);
+
+//            try {
+                return t.eventsWhile((w, e) -> add(e, w),
+                        at,
+                        (at != ETERNAL),
+                        (at == ETERNAL), //only decompose DTERNAL if in the ETERNAL context, otherwise they are embedded as events
+                        false, 0);
+//            } catch (StackOverflowError e) {
+//                System.err.println(t + " " + at + " " + dt);
+//                throw new RuntimeException(t + " should not have recursed");
+//            }
         } else {
 
             short id = id(t, at);
@@ -322,7 +328,8 @@ public class ConjEvents {
         }
 
         return eternal!=null ?
-                Op.instance(CONJ, DTERNAL, sorted(eternal, temporal))
+                //Op.instance(CONJ, DTERNAL, sorted(eternal, temporal))
+                CONJ.the(DTERNAL, sorted(eternal, temporal))
                 :
                 temporal;
     }

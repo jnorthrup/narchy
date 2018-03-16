@@ -469,6 +469,22 @@ public class RevisionTest {
         return ss;
     }
 
+    @Test public void testEmbeddedIntermpolation() {
+        Term a = $.$safe("(a, (b ==>+2 c))");
+        Term b = $.$safe("(a, (b ==>+10 c))");
+        NAR nar = NARS.shell();
+        {
+            nar.dtMergeOrChoose.set(true);
+            Term c = Revision.intermpolate(a, b, 0.5f, nar);
+            assertEquals("(a,(b ==>+6 c))", c.toString());
+        }
+        {
+            nar.dtMergeOrChoose.set(false);
+            Term c = Revision.intermpolate(a, b, 0.9f, nar);
+            assertEquals("(a,(b ==>+10 c))", c.toString());
+        }
+    }
+
 //    private boolean validIntermpolation(@NotNull Set<Term> ut, Term ab) {
 //        return ut.equals( ((Compound)ab).recurseTermsToSet(ATOM) );
 //    }

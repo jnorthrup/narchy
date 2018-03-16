@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import static nars.$.*;
-import static nars.Op.False;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -149,8 +148,8 @@ public class TemporalTermTest {
     public void testStableConceptualization2() throws Narsese.NarseseException {
         Term c1 = ceptualStable("(((a)&&(b))&|do(that))");
         assertEquals(
-                //"(((a)&&(b)) &&+- do(that))",
-                "(&&,do(that),(a),(b))",
+                "(((a)&&(b)) &&+- do(that))",
+                //"(&&,do(that),(a),(b))",
                 c1.toString());
     }
 
@@ -332,8 +331,8 @@ public class TemporalTermTest {
     @Test
     public void testParseOperationInFunctionalForm2() throws Narsese.NarseseException {
         assertEquals(
-                //"(((a)&&(b))&|do(that))",
-                "(&|,do(that),(a),(b))",
+                "(((a)&&(b))&|do(that))",
+                //"(&|,do(that),(a),(b))",
                 $("(do(that) &&+0 ((a)&&(b)))").toString());
 
         Termed nt = $("(((that)-->do) &&+0 ((a)&&(b)))");

@@ -76,7 +76,8 @@ public class Anoncepts extends LeakBack {
             return 0;  //???
 
         short cid = out.id;
-        c.tasklinks().putAsync(new CauseLink.CauseLinkUntilDeleted<>(task, pri * taskLinkActivationRate.floatValue(), cid));
+
+        //c.tasklinks().putAsync(new CauseLink.CauseLinkUntilDeleted<>(task, pri * taskLinkActivationRate.floatValue(), cid));
         c.termlinks().putAsync(new CauseLink.PriCauseLink<>(taskTerm, pri * cr, cid));
 
         return 1;

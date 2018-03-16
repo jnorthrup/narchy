@@ -29,6 +29,7 @@ public interface QuestionTable extends TaskTable {
 
     /*@NotNull*/ QuestionTable Empty = new NullQuestionTable();
 
+
     class NullQuestionTable implements QuestionTable {
 
         @Override
@@ -78,7 +79,9 @@ public interface QuestionTable extends TaskTable {
     /** unsorted, MRU policy */
     class DefaultQuestionTable extends MRUCache<Task, Task> implements QuestionTable {
 
-        final Object lock = new Object();
+        final Object lock =
+                this;
+                //new Object();
 
         public DefaultQuestionTable() {
             super(0);
@@ -86,7 +89,13 @@ public interface QuestionTable extends TaskTable {
 
         @Override
         public void capacity(int newCapacity) {
-            setCapacity(newCapacity);
+            synchronized (lock) {
+                setCapacity(newCapacity);
+                //TODO
+                //while (size() > newCapacity) {
+                //   remove(weakest());
+                //}
+            }
         }
 
         @Override
@@ -101,7 +110,9 @@ public interface QuestionTable extends TaskTable {
         @Override
         public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
             Task u;
-            float tPri = t.priElseZero();
+            float tPri = t.pri();
+            if (tPri!=tPri)
+                return false;
 
             synchronized (lock) {
                 u = merge(t, t, (prev, next) -> {
@@ -109,13 +120,14 @@ public interface QuestionTable extends TaskTable {
                     return prev;
                 });
             }
-            Tasklinks.linkTask(u, tPri, c, n);
+
             if (u != t) {
                 t.delete();
-                return false;
-            } else {
-                return true;
             }
+
+            Tasklinks.linkTask(u, tPri, c, n);
+
+            return u == t;
         }
 
         @Override
@@ -147,7 +159,9 @@ public interface QuestionTable extends TaskTable {
             Task[] t = toArray();
             for (Task y : t) {
                 if (y.isDeleted()) {
-                    remove(y);
+                    synchronized (lock) {
+                        remove(y);
+                    }
                 } else {
                     x.accept(y);
                 }
