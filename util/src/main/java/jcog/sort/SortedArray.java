@@ -45,6 +45,8 @@ import java.util.function.Consumer;
  *
  * @param <E>
  * @author Andreas Hollmann
+ *
+ * TODO extend FasterList as a base
  */
 public abstract class SortedArray<E> extends AbstractCollection<E> {
 

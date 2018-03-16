@@ -38,7 +38,7 @@ public interface Priority extends Prioritized {
                     u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
             }
         }
-        assert(u.priElseZero() <= maxPri);
+        assert(u.priElseZero() <= maxPri + Pri.EPSILON);
         return u;
     }
 

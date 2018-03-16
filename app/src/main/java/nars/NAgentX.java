@@ -172,7 +172,9 @@ abstract public class NAgentX extends NAgent {
 
                 .time(clock)
                 .deriverAdd(1, 1)
-                .deriverAdd(2, 5)
+                .deriverAdd(2, 2)
+                .deriverAdd(3, 3)
+                .deriverAdd(5, 5)
                 .deriverAdd(6, 8)
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("goal_analogy.nal")
@@ -182,7 +184,7 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //250 * 1024
-                                150 * 1024
+                                250 * 1024
                                 //200 * 1024
                                 //100 * 1024
                                 //50 * 1024

@@ -91,7 +91,7 @@ public class LambdaStampedLock extends StampedLock {
         }
         return result;
     }
-    public <T> void readOptimistic(Runnable readProcedure) {
+    public void readOptimistic(Runnable readProcedure) {
         long stamp = tryOptimisticRead();
         readProcedure.run();
         if (!validate(stamp)) {

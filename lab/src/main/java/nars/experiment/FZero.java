@@ -71,6 +71,7 @@ public class FZero extends NAgentX {
                 //10,4
                 //16,8
         )/*.blur()*/).resolution(0.02f);
+        c.pixelPri.set(0.05f);
 
 //        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
 //                //32, 24

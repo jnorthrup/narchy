@@ -178,7 +178,12 @@ public class DeriveTime extends TimeGraph {
 
             if (!d.belief.equals(d.task)) {
                 if (beliefTime) {
-                    know(belief, d.beliefTruth, d.beliefAt);
+                    if (d.beliefAt==TIMELESS) {
+                        //wtf
+                        know(bb);
+                    } else {
+                        know(belief, d.beliefTruth, d.beliefAt);
+                    }
                 } else {
                     know(bb);
                 }
@@ -695,7 +700,7 @@ public class DeriveTime extends TimeGraph {
 
 
     protected Supplier<Term> solveAll(Term pattern) {
-        ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS);
+        ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS*4);
 
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
         //final boolean[] rejectRelative = {false};

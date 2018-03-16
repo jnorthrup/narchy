@@ -79,30 +79,30 @@ public class PoolMultiExec extends AbstractExec {
     }
 
 
-    private final Consumer immediate = this::executeInline;
-
-    private final Consumer deferred = x -> {
-        if (x instanceof Task)
-            executeInline(x);
-        else
-            exe.accept(x);
-    };
-
     /**
      * the input procedure according to the current thread
      */
-    private Consumer add() {
-        return isWorker() ? immediate : deferred;
+    private void add(ITask x) {
+        if (isWorker()) {
+            //immediate
+            executeInline(x);
+        } else {
+            //deferred
+            if (x instanceof Task)
+                executeInline(x);
+            else
+                exe.accept(x);
+        }
     }
 
     @Override
     public void execute(Stream<? extends ITask> input) {
-        input.forEach(add());
+        input.forEach(this::add);
     }
 
     @Override
     public void execute(Iterator<? extends ITask> input) {
-        input.forEachRemaining(add());
+        input.forEachRemaining(this::add);
     }
 
     private boolean isWorker() {

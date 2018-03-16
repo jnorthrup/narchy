@@ -337,7 +337,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     protected void always(float activation) {
         for (int i = 0, alwaysSize = always.size(); i < alwaysSize; i++) {
             Task x = always.get(i);
-            x.priMax(
+            x.pri(
                     //nar.priDefault(GOAL)
                     activation
             );
@@ -660,7 +660,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     u = new NALTask(t.term(), t.punc(), t.truth(), nownow, nownow, nownow, new long[]{nar.time.nextStamp()});
                 }
 
-                u.priMax(nar.priDefault(u.punc()));
+                u.pri(nar.priDefault(u.punc()));
 
                 return u;
             };

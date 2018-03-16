@@ -141,15 +141,13 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 } else {
                     //HACK sample random subset
                     FasterList<Task> all = new FasterList(inner);
-                    int toRemove = all.size() - MAX_TASKS_TRUTHPOLATED;
                     Random rng = nar.random();
-                    for (int i = 0; i < toRemove; i++) {
-                        all.removeFast(rng.nextInt(all.size()));
+                    for (int i = 0; i < MAX_TASKS_TRUTHPOLATED; i++) {
+                        d.add(all.remove(rng.nextInt(all.size())));
                     }
-                    d.addAll(all);
                 }
 
-                if (d.size() < MAX_TASKS_TRUTHPOLATED) {
+                if (d.size() < 1 /*MIN_TASKS_TRUTHPOLATED */) {
                     Map.Entry<Long, Task> above = at.higherEntry(end);
                     if (above != null) d.add(above.getValue());
 

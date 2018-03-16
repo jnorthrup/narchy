@@ -30,12 +30,10 @@ public class ConjEvents {
     private static final byte POSITIVE = 1;
     private static final byte NEGATIVE = 2;
 
-    /** occurrences */
-    public final LongArrayList times = new LongArrayList(1);
 
     /** unnegated events */
     final TermHashMap<Byte> terms = new TermHashMap();
-    final List<Term> termsIndex = new FasterList(2);
+    final List<Term> termsIndex = new FasterList(8);
 
     /**
      * keys are encoded 8-bits + 8-bits vector of the time,term index
@@ -52,6 +50,9 @@ public class ConjEvents {
      */
     public final ShortByteHashMap event = new ShortByteHashMap(2);
 
+    /** occurrences */
+    public final LongArrayList times = new LongArrayList(1);
+    
     /** state which will be set in a terminal condition, or upon term construction in non-terminal condition */
     Term term = null;
 

@@ -184,8 +184,9 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 truthModel instanceof DynamicTruthModel ?
                         ((DynamicTruthModel)truthModel).construct(superterm, this) :
                         superterm,
-                beliefOrGoal ? BELIEF : GOAL, false);
-        /*if (r == null) return null;*/
+                beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG);
+        if (r == null)
+            return null;
 
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,

@@ -32,7 +32,12 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     }
 
     public void clear() {
-        if (id != null) id.clear();
+        if (id != null) {
+            int sizeBeforeClear = id.size();
+            id.clear();
+            if (sizeBeforeClear > 16)
+                id.compact(); //shrink internal key/value array
+        }
         //id = null;
 
         if (other != null) other.clear();

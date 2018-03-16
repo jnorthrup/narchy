@@ -2,8 +2,11 @@ package nars.table;
 
 import com.google.common.collect.Streams;
 import jcog.Util;
+import jcog.decide.Roulette;
+import jcog.list.FasterList;
 import jcog.pri.Priority;
 import jcog.sort.SortedArray;
+import jcog.util.ArrayIterator;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -19,9 +22,7 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -90,11 +91,45 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
-    public Stream<Task> streamTasks() {
-        return Streams.stream(iterator());
+    public void forEachTask(Consumer<? super Task> x) {
+        Task[] a = toArray();
+        for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
+            Task y = a[i];
+            if (y == null)
+                break; //null-terminator reached sooner than expected
+            if (!y.isDeleted())
+                x.accept(y);
+        }
     }
 
+    @Override
+    public Stream<Task> streamTasks() {
+//        Task[] values = toArray();
+//        if (values.length == 0) return Stream.empty();
+//        else return Stream.of(values);
 
+        Task[] list = this.list;
+        //TODO may not be null filtered properly for certain multithread cases of removal
+        return Streams.stream(ArrayIterator.get(list, Math.min(list.length, size)));
+    }
+
+    @Override
+    public Task match(long when, Term t, NAR n) {
+        Random rng = n.random();
+        synchronized (this) {
+
+            int s = size();
+            switch (s) {
+                case 0: return null;
+                case 1: return list[0];
+                default:
+                    Task[] l = this.list;
+                    return l[Roulette.decideRoulette(s,
+                            i -> l[i].evi(), //value function
+                            rng)];
+            }
+        }
+    }
 
     @Override
     protected Task[] newArray(int s) {
@@ -105,31 +140,61 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         int wasCapacity = this.capacity();
         if (wasCapacity != c) {
 
+            List<Task> trash = null;
             synchronized (this) {
-                if (capacity() == c)
-                    return; //already set
+
+                wasCapacity = capacity(); //just to be sure
 
                 int s = size;
+                if (s > c) {
 
-                //TODO can be accelerated by batch remove operation
-                Task x = strongest();
-                while (c < s--) {
-                    ((NALTask) removeLast()).delete(x);
+                    //TODO can be accelerated by batch/range remove operation
+
+                    trash = new FasterList(s - c);
+                    while (c < s--) {
+                        trash.add(removeLast());
+                    }
                 }
 
-                resize(c);
+                if (wasCapacity!=c)
+                    resize(c);
+            }
+
+            //do this outside of the synch
+            if (trash!=null) {
+//                Task s = strongest();
+//                if (s!=null) {
+//                    TaskLink.GeneralTaskLink sl = new TaskLink.GeneralTaskLink(s, 0);
+//                    trash.forEach(t -> ((NALTask)t).delete(sl));
+//                } else {
+                    trash.forEach(Task::delete);
+//                }
             }
 
         }
     }
 
+
     @Override
-    public void forEachTask(Consumer<? super Task> x) {
-        forEach((y) -> {
-            if (!y.isDeleted()) x.accept(y);
-        });
+    public Task[] toArray() {
+        //synchronized (this) {
+            if (size == 0)
+                return Task.EmptyArray;
+            else {
+                return Arrays.copyOf(list, size, Task[].class);
+                //return ArrayUtils.subarray(list, 0, size, Task[]::new);
+            }
+        //}
     }
 
+
+
+    @Override
+    public void clear() {
+        synchronized (this) {
+            super.clear();
+        }
+    }
 
     public Task strongest() {
         Object[] l = this.list;
@@ -403,10 +468,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     if (inputIns) {
                         if (activated == null) {
                             activated = input;
-                        } else {
-                            //revised will be activated, but at least emit a taskProcess for the input task
-                            nar.eventTask.emit(input);
                         }
+
+                        //revised will be activated, but at least emit a taskProcess for the input task
+                        nar.eventTask.emit(activated);
+
                     } else {
                         activated = null;
                         input.delete();

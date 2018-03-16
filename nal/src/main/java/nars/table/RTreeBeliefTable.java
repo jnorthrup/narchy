@@ -821,7 +821,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         ScanFilter scan(RTreeBeliefTable table, long _start, long _end) {
 
 
-            table.readOptimistic((Space<TaskRegion> tree) -> {
+            table.read((Space<TaskRegion> tree) -> {
+            //table.readOptimistic((Space<TaskRegion> tree) -> {
 
                 int s = tree.size();
                 if (s == 0)
@@ -866,6 +867,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 float maxConf = bounds.confMax();
                 float minConf = bounds.confMin();
 
+                int FATAL_LIMIT = 100;
+                int count = 0;
                 boolean done = false;
                 do {
 
@@ -883,6 +886,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                         if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
                             tree.whileEachIntersecting(r.set(rightMid, rightEnd, cMin, cMax), this);
 
+                        if (count++ == FATAL_LIMIT) {
+                            throw new RuntimeException("livelock in rtree scan");
+                        }
                     }
 
                     if (done)

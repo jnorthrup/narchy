@@ -105,18 +105,14 @@ public class DefaultBeliefTable implements BeliefTable {
         eternal.setCapacity(eternals);
     }
 
-    /**
-     * get the most relevant belief/goal with respect to a specific time.
-     */
     @Override
     public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
 
-        Task ete = eternal.strongest();
-        if (ete!=null && filter!=null && !filter.test(ete))
-            ete = null;
+        Task ete = eternal.match((start+end)/2L, template, nar);
+        if (ete!=null && (filter == null || filter.test(ete)))
+            return ete;
 
         Task tmp = temporal.match(start, end, template, nar, filter);
-
         if (tmp == null) {
             return ete;
         } else {

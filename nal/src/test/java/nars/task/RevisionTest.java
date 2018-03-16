@@ -5,6 +5,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.util.DefaultConceptState;
+import nars.link.TaskLink;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
@@ -268,7 +269,7 @@ public class RevisionTest {
 
         b.believe(1.0f, 0.5f).run(1);
 
-        Bag<Task,?> tasklinks = b.concept().tasklinks();
+        Bag<?,TaskLink> tasklinks = b.concept().tasklinks();
 
         assertEquals(0.5f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.01f);
 

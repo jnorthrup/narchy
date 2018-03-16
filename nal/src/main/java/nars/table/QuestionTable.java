@@ -76,12 +76,15 @@ public interface QuestionTable extends TaskTable {
 
     }
 
-    /** unsorted, MRU policy */
+    /**
+     * unsorted, MRU policy.
+     * this impl sucks actually
+     */
     class DefaultQuestionTable extends MRUCache<Task, Task> implements QuestionTable {
 
         final Object lock =
                 this;
-                //new Object();
+        //new Object();
 
         public DefaultQuestionTable() {
             super(0);
@@ -111,7 +114,7 @@ public interface QuestionTable extends TaskTable {
         public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
             Task u;
             float tPri = t.pri();
-            if (tPri!=tPri)
+            if (tPri != tPri)
                 return false;
 
             synchronized (lock) {
@@ -148,10 +151,16 @@ public interface QuestionTable extends TaskTable {
         }
 
         public Task[] toArray() {
-            synchronized (lock) {
-                int s = size();
-                return s == 0 ? Task.EmptyArray : values().toArray(new Task[s]);
+
+            int s = size();
+            if (s == 0) {
+                return Task.EmptyArray;
+            } else {
+                synchronized (lock) {
+                    return values().toArray(new Task[s]);
+                }
             }
+
         }
 
         @Override
@@ -159,9 +168,7 @@ public interface QuestionTable extends TaskTable {
             Task[] t = toArray();
             for (Task y : t) {
                 if (y.isDeleted()) {
-                    synchronized (lock) {
-                        remove(y);
-                    }
+                    removeTask(y);
                 } else {
                     x.accept(y);
                 }

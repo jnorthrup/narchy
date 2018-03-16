@@ -172,19 +172,40 @@ public class NALTask extends Pri implements Task {
     }
 
     public boolean delete(Task forwardTo) {
-        if (super.delete()) {
-            if (meta!=null) {
-                if (Param.DEBUG)
-                    meta.put("@", forwardTo);
-                else
-                    meta.clearPut("@", forwardTo);
-            }
+        return delete();
 
-            return true;
-        }
-        return false;
+        //return delete(forwardTo.term().concept(), forwardTo.punc(), forwardTo.mid());
+
+//        if (super.delete()) {
+//            if (meta!=null) {
+//                if (Param.DEBUG)
+//                    meta.put("@", forwardTo);
+//                else
+//                    meta.clearPut("@", forwardTo);
+//            }
+//
+//            return true;
+//        }
+//        return false;
     }
 
+//    public boolean delete(Term forwardTo, byte punc, long when) {
+//        return delete(new TaskLink.GeneralTaskLink(forwardTo, punc, when, 0));
+//    }
+//
+//    public boolean delete(TaskLink forwardLink) {
+//        if (super.delete()) {
+//            if (meta!=null) {
+//                if (Param.DEBUG)
+//                    meta.put("@", forwardLink);
+//                else
+//                    meta.clearPut("@", forwardLink);
+//            }
+//
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public String toString() {

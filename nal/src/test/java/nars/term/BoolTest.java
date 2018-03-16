@@ -1,6 +1,7 @@
 package nars.term;
 
-import nars.*;
+import nars.$;
+import nars.Op;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.*;

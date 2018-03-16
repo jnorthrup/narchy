@@ -6,7 +6,6 @@ import nars.Narsese;
 import nars.index.term.TermKey;
 import nars.index.term.TermTree;
 import nars.index.term.TreeConceptIndex;
-import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

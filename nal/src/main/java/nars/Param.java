@@ -61,7 +61,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 16;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
 
     public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
@@ -213,7 +213,7 @@ public abstract class Param {
 
     /** cost of having insufficient evidence (according to NAR's confMin param) to derive task */
     @Range(min=0, max=64)
-    public static int TTL_EVI_INSUFFICIENT = 30;
+    public static int TTL_EVI_INSUFFICIENT = 10;
 
     /**
      * cost of a failed/aborted task derivation
@@ -325,7 +325,7 @@ public abstract class Param {
     public static final int CAUSE_LIMIT = (int) (causeCapacity.max * 2);
 
 
-    public final static int UnificationStackMax = 64; //how many assignments can be stored in the 'versioning' maps
+    public final static int UnificationStackMax = 96; //how many assignments can be stored in the 'versioning' maps
 
 //    /** estimate initial capacity for variable unification maps */
 //    public static final int UnificationVariableCapInitial = 8;

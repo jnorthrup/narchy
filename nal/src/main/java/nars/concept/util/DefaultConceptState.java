@@ -35,7 +35,7 @@ public final class DefaultConceptState extends ConceptState {
     public DefaultConceptState(String id, int beliefsCapTotal, int goalsCapTotal, int questionsMax) {
         this(id,
                 new MutableInteger(clamp(beliefsCapTotal / 4, 2, 6)), //belief ete ~1/4
-                new MutableInteger(clamp(beliefsCapTotal / 4, 2, 6)),   //goal ete  ~1/4
+                new MutableInteger(clamp(beliefsCapTotal / 4, 1, 1)),   //goal ete  ~1/4
                 new MutableInteger(Math.max(3, beliefsCapTotal)), //belief temp
                 new MutableInteger(Math.max(3, goalsCapTotal)), //goal temp
                 new MutableInteger(questionsMax),
