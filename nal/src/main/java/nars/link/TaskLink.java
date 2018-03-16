@@ -3,6 +3,7 @@ package nars.link;
 import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
+import jcog.util.HashCachedPair;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -12,7 +13,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ByteLongPair;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 public interface TaskLink extends Priority, Termed {
@@ -22,7 +22,8 @@ public interface TaskLink extends Priority, Termed {
      */
     Task get(NAR n);
 
-    /** after it has been deleted, give an opportunity to re-insert
+    /**
+     * after it has been deleted, give an opportunity to re-insert
      * any forwarded task in a bag where it was just removed
      */
     void reincarnate(TaskLinkCurveBag taskLinks);
@@ -33,8 +34,6 @@ public interface TaskLink extends Priority, Termed {
      * may delete itself if the target concept is not conceptualized.
      */
     class GeneralTaskLink extends PLink<Pair<Term, ByteLongPair>> implements TaskLink {
-
-        private final int hash;
 
 //        public GeneralTaskLink(Task template, NAR nar, float pri) {
 //            this(template.term().concept(), template.punc(), Tense.dither(template.mid(), nar), pri);
@@ -52,10 +51,12 @@ public interface TaskLink extends Priority, Termed {
             this(seed(t, punc, when), pri);
         }
 
-        /** use this to create a tasklink seed shared by several different tasklinks
-         *  each with its own distinct priority */
+        /**
+         * use this to create a tasklink seed shared by several different tasklinks
+         * each with its own distinct priority
+         */
         public static Pair<Term, ByteLongPair> seed(Term t, byte punc, long when) {
-            return Tuples.pair(t, PrimitiveTuples.pair(punc, when));
+            return new HashCachedPair<>(t, PrimitiveTuples.pair(punc, when));
         }
 
         public static Pair<Term, ByteLongPair> seed(Task t, boolean polarizeBeliefsAndGoals) {
@@ -63,11 +64,10 @@ public interface TaskLink extends Priority, Termed {
                     t.punc(), t.mid());
         }
 
+
         public GeneralTaskLink(Pair<Term, ByteLongPair> seed, float pri) {
             super(seed, pri);
-            this.hash = super.hashCode();
         }
-
 
 
         @Override
@@ -77,7 +77,7 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public int hashCode() {
-            return hash;
+            return id.hashCode();
         }
 
         @Override
