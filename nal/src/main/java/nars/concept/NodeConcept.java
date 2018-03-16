@@ -11,6 +11,7 @@ import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
 import nars.link.TaskLink;
 import nars.link.TermLinks;
+import nars.link.TermlinkTemplates;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.term.Term;
@@ -29,7 +30,7 @@ public class NodeConcept implements Concept {
     public final Bag<?, TaskLink> taskLinks;
     public final Bag<Term, PriReference<Term>> termLinks;
     public transient ConceptState state = New;
-    private final List<Termed> templates;
+    private final TermlinkTemplates templates;
 
     private final int hash;
 
@@ -71,7 +72,7 @@ public class NodeConcept implements Concept {
     @Override public QuestionTable quests() { return QuestionTable.Empty; }
 
     /** called during initializer to cache the templates. override to define custom template patterns */
-    protected List<Termed> buildTemplates(Term term) {
+    protected TermlinkTemplates buildTemplates(Term term) {
         return TermLinks.templates(term);
     }
 
@@ -100,7 +101,7 @@ public class NodeConcept implements Concept {
 
 
     @Override
-    public List<Termed> templates() {
+    public TermlinkTemplates templates() {
         return templates;
     }
 

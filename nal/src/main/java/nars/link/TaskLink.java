@@ -40,16 +40,35 @@ public interface TaskLink extends Priority, Termed {
 //            this(template.term().concept(), template.punc(), Tense.dither(template.mid(), nar), pri);
 //        }
 
-        public GeneralTaskLink(Task template, float pri) {
-            this(
-                 template.term().negIf(template.isBeliefOrGoal() && template.isNegative()),
-                 template.punc(), template.mid(), pri);
+        public GeneralTaskLink(Task t, float pri) {
+            this(t, false, pri);
+        }
+
+        public GeneralTaskLink(Task t, boolean polarizeBeliefsAndGoals, float pri) {
+            this(seed(t, polarizeBeliefsAndGoals), pri);
         }
 
         public GeneralTaskLink(Term t, byte punc, long when, float pri) {
-            super(Tuples.pair(t, PrimitiveTuples.pair(punc, when)), pri);
+            this(seed(t, punc, when), pri);
+        }
+
+        /** use this to create a tasklink seed shared by several different tasklinks
+         *  each with its own distinct priority */
+        public static Pair<Term, ByteLongPair> seed(Term t, byte punc, long when) {
+            return Tuples.pair(t, PrimitiveTuples.pair(punc, when));
+        }
+
+        public static Pair<Term, ByteLongPair> seed(Task t, boolean polarizeBeliefsAndGoals) {
+            return seed(t.term().negIf(polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()),
+                    t.punc(), t.mid());
+        }
+
+        public GeneralTaskLink(Pair<Term, ByteLongPair> seed, float pri) {
+            super(seed, pri);
             this.hash = super.hashCode();
         }
+
+
 
         @Override
         public String toString() {
@@ -80,8 +99,8 @@ public interface TaskLink extends Priority, Termed {
         }
 
         @Override
-        public void reincarnate(TaskLinkCurveBag taskLinks) {
-            //TODO
+        public final void reincarnate(TaskLinkCurveBag taskLinks) {
+            //N/A
         }
 
         @Override

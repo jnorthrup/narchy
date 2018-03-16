@@ -29,6 +29,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptState;
 import nars.link.TaskLink;
+import nars.link.TermlinkTemplates;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TaskTable;
@@ -40,7 +41,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -48,9 +48,7 @@ import static jcog.Texts.n4;
 import static nars.Op.*;
 
 public interface Concept extends Termed, MetaMap, Iterable<Concept> {
-
-
-//    Concept[] EmptyArray = new Concept[0];
+    Concept[] EmptyArray = new Concept[0];
 
     /*@NotNull*/ Bag<?,TaskLink> tasklinks();
 
@@ -216,7 +214,7 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
     /** should not include itself, although this will be included with these templates on activation
      *  should use something like an ArrayList which supports fast random access by index
      * */
-    List<Termed> templates();
+    TermlinkTemplates templates();
 
 
 

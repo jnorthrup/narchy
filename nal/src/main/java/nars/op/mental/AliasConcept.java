@@ -5,15 +5,13 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptState;
+import nars.link.TermlinkTemplates;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 /**
  * the proxy concepts present a bidirectional facade between a referenced and an alias term (alias term can be just a serial # atom wrapped in a product).
@@ -104,7 +102,7 @@ public final class AliasConcept extends TaskConcept {
     }
 
     @Override
-    public List<Termed> templates() {
+    public TermlinkTemplates templates() {
         return abbr.templates();
     }
 

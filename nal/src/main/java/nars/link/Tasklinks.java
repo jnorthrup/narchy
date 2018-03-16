@@ -4,18 +4,16 @@ import jcog.bag.Bag;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriForget;
-import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.term.Termed;
+import nars.term.Term;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.primitive.ByteLongPair;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
-import java.util.List;
 
 
 public class Tasklinks {
@@ -25,14 +23,15 @@ public class Tasklinks {
 //        linkTask(t, pri, cc, null);
 //    }
 
-    public static void linkTask(Task x, float p, Bag b) {
-        linkTask(x, p, b, null);
-    }
-
-    static void linkTask(Task x, float p, Bag<?, TaskLink> b, @Nullable MutableFloat overflow) {
+    @Deprecated public static void linkTask(Task x, float p, Bag b) {
         TaskLink xx =
                 //new TaskLink.DirectTaskLink(x, p);
                 new TaskLink.GeneralTaskLink(x, p);
+
+        linkTask(xx, b, null);
+    }
+
+    static void linkTask(TaskLink xx, Bag<?, TaskLink> b, @Nullable MutableFloat overflow) {
 
         if (overflow != null) {
             TaskLink yy = b.put(xx, overflow);
@@ -54,11 +53,9 @@ public class Tasklinks {
 
         final float priCause = Math.max(_pri, Pri.EPSILON);
 
-
-
         MutableFloat overflow = new MutableFloat();
 
-        linkTask(t, priCause, cc.tasklinks(), overflow);
+        linkTask(new TaskLink.GeneralTaskLink(t, _pri), cc.tasklinks(), overflow);
 
         float priEffect = priCause - overflow.floatValue();
         assert(priEffect >= 0);
@@ -89,64 +86,38 @@ public class Tasklinks {
 
     public static void linkTaskTemplates(Concept c, Task t, float priApplied, NAR nar) {
 
-        List<Termed> ts = c.templates();
-        int tss = ts.size();
-        if (tss > 0) {
-            List<Concept> cc = $.newArrayList(tss);
-            for (int i = 0, tsSize = ts.size(); i < tsSize; i++) {
-                Termed x = ts.get(i);
-                if (x.op().conceptualizable) {
-                    Concept ccc = nar.conceptualize(x);
-                    if (ccc!=null)
-                        cc.add(ccc);
+        Concept[] cc = c.templates().conceptsShuffled(nar, true);
+        int ccs = cc.length;
+        if (ccs <= 0)
+            return;
+
+        MutableFloat overflow = new MutableFloat();
+        float p = priApplied;
+        float pEach = p / ccs;
+        if (pEach > Pri.EPSILON) {
+
+            Pair<Term, ByteLongPair> tlSeed = TaskLink.GeneralTaskLink.seed(t, false);
+
+            final float headRoom = 1f - pEach;
+            for (int i = 0; i < ccs; i++) {
+                float o = overflow.get();
+
+                //spread overflow of saturated targets to siblings
+                float change;
+                if (o >= Pri.EPSILON) {
+                    change = Math.min(o, headRoom);
+                    overflow.subtract(change);
+                } else {
+                    change = 0;
                 }
+
+                TaskLink xx =
+                        //new TaskLink.DirectTaskLink(t, pEach + change);
+                        new TaskLink.GeneralTaskLink(tlSeed, pEach + change);
+
+                linkTask(xx, cc[i].tasklinks(), overflow);
             }
-
-            int ccs = cc.size();
-            if (ccs > 0) {
-                float p = priApplied;
-                {
-                    List<Concept> l;
-                    if (ccs == 1) {
-                        l = cc;
-                    } else { //if (activation > (1f - 1f / ccs)) {
-                        //all of them but in a random order
-                        Collections.shuffle(cc, nar.random());
-                        l = cc;
-                    } /*else {
-                        //sample from the set
-                        l = randomTemplateConcepts(
-                                cc, nar.random(), (int) Math.ceil(activation * ccs));
-                        ccs = l.size();
-                    }*/
-
-                    MutableFloat overflow = new MutableFloat();
-                    float pEach = p / ccs;
-                    if (pEach > Pri.EPSILON) {
-
-                        final float headRoom = 1f - pEach;
-                        for (int i = 0; i < ccs; i++) {
-                            float o = overflow.get();
-
-                            //spread overflow of saturated targets to siblings
-                            float change;
-                            if (o >= Pri.EPSILON) {
-                                change = Math.min(o, headRoom);
-                                overflow.subtract(change);
-                            } else {
-                                change = 0;
-                            }
-
-                            linkTask(t, pEach + change, l.get(i).tasklinks(), overflow);
-                        }
-                    }
-                }
-            }
-
         }
-
-        //TODO also use BatchActivator
-
 
     }
 

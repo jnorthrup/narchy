@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
 import static nars.Op.*;
 
 public enum TermLinks {
@@ -30,11 +29,11 @@ public enum TermLinks {
      * see:
      * https://github.com/opennars/opennars/blob/master/nars_core/nars/language/Terms.java#L367
      */
-    public static List<Termed> templates(Term term) {
+    public static TermlinkTemplates templates(Term term) {
 
         if (term.subs() > 0) {
 
-            ArrayHashSet<Termed> tc =
+            ArrayHashSet<Term> tc =
                     //new UnifiedSet<>(id.volume() /* estimate */);
                     new ArrayHashSet<>(term.volume());
 
@@ -62,20 +61,20 @@ public enum TermLinks {
 
 
             int tcs = tc.size();
-            if (tcs > 0)
-                return ((FasterList) tc.list).compact(); //store as list for compactness and fast iteration
-
+            if (tcs > 0) {
+                return new TermlinkTemplates(((FasterList<Term>)(tc.list)).toArrayRecycled(Term[]::new)); //store as list for compactness and fast iteration
+            }
 
         }
 
 
-        return emptyList();
+        return TermlinkTemplates.EMPTY;
     }
 
     /**
      * recurses
      */
-    static void templates(Term _x, Set<Termed> tc, int depth, Term root, int maxDepth) {
+    static void templates(Term _x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
         Term x = _x;
 
@@ -354,7 +353,7 @@ public enum TermLinks {
      */
     public static float linkTemplates(Concept src, float totalBudget, float momentum, NAR nar) {
 
-        List<Termed> templates = src.templates();
+        List<Term> templates = src.templates();
         int n = templates.size();
         if (n == 0)
             return 0;

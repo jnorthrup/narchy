@@ -2,19 +2,17 @@ package nars.op;
 
 import jcog.Paper;
 import jcog.Skill;
+import jcog.TODO;
 import nars.NAR;
 import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.link.CauseLink;
+import nars.link.TermlinkTemplates;
 import nars.term.Term;
-import nars.term.Termed;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
  *  Anonymizing spider which creates anonymous meta-concepts
@@ -88,8 +86,9 @@ public class Anoncepts extends LeakBack {
             super(a, nar);
         }
 
-        @Override protected List<Termed> buildTemplates(Term term) {
-            return Collections.emptyList();
+        @Override protected TermlinkTemplates buildTemplates(Term term) {
+            throw new TODO();
+            //return Collections.emptyList();
         }
     }
 

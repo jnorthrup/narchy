@@ -18,7 +18,9 @@ import static nars.Op.QUESTION;
 
 public class TaskLinkCurveBag extends CurveBag<TaskLink> {
 
-    static final float TEMPORAL_COMPRESSION_THRESHOLD = 0.75f;
+    static final float TEMPORAL_COMPRESSION_THRESHOLD =
+            1.1f; //off
+            //0.75f;
 
     public TaskLinkCurveBag(Map sharedMap) {
         super(Param.tasklinkMerge, sharedMap, 0);
@@ -37,6 +39,9 @@ public class TaskLinkCurveBag extends CurveBag<TaskLink> {
      * TODO eternal links can be combined && with any other links
      * */
     public void compress(NAR nar) {
+
+        if (size() < capacity()*TEMPORAL_COMPRESSION_THRESHOLD)
+            return;
 
         final ConjEvents[] beliefs = {new ConjEvents()};
         final ConjEvents[] questions = {new ConjEvents()};
