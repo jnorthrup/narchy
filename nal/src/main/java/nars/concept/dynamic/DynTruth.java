@@ -178,12 +178,17 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         PreciseTruth tr = new PreciseTruth(f, evi, false);
 
         // then if the term is valid, see if it is valid for a task
+        Term content = truthModel instanceof DynamicTruthModel ?
+                ((DynamicTruthModel) truthModel).construct(superterm, this) :
+                superterm;
+
+        if (content == null)
+            return null;
+
         @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
                 //if dynamic truth model, construct the appropriate term
                 //otherwise consider the superterm argument as the task content
-                truthModel instanceof DynamicTruthModel ?
-                        ((DynamicTruthModel)truthModel).construct(superterm, this) :
-                        superterm,
+                content,
                 beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG);
         if (r == null)
             return null;

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 
 import static nars.Op.*;
@@ -69,6 +70,14 @@ public class ConjEvents {
 
     public ConjEvents() {
 
+    }
+
+    public static int eventCount(Object what) {
+        if (what instanceof byte[]) {
+            return indexOfZeroTerminated((byte[])what, (byte)0);
+        } else {
+            return ((RoaringBitmap)what).getCardinality();
+        }
     }
 
 
@@ -161,7 +170,7 @@ public class ConjEvents {
         return false;
     }
 
-    private int indexOfZeroTerminated(byte[] b, byte val) {
+    static int indexOfZeroTerminated(byte[] b, byte val) {
         for (int i = 0; i < b.length; i++) {
             byte bi = b[i];
             if (val == bi) {
@@ -230,7 +239,7 @@ public class ConjEvents {
 
         IntPredicate validator = null;
         Object eternalWhat = event.get(ETERNAL);
-        Term eternal = termConj(ETERNAL, eternalWhat);
+        Term eternal = term(ETERNAL, eternalWhat);
         if (eternal != null) {
 
             if (eternal instanceof Bool)
@@ -267,7 +276,7 @@ public class ConjEvents {
             if (when == ETERNAL)
                 continue; //already handled above
 
-            Term wt = termConj(when, next.getTwo(), validator);
+            Term wt = term(when, next.getTwo(), validator);
 
             if (wt == True) {
                 continue; //canceled out
@@ -313,15 +322,15 @@ public class ConjEvents {
     }
 
 
-    private Term termConj(long w) {
-        return termConj(w, event.get(w), null);
+    public Term term(long when) {
+        return term(when, event.get(when), null);
     }
 
-    private Term termConj(long w, Object what) {
-        return termConj(w, what, null);
+    private Term term(long when, Object what) {
+        return term(when, what, null);
     }
 
-    private Term termConj(long w, Object what, IntPredicate validator) {
+    private Term term(long when, Object what, IntPredicate validator) {
 
         if (what == null) return null;
 
@@ -402,12 +411,17 @@ public class ConjEvents {
             default:
                 return
                         Op.instance(CONJ,
-                                w == ETERNAL ? DTERNAL : 0,
+                                when == ETERNAL ? DTERNAL : 0,
                                 sorted(t));
         }
     }
 
-    private Term sub(int termIndex, @Nullable boolean[] negatives, IntPredicate validator) {
+
+    public Term sub(int termIndex) {
+        return sub(termIndex, null, null);
+    }
+
+    public Term sub(int termIndex, @Nullable boolean[] negatives, @Nullable IntPredicate validator) {
         assert (termIndex != 0);
 
         boolean neg = false;
@@ -512,4 +526,18 @@ public class ConjEvents {
         return Op.implInConjReduce(instance(CONJ, dt, left, right));
     }
 
+    public void forEachTerm(Object what, Consumer<Term> each) {
+        if (what instanceof byte[]) {
+            byte[] b = (byte[])what;
+            for (byte termIndex : b) {
+                if (termIndex == 0)
+                    break; //done
+                each.accept(sub(termIndex));
+            }
+        } else {
+            ((RoaringBitmap)what).forEach((int termIndex) -> {
+                each.accept(sub(termIndex));
+            });
+        }
+    }
 }

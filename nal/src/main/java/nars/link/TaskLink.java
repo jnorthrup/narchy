@@ -10,7 +10,6 @@ import nars.concept.Concept;
 import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.Tense;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ByteLongPair;
 import org.eclipse.collections.impl.tuple.Tuples;
@@ -37,12 +36,14 @@ public interface TaskLink extends Priority, Termed {
 
         private final int hash;
 
-        public GeneralTaskLink(Task template, NAR nar, float pri) {
-            this(template.term().concept(), template.punc(), Tense.dither(template.mid(), nar), pri);
-        }
+//        public GeneralTaskLink(Task template, NAR nar, float pri) {
+//            this(template.term().concept(), template.punc(), Tense.dither(template.mid(), nar), pri);
+//        }
 
         public GeneralTaskLink(Task template, float pri) {
-            this(template.term().concept(), template.punc(), template.mid(), pri);
+            this(
+                 template.term().negIf(template.isBeliefOrGoal() && template.isNegative()),
+                 template.punc(), template.mid(), pri);
         }
 
         public GeneralTaskLink(Term t, byte punc, long when, float pri) {
@@ -86,7 +87,7 @@ public interface TaskLink extends Priority, Termed {
         @Override
         public Task get(NAR n) {
 
-            Term t = term();
+            Term t = term().unneg();
             Concept c = n.concept(t);
             if (c == null) {
                 delete();

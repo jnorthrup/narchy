@@ -1523,7 +1523,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
 
     public Concept activate(Termed t, float activationApplied) {
-        Concept c = concept(t, false /* true */);
+        Concept c = concept(t, true /*false */ /* true */);
         if (c != null)
             exe.activate(c, activationApplied);
         return c;

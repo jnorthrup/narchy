@@ -8,6 +8,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.CONJ;
@@ -32,9 +33,11 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
     }
 
     @Override
-    protected Task taskDynamic(long start, long end, final Term _template, NAR nar) {
+    protected Task taskDynamic(long start, long end, @NotNull final Term _template, NAR nar) {
 
         Term template = template(start, end, _template, nar);
+        if (template == null)
+            return null;
 
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {

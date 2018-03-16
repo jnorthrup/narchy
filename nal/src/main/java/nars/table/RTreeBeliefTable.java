@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 
 import static nars.table.TemporalBeliefTable.temporalTaskPriority;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -821,8 +822,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         ScanFilter scan(RTreeBeliefTable table, long _start, long _end) {
 
 
-            table.read((Space<TaskRegion> tree) -> {
-            //table.readOptimistic((Space<TaskRegion> tree) -> {
+            //table.read((Space<TaskRegion> tree) -> {
+            table.readOptimistic((Space<TaskRegion> tree) -> {
 
                 int s = tree.size();
                 if (s == 0)
@@ -839,6 +840,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 long boundsStart = bounds.start();
                 long boundsEnd = bounds.end();
+                if (boundsEnd == XTERNAL || boundsEnd < boundsStart) {
+                    throw new RuntimeException("wtf");
+                }
 
                 long start = Math.min(boundsEnd, Math.max(boundsStart, _start));
                 long end = Math.max(boundsStart, Math.min(boundsEnd, _end));

@@ -121,7 +121,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * may include the item being added
      */
     @Nullable
-    private void update(@Nullable Y toAdd, @Nullable Consumer<Y> update, boolean commit, final FasterList<Y> trash) {
+    protected void update(@Nullable Y toAdd, @Nullable Consumer<Y> update, boolean commit, final FasterList<Y> trash) {
 
         int s = size();
         if (s == 0) {

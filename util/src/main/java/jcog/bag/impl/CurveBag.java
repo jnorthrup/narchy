@@ -13,7 +13,7 @@ import java.util.Random;
  */
 public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
-    public static final int SAMPLE_WINDOW_SIZE = 4;
+//    public static final int SAMPLE_WINDOW_SIZE = 4;
 
     public CurveBag(PriMerge mergeFunction, Map<X, X> map, int cap) {
         this(mergeFunction, map);
