@@ -210,11 +210,15 @@ public interface BeliefTable extends TaskTable {
         return answer(start, end, nar.dur(), null, template, nar, nar::input);
     }
 
+    @Override
+    default Task match(long start, long end, Term template, NAR nar) {
+        return match(start, end, template, nar, (t) -> true);
+    }
+
     /**
      * projects a match
      */
     @Nullable default Task answer(long start, long end, int dur, @Nullable Task question, Term template, NAR nar, Consumer<Task> withNovel) {
-
 
         Task answer = match(start, end, template, nar);
         if (answer == null || answer.isDeleted())

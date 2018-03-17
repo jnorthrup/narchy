@@ -134,10 +134,14 @@ public interface TaskTable {
     default Task match(long when, Term template, NAR nar) {
         return match(when, when, template, nar);
     }
+
     default Task match(long start, long end, Term template, NAR nar) {
 
+        if (isEmpty())
+            return null;
+
         TaskMatch m =
-                template == null ?
+                template == null || (!template.isTemporal()) ?
                     TaskMatch.best(start, end) :
                     TaskMatch.best(start, end,
                             t-> 1 / (1 + Revision.dtDiff(template, t.term())));
@@ -146,6 +150,10 @@ public interface TaskTable {
     }
 
     default Task sample(long start, long end, Term template, NAR nar) {
+
+        if (isEmpty())
+            return null;
+
         //TODO include template in value function
         return matchThe(TaskMatch.sampled(start, end, nar.random()));
     }

@@ -333,10 +333,10 @@ public class DynamicTruthBeliefTableTest {
         assertEquals( DynamicTruthBeliefTable.class, n.conceptualize(xMinY).beliefs().getClass());
         assertEquals( DynamicTruthBeliefTable.class, n.conceptualize(yMinX).beliefs().getClass());
         assertEquals(
-                "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
+                "%.57;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );
         assertEquals(
-                "%.06;.25%", n.beliefTruth(yMinX, n.time()).toString()
+                "%.07;.25%", n.beliefTruth(yMinX, n.time()).toString()
         );
 
     }
