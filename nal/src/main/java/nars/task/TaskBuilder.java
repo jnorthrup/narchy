@@ -223,7 +223,7 @@ import static nars.time.Tense.ETERNAL;
 
         Truth tFinal;
         if (truth!=null) {
-            tFinal = Truth.theDithered(truth.freq(), truth.conf(), n);
+            tFinal = Truth.theDithered(truth.freq(), truth.evi(), n);
         } else {
             tFinal = null;
         }

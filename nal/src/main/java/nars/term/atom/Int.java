@@ -11,7 +11,7 @@ import nars.Op;
 import nars.Param;
 import nars.The;
 import nars.index.term.TermContext;
-import nars.subterm.TermMetadata;
+import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;

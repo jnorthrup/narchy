@@ -83,6 +83,8 @@ public class Gridding extends MutableContainer {
         Surface[] children = this.children();
         if (children == null) return;
         int n = children.length;
+        if (n == 0) return;
+
         float a = gridAspect;
 //        if ((n < 3) && !((a==0) || (a == Float.POSITIVE_INFINITY)))
 //            a = 0; //use linear layout for small n

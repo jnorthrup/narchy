@@ -1,6 +1,7 @@
-package nars.subterm;
+package nars.subterm.util;
 
 import jcog.list.FasterList;
+import nars.subterm.Subterms;
 import nars.term.Term;
 
 import java.util.Collection;

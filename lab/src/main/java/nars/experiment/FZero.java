@@ -21,7 +21,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static jcog.Util.unitize;
 import static spacegraph.render.JoglPhysics.window;
 
 /**
@@ -31,8 +30,8 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 16;
-    float rotSpeed = 0.35f/3f;
+    float fwdSpeed = 4;
+    float rotSpeed = 0.08f;
     static float fps = 30f;
     final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
@@ -330,24 +329,24 @@ public class FZero extends NAgentX {
         final float[] left = new float[1];
         final float[] right = new float[1];
         actionUnipolar($.the("left"), false, (x)->Util.lerp(0.1f, x, 0.5f), (x) -> {
-            float power = unitize(Math.max(x, 0.5f) - 0.5f)*2f;
+            float power = (x - 0.5f)*2f;
             left[0] = power;
-            fz.playerAngle += Math.max(0,(power - right[0])) * rotSpeed;
+            fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed;
             fz.vehicleMetrics[0][6] +=
                     //Util.mean(left[0], right[0])
-                    Util.and(left[0], right[0])
+                    left[0]
                     //Util.or(left[0], right[0])
                             * fwdSpeed/2f;
             return x;
         }).resolution.set(res);
         actionUnipolar($.the("right"), false, (x)->Util.lerp(0.1f, x, 0.5f), (x) -> {
-            float power = unitize(Math.max(x, 0.5f) - 0.5f)*2f;
+            float power = (x - 0.5f)*2f;
             right[0] = power;
-            fz.playerAngle -= Math.max(0,(power - left[0])) * rotSpeed;
+            fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed;
             fz.vehicleMetrics[0][6] +=
                     //Util.mean(left[0], right[0])
-                    Util.and(left[0], right[0])
-                    //Util.or(left[0], right[0])
+                    right[0]
+                            //Util.or(left[0], right[0])
                             * fwdSpeed/2f;
             return x;
         }).resolution.set(res);
@@ -472,8 +471,8 @@ public class FZero extends NAgentX {
         boolean[] K = new boolean[65535]; // pressed keys
         public double power;
         public int rank;
-        double rotVel = 0.07;
-        float fwdVel = 0.8f;
+        double rotVel = 0.03;
+        float fwdVel = 0.7f;
         final double VIEWER_X = 159.5;
         final double VIEWER_Y = 32;
         final double VIEWER_Z = -128;

@@ -2,6 +2,7 @@ package nars.subterm;
 
 import com.google.common.base.Joiner;
 import nars.The;
+import nars.subterm.util.TermMetadata;
 import nars.term.Term;
 
 import java.util.Iterator;

@@ -24,6 +24,7 @@ import jcog.tree.rtree.util.Stats;
 import jcog.util.LambdaStampedLock;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -192,7 +193,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
      */
     @Override
     public Stream<T> stream() {
-        return root().stream();
+        return root().stream().filter(Objects::nonNull);
     }
 
     /**

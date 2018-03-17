@@ -62,104 +62,6 @@ public class NAL3Test extends NALTest {
 
     }
 
-    @Test
-    public void set_operations() {
-
-        test
-                .believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f) //.en("PlanetX is Mars, Pluto, or Venus.");
-                .believe("<planetX --> {Pluto,Saturn}>", 0.7f, 0.9f) //.en("PlanetX is probably Pluto or Saturn.");
-                .mustBelieve(cycles, "<planetX --> {Mars,Pluto,Saturn,Venus}>", 0.97f, 0.81f) //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-                .mustBelieve(cycles, "<planetX --> {Pluto}>", 0.63f, 0.81f); //.en("PlanetX is probably Pluto.");
-
-    }
-
-    @Test
-    public void set_operationsSetExt_union() {
-
-        TestNAR tester = test;
-        tester.believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("<planetX --> {Pluto,Saturn}>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles, "<planetX --> {Mars,Pluto,Saturn,Venus}>", 0.91f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-    }
-
-    @Test
-    public void set_operationsSetExt_unionNeg() {
-
-        TestNAR tester = test;
-        tester.believe("<planetX --> {Earth}>", 0.1f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("<planetX --> {Mars}>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles, "<planetX --> {Earth,Mars}>", 0.19f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-    }
-
-
-    @Test
-    public void set_operationsSetInt_union_2_3_4() {
-
-        TestNAR tester = test;
-        tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("<planetX --> [earthly,saturny]>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles, "<planetX --> [marsy,earthly,saturny,venusy]>", 0.1f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-    }
-
-    @Test
-    public void set_operationsSetInt_union1_1_2_3() {
-
-        TestNAR tester = test;
-        tester.believe("<planetX --> [marsy,venusy]>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("<planetX --> [earthly]>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles, "<planetX --> [marsy,earthly,venusy]>", 0.1f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-
-    }
-
-    @Test
-    public void set_operations2_difference() throws Narsese.NarseseException {
-        assertEquals("{Mars,Venus}", DIFFe.the($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
-
-        TestNAR tester = test;
-        tester.believe("(planetX --> {Mars,Pluto,Venus})", 0.9f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("(planetX --> {Pluto,Saturn})", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles * 2, "(planetX --> {Mars,Venus})", 0.9f, 0.73f /*0.81f ,0.81f*/); //.en("PlanetX is either Mars or Venus.");
-
-    }
-
-
-    @Test
-    public void set_operations3_difference() {
-
-        TestNAR tester = test;
-        tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("<planetX --> [earthly,saturny]>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles * 2, "<planetX --> [marsy,venusy]>", 0.90f, 0.81f); //.en("PlanetX is either Mars or Venus.");
-    }
-
-    @Test
-    public void set_operations4() {
-
-        TestNAR tester = test;
-        tester.believe("<[marsy,earthly,venusy] --> planetX>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("<[earthly,saturny] --> planetX>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles * 2, "<[marsy,earthly,saturny,venusy] --> planetX>", 1.0f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-        tester.mustBelieve(cycles * 2, "<[marsy,venusy] --> planetX>", 0.90f, 0.81f); //.en("PlanetX is either Mars or Venus.");
-
-    }
-
-    @Test
-    public void set_operations5Half() {
-
-        TestNAR tester = test;
-        tester.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.mustBelieve(cycles, "<{Mars,Venus} --> planetX>", 1.0f, 0.81f); //.en("PlanetX is either Mars or Venus.");
-    }
-
-    @Test
-    public void set_operations5() {
-
-        TestNAR tester = test;
-        tester.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
-        tester.believe("<{Pluto,Saturn} --> planetX>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles * 2, "<{Mars,Pluto,Saturn,Venus} --> planetX>", 0.1f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-        tester.mustBelieve(cycles * 2, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f); //.en("PlanetX is either Mars or Venus.");
-    }
 
     @Test
     public void composition_on_both_sides_of_a_statement() throws Narsese.NarseseException {
@@ -301,28 +203,6 @@ public class NAL3Test extends NALTest {
                 .believe("(a-->(b|c))", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);
     }
-
-    @Test
-    public void testIntersectDiffUnionOfCommonSubterms() {
-
-        TestNAR x = test;
-
-        x
-                .believe("<{x,y}-->c>")
-                .believe("<{x,z}-->c>")
-                .mustBelieve(cycles, "<{x,y,z}-->c>", 1f, 0.81f) //union
-                .mustBelieve(cycles, "<{x}-->c>", 1f, 0.81f) //intersect
-                .mustBelieve(cycles, "<{y}-->c>", 1f, 0.81f) //difference
-                .mustBelieve(cycles, "<{z}-->c>", 1f, 0.81f) //difference
-        //.mustBelieve(cycles, "<{y}-->c>", 0f, 0.81f) //difference
-        //these are probably ok:
-        //.mustNotOutput(cycles,"<{x}-->c>", BELIEF, 0, 0, 0.5f, 1, ETERNAL) //contradiction of input above conf=0.5
-        //.mustNotOutput(cycles,"<{x,y}-->c>", BELIEF, 0, 0, 0.5f, 1, ETERNAL) //contradiction of input above conf=0.5
-        //.mustNotOutput(cycles,"<{x,z}-->c>", BELIEF, 0, 0, 0.5f, 1, ETERNAL) //contradiction of input above conf=0.5
-        ;
-
-    }
-
 
 
 

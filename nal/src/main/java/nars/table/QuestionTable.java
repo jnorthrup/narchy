@@ -6,6 +6,7 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
+import nars.term.Term;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -27,10 +28,7 @@ public interface QuestionTable extends TaskTable {
      */
     ///*@NotNull*/ QuestionTable Unstored = new EmptyQuestionTable();
 
-    /*@NotNull*/ QuestionTable Empty = new NullQuestionTable();
-
-
-    class NullQuestionTable implements QuestionTable {
+    /*@NotNull*/ QuestionTable Empty = new QuestionTable() {
 
         @Override
         public Stream<Task> streamTasks() {
@@ -42,6 +40,15 @@ public interface QuestionTable extends TaskTable {
             return false;
         }
 
+        @Override
+        public Task match(long start, long end, Term template, NAR nar) {
+            return null;
+        }
+
+        @Override
+        public Task sample(long start, long end, Term template, NAR nar) {
+            return null;
+        }
 
         @Override
         public void clear() {
@@ -74,7 +81,7 @@ public interface QuestionTable extends TaskTable {
             return 0;
         }
 
-    }
+    };
 
     /**
      * unsorted, MRU policy.

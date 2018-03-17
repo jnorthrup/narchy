@@ -149,7 +149,12 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                 ETERNAL, ETERNAL,
                 //Stamp.UNSTAMPED
                 nar().time.nextStampArray()
-        );
+        ) {
+            @Override
+            public boolean isInput() {
+                return false;
+            }
+        };
 
         always.add(t);
         return t;

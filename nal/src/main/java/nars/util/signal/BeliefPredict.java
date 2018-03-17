@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.map;
 import static nars.Op.BELIEF;
+import static nars.truth.TruthFunctions.c2w;
 
 /**
  * numeric prediction support
@@ -53,7 +54,7 @@ public class BeliefPredict {
             for (int i = 0; i < predFreq.length; i++) {
 
                 float f = (float)Util.unitize(predFreq[i]);
-                PreciseTruth t = Truth.theDithered(f, conf.floatValue(), nar);
+                PreciseTruth t = Truth.theDithered(f, c2w(conf.floatValue()), nar);
 
                 predict.input(
                     new SignalTask(outConcepts[i].term(), BELIEF,

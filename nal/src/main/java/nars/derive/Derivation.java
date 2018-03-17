@@ -637,7 +637,7 @@ public class Derivation extends ProtoDerivation {
 
         //this.pri *= Math.max(1f, nar.amp(parentCause));
 
-        this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : 0;
+        this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : Float.NaN;
         this.premiseEviDouble = beliefTruth != null ?
                 Math.max(premiseEviSingle, beliefTruth.evi()) :
                 premiseEviSingle;

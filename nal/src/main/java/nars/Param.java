@@ -10,11 +10,14 @@ import jcog.util.FloatFloatToFloatFunction;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.term.atom.Atom;
+import nars.time.Tense;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.MAX_CONF;
 
 /**
  * NAR Parameters
@@ -61,7 +64,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 16;
 
 
     public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
@@ -170,11 +173,20 @@ public abstract class Param {
     public final FloatRange timeFocus = new FloatRange(0.5f, 0, 10);
 
     /** provides a start,end pair of time points for the current focus given the current time and duration */
-    public long[] timeFocus() {
-        int dur = dur();
+    public final long[] timeFocus() {
+        return timeFocus(time());
+    }
+
+    public final long[] timeFocus(long when) {
+        return timeFocus(when, dur());
+    }
+
+    public final long[] timeFocus(long when, float dur) {
+        if (when == ETERNAL)
+            return Tense.ETERNAL_ETERNAL;
+
         int f = Math.round(dur * timeFocus.floatValue());
-        long now = time();
-        return new long[] { now - f, now + f };
+        return new long[] { when - f, when + f };
     }
 
     public static final int TTL_MIN() {
@@ -345,12 +357,12 @@ public abstract class Param {
     /**
      * internal granularity which truth components are rounded to
      */
-    public static final float TRUTH_EPSILON = 0.01f;
+    public static final float TRUTH_EPSILON = 0.01f/2f;
 
     /**
      * how precise unit test results must match expected values to pass
      */
-    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON;
+    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON*2;
 
 
 //    /** EXPERIMENTAL  decreasing priority of sibling tasks on temporal task insertion */
@@ -367,7 +379,7 @@ public abstract class Param {
     /**
      * truth confidence threshold necessary to form tasks
      */
-    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, 1f);
+    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, MAX_CONF);
 
     /**
      * global truth frequency resolution by which reasoning is dithered
@@ -389,15 +401,6 @@ public abstract class Param {
 
 
     /**
-     * controls the speed (0..+1.0) of budget propagating from compound
-     * terms to their subterms
-     * 0 momentum means an activation is fired completely and suddenly
-     * 1 momentum means it retains all activation
-     */
-    public final FloatRange momentum = new FloatRange(0.5f, 0, 1f);
-
-
-    /**
      * tolerance of complexity
      * low values (~0) will penalize complexity in derivations maximally (preferring simplicity)
      * high values (~1) will penalize complexity in deriations minimally (allowing complexity)
@@ -410,7 +413,7 @@ public abstract class Param {
      * dt >= 0
      */
     public static double evi(double evi, double dt, long dur) {
-
+        assert(Double.isFinite(dt) && dt>=0);
         return evi / (1.0 + (dt / dur)); //inverse linear
 
         //double ddt = dt;

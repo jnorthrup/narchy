@@ -36,6 +36,16 @@ public interface BeliefTable extends TaskTable {
         }
 
         @Override
+        public Task match(long start, long end, Term template, NAR nar) {
+            return null;
+        }
+
+        @Override
+        public Task sample(long start, long end, Term template, NAR nar) {
+            return null;
+        }
+
+        @Override
         public void forEachTask(Consumer<? super Task> x) {
 
         }
@@ -195,13 +205,6 @@ public interface BeliefTable extends TaskTable {
 
     Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> accept);
 
-    default Task match(long start, long end, @Nullable Term template, NAR nar) {
-        return match(start, end, template, nar, (each)->true);
-    }
-
-    @Override default Task match(long when, @Nullable Term template, NAR nar) {
-        return match(when, when, template, nar);
-    }
 
     @Nullable default Task answer(long start, long end, @Nullable Term template, NAR nar) {
         return answer(start, end, nar.dur(), null, template, nar, nar::input);

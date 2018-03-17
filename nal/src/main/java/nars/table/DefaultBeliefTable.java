@@ -106,28 +106,17 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
     @Override
+    public Task sample(long start, long end, Term template, NAR nar) {
+        Task ete = eternal.sample(start, end, template, nar);
+        Task tmp = temporal.sample(start, end, template, nar);
+        return Task.eviMax(ete, tmp, start, end);
+    }
+
+    @Override
     public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
-
-        Task ete = eternal.match((start+end)/2L, template, nar);
-        if (ete!=null && (filter == null || filter.test(ete)))
-            return ete;
-
+        Task ete = filter==null ? eternal.strongest() : eternal.select(filter);
         Task tmp = temporal.match(start, end, template, nar, filter);
-        if (tmp == null) {
-            return ete;
-        } else {
-//            if (ete!=null && tmp.conf() < nar.confMin.floatValue())
-//                return ete; //below conf for whatever reason
-//
-//            return tmp;
-
-            if (ete == null) {
-                return tmp;
-            } else {
-                return (ete.evi() > tmp.evi(start, end, nar.dur())) ?
-                        ete : tmp;
-            }
-        }
+        return Task.eviMax(ete, tmp, start, end);
     }
 
 

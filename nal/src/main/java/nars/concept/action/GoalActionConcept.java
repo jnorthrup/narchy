@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static nars.Op.GOAL;
+import static nars.truth.TruthFunctions.c2w;
 
 
 /**
@@ -74,6 +75,9 @@ public class GoalActionConcept extends ActionConcept {
 
         goal = this.goals().truth(pStart, pEnd, nar);
 
+//        if (goals.size() > 0)
+//            System.err.println(term + " " + goal.freq() + " " + goal.evi() + " " + goal.conf());
+
         boolean curi;
         if (nar.random().nextFloat() < cur * (1f - (goal!=null ? goal.conf() : 0))) {
 //            // curiosity override
@@ -104,7 +108,7 @@ public class GoalActionConcept extends ActionConcept {
 ////                        hashCode() /* for phase shift */
 ////                            + now / (curiPeriod * (2 * Math.PI) * dur)) + 1f)/2f;
 //
-            goal = Truth.theDithered(nar.random().nextFloat(), curiConf, nar);
+            goal = Truth.theDithered(nar.random().nextFloat(), c2w(curiConf), nar);
             //curiosityGoal = null;
 
 //            curious = true;
@@ -150,11 +154,11 @@ public class GoalActionConcept extends ActionConcept {
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief!=null) {
-//            long curiosityStamp = nar.time.nextStamp();
-//            curiosityGoal = this.curiosity(nar,
-//                    //goal,
-//                    Truth.theDiscrete(feedbackBelief.freqMean(dur, pStart, pEnd), goal.evi(), nar),
-//                    term, pStart, pEnd, curiosityStamp);
+            long curiosityStamp = nar.time.nextStamp();
+            curiosityGoal = this.curiosity(nar,
+                    //goal,
+                    Truth.theDithered(feedbackBelief.freqMean(dur, pStart, pEnd), goal.evi(), nar),
+                    term, pStart, pEnd, curiosityStamp);
         }
 
         return Stream.of(feedbackBelief, (ITask)curiosityGoal).filter(Objects::nonNull);

@@ -101,6 +101,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return false;
     }
 
+    static @Nullable Task eviMax(@Nullable Task a, @Nullable Task b, long start, long end) {
+        if (b == null) {
+            return a;
+        } else {
+            if (a == null) {
+                return b;
+            } else {
+                return (a.evi() > b.evi(start, end, 1)) ?
+                        a : b;
+            }
+        }
+    }
+
     @Override
     default float freqMin() {
         return freq();
@@ -530,6 +543,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     default float eternalizability() {
 
         return 1f; //always
+        //return 0.5f; //some
         //return punc()==BELIEF ? 1f: 0f; //always if belief
         //return 0f; //never
 
@@ -1101,6 +1115,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     default float eviInteg() {
         return isEternal() ? Float.POSITIVE_INFINITY : range() * evi();
+    }
+    default float confInteg() {
+        return isEternal() ? Float.POSITIVE_INFINITY : range() * conf();
     }
 
     byte punc();

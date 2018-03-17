@@ -45,7 +45,8 @@ public class PoolMultiExec extends AbstractExec {
 
 
     public PoolMultiExec(Revaluator revaluator, int conceptCapacity, int qSize) {
-        this(revaluator, Runtime.getRuntime().availableProcessors() - 1, conceptCapacity, qSize);
+        this(revaluator,
+                Math.max(1, Runtime.getRuntime().availableProcessors() - 1), conceptCapacity, qSize);
     }
 
     public PoolMultiExec(Revaluator r, int threads, int conceptCapacity, int qSize) {
@@ -53,16 +54,16 @@ public class PoolMultiExec extends AbstractExec {
         this.revaluator = r;
         this.threads.set(threads);
         this.qSize = qSize;
-        this.exe = this::executeInline;
+        this.exe = this::executeNow;
     }
 
     @Override
-    public void execute(Consumer<NAR> r) {
+    public final void execute(Consumer<NAR> r) {
         execute((Object) r);
     }
 
     @Override
-    public void execute(Runnable r) {
+    public final void execute(Runnable r) {
         execute((Object) r);
     }
 
@@ -71,38 +72,30 @@ public class PoolMultiExec extends AbstractExec {
     public void execute(Object t) {
 
         if (t instanceof Task || isWorker()) {
-            executeInline(t);
+            executeNow(t);
         } else {
             exe.accept(t);
         }
 
     }
 
-
-    /**
-     * the input procedure according to the current thread
-     */
-    private void add(ITask x) {
-        if (isWorker()) {
-            //immediate
-            executeInline(x);
-        } else {
-            //deferred
-            if (x instanceof Task)
-                executeInline(x);
-            else
-                exe.accept(x);
-        }
+    private void executeLater(ITask x) {
+        if (x instanceof Task)
+            executeNow(x);
+        else
+            exe.accept(x);
     }
 
     @Override
     public void execute(Stream<? extends ITask> input) {
-        input.forEach(this::add);
+        input.forEach(isWorker() ?
+                this::executeNow : this::executeLater);
     }
 
     @Override
     public void execute(Iterator<? extends ITask> input) {
-        input.forEachRemaining(this::add);
+        input.forEachRemaining(isWorker() ?
+                this::executeNow : this::executeLater);
     }
 
     private boolean isWorker() {
@@ -168,7 +161,7 @@ public class PoolMultiExec extends AbstractExec {
     @Override
     public void stop() {
         synchronized (this) {
-            exe = this::executeInline;
+            exe = this::executeNow;
             super.stop();
             pool.shutdownNow();
             pool = null;
@@ -202,7 +195,7 @@ public class PoolMultiExec extends AbstractExec {
 
         @Override
         protected void run(Object next) {
-            executeInline(next);
+            executeNow(next);
         }
 
         int idles = 0;

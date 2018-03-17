@@ -113,7 +113,7 @@ public class Try implements Consumer<Derivation> {
         //System.out.println(Arrays.toString(choices) + " " + Arrays.toString(w));
 
         int before = d.now();
-        Roulette.selectRouletteUnique(N, i -> w[i], (i) -> {
+        Roulette.RouletteUnique.run(w, (i) -> {
             int ttlSave = d.ttl;
 
 

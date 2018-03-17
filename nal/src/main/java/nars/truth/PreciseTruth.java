@@ -6,7 +6,7 @@ import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Float.floatToIntBits;
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
@@ -22,21 +22,16 @@ public class PreciseTruth implements Truth {
     }
 
     public PreciseTruth(float freq, float ce, boolean xIsConfOrEvidence) {
-        assert ((freq == freq) && (freq >= 0) && (freq <= 1)):
+        assert ((Float.isFinite(freq ) ) && (freq >= 0) && (freq <= 1)):
                 "invalid freq: " + freq;
         this.f = freq;
-        assert ((ce == ce) && (ce >= Float.MIN_NORMAL)):
-                "invalid evidence/conf: " + ce;
-        float e;
+
         if (xIsConfOrEvidence) {
-//            if (ce > TruthFunctions.MAX_CONF)
-//                throw new RuntimeException(ce + " is gte max (" + TruthFunctions.MAX_CONF + ')');
-            ce = Util.min(ce, TruthFunctions.MAX_CONF);
-            e = c2wSafe(ce, Param.HORIZON);
+            this.e = c2w(ce);
         } else {
-            e = ce;
+            assert(Float.isFinite(ce) && ce > 0);
+            this.e = ce;
         }
-        this.e = e;
     }
 
     public PreciseTruth(@Nullable Truth truth) {
@@ -94,7 +89,4 @@ public class PreciseTruth implements Truth {
         return w2cSafe(e);
     }
 
-//    public PreciseTruth eviMult(float v) {
-//        return v == 1 ? this : new PreciseTruth(f, e * v, false);
-//    }
 }

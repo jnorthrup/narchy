@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class QuestionTest {
 
-    final int withinCycles = 512;
+    final int withinCycles = 212;
 
     @Test
     public void whQuestionUnifyQueryVar() throws Narsese.NarseseException {
@@ -50,8 +50,7 @@ public class QuestionTest {
 
         Term expectedSolutionTerm = $.$(expectedSolution);
 
-        NAR nar = NARS.tmp();
-        //nar.nal(1);
+        NAR nar = NARS.tmp(1);
         nar.log();
 
         nar
@@ -142,7 +141,7 @@ public class QuestionTest {
         DoubleSummaryStatistics withOutTime = new DoubleSummaryStatistics();
 
         IntFunction<NAR> narProvider = (seed) -> {
-            NAR d = NARS.tmp();
+            NAR d = NARS.tmp(1);
             d.random().setSeed(seed);
             d.termVolumeMax.set(16);
             d.freqResolution.set(0.1f);

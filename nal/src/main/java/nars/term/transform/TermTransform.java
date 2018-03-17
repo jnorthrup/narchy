@@ -4,9 +4,9 @@ import nars.$;
 import nars.Op;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
-import nars.subterm.DisposableTermList;
+import nars.subterm.util.DisposableTermList;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
+import nars.subterm.util.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 import static nars.Op.VAR_QUERY;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * I = input term type, T = transformable subterm type
@@ -58,7 +59,7 @@ public interface TermTransform extends TermContext {
         } else if (yy != xx || op != x.op()) {
 
 
-            Term z = the(op, dt, (TermList)yy);
+            Term z = the(op, op.temporal ? dt : DTERNAL, (TermList)yy);
 
 
 //            if (op==x.op() && Arrays.equals(xx.arrayShared(),z.subterms().arrayShared())) {

@@ -64,6 +64,7 @@ import static nars.$.$;
 import static nars.Op.*;
 import static nars.term.Functor.f;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2w;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
@@ -535,7 +536,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @Nullable
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws InvalidTaskException {
 
-        PreciseTruth tr = Truth.theDithered(freq, conf, this);
+        PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
         @Nullable Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
             Task y = new NALTask(c, punc, truth, time(), start, end, new long[]{time.nextStamp()});
             y.priSet(pri);
@@ -1001,6 +1002,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public final Concept concept(Termed termed) {
         return concept(termed, false);
     }
+    @Nullable
+    public final Concept concept(String term) {
+        return concept($.$safe(term), false);
+    }
 
     /**
      * resolves a term to its Concept; if it doesnt exist, its construction will be attempted
@@ -1329,7 +1334,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @Nullable
     public Task match(Termed c, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
-        Concept concept = conceptualize(c);
+        Concept concept =
+                conceptualize(c); //necessary for novel dynamic concepts
+                 //concept(c);
+
         if (!(concept instanceof TaskConcept))
             return null;
 

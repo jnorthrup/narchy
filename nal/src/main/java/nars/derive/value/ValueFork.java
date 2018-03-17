@@ -75,7 +75,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
                     //Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
                     Util.softmax(N, i -> causes[i].value(), Param.TRIE_DERIVER_TEMPERATURE);
 
-            Roulette.selectRouletteUnique(N, i->w[i], (b) -> {
+            Roulette.RouletteUnique.run(w, (b) -> {
 
                 this.branches[b].test(d);
 

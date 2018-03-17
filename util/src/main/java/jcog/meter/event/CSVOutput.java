@@ -1,7 +1,9 @@
 package jcog.meter.event;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.util.ArrayIterator;
 
 import java.io.*;
 import java.util.stream.Collectors;
@@ -20,7 +22,11 @@ public class CSVOutput extends PrintStream {
 
     public CSVOutput(OutputStream out, String... headers) {
         super(out);
-        println(Joiner.on(',').join(headers));
+        println(Joiner.on(',').join(Iterables.transform(
+                new ArrayIterator<>(headers),
+                col -> "\"" + col + "\"" //column quoted in case it contains special chars
+            )
+        ));
     }
 
     public void out(double... row) {

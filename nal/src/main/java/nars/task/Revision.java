@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.Texts;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.Priority;
@@ -12,6 +13,7 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.compound.util.ConjEvents;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -20,14 +22,11 @@ import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectLongHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -689,7 +688,7 @@ public class Revision {
                 }
 
 
-                ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), false);
+                ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), Param.DEBUG_EXTRA);
                 /*if (ccp != null) */{
 
                     cc = ccp.getOne();
@@ -979,60 +978,25 @@ public class Revision {
         float d = 0;
 
         //if (len!=blen) {
-        //TODO compare by events
-        if (!aa.equals(bb)) {
-            return (a.dtRange() + b.dtRange()) / depth; //estimate
-        }
+//        if (!aa.equals(bb)) {
+//            return (a.dtRange() + b.dtRange()) / depth; //estimate
+//        }
         //int blen = bb.subs();
 
-        if (a.op() == CONJ && (len > 2 /*|| blen > 2*/)) {
-            if (len > 2 /*&& blen == len*/) {
+        boolean aSubsEqualsBSubs = aa.equals(bb);
+        if (a.op() == CONJ && !aSubsEqualsBSubs) {
+            //HACK :)
+            ConjEvents c = new ConjEvents();
+            String as = ConjEvents.sequenceString(a, c).toString();
+            String bs = ConjEvents.sequenceString(b, c).toString();
 
-                //parallel, eternal, or xternal commutive
-                for (int i = 0; i < len; i++)
-                    d += dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+            int levDist = Texts.levenshteinDistance(as, bs);
+            float seqDiff = (((float)levDist)/(Math.min(as.length(),bs.length())));
 
-            } else {
-                //hard way: break down into events because there is a combination of parallel and seq
+            //HACK estimate
+            float rangeDiff = Math.max(1f, Math.abs(a.dtRange() - b.dtRange()));
 
-                //a) inter-term distance if both are non-XTERNAL
-                if (a.dt() != XTERNAL && b.dt() != XTERNAL) {
-
-                    ObjectLongHashMap<Term> ab = new ObjectLongHashMap(len);
-                    a.events((tw) -> ab.put(tw.getTwo().root(), tw.getOne()));
-                    b.events((tw) -> ab.addToValue(tw.getTwo().root(), -tw.getOne()));
-
-                    final float[] xd = {0};
-                    ab.forEachValue(x -> xd[0] += Math.abs(x));
-                    d += xd[0];
-                }
-
-                Map<Term, Term[]> ab = new HashMap(len);
-
-                //TODO this collapses duplicates. ignore for now
-                a.events((tw) -> {
-                    Term tww = tw.getTwo();
-                    if (tww.isTemporal())
-                        ab.put(tww.root(), new Term[]{tww, null});
-                });
-
-                b.events((tw) -> {
-                    Term tww = tw.getTwo();
-                    if (tww.isTemporal()) {
-                        Term[] x = ab.computeIfAbsent(tww.root(), (nn) -> new Term[2]);
-                        x[1] = tww;
-                    }
-                });
-
-                for (Term[] xy : ab.values()) {
-                    if (xy[0] != null && xy[1] != null) {
-                        if (!xy[0].equals(xy[1])) {
-                            if (!((!xy[0].equals(a) && !xy[1].equals(b)) || (!xy[1].equals(a) && !xy[0].equals(b)))) //for prevneting an infinite recursion here that i dont understand yet
-                                d += dtDiff(xy[0], xy[1], depth + 1);
-                        }
-                    } //else ?
-                }
-            }
+            d += (1f + rangeDiff) * (1f + seqDiff);
 
         } else {
             int adt = a.dt();
@@ -1059,8 +1023,10 @@ public class Revision {
                 d += Math.abs(adt - bdt);
             }
 
-            for (int i = 0; i < len; i++)
-                d += dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+            if (!aSubsEqualsBSubs) {
+                for (int i = 0; i < len; i++)
+                    d += dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+            }
         }
 
         return d / depth;

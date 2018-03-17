@@ -25,7 +25,6 @@ import java.util.SortedSet;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static jcog.Texts.n4;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -37,13 +36,15 @@ public class Optimize<X> {
     /**
      * if a tweak's 'inc' (increment) is not provided,
      * use the known max/min range divided by this value as 'inc'
+     *
+     * this controls the exploration rate
      */
-    static final float autoInc_default = 2f;
+    static final float autoInc_default = 5f;
 
     final List<Tweak<X, ?>> tweaks;
     final Supplier<X> subject;
 
-    private final boolean trace = false;
+    private final boolean trace = true;
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
 
     private CSVOutput csv;
@@ -136,12 +137,12 @@ public class Optimize<X> {
 
 
             if (trace)
-                csv.out(ArrayUtils.add(point, score));
+                csv.out(ArrayUtils.add(point, (int)0, score));
 
             maxScore[0] = Math.max(maxScore[0], score);
-            System.out.println(
-                    n4(score) + " / " + n4(maxScore[0]) + "\t" + n4(point)
-            );
+//            System.out.println(
+//                    n4(score) + " / " + n4(maxScore[0]) + "\t" + n4(point)
+//            );
 
             experiments.add(pair(score, point));
             experimentIteration(point, score);
@@ -160,7 +161,7 @@ public class Optimize<X> {
             logger.info("solve {} {}", func, t);
         }
 
-        return new Result<X>(experiments, tweaks);
+        return new Result<>(experiments, tweaks);
 
 
     }

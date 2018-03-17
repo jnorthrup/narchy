@@ -49,31 +49,30 @@ public class Tasklinks {
     }
 
 
-    public static void linkTask(Task t, final float _pri, /*Task*/Concept cc, @Nullable NAR nar) {
+    public static void linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
 
+        /** non-zero for safety */
         final float priCause = Math.max(_pri, Pri.EPSILON);
 
         MutableFloat overflow = new MutableFloat();
-
-        linkTask(new TaskLink.GeneralTaskLink(t, _pri), cc.tasklinks(), overflow);
+        linkTask(new TaskLink.GeneralTaskLink(t, priCause), src.tasklinks(), overflow);
 
         float priEffect = priCause - overflow.floatValue();
         assert(priEffect >= 0);
 
-        //adjust the experienced emotion according to the actual effect
-        nar.emotion.onActivate(t, priEffect);
+        //activate the task's concept
+        nar.activate(src, priEffect);
 
+        //activate the task concept templates
+        src.templates().activate(src, priEffect, nar);
 
-        float conceptActivation = priEffect
-                //* nar.amp(t.cause())
-        ;
+        {
+            //adjust the cause values according to the input's actual demand
+            ((TaskConcept) src).value(t, priCause, nar);
 
-        TermLinks.linkTemplates(cc, priEffect, nar.momentum.floatValue(), nar);
-
-        nar.activate(cc, conceptActivation);
-
-        //adjust the cause values according to the input's actual demand
-        ((TaskConcept) cc).value(t, priCause, nar);
+            //adjust the experienced emotion according to the actual effect
+            nar.emotion.onActivate(t, priEffect);
+        }
 
 
         //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
@@ -105,8 +104,7 @@ public class Tasklinks {
                 //spread overflow of saturated targets to siblings
                 float change;
                 if (o >= Pri.EPSILON) {
-                    change = Math.min(o, headRoom);
-                    overflow.subtract(change);
+                    overflow.subtract(change = Math.min(o, headRoom));
                 } else {
                     change = 0;
                 }

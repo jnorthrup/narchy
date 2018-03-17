@@ -414,19 +414,16 @@ public class Builtin {
         }));
 
         /** similar to without() but special handling for CONJ sub-events */
-        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term _event) -> {
-            if (conj.op() != CONJ || conj.impossibleSubTerm(_event))
+        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
+            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
                 return Null;
 
 
-            Term event = _event.root();
-
-            //extract from inside recursive event
-            if (conj.dt() != DTERNAL) {
 
 
-                FasterList<LongObjectPair<Term>> events = conj.eventList();
-                IntArrayList found = new IntArrayList(1);
+
+                FasterList<LongObjectPair<Term>> events = conj.eventList(0, 1, true, true);
+                IntArrayList found = new IntArrayList(2);
                 int es = events.size();
                 assert (es > 1);
                 for (int i = 0; i < es; i++) {
@@ -450,9 +447,9 @@ public class Builtin {
                 }
                 events.remove(f);
                 return Op.conj(events);
-            } else {
-                return nullToNull(Op.without(conj, event::equalsRoot, nar.random()));
-            }
+//            } else {
+//                return nullToNull(Op.without(conj, event::equalsRoot, nar.random()));
+//            }
         }));
         /** extracts only the events preceding the specified events */
         nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) ->

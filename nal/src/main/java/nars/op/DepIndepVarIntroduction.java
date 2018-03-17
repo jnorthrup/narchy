@@ -29,7 +29,10 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     /** sum by complexity if passes include filter */
     private static final ToIntFunction<Term> depIndepFilter = t ->
-            t.hasAny(DepOrIndepBits | Op.NEG.bit) ? 0 : 1;
+            t.hasAny(DepOrIndepBits
+                    //| Op.NEG.bit //??
+                    //| Op.VariableBits //dont re-introduce over variables
+            ) ? 0 : 1;
 
     @Override
     public Pair<Term, Map<Term, Term>> apply(Term x, Random r) {

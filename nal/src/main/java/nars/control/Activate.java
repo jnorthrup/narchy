@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.link.TaskLink;
-import nars.link.TaskLinkCurveBag;
 import nars.link.Tasklinks;
 import nars.term.Term;
 import nars.term.Termed;
@@ -55,7 +54,7 @@ public class Activate extends PLink<Concept> implements Termed {
 
         Random rng = nar.random();
 
-        ((TaskLinkCurveBag)tasklinks).compress(nar);
+        //((TaskLinkCurveBag)tasklinks).compress(nar);
 
         tasklinks.sample(rng, _tasklinks, tasklink -> {
 

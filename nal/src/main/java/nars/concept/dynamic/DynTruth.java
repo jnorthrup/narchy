@@ -23,6 +23,7 @@ import nars.truth.Truthed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -96,7 +97,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     /** TODO make Task truth dithering optional */
-    public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+    public Truthed eval(@NotNull Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
 
         Truth t = truthModel.apply(this, nar);
         if (t == null)
@@ -123,7 +124,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             if (size() > 1) {
                 if (superterm.op() == CONJ) {
                     long min = Long.MAX_VALUE;
-                    long maxRange = Long.MIN_VALUE;
+                    long maxRange = 0;
                     for (int i = 0, thisSize = size(); i < thisSize; i++) {
                         LongInterval ii = get(i);
                         long iis = ii.start();
@@ -182,14 +183,12 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 ((DynamicTruthModel) truthModel).construct(superterm, this) :
                 superterm;
 
-        if (content == null)
-            return null;
 
         @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
                 //if dynamic truth model, construct the appropriate term
                 //otherwise consider the superterm argument as the task content
                 content,
-                beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG);
+                beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG_EXTRA);
         if (r == null)
             return null;
 
@@ -257,11 +256,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     public final Truth truth(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
-        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, 0, nar);
+        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, Truth.EVIMIN, nar);
     }
 
     public final Task task(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
-        return (Task) eval(term, o, true, beliefOrGoal, 0, 0, 0, nar);
+        return (Task) eval(term, o, true, beliefOrGoal, 0, 0, Truth.EVIMIN, nar);
     }
 
     public static class DynamicTruthTask extends NALTask {
@@ -286,10 +285,6 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             return false;
         }
 
-        @Override
-        public float eternalizability() {
-            return 1;
-        }
     }
 
 }

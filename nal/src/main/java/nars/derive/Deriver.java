@@ -28,9 +28,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.Util.unitize;
-import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * an individual deriver process: executes a particular Deriver model
@@ -42,7 +39,6 @@ public class Deriver extends Causable {
 
 
     public final IntRange conceptsPerIteration = new IntRange(2, 1, 1024);
-
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
@@ -76,10 +72,7 @@ public class Deriver extends Causable {
      */
     final Memoize<ProtoDerivation.PremiseKey, short[]> whats =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
-                    32 * 1024, 4, false);
-
-
-    transient private long now;
+                    64 * 1024, 4, false);
 
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
@@ -145,8 +138,8 @@ public class Deriver extends Causable {
             float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
             if (parentEvi > 0) {
                 discount *= unitize(
-                        //derivedTruth.evi() / parentEvi
-                        derivedTruth.conf() / w2cSafe(parentEvi)
+                        derivedTruth.evi() / parentEvi
+                        //derivedTruth.conf() / w2cSafe(parentEvi)
                 );
             }
 
@@ -209,8 +202,6 @@ public class Deriver extends Causable {
 
             premiseBurst.clear();
 
-            this.now = nar.time();
-
             //SELECT
 
             fired += selectPremises(burstSize, (t, termlink) -> {
@@ -230,13 +221,14 @@ public class Deriver extends Causable {
 
             //--- FIRE
 
-            this.now = nar.time();
 
             totalPremises += premiseBurst.size();
 
+            long[] focus = nar.timeFocus();
+
             premiseBurst.forEach(premise -> {
 
-                if (premise.match(d, this::matchTime, matchTTL) != null) {
+                if (premise.match(d, focus, matchTTL) != null) {
 
                     boolean derivable = proto(d);
 
@@ -362,61 +354,62 @@ public class Deriver extends Causable {
         return Util.sum(Cause::value, subCauses);
     }
 
-    protected long matchTime(Task task) {
-        assert (now != ETERNAL);
-
-        if (task.isEternal()) {
-            return
-                    //task.punc()!=GOAL ? ETERNAL : now;
-                    //ETERNAL
-                    now;
-        } else {
-
-            //return now;
-
-            //return task.myNearestTimeTo(now);
-
-            switch (task.punc()) {
-                case GOAL:
-                case QUEST:
-                    return now;
-                case BELIEF:
-                case QUESTION:
-                    return task.nearestPointInternal(now);
-                default:
-                    throw new UnsupportedOperationException();
-            }
-
-
-//            return nar.random().nextBoolean() ?
-//                    now : task.myNearestTimeTo(now);
-
-            //        return nar.random().nextBoolean() ?
-            //                task.nearestTimeTo(now) :
-            //                now + Math.round((-0.5f + nar.random().nextFloat()) * 2f * (Math.abs(now - task.mid())));
-        }
-
-        //return now + dur;
-
+//    protected long[] matchTime(Task task) {
+//        assert (now != ETERNAL);
+//
+//        return
 //        if (task.isEternal()) {
-//            return ETERNAL;
-//        } else //if (task.isInput()) {
-//            return task.nearestTimeTo(now);
-
+//            return
+//                    //task.punc()!=GOAL ? ETERNAL : now;
+//                    //ETERNAL
+//                    now;
 //        } else {
-//            if (task.isBelief()) {
-//                return now +
-//                        nar.dur() *
-//                            nar.random().nextInt(2*Param.PREDICTION_HORIZON)-Param.PREDICTION_HORIZON; //predictive belief
-//            } else {
-//                return Math.max(now, task.start()); //the corresponding belief for a goal or question task
+//
+//            //return now;
+//
+//            //return task.myNearestTimeTo(now);
+//
+//            switch (task.punc()) {
+//                case GOAL:
+//                case QUEST:
+//                    return now;
+//                case BELIEF:
+//                case QUESTION:
+//                    return task.nearestPointInternal(now);
+//                default:
+//                    throw new UnsupportedOperationException();
 //            }
+//
+//
+////            return nar.random().nextBoolean() ?
+////                    now : task.myNearestTimeTo(now);
+//
+//            //        return nar.random().nextBoolean() ?
+//            //                task.nearestTimeTo(now) :
+//            //                now + Math.round((-0.5f + nar.random().nextFloat()) * 2f * (Math.abs(now - task.mid())));
 //        }
-
-        //now;
-        //now + dur;
-
-    }
+//
+//        //return now + dur;
+//
+////        if (task.isEternal()) {
+////            return ETERNAL;
+////        } else //if (task.isInput()) {
+////            return task.nearestTimeTo(now);
+//
+////        } else {
+////            if (task.isBelief()) {
+////                return now +
+////                        nar.dur() *
+////                            nar.random().nextInt(2*Param.PREDICTION_HORIZON)-Param.PREDICTION_HORIZON; //predictive belief
+////            } else {
+////                return Math.max(now, task.start()); //the corresponding belief for a goal or question task
+////            }
+////        }
+//
+//        //now;
+//        //now + dur;
+//
+//    }
 
 
 //    private int premises(Activate a) {

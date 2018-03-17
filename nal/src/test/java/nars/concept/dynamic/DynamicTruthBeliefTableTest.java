@@ -132,6 +132,7 @@ public class DynamicTruthBeliefTableTest {
 
         {
             Task t = n.belief(ccn.term());
+            assertNotNull(t);
             assertEquals($("a:y"), t.term()); //the critical component
             assertEquals(1f, t.freq());
         }
@@ -142,10 +143,15 @@ public class DynamicTruthBeliefTableTest {
 
         n.clear();
 
-        //test change after a component's revision:
+        //test change after a component's revision to negate the input freq
         n.believe("a:y", 0, 0.95f);
         n.run(1);
-        Truth now2 = n.belief(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time()).truth();
+        n.concept("a:y").print();
+        Task ay = n.belief($.$safe("a:y"));
+        assertTrue(ay.freq() < 0.5f);
+
+        Task bb = n.belief(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time());
+        Truth now2 = bb.truth();
         assertTrue(now2.freq() < 0.4f);
 
     }
@@ -294,8 +300,10 @@ public class DynamicTruthBeliefTableTest {
         assertEquals(
                 "%1.0;.81%", n.beliefTruth(xyz, n.time()).toString()
         );
+        Task nbt = n.belief(xyz, n.time());
+        assertNotNull(nbt);
         assertEquals(
-                1, n.belief(xyz, n.time()).stamp().length
+                1, nbt.stamp().length
         );
     }
 

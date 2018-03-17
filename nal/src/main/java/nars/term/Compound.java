@@ -60,13 +60,12 @@ public interface Compound extends Term, IPair, Subterms {
     static boolean equals(/*@NotNull*/ Compound a, @Nullable Term bb) {
         assert (a != bb) : "instance check should have already been performed before calling this";
 
-
         return
                 (a.opX() == bb.opX())
-                        &&
-                        (a.subterms().equals(bb.subterms()))
-                        &&
-                        (a.dt() == bb.dt())
+                    &&
+                (a.dt() == bb.dt())
+                    &&
+                (a.subterms().equals(bb.subterms()))
                 ;
     }
 

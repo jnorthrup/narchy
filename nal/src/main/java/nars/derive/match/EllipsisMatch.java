@@ -4,7 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.index.term.TermContext;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
+import nars.subterm.util.TermList;
 import nars.term.compound.CompoundLight;
 import nars.term.Term;
 import nars.term.subst.Unify;

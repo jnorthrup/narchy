@@ -643,7 +643,7 @@ public enum Util {
      * clamps a value to 0..1 range
      */
     public static double unitize(double x) {
-        notNaN(x);
+        finite(x);
         return Util.clamp(x, 0.0, 1.0);
     }
 
@@ -651,8 +651,19 @@ public enum Util {
      * clamps a value to 0..1 range
      */
     public static float unitize(float x) {
-        notNaN(x);
+        finite(x);
         return Util.clamp(x, 0, 1f);
+    }
+
+    public static float finite(float x) throws NumberException {
+        if (!Float.isFinite(x))
+            throw new NumberException("non-finite");
+        return x;
+    }
+    public static double finite(double x) throws NumberException {
+        if (!Double.isFinite(x))
+            throw new NumberException("non-finite");
+        return x;
     }
 
     public static float notNaN(float x) throws NumberException {
@@ -735,11 +746,11 @@ public enum Util {
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(float a, float b, float epsilon) {
-        return  ((a!=a) && (b!=b)) //NaN
-                ||
-                (a == b)
-                ||
-                (Math.abs(a - b) < epsilon);
+        assert(a==a);
+        return  (Math.abs(a - b) < epsilon)
+                //||
+                //((a!=a) && (b!=b)) //NaN
+        ;
     }
 
     /**
@@ -2014,7 +2025,14 @@ public enum Util {
         }
         return f;
     }
-
+    public static <X> float[] map(X[] what, FloatFunction<X> value) {
+        int num = what.length;
+        float[] f = new float[num];
+        for (int i = 0; i < num; i++) {
+            f[i] = value.floatValueOf(what[i]);
+        }
+        return f;
+    }
     /**
      * returns amount of memory used as a value between 0 and 100% (1.0)
      */

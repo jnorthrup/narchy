@@ -12,7 +12,7 @@ import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import nars.derive.LambdaPred;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
+import nars.subterm.util.TermList;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
 import nars.term.Term;

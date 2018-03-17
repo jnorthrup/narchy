@@ -2,7 +2,6 @@ package nars.table;
 
 import com.google.common.collect.Streams;
 import jcog.Util;
-import jcog.decide.Roulette;
 import jcog.list.FasterList;
 import jcog.pri.Priority;
 import jcog.sort.SortedArray;
@@ -22,8 +21,12 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
@@ -102,6 +105,18 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
     }
 
+    public Task select(Predicate<? super Task> selector) {
+        Task[] a = toArray();
+        for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
+            Task x = a[i];
+            if (x == null)
+                break; //null-terminator reached sooner than expected
+            if (selector.test(x))
+                return x;
+        }
+        return null;
+    }
+
     @Override
     public Stream<Task> streamTasks() {
 //        Task[] values = toArray();
@@ -111,24 +126,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         Task[] list = this.list;
         //TODO may not be null filtered properly for certain multithread cases of removal
         return Streams.stream(ArrayIterator.get(list, Math.min(list.length, size)));
-    }
-
-    @Override
-    public Task match(long when, Term t, NAR n) {
-        Random rng = n.random();
-        synchronized (this) {
-
-            int s = size();
-            switch (s) {
-                case 0: return null;
-                case 1: return list[0];
-                default:
-                    Task[] l = this.list;
-                    return l[Roulette.decideRoulette(s,
-                            i -> l[i].evi(), //value function
-                            rng)];
-            }
-        }
     }
 
     @Override
@@ -156,18 +153,18 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     }
                 }
 
-                if (wasCapacity!=c)
+                if (wasCapacity != c)
                     resize(c);
             }
 
             //do this outside of the synch
-            if (trash!=null) {
+            if (trash != null) {
 //                Task s = strongest();
 //                if (s!=null) {
 //                    TaskLink.GeneralTaskLink sl = new TaskLink.GeneralTaskLink(s, 0);
 //                    trash.forEach(t -> ((NALTask)t).delete(sl));
 //                } else {
-                    trash.forEach(Task::delete);
+                trash.forEach(Task::delete);
 //                }
             }
 
@@ -178,15 +175,16 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     @Override
     public Task[] toArray() {
         //synchronized (this) {
-            if (size == 0)
-                return Task.EmptyArray;
-            else {
-                return Arrays.copyOf(list, size, Task[].class);
-                //return ArrayUtils.subarray(list, 0, size, Task[]::new);
-            }
+        int s = this.size;
+        if (s == 0)
+            return Task.EmptyArray;
+        else {
+            Task[] list = this.list;
+            return Arrays.copyOf(list, Math.min(s, list.length), Task[].class);
+            //return ArrayUtils.subarray(list, 0, size, Task[]::new);
+        }
         //}
     }
-
 
 
     @Override
@@ -273,8 +271,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             } else if (Stamp.overlapping(y, x)) {
                 boolean FILTER_WEAKER_BUT_EQUAL = false;
                 if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && xconf >= y.conf() &&
-                    Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
-                    Arrays.equals(y.stamp(), x.stamp())) {
+                        Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
+                        Arrays.equals(y.stamp(), x.stamp())) {
                     y.delete();
                     return null; //subsume by stronger belief with same freq and stamp
                 }
@@ -391,7 +389,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 //        }
 //        TaskTable.removeTask(belief, null, displ);
 //    }
-
 
 
     @Override

@@ -16,10 +16,7 @@ import nars.term.atom.Bool;
 import nars.term.subst.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.ToLongFunction;
-
 import static nars.Op.BELIEF;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Defines the conditions used in an instance of a derivation
@@ -65,7 +62,7 @@ public class Premise extends Pri {
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
     @Nullable
-    public Derivation match(Derivation d, ToLongFunction<Task> matchTime, int matchTTL) {
+    public Derivation match(Derivation d, long[] focus, int matchTTL) {
 
         NAR n = d.nar;
 
@@ -138,20 +135,21 @@ public class Premise extends Pri {
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
         Task belief = null;
 
-        float timeFocus = n.timeFocus.floatValue();
-        int fRad = Math.round(Math.max(1,dur * timeFocus));
+//        float timeFocus = n.timeFocus.floatValue();
+//        int fRad = Math.round(Math.max(1,dur * timeFocus));
 
         final Concept beliefConcept = beliefTerm.op().conceptualizable ? n.concept(beliefTerm) : null;
         if (beliefConcept != null) {
 
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
+                final BeliefTable bb = beliefConcept.beliefs();
                 if (task.isQuestOrQuestion()) {
                     if (beliefConceptCanAnswerTaskConcept[0]) {
                         final BeliefTable answerTable =
                                 (task.isGoal() || task.isQuest()) ?
                                         beliefConcept.goals() :
-                                        beliefConcept.beliefs();
+                                        bb;
 
 //                            //see if belief unifies with task (in reverse of previous unify)
 //                            if (questionTerm.varQuery() == 0 || (unify((Compound)beliefConcept.term(), questionTerm, nar) == null)) {
@@ -177,24 +175,14 @@ public class Premise extends Pri {
                     }
                 }
 
-                if (belief == null) {
-                    long focus = matchTime.applyAsLong(task);
-                    long focusStart, focusEnd;
-                    if (focus == ETERNAL) {
-                        focusStart = focusEnd = ETERNAL;
-                    } else {
-                        focusStart =
-                                focus - fRad;
-                        //focus - dur;
-                        //focus;
-                        focusEnd =
-                                focus + fRad;
-                        //focus + dur;
-                        //focus;
-                    }
+                if ((belief == null) && !bb.isEmpty()) {
 
-                    belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n,
-                            beliefConcept.term().equals(task.term().concept()) ? x ->
+                    Term taskConcept = task.term().concept();
+                    belief = bb.match(
+                            focus[0], focus[1],
+                            beliefTerm,
+                            n,
+                            taskConcept.equals(beliefConcept.term()) ? x ->
                                 !x.equals(task) : null);
                 }
             }

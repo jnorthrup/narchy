@@ -69,7 +69,7 @@ public class TaskTest {
 
         assertEquals(3276, new DiscreteTruth(0, 0.1f).hashCode());
 
-        assertEquals(2147385014, new DiscreteTruth(1, 1.0f).hashCode());
+        assertEquals(2147385178, new DiscreteTruth(1, 1.0f).hashCode());
     }
 
 //    /** tests the ordering of tasks that differ by truth values,

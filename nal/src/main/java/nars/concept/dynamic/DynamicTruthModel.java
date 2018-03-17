@@ -1,7 +1,6 @@
 package nars.concept.dynamic;
 
 import jcog.Util;
-import jcog.list.FasterList;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
@@ -12,9 +11,10 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.term.compound.util.ConjEvents;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * Created by me on 12/4/16.
@@ -157,6 +157,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         }
 
         @Override
+        @NotNull
         public Term construct(Term superterm, List<TaskRegion> components) {
 
             int n = components.size();
@@ -166,47 +167,18 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
             boolean conj = superterm.op() == CONJ;
             if (conj) {
-                long[] range = TaskRegion.range(components);
-                if (range[0] != range[1]) {
-                    //construct using events
-
-                    FasterList<LongObjectPair<Term>> events = new FasterList(n);
-                    List<Term> eternals = new FasterList(0);
-                    for (int i = 0; i < n; i++) {
-                        Task t = components.get(i).task();
-                        Term tt = t.term();
-                        long s = t.start();
-                        if (s == ETERNAL) {
-                            eternals.add(tt);
-                        } else {
-                            events.add(pair(s, tt));
-                        }
-                    }
-                    if (events.isEmpty()) {
-                        if (eternals.isEmpty())
-                            return null;
-                        else
-                            return CONJ.the(DTERNAL, eternals);
-                    } else {
-                        Term x = Op.conj(events);
-                        if (x != null) {
-                            if (eternals.isEmpty())
-                                return x;
-                            else {
-                                return CONJ.the(DTERNAL, CONJ.the(DTERNAL, eternals), x);
-                            }
-                        }
-                        return null;
-                    }
+                ConjEvents c = new ConjEvents();
+                //long estVolume = ((FasterList<TaskRegion>)components).sumOfInt(xt -> ((Task)xt).term().volume());
+                //TODO heuristic for range sampling parameters
+                for (TaskRegion t : components) {
+                    if (!c.add(((Task)t).term(), t.start(), t.end(), 2, 1))
+                        return Null; //TODO maybe try with less aggressive sampling, if sampling was used
                 }
-            }
-
-            Term[] ct = Util.map(0, n, c -> components.get(c).task().term(), Term[]::new);
-
-            if (conj) {
-                return CONJ.the(superterm.dt(), ct);
+                return c.term();
             } else {
+                //SECT's
 
+                Term[] ct = Util.map(0, n, c -> components.get(c).task().term(), Term[]::new);
                 if (n == 2) {
                     return inhConstruct2(superterm, SECTe.bit | SECTi.bit, ct);
                 } else {
@@ -334,7 +306,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 return Op.DIFFe.the(DTERNAL, a, b);
             }
 
-            return null; //wtf
+            throw new RuntimeException();
         }
 
         @Override
@@ -346,14 +318,14 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         public Truth apply(DynTruth d, NAR n) {
             assert (d.size() == 2);
             TaskRegion a = d.get(0);
-            if (((Task)a).truth()==null)
-                return null;
+//            if (((Task)a).truth()==null)
+//                return null;
             TaskRegion b = d.get(1);
-            if (((Task)b).truth()==null)
-                return null;
+//            if (((Task)b).truth()==null)
+//                return null;
             float conf = a.confMin() * b.confMin();
             float freq = a.freqMean() * (1f - b.freqMean());
-            return new PreciseTruth(freq, conf);
+            return Truth.theDithered(freq, c2wSafe(conf), n);
         }
     }
 

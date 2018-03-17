@@ -10,7 +10,7 @@ import java.util.function.IntFunction;
  */
 public class CachedTopN<X> extends TopN<X> {
 
-    final ObjectFloatHashMap<X> seen = new ObjectFloatHashMap();
+    final ObjectFloatHashMap<X> seen = new ObjectFloatHashMap(8);
 
     public CachedTopN(X[] target, FloatFunction<X> rank) {
         super(target, rank);

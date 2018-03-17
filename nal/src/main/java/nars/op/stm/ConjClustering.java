@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.c2w;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
@@ -289,7 +289,7 @@ public class ConjClustering extends Causable {
 
             ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
             float overlap = evidence.getTwo();
-            float e = c2wSafe(conf) * Param.overlapFactor(overlap);
+            float e = c2w(conf) * Param.overlapFactor(overlap);
             if (e > 0) {
                 final Truth t = Truth.theDithered(freq, e, nar);
                 if (t != null) {
@@ -381,11 +381,6 @@ public class ConjClustering extends Causable {
 
         public STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
             super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
-        }
-
-        @Override
-        public float eternalizability() {
-            return 1;
         }
 
         @Override

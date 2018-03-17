@@ -1,7 +1,6 @@
 package jcog.decide;
 
 import jcog.Util;
-import jcog.data.bit.MetalBitSet;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
@@ -9,15 +8,15 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import java.util.Random;
-import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
-import java.util.function.IntSupplier;
 
-import static java.lang.Float.NaN;
 import static java.lang.Math.exp;
 
-/** roulette decision making */
-public enum Roulette { ;
+/**
+ * roulette decision making
+ */
+public enum Roulette {
+    ;
 
     public final static FloatFunction<? super PriReference> linearPri = (p) -> {
         return Math.max(p.priElseZero(), Prioritized.EPSILON);
@@ -42,54 +41,10 @@ public enum Roulette { ;
         return decideRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
     }
 
-    public static void decideRouletteWhile(IntSupplier choices, IntToFloatFunction choiceWeight, Random rng, IntPredicate each) {
-        decideRouletteWhile(choices, choiceWeight, rng, (IntFunction)((i)->each.test(i) ? RouletteControl.CONTINUE : RouletteControl.STOP));
-    }
 
-    public static void decideRouletteWhile(int _choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
-        decideRouletteWhile(()->_choices, choiceWeight, rng, each);
-    }
-
-    public static void decideRouletteWhile(IntSupplier _choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
-        float weightSum = NaN;
-        while (true) {
-            RouletteControl result;
-            int choices = _choices.getAsInt();
-
-            if (choices > 0) {
-                if (choices>1) {
-                    if (weightSum != weightSum) {
-                        weightSum = Util.sumIfPositive(choices, choiceWeight);
-                    }
-                    if (weightSum < Float.MIN_NORMAL * choices) {
-                        //flat
-                        float perChoice = 1f / choices;
-                        choiceWeight = (i) -> perChoice;
-                        weightSum = 1f;
-                    }
-                    result = each.apply(decideRoulette(choices, choiceWeight, weightSum, rng));
-                } else {
-                    weightSum = Float.NaN;
-                    result = each.apply(0); //only choice
-                }
-            } else {
-                weightSum = Float.NaN;
-                result = each.apply(-1 /* signal for no choices */);
-            }
-
-            switch (result) {
-                case STOP:
-                    return;
-                case CONTINUE:
-                    break;
-                case WEIGHTS_CHANGED:
-                    weightSum = Float.NaN;
-                    break;
-            }
-        }
-    }
-
-    /** roulette selection on a softmax scale */
+    /**
+     * roulette selection on a softmax scale
+     */
     public static int decideSoftmax(int count, IntToFloatFunction weight, float temperature, Random random) {
         return decideRoulette(count, (i) ->
                 (float) exp(weight.valueOf(i) / temperature), random);
@@ -126,88 +81,74 @@ public enum Roulette { ;
         return i;
     }
 
-    public static void selectRouletteUnique(int choices, IntToFloatFunction choiceWeight, IntPredicate tgt, Random random) {
-        assert(choices > 0);
-        if (choices == 1) {
-            tgt.test(0);
-            return;
+    public static class RouletteUnique {
+        /** weights of each choice */
+        final float[] w;
+        private final Random rng;
+
+        /** current weight sum */
+        private float weightSum;
+        private float remaining;
+
+        int i;
+
+        public static void run(float[] weights, IntPredicate select, Random rng) {
+            assert(weights.length > 0);
+            if (weights.length == 1) {
+                select.test(0);
+            } else {
+                RouletteUnique r = new RouletteUnique(weights, rng);
+                float[] rw = r.w;
+                do {
+                    int next = r.choose();
+                    if (!select.test(next))
+                        break; //done
+
+                    r.weightSum-= rw[next];
+                    rw[next] = 0; //clear
+                } while (--r.remaining > 0);
+            }
+
         }
 
-        MetalBitSet selected = MetalBitSet.bits(choices);
+        private int choose() {
 
-        final int[] hardLimit = {choices*2};
-        IntToFloatFunction cc = ii -> {
-            if (selected.get(ii)) {
-                return 0;
-            } else {
-                float w = choiceWeight.valueOf(ii);
-                if (w <= 0)
-                    selected.set(ii);
-                return w;
+            int count = w.length;
+
+            if (remaining == 1) {
+                //special case:
+                //there is only one with non-zero weight remaining
+                for (int x = 0; x < count; x++)
+                    if (w[x] > 0)
+                        return x;
             }
-        };
-        decideRouletteWhile(choices, cc, random, (int y) -> {
-            selected.set(y);
-//            int remain = choices - selected.cardinality();
-            boolean kontinue = tgt.test(y) && (hardLimit[0]-- > 0);
-//            if (kontinue && remain == 1) {
-//                //"tail" roulette optimization
-//                int x = selected.nextClearBit();
-//                tgt.test(x);
-//                return RouletteControl.STOP;
-//            }
-            return kontinue ?
-                    RouletteControl.WEIGHTS_CHANGED : RouletteControl.STOP;
-        });
 
-//        if (sampled == 0) return Collections.emptyList();
-//        if (sampled == choices) {
-//            return List.of(x);
-//        } else {
-//            //TODO better selection method
-//
-//            List<X> l = new FasterList(sampled);
-//            MetalBitSet b = new MetalBitSet(choices);
-//            int limit = sampled * 4;
-//            int c = 0;
-//            for (int i = 0; c < sampled && i < limit; i++) {
-//                int w = random.nextInt(choices); //<- TODO weighted roullette selection here
-//                if (!b.getAndSet(w, true)) {
-//                    l.add(x[w]);
-//                    c++;
-//                }
-//            }
-//            return l;
-//        }
+            float distance = rng.nextFloat() * weightSum;
+            //boolean dir = rng.nextBoolean(); //randomize the direction
+
+            while ((distance = distance - w[i]) > 0) {
+                //if (dir) {
+                    if (++i == count) i = 0;
+                //} else {
+                  //  if (--i == -1) i = count - 1;
+                //}
+            }
+
+            return i;
+
+        }
+
+        RouletteUnique(float[] w, Random rng) {
+            this.w = w;
+            this.weightSum = Util.sum(w); assert(weightSum > Float.MIN_VALUE);
+            this.remaining = w.length;
+            this.i = rng.nextInt(w.length); //random start location
+            this.rng = rng;
+
+        }
+
     }
 
-//    @Nullable
-//    public X decide(Random rng) {
-//        int s = size();
-//        if (s == 0)
-//            return null;
-//        return get(decideWhich(rng));
-//    }
-//
-//    public int decideWhich(Random rng) {
-//        int s = size();
-//        if (s == 0)
-//            return -1;
-//        else if (s == 1)
-//            return 0;
-//
-//        if (this.values == null || this.values.length!= s) {
-//            this.values = new float[s];
-//            float sum = 0;
-//            for (int i = 0; i < s; i++) {
-//                float f = eval.floatValueOf(get(i));
-//                values[i] = f;
-//                sum += f;
-//            }
-//            this.sum = sum;
-//        }
-//        return decideRoulette(s, (i)->values[i], sum, rng);
-//    }
 
     public static enum RouletteControl {
         STOP, CONTINUE, WEIGHTS_CHANGED

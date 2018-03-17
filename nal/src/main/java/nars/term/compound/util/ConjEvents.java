@@ -80,6 +80,21 @@ public class ConjEvents {
         }
     }
 
+    /** TODO impl levenshtein via byte-array ops */
+    public static StringBuilder sequenceString(Term a, ConjEvents x) {
+        StringBuilder sb = new StringBuilder(4);
+        int range = a.dtRange();
+        final int stepResolution = 16; //how finely to fractionalize time range
+        a.eventsWhile((when,what)->{
+            int step = Math.round((((float) when) / range) * stepResolution);
+            sb.append((char) step); //character representing the relative offset of the event
+            sb.append(((char)x.add(what)));
+            return true;
+        }, 0, true, true, false, 0);
+
+        return sb;
+    }
+
 
     /**
      * returns false if contradiction occurred, in which case this
@@ -127,7 +142,7 @@ public class ConjEvents {
 //            }
         } else {
 
-            int id = id(t);
+            int id = add(t);
             if (!polarity)
                 id = -id;
 
@@ -139,6 +154,27 @@ public class ConjEvents {
             }
 
             return true;
+        }
+    }
+
+    public boolean add(Term t, long start, long end, int maxSamples, int minSegmentLength) {
+        if ((start == end) || start == ETERNAL) {
+            return add(t, start);
+        } else {
+            if (maxSamples == 1) {
+                //add at the midpoint
+                return add(t, (start+end)/2L);
+            } else {
+                //compute segment length
+                long dt = Math.max(minSegmentLength, (end-start)/maxSamples);
+                long x = start;
+                while (x < end) {
+                    if (!add(t, x))
+                        return false;
+                    x += dt;
+                }
+                return true;
+            }
         }
     }
 
@@ -183,7 +219,7 @@ public class ConjEvents {
     }
 
 
-    private int id(Term t) {
+    public int add(Term t) {
         assert (t != null && !(t instanceof Bool));
         return terms.computeIfAbsent(t, tt -> {
             int s = terms.size();

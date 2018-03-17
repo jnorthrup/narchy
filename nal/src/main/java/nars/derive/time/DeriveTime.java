@@ -373,7 +373,10 @@ public class DeriveTime extends TimeGraph {
 //    }
 
     public void know(Task t, Truth tr, long when) {
-        assert (when != TIMELESS);
+        if (when == TIMELESS)
+            throw new RuntimeException();
+        //assert (when != TIMELESS);
+
         Term tt = t.term();
 
 

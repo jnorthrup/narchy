@@ -29,7 +29,7 @@ import nars.index.term.TermContext;
 import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
-import nars.subterm.TermMetadata;
+import nars.subterm.util.TermMetadata;
 import nars.subterm.TermVector;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;

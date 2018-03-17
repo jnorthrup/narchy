@@ -8,7 +8,6 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.Termed;
 import org.eclipse.collections.api.tuple.Pair;
@@ -72,7 +71,7 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public String toString() {
-            return toBudgetString() + " " + term() + punc() + ":" + when();
+            return toBudgetString() + " " + term() + ((char)punc()) + ":" + when();
         }
 
         @Override
@@ -112,11 +111,11 @@ public interface TaskLink extends Priority, Termed {
                 delete();
                 return null;
             }
-            TaskTable table = c.table(punc());
-            Task result = table.match(when(), t, n);
-            if (result == null || result.isDeleted())
-                return null;
-            return result;
+
+            long[] se = n.timeFocus(when());
+            Task result = c.table(punc()).sample(se[0], se[1], t, n);
+
+            return result == null || result.isDeleted() ? null : result;
         }
     }
 

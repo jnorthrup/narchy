@@ -1,22 +1,12 @@
 package nars.link;
 
-import jcog.bag.Bag;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
-import jcog.pri.PLink;
-import jcog.pri.Pri;
-import jcog.pri.PriReference;
-import nars.NAR;
 import nars.Op;
 import nars.Param;
-import nars.concept.Concept;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.Termed;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Set;
 
 import static nars.Op.*;
@@ -109,10 +99,10 @@ public enum TermLinks {
 
         Op r = root.op();
         if (r == INH || r == SIM) {
-            if (depth >= 2) {
-                if (s.isAny(Op.SetBits))
-                    return false;
-            }
+//            if (depth >= 2) {
+//                if (s.isAny(Op.SetBits))
+//                    return false;
+//            }
 
 //            if (depth > 2) {
 //                if (s.isAny(Op.SectBits))
@@ -144,13 +134,13 @@ public enum TermLinks {
         switch (b.op()) {
             case INH:
             case SIM:
-                return false;
+                return b.hasAny(Op.SETe,Op.SETi,Op.SECTe,Op.SECTi);
 
             case PROD:
                 return false;
 
             case IMPL: //<- check if IMPL needs it
-                return true;
+                return false;
             case SECTe:
             case SECTi:
             case SETe:
@@ -217,36 +207,6 @@ public enum TermLinks {
         }
     }
 
-    @Nullable
-    public static Concept linkTemplate(Term srcTerm, Bag srcTermLinks, Termed target, float priForward, float priReverse, NAR nar, MutableFloat refund) {
-
-        Term targetTerm = null;
-        boolean reverseLinked = false;
-        Concept c = null;
-        if (target.op().conceptualizable && !target.equals(srcTerm)) {
-            c = nar.conceptualize(target);
-            if (c != null) {
-                c.termlinks().put(
-                        new PLink<>(srcTerm, priReverse), refund
-                );
-                nar.activate(c, priForward + priReverse);
-                reverseLinked = true;
-                targetTerm = c.term();
-            }
-        }
-
-        if (targetTerm == null)
-            targetTerm = target.term();
-
-        if (!reverseLinked)
-            refund.add(priReverse);
-
-        srcTermLinks.put(
-                new PLink<>(targetTerm, priForward), refund
-        );
-
-        return c;
-    }
 
 //    @Nullable
 //    public static List<Termed> templates(Concept id, NAR nar) {
@@ -348,45 +308,5 @@ public enum TermLinks {
 //        return templateConcepts.toArrayRecycled(Concept[]::new);
 //    }
 
-    /**
-     * send some activation, returns the cost
-     */
-    public static float linkTemplates(Concept src, float totalBudget, float momentum, NAR nar) {
-
-        List<Term> templates = src.templates();
-        int n = templates.size();
-        if (n == 0)
-            return 0;
-
-//        float freed = 1f - momentum;
-//        int toFire = (int) Math.ceil(n * freed);
-        float budgeted = totalBudget * (1f - momentum);
-
-        float budgetedToEach = budgeted / n;
-        if (budgetedToEach < Pri.EPSILON)
-            return 0;
-
-        MutableFloat refund = new MutableFloat(0);
-
-        int nextTarget = nar.random().nextInt(n);
-        Term srcTerm = src.term();
-        Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
-        float balance = nar.termlinkBalance.floatValue();
-        for (int i = 0; i < n; i++) {
-
-            Termed t = templates.get(nextTarget++);
-            if (nextTarget == n) nextTarget = 0; //wrap around
-
-            Concept c = linkTemplate(srcTerm, srcTermLinks, t,
-                    budgetedToEach * balance,
-                    budgetedToEach * (1f - balance),
-                    nar, refund);
-
-        }
-
-        float r = refund.floatValue();
-        float cost = budgeted - r;
-        return cost;
-    }
 
 }

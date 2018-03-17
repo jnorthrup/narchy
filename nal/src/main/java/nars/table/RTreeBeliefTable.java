@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.table.TemporalBeliefTable.temporalTaskPriority;
+import static nars.table.TemporalBeliefTable.value;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
@@ -76,6 +76,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int COMPLETE_SCAN_SIZE_THRESHOLD = MAX_TASKS_PER_LEAF;
 
     protected int capacity;
+
 
 
     @Override
@@ -571,7 +572,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //    }
 
     private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
-        return (Task x) -> temporalTaskPriority(x, start, end, dur);
+        return (Task x) -> value(x, start, end, dur);
     }
 
     private double tableDur() {
@@ -590,7 +591,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             //boost for present and future
             return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) *
-                    temporalTaskPriority(x, when, when, perceptDur);
+                    value(x, when, when, perceptDur);
         };
     }
 
@@ -611,7 +612,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         } else {
             //int tableDur = 1 + (int) (tableDur());
             return (Task x) ->
-                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()) / (dur*dur) );
+                    value(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()) / (dur*dur) );
         }
     }
 
@@ -623,6 +624,18 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     @Override
     public Stream<Task> streamTasks() {
         return stream().map(TaskRegion::task);
+    }
+
+    @Override
+    public Task[] toArray() {
+        int s = size();
+        if (s == 0) {
+            return Task.EmptyArray;
+        } else {
+            FasterList<Task> l = new FasterList(s);
+            forEachTask(l::add);
+            return l.toArrayRecycled(Task[]::new);
+        }
     }
 
     private Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {

@@ -33,6 +33,9 @@ import static java.util.Collections.addAll;
 import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
+import static nars.subterm.util.Contains.Event;
+import static nars.subterm.util.Contains.Recursive;
+import static nars.subterm.util.Contains.Subterm;
 import static nars.term.Terms.concat;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -345,26 +348,72 @@ public class PremiseRule {
                 case "subOf": //non-recursive
                     //X subOf Y : X is subterm of Y
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, false));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, false));
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm));
+                    break;
+
+                case "subOfNeg": //non-recursive
+                    //X subOfNeg Y : --X is subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, -1));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, -1));
+                    break;
+
+                case "subPosOrNeg": //non-recursive
+                    //X subPosOrNeg Y : X or --X is subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, 0));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, 0));
                     break;
 
                 case "in": //recursive
                     //X in Y : X is recursive subterm of Y
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, true));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, true));
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Recursive));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Recursive));
                     break;
 
                 case "inNeg": //recursive
                     //X inNeg Y : --X is recursive subterm of Y
-                    constraints.add(new SubOfConstraint(X, Y, false, false, true, true));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, true, true));
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Recursive, -1));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, -1));
                     break;
 
+                case "inPosOrNeg": //recursive
+                    //X inPosOrNeg Y : X or --X is recursive subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Recursive, 0));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, 0));
+                    break;
+
+
+                case "eventOf": //recursive
+                    //X in Y : X is recursive subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Event));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Event));
+                    break;
+
+                case "eventOfNeg": //recursive
+                    //X inNeg Y : --X is recursive subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Event, -1));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Event, -1));
+                    break;
+
+                case "eventOfPosOrNeg": //recursive
+                    //X inPosOrNeg Y : X or --X is recursive subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
+                    break;
+
+
+
                 case "eqOrIn": //recursive
-                    constraints.add(new SubOfConstraint(X, Y, false, true, true));
-                    constraints.add(new SubOfConstraint(Y, X, true, true, true));
+                    constraints.add(new SubOfConstraint(X, Y, false, true, Recursive));
+                    constraints.add(new SubOfConstraint(Y, X, true, true, Recursive));
                     break;
 
 //                 case "isAny":

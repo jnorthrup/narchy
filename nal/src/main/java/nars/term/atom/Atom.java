@@ -2,7 +2,7 @@ package nars.term.atom;
 
 import nars.Op;
 import nars.The;
-import nars.subterm.TermMetadata;
+import nars.subterm.util.TermMetadata;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 

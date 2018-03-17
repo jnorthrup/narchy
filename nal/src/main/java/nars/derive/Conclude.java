@@ -3,6 +3,7 @@ package nars.derive;
 import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.Task;
 import nars.control.Cause;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.match.Ellipsis;
@@ -235,7 +236,7 @@ public final class Conclude {
             if (!y.unneg().op().conceptualizable ||
                 y.equals(x) || /* keep only if it differs */
                 //!y.hasAny(Op.ConstantAtomics) ||  //entirely variablized
-                !Taskify.valid(y)
+                !Task.validTaskTerm(y, p.concPunc, true)
             )
                 return false;
 

@@ -25,6 +25,26 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BeliefTableTest {
 
 
+    static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
+        TaskConcept cc = (TaskConcept) n.conceptualize(c);
+        assertNotNull(cc, c + " unconceptualized");
+
+        List<Task> tt = cc.beliefs().streamTasks().collect(toList());
+        assertTrue(cc.beliefs() instanceof DynamicTruthBeliefTable || !tt.isEmpty(), c + " not believed");
+
+        if (!tt.isEmpty()) {
+            Task t = tt.get(0);
+            //System.out.println(sim.proof());
+            //System.out.println(sim.start() + ".." + /*sim.occurrence() + ".."*/ + sim.end());
+            assertEquals(start, t.start());
+            assertEquals(end, t.end());
+        }
+    }
+
+    static float dtDiff(String x, String y) {
+        return Revision.dtDiff($.$safe(x), $.$safe(y));
+    }
+
     @Test
     public void testEternalBeliefRanking() {
 
@@ -213,23 +233,6 @@ public class BeliefTableTest {
 
     }
 
-    static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
-        TaskConcept cc = (TaskConcept) n.conceptualize(c);
-        assertNotNull(cc, c + " unconceptualized");
-
-        List<Task> tt = cc.beliefs().streamTasks().collect(toList());
-        assertTrue(cc.beliefs() instanceof DynamicTruthBeliefTable || !tt.isEmpty(), c + " not believed");
-
-        if (!tt.isEmpty()) {
-            Task t = tt.get(0);
-            //System.out.println(sim.proof());
-            //System.out.println(sim.start() + ".." + /*sim.occurrence() + ".."*/ + sim.end());
-            assertEquals(start, t.start());
-            assertEquals(end, t.end());
-        }
-    }
-
-
     @Test
     public void testConceptualizationIntermpolation() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present, Eternal}) {
@@ -307,6 +310,7 @@ public class BeliefTableTest {
         assertEquals(0f, same, 0.001f);
         assertEquals(dtDiff("(x ==>+5 y)", "(x ==>+- y)"), same);
     }
+
     @Test
     public void testDTImpl1() {
 
@@ -317,17 +321,23 @@ public class BeliefTableTest {
         assertTrue(a52 > a54);
     }
     @Test
+    public void testConjSequence1() {
+
+        float a52 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+2 y) &&+1 z)");
+        float a54 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+4 y) &&+1 z)");
+        assertEquals(4, a52, 0.001f);
+        assertEquals(2, a54, 0.001f);
+        assertTrue(a52 > a54);
+    }
+
+    @Test
     public void testDTImplEmbeddedConj() {
 
         //difference in the subterm has less impact than at the root
         float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
         float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
-        assertEquals(a, 1, 0.1f);
-        assertEquals(b, 0.5f, 0.1f);
-    }
-
-    static float dtDiff(String x, String y) {
-        return Revision.dtDiff($.$safe(x), $.$safe(y));
+        assertEquals(1, a, 0.1f);
+        assertEquals(0.5f, b, 0.1f);
     }
 
 }

@@ -170,15 +170,16 @@ public class FasterList<X> extends FastList<X> {
         //}
     }
 
-    public X get(Random random) {
+    @Nullable public X get(Random random) {
         int s = this.size;
+        X[] ii = this.items;
         switch (s) {
             case 0:
-                throw new UnsupportedOperationException();
+                return null;
             case 1:
-                return items[0];
+                return ii[0];
             default:
-                return items[random.nextInt(s)];
+                return ii[random.nextInt(Math.min(s, ii.length))];
         }
     }
 

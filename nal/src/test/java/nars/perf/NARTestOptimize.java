@@ -8,10 +8,8 @@ import nars.NARLoop;
 import nars.NARS;
 import nars.Param;
 import nars.control.MetaGoal;
-import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
-import nars.nal.nal3.NAL3Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +26,7 @@ import static java.util.stream.Collectors.toList;
 public class NARTestOptimize {
 
     static final int threads =
-            6;
+            5;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
@@ -69,7 +67,10 @@ public class NARTestOptimize {
         try {
             NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
             t.nar = s.get(); //overwrite NAR with the supplier
-            t.nar.random().setSeed(System.nanoTime());
+            t.nar.random().setSeed(
+                //System.nanoTime()
+                1
+            );
             m.invoke(t);
             try {
                 Param.DEBUG = false;
@@ -101,13 +102,13 @@ public class NARTestOptimize {
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(128, 3, (n) ->
+                .optimize(1024, 2, (n) ->
                         tests(n,
                                 NAL1Test.class,
-                                NAL1MultistepTest.class,
-                                NAL2Test.class,
-                                NAL3Test.class
-                                //NAL5Test.class,
+//                                NAL1MultistepTest.class
+                                NAL2Test.class
+//                                NAL3Test.class,
+//                                NAL5Test.class
                                 //NAL6Test.class
 
                                 //NAL7Test.class,

@@ -23,7 +23,7 @@ public interface TemporalBeliefTable extends TaskTable {
     /**
      * range will be between 0 and 1
      */
-    static float temporalTaskPriority(Task t, long start, long end, int dur) {
+    static float value(Task t, long start, long end, int dur) {
 //        if (t.isDeleted())
 //            return Float.NEGATIVE_INFINITY;
 
@@ -35,11 +35,12 @@ public interface TemporalBeliefTable extends TaskTable {
 //
 //        //float fdur = dur;
 //        //float range = t.range();
-        long dt = t.minDistanceTo(start, end);
 
         float ee =
-                t.eviInteg();
-                //t.evi();
+                t.confInteg()/dur;
+                //t.eviInteg()/dur;
+
+        long dt = t.minDistanceTo(start, end);
 
         if (dt == 0)
             return ee; //full integral
@@ -136,12 +137,7 @@ public interface TemporalBeliefTable extends TaskTable {
             return Stream.empty();
         }
 
-        @Override
-        public @Nullable Task match(long when, Term t, NAR n) {
-            return null;
-        }
-
-        @Override
+           @Override
         public void forEachTask(Consumer<? super Task> x) {
 
         }

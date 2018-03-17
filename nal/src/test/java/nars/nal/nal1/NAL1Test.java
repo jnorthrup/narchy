@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    final int CYCLES = 250;
+    final int CYCLES = 20;
 
     static {
         //Param.DEBUG = true;
@@ -17,10 +17,6 @@ public class NAL1Test extends NALTest {
     @Override protected NAR nar() {
         return NARS.tmp(1);
     }
-
-//    static {
-//        Param.TRACE = true;
-//    }
 
     @Test
     public void deduction()  {

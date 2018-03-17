@@ -45,11 +45,11 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
     //long spanStart = Long.MAX_VALUE, spanEnd = Long.MIN_VALUE, rangeSum = 0;
 
-    public TruthPolation(long start, long end, int dur, Task... tasks) {
-        this(start, end, dur);
-        for (Task t : tasks)
-            add(t);
-    }
+//    public TruthPolation(long start, long end, int dur, Task... tasks) {
+//        this(start, end, dur);
+//        for (Task t : tasks)
+//            add(t);
+//    }
 
     public TruthPolation(long start, long end, int dur, TaskRegion... tasks) {
         this(start, end, dur);

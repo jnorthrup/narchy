@@ -637,14 +637,13 @@ public enum Op {
      * returns null if wasnt contained, Null if nothing remains after removal
      */
     @Nullable
-    public static Term conjDrop(NAR nar, Term conj, Term _event, boolean earlyOrLate) {
-        if (conj.op() != CONJ || conj.impossibleSubTerm(_event))
+    public static Term conjDrop(NAR nar, Term conj, Term event, boolean earlyOrLate) {
+        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return null;
 
-        Term event = _event.root();
 
-        int dt = conj.dt();
-        if (dt != DTERNAL && dt != 0) {
+
+
 
 
             FasterList<LongObjectPair<Term>> events = conj.eventList();
@@ -662,9 +661,9 @@ public enum Op {
                 return null;
             }
 
-        } else {
-            return Op.without(conj, (t) -> t.equalsRoot(event), nar.random());
-        }
+//        } else {
+//            return Op.without(conj, (t) -> t.equalsRoot(event), nar.random());
+//        }
     }
 
 
@@ -2292,7 +2291,10 @@ public enum Op {
             case 1:
                 return Null; //removed itself
             case 2:
-                return cs.sub(1 - i); //shortcut: return the other
+                //shortcut: return the other
+                Term remain = cs.sub(1 - i);
+                Op o = container.op();
+                return o.isSet() ? o.the(remain) : remain;
             default:
                 return container.op().the(container.dt(), cs.termsExcept(i));
         }

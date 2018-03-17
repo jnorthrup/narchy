@@ -26,7 +26,12 @@ public class DepIndepVarIntroductionTest {
 
         assertEquals("[((a-->$1)=|>(b-->$1))]",
                 introduce("((a-->c)=|>(b-->c))", 16).toString());
+    }
 
+    @Test
+    public void testIntroduceIndepVar2() throws Narsese.NarseseException {
+        assertEquals("[((a-->($1,#2))=|>(b-->($1,#2)))]",
+                introduce("((a-->(x,#1))=|>(b-->(x,#1)))", 16).toString());
     }
 
     @Test
@@ -47,10 +52,10 @@ public class DepIndepVarIntroductionTest {
 
     }
 
-    private TreeSet<Term> introduce(String term, int iterations) throws Narsese.NarseseException {
+    private TreeSet<Term> introduce(String term, int iterations) {
         TreeSet<Term> s = new TreeSet();
         for (int i = 0; i < iterations; i++) {
-            Term u = $.$("varIntro(" + term + ")").eval(n.concepts.functors);
+            Term u = $.func("varIntro", $.$safe(term).normalize()).eval(n.concepts.functors);
             if (u!=null)
                 s.add(u);
         }

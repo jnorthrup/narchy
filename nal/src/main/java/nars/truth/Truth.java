@@ -25,7 +25,6 @@ import jcog.Util;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +33,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.Util.*;
+import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.w2c;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -42,7 +42,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
 public interface Truth extends Truthed {
 
 
-
+    float EVIMIN = c2w(Param.TRUTH_EPSILON);
 
     @Override
     float freq();
@@ -230,12 +230,12 @@ public interface Truth extends Truthed {
 
 
     @Nullable default PreciseTruth dither(NAR nar) {
-        return theDithered(freq(), conf(), nar);
+        return theDithered(freq(), evi(), nar);
     }
 
-    @Nullable public static PreciseTruth theDithered(float f, float c, NAR nar) {
-        float cc = conf(c, nar);
-        return cc > nar.confMin.floatValue() ? new PreciseTruth(freq(f, nar), cc) : null;
+    @Nullable
+    static PreciseTruth theDithered(float f, float e, NAR nar) {
+        return theDithered(f, nar.freqResolution.floatValue(), e, nar.confResolution.floatValue(), nar.confMin.floatValue());
     }
 
     @Nullable static PreciseTruth theDithered(float f, float fRes, float evi, float cRes, float confMin) {
@@ -308,30 +308,30 @@ public interface Truth extends Truthed {
 //    }
 
 
-    enum TruthComponent {
-        Frequency, Confidence, Expectation
-    }
-    
-    default float component(@NotNull TruthComponent c) {
-        switch (c) {
-            case Frequency: return freq();
-            case Confidence: return conf();
-            case Expectation: return expectation();
-        }
-        return Float.NaN;
-    }
-    
-    /** provides a statistics summary (mean, min, max, variance, etc..) of a particular TruthValue component across a given list of Truthables (sentences, TruthValue's, etc..).  null values in the iteration are ignored */
-    @NotNull
-    static DescriptiveStatistics statistics(@NotNull Iterable<? extends Truthed> t, @NotNull TruthComponent component) {
-        DescriptiveStatistics d = new DescriptiveStatistics();
-        for (Truthed x : t) {
-            Truth v = x.truth();
-            if (v!=null)
-                d.addValue(v.component(component));
-        }
-        return d;
-    }
+//    enum TruthComponent {
+//        Frequency, Confidence, Expectation
+//    }
+//
+//    default float component(@NotNull TruthComponent c) {
+//        switch (c) {
+//            case Frequency: return freq();
+//            case Confidence: return conf();
+//            case Expectation: return expectation();
+//        }
+//        return Float.NaN;
+//    }
+//
+//    /** provides a statistics summary (mean, min, max, variance, etc..) of a particular TruthValue component across a given list of Truthables (sentences, TruthValue's, etc..).  null values in the iteration are ignored */
+//    @NotNull
+//    static DescriptiveStatistics statistics(@NotNull Iterable<? extends Truthed> t, @NotNull TruthComponent component) {
+//        DescriptiveStatistics d = new DescriptiveStatistics();
+//        for (Truthed x : t) {
+//            Truth v = x.truth();
+//            if (v!=null)
+//                d.addValue(v.component(component));
+//        }
+//        return d;
+//    }
 
 
 

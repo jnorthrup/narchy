@@ -2,7 +2,7 @@ package nars.term.transform;
 
 import jcog.memoize.QuickMemoize;
 import nars.Op;
-import nars.subterm.TermList;
+import nars.subterm.util.TermList;
 import nars.term.Term;
 import org.eclipse.collections.api.tuple.Pair;
 
