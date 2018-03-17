@@ -80,7 +80,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     }
 
     @Override
-    protected void told(@Nullable UDPeer.UDProfile connected, @NotNull UDPeer.Msg m) {
+    protected void receive(@Nullable UDPeer.UDProfile connected, @NotNull UDPeer.Msg m) {
 
         try {
             MapKeyValue mkv = Util.fromBytes(m.data(), MapKeyValue.class);

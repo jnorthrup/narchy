@@ -122,7 +122,7 @@ public class UDPeerSim {
         }
 
         @Override
-        protected void told(@Nullable UDPeer.UDProfile sender, @NotNull UDPeer.Msg m) {
+        protected void receive(@Nullable UDPeer.UDProfile sender, @NotNull UDPeer.Msg m) {
             UDPeerSim.this.onTell(sender, this, m);
         }
     }

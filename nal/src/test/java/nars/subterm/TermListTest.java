@@ -30,7 +30,7 @@ public class TermListTest {
     }
 
     static void assertReallyEquals(String s) {
-        Subterms immutable = $.$safe(s).subterms();
+        Subterms immutable = $.$$(s).subterms();
         TermList mutable = new TermList(immutable);
         assertNotSame(immutable, mutable);
         assertNotEquals(immutable.getClass(), mutable.getClass());

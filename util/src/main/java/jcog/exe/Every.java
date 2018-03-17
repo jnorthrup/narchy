@@ -9,6 +9,13 @@ import java.util.function.LongConsumer;
  * */
 public class Every {
 
+    public static Every Never = new Every((LongConsumer)null, Integer.MAX_VALUE) {
+        @Override
+        public void next() {
+            //nothing
+        }
+    };
+
     public final MutableInt periodMS = new MutableInt();
 
 

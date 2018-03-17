@@ -27,11 +27,11 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     private final MutableFloat scale;
     final AtomicBoolean busy = new AtomicBoolean();
 
-    public Bagregate(@NotNull Stream<X> src, int capacity, float scale) {
+    public Bagregate(Stream<X> src, int capacity, float scale) {
         this(src::iterator, capacity, scale);
     }
 
-    public Bagregate(@NotNull Iterable<X> src, int capacity, float scale) {
+    public Bagregate(Iterable<X> src, int capacity, float scale) {
         this.bag = new PLinkArrayBag(PriMerge.plus, capacity) {
             @Override
             public void onRemove(Object value) {
@@ -39,7 +39,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
             }
         };
         this.src = src;
-        this.scale = new FloatRange(scale);
+        this.scale = new FloatRange(scale, 0f, 1f);
 
     }
 

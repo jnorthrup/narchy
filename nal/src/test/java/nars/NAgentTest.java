@@ -61,7 +61,7 @@ public class NAgentTest {
         System.out.println((posOrNeg ? "positive" : " negative"));// + " and " + (toggleOrPush ? "toggle" : " push"));
         MiniTest a = new ToggleSame(nar(), $.the("t"),
                 //$.$safe("t:y"),
-                $.$safe("(t,y)"),
+                $.$$("(t,y)"),
                 posOrNeg);
 
 //        a.curiosity.set(0.5f);
@@ -102,7 +102,7 @@ public class NAgentTest {
 //        System.out.println((toggleOrPush ? "toggle" : " push"));
 
         MiniTest a = new ToggleOscillate(n, $.the("t"),
-                $.$safe("t:y"),
+                $.$$("t:y"),
                 //$.$safe("(t,y)"),
                 true);
                 //toggleOrPush);
@@ -246,7 +246,7 @@ public class NAgentTest {
 //        n.log();
 
 
-        Term action = $.$safe("(t,y)");
+        Term action = $.$$("(t,y)");
         MiniTest a = new ToggleSame(n, $.the("t"),
                 //$.$safe("t:y"),
                 action,
@@ -256,7 +256,7 @@ public class NAgentTest {
 //        n.run(100);
 
         //n.goal("(t,y)", Tense.Present, 1f);
-        Term ax = IMPL.the(action, 0, $.$safe("(t --> [happy])") /*a.happy.term*/);
+        Term ax = IMPL.the(action, 0, $.$$("(t --> [happy])") /*a.happy.term*/);
         n.believe(ax, Tense.Present);
 
         a.runSynch(500);

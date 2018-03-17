@@ -42,7 +42,7 @@ public class BeliefTableTest {
     }
 
     static float dtDiff(String x, String y) {
-        return Revision.dtDiff($.$safe(x), $.$safe(y));
+        return Revision.dtDiff($.$$(x), $.$$(y));
     }
 
     @Test

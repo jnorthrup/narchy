@@ -785,7 +785,7 @@ public class NAL8Test extends NALTest {
         int when = 6;
 
         int goalAt = Math.max(when,
-                when - dt - $.$safe(sj).dtRange()); //immediate
+                when - dt - $.$$(sj).dtRange()); //immediate
 
         String[] subjPred = sj.split("\\/");
         assertEquals(2, subjPred.length);

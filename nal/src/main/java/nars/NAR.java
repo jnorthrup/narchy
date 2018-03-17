@@ -80,18 +80,15 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR>, Cycler {
 
-
-
-    protected Logger logger;
+    protected volatile Logger logger;
 
     static final Set<String> logEvents = Set.of("eventTask");
     static final String VERSION = "NARchy v?.?";
 
     public final Exec exe;
-    public final transient Topic<NAR> eventClear = new ListTopic<>();
-    public final transient Topic<NAR> eventCycle = new ListTopic<>();
-    public final transient Topic<Task> eventTask = new ListTopic<>();
-
+    public final Topic<NAR> eventClear = new ListTopic<>();
+    public final Topic<NAR> eventCycle = new ListTopic<>();
+    public final Topic<Task> eventTask = new ListTopic<>();
     public final Services<Term, NAR> services;
 
     public final Emotion emotion;
@@ -107,9 +104,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     protected final Random random;
 
-
-    private final AtomicReference<Term> self;
-
+    /** atomic for thread-safe schizophrenia */
+    private final AtomicReference<Term> self = new AtomicReference<>(null);
 
     public NAR(@NotNull ConceptIndex concepts, @NotNull Exec exe, @NotNull Time time, @NotNull Random rng, @NotNull ConceptBuilder conceptBuilder) {
 
@@ -122,10 +118,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         this.exe = exe;
 
-        self = new AtomicReference<>(null);
-        setSelf(Param.randomSelf());
+        named(Param.randomSelf());
 
-        services = new Services(this, exe);
+        services = new Services<>(this, exe);
 
         this.emotion = new Emotion(this);
 
@@ -333,17 +328,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
 
-    public final void setSelf(String self) {
-        setSelf(Atomic.the(self));
+    public final NAR named(String self) {
+        return named(Atomic.the(self));
     }
 
 
-    public final void setSelf(Term self) {
-        synchronized (exe) {
-            this.self.set(self);
-            this.logger =
-                    LoggerFactory.getLogger("NAR:" + self);
-        }
+    public final NAR named(Term self) {
+        Logger nextLogger = LoggerFactory.getLogger("NAR:" + self);
+        this.self.updateAndGet((prevSelf)->{
+            logger = nextLogger;
+            return self;
+        });
+        return this;
     }
 
     /**
@@ -1004,7 +1000,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
     @Nullable
     public final Concept concept(String term) {
-        return concept($.$safe(term), false);
+        return concept($.$$(term), false);
     }
 
     /**
@@ -1561,9 +1557,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
 
     /** invokes any pending tasks without advancing the clock */
-    public final void synch() {
+    public final NAR synch() {
         synchronized (exe) {
             time.synch(this);
         }
+        return this;
     }
+
+    public void pause() {
+        loop.stop();
+    }
+
 }

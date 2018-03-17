@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static nars.$.$safe;
+import static nars.$.$$;
 import static spacegraph.container.Gridding.col;
 import static spacegraph.render.JoglPhysics.window;
 
@@ -320,7 +320,7 @@ public class Vis {
     }
 
     public static void conceptWindow(String t, NAR n) {
-        conceptWindow($safe(t), n);
+        conceptWindow($$(t), n);
     }
     public static void conceptWindow(Termed t, NAR n) {
         window(new ConceptSurface(t, n), 500, 500);

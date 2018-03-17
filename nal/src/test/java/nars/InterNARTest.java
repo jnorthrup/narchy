@@ -1,0 +1,177 @@
+package nars;
+
+import jcog.Util;
+import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
+
+import static nars.$.$$;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+/**
+ * Created by me on 7/8/16.
+ */
+public class InterNARTest {
+
+    static void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
+
+        final int MAX_CONNECT_INTERVALS = 20;
+        final int CONNECT_INTERVAL_MS = 200; //ms
+
+        final float NET_FPS = 10f;
+        final float REASONER_FPS = 20f;
+        final int INTERACT_TIME = 1500; //ms
+
+        int preCycles = 1;
+        int postCycles = 100;
+
+        NAR a = NARS.threadSafe(1).named("a");
+        NAR b = NARS.threadSafe(1).named("b");
+
+
+        beforeConnect.accept(a, b);
+
+        for (int i = 0; i < preCycles; i++) {
+            a.run(1);
+            b.run(1);
+        }
+
+
+        InterNAR ai = new InterNAR(a, 1, 0, false) {
+            @Override
+            protected void start(NAR nar) {
+                super.start(nar);
+                runFPS(NET_FPS);
+            }
+        };
+        InterNAR bi = new InterNAR(b, 1, 0, false) {
+
+            @Override
+            protected void start(NAR nar) {
+                super.start(nar);
+                runFPS(NET_FPS);
+            }
+        };
+        assertTrue(ai.id!=bi.id);
+        assertTrue(!ai.addr().equals(bi.addr()));
+        assertTrue(!ai.peer.name().equals(bi.peer.name()));
+
+        /* init */
+        a.run(1);
+        b.run(1);
+
+        ai.peer.ping(bi.peer);
+
+        boolean connected = false;
+        for (int i = 0; !connected && i < MAX_CONNECT_INTERVALS; i++) {
+            Util.sleep(CONNECT_INTERVAL_MS);
+            connected = ai.peer.connected() && bi.peer.connected();
+        }
+        assertTrue(connected);
+
+
+        System.out.println("connected. interacting...");
+
+        afterConnect.accept(a, b);
+
+        //run reasoner
+        a.startFPS(REASONER_FPS);
+        b.startFPS(REASONER_FPS);
+
+        Util.sleep(INTERACT_TIME);
+
+        //pause reasoner
+        a.pause();
+        b.pause();
+
+        System.out.println("disconnecting..");
+
+//        ai.off();
+//        bi.off();
+
+        /* init */
+        for (int i = 0; i < postCycles; i++) {
+            a.run(1);
+            b.run(1);
+        }
+
+
+        a.stop();
+        b.stop();
+
+
+    }
+
+    @Test
+    public void testInterNAR1() {
+        AtomicBoolean aRecvQuestionFromB = new AtomicBoolean();
+
+        testAB((a, b) -> {
+
+            a.onTask(tt -> {
+                //System.out.println(b + ": " + tt);
+                if (tt.toString().contains("(?1-->y)"))
+                    aRecvQuestionFromB.set(true);
+            });
+
+            try {
+                b.believe("(X --> y)");
+            } catch (Narsese.NarseseException e) {
+                fail(e);
+            }
+
+
+            //a.log();
+
+        }, (a, b) -> {
+
+
+            try {
+                a.input("(?x --> y)?");
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        assertTrue(aRecvQuestionFromB.get());
+
+    }
+
+    /**
+     * cooperative solving
+     */
+    @Test
+    public void testInterNAR2() {
+
+        AtomicBoolean recv = new AtomicBoolean();
+
+        testAB((a, b) -> {
+
+            a.onTask(at -> {
+                System.out.println(a + ": " + at);
+            });
+
+            b.onTask(bt -> {
+                System.out.println(b + ": " + bt);
+                if (bt.isBelief() && bt.toString().contains("(a-->d)"))
+                    recv.set(true);
+            });
+
+        }, (a, b) -> {
+
+            a.believe($$("(b --> c)"));
+
+            b.believe($$("(a --> b)"));
+            b.believe($$("(c --> d)"));
+            b.question($$("(a --> d)"));
+
+        });
+
+        assertTrue(recv.get());
+
+    }
+
+}

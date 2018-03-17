@@ -122,7 +122,7 @@ abstract public class Loop {
         return false;
     }
 
-    private Thread newThread() {
+    private synchronized Thread newThread() {
         if (this.thread!=null)
             throw new RuntimeException("thread already started: " + thread);
 
@@ -152,7 +152,7 @@ abstract public class Loop {
     /**
      * dont call this directly
      */
-    private final void run() {
+    private void run() {
 
         onStart();
 

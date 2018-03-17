@@ -77,7 +77,7 @@ public class MIDI {
 //                    volume[finalI] = Float.NaN;
 //                return v;
 //            }, (v) -> $.t(v, nar.confDefault(BELIEF)));
-            GoalActionConcept c = new GoalActionConcept(keyTerm, nar, new FloatRange(0), (b, d) -> {
+            GoalActionConcept c = new GoalActionConcept(keyTerm, nar, new FloatRange(0, 0f, 1f), (b, d) -> {
 //                float v = volume[finalI];
 //                if (v == 0)
 //                    volume[finalI] = Float.NaN;

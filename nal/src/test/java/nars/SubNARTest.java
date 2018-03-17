@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.test.DeductiveChainTest;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$safe;
+import static nars.$.$$;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -44,7 +44,7 @@ class SubNARTest {
         a.run(25, ()->Util.sleep(50));
 
         a.tasks().forEach(System.out::println);
-        assertTrue(a.beliefTruth($safe("(a-->c)"), ETERNAL).expectation() > 0.6f);
+        assertTrue(a.beliefTruth($$("(a-->c)"), ETERNAL).expectation() > 0.6f);
 
     }
 

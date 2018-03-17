@@ -16,9 +16,9 @@ import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.net.attn.HashMapTagSet;
 import jcog.pri.Priority;
+import org.HdrHistogram.AtomicHistogram;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,9 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import static jcog.net.UDPeer.Command.*;
@@ -72,7 +74,7 @@ public class UDPeer extends UDP {
     /**
      * rate of sharing peer needs
      */
-    private static final FloatRange empathy = new FloatRange(0.5f);
+    private static final FloatRange empathy = new FloatRange(0.5f, 0f, 1f);
 
     private static final byte DEFAULT_PING_TTL = 2;
     private static final byte DEFAULT_ATTN_TTL = DEFAULT_PING_TTL;
@@ -130,10 +132,10 @@ public class UDPeer extends UDP {
                 port);*/
         //this.meBytes = bytes(me);
 
-        this.rng = new XorShift128PlusRandom(System.currentTimeMillis());
+        this.rng = new XorShift128PlusRandom(System.nanoTime());
 
         int me;
-        while ((me = rng.nextInt()) == UNKNOWN_ID) ;
+        while ((me = (int)(UUID.randomUUID().getLeastSignificantBits() & 0xffff)) == UNKNOWN_ID) ;
         this.me = me;
 
         this.logger = LoggerFactory.getLogger(getClass().getSimpleName() + ':' + name());
@@ -207,7 +209,10 @@ public class UDPeer extends UDP {
                 }
             }
         } : null;
-        discoverEvery = new Every(discover::update, 250);
+        if (discovery)
+            discoverEvery = new Every(discover::update, 250);
+        else
+            discoverEvery = Every.Never;
     }
 
     static class Discoverability implements Serializable {
@@ -266,14 +271,21 @@ public class UDPeer extends UDP {
 
     @Override
     protected void onStart() {
-        super.onStart();
-        discover.start();
+        synchronized (this) {
+            super.onStart();
+            if (discover != null)
+                discover.start();
+        }
     }
 
     @Override
     protected void onStop() {
-        them.clear();
-        discover.stop();
+        synchronized (this) {
+            if (discover != null)
+                discover.stop();
+            them.clear();
+            super.onStop();
+        }
     }
 
 
@@ -391,7 +403,7 @@ public class UDPeer extends UDP {
 //                m.dataAddresses(this::ping);
 //                break;
             case TELL:
-                told(you, m);
+                receive(you, m);
                 break;
             case ATTN:
                 if (you != null) {
@@ -435,16 +447,16 @@ public class UDPeer extends UDP {
         }
     }
 
-    protected void told(@Nullable UDProfile from, Msg m) {
+    protected void receive(@Nullable UDProfile from, Msg m) {
         if (!onReceive.isEmpty())
             onReceive.emit(pair(from, m));
     }
 
 
-    public synchronized long latencyAvg() {
+    public RecycledSummaryStatistics latencyAvg() {
         RecycledSummaryStatistics r = new RecycledSummaryStatistics();
-        them.forEach(x -> r.accept(x.latency));
-        return Math.round(r.getMean());
+        them.forEach(x -> r.accept(x.latency()));
+        return r;
     }
 
     public String summary() {
@@ -468,6 +480,10 @@ public class UDPeer extends UDP {
 
     public void ping(@Nullable InetSocketAddress to) {
         send(ping(), to);
+    }
+    public void ping(@Nullable UDPeer x) {
+        assert(this!=x);
+        ping(x.addr);
     }
 
     protected Msg ping() {
@@ -848,8 +864,6 @@ public class UDPeer extends UDP {
     public static class UDProfile {
         public final InetSocketAddress addr;
 
-        final static int PING_WINDOW = 8;
-
         public final int id;
 
         long lastMessage = Long.MIN_VALUE;
@@ -859,9 +873,10 @@ public class UDPeer extends UDP {
          * ping time, in ms
          * TODO find a lock-free sort of statistics class
          */
-        final SynchronizedDescriptiveStatistics pingTime = new SynchronizedDescriptiveStatistics(PING_WINDOW);
-        private long latency;
+        final AtomicHistogram pingTime = new AtomicHistogram(1, 16*1024, 0);
 
+        /** caches the value of the mean pingtime */
+        final AtomicLong latency = new AtomicLong(Long.MAX_VALUE);
 
         HashMapTagSet
                 can = HashMapTagSet.EMPTY,
@@ -886,22 +901,22 @@ public class UDPeer extends UDP {
         }
 
         public void onPing(long time) {
-            pingTime.addValue(time);
-            latency = Math.round(pingTime.getMean());
+            pingTime.recordValue(Math.max(1,time));
+            latency.updateAndGet((l)->Math.round(pingTime.getMean()));
         }
 
         /**
          * average ping time in ms
          */
         public long latency() {
-            return latency;
+            return latency.get();
         }
 
         @Override
         public String toString() {
             return name() + '{' +
                     "addr=" + addr +
-                    ", ping=" + latency +
+                    ", ping=" + latency() +
                     ", can=" + can +
                     ", need=" + need +
                     '}';
@@ -919,22 +934,17 @@ public class UDPeer extends UDP {
         int port = addr.getPort();
         x[0] = (byte) ((port >> 8) & 0xff); //unsigned;
         x[1] = (byte) (port & 0xff);
-        System.arraycopy(ipv6(addr.getAddress().getAddress()), 0, x, 2, 16);
+        ipv6(addr.getAddress().getAddress(), x, 2);
         return x;
     }
 
-    private static byte[] ipv6(byte[] address) {
+    private static void ipv6(byte[] address, byte[] target, int offset) {
         if (address.length == 4) {
-            byte ipv4asIpV6addr[] = new byte[16];
-            ipv4asIpV6addr[10] = (byte) 0xff;
-            ipv4asIpV6addr[11] = (byte) 0xff;
-            ipv4asIpV6addr[12] = address[0];
-            ipv4asIpV6addr[13] = address[1];
-            ipv4asIpV6addr[14] = address[2];
-            ipv4asIpV6addr[15] = address[3];
-            return ipv4asIpV6addr;
+            Arrays.fill(target, offset, 10, (byte)0);
+            Arrays.fill(target, offset+10, 12, (byte)(0xff));
+            System.arraycopy(address, 0, target, offset+12, 4);
         } else {
-            return address;
+            System.arraycopy(address, 0, target, offset, 16);
         }
     }
 

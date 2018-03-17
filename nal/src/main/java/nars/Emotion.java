@@ -12,7 +12,7 @@ import jcog.meter.ExplainedCounter;
 import jcog.meter.FastCounter;
 import jcog.meter.Meter;
 import jcog.meter.MetricsMapper;
-import jcog.meter.event.AtomicFloatGuage;
+import jcog.meter.event.AtomicMeanFloat;
 import jcog.pri.Pri;
 import nars.control.MetaGoal;
 import org.jetbrains.annotations.NotNull;
@@ -90,7 +90,7 @@ public class Emotion implements Meter {
 
 
     @NotNull
-    public final AtomicFloatGuage busyVol;
+    public final AtomicMeanFloat busyVol;
 
 //    /**
 //     * priority rate of Task processing which affected concepts
@@ -108,7 +108,7 @@ public class Emotion implements Meter {
      * happiness rate
      */
     @NotNull
-    public final AtomicFloatGuage happy;
+    public final AtomicMeanFloat happy;
     private final NAR nar;
 
     float _happy;
@@ -138,9 +138,9 @@ public class Emotion implements Meter {
 
         this.nar = n;
 
-        this.happy = new AtomicFloatGuage("happy");
+        this.happy = new AtomicMeanFloat("happy");
 
-        this.busyVol = new AtomicFloatGuage("busyV");
+        this.busyVol = new AtomicMeanFloat("busyV");
 
 //        this.learnPri = new BufferedFloatGuage("learnP");
 //        this.learnVol = new BufferedFloatGuage("learnV");

@@ -2,7 +2,6 @@ package nars.op.mental;
 
 
 import jcog.bag.impl.PLinkArrayBag;
-import jcog.math.FloatRange;
 import jcog.math.MutableIntRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -73,7 +72,7 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
 //            public Compound key(PriReference<Compound> l) {
 //                return l.get();
 //            } }
-        , new FloatRange(selectionRate)) {
+        , new MutableFloat(selectionRate)) {
 
             @Override
             protected Random random() {

@@ -456,7 +456,7 @@ public class KIFInput implements Runnable {
 //        e.question("member(?1, org1)?", ETERNAL, (q,a)->{
 //            System.out.println(a);
 //        });
-        e.ask($.$safe("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
+        e.ask($.$$("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
            System.out.println(t);
         });
         //e.believe("accountHolder(xyz,1)");

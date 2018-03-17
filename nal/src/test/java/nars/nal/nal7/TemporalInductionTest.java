@@ -225,7 +225,7 @@ public class TemporalInductionTest {
 
         public PriMeter(NAR n, String id) {
             super("pri(" + id + ")", true);
-            Term term = $.$safe(id);
+            Term term = $.$$(id);
             this.getter = ()->{
                 Concept cc = n.concept(term);
                 if (cc == null)

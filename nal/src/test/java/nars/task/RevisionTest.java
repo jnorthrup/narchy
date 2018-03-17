@@ -471,8 +471,8 @@ public class RevisionTest {
     }
 
     @Test public void testEmbeddedIntermpolation() {
-        Term a = $.$safe("(a, (b ==>+2 c))");
-        Term b = $.$safe("(a, (b ==>+10 c))");
+        Term a = $.$$("(a, (b ==>+2 c))");
+        Term b = $.$$("(a, (b ==>+10 c))");
         NAR nar = NARS.shell();
         {
             nar.dtMergeOrChoose.set(true);

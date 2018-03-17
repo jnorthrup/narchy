@@ -41,14 +41,14 @@ public class Inperience extends LeakBack {
      * original value: 0.66
      */
     @NotNull
-    public final FloatRange confMin = new FloatRange(0.5f);
+    public final FloatRange confMin = new FloatRange(0.5f, 0f, 1f);
 
     /**
      * max frequency difference from either 0.0 or 1.0 to be polarized enough.
      * use the < 0.5 value here, ex: 0.1 means that 0..0.1 and 0.9..1.0 will be accepted
      */
     @NotNull
-    public final FloatRange freqMax = new FloatRange(0.1f);
+    public final FloatRange freqMax = new FloatRange(0.1f, 0f, 1f);
 
 
     /**

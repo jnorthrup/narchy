@@ -1,7 +1,7 @@
 package nars.bag.leak;
 
 import jcog.bag.Bag;
-import jcog.math.FloatRange;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -22,14 +22,13 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
     float RATE_THRESH = 1f;
 
-    @NotNull
-    public final FloatRange rate /* base rate items per dt */;
+    public final MutableFloat rate /* base rate items per dt */;
 
 
-    protected long lastLeak = ETERNAL;
-    private float lastBudget;
+    private volatile long lastLeak = ETERNAL;
+    private volatile float lastBudget;
 
-    protected DtLeak(@NotNull Bag<X, Y> bag, @NotNull FloatRange rate) {
+    protected DtLeak(@NotNull Bag<X, Y> bag, @NotNull MutableFloat rate) {
         super(bag);
         this.rate = rate;
     }
@@ -48,7 +47,7 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
                 long last = this.lastLeak;
                 if (last == ETERNAL) {
-                    this.lastLeak = last = now;
+                    last = now - dur;
                 }
 
                 return commit(now, last, dur, work);

@@ -195,7 +195,16 @@ public class NARS {
      * unbounded soft reference index
      */
     public static NAR threadSafe() {
-        return new DefaultNAR(8, true).get();
+        return threadSafe(8);
+    }
+    
+    public static NAR threadSafe(int level) {
+        NARS d = new DefaultNAR(level, true)
+                .time(new RealTime.CS().durFPS(0.01f));
+
+        d.rng = ()->new XoRoShiRo128PlusRandom(System.nanoTime());
+
+         return d.get();
     }
 
 

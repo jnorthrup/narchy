@@ -138,7 +138,7 @@ public class BoolTest {
         //TODO
     }
 
-    static final Term x = $.$safe("x");
-    static final Term y = $.$safe("y");
+    static final Term x = $.$$("x");
+    static final Term y = $.$$("y");
 
 }

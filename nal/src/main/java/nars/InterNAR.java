@@ -9,6 +9,8 @@ import nars.control.TaskService;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,41 +24,13 @@ import static jcog.net.UDPeer.Command.TELL;
  */
 public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQuestionTask, Task> {
 
-    //public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
+    public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
 
     public final TaskLeak buffer;
     final CauseChannel<ITask> recv;
-    public MyUDPeer peer;
+    final MyUDPeer peer;
+    private final NAR nar;
 
-
-    @Override
-    public void accept(NAR nar, Task t) {
-        buffer.accept(nar, t);
-    }
-
-    @Override
-    protected void start(NAR nar)  {
-        super.start(nar);
-        try {
-            peer = new MyUDPeer(nar, 0, true);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    protected void stopping(NAR nar)  {
-        if (peer!=null) {
-            peer.stop();
-            peer = null;
-        }
-    }
-
-
-    InterNAR pri(float priFactor) {
-        recv.preAmp = priFactor;
-        return InterNAR.this;
-    }
 
     /**
      * @param nar
@@ -65,7 +39,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
      * @throws SocketException
      * @throws UnknownHostException
      */
-    public InterNAR(NAR nar, float outRate, int port) throws IOException {
+    public InterNAR(NAR nar, float outRate, int port) {
         this(nar, outRate, port, true);
     }
 
@@ -77,10 +51,15 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
      * @throws SocketException
      * @throws UnknownHostException
      */
-    public InterNAR(NAR nar, float outRate, int port, boolean discover) throws IOException {
+    public InterNAR(NAR nar, float outRate, int port, boolean discover) {
         super(nar);
 
-        peer = new MyUDPeer(nar, port, discover);
+        this.nar = nar;
+        try {
+            peer = new MyUDPeer(port, discover);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         recv = nar.newCauseChannel(this);
 
@@ -88,28 +67,31 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
 
             @Override
             public float value() {
-                return 1;
+                return recv.value();
+            }
+
+            @Override
+            protected int next(NAR nar, int work) {
+                if (!peer.connected())
+                    return -1;
+
+                return super.next(nar, work);
             }
 
             @Override
             protected float leak(Task next) {
 
-                if (peer.connected()) {
-                    try {
-                        //if (x!=null) {
-                        @Nullable byte[] msg = IO.taskToBytes(next);
-                        if (msg != null) {
-                            if (peer.tellSome(msg, ttl(next), true) > 0) {
-                                return 1;
-                            }
-                        }
-                        //}
-                    } catch (RuntimeException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return 0;
 
+                logger.debug("{} share {}", peer, next);
+
+                @Nullable byte[] msg = IO.taskToBytes(next);
+                assert (msg != null);
+                if (peer.tellSome(msg, ttl(next), true) > 0) {
+                    return 1;
+                }
+
+
+                return 0;
             }
 
             @Override
@@ -122,12 +104,28 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         };
     }
 
-    public void ping(InetSocketAddress x) {
-        peer.ping(x);
-    }
-
     private static byte ttl(Task x) {
         return (byte) (1 + Util.lerp(x.priElseZero() /* * (1f + x.qua())*/, 2, 5));
+    }
+
+    @Override
+    public void accept(NAR nar, Task t) {
+        buffer.accept(nar, t);
+    }
+
+
+    @Override
+    protected void stopping(NAR nar) {
+        peer.stop();
+    }
+
+    InterNAR pri(float priFactor) {
+        recv.preAmp = priFactor;
+        return InterNAR.this;
+    }
+
+    public void ping(InetSocketAddress x) {
+        peer.ping(x);
     }
 
     //        @Override
@@ -164,32 +162,35 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         return peer.addr;
     }
 
-    private class MyUDPeer extends UDPeer {
+    void receive(UDPeer.UDProfile from, UDPeer.Msg m, Task x) {
+        if (x.isQuestOrQuestion()) {
+            //reconstruct a question task with an onAnswered handler to reply with answers to the sender
+            x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
+            x.meta("UDPeer", m);
+        }
+        x.budget(nar);
 
-        private final NAR nar;
+        //System.out.println(me + " RECV " + x + " " + Arrays.toString(x.stamp()) + " from " + m.origin());
+        logger.debug("recv {} from {}", x, from);
+        recv.input(x);
+    }
 
-        public MyUDPeer(NAR nar, int port, boolean discovery) throws IOException {
+    class MyUDPeer extends UDPeer {
+
+        MyUDPeer(int port, boolean discovery) throws IOException {
             super(port, discovery);
-            this.nar = nar;
         }
 
         @Override
-        protected void told(UDProfile connected, Msg m) {
-
+        protected void receive(UDProfile from, Msg m) {
 
             Task x = IO.taskFromBytes(m.data());
-            if (x != null) {
-                if (x.isQuestOrQuestion()) {
-                    //reconstruct a question task with an onAnswered handler to reply with answers to the sender
-                    x = new ActiveQuestionTask(x, 8, nar, (q,a)->accept(nar, q, a));
-                    x.meta("UDPeer", m);
-                }
-                x.budget(nar);
-
-                //System.out.println(me + " RECV " + x + " " + Arrays.toString(x.stamp()) + " from " + m.origin());
-                logger.debug("recv {} from {}", x, m.origin());
-                recv.input(x);
+            if (x == null) {
+                logger.warn("received invalid task {} {}", from, m);
+                return;
             }
+
+            InterNAR.this.receive(from, m, x);
         }
     }
 }

@@ -22,9 +22,9 @@ public class TimeGraphTest {
      */
     final TimeGraph A; {
         A = newTimeGraph(1);
-        A.know($.$safe("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
-        A.know($.$safe("one"), 1);
-        A.know($.$safe("two"), 20);
+        A.know($.$$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
+        A.know($.$$("one"), 1);
+        A.know($.$$("two"), 20);
 
     }
 
@@ -36,8 +36,8 @@ public class TimeGraphTest {
         //                .mustBelieve(cycles, "(x ==>-1 z)", 1.00f, 0.45f)
         //                .mustNotOutput(cycles, "(x ==>+1 z)", BELIEF, Tense.ETERNAL)
         B = newTimeGraph(1);
-        B.know($.$safe("(y ==>+3 x)"), ETERNAL);
-        B.know($.$safe("(y ==>+2 z)"), ETERNAL);
+        B.know($.$$("(y ==>+3 x)"), ETERNAL);
+        B.know($.$$("(y ==>+2 z)"), ETERNAL);
     }
 
 //    @BeforeEach
@@ -271,7 +271,7 @@ public class TimeGraphTest {
         {
             ExpectSolutions ee = new ExpectSolutions(solutions);
 
-            t.solve($.$safe(inputTerm), false, ee);
+            t.solve($.$$(inputTerm), false, ee);
         }
 
         int nodesAfter = A.nodes().size();

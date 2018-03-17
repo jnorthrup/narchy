@@ -147,7 +147,7 @@ public class DynamicTruthBeliefTableTest {
         n.believe("a:y", 0, 0.95f);
         n.run(1);
         n.concept("a:y").print();
-        Task ay = n.belief($.$safe("a:y"));
+        Task ay = n.belief($.$$("a:y"));
         assertTrue(ay.freq() < 0.5f);
 
         Task bb = n.belief(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time());

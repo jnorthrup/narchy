@@ -2,13 +2,12 @@ package nars.bag.leak;
 
 import jcog.bag.Bag;
 import jcog.bag.impl.PLinkArrayBag;
-import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.exe.Causable;
-import org.jetbrains.annotations.NotNull;
+import org.apache.commons.lang3.mutable.MutableFloat;
 
 import java.util.Random;
 
@@ -21,7 +20,7 @@ public abstract class TaskLeak extends Causable {
 
     protected final DtLeak<Task, PLink<Task>> in;
 
-    protected TaskLeak(int capacity, float ratePerDuration, @NotNull NAR n) {
+    protected TaskLeak(int capacity, float ratePerDuration, NAR n) {
         //noinspection Convert2Diamond
         this(
                 //new ConcurrentArrayBag<Task, PLink<Task>>(PriMerge.max, capacity) {
@@ -35,12 +34,12 @@ public abstract class TaskLeak extends Causable {
         );
     }
 
-    protected TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, float ratePerDuration, @NotNull NAR n) {
-        this(bag, new FloatRange(ratePerDuration), n);
+    protected TaskLeak(Bag<Task, PLink<Task>> bag, float ratePerDuration, NAR n) {
+        this(bag, new MutableFloat(ratePerDuration), n);
     }
 
 
-    TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, @NotNull FloatRange rate, @NotNull NAR n) {
+    TaskLeak(Bag<Task, PLink<Task>> bag, MutableFloat rate, NAR n) {
         super(n);
         this.in = new DtLeak<>(bag, rate) {
             @Override

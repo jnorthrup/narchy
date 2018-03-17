@@ -250,9 +250,9 @@ public class ThermostatTest {
                 t.should(0);
                 n.run(thinkDurs * n.dur());
 
-                Term cold = $.$safe("is(a_Thermostat,0)");
+                Term cold = $.$$("is(a_Thermostat,0)");
                 //Term cold = $.$safe("(a_Thermostat(is,(),0) &| --a_Thermostat(is,(),3))");
-                Term hot = $.$safe("is(a_Thermostat,3)");
+                Term hot = $.$$("is(a_Thermostat,3)");
                 Truth goalTruth = $.t(1f, 0.9f);
 
                 DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
@@ -277,11 +277,11 @@ public class ThermostatTest {
 
                 if (t.is() == t.should()) {
                     System.out.println("good job nars!");
-                    n.believe($.$safe("(learn(up) && learn(down))"), Tense.Present);
+                    n.believe($.$$("(learn(up) && learn(down))"), Tense.Present);
                     stupid = false;
                 } else {
                     System.out.println("bad job nars! try again");
-                    n.believe($.$safe("(--learn(up) && --learn(down))"), Tense.Present);
+                    n.believe($.$$("(--learn(up) && --learn(down))"), Tense.Present);
                 }
 
 

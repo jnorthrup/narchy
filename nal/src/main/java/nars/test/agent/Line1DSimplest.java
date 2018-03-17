@@ -109,13 +109,13 @@ public class Line1DSimplest extends NAgent {
     }
 
     private void initDualToggle() {
-        actionToggle($.$safe("y:up"), (b) -> {
+        actionToggle($.$$("y:up"), (b) -> {
             if(b) {
                 o.set(Util.unitize(o.floatValue() + speed.floatValue()));
                 System.out.println(o);
             }
         });
-        actionToggle($.$safe("y:down"), (b) -> {
+        actionToggle($.$$("y:down"), (b) -> {
             if (b) {
                 o.set(Util.unitize(o.floatValue() - speed.floatValue()));
                 System.out.println(o);

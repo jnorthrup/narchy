@@ -140,7 +140,8 @@ public enum $ {
         return (T) Narsese.term(term, true);
     }
 
-    public static <T extends Term> T $safe(String term) {
+    /** doesnt throw exception, but may throw RuntimeException */
+    public static <T extends Term> T $$(String term) {
         try {
             return $(term);
         } catch (Narsese.NarseseException e) {

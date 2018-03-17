@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AtomicFloatGuageTest {
+class AtomicMeanFloatTest {
 
     @Test
     public void test1() {
-        AtomicFloatGuage x = new AtomicFloatGuage("x");
+        AtomicMeanFloat x = new AtomicMeanFloat("x");
         x.accept(1);
         x.accept(5);
         x.accept(9);

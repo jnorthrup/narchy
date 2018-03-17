@@ -12,14 +12,14 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
  * or use the commitMean and commitSum methods to accurately access
  * either of those current values in one atomic commit
  */
-public class AtomicFloatGuage extends AtomicFloat implements FloatProcedure {
+public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
 
     public final String id;
 
     private volatile int count = 0;
     private volatile float sum = 0, mean = 0;
 
-    public AtomicFloatGuage(String id) {
+    public AtomicMeanFloat(String id) {
         super(0f);
         this.id = id;
     }

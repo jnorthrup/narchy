@@ -17,7 +17,7 @@ import nars.video.PixelBag;
 import javax.swing.*;
 
 import static jcog.Util.unitize;
-import static nars.$.$safe;
+import static nars.$.$$;
 
 public class NARio extends NAgentX {
 
@@ -109,9 +109,9 @@ public class NARio extends NAgentX {
         initToggle();
 
 
-        Scalar dvx = senseNumberDifference($safe("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Scalar dvx = senseNumberDifference($$("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.02f);
-        Scalar dvy = senseNumberDifference($safe("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Scalar dvy = senseNumberDifference($$("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.02f);
 
 //        window(Vis.beliefCharts(64, concat(dvx,dvy), nar), 300, 300);
@@ -134,15 +134,15 @@ public class NARio extends NAgentX {
 
     private void initToggle() {
 
-        actionPushButton($safe("left"),
+        actionPushButton($$("left"),
                 n -> mario.scene.key(Mario.KEY_LEFT, n));
-        actionPushButton($safe("right"),
+        actionPushButton($$("right"),
                 n -> mario.scene.key(Mario.KEY_RIGHT, n));
-        actionPushButton($safe("jump"),
+        actionPushButton($$("jump"),
                 n -> mario.scene.key(Mario.KEY_JUMP, n));
-        actionPushButton($safe("down"),
+        actionPushButton($$("down"),
                 n -> mario.scene.key(Mario.KEY_DOWN, n));
-        actionPushButton($safe("speed"),
+        actionPushButton($$("speed"),
                 n -> mario.scene.key(Mario.KEY_SPEED, n));
 
 //        actionTriState($("x"), i -> {

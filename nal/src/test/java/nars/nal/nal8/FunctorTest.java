@@ -29,7 +29,7 @@ public class FunctorTest {
         n.run(1);
 
         assertTrue(got[0]);
-        assertTrue(n.beliefTruth($.$safe("[a,b]"), ETERNAL)!=null);
+        assertTrue(n.beliefTruth($.$$("[a,b]"), ETERNAL)!=null);
     }
 
     @Test

@@ -46,7 +46,7 @@ import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
 import static nars.$.$;
-import static nars.$.$safe;
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.container.Gridding.col;
 import static spacegraph.container.Gridding.grid;
@@ -748,7 +748,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable String id, C bc) {
-        return senseCamera(id != null ? $safe(id) : null, bc);
+        return senseCamera(id != null ? $$(id) : null, bc);
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Term id, C bc) {

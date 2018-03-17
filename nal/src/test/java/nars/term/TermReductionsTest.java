@@ -189,7 +189,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     public void implSubjSimultaneousWithTemporalPred() {
-        Term x = $safe("((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
+        Term x = $$("((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
         assertEquals(
                 "((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))",
                 x.toString());
@@ -370,12 +370,12 @@ public class TermReductionsTest extends NarseseTest {
                 "(((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))&|(--,(x-->happy)))");
         assertEquals(False,
                 CONJ.the(0,
-                        $safe("((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))"),
-                        $safe("(--,(x-->happy))")));
+                        $$("((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))"),
+                        $$("(--,(x-->happy))")));
         assertEquals(False,
                 Op.conjMerge(
-                        $safe("((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))"),
-                        $safe("(--,(x-->happy))")));
+                        $$("((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))"),
+                        $$("(--,(x-->happy))")));
 
     }
 
@@ -1037,10 +1037,10 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     public void testConjInImplicationTautology() {
-        Term x0 = $.$safe("((x &&+2 x) ==>-2 x)");
+        Term x0 = $.$$("((x &&+2 x) ==>-2 x)");
         assertEquals(True, x0);
 
-        Term x = $.$safe("((((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3))) ==>-2 ((_1,_2)&|(_1,_3)))");
+        Term x = $.$$("((((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3))) ==>-2 ((_1,_2)&|(_1,_3)))");
         assertEquals(True, x);
     }
 
@@ -1258,13 +1258,13 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     static Term assertReduction(String exp, String is)  {
-        Term t = $safe(is);
+        Term t = $$(is);
         assertEquals(exp, t.toString(), () -> is + " reduces to " + exp);
         return t;
     }
 
     static void assertReduction(Term exp, String is)  {
-        assertEquals(exp, $safe(is), () -> exp + " reduces to " + is);
+        assertEquals(exp, $$(is), () -> exp + " reduces to " + is);
     }
 
     static void assertReduction(String exp, Term is)  {
