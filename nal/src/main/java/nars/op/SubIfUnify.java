@@ -3,7 +3,6 @@ package nars.op;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.Deriver;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
@@ -11,7 +10,8 @@ import nars.term.atom.Atom;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
+import static nars.Op.Null;
+import static nars.Op.VAR_DEP;
 
 /**
  * substituteIfUnifies....(term, varFrom, varTo)
@@ -61,15 +61,19 @@ import static nars.Op.*;
  * <patham9_> allow dep-var unify on ind-var unify, but not vice versa.
  * <patham9_> and require at least one dep-var to be unified in dep-var unification.
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
+ *
  */
-abstract public class SubIfUnify extends Functor {
+public class SubIfUnify extends Functor {
 
 
     final static Term INDEP_VAR = $.quote("$");
     final static Term DEP_VAR = $.quote("#");
 
-    protected SubIfUnify(Atom id) {
-        super(id);
+    private final Derivation parent;
+
+    public SubIfUnify(Derivation parent) {
+        super((Atom)$.the("subIfUnifiesAny"));
+        this.parent = parent;
     }
 
     @Override
@@ -88,17 +92,23 @@ abstract public class SubIfUnify extends Functor {
             Term ai = aa[i];
             if (ai.equals(Subst.STRICT))
                 strict = true;
-            else if (ai.equals(INDEP_VAR))
-                op = VAR_INDEP;
-            else if (ai.equals(DEP_VAR))
+            else if (ai.equals(INDEP_VAR)) {
+                //;in this cases also dependent var elimination is fine!
+                //
+                //   (let [[mode check-var-type] (if (= var-symbol "$")
+                //                             [:ind #(or (= % 'ind-var) (= % 'dep-var))]
+                //                             [:dep #(= % 'dep-var)])
+                //op = VAR_INDEP;
+            } else if (ai.equals(DEP_VAR)) {
                 op = VAR_DEP;
-            else if (ai.equals(Subst.FORCE))
+            } else if (ai.equals(Subst.FORCE))
                 force = true;
             else
                 throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
 
-        Term input = aa[0];
+        /** term being transformed if x unifies with y */
+        Term c = aa[0];
         //if (input instanceof Bool)return Null;
         //if (input == Null) return Null;
 
@@ -108,42 +118,34 @@ abstract public class SubIfUnify extends Functor {
         Term y = aa[2];
         //if (y == Null) return Null;
 
-        if (x.equals(y)) {
-            return strict ? Null : input; //unification would occurr but no changes would result
+        if (x.equalsRoot(y)) {
+            return strict ? Null : c; //unification would occurr but no changes would result
         }
 
         Term output;
-        if (input.equals(x)) {
-            //input equals X so it effectiely replaces input with 'y'
+        if (c.equals(x)) {
+            //input equals X so it is entirely replaced by 'y'
             output = y;
         } else {
 
-            Derivation parent = Deriver.derivation.get();
-
-            boolean hasAnyOp =
-                    (op == null && x.hasAny(Op.VariableBits))
+            boolean tryUnify =
+                        (op == null && x.hasAny(Op.VariableBits))
                             ||
-                            (op != null && x.hasAny(op));
+                        (op != null && x.hasAny(op));
 
-            if (!hasAnyOp/* && mustSubstitute()*/) {
+            if (!tryUnify/* && mustSubstitute()*/) {
                 output = null; //no change
             } else {
-//                int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
-//                if (subTTL > 0) {
-                    SubUnify su = new SubUnify(parent, op, parent.ttl);
-                    su.strict = strict;
-                    output = su.tryMatch(input, x, y);
-                    parent.use(parent.ttl - su.ttl);
-//                } else {
-//                    output = null;
-//                }
+                SubUnify su = new MySubUnify(op, strict);
+                output = su.tryMatch(c, x, y);
+                parent.use(parent.ttl - su.ttl);
             }
 
             if (output == null) {
                 if (!force) {
                     return Null;
                 } else {
-                    output = input.replace(x, y); //force: apply substitution even if un-unifiable
+                    output = c.replace(x, y); //force: apply substitution even if un-unifiable
                     if (output == null)
                         return Null;
                 }
@@ -151,7 +153,28 @@ abstract public class SubIfUnify extends Functor {
 
         }
 
-        return (strict && input.equals(output)) ? Null : output;
+        return (strict && c.equals(output)) ? Null : output;
+    }
+
+    private class MySubUnify extends SubUnify {
+        private final boolean strict;
+
+        MySubUnify(@Nullable Op op, boolean strict) {
+            super(parent, op, parent.ttl);
+            this.strict = strict;
+        }
+
+        @Override
+        protected boolean tryMatch(Term result) {
+            if (!strict || !result.equals(transformed)) {
+                //adjust the substitution map for temporalization and other usages of reverse resolution
+                this.xy.forEach((x,y)->{
+                    parent.replaceXY(x,y);
+                });
+                return true;
+            }
+            return false;
+        }
     }
 
     //    public static class substituteIfUnifiesDep extends substituteIfUnifies {

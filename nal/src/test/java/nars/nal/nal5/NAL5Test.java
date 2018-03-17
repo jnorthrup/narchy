@@ -25,7 +25,7 @@ public class NAL5Test extends NALTest {
     public void revision() {
 
         test
-                .mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> bird>>", 0.86f, 0.91f) //.en("If robin can fly then robin is a type of bird.");
+                .mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> bird>>", 0.85f, 0.92f) //.en("If robin can fly then robin is a type of bird.");
                 .believe("<<robin --> [flying]> ==> <robin --> bird>>") //.en("If robin can fly then robin is a type of bird.");
                 .believe("<<robin --> [flying]> ==> <robin --> bird>>", 0.00f, 0.60f); //.en("If robin can fly then robin may not a type of bird.");
 

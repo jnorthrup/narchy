@@ -46,9 +46,7 @@ import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -240,7 +238,6 @@ public enum Op {
 
                     ci = junctionFlat(dt, u);
                     break;
-
 
 
                 case XTERNAL:
@@ -484,60 +481,40 @@ public enum Op {
 
 
     public static final String DISJstr = "||";
-    public static int ConstantAtomics = Op.ATOM.bit | Op.INT.bit;
-
-    public final boolean indepVarParent;
-    public final boolean depVarParent;
-
-    public static final Compound ZeroProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
-
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
-
     public static final int funcBits = Op.or(Op.ATOM, Op.INH, Op.PROD);
     public static final int funcInnerBits = Op.or(Op.ATOM, Op.PROD);
-
     public static final byte BELIEF = '.';
     public static final byte QUESTION = '?';
     public static final byte GOAL = '!';
     public static final byte QUEST = '@';
     public static final byte COMMAND = ';';
-
     public static final String TENSE_PAST = ":\\:";
     public static final String TENSE_PRESENT = ":|:";
     public static final String TENSE_FUTURE = ":/:";
-
     public static final String TENSE_ETERNAL = ":-:"; //ascii infinity symbol
     public static final String TASK_RULE_FWD = "|-";
-
     public static final char BUDGET_VALUE_MARK = '$';
     public static final char TRUTH_VALUE_MARK = '%';
     public static final char VALUE_SEPARATOR = ';';
-
     public static final char ARGUMENT_SEPARATOR = ',';
-
     public static final char SET_INT_CLOSER = ']';
     public static final char SET_EXT_CLOSER = '}';
     public static final char COMPOUND_TERM_OPENER = '(';
     public static final char COMPOUND_TERM_CLOSER = ')';
-
     @Deprecated
     public static final char OLD_STATEMENT_OPENER = '<';
     @Deprecated
     public static final char OLD_STATEMENT_CLOSER = '>';
-
     public static final char STAMP_OPENER = '{';
     public static final char STAMP_CLOSER = '}';
     public static final char STAMP_SEPARATOR = ';';
     public static final char STAMP_STARTER = ':';
-
-
     /**
      * bitvector of non-variable terms which can not be part of a goal term
      */
     public static final int NonGoalable = or(IMPL);
     public static final int varBits = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
-
-
     /**
      * Image index ("imdex") symbol for products, and anonymous variable in products
      */
@@ -552,122 +529,46 @@ public enum Op {
                     return RANK;
                 }
             };
-
-
     public static final char TrueSym = '†';
     public static final char FalseSym = 'Ⅎ';
     public static final char NullSym = '☢';
-
     /**
      * absolutely nonsense
      */
     public static final Bool Null = new BoolNull();
-
     /**
      * tautological absolute false
      */
     public static final Bool False = new BoolFalse();
-
     /**
      * tautological absolute true
      */
     public static final Bool True = new BoolTrue();
-
+    public static final int SectBits = or(Op.SECTe, Op.SECTi);
+    public static final int SetBits = or(Op.SETe, Op.SETi);
+    public static final int Temporal = or(Op.CONJ, Op.IMPL);
+    public static final Compound ZeroProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
+    public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
+    public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
+    static final ImmutableMap<String, Op> stringToOperator;
+    /**
+     * ops across which reflexivity of terms is allowed
+     */
+    final static int relationDelimeterWeak = Op.or(Op.PROD, Op.SETe, Op.CONJ, Op.NEG);
+    public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
+            c -> !c.isAny(relationDelimeterWeak);
+    final static int relationDelimeterStrong = Op.or(Op.PROD, Op.SETe, Op.NEG);
+    public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
+            c -> !c.isAny(relationDelimeterStrong);
+    final static TermCache cache = new TermCache(256 * 1024, 4, false);
+    final static TermCache cacheTemporal = new TermCache(192 * 1024, 4, false);
     /**
      * specifier for any NAL level
      */
     private static final int ANY_LEVEL = 0;
-    public static final int SectBits = or(Op.SECTe, Op.SECTi);
-    public static final int SetBits = or(Op.SETe, Op.SETi);
-    public static final int Temporal = or(Op.CONJ, Op.IMPL);
-    public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
-    public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
 
 
-    /**
-     * whether it is a special or atomic term that isnt conceptualizable.
-     * negation is an exception to this, being unconceptualizable itself
-     * but it will have conceptualizable=true.
-     */
-    public final boolean conceptualizable;
-
-    public final boolean beliefable, goalable;
-
-    /**
-     * TODO option for instantiating CompoundLight base's in the bottom part of this
-     */
-    public static Term dt(Compound base, int nextDT) {
-
-        //if (base.dt() == nextDT) return base;
-
-        return base.op().the(nextDT, base.arrayShared());
-
-//        if (nextDT == XTERNAL) {
-//            return new CompoundDTLight(base, XTERNAL);
-//        } else {
-//            Subterms subs = base.subterms();
-//            int ns = subs.subs();
-////                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
-////                    return base; //re-use base only if the terms are inequal
-//
-//            /*@NotNull*/
-//            if (ns > 2 && !concurrent(nextDT))
-//                return Null; //tried to temporalize what can only be commutive
-//
-//
-//            Term[] ss = subs.arrayShared();
-//
-//            Op o = base.op();
-//            assert (o.temporal);
-//            if (o.commutative) {
-//
-//                if (ss.length == 2) {
-//                    //must re-arrange the order to lexicographic, and invert dt
-//                    return o.the(nextDT != DTERNAL ? -nextDT : DTERNAL, ss[1], ss[0]);
-//                } else {
-//                    return o.the(nextDT, ss);
-//                }
-//            } else {
-//                return o.the(nextDT, ss);
-//            }
-//        }
-    }
-
-    /**
-     * returns null if wasnt contained, Null if nothing remains after removal
-     */
-    @Nullable
-    public static Term conjDrop(NAR nar, Term conj, Term event, boolean earlyOrLate) {
-        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
-            return null;
-
-
-
-
-
-
-            FasterList<LongObjectPair<Term>> events = conj.eventList();
-            Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
-            int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
-
-            LongObjectPair<Term> ev = events.get(eMax);
-            if (ev.getTwo().equalsRoot(event)) {
-                if (events.size() == 1)
-                    return Null; //emptied
-
-                events.remove(eMax);
-                return Op.conj(events);
-            } else {
-                return null;
-            }
-
-//        } else {
-//            return Op.without(conj, (t) -> t.equalsRoot(event), nar.random());
-//        }
-    }
-
-
-//    public interface TermInstancer {
+    //    public interface TermInstancer {
 //
 //
 //        default @NotNull Term compound(@NotNull NewCompound apc, int dt) {
@@ -752,17 +653,8 @@ public enum Op {
 //
 //        }
 //    }
-
-
-    public final Term the(Subterms s) {
-        return the(s.arrayShared());
-    }
-
-    public final Term the(/*@NotNull*/ Term... u) {
-        return the(DTERNAL, u);
-    }
-
-    static final ImmutableMap<String, Op> stringToOperator;
+    private static final int InvalidImplicationSubj = or(IMPL);
+    public static int ConstantAtomics = Op.ATOM.bit | Op.INT.bit;
 
     static {
         for (Op o : Op.values()) {
@@ -793,6 +685,15 @@ public enum Op {
 //        }
     }
 
+    public final boolean indepVarParent;
+    public final boolean depVarParent;
+    /**
+     * whether it is a special or atomic term that isnt conceptualizable.
+     * negation is an exception to this, being unconceptualizable itself
+     * but it will have conceptualizable=true.
+     */
+    public final boolean conceptualizable;
+    public final boolean beliefable, goalable;
     /**
      * string representation
      */
@@ -802,7 +703,6 @@ public enum Op {
      */
     public final char ch;
     public final OpType type;
-
     /**
      * arity limits, range is inclusive >= <=
      * TODO replace with an IntPredicate
@@ -814,32 +714,28 @@ public enum Op {
     public final int minLevel;
     public final boolean commutative;
     public final boolean temporal;
-
     /**
      * 1 << op.ordinal
      */
     public final int bit;
-
     public final boolean var;
     public final boolean atomic;
     public final boolean statement;
-    /**
-     * whether this involves an additional numeric component: 'dt' (for temporals) or 'relation' (for images)
-     */
-    public final boolean hasNumeric;
-    public final byte id;
-
-
-    Op(char c, int minLevel, OpType type) {
-        this(c, minLevel, type, Args.None);
-    }
 
     /*
     used only by Termlike.hasAny
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }*/
+    /**
+     * whether this involves an additional numeric component: 'dt' (for temporals) or 'relation' (for images)
+     */
+    public final boolean hasNumeric;
+    public final byte id;
 
+    Op(char c, int minLevel, OpType type) {
+        this(c, minLevel, type, Args.None);
+    }
 
     Op(@NotNull String s, boolean commutative, int minLevel, @NotNull IntIntPair size) {
         this(s, commutative, minLevel, OpType.Other, size);
@@ -850,6 +746,7 @@ public enum Op {
         this(Character.toString(c), minLevel, type, size);
     }
 
+
     Op(@NotNull String string, int minLevel, @NotNull IntIntPair size) {
         this(string, minLevel, OpType.Other, size);
     }
@@ -858,11 +755,9 @@ public enum Op {
         this(string, false /* non-commutive */, minLevel, type, Args.None);
     }
 
-
     Op(@NotNull String string, int minLevel, OpType type, @NotNull IntIntPair size) {
         this(string, false /* non-commutive */, minLevel, type, size);
     }
-
 
     Op(@NotNull String string, boolean commutative, int minLevel, OpType type, @NotNull IntIntPair size) {
 
@@ -907,51 +802,83 @@ public enum Op {
 
     }
 
+    //CaffeineMemoize.builder(buildTerm, -1 /* softref */, true /* Param.DEBUG*/);
+    //new NullMemoize<>(buildTerm);
+
+    /**
+     * TODO option for instantiating CompoundLight base's in the bottom part of this
+     */
+    public static Term dt(Compound base, int nextDT) {
+
+        //if (base.dt() == nextDT) return base;
+
+        return base.op().the(nextDT, base.arrayShared());
+
+//        if (nextDT == XTERNAL) {
+//            return new CompoundDTLight(base, XTERNAL);
+//        } else {
+//            Subterms subs = base.subterms();
+//            int ns = subs.subs();
+////                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
+////                    return base; //re-use base only if the terms are inequal
+//
+//            /*@NotNull*/
+//            if (ns > 2 && !concurrent(nextDT))
+//                return Null; //tried to temporalize what can only be commutive
+//
+//
+//            Term[] ss = subs.arrayShared();
+//
+//            Op o = base.op();
+//            assert (o.temporal);
+//            if (o.commutative) {
+//
+//                if (ss.length == 2) {
+//                    //must re-arrange the order to lexicographic, and invert dt
+//                    return o.the(nextDT != DTERNAL ? -nextDT : DTERNAL, ss[1], ss[0]);
+//                } else {
+//                    return o.the(nextDT, ss);
+//                }
+//            } else {
+//                return o.the(nextDT, ss);
+//            }
+//        }
+    }
+
+    /**
+     * returns null if wasnt contained, Null if nothing remains after removal
+     */
+    @Nullable
+    public static Term conjDrop(Term conj, Term event, boolean earlyOrLate) {
+        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+            return null;
+
+        FasterList<LongObjectPair<Term>> events = conj.eventList(0, 1, true, true);
+        Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
+        int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
+
+        LongObjectPair<Term> ev = events.get(eMax);
+        if (ev.getTwo().equals(event)) {
+            if (events.size() == 1)
+                return Null; //emptied
+
+            events.removeFast(eMax);
+            return Op.conj(events);
+        } else {
+            return null;
+        }
+
+//        } else {
+//            return Op.without(conj, (t) -> t.equalsRoot(event), nar.random());
+//        }
+    }
+
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }
 
     public static boolean hasAll(int existing, int possiblyIncluded) {
         return ((existing | possiblyIncluded) == existing);
-    }
-
-    public static boolean isTrueOrFalse(Term x) {
-        return x == True || x == False;
-    }
-
-    //CaffeineMemoize.builder(buildTerm, -1 /* softref */, true /* Param.DEBUG*/);
-    //new NullMemoize<>(buildTerm);
-
-    public static boolean concurrent(int dt) {
-        return (dt == DTERNAL) || (dt == 0);
-    }
-
-
-    public static Term conjMerge(Term a, Term b, int dt) {
-        return (dt >= 0) ?
-                conjMerge(a, 0, b, +dt + a.dtRange()) :
-                conjMerge(b, 0, a, -dt + b.dtRange());
-    }
-
-
-    /**
-     * merge a set of terms with dt=0
-     */
-    static public Term conjMerge(Term... x) {
-        assert (x.length > 1);
-        ArrayHashSet<LongObjectPair<Term>> xx = new ArrayHashSet();
-        for (int i = 0; i < x.length; i++) {
-            xx.addAll(x[i].eventList(0, 1, true, true));
-        }
-        return conj((FasterList)xx.list);
-    }
-
-
-    static public Term conjMerge(Term a, @Deprecated long aStart, Term b, long bStart) {
-        FasterList<LongObjectPair<Term>> ae = a.eventList(aStart, 1);
-        FasterList<LongObjectPair<Term>> be = b.eventList(bStart, 1);
-        ae.addAll(be);
-        return conj(ae);
     }
 
 //    /*@NotNull*/
@@ -1058,6 +985,150 @@ public enum Op {
 ////        }
 //
 //    }
+
+    public static boolean isTrueOrFalse(Term x) {
+        return x == True || x == False;
+    }
+
+    public static boolean concurrent(int dt) {
+        return (dt == DTERNAL) || (dt == 0);
+    }
+
+
+//    static private Term implInConjReduction(final Term conj /* possibly a conjunction */) {
+//        int cdt = conj.dt();
+//        if (concurrent(cdt) || cdt == XTERNAL)
+//            return implInConjReduction0(conj);
+//        else
+//            return conj;
+//    }
+
+    public static Term conjMerge(Term a, Term b, int dt) {
+        return (dt >= 0) ?
+                conjMerge(a, 0, b, +dt + a.dtRange()) :
+                conjMerge(b, 0, a, -dt + b.dtRange());
+    }
+//        if (conj.op() != CONJ)
+//            return conj;
+//
+//        if (!conj.hasAny(IMPL))
+//            return conj; //fall-through
+//
+//        int conjDT = conj.dt();
+////        if (conjDT!=0 && conjDT!=DTERNAL)
+////            return conj; //dont merge temporal
+////        assert (conjDT != XTERNAL);
+//
+//        //if there is only one implication subterm (first layer only), then fold into that.
+//        int whichImpl = -1;
+//        int conjSize = conj.subs();
+//
+//
+//        boolean implIsNeg = false;
+//        for (int i = 0; i < conjSize; i++) {
+//            Term conjSub = conj.sub(i);
+//            Op conjSubOp = conjSub.op();
+//            if (conjSubOp == IMPL) {
+//                //only handle the first implication in this iteration
+////                if (implDT == XTERNAL) {
+////                    //dont proceed any further if XTERNAL
+////                    //return conj;
+////                }
+//                whichImpl = i;
+//                break;
+//            } else if (conjSubOp == NEG) {
+//                if (conjSub.unneg().op() == IMPL) {
+//                    whichImpl = i;
+//                    implIsNeg = true;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if (whichImpl == -1)
+//            return conj;
+//
+//        Term implication = conj.sub(whichImpl).unneg();
+//        Term implicationPolarized = conj.sub(whichImpl);
+//
+//        Term other;
+//        if (conjSize == 2) {
+//            other = conj.sub(1 - whichImpl);
+//        } else {
+//            //more than 2; group them as one term
+//            Subterms cs = conj.subterms();
+//            SortedSet<Term> ss = cs.toSetSorted();
+//            boolean removed = ss.remove(implicationPolarized);
+//            assert removed : "must have removed something";
+//
+//            Term[] css = sorted(ss);
+//            if (conj.dt() == conjDT && cs.equalTerms(css))
+//                return conj; //prevent recursive loop
+//            else
+//                other = CONJ.the(conjDT, css /* assumes commutive since > 2 */);
+//        }
+//
+//        if (other.op() == IMPL) {
+//            //TODO if other is negated impl
+//            if ((other.dt() == DTERNAL) && other.sub(1).equals(implicationPolarized.sub(1))) {
+//                //same predicate
+//                other = other.sub(0);
+//            } else {
+//                //cant be combined
+//                return conj;
+//            }
+//        }
+//        int implDT = implication.dt();
+//
+//        Term conjInner;
+//        Term ours = implication.sub(0);
+//        int cist;
+//        if (conjDT == DTERNAL) {
+//            conjInner = CONJ.the(other, ours);
+//            cist = 0;
+//        } else if ((conjDT < 0 ? (1 - whichImpl) : whichImpl) == 1) {
+//            conjInner = conjMerge(other, 0, ours, -conjDT);
+//            cist = -conjDT;
+//        } else {
+//            conjInner = conjMerge(ours, 0, other, conjDT);
+//            cist = 0;
+//        }
+//
+//
+//        if (conjInner instanceof Bool)
+//            return conjInner;
+//
+//
+//        if (implDT != DTERNAL) {
+////            int cist = conjInner.dt() == DTERNAL ? 0 : conjInner.subTimeSafe(ours); //HACK
+////            if (cist == DTERNAL)
+////                throw new TODO();
+//
+//            implDT -= (conjInner.dtRange() - cist) - (ours.dtRange());
+//        }
+//
+//        return IMPL.the(implDT, conjInner, implication.sub(1)).negIf(implIsNeg);
+//
+//    }
+
+    /**
+     * merge a set of terms with dt=0
+     */
+    static public Term conjMerge(Term... x) {
+        assert (x.length > 1);
+        ArrayHashSet<LongObjectPair<Term>> xx = new ArrayHashSet();
+        for (int i = 0; i < x.length; i++) {
+            xx.addAll(x[i].eventList(0, 1, true, true));
+        }
+        return conj((FasterList) xx.list);
+    }
+
+    static public Term conjMerge(Term a, @Deprecated long aStart, Term b, long bStart) {
+        FasterList<LongObjectPair<Term>> ae = a.eventList(aStart, 1);
+        FasterList<LongObjectPair<Term>> be = b.eventList(bStart, 1);
+        ae.addAll(be);
+        return conj(ae);
+    }
 
     public static Term conj(FasterList<LongObjectPair<Term>> events) {
         ConjEvents ce = new ConjEvents();
@@ -1205,16 +1276,6 @@ public enum Op {
         }
     }
 
-
-
-//    static private Term implInConjReduction(final Term conj /* possibly a conjunction */) {
-//        int cdt = conj.dt();
-//        if (concurrent(cdt) || cdt == XTERNAL)
-//            return implInConjReduction0(conj);
-//        else
-//            return conj;
-//    }
-
     /**
      * precondition combiner: a combination nconjunction/implication reduction
      */
@@ -1222,108 +1283,6 @@ public enum Op {
     public static Term implInConjReduce(final Term conj /* possibly a conjunction */) {
         return conj;
     }
-//        if (conj.op() != CONJ)
-//            return conj;
-//
-//        if (!conj.hasAny(IMPL))
-//            return conj; //fall-through
-//
-//        int conjDT = conj.dt();
-////        if (conjDT!=0 && conjDT!=DTERNAL)
-////            return conj; //dont merge temporal
-////        assert (conjDT != XTERNAL);
-//
-//        //if there is only one implication subterm (first layer only), then fold into that.
-//        int whichImpl = -1;
-//        int conjSize = conj.subs();
-//
-//
-//        boolean implIsNeg = false;
-//        for (int i = 0; i < conjSize; i++) {
-//            Term conjSub = conj.sub(i);
-//            Op conjSubOp = conjSub.op();
-//            if (conjSubOp == IMPL) {
-//                //only handle the first implication in this iteration
-////                if (implDT == XTERNAL) {
-////                    //dont proceed any further if XTERNAL
-////                    //return conj;
-////                }
-//                whichImpl = i;
-//                break;
-//            } else if (conjSubOp == NEG) {
-//                if (conjSub.unneg().op() == IMPL) {
-//                    whichImpl = i;
-//                    implIsNeg = true;
-//                    break;
-//                }
-//            }
-//        }
-//
-//        if (whichImpl == -1)
-//            return conj;
-//
-//        Term implication = conj.sub(whichImpl).unneg();
-//        Term implicationPolarized = conj.sub(whichImpl);
-//
-//        Term other;
-//        if (conjSize == 2) {
-//            other = conj.sub(1 - whichImpl);
-//        } else {
-//            //more than 2; group them as one term
-//            Subterms cs = conj.subterms();
-//            SortedSet<Term> ss = cs.toSetSorted();
-//            boolean removed = ss.remove(implicationPolarized);
-//            assert removed : "must have removed something";
-//
-//            Term[] css = sorted(ss);
-//            if (conj.dt() == conjDT && cs.equalTerms(css))
-//                return conj; //prevent recursive loop
-//            else
-//                other = CONJ.the(conjDT, css /* assumes commutive since > 2 */);
-//        }
-//
-//        if (other.op() == IMPL) {
-//            //TODO if other is negated impl
-//            if ((other.dt() == DTERNAL) && other.sub(1).equals(implicationPolarized.sub(1))) {
-//                //same predicate
-//                other = other.sub(0);
-//            } else {
-//                //cant be combined
-//                return conj;
-//            }
-//        }
-//        int implDT = implication.dt();
-//
-//        Term conjInner;
-//        Term ours = implication.sub(0);
-//        int cist;
-//        if (conjDT == DTERNAL) {
-//            conjInner = CONJ.the(other, ours);
-//            cist = 0;
-//        } else if ((conjDT < 0 ? (1 - whichImpl) : whichImpl) == 1) {
-//            conjInner = conjMerge(other, 0, ours, -conjDT);
-//            cist = -conjDT;
-//        } else {
-//            conjInner = conjMerge(ours, 0, other, conjDT);
-//            cist = 0;
-//        }
-//
-//
-//        if (conjInner instanceof Bool)
-//            return conjInner;
-//
-//
-//        if (implDT != DTERNAL) {
-////            int cist = conjInner.dt() == DTERNAL ? 0 : conjInner.subTimeSafe(ours); //HACK
-////            if (cist == DTERNAL)
-////                throw new TODO();
-//
-//            implDT -= (conjInner.dtRange() - cist) - (ours.dtRange());
-//        }
-//
-//        return IMPL.the(implDT, conjInner, implication.sub(1)).negIf(implIsNeg);
-//
-//    }
 
     static boolean hasNull(Term[] t) {
         for (Term x : t)
@@ -1396,6 +1355,10 @@ public enum Op {
 
     }
 
+
+//        else
+//            return compound(new NewCompound(op, subterms), dt);
+
     public static Term difference(/*@NotNull*/ Term a, Term b) {
         Op o = a.op();
         assert (b.op() == o);
@@ -1428,7 +1391,7 @@ public enum Op {
 //        }
 
         int size = a.subs();
-        Collection<Term> terms = o.commutative ? new TreeSet() : $.newArrayList(size);
+        Collection<Term> terms = o.commutative ? new TreeSet() : new FasterList(size);
 
         for (int i = 0; i < size; i++) {
             Term x = a.sub(i);
@@ -1470,7 +1433,6 @@ public enum Op {
         return null;
     }
 
-
     /**
      * direct constructor
      * no reductions or validatios applied
@@ -1479,7 +1441,6 @@ public enum Op {
     public static Term instance(Op op, Term... subterms) {
         return instance(op, DTERNAL, subterms);
     }
-
 
     /**
      * direct constructor
@@ -1531,14 +1492,13 @@ public enum Op {
         return CachedCompound.the(o, dt, ss);
     }
 
-
-//        else
-//            return compound(new NewCompound(op, subterms), dt);
-
-
     static boolean in(int needle, int haystack) {
         return (needle & haystack) == needle;
     }
+
+//    public static final Predicate<Term> onlyTemporal =
+//            c -> concurrent(c.dt());
+    //c.op()!=CONJ || concurrent(c.dt()); //!c.op().temporal || concurrent(c.dt());
 
     public static int or(/*@NotNull*/ Op... o) {
         int bits = 0;
@@ -1546,22 +1506,6 @@ public enum Op {
             bits |= n.bit;
         return bits;
     }
-
-    /**
-     * ops across which reflexivity of terms is allowed
-     */
-    final static int relationDelimeterWeak = Op.or(Op.PROD, Op.SETe, Op.CONJ, Op.NEG);
-    public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
-            c -> !c.isAny(relationDelimeterWeak);
-    final static int relationDelimeterStrong = Op.or(Op.PROD, Op.SETe, Op.NEG);
-    public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
-            c -> !c.isAny(relationDelimeterStrong);
-
-//    public static final Predicate<Term> onlyTemporal =
-//            c -> concurrent(c.dt());
-    //c.op()!=CONJ || concurrent(c.dt()); //!c.op().temporal || concurrent(c.dt());
-
-    private static final int InvalidImplicationSubj = or(IMPL);
 
     /*@NotNull*/
     static Term statement(/*@NotNull*/ Op op, int dt, final Term subject, final Term predicate) {
@@ -1825,29 +1769,29 @@ public enum Op {
 //                    case 0:
 //                        return True;
 //                    case 1:
-                        if (peChange[0]) {
-                            //change occurred, duplicates were removed, reconstruct new predicate
-                            int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
-                            Term newPredicate;
-                            if (pe.size()==1) {
-                                newPredicate = pe.getOnly().getTwo();
-                            } else if (predicate.dt()==DTERNAL) {
-                                //construct && from the subterms since it was originally && otherwise below will construct &|
-                                ConjEvents c = new ConjEvents();
-                                for (int i = 0, peSize = pe.size(); i < peSize; i++) {
-                                    if (!c.add(pe.get(i).getTwo(), ETERNAL)) //override as ETERNAL
-                                        break;
-                                }
-                                newPredicate = c.term();
-                            } else {
-                                newPredicate = Op.conj(pe);
-                            }
-
-                            return IMPL.the(ndt, subject, newPredicate);
+                if (peChange[0]) {
+                    //change occurred, duplicates were removed, reconstruct new predicate
+                    int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
+                    Term newPredicate;
+                    if (pe.size() == 1) {
+                        newPredicate = pe.getOnly().getTwo();
+                    } else if (predicate.dt() == DTERNAL) {
+                        //construct && from the subterms since it was originally && otherwise below will construct &|
+                        ConjEvents c = new ConjEvents();
+                        for (int i = 0, peSize = pe.size(); i < peSize; i++) {
+                            if (!c.add(pe.get(i).getTwo(), ETERNAL)) //override as ETERNAL
+                                break;
                         }
+                        newPredicate = c.term();
+                    } else {
+                        newPredicate = Op.conj(pe);
+                    }
+
+                    return IMPL.the(ndt, subject, newPredicate);
+                }
 //                        break;
 //                    default: {
-                        //TODO if pred has >1 events, and dt is temporal, pull all the events except the last into a conj for the subj then impl the final event
+                //TODO if pred has >1 events, and dt is temporal, pull all the events except the last into a conj for the subj then impl the final event
 
 //                        if (dt != DTERNAL) {
 //                            long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
@@ -2100,6 +2044,147 @@ public enum Op {
         return !c.hasAny(Op.NonGoalable);// && c.op().goalable;
     }
 
+    public static boolean internable(Term[] u) {
+        if (u.length == 0)
+            return false;
+
+        boolean cache = true;
+        for (Term x : u) {
+            if (!(x instanceof The)) {
+                //HACK caching these interferes with unification.  instead fix unification then allow caching of these
+                cache = false;
+                break;
+            }
+        }
+        return cache;
+    }
+
+    /**
+     * returns null if not found, and Null if no subterms remain after removal
+     */
+    @Nullable
+    public static Term without(Term container, Predicate<Term> filter, Random rand) {
+
+
+        Subterms cs = container.subterms();
+
+        int i = cs.indexOf(filter, rand);
+        if (i == -1)
+            return null;
+
+
+        switch (cs.subs()) {
+            case 1:
+                return Null; //removed itself
+            case 2:
+                //shortcut: return the other
+                Term remain = cs.sub(1 - i);
+                Op o = container.op();
+                return o.isSet() ? o.the(remain) : remain;
+            default:
+                return container.op().the(container.dt(), cs.termsExcept(i));
+        }
+
+    }
+
+    public static int conjEarlyLate(Term x, boolean earlyOrLate) {
+        assert (x.op() == CONJ);
+        int dt = x.dt();
+        switch (dt) {
+            case DTERNAL:
+            case XTERNAL:
+            case 0:
+                return earlyOrLate ? 0 : 1;
+
+            default: {
+//                int d = x.sub(0).compareTo(x.sub(1));
+//                if (d > 0)
+//                    throw new RuntimeException();
+//                if (dt < 0) earlyOrLate = !earlyOrLate;
+//                return (d <= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
+                return (dt < 0) ? (earlyOrLate ? 1 : 0) : (earlyOrLate ? 0 : 1);
+            }
+        }
+    }
+
+    public static Term conjEternalize(FasterList<LongObjectPair<Term>> events, int start, int end) {
+        if (end - start == 1)
+            return events.get(start).getTwo();
+        else
+            return CONJ.the(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
+    }
+
+    /**
+     * flattening conjunction builder, for (commutive) multi-arg conjunction and disjunction (dt == 0 ar DTERNAL)
+     * see: https://en.wikipedia.org/wiki/Boolean_algebra#Monotone_laws
+     */
+    /*@NotNull*/
+    static Term junctionFlat(int dt, final Term[] u) {
+
+        //TODO if there are no negations in u then an accelerated construction is possible
+
+        assert (u.length > 1 && (dt == 0 || dt == DTERNAL)); //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
+
+
+//            //simple accelerated case:
+//            if (u.length == 2 && !u[0].hasAny(CONJ) && !u[1].hasAny(CONJ)) { //if it's simple
+//
+//                //already checked in callee
+//                //if (u[0].unneg().equals(u[1].unneg()))
+//                //    return False; //co-neg
+//
+//                return Op.implInConjReduction(compound(CONJ, dt, u));
+//            }
+
+
+//        ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
+//
+//        Term uu = flatten(CONJ, u, dt, s);
+//        if (uu != null) {
+//            assert (uu instanceof Bool);
+//            return uu;
+//        }
+//
+//        int os = s.size();
+//        if (os == 0) {
+//            return True;  //? does this happen
+//        }
+//
+//        Set<Term> outer = os > 1 ? new HashSet(os) : null /* unnecessary for the one element case */;
+//
+//        for (ObjectBytePair<Term> xn : s.keyValuesView()) {
+//            Term oi = xn.getOne().negIf(xn.getTwo() < 0);
+//            if (os == 1)
+//                return oi; //was the only element
+//            else
+//                outer.add(oi);
+//        }
+//
+//
+//
+//        Term[] scs = sorted(outer);
+//        if (scs.length == 1) {
+//            return scs[0];
+//        } else {
+//            return instance(CONJ, dt, scs);
+//        }
+
+        ConjEvents c = new ConjEvents();
+        long sdt = dt == DTERNAL ? ETERNAL : 0;
+        for (Term x : u) {
+            if (!c.add(x, sdt))
+                break;
+        }
+        return c.term();
+    }
+
+    public final Term the(Subterms s) {
+        return the(s.arrayShared());
+    }
+
+    public final Term the(/*@NotNull*/ Term... u) {
+        return the(DTERNAL, u);
+    }
 
     @Override
     public String toString() {
@@ -2169,7 +2254,6 @@ public enum Op {
         return commutative && size > 1 && Op.concurrent(dt);
     }
 
-
     public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
         int s = sub.size();
         return the(dt, sub.toArray(new Term[s]));
@@ -2220,24 +2304,6 @@ public enum Op {
         return internable(u);
     }
 
-    public static boolean internable(Term[] u) {
-        if (u.length == 0)
-            return false;
-
-        boolean cache = true;
-        for (Term x : u) {
-            if (!(x instanceof The)) {
-                //HACK caching these interferes with unification.  instead fix unification then allow caching of these
-                cache = false;
-                break;
-            }
-        }
-        return cache;
-    }
-
-    final static TermCache cache = new TermCache(256 * 1024, 4, false);
-    final static TermCache cacheTemporal = new TermCache(192 * 1024, 4, false);
-
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
                 (dt == DTERNAL ? cache : cacheTemporal).apply(new InternedCompound(this, dt, u)) :
@@ -2272,66 +2338,9 @@ public enum Op {
         return false;
     }
 
-
-    /**
-     * returns null if not found, and Null if no subterms remain after removal
-     */
-    @Nullable
-    public static Term without(Term container, Predicate<Term> filter, Random rand) {
-
-
-        Subterms cs = container.subterms();
-
-        int i = cs.indexOf(filter, rand);
-        if (i == -1)
-            return null;
-
-
-        switch (cs.subs()) {
-            case 1:
-                return Null; //removed itself
-            case 2:
-                //shortcut: return the other
-                Term remain = cs.sub(1 - i);
-                Op o = container.op();
-                return o.isSet() ? o.the(remain) : remain;
-            default:
-                return container.op().the(container.dt(), cs.termsExcept(i));
-        }
-
-    }
-
-    public static int conjEarlyLate(Term x, boolean earlyOrLate) {
-        assert (x.op() == CONJ);
-        int dt = x.dt();
-        switch (dt) {
-            case DTERNAL:
-            case XTERNAL:
-            case 0:
-                return earlyOrLate ? 0 : 1;
-
-            default: {
-//                int d = x.sub(0).compareTo(x.sub(1));
-//                if (d > 0)
-//                    throw new RuntimeException();
-//                if (dt < 0) earlyOrLate = !earlyOrLate;
-//                return (d <= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
-                return (dt < 0) ? (earlyOrLate ? 1 : 0) : (earlyOrLate ? 0 : 1);
-            }
-        }
-    }
-
     public boolean isAny(int bits) {
         return ((bit & bits) != 0);
     }
-
-    public static Term conjEternalize(FasterList<LongObjectPair<Term>> events, int start, int end) {
-        if (end - start == 1)
-            return events.get(start).getTwo();
-        else
-            return CONJ.the(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
-    }
-
 
     /**
      * top-level Op categories
@@ -2361,11 +2370,11 @@ public enum Op {
     }
 
     private static class BoolNull extends Bool {
+        final static int rankBoolNull = Term.opX(BOOL, 0);
+
         public BoolNull() {
             super(String.valueOf(Op.NullSym));
         }
-
-        final static int rankBoolNull = Term.opX(BOOL, 0);
 
         @Override
         public final int opX() {
@@ -2389,11 +2398,11 @@ public enum Op {
     }
 
     private static class BoolFalse extends Bool {
+        final static int rankBoolFalse = Term.opX(BOOL, 1);
+
         public BoolFalse() {
             super(String.valueOf(Op.FalseSym));
         }
-
-        final static int rankBoolFalse = Term.opX(BOOL, 1);
 
         @Override
         public final int opX() {
@@ -2417,11 +2426,11 @@ public enum Op {
     }
 
     private static class BoolTrue extends Bool {
+        final static int rankBoolTrue = Term.opX(BOOL, 2);
+
         public BoolTrue() {
             super(String.valueOf(Op.TrueSym));
         }
-
-        final static int rankBoolTrue = Term.opX(BOOL, 2);
 
         @Override
         public final int opX() {
@@ -2432,79 +2441,16 @@ public enum Op {
         public Term neg() {
             return False;
         }
+
         @Override
         public boolean equalsNeg(Term t) {
             return t == False;
         }
+
         @Override
         public Term unneg() {
             return True;
         } //doesnt change
-    }
-
-
-    /**
-     * flattening conjunction builder, for (commutive) multi-arg conjunction and disjunction (dt == 0 ar DTERNAL)
-     * see: https://en.wikipedia.org/wiki/Boolean_algebra#Monotone_laws
-     */
-    /*@NotNull*/
-    static Term junctionFlat(int dt, final Term[] u) {
-
-        //TODO if there are no negations in u then an accelerated construction is possible
-
-        assert (u.length > 1 && (dt == 0 || dt == DTERNAL)); //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
-
-
-//            //simple accelerated case:
-//            if (u.length == 2 && !u[0].hasAny(CONJ) && !u[1].hasAny(CONJ)) { //if it's simple
-//
-//                //already checked in callee
-//                //if (u[0].unneg().equals(u[1].unneg()))
-//                //    return False; //co-neg
-//
-//                return Op.implInConjReduction(compound(CONJ, dt, u));
-//            }
-
-
-//        ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
-//
-//        Term uu = flatten(CONJ, u, dt, s);
-//        if (uu != null) {
-//            assert (uu instanceof Bool);
-//            return uu;
-//        }
-//
-//        int os = s.size();
-//        if (os == 0) {
-//            return True;  //? does this happen
-//        }
-//
-//        Set<Term> outer = os > 1 ? new HashSet(os) : null /* unnecessary for the one element case */;
-//
-//        for (ObjectBytePair<Term> xn : s.keyValuesView()) {
-//            Term oi = xn.getOne().negIf(xn.getTwo() < 0);
-//            if (os == 1)
-//                return oi; //was the only element
-//            else
-//                outer.add(oi);
-//        }
-//
-//
-//
-//        Term[] scs = sorted(outer);
-//        if (scs.length == 1) {
-//            return scs[0];
-//        } else {
-//            return instance(CONJ, dt, scs);
-//        }
-
-        ConjEvents c = new ConjEvents();
-        long sdt = dt==DTERNAL ? ETERNAL : 0;
-        for (Term x : u) {
-            if (!c.add(x, sdt))
-                break;
-        }
-        return c.term();
     }
 
 
@@ -2545,15 +2491,12 @@ public enum Op {
 //            return y;
 //        }
 
-
     final static class InternedCompound extends AbstractPLink<Term> implements HijackMemoize.Computation<InternedCompound, Term> {
         //X
         public final Op op;
         public final int dt;
-        public Term[] subs;
-
         private final int hash;
-
+        public Term[] subs;
         //Y
         public Term y = null;
 

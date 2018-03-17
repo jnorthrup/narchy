@@ -19,13 +19,14 @@ import static nars.time.Tense.ETERNAL;
  */
 public class NAL8EternalMixTest extends NALTest {
 
-    final int cycles = 450;
+    final int cycles = 550;
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
     }
+
     @Test
     public void subsent_1_even_simpler_simplerGoalEternal() {
 
@@ -136,7 +137,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void condition_goal_deductionWithVariableEliminationOpposite() {
 
         test
-                
+
                 .input("goto({t003}). :|:")
                 .input("(goto(#1) &&+5 at(SELF,#1))!")
                 .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, 5)
@@ -149,7 +150,7 @@ public class NAL8EternalMixTest extends NALTest {
         TestNAR tester = test;
         tester.input("x:y! :|:");
         tester.input("(goto(z) ==>+5 x:y).");
-        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t)->t>=0);
+        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t) -> t >= 0);
     }
 
     @Test
@@ -158,7 +159,7 @@ public class NAL8EternalMixTest extends NALTest {
         TestNAR tester = test;
         tester.input("x:y! :|:");
         tester.input("(goto(z) ==>-5 x:y).");
-        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, 0);
+        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, 5);
     }
 
     @Test
@@ -168,11 +169,8 @@ public class NAL8EternalMixTest extends NALTest {
         tester.log();
         tester.input("x:y!");
         tester.inputAt(3, "(goto(z) ==>+5 x:y). :|:");
-        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t)->t>=3);
+        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t) -> t >= 3);
     }
-
-
-
 
 
     @Test
@@ -257,7 +255,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void goal_ded_2() {
 
         TestNAR tester = test;
-        
+
         tester.inputAt(0, "at(SELF,{t001}). :|:");
         tester.inputAt(0, "(at(SELF,{t001}) &&+5 open({t001}))!");
 
@@ -269,7 +267,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void condition_goal_deduction_3simplerReverse() {
 
         test
-                
+
                 .inputAt(1, "at:t003! :|:")
                 .input("(at:$1 ==>+5 goto:$1).")
 
@@ -277,8 +275,6 @@ public class NAL8EternalMixTest extends NALTest {
                 .mustNotOutput(cycles, "goto:t003", GOAL, 0f, 1f, 0.1f, 1f, 1L);
 
     }
-
-
 
 
     @Test
@@ -301,31 +297,33 @@ public class NAL8EternalMixTest extends NALTest {
         tester.input("goto({t001}). :|: ");
         tester.inputAt(7, "(goto($1) ==>+2 at(SELF,$1)). ");
 
-        tester.mustBelieve(cycles, "at(SELF,{t001})", 1.0f, 0.81f, 2);
-
+        //result time must be 2, not 0:
+        tester
+                .mustBelieve(cycles, "at(SELF,{t001})", 1.0f, 0.81f, 2)
+                .mustNotOutput(cycles, "at(SELF,{t001})", BELIEF, 1f, 1.0f, 0.81f, 0.81f,
+                        t -> t == 0);
     }
-      @Test
+
+    @Test
     public void condition_goal_deduction_2() {
 
         test
-
                 .input("on({t002},{t003}). :|:")
                 .input("(on({t002},#1) &&+0 at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, 0);
 
         //tester.mustNotOutput(time, selfAtT3, GOAL, 0, 1f, 0, 1f, ETERNAL);
     }
-        @Test
+
+    @Test
     public void condition_belief_deduction_2() {
 
         test
-                .confTolerance(0.1f)
                 .input("on({t002},{t003}). :|:")
                 .inputAt(2, "(on({t002},#1) &&+0 at(SELF,#1)).")
                 .mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.23f, 0)
                 .mustNotOutput(cycles, "at(SELF,{t003})", BELIEF, 0, 1f, 0, 1f, ETERNAL);
     }
-
 
 
     @Test
@@ -362,7 +360,7 @@ public class NAL8EternalMixTest extends NALTest {
         ;
     }
 
-        @Test
+    @Test
     public void temporal_goal_detachment_1() {
 
         test
@@ -370,7 +368,7 @@ public class NAL8EternalMixTest extends NALTest {
                 .input("(hold). :|:")
                 .input("( (hold) &&+5 ((at) &&+5 (open)) )!")
                 .mustGoal(cycles, "((at) &&+5 (open))", 1.0f, 0.81f, 5, 10)
-                //.mustNotOutput(cycles, "((at) &&+5 (open))", GOAL, ETERNAL)
+        //.mustNotOutput(cycles, "((at) &&+5 (open))", GOAL, ETERNAL)
         ;
     }
 
@@ -418,7 +416,7 @@ public class NAL8EternalMixTest extends NALTest {
         tester.inputAt(when, "hold:t2. :|:");
 
         String result = "((att1 &&+5 open:t1) ==>+5 opened:t1)";
-        tester.mustBelieve(cycles, result, 1.0f, 0.81f, when+5);
+        tester.mustBelieve(cycles, result, 1.0f, 0.81f, when + 5);
 
     }
 
@@ -459,7 +457,6 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
 
-
     @Test
     public void implSubstitutionViaSimilarity() {
 
@@ -480,7 +477,6 @@ public class NAL8EternalMixTest extends NALTest {
                 .mustBelieve(cycles, "(e:f ==>+1 a:b)", 1.0f, 0.4f, 0)
                 .mustNotOutput(cycles, "(e:f ==>+1 a:b)", BELIEF, ETERNAL);
     }
-
 
 
     @Test
@@ -526,7 +522,7 @@ public class NAL8EternalMixTest extends NALTest {
         ;
     }
 
-        @Test
+    @Test
     public void testNegatedImplicationS() {
 
         test
@@ -544,7 +540,8 @@ public class NAL8EternalMixTest extends NALTest {
                 .input("((S) ==>+0 --(R)).") //internally, this reduces to --(S ==> R)
                 .mustGoal(cycles, "(S)", 0.0f, 0.81f, 0);
     }
-        @Test
+
+    @Test
     public void testNegatedImplicationTerm2() {
 
         test
@@ -586,7 +583,7 @@ public class NAL8EternalMixTest extends NALTest {
     @Test
     public void testGoalImplComponentWithVar() {
 
-        test.nar.at(cycles*4, ()->{
+        test.nar.at(cycles * 4, () -> {
             try {
                 test.nar.concept($.$("c($1)")).print();
             } catch (Narsese.NarseseException e) {
@@ -599,8 +596,9 @@ public class NAL8EternalMixTest extends NALTest {
                 .inputAt(0, "c(x)! :|:")
                 //.inputAt(1, "a(x). :|:")
                 .mustGoal(cycles * 5, "b(x)", 1f, 0.73f,
-                        (t)->t>=3 /* early since c(x) is alrady active when this gets derived */);
+                        (t) -> t >= 3 /* early since c(x) is alrady active when this gets derived */);
     }
+
     @Test
     public void testPredictiveImplicationTemporalEternal() {
 
@@ -634,7 +632,8 @@ public class NAL8EternalMixTest extends NALTest {
                 .mustGoal(cycles * 2, "z:x", 0f, 0.81f, 0);
     }
 
-     @Test public void testStrongUnificationDeductionPN() {
+    @Test
+    public void testStrongUnificationDeductionPN() {
         //((--,%Y)==>X),Z,task(".") |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
         test
                 .input("((--,Y) ==>+1 (X)).")
@@ -644,7 +643,8 @@ public class NAL8EternalMixTest extends NALTest {
         ;
     }
 
-    @Test public void testStrongUnificationAbductionPN() {
+    @Test
+    public void testStrongUnificationAbductionPN() {
         //((--,%Y)==>X),Z,task(".") |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
         test
                 .input("((--,X) ==>+1 (Y)).")

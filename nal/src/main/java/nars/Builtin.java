@@ -453,10 +453,10 @@ public class Builtin {
         }));
         /** extracts only the events preceding the specified events */
         nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) ->
-                nullToNull(conjDrop(nar, conj, event, false))
+                nullToNull(conjDrop(conj, event, false))
         ));
         nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) ->
-                nullToNull(conjDrop(nar, conj, event, true))
+                nullToNull(conjDrop(conj, event, true))
         ));
 
 

@@ -729,21 +729,8 @@ public class Derivation extends ProtoDerivation {
         return pp;
     };
 
-    final static Atom uniSubAnyFunc = (Atom) $.the("subIfUnifiesAny");
-    private final SubIfUnify uniSubAny = new SubIfUnify(uniSubAnyFunc) {
-        @Override
-        public Term apply(Subterms xx) {
-            Term y = super.apply(xx);
-            if (y != null && !(y instanceof Bool)) {
-                Term a = xx.sub(1);
-                Term b = xx.sub(2);
-                if (!a.equals(b))
-                    replaceXY(a, b);
-            }
-            return y;
-        }
-    };
 
+    private final SubIfUnify uniSubAny = new SubIfUnify(this);
 
     private final Subst uniSub = new Subst() {
 
