@@ -506,7 +506,7 @@ public abstract class Unify extends Versioning implements Subst {
             return true;
         }
 
-        public boolean constrain(MatchConstraint m) {
+        boolean constrain(MatchConstraint m) {
 
             Versioned<MatchConstraint> c = this.constraints;
             if (c == null)

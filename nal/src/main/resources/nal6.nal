@@ -313,7 +313,11 @@
 
     //structural decompose any component of a conjunction.
     //C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, task("&&"), eventOfPosOrNeg(X,C)  |- dropAnyEvent(C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
+    //C, X, task("&&"), eventOfPosOrNeg(X,C)  |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&"), eventOf(X,C)   |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&"), eventOfNeg(X,C) |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
     //C, X, task(negative), task("&&"), in(X,C)  |- (--,dropAnyEvent(C)), (Goal:StructuralDeduction)
 
 

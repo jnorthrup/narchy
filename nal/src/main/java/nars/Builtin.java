@@ -355,7 +355,7 @@ public class Builtin {
                 return Null;//returning the original value may cause feedback loop in callees expcting a change in value
 
             FasterList<LongObjectPair<Term>> ee = Conj.decompose(t);
-            ee.remove(nar.random());
+            ee.remove(nar.random().nextInt(ee.size()));
             return Op.conj(ee);
 
 //            }
@@ -403,25 +403,25 @@ public class Builtin {
             int es = events.size();
             assert (es > 1);
             for (int i = 0; i < es; i++) {
-                if (event.equals(events.get(i).getTwo())) {
+                if (event.equalsRoot(events.get(i).getTwo())) {
                     found.add(i);
                 }
             }
             if (found.isEmpty())
                 return Null;
 
-            int fs = found.size(), f;
+            int fs = found.size(), r;
             switch (fs) {
                 case 0:
                     return Null;
                 case 1:
-                    f = 0;
+                    r = found.get(0);
                     break;
                 default:
-                    f = nar.random().nextInt(fs);
+                    r = found.get(nar.random().nextInt(fs));
                     break;
             }
-            events.removeFast(f);
+            events.remove(r);
             return Op.conj(events);
 //            } else {
 //                return nullToNull(Op.without(conj, event::equalsRoot, nar.random()));

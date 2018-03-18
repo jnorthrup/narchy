@@ -19,6 +19,7 @@ public class SubOfConstraint extends MatchConstraint {
     private final static int NEGATIVE = -1;
     private final static int ANY = 0;
 
+    /** containment of the term positively (normal), negatively (negated), or either (must test both) */
     private final int polarityCompare;
     private final float cost;
 
@@ -58,22 +59,24 @@ public class SubOfConstraint extends MatchConstraint {
         if (!canEqual && ((reverse?xx:yy).impossibleSubTerm(reverse?yy:xx)))
             return true;
 
-        switch (polarityCompare) {
-            case +1:
-                //normal
-                break;
-            case 0:
-                xx = xx.unneg();
-                yy = yy.unneg();
-                break;
-            case -1:
-                xx = xx.neg();
-                break;
+        if (polarityCompare==-1)
+            xx = xx.neg();
 
+        if (canEqual) {
+            if (polarityCompare != 0) {
+                if (xx.equalsRoot(yy))
+                    return false;
+            } else {
+                if (xx.unneg().equalsRoot(yy.unneg()))
+                    return false;
+            }
         }
 
-        if (canEqual && xx.equalsRoot(yy))
-            return false;
+        if (polarityCompare==0) {
+            //if posOrNeg, discover if the negative case is valid.  positive (normal) case is tested after
+            if (containment.test( reverse ? xx.neg() : yy,  reverse ? yy : xx.neg()))
+                return false;
+        }
 
         return !containment.test( reverse ? xx : yy, reverse ? yy : xx);
     }

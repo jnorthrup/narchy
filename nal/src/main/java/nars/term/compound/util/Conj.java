@@ -149,17 +149,18 @@ public class Conj {
         }
 
         int dt;
+        boolean atEternal = at == ETERNAL;
         if (x == CONJ && (dt = t.dt()) != XTERNAL
-                && (dt != DTERNAL || at == ETERNAL)
-                && (dt != 0 || at != ETERNAL)
-                && (at != ETERNAL || (dt==DTERNAL))
+                && (dt != DTERNAL || atEternal)
+                && (dt != 0 || !atEternal)
+                && (!atEternal || (dt==DTERNAL))
                 ) {
 
 //            try {
             return t.eventsWhile((w, e) -> add(e, w),
                     at,
-                    (at != ETERNAL),
-                    (at == ETERNAL), //only decompose DTERNAL if in the ETERNAL context, otherwise they are embedded as events
+                    !atEternal,
+                    atEternal, //only decompose DTERNAL if in the ETERNAL context, otherwise they are embedded as events
                     false, 0);
 //            } catch (StackOverflowError e) {
 //                System.err.println(t + " " + at + " " + dt);

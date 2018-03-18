@@ -491,52 +491,45 @@ public class Derivation extends ProtoDerivation {
     protected boolean setTruth() {
 
 
-        {
-            if (belief != null) {
-                long bAt = //belief.nearestPointExternal(_task.start(), _task.end());
-                        belief.nearestPointExternal(time, time);
-                if ((this.beliefTruth = belief.truth(bAt, dur)) != null) {
-                    this.beliefPolarity = polarity(this.beliefTruth);
-                    this.beliefAt =
-                            bAt;
-                    //belief.start();
-                } else {
-                    this.belief = null;
-                    this.beliefPolarity = 0;
-                    this.beliefAt = TIMELESS;
-                }
+        long tAt;
+        //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
+        if (_task.isEternal() && (belief!=null && !belief.isEternal()))
+            tAt = time;
+        else
+            tAt = _task.nearestPointInternal(time);
 
+        this.taskAt = tAt;
+        switch (this.taskPunc = _task.punc()) {
+            case QUESTION:
+            case QUEST:
+                this.taskPolarity = 0;
+                assert(this.taskTruth == null);
+                break;
+            default:
+                if ((this.taskTruth = _task.truth(tAt, dur)) == null)
+                    return false;
+                assert(this.taskTruth!=null);
+                this.taskPolarity = polarity(taskTruth);
+                break;
+        }
+
+        if (belief != null) {
+            long bAt = belief.nearestPointExternal(_task.start(), _task.end());
+            if ((this.beliefTruth = belief.truth(bAt, dur))!=null) {
+                this.beliefPolarity = polarity(this.beliefTruth);
+                this.beliefAt =
+                        //bAt;
+                        belief.start();
             } else {
-                this.beliefTruth = null;
+                this.belief = null;
                 this.beliefPolarity = 0;
                 this.beliefAt = TIMELESS;
             }
-        }
 
-        {
-            long tAt;
-            //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
-            if (_task.isEternal() && (belief != null && !belief.isEternal()))
-                tAt = time;
-            else
-                tAt = //_task.nearestPointInternal(time);
-                      _task.nearestPointInternal(beliefAt!=TIMELESS ? beliefAt : time);
-
-            this.taskAt = tAt;
-            switch (this.taskPunc = _task.punc()) {
-                case QUESTION:
-                case QUEST:
-                    this.taskPolarity = 0;
-                    assert (this.taskTruth == null);
-                    break;
-                default:
-                    if ((this.taskTruth = _task.truth(tAt, dur)) == null) {
-                        return false; //truth failure: why?
-                    }
-                    //assert (this.taskTruth != null);
-                    this.taskPolarity = polarity(taskTruth);
-                    break;
-            }
+        } else {
+            this.beliefTruth = null;
+            this.beliefPolarity = 0;
+            this.beliefAt = TIMELESS;
         }
 
         return true;
