@@ -405,19 +405,22 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default boolean isCommutative() {
         Op op = op();
+        if (!op.commutative)
+            return false;
+
         if (op == CONJ) {
             int dt = dt();
             switch (dt) {
                 case 0:
                 case DTERNAL:
+                case XTERNAL:
                     return true;
                     //return (subs() > 1);
-                case XTERNAL:
                 default:
                     return false;
             }
         } else
-            return op.commutative && subs() > 1;
+            return subs() > 1;
     }
 
 

@@ -4,6 +4,7 @@ import nars.$;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.subst.Unify;
 
 /**
@@ -35,12 +36,15 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
             $.pFast(x), $.pFast(y)
         );
     }
+
+    final static Atom COMMUTIVE_PERMUTATIONS = $.the(CommutivePermutations.class);
+
     /**
      * important note: using raw Set<Term> here to avoid the clobbering of PatternCompound subterms if interned with current impl
      * x and y must have same size
      */
     public CommutivePermutations(Term x, Term y) {
-        super(x, y);
+        super(COMMUTIVE_PERMUTATIONS,x, y);
 
         int xs = x.subs();
         assert(xs > 1);

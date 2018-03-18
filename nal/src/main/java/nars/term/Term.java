@@ -679,7 +679,9 @@ public interface Term extends Termed, Comparable<Termed> {
     default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
         return eventList(offset, dtDither, true, false);
     }
-    /** sorted by time; decomposes inner parallel conj */
+    /** sorted by time; decomposes inner parallel conj
+     * TODO make sorting optional
+     * */
     default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither, boolean decomposeParallel, boolean decomposeEternal) {
         FasterList<LongObjectPair<Term>> events = new FasterList(2);
         eventsWhile((w, t) -> {

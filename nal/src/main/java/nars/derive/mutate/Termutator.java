@@ -3,6 +3,7 @@ package nars.derive.mutate;
 import nars.$;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.subst.Unify;
 
 /**
@@ -21,8 +22,8 @@ public interface Termutator {
 
     abstract class AbstractTermutator extends ProxyTerm implements Termutator {
 
-        AbstractTermutator(Term... keyComponents) {
-            super(keyComponents.length == 1 ? keyComponents[0] : $.pFast(keyComponents));
+        AbstractTermutator(Atom klass, Term... keyComponents) {
+            super($.pFast(klass, keyComponents.length == 1 ? keyComponents[0] : $.pFast(keyComponents)));
         }
 
     }

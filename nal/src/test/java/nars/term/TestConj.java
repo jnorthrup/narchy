@@ -4,7 +4,7 @@ import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Op;
-import nars.term.compound.util.ConjEvents;
+import nars.term.compound.util.Conj;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.junit.jupiter.api.Test;
 import org.roaringbitmap.RoaringBitmap;
@@ -17,10 +17,10 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class TestConjEvents {
+public class TestConj {
 
     @Test public void testSimpleEternals() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("x"), ETERNAL);
         c.add($.the("y"), ETERNAL);
         assertEquals("(x&&y)", c.term().toString());
@@ -29,14 +29,14 @@ public class TestConjEvents {
     }
 
     @Test public void testSimpleEternalsNeg() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("x"), ETERNAL);
         c.add($.the("y").neg(), ETERNAL);
         assertEquals("((--,y)&&x)", c.term().toString());
     }
 
     @Test public void testSimpleEvents() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("x"), 1);
         c.add($.the("y"), 2);
         assertEquals("(x &&+1 y)", c.term().toString());
@@ -44,7 +44,7 @@ public class TestConjEvents {
         assertEquals(2, c.event.size());
     }
     @Test public void testRoaringBitmapNeededManyEventsAtSameTime() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("a"), 1);
         c.add($.the("b"), 1);
         c.add($.the("c"), 1);
@@ -55,20 +55,20 @@ public class TestConjEvents {
         assertEquals(RoaringBitmap.class, c.event.get(1).getClass());
     }
     @Test public void testSimpleEventsNeg() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("x"), 1);
         c.add($.the("y").neg(), 2);
         assertEquals("(x &&+1 (--,y))", c.term().toString());
     }
 
     @Test public void testEventContradiction() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("x"), 1);
         assertFalse(c.add($.the("x").neg(), 1));
         assertEquals(False, c.term());
     }
     @Test public void testEventContradictionAmongNonContradictions() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("x"), 1);
         c.add($.the("y"), 1);
         c.add($.the("z"), 1);
@@ -76,13 +76,13 @@ public class TestConjEvents {
         assertEquals(False, c.term());
     }
     @Test public void testEventContradictionAmongNonContradictionsRoaring() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.$$("(&&,a,b,c,d,e,f,g,h)"), ETERNAL);
         boolean added = c.add($.the("a").neg(), 1);
         assertEquals(False, c.term());
     }
     @Test public void testEventContradictionWithEternal() {
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         c.add($.the("x"), ETERNAL);
         c.add($.the("x").neg(), 1);
         assertEquals(False, c.term());

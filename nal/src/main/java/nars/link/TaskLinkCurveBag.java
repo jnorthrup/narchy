@@ -7,7 +7,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
-import nars.term.compound.util.ConjEvents;
+import nars.term.compound.util.Conj;
 import nars.time.Tense;
 
 import java.util.Map;
@@ -43,9 +43,9 @@ public class TaskLinkCurveBag extends CurveBag<TaskLink> {
         if (size() < capacity()*TEMPORAL_COMPRESSION_THRESHOLD)
             return;
 
-        final ConjEvents[] beliefs = {new ConjEvents()};
-        final ConjEvents[] questions = {new ConjEvents()};
-        final ConjEvents[] goals = {new ConjEvents()};
+        final Conj[] beliefs = {new Conj()};
+        final Conj[] questions = {new Conj()};
+        final Conj[] goals = {new Conj()};
         forEach(x -> {
             if (!(x instanceof TaskLink.GeneralTaskLink))
                 return;
@@ -53,7 +53,7 @@ public class TaskLinkCurveBag extends CurveBag<TaskLink> {
             long when = Tense.dither(g.when(), nar);
             Term what = g.term(); //must be exact, not root
 
-            ConjEvents[] table = null;
+            Conj[] table = null;
             switch (g.punc()) {
                 case BELIEF: table = beliefs; break; //maybe include a negation flag for beliefs
                 case QUESTION: table = questions; break;
@@ -63,7 +63,7 @@ public class TaskLinkCurveBag extends CurveBag<TaskLink> {
             }
 
             if (!table[0].add(what, when))
-                table[0] = new ConjEvents();  /* HACK just clear when it becomes contradicting */
+                table[0] = new Conj();  /* HACK just clear when it becomes contradicting */
         });
         compress(beliefs[0], BELIEF, nar);
         compress(questions[0], QUESTION, nar);
@@ -72,11 +72,11 @@ public class TaskLinkCurveBag extends CurveBag<TaskLink> {
 
     final static int MAX_EVENTS = 4;
 
-    private void compress(ConjEvents e, byte punc, NAR nar) {
+    private void compress(Conj e, byte punc, NAR nar) {
         int maxVol = nar.termVolumeMax.intValue();
 
         e.event.forEachKeyValue((when, what)->{
-            int eventCount = ConjEvents.eventCount(what);
+            int eventCount = Conj.eventCount(what);
             if (eventCount > 1 && eventCount < MAX_EVENTS /* TODO allow choosing subset of events from a single time */) {
                 Term c = e.term(when);
                 if (c.volume() < maxVol && Task.validTaskTerm(c, punc, true)) {

@@ -13,7 +13,7 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.compound.util.ConjEvents;
+import nars.term.compound.util.Conj;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -986,9 +986,9 @@ public class Revision {
         boolean aSubsEqualsBSubs = aa.equals(bb);
         if (a.op() == CONJ && !aSubsEqualsBSubs) {
             //HACK :)
-            ConjEvents c = new ConjEvents();
-            String as = ConjEvents.sequenceString(a, c).toString();
-            String bs = ConjEvents.sequenceString(b, c).toString();
+            Conj c = new Conj();
+            String as = Conj.sequenceString(a, c).toString();
+            String bs = Conj.sequenceString(b, c).toString();
 
             int levDist = Texts.levenshteinDistance(as, bs);
             float seqDiff = (((float)levDist)/(Math.min(as.length(),bs.length())));

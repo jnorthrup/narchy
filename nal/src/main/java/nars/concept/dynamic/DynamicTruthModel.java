@@ -11,7 +11,7 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.term.compound.util.ConjEvents;
+import nars.term.compound.util.Conj;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
@@ -167,7 +167,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
             boolean conj = superterm.op() == CONJ;
             if (conj) {
-                ConjEvents c = new ConjEvents();
+                Conj c = new Conj();
                 //long estVolume = ((FasterList<TaskRegion>)components).sumOfInt(xt -> ((Task)xt).term().volume());
                 //TODO heuristic for range sampling parameters
                 for (TaskRegion t : components) {

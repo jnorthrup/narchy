@@ -1526,6 +1526,7 @@ public class NAL7Test extends NALTest {
     public void testDecomposeImplPredSimpler() {
 
         test
+                .log()
                 .believe("( a =|> ( ( x &| y) &| z ) )", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "( a =|> x )", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "( a =|> y )", 1f, 0.73f, 0)

@@ -409,7 +409,7 @@ public class EllipsisTest {
         new EllipsisTest.CommutiveEllipsisTest2("%1..*", p("(Z,", ")")).test(0, 2, 0);
     }
 
-    static void testCombinations(Compound _X, @NotNull Compound Y, int expect) {
+    static void testCombinations(Compound _X, Compound Y, int expect) {
         Compound X = (Compound) new PatternIndex().pattern(_X);
 
         for (int seed = 0; seed < 3 /*expect*5*/; seed++) {
@@ -468,10 +468,10 @@ public class EllipsisTest {
     @Test
     public void testRepeatEllipsisA() throws Narsese.NarseseException {
 
-        //should match the same with ellipsis
+        //ellipsis should only match the common
         testCombinations(
                 $("((|,%X,%A..+) --> (|,%Y,%A..+))"),
-                $("((|,bird,swimmer)-->(|,animal,swimmer))"),
+                $("((|,x,common)-->(|,y,common))"),
                 1);
     }
 

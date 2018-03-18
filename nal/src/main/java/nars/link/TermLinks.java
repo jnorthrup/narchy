@@ -97,8 +97,8 @@ public enum TermLinks {
 
 
 
-        Op r = root.op();
-        if (r == INH || r == SIM) {
+//        Op r = root.op();
+//        if (r == INH || r == SIM) {
 //            if (depth >= 2) {
 //                if (s.isAny(Op.SetBits))
 //                    return false;
@@ -108,7 +108,7 @@ public enum TermLinks {
 //                if (s.isAny(Op.SectBits))
 //                    return false;
 //            }
-        }
+//        }
 
 //        if (r == IMPL) {
 //            if (depth > 2) {
@@ -116,13 +116,13 @@ public enum TermLinks {
 //                    return false;
 //            }
 //        }
-
-        if ((r == IMPL || r == CONJ) ) {
-            if (depth >= 2)
-                if (s.isAny(PROD.bit | Op.SetBits | Op.SectBits ))
-                    return false;
-
-        }
+//
+//        if ((r == IMPL || r == CONJ) ) {
+//            if (depth >= 2)
+//                if (s.isAny(PROD.bit | Op.SetBits | Op.SectBits ))
+//                    return false;
+//
+//        }
         return depth <= 2 || s != PROD;
     }
 
@@ -140,7 +140,7 @@ public enum TermLinks {
                 return false;
 
             case IMPL: //<- check if IMPL needs it
-                return false;
+                return true;
             case SECTe:
             case SECTi:
             case SETe:

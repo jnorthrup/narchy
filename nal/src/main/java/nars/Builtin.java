@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.TODO;
 import jcog.User;
 import jcog.list.FasterList;
 import jcog.pri.PriReference;
@@ -15,6 +16,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
+import nars.term.compound.util.Conj;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -29,8 +31,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,15 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Provides the standard core function library
  */
 public class Builtin {
-
-    public static void init(NAR nar) {
-        registerFunctors(nar);
-        registerOperators(nar);
-    }
-
-
-    //TODO: http://software-lab.de/doc/ref.html#fun
-    //TODO: https://openreview.net/pdf?id=ByldLrqlx (section F)
 
     public static final Concept[] statik = {
 
@@ -173,12 +164,9 @@ public class Builtin {
                 return False;
             }),
 
-            Functor.f2("ifNeqRoot", (returned, compareTo) -> {
-                if (!returned.equalsRoot(compareTo))
-                    return returned; //unconditionally true
-                else
-                    return Null;
-            }),
+            Functor.f2("ifNeqRoot", (returned, compareTo) ->
+                    !returned.equalsRoot(compareTo) ? returned : Null
+            ),
 
             //TODO for binding equal values
 //            Functor.f2("equality", (x, y) ->
@@ -196,8 +184,8 @@ public class Builtin {
             }),
 
             //TODO add exceptions for identities: ex: add(#x,0) --> #x  etc
-            Functor.f2Int("add", true, (i)->i==0, (n)->false, (x, y) -> x + y),
-            Functor.f2Int("mul", true, (i)->i==1, (n)->n==0, (x, y) -> x * y),
+            Functor.f2Int("add", true, (i) -> i == 0, (n) -> false, (x, y) -> x + y),
+            Functor.f2Int("mul", true, (i) -> i == 1, (n) -> n == 0, (x, y) -> x * y),
 
             //Functor.f2Int("sub", (x, y) -> x - y),
 
@@ -205,6 +193,14 @@ public class Builtin {
             Functor.f1("quote", x -> x) //TODO does this work    //throw new RuntimeException("quote should never actually be invoked by the system");
     };
 
+
+    //TODO: http://software-lab.de/doc/ref.html#fun
+    //TODO: https://openreview.net/pdf?id=ByldLrqlx (section F)
+
+    public static void init(NAR nar) {
+        registerFunctors(nar);
+        registerOperators(nar);
+    }
 
     public static void registerFunctors(NAR nar) {
         for (Concept t : Builtin.statik) {
@@ -267,7 +263,7 @@ public class Builtin {
         }));
 
         nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) ->
-                nullToNull(Op.without(container, (x) -> (x.equalsRoot(content)), nar.random()))));
+                nullToNull(Op.without(container, (x) -> (x.equals(content)), nar.random()))));
 
         /**
          * TODO rename this to 'dropAnyCommutive'
@@ -358,59 +354,42 @@ public class Builtin {
             if (oo != CONJ)
                 return Null;//returning the original value may cause feedback loop in callees expcting a change in value
 
-            int tdt = t.dt();
-            Term r;
-            if (tdt == DTERNAL || tdt == 0 || tdt == XTERNAL) {
-                switch (t.subs()) {
-                    case 0:
-                    case 1:
-                        throw new RuntimeException("degenerate conjunction cases");
+            FasterList<LongObjectPair<Term>> ee = Conj.decompose(t);
+            ee.remove(nar.random());
+            return Op.conj(ee);
 
-                    case 2:
-                        r = t.sub(nar.random().nextInt(2)); //one of the two
-                        break;
-
-                    default:
-                        r = CONJ.the(tdt, Terms.dropRandom(nar.random(), t.subterms()));
-                        break;
-                }
-            } else {
-                //recursive event-based decomposition and recomposition
-
-                FasterList<LongObjectPair<Term>> ee = t.eventList();
-                int toRemove = nar.random().nextInt(ee.size());
-                ee.remove(toRemove);
-
-                r = Op.conj(ee);
-
-            }
+//            }
 
 //            if (r instanceof Variable /*&& r.op()!=VAR_DEP*/)
 //                return Null; //HACK dont allow returning a variable as an event during decomposition HACK TODO make more careful and return the only result if one subterm is a non-returnable variable
 
-            return r;
+//            return r;
         }));
         nar.on(Functor.f2((Atom) $.the("conjEvent"), (Term c, Term when) -> {
             if (c.op() != CONJ || !(when instanceof Atom))
                 return Null;
-            if (c.dt() == DTERNAL || c.dt() == 0) {
-                return c.sub(nar.random().nextInt(c.subs())); //choose a subterm at random
-            }
-            assert (c.subs() == 2);
-            int target;
-            switch (when.toString()) {
-                case "early":
-                    target = 0;
-                    break;
-                case "late":
-                    target = 1;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            if (c.dt() < 0)
-                target = 1 - target;
-            return c.sub(target);
+
+
+            throw new TODO(); //extract earliest or latest &| timeslice of events
+
+//            if (c.dt() == DTERNAL || c.dt() == 0) {
+//                return c.sub(nar.random().nextInt(c.subs())); //choose a subterm at random
+//            }
+//            assert (c.subs() == 2);
+//            int target;
+//            switch (when.toString()) {
+//                case "early":
+//                    target = 0;
+//                    break;
+//                case "late":
+//                    target = 1;
+//                    break;
+//                default:
+//                    throw new UnsupportedOperationException();
+//            }
+//            if (c.dt() < 0)
+//                target = 1 - target;
+//            return c.sub(target);
         }));
 
         /** similar to without() but special handling for CONJ sub-events */
@@ -419,44 +398,41 @@ public class Builtin {
                 return Null;
 
 
-
-
-
-                FasterList<LongObjectPair<Term>> events = conj.eventList(0, 1, true, true);
-                IntArrayList found = new IntArrayList(2);
-                int es = events.size();
-                assert (es > 1);
-                for (int i = 0; i < es; i++) {
-                    if (event.equalsRoot(events.get(i).getTwo())) {
-                        found.add(i);
-                    }
+            FasterList<LongObjectPair<Term>> events = Conj.decompose(conj);
+            IntArrayList found = new IntArrayList(2);
+            int es = events.size();
+            assert (es > 1);
+            for (int i = 0; i < es; i++) {
+                if (event.equals(events.get(i).getTwo())) {
+                    found.add(i);
                 }
-                if (found.isEmpty())
+            }
+            if (found.isEmpty())
+                return Null;
+
+            int fs = found.size(), f;
+            switch (fs) {
+                case 0:
                     return Null;
-
-                int fs = found.size(), f;
-                switch (fs) {
-                    case 0:
-                        return Null;
-                    case 1:
-                        f = 0;
-                        break;
-                    default:
-                        f = nar.random().nextInt(fs);
-                        break;
-                }
-                events.remove(f);
-                return Op.conj(events);
+                case 1:
+                    f = 0;
+                    break;
+                default:
+                    f = nar.random().nextInt(fs);
+                    break;
+            }
+            events.removeFast(f);
+            return Op.conj(events);
 //            } else {
 //                return nullToNull(Op.without(conj, event::equalsRoot, nar.random()));
 //            }
         }));
         /** extracts only the events preceding the specified events */
         nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) ->
-                nullToNull(conjDrop(conj, event, false))
+                Conj.conjDrop(conj, event, false)
         ));
         nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) ->
-                nullToNull(conjDrop(conj, event, true))
+                Conj.conjDrop(conj, event, true)
         ));
 
 
@@ -605,7 +581,7 @@ public class Builtin {
         nar.onOp2("memory2txtfile", (id, filePath, nn) -> {
             nar.runLater(() -> {
                 try {
-                    PrintStream p = new PrintStream(new FileOutputStream( $.unquote(filePath) ));
+                    PrintStream p = new PrintStream(new FileOutputStream($.unquote(filePath)));
                     User.the().get(id.toString(), (byte[] x) -> {
                         try {
                             IO.readTasks(x, (Task t) -> {
@@ -616,7 +592,7 @@ public class Builtin {
                         }
                     });
                     p.close();
-                    
+
                     nn.logger.info("saved {} to {}", id, filePath);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

@@ -4,6 +4,8 @@ import nars.$;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.term.Term;
+import nars.term.Terms;
+import nars.term.atom.Atom;
 import nars.term.subst.Unify;
 
 import java.util.SortedSet;
@@ -18,11 +20,17 @@ public class Choose1 extends Termutator.AbstractTermutator {
     private final Term[] yy;
 
     public Choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree) {
-        super(x, xEllipsis, $.pFast(yFree));
+        this(xEllipsis, x, Terms.sorted(yFree));
+    }
 
-        int ysize = yFree.size();  assert(ysize >= 2): yFree + " must offer choice";
+    final static Atom CHOOSE_1 = $.the(Choose1.class);
 
-        yy = yFree.toArray(new Term[ysize]);
+    Choose1(Ellipsis xEllipsis, Term x, Term[] yFree) {
+        super(CHOOSE_1, x, xEllipsis, $.pFast(yFree));
+
+        int ysize = yFree.length;  assert(ysize >= 2): yFree + " must offer choice";
+
+        yy = yFree;
         //this.yFree = yFree;
 
 

@@ -55,6 +55,7 @@ public class GoalActionConcept extends ActionConcept {
     }
 
 
+
     @Override
     public Stream<ITask> update(long pStart, long pEnd, int dur, NAR nar) {
 

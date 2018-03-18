@@ -4,17 +4,14 @@ import jcog.list.FasterList;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.util.TermHashMap;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 
@@ -24,10 +21,10 @@ import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
- * representation of events specified in one or more conjunctions,
+ * representation of conjoined (eternal, parallel, or sequential) events specified in one or more conjunctions,
  * for use while constructing, merging, and/or analyzing
  */
-public class ConjEvents {
+public class Conj {
 
     //capacity of the initial array before upgrading to RoaringBitmap
     private static final int ROARING_UPGRADE_THRESH = 4;
@@ -40,8 +37,9 @@ public class ConjEvents {
     /**
      * unnegated events
      */
-    final TermHashMap<Byte> terms = new TermHashMap();
-    final List<Term> termsIndex = new FasterList(8);
+    //final Map<Term,Byte> terms = new TermHashMap();
+    final ObjectByteHashMap<Term> terms = new ObjectByteHashMap<>(4);
+    final List<Term> termsIndex = new FasterList(4);
 
 //    /**
 //     * keys are encoded 8-bits + 8-bits vector of the time,term index
@@ -68,7 +66,7 @@ public class ConjEvents {
      */
     Term term = null;
 
-    public ConjEvents() {
+    public Conj() {
 
     }
 
@@ -81,7 +79,7 @@ public class ConjEvents {
     }
 
     /** TODO impl levenshtein via byte-array ops */
-    public static StringBuilder sequenceString(Term a, ConjEvents x) {
+    public static StringBuilder sequenceString(Term a, Conj x) {
         StringBuilder sb = new StringBuilder(4);
         int range = a.dtRange();
         final int stepResolution = 16; //how finely to fractionalize time range
@@ -93,6 +91,31 @@ public class ConjEvents {
         }, 0, true, true, false, 0);
 
         return sb;
+    }
+
+    /**
+     * returns null if wasnt contained, Null if nothing remains after removal
+     */
+    @Nullable
+    public static Term conjDrop(Term conj, Term event, boolean earlyOrLate) {
+        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+            return Null;
+
+        FasterList<LongObjectPair<Term>> events = Conj.decompose(conj);
+        Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
+        int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
+
+        LongObjectPair<Term> ev = events.get(eMax);
+        if (ev.getTwo().equals(event)) {
+            events.removeFast(eMax);
+            return Op.conj(events);
+        } else {
+            return Null;
+        }
+    }
+
+    public static FasterList<LongObjectPair<Term>> decompose(Term t) {
+        return t.eventList(t.dt()==DTERNAL ? ETERNAL : 0, 1, true, true);
     }
 
 
@@ -128,7 +151,9 @@ public class ConjEvents {
         int dt;
         if (x == CONJ && (dt = t.dt()) != XTERNAL
                 && (dt != DTERNAL || at == ETERNAL)
-                && (dt != 0 || at != ETERNAL)) {
+                && (dt != 0 || at != ETERNAL)
+                && (at != ETERNAL || (dt==DTERNAL))
+                ) {
 
 //            try {
             return t.eventsWhile((w, e) -> add(e, w),
@@ -221,7 +246,7 @@ public class ConjEvents {
 
     public int add(Term t) {
         assert (t != null && !(t instanceof Bool));
-        return terms.computeIfAbsent(t, tt -> {
+        return terms.getIfAbsentPutWithKey(t, tt -> {
             int s = terms.size();
             termsIndex.add(tt);
             assert (s < Byte.MAX_VALUE);

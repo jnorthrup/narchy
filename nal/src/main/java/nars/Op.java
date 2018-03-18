@@ -22,7 +22,7 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
-import nars.term.compound.util.ConjEvents;
+import nars.term.compound.util.Conj;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -321,6 +321,8 @@ public enum Op {
 
                 default: {
                     if (n != 2) {
+                        if (Param.DEBUG)
+                            throw new RuntimeException("temporal conjunction with n!=2 subterms");
                         return Null;
                     }
 
@@ -845,34 +847,6 @@ public enum Op {
 //        }
     }
 
-    /**
-     * returns null if wasnt contained, Null if nothing remains after removal
-     */
-    @Nullable
-    public static Term conjDrop(Term conj, Term event, boolean earlyOrLate) {
-        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
-            return null;
-
-        FasterList<LongObjectPair<Term>> events = conj.eventList(0, 1, true, true);
-        Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
-        int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
-
-        LongObjectPair<Term> ev = events.get(eMax);
-        if (ev.getTwo().equals(event)) {
-            if (events.size() == 1)
-                return Null; //emptied
-
-            events.removeFast(eMax);
-            return Op.conj(events);
-        } else {
-            return null;
-        }
-
-//        } else {
-//            return Op.without(conj, (t) -> t.equalsRoot(event), nar.random());
-//        }
-    }
-
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }
@@ -994,146 +968,30 @@ public enum Op {
         return (dt == DTERNAL) || (dt == 0);
     }
 
-
-//    static private Term implInConjReduction(final Term conj /* possibly a conjunction */) {
-//        int cdt = conj.dt();
-//        if (concurrent(cdt) || cdt == XTERNAL)
-//            return implInConjReduction0(conj);
-//        else
-//            return conj;
-//    }
-
-    public static Term conjMerge(Term a, Term b, int dt) {
+    static Term conjMerge(Term a, Term b, int dt) {
         return (dt >= 0) ?
                 conjMerge(a, 0, b, +dt + a.dtRange()) :
                 conjMerge(b, 0, a, -dt + b.dtRange());
     }
-//        if (conj.op() != CONJ)
-//            return conj;
-//
-//        if (!conj.hasAny(IMPL))
-//            return conj; //fall-through
-//
-//        int conjDT = conj.dt();
-////        if (conjDT!=0 && conjDT!=DTERNAL)
-////            return conj; //dont merge temporal
-////        assert (conjDT != XTERNAL);
-//
-//        //if there is only one implication subterm (first layer only), then fold into that.
-//        int whichImpl = -1;
-//        int conjSize = conj.subs();
-//
-//
-//        boolean implIsNeg = false;
-//        for (int i = 0; i < conjSize; i++) {
-//            Term conjSub = conj.sub(i);
-//            Op conjSubOp = conjSub.op();
-//            if (conjSubOp == IMPL) {
-//                //only handle the first implication in this iteration
-////                if (implDT == XTERNAL) {
-////                    //dont proceed any further if XTERNAL
-////                    //return conj;
-////                }
-//                whichImpl = i;
-//                break;
-//            } else if (conjSubOp == NEG) {
-//                if (conjSub.unneg().op() == IMPL) {
-//                    whichImpl = i;
-//                    implIsNeg = true;
-//                    break;
-//                }
-//            }
-//        }
-//
-//        if (whichImpl == -1)
-//            return conj;
-//
-//        Term implication = conj.sub(whichImpl).unneg();
-//        Term implicationPolarized = conj.sub(whichImpl);
-//
-//        Term other;
-//        if (conjSize == 2) {
-//            other = conj.sub(1 - whichImpl);
-//        } else {
-//            //more than 2; group them as one term
-//            Subterms cs = conj.subterms();
-//            SortedSet<Term> ss = cs.toSetSorted();
-//            boolean removed = ss.remove(implicationPolarized);
-//            assert removed : "must have removed something";
-//
-//            Term[] css = sorted(ss);
-//            if (conj.dt() == conjDT && cs.equalTerms(css))
-//                return conj; //prevent recursive loop
-//            else
-//                other = CONJ.the(conjDT, css /* assumes commutive since > 2 */);
-//        }
-//
-//        if (other.op() == IMPL) {
-//            //TODO if other is negated impl
-//            if ((other.dt() == DTERNAL) && other.sub(1).equals(implicationPolarized.sub(1))) {
-//                //same predicate
-//                other = other.sub(0);
-//            } else {
-//                //cant be combined
-//                return conj;
-//            }
-//        }
-//        int implDT = implication.dt();
-//
-//        Term conjInner;
-//        Term ours = implication.sub(0);
-//        int cist;
-//        if (conjDT == DTERNAL) {
-//            conjInner = CONJ.the(other, ours);
-//            cist = 0;
-//        } else if ((conjDT < 0 ? (1 - whichImpl) : whichImpl) == 1) {
-//            conjInner = conjMerge(other, 0, ours, -conjDT);
-//            cist = -conjDT;
-//        } else {
-//            conjInner = conjMerge(ours, 0, other, conjDT);
-//            cist = 0;
-//        }
-//
-//
-//        if (conjInner instanceof Bool)
-//            return conjInner;
-//
-//
-//        if (implDT != DTERNAL) {
-////            int cist = conjInner.dt() == DTERNAL ? 0 : conjInner.subTimeSafe(ours); //HACK
-////            if (cist == DTERNAL)
-////                throw new TODO();
-//
-//            implDT -= (conjInner.dtRange() - cist) - (ours.dtRange());
-//        }
-//
-//        return IMPL.the(implDT, conjInner, implication.sub(1)).negIf(implIsNeg);
-//
-//    }
 
-    /**
-     * merge a set of terms with dt=0
-     */
-    static public Term conjMerge(Term... x) {
-        assert (x.length > 1);
-        ArrayHashSet<LongObjectPair<Term>> xx = new ArrayHashSet();
-        for (int i = 0; i < x.length; i++) {
-            xx.addAll(x[i].eventList(0, 1, true, true));
-        }
-        return conj((FasterList) xx.list);
-    }
-
-    static public Term conjMerge(Term a, @Deprecated long aStart, Term b, long bStart) {
-        FasterList<LongObjectPair<Term>> ae = a.eventList(aStart, 1);
-        FasterList<LongObjectPair<Term>> be = b.eventList(bStart, 1);
-        ae.addAll(be);
-        return conj(ae);
+    static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
+        Conj c = new Conj();
+        c.add(a, aStart);
+        c.add(b, bStart);
+        return c.term();
     }
 
     public static Term conj(FasterList<LongObjectPair<Term>> events) {
-        ConjEvents ce = new ConjEvents();
+        int eventsSize = events.size();
+        switch (eventsSize) {
+            case 0: return Null;
+            case 1: return events.get(0).getTwo();
+        }
 
-        for (LongObjectPair<Term> o : events) {
+        Conj ce = new Conj();
+
+        for (int i = 0; i < eventsSize; i++) {
+            LongObjectPair<Term> o = events.get(i);
             if (!ce.add(o.getTwo(), o.getOne())) {
                 break;
             }
@@ -1270,7 +1128,7 @@ public enum Op {
                     case 1:
                         return events.get(0).getTwo();
                     default:
-                        return ConjEvents.conjSeq(events);
+                        return Conj.conjSeq(events);
                 }
 
         }
@@ -1777,7 +1635,7 @@ public enum Op {
                         newPredicate = pe.getOnly().getTwo();
                     } else if (predicate.dt() == DTERNAL) {
                         //construct && from the subterms since it was originally && otherwise below will construct &|
-                        ConjEvents c = new ConjEvents();
+                        Conj c = new Conj();
                         for (int i = 0, peSize = pe.size(); i < peSize; i++) {
                             if (!c.add(pe.get(i).getTwo(), ETERNAL)) //override as ETERNAL
                                 break;
@@ -2169,7 +2027,7 @@ public enum Op {
 //            return instance(CONJ, dt, scs);
 //        }
 
-        ConjEvents c = new ConjEvents();
+        Conj c = new Conj();
         long sdt = dt == DTERNAL ? ETERNAL : 0;
         for (Term x : u) {
             if (!c.add(x, sdt))

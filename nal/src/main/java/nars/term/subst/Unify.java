@@ -351,8 +351,20 @@ public abstract class Unify extends Versioning implements Subst {
                 if (y0.equals(y))
                     return true;
 
-                if (!replace(y0, y))
+                if (y.equalsRoot(x)) {
+                    int ydt = y.dt();
+                    if (ydt != XTERNAL) {
+                        int xdt = x.dt();
+                        if ((xdt == XTERNAL) || (xdt == DTERNAL && ydt != DTERNAL)) {
+                            //replace because y is more temporally specific
+                            xy.replace(x, y);
+                        }
+                    }
+                    return true; //keep X, but continue
+                } else {
                     return false; //mismatch
+                }
+
             }
 
             return y0Versioned.set(y) != null;
@@ -361,31 +373,7 @@ public abstract class Unify extends Versioning implements Subst {
         }
     }
 
-    /** whether to replace x with y */
-    protected boolean replace(Term x, Term y) {
-        //return !y0.equalsRoot(y);
 
-        if (x.equals(y)) {
-            return true;
-        } else {
-            //return y instanceof Compound
-            //y.moreSpecificThan(y0);
-            if (y.equalsRoot(x)) {
-//                return true;
-//            }
-//                //HACK compare first level DT only
-                int ydt = y.dt();
-                if (ydt!=XTERNAL) {
-                    int xdt = x.dt();
-                    if ((xdt == XTERNAL) || (xdt == DTERNAL && ydt!=DTERNAL)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            return false;
-        }
-    }
 
     public final boolean replaceXY(final Term x, final Term y) {
         return xy.tryPut(x, y);
@@ -508,10 +496,11 @@ public abstract class Unify extends Versioning implements Subst {
         }
 
         private boolean valid(Term x) {
-            if (constraints != null) {
-                int s = constraints.size();
+            Versioned<MatchConstraint> c = this.constraints;
+            if (c != null) {
+                int s = c.size();
                 for (int i = 0; i < s; i++)
-                    if (constraints.get(i).invalid(x, Unify.this))
+                    if (c.get(i).invalid(x, Unify.this))
                         return false;
             }
             return true;

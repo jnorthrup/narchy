@@ -6,7 +6,9 @@ import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
+import nars.subterm.util.TermList;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -19,7 +21,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
     /*@NotNull*/
     final Combinations comb;
-    ///*@NotNull*/ private final Term[] yFree;
+    //private final Term[] yFree;
     /*@NotNull*/
     private final Term[] x;
     /*@NotNull*/
@@ -29,17 +31,26 @@ public class Choose2 extends Termutator.AbstractTermutator {
     /*@NotNull*/
     private final ShuffledSubterms yy;
 
-    public Choose2(/*@NotNull*/ Ellipsis xEllipsis, /*@NotNull*/ Unify f, /*@NotNull*/ SortedSet<Term> x, /*@NotNull*/ SortedSet<Term> yFree) {
-        super($.pFast(x), xEllipsis, $.pFast(yFree));
+    final static Atom CHOOSE_2 = $.the(Choose2.class);
+
+    public Choose2(Ellipsis xEllipsis, Unify f, SortedSet<Term> x, SortedSet<Term> yFree) {
+        this(xEllipsis, f,
+                x.toArray(new Term[x.size()]),
+                new TermList(yFree.toArray(new Term[yFree.size()])));
+    }
+
+    Choose2(Ellipsis xEllipsis, Unify f, Term[] x, TermList yFree) {
+        super(CHOOSE_2, $.pFast(x), xEllipsis, $.pFast((Subterms)yFree));
+
         this.f = f;
+
         this.xEllipsis = xEllipsis;
-        this.x = x.toArray(new Term[x.size()]);
 
-        int yFreeSize = yFree.size();
+        this.x = x;
 
-        this.yy = new ShuffledSubterms(Subterms.subterms(yFree), f.random  /*new ArrayTermVector(yFree)*/);
+        this.yy = new ShuffledSubterms(yFree, f.random  /*new ArrayTermVector(yFree)*/);
 
-        this.comb = new Combinations(yFreeSize, 2);
+        this.comb = new Combinations(yFree.subs(), 2);
     }
 
     @Override
@@ -50,13 +61,13 @@ public class Choose2 extends Termutator.AbstractTermutator {
     @Override
     public void mutate(Unify versioneds, Termutator[] chain, int current) {
 
-        /*@NotNull*/ Combinations ccc = this.comb;
+        Combinations ccc = this.comb;
         ccc.reset();
 
         boolean phase = true;
 
         int start = f.now();
-        /*@NotNull*/ ShuffledSubterms yy = this.yy;
+        ShuffledSubterms yy = this.yy;
 
 
 
