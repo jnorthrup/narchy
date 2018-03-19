@@ -1928,7 +1928,7 @@ public enum Op {
 
         int i = cs.indexOf(filter, rand);
         if (i == -1)
-            return null;
+            return Null;
 
 
         switch (cs.subs()) {

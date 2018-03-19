@@ -100,7 +100,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-        /*@NotNull*/
     Subterms subterms();
 
     @Override

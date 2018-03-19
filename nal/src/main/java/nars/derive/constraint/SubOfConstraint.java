@@ -71,7 +71,7 @@ public class SubOfConstraint extends MatchConstraint {
 
         if (polarityCompare==0) {
             //if posOrNeg, discover if the negative case is valid.  positive (normal) case is tested after
-            if (containment.test( forward ? xx : yy.neg(),  forward ? yy.neg() : xx))
+            if (containment.test( forward ? xx.neg() : yy,  forward ? yy : xx.neg()))
                 return false;
         }
 

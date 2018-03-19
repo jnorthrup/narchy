@@ -112,8 +112,8 @@ public abstract class Param {
             PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
 
     //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
@@ -166,7 +166,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange matchTTLmean = new IntRange(512, 0, 1024);
+    public final IntRange matchTTLmean = new IntRange(256, 0, 1024);
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */

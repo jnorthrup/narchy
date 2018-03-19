@@ -99,6 +99,9 @@ public class RLBooster implements Consumer<NAR> {
                 // = Float.NaN;
 
         for (ActionConcept a : env.actions.keySet()) {
+            //TODO
+//            Scalar aGoal = new Scalar($.p(a.term(), $.the("agent")), GOAL env.nar.freqResolution)
+//                    .pri(() -> env.nar.priDefault(GOAL));
             Signal aGoal = new Signal(GOAL, env.nar.freqResolution)
                     .pri(() -> env.nar.priDefault(GOAL));
             final int aa = agN;

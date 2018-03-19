@@ -258,19 +258,17 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     }
 
     private boolean truthMatches(Truthed task) {
+        Truth tt = task.truth();
         if ((punc == Op.BELIEF) || (punc == Op.GOAL)) {
-            Truth tt = task.truth();
-//            if (tt == null)
-//                return false;
 
             float co = tt.conf();
             if ((co > confMax) || (co < confMin))
                 return false;
 
             float fr = tt.freq();
-            return (!(fr > freqMax)) && (!(fr < freqMin));
+            return (fr <= freqMax && fr >= freqMin);
         } else {
-            return task.truth() == null;
+            return tt == null;
         }
     }
 

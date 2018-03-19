@@ -73,6 +73,7 @@ public class Activate extends PLink<Concept> implements Termed {
                     }
                 });
             } else {
+                tasklink.delete();
                 --ttl[0]; //safety misfire decrement
             }
 

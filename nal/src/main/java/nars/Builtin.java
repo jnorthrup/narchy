@@ -263,7 +263,9 @@ public class Builtin {
         }));
 
         nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) ->
-                nullToNull(Op.without(container, (x) -> (x.equals(content)), nar.random()))));
+                Op.without(container, x -> x.equals(content), nar.random())));
+        nar.on(Functor.f2((Atom) $.the("withoutPosOrNeg"), (Term container, Term content) ->
+                Op.without(container, x -> x.unneg().equals(content), nar.random())));
 
         /**
          * TODO rename this to 'dropAnyCommutive'

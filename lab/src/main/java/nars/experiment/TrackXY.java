@@ -15,7 +15,6 @@ import nars.index.term.map.CaffeineIndex;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
-import nars.term.Term;
 import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
@@ -28,8 +27,7 @@ import java.util.function.Consumer;
 
 import static jcog.Texts.n4;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
-import static nars.Op.INH;
+import static nars.Op.PROD;
 import static spacegraph.render.JoglSpace.window;
 
 /* 1D and 2D grid tracking */
@@ -73,11 +71,11 @@ public class TrackXY extends NAgent {
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(34);
 //        n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
-        n.forgetRate.set(0.9f);
+//        n.forgetRate.set(0.9f);
 
 
         TrackXY t = new TrackXY(8, 8);
@@ -155,10 +153,10 @@ public class TrackXY extends NAgent {
                 //(tt) -> tt.isInput(),
                 5, 16);
 
-            ConjClustering cjG = new ConjClustering(n, GOAL,
-                    (tt)->true,
-                    //(tt) -> tt.isInput(),
-                    5, 16);
+//            ConjClustering cjG = new ConjClustering(n, GOAL,
+//                    (tt)->true,
+//                    //(tt) -> tt.isInput(),
+//                    5, 16);
 
 //            Implier ii = new Implier(t , 0, 1);
 
@@ -208,23 +206,23 @@ public class TrackXY extends NAgent {
         super.start(nar);
 
         if (view.height() > 1) {
-            actionPushButton(INH.the($.the("up"),id), () -> {
+            actionPushButton(PROD.the($.the("up"),id), () -> {
                 sy = Util.clamp(sy + controlSpeed, 0, view.height() - 1);
 
             });
-            actionPushButton(INH.the($.the("down"),id), () -> {
+            actionPushButton(PROD.the($.the("down"),id), () -> {
                 sy = Util.clamp(sy - controlSpeed, 0, view.height() - 1);
             });
         }
 
-        actionPushButton(INH.the($.the("right"),id), () -> {
+        actionPushButton(PROD.the($.the("right"),id), () -> {
             sx = Util.clamp(sx + controlSpeed, 0, view.width() - 1);
         });
-        actionPushButton(INH.the($.the("left"), id), () -> {
+        actionPushButton(PROD.the($.the("left"), id), () -> {
             sx = Util.clamp(sx - controlSpeed, 0, view.width() - 1);
         });
 
-        this.cam = new Bitmap2DSensor(/*id */ (Term) null, view, nar);
+        this.cam = new Bitmap2DSensor(id /* (Term) null*/, view, nar);
         this.cam.pixelPri.set(0.2f);
         //this.cam.resolution(0.1f);
         sensorCam.add(cam);

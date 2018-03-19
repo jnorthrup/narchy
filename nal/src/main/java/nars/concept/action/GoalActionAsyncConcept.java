@@ -94,7 +94,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
         else
             fg = null;
 
-        SignalTask fb = ((ScalarBeliefTable)beliefs()).add(f, start, end, nar.time.nextStamp());
+        SignalTask fb = ((ScalarBeliefTable)beliefs()).add(f, start, end, nar);
 
         in.input(
             fg,

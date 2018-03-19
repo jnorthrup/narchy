@@ -40,23 +40,23 @@ import static nars.truth.TruthFunctions.w2cSafe;
 public class Deriver extends Causable {
 
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 1024);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
-    @Range(min = 1, max = 16)
-    public int premisesPerConcept = 3;
+    @Range(min = 1, max = 8)
+    public int premisesPerConcept = 2;
 
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
-    @Range(min = 1, max = 16)
-    public int termLinksPerTaskLink = 3;
+    @Range(min = 1, max = 8)
+    public int termLinksPerTaskLink = 2;
 
 
     @Range(min = 1, max = 1024)
-    public int burstMax = 512;
+    public int burstMax = 64;
 
 
     /**
@@ -102,7 +102,7 @@ public class Deriver extends Causable {
         }
 
         float simplicity = 1 - d.nar.deep.floatValue();
-        float truthFactor = 0.1f;
+        float truthFactor = 0.5f;
 
         Truth derivedTruth = t.truth();
         {
@@ -261,15 +261,14 @@ public class Deriver extends Causable {
 
             });
             premiseBurst.clear();
-        }
 
-        int s = d.derivations.size();
-        if (s > 0) {
-            nar.emotion.deriveTask.increment(s);
-            input(totalPremises, d.derivations.values());
-            d.derivations.clear();
+            int s = d.derivations.size();
+            if (s > 0) {
+                nar.emotion.deriveTask.increment(s);
+                input(totalPremises, d.derivations.values());
+                d.derivations.clear();
+            }
         }
-
 
         if (fired == 0) return 0;
         else

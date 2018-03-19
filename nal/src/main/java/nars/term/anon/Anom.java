@@ -30,6 +30,12 @@ public final class Anom extends Int implements AnonID {
     }
 
     @Override
+    public int structure() {
+        return ATOM.bit;
+    }
+
+
+    @Override
     public String toString() {
         return "_" +  Integer.toString(id);
     }

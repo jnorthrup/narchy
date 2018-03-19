@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 850;
+    static final int cycles = 350;
 
 
     @Override
@@ -291,13 +291,23 @@ public class NAL2Test extends NALTest {
                 .mustBelieve(cycles*2,"({y}-->c)", 1f, 0.81f)
         ;
     }
+
     @Test
-    public void testSetDecomposeNegative() {
+    public void testSetDecomposeNegativeExt() {
         //tests that a termlink (which is always positive) can match a subterm which is negative to decompose the set
         test
                 .believe("<{--x,y}-->c>")
                 .mustBelieve(cycles*2,"({--x}-->c)", 1f, 0.81f)
                 .mustBelieve(cycles*2,"({y}-->c)", 1f, 0.81f)
+        ;
+    }
+    @Test
+    public void testSetDecomposeNegativeInt() {
+        //tests that a termlink (which is always positive) can match a subterm which is negative to decompose the set
+        test
+                .believe("<c-->[--x,y]>")
+                .mustBelieve(cycles*2,"(c-->[--x])", 1f, 0.81f)
+                .mustBelieve(cycles*2,"(c-->[y])", 1f, 0.81f)
         ;
     }
 

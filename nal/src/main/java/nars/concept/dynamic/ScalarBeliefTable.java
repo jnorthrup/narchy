@@ -45,9 +45,9 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
      */
     interface TimeSeries {
 
-        void add(long time, Task value);
+        SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, FloatSupplier res, NAR nar);
 
-        DynTruth truth(long start, long end, long dur, NAR nar);
+        @Nullable DynTruth truth(long start, long end, long dur, NAR nar);
 
         int size();
 
@@ -125,11 +125,63 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         @Override
-        public void add(long time, Task value) {
+        public SignalTask add(Term term, byte punc, long nextStart, long nextEnd, Truth next, FloatSupplier res, NAR nar) {
 
-            at.put(time, value);
+            int dur = nar.dur();
+
+            SignalTask nextTask = null;
+
+            synchronized (this) { //TODO try to make this synch free but for now this works
+
+                Map.Entry<Long, Task> lastEntry = at.lastEntry();
+                boolean removePrev = false;
+                long lastStamp = Long.MIN_VALUE;
+                long lastEntryKey;
+                if (lastEntry!=null) {
+                    Task last = lastEntry.getValue();
+                    lastEntryKey = lastEntry.getKey();
+                    long lastStart = last.start();
+                    if (lastStart > nextStart)
+                        return null; //too late
+
+                    if (nextStart - last.end() < dur) {
+                        Truth lastEnds = last.truth(nextStart, dur);
+                        if (lastEnds.equals(next) ||
+                                (Math.abs(lastEnds.freq() - next.freq()) < Math.max(nar.freqResolution.floatValue(), res.asFloat())
+                                    &&
+                                Math.abs(lastEnds.conf() - next.conf()) < Math.max(nar.confResolution.floatValue(), res.asFloat()))
+                        ) {
+                            //stretch previous task
+                            nextStart = lastStart;
+                            lastStamp = last.stamp()[0];
+                            removePrev = true;
+                        }
+                    }
+
+                } else {
+                    lastEntryKey = Long.MIN_VALUE;
+                }
+
+                assert(nextStart <= nextEnd);
+
+                nextTask = new ScalarSignalTask(
+                        term,
+                        punc,
+                        next,
+                        nextStart, nextEnd,
+                        removePrev ? lastStamp : nar.time.nextStamp());
+
+                if (removePrev) {
+                    at.remove(lastEntryKey);
+                }
+
+                at.put((nextStart + nextEnd) / 2L, nextTask);
+
+            }
 
             compress();
+
+            return nextTask;
 
         }
 
@@ -287,18 +339,12 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         this.res = res;
     }
 
-    public SignalTask add(Truth value, long start, long end, long stamp) {
-        SignalTask t = new ScalarSignalTask(
-                term,
-                punc(),
-                value,
-                start, end,
-                stamp);
+    public SignalTask add(Truth value, long start, long end, NAR nar) {
 
-        float p = pri.asFloat();
-        t.pri(p);
+        SignalTask t = series.add(term, punc(), start, end, value, res, nar);
 
-        series.add((start + end) / 2L, t);
+        if (t!=null)
+            t.pri(pri.asFloat());
 
         return t;
     }

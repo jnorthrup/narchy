@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.function.LongSupplier;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 
 /**
@@ -37,19 +38,21 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
 
     private volatile float currentValue = Float.NaN;
 
-    private transient short cause = -1;
-
     public Scalar(Term c, FloatSupplier signal, NAR n) {
-        this(c, signal, n.conceptBuilder);
-        pri(() -> n.priDefault(BELIEF));
+        this(c, BELIEF, signal, n);
+    }
+
+    public Scalar(Term c, byte punc, FloatSupplier signal, NAR n) {
+        this(c, punc, signal, n.conceptBuilder);
+        pri(() -> n.priDefault(punc));
         ((ScalarBeliefTable)beliefs()).res(resolution);
         n.on(this);
     }
 
-    private Scalar(Term term, FloatSupplier signal, ConceptBuilder b) {
+    private Scalar(Term term, byte punc, FloatSupplier signal, ConceptBuilder b) {
         super(term,
-                new ScalarBeliefTable(term, true, b),
-                b.newTable(term, false),
+                punc == BELIEF ? new ScalarBeliefTable(term, true, b) : b.newTable(term, true),
+                punc == GOAL ? new ScalarBeliefTable(term, false, b) : b.newTable(term, false),
                 b);
 
         this.signal = signal;
@@ -88,26 +91,6 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         return currentValue;
     }
 
-
-    @Override
-    public boolean add(Task t, NAR n) {
-
-        //feedback prefilter non-signal beliefs
-
-        if (cause >= 0) { //HACK wait for the cause id to come from a task
-
-        } else {
-            //HACK snoop this concept's cause channel from a signal task inserted to it
-            if (t instanceof SignalTask) {
-                short[] c = ((SignalTask) t).cause;
-                if (c.length > 0)
-                    this.cause = c[0];
-            }
-        }
-
-        return super.add(t, n);
-    }
-
     public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
         return update(truther, n.time(), n.dur(), n);
     }
@@ -123,7 +106,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         Truth nextTruth = truther.value(currentValue, floatValueOf(term));
         if (nextTruth!=null) {
             SignalTask x = ((ScalarBeliefTable) beliefs()).add(nextTruth,
-                    start, end, n.time.nextStamp());
+                    start, end, n);
 
             PredictionFeedback.feedbackNewSignal(x, beliefs, n);
 

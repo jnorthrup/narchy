@@ -31,12 +31,12 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean contains(Term t) {
-        return the().equals(t);
+        return sub().equals(t);
     }
 
     @Override
     public boolean containsRoot(Term x) {
-        return the().equalsRoot(x);
+        return sub().equalsRoot(x);
     }
 
 
@@ -89,6 +89,10 @@ public abstract class UnitCompound implements Compound {
         return this;
     }
 
+    @Override
+    public boolean isTemporal() {
+        return sub().isTemporal();
+    }
 
     @Override
     public Subterms subterms() {

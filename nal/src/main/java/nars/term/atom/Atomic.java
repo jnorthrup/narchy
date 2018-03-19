@@ -201,6 +201,10 @@ public interface Atomic extends Term {
     default int subs() {
         return 0;
     }
+    @Override
+    default int subs(Op matchingOp) {
+        return 0;
+    }
 
     /**
      * atoms contain no subterms so impossible for anything to fit "inside" it

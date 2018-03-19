@@ -10,6 +10,11 @@ import nars.term.var.NormalizedVariable;
  */
 public interface AnonID extends Term, The {
 
+    @Override
+    default Term anon() {
+        return this;
+    }
+
     short anonID();
 
     default byte anonNum() {
