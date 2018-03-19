@@ -44,8 +44,8 @@ public class Versioning<X>
     public final boolean revert(int when) {
 
         int s = size;
-        if (s<=when)
-            return false;
+        if (s<=when || s == 0)
+            return true;
 
         int c = s - when;
         final Versioned<X>[] i = this.items;

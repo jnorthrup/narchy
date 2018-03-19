@@ -405,7 +405,7 @@ public abstract class Param {
      * low values (~0) will penalize complexity in derivations maximally (preferring simplicity)
      * high values (~1) will penalize complexity in deriations minimally (allowing complexity)
      */
-    public final FloatRange deep = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange deep = new FloatRange(0f, 0, 1f);
 
     /**
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence

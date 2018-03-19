@@ -172,9 +172,10 @@ public class NAL5Test extends NALTest {
     @Test
     public void anonymous_analogy1_pos2() {
         test
+                .log()
                 .believe("(x && y)")
                 .believe("x", 0.80f, 0.9f)
-                .mustBelieve(cycles * 2, "y", 0.80f, 0.43f);
+                .mustBelieve(cycles*10, "y", 0.80f, 0.43f);
     }
 
     @Test

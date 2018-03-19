@@ -176,8 +176,8 @@ public class ArithmeticIntroduction extends LeakBack {
                 return 1;
             }
         } else {
-            if (Param.DEBUG)
-                logger.warn("fail: task={} result=", xx, y);
+//            if (Param.DEBUG)
+//                logger.warn("fail: task={} result=", xx, y);
         }
 
         return 0;

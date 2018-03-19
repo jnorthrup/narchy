@@ -347,8 +347,11 @@ public interface NAct {
         });
     }
     default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
-        float thresh = nar().freqResolution.get();
-        actionUnipolar(t, false, (x)->0, (f) -> {
+        float thresh =
+                //nar().freqResolution.get();
+                0f;
+
+        actionUnipolar(t, true, (x)->0, (f) -> {
             boolean positive = f >= 0.5f + thresh;
             on.value(positive);
             return positive ? 1f : 0f;

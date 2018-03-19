@@ -54,10 +54,15 @@ public class Tasklinks {
         /** non-zero for safety */
         final float priCause = Math.max(_pri, Pri.EPSILON);
 
-        MutableFloat overflow = new MutableFloat();
-        linkTask(new TaskLink.GeneralTaskLink(t, priCause), src.tasklinks(), overflow);
+        //MutableFloat overflow = new MutableFloat();
+        linkTask(new TaskLink.GeneralTaskLink(t, priCause), src.tasklinks(),
+                null);
+                //overflow);
 
-        float priEffect = priCause - overflow.floatValue();
+        float priEffect =
+                priCause;
+                //t.isInput() ? priCause : priCause - overflow.floatValue();
+
         assert(priEffect >= 0);
 
         //activate the task's concept

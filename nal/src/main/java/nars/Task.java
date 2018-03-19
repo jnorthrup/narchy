@@ -249,7 +249,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        }
 
         if ((punc == Op.GOAL || punc == Op.QUEST) && !goalable(t))
-            return fail(t, "Goal/Quest task term may not be Implication or Equivalence", safe);
+            return fail(t, "Goal/Quest task term may not be Implication", safe);
 
         return o.atomic || validTaskCompound(t, safe);
     }

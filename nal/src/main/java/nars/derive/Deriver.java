@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.Util.unitize;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * an individual deriver process: executes a particular Deriver model
@@ -100,11 +101,14 @@ public class Deriver extends Causable {
             //float p = 1f / (1f + ((float)t.complexity())/termVolumeMax.floatValue());
         }
 
+        float simplicity = 1 - d.nar.deep.floatValue();
+        float truthFactor = 0.1f;
+
         Truth derivedTruth = t.truth();
         {
 
             float dCompl = t.voluplexity();
-            float simplicity = 1 - d.nar.deep.floatValue();
+
 //            if (simplicity > Float.MIN_NORMAL) {
 
 //                //float increase = (dCompl-d.parentComplexityMax);
@@ -135,15 +139,15 @@ public class Deriver extends Causable {
             //loss of relative confidence: prefer confidence, relative to the premise which formed it
             float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
             if (parentEvi > 0) {
-                discount *= unitize(
-                        derivedTruth.evi() / parentEvi
-                        //derivedTruth.conf() / w2cSafe(parentEvi)
-                );
+                discount *= Util.lerp(1f-truthFactor, unitize(
+                        //derivedTruth.evi() / parentEvi
+                        derivedTruth.conf() / w2cSafe(parentEvi)
+                ),1f);
             }
 
             //opinionation: preference for polarized beliefs/goals
-            float polarizationPreference = 0.5f;
-            discount *= Util.lerp(polarizationPreference, 1, (2 * Math.abs(derivedTruth.freq() - 0.5f)));
+//            float polarizationPreference = 0.5f;
+//            discount *= Util.lerp(polarizationPreference, 1, (2 * Math.abs(derivedTruth.freq() - 0.5f)));
         }
 
         return discount * d.pri;

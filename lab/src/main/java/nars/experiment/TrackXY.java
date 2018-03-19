@@ -15,6 +15,7 @@ import nars.index.term.map.CaffeineIndex;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
+import nars.term.Term;
 import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
@@ -27,6 +28,8 @@ import java.util.function.Consumer;
 
 import static jcog.Texts.n4;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+import static nars.Op.INH;
 import static spacegraph.render.JoglSpace.window;
 
 /* 1D and 2D grid tracking */
@@ -55,22 +58,22 @@ public class TrackXY extends NAgent {
     public static void main(String[] args) {
 
         boolean nars = true;
-        boolean rl = true;
+        boolean rl = false;
 
-        int dur = 2;
+        int dur = 1;
 
         NARS nb = new NARS()
-                .exe(new UniExec(128))
+                .exe(new UniExec(64))
                 .time(new CycleTime().dur(dur))
                 .index(
                         //new HijackConceptIndex(4 * 1024, 4)
-                        new CaffeineIndex(8 * 1024)
+                        new CaffeineIndex(32 * 1024)
                 );
 
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(40);
 //        n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
@@ -80,7 +83,7 @@ public class TrackXY extends NAgent {
         TrackXY t = new TrackXY(8, 8);
         n.on(t);
 
-        int experimentTime = 2048;
+        int experimentTime = 8048;
 
         TemporalMetrics m = new TemporalMetrics(experimentTime + 100);
         n.onCycle(() -> m.update(n.time()));
@@ -130,7 +133,7 @@ public class TrackXY extends NAgent {
         }
         if (nars) {
 
-            Param.DEBUG = true;
+            //Param.DEBUG = true;
             //n.log();
 
 //            for (String action : new String[]{"up", "down", "left", "right"}) {
@@ -141,22 +144,25 @@ public class TrackXY extends NAgent {
         Deriver d = new Deriver(Derivers.rules(
                 //1,
                 1,
-                8, n, "list.nal", "motivation.nal"), n);
+                8, n,
+                //"list.nal",
+                "motivation.nal"), n);
         d.conceptsPerIteration.set(32);
+        n.timeFocus.set(2);
 
         ConjClustering cjB = new ConjClustering(n, BELIEF,
-                //(tt)->true,
-                (tt) -> tt.isInput(),
-                2, 8);
+                (tt)->true,
+                //(tt) -> tt.isInput(),
+                5, 16);
 
-//            ConjClustering cjG = new ConjClustering(n, GOAL,
-//                    //(tt)->true,
-//                    (tt) -> tt.isInput(),
-//                    2, 8);
+            ConjClustering cjG = new ConjClustering(n, GOAL,
+                    (tt)->true,
+                    //(tt) -> tt.isInput(),
+                    5, 16);
 
 //            Implier ii = new Implier(t , 0, 1);
 
-//            ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
+            //ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
 
         window(new Gridding(
                 new AutoSurface(d),
@@ -202,23 +208,24 @@ public class TrackXY extends NAgent {
         super.start(nar);
 
         if (view.height() > 1) {
-            actionToggle($.the("up"), () -> {
+            actionPushButton(INH.the($.the("up"),id), () -> {
                 sy = Util.clamp(sy + controlSpeed, 0, view.height() - 1);
 
             });
-            actionToggle($.the("down"), () -> {
+            actionPushButton(INH.the($.the("down"),id), () -> {
                 sy = Util.clamp(sy - controlSpeed, 0, view.height() - 1);
             });
         }
 
-        actionToggle($.the("right"), () -> {
+        actionPushButton(INH.the($.the("right"),id), () -> {
             sx = Util.clamp(sx + controlSpeed, 0, view.width() - 1);
         });
-        actionToggle($.the("left"), () -> {
+        actionPushButton(INH.the($.the("left"), id), () -> {
             sx = Util.clamp(sx - controlSpeed, 0, view.width() - 1);
         });
 
-        this.cam = new Bitmap2DSensor(id /*(Term) null*/, view, nar);
+        this.cam = new Bitmap2DSensor(/*id */ (Term) null, view, nar);
+        this.cam.pixelPri.set(0.2f);
         //this.cam.resolution(0.1f);
         sensorCam.add(cam);
 
@@ -290,7 +297,7 @@ public static class CircleTarget implements Consumer<TrackXY> {
 
 
     float speed =
-            0.05f;
+            0.02f;
     float theta = 0;
 
 

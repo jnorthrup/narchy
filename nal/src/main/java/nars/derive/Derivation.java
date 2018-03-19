@@ -290,29 +290,7 @@ public class Derivation extends ProtoDerivation {
                 , null, Param.UnificationStackMax, 0);
 
 
-        derivedTerm = new Versioned(this, 3) {
-            //TEMPORARY TO FIND A BUG
-
-            @Nullable
-            @Override
-            public Versioned set(Object nextValue) {
-                Versioned v = super.set(nextValue);
-                if (get()==null) {
-                    super.set(nextValue);
-                    throw new NullPointerException();
-                }
-                return v;
-            }
-
-//            @Nullable
-//            @Override
-//            public Object get() {
-//                Object o = super.get();
-//                if (o == null)
-//                    throw new NullPointerException(); //shouldnt happen
-//                return o;
-//            }
-        };
+        derivedTerm = new Versioned(this, 3);
 
 
         //anon = new Anon();
@@ -640,7 +618,8 @@ public class Derivation extends ProtoDerivation {
 
         this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : Float.NaN;
         this.premiseEviDouble = beliefTruth != null ?
-                Math.max(premiseEviSingle, beliefTruth.evi()) :
+                //Math.max(premiseEviSingle, beliefTruth.evi()) :
+                premiseEviSingle + beliefTruth.evi() :
                 premiseEviSingle;
 
 
