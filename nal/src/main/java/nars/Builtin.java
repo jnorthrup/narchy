@@ -407,8 +407,7 @@ public class Builtin {
                     found.add(i);
                 }
             }
-            if (found.isEmpty())
-                return Null;
+
 
             int fs = found.size(), r;
             switch (fs) {

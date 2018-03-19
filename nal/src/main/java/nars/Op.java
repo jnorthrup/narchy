@@ -321,7 +321,7 @@ public enum Op {
 
                 default: {
                     if (n != 2) {
-                        if (Param.DEBUG)
+                        if (Param.DEBUG_EXTRA)
                             throw new RuntimeException("temporal conjunction with n!=2 subterms");
                         return Null;
                     }

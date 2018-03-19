@@ -357,8 +357,8 @@ public static class CircleTarget implements Consumer<TrackXY> {
 
         //return 1f/(1f+dist);
         //return controlSpeed - dist*dist; //controlSpeed is margin of tolerance
-        //return -dist; //chase
-        return +dist; //avoid
+        return -dist; //chase
+        //return +dist; //avoid
     }
 }
 

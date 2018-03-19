@@ -2,8 +2,8 @@ package nars.derive.rule;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Streams;
-import jcog.memoize.LinkedMRUMemoize;
 import jcog.memoize.Memoize;
+import jcog.memoize.SoftMemoize;
 import nars.NAR;
 import nars.Narsese;
 import nars.index.term.PatternIndex;
@@ -11,10 +11,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +19,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 
 /**
@@ -36,29 +31,19 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
 
-    private final NAR nar;
-
-    @NotNull
-    public final PatternIndex patterns;
-
     private static final Logger logger = LoggerFactory.getLogger(PremiseRuleSet.class);
 
-
-    @NotNull
-    public static PremiseRuleSet rules(NAR nar, PatternIndex p, Collection<String> filename) {
-
-        PremiseRuleSet rs = new PremiseRuleSet(parsedRules(filename), p, nar);
-
-        //logger.info("{} totalRules={}, uniqueComponents={}", name, rs.rules.size(), rs.patterns.size());
-        if (rs.errors[0] > 0) {
-            logger.error("{} errors={}", filename, rs.errors[0]);
-        }
-
-        return rs;
+    public static PremiseRuleSet rules(NAR nar, Collection<String> filename) {
+        return rules(new PatternIndex(), nar, filename);
     }
 
-    final static Memoize<String, List<Pair<PremiseRule, String>>> ruleCache =
-            new LinkedMRUMemoize<>((String n) -> {
+    public static PremiseRuleSet rules(PatternIndex p, NAR nar, Collection<String> filename) {
+        p.nar = nar;
+        return new PremiseRuleSet(parsedRules(filename), p, nar);
+    }
+
+    final static Memoize<String, List<PremiseRule>> ruleCache =
+            new SoftMemoize<>((String n) -> {
         InputStream nn = null;
         try {
             nn = ClassLoader.getSystemResource(n).openStream();
@@ -76,15 +61,15 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
             e.printStackTrace();
             bb = ArrayUtils.EMPTY_BYTE_ARRAY;
         }
-        return parse(load(bb)).collect(toList());
+        return parse(load(bb)).distinct().collect(Collectors.toList());
 
 
-    }, 32);
+    }, 32, true);
 
 //    public static Stream<Pair<PremiseRule, String>> parsedRules(Collection<String> name) {
 //        return name.stream().flatMap(n -> ruleCache.apply(n).stream());
 //    }
-    public static Stream<Pair<PremiseRule, String>> parsedRules(Collection<String> filenames) {
+    static Stream<PremiseRule> parsedRules(Collection<String> filenames) {
         return filenames.stream().flatMap(n -> ruleCache.apply(n).stream());
     }
 
@@ -96,20 +81,25 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
         this(parse(Stream.of(rules)), index, nar);
     }
 
+    public PremiseRuleSet(Stream<PremiseRule> parsed, PatternIndex patterns, NAR nar) {
+        //HACK
+        if (patterns.nar == null)
+            patterns.nar = nar;
+        else
+            if (patterns.nar!=nar)
+                throw new RuntimeException("wrong NAR ref");
 
-    final int[] errors = {0};
-
-
-    public PremiseRuleSet(Stream<Pair<PremiseRule, String>> parsed, PatternIndex patterns, NAR nar) {
-        this.nar = nar;
-        this.patterns = patterns;
-
-        parsed.forEach(x -> add(new PremiseRule(x)));
+        parsed.forEach(rule -> super.add(new CompileablePremiseRule(rule, patterns)));
     }
 
     @Override
     public boolean add(PremiseRule rule) {
-        return super.add(normalize(rule, patterns, nar));
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends PremiseRule> c) {
+        throw new UnsupportedOperationException();
     }
 
     @NotNull
@@ -212,16 +202,16 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 //            .builder();
 
 
-    public static Stream<Pair<PremiseRule, String>> parse(Stream<String> rawRules) {
+    public static Stream<PremiseRule> parse(Stream<String> rawRules) {
 
-        return rawRules.map(src -> Tuples.pair(lines.computeIfAbsent(src, s -> {
+        return rawRules.map(src -> lines.computeIfAbsent(src, s -> {
             try {
                 return PremiseRuleSet.parse(s);
             } catch (Narsese.NarseseException e) {
                 logger.error("rule parse: {}:\t{}", e, src);
                 return null;
             }
-        }), src)).filter(x -> x.getOne() != null);
+        })).filter(Objects::nonNull);
 
     }
 
@@ -238,8 +228,8 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 //    }
 
     @NotNull
-    public static PremiseRule parse(@NotNull String src) throws Narsese.NarseseException {
-        return new PremiseRule(parseRuleComponents(src));
+    public static PremiseRule parse(String src) throws Narsese.NarseseException {
+        return new PremiseRule(parseRuleComponents(src), src);
     }
 
     @NotNull
@@ -284,27 +274,6 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 //        }
 //    }
 
-    protected void add(@NotNull PremiseRule preNorm, String src, @NotNull Collection<PremiseRule> ur, @NotNull PatternIndex index, @NotNull Consumer<PremiseRule> each) {
-
-//        Term[] pp = getPremise().terms().clone();
-//        pp = ArrayUtils.add(pp, TaskPositive.proto);
-//        Compound newPremise = (Compound) $.the(getPremise().op(), pp);
-//
-//        PremiseRule r = new PremiseRule(newPremise, getConclusion());
-//        @NotNull PremiseRule pos = normalize(r, index);
-//
-//        //System.err.println(term(0) + " |- " + term(1) + "  " + "\t\t" + remapped);
-
-        PremiseRule pos = add(preNorm, src, ur, index);
-        if (pos != null)
-            each.accept(pos);
-
-//        if (Global.NEGATIVE_RULES) {
-//            PremiseRule neg = add(preNorm.negative(index), src + ":Negated", ur, index);
-//            if (neg != null)
-//                each.accept(neg);
-//        }
-    }
 
 
 //    public void permuteSwap(@NotNull PremiseRule r, String src, @NotNull PatternIndex index, @NotNull Collection<PremiseRule> ur, @NotNull Consumer<PremiseRule> then) {
@@ -320,23 +289,6 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 //
 //    }
 
-
-    @Nullable
-    PremiseRule add(@Nullable PremiseRule q, String src, @NotNull Collection<PremiseRule> target, @NotNull PatternIndex index) {
-        if (q == null)
-            return null;
-//            throw new RuntimeException("null: " + q + ' ' + src);
-
-
-        PremiseRule normalized = normalize(q, index, nar);
-        normalized.withSource(src);
-        return target.add(normalized) ? normalized : null;
-    }
-
-    @NotNull
-    static PremiseRule normalize(PremiseRule q, PatternIndex index, NAR nar) {
-        return q.normalize(index).setup(index, nar);
-    }
 
 }
 

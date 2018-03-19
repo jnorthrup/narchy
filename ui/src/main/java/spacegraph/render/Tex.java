@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
 
+/** https://www.khronos.org/opengl/wiki/Image_Format */
 public class Tex {
 
     public com.jogamp.opengl.util.texture.Texture texture;
@@ -128,6 +129,22 @@ public class Tex {
     public Surface view(float aspect) {
         return new AspectAlign(new TexSurface(), aspect);
     }
+
+//    public void update(GrayU8 x) {
+//        this.src = x;
+//
+//        ByteBuffer buffer = ByteBuffer.wrap(x.data);
+//        nextData = new TextureData(profile, GL_RGB,
+//                x.width, x.height,
+//                0 /* border */,
+//                GL_BGRA, GL_UNSIGNED_BYTE,
+//                mipmap,
+//                false,
+//                false,
+//                buffer, null
+//        );
+//
+//    }
 
     private class TexSurface extends Surface {
 

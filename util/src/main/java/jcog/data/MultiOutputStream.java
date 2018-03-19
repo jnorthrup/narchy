@@ -4,13 +4,8 @@
  */
 package jcog.data;
 
-import com.google.common.collect.Lists;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 
 /**
@@ -20,23 +15,10 @@ import java.util.List;
 
 public class MultiOutputStream extends OutputStream {
 
-    private final List<OutputStream> out;
+    private final OutputStream[] out;
 
-    
     public MultiOutputStream(OutputStream... o) {
-        this(Lists.newArrayList(o));
-    }
-    
-    public MultiOutputStream(Collection<OutputStream> outStreams) {
-
-        out = new ArrayList<>();
-
-        for (OutputStream outputStream : outStreams) {
-            if (outputStream == null) {
-                throw new NullPointerException();
-            }
-            out.add(outputStream);
-        }
+        out = o;
     }
 
     @Override public void write(int arg0) throws IOException {

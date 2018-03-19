@@ -13,7 +13,7 @@ import static nars.time.Tense.ETERNAL;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 400;
+    final int cycles = 900;
 
     @Override
     protected NAR nar() {
@@ -502,7 +502,6 @@ public class NAL5Test extends NALTest {
     public void conditional_abduction3_generic_simpler() {
 
         test
-        .log()
         .believe("((a && b) ==> d)", 0.9f, 0.9f)
         .believe("((a && c) ==> d)", 1f, 0.9f)
         .mustBelieve(cycles * 2, "(c ==> b)", 1f, 0.42f)

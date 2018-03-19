@@ -1840,6 +1840,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     // Reference queue mechanics for reclaimable nodes
 
     private static final ReclamationThread reclaim = new ReclamationThread();
+    static {
+        reclaim.start();
+    }
     private static final ReferenceQueue<Object> refQueue = reclaim.queue;
 
     static final class ReclamationThread extends Thread {
@@ -1859,6 +1862,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                     if (r instanceof Reclaimable)
                         ((Reclaimable) r).onReclamation();
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                     /* ignore */
                 }
             }

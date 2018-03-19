@@ -79,7 +79,6 @@ public class SubIfUnify extends Functor {
     @Override
     public Term apply(/*@NotNull*/ Subterms a) {
 
-        Term[] aa = a.arrayShared();
 
         //parse parameters
         boolean strict = false;
@@ -88,8 +87,9 @@ public class SubIfUnify extends Functor {
         //TODO compile at function construction time
 
         boolean force = false;
-        for (int i = 3; i < aa.length; i++) {
-            Term ai = aa[i];
+        int pp = a.subs();
+        for (int p = 3; p < pp; p++) {
+            Term ai = a.sub(p);
             if (ai.equals(Subst.STRICT))
                 strict = true;
             else if (ai.equals(INDEP_VAR)) {
@@ -108,14 +108,14 @@ public class SubIfUnify extends Functor {
         }
 
         /** term being transformed if x unifies with y */
-        Term c = aa[0];
+        Term c = a.sub(0);
         //if (input instanceof Bool)return Null;
         //if (input == Null) return Null;
 
-        Term x = aa[1];
+        Term x = a.sub(1);
         //if (x == Null) return Null;
 
-        Term y = aa[2];
+        Term y = a.sub(2);
         //if (y == Null) return Null;
 
         if (x.equalsRoot(y)) {
@@ -168,9 +168,7 @@ public class SubIfUnify extends Functor {
         protected boolean tryMatch(Term result) {
             if (!strict || !result.equals(transformed)) {
                 //adjust the substitution map for temporalization and other usages of reverse resolution
-                this.xy.forEach((x,y)->{
-                    parent.replaceXY(x,y);
-                });
+                this.xy.forEach(parent::replaceXY);
                 return true;
             }
             return false;

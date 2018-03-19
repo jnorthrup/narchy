@@ -135,12 +135,16 @@ public enum TermLinks {
             case INH:
             case SIM:
                 return b.hasAny(Op.SETe,Op.SETi,Op.SECTe,Op.SECTi);
+                //return true;
+                //return false;
+
+            case IMPL: //<- check if IMPL needs it
+                return false;
 
             case PROD:
                 return false;
 
-            case IMPL: //<- check if IMPL needs it
-                return true;
+
             case SECTe:
             case SECTi:
             case SETe:
@@ -150,7 +154,7 @@ public enum TermLinks {
                 return true;
 
             case CONJ:
-                return true;
+                return false;
 
             default:
                 throw new UnsupportedOperationException("what case am i missing");

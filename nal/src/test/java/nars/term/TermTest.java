@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 
 import static java.lang.Long.toBinaryString;
 import static nars.$.$;
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.task.RevisionTest.x;
 import static nars.time.Tense.DTERNAL;
@@ -363,8 +364,12 @@ public class TermTest {
 //        }
     }
 
+    @Test public void testValidIndep() {
+        assertTrue(Task.validTaskTerm(
+                $$("(($1 &&+4 $1) ==>-2 ((--,angX) &&+8 $1))")));
+    }
 
-    @Deprecated static boolean isOperation(@NotNull Termed _t) {
+    @Deprecated static boolean isOperation(Termed _t) {
         Term t = _t.term();
         if (t.op() == Op.INH) { //Op.hasAll(t.structure(), Op.OperationBits) &&
             Compound c = (Compound) t;

@@ -220,7 +220,12 @@ public interface BeliefTable extends TaskTable {
      */
     @Nullable default Task answer(long start, long end, int dur, @Nullable Task question, Term template, NAR nar, Consumer<Task> withNovel) {
 
-        Task answer = match(start, end, template, nar);
+        if (isEmpty())
+            return null;
+
+        Task answer = match(start, end, template, nar/*, start!=ETERNAL ? (x)->{
+          return x.intersects(start, end); //HACK only use tasks associated with this time interval
+        } : null*/);
         if (answer == null || answer.isDeleted())
             return null;
 

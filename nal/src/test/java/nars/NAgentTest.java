@@ -6,6 +6,7 @@ import nars.control.MetaGoal;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.op.RLBooster;
+import nars.op.stm.STMLinkage;
 import nars.term.Term;
 import nars.time.Tense;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -25,7 +26,7 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(14);
+        n.termVolumeMax.set(24);
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.04f);
         n.time.dur(1);
@@ -241,7 +242,8 @@ public class NAgentTest {
                 super.input(premises, filtered);
             }
         };
-        d.conceptsPerIteration.set(16);
+        new STMLinkage(n, 2, false);
+        d.conceptsPerIteration.set(9);
 
 //        n.log();
 

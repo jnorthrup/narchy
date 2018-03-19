@@ -362,7 +362,7 @@ public abstract class Param {
     /**
      * how precise unit test results must match expected values to pass
      */
-    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON*2;
+    public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON*4;
 
 
 //    /** EXPERIMENTAL  decreasing priority of sibling tasks on temporal task insertion */

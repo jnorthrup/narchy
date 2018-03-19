@@ -44,7 +44,7 @@ public class Versioning<X>
     public final boolean revert(int when) {
 
         int s = size;
-        if (s == 0 || s<=when)
+        if (s<=when)
             return false;
 
         int c = s - when;

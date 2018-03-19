@@ -48,7 +48,7 @@ public class AIMATests {
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.9f);
 //        n.beliefPriDefault.set(0.7f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(30);
         //n.conceptActivation.set(0.5f);
 
         //new QuerySpider(n);

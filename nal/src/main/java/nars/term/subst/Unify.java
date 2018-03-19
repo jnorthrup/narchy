@@ -16,7 +16,6 @@ import nars.derive.mutate.Termutator;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.util.TermHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,30 +113,32 @@ public abstract class Unify extends Versioning implements Subst {
     public abstract void tryMatch();
 
 
-    protected void nextMatch(boolean termuting) {
-        if (termuting) {
-
-            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES && matches == null)
-                matches = new UnifiedSet(1);
-
-            if (!Param.DEBUG_FILTER_DUPLICATE_MATCHES || matches.add(((ConstrainedVersionMap) xy).snapshot())) {
-
-                tryMatch(); //new unique match
-
-            } else {
-                //duplicate
-                throw new UnsupportedOperationException("duplicate match");
-            }
-        } else {
-
-            tryMatch();
-
-            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES) {
-                assert (matches == null);
-                matches = Collections.emptySet();//indicates that there was a match, by being non-null
-            }
-        }
-    }
+//    void tryMatch(boolean termuting) {
+//
+//        if (termuting) {
+//
+//            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES && matches == null)
+//                matches = new UnifiedSet(1);
+//
+//            if (!Param.DEBUG_FILTER_DUPLICATE_MATCHES || matches.add(((ConstrainedVersionMap) xy).snapshot())) {
+//
+//                tryMatch(); //new unique match
+//
+//            } else {
+//                //duplicate
+//                throw new UnsupportedOperationException("duplicate match");
+//            }
+//        } else {
+//
+//            tryMatch();
+//
+//            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES) {
+//                assert (matches == null);
+//                matches = Collections.emptySet();//indicates that there was a match, by being non-null
+//            }
+//        }
+//
+//    }
 
     public final boolean tryMutate(Termutator[] chain, int next) {
         if (!use(Param.TTL_MUTATE))
@@ -146,7 +147,8 @@ public abstract class Unify extends Versioning implements Subst {
         if (++next < chain.length) {
             chain[next].mutate(this, chain, next);
         } else {
-            nextMatch(true); //end of chain
+            //tryMatch(true); //end of chain
+            tryMatch(); //end of chain
         }
         return true;
     }
@@ -252,7 +254,8 @@ public abstract class Unify extends Versioning implements Subst {
             tryMutate(t, -1); //start combinatorial recurse
 
         } else {
-            nextMatch(false); //go directly to conclusion
+            //tryMatch(false); //go directly to conclusion
+            tryMatch();
         }
 
 //        if (matched.size()>1)

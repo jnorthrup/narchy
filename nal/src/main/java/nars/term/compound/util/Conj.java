@@ -82,9 +82,10 @@ public class Conj {
     public static StringBuilder sequenceString(Term a, Conj x) {
         StringBuilder sb = new StringBuilder(4);
         int range = a.dtRange();
-        final int stepResolution = 16; //how finely to fractionalize time range
+        final float stepResolution = 16f; //how finely to fractionalize time range
+        float factor = stepResolution / range;
         a.eventsWhile((when,what)->{
-            int step = Math.round((((float) when) / range) * stepResolution);
+            int step = Math.round(when * factor);
             sb.append((char) step); //character representing the relative offset of the event
             sb.append(((char)x.add(what)));
             return true;

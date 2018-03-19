@@ -85,7 +85,7 @@ public class ImplicationTest {
 
                         n.believe(impl);
                         n.goal(cond);
-                        n.run(16 );
+                        n.run(64 );
 
                         Term nz = sp ? y : x;
                         @Nullable Truth nzt = n.goalTruth(nz, ETERNAL);

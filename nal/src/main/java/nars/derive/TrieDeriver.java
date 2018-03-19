@@ -103,7 +103,9 @@ public final class TrieDeriver {
         return the(r, null);
     }
 
-    public static DeriverRoot the(PremiseRuleSet r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+    public static DeriverRoot the(@NotNull PremiseRuleSet r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+        assert(!r.isEmpty());
+
         TrieDeriver t = new TrieDeriver(r);
 
         FasterList<ValueFork> pc = t.postChoices;
@@ -124,6 +126,9 @@ public final class TrieDeriver {
             }
 
         }
+
+        assert(!t.path.isEmpty());
+
         return new DeriverRoot(//AndCondition.the(
                 TrieDeriver.compile(t.path, each),
                 new Try(t.postChoices.toArrayRecycled(ValueFork[]::new)));

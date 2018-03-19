@@ -847,7 +847,7 @@ public class TemporalTermTest {
         assertTrue($("(b && a)").isCommutative());
         assertTrue($("(b &| a)").isCommutative());
         assertFalse($("(b &&+1 a)").isCommutative());
-        assertFalse($("(b &&+- a)").isCommutative());
+        assertTrue($("(b &&+- a)").isCommutative());
 
 
         Term abc = $("((a &| b) &| c)");

@@ -19,6 +19,7 @@ import nars.truth.Truth;
 
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
@@ -76,12 +77,9 @@ public class Deriver extends Causable {
 
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
-        return (nar) ->
-                new Deriver(TrieDeriver.the(rules.apply(nar),
-                        //Param.TRACE ? DebugDerivationPredicate::new : null
-                        null
-                ), nar);
+        return (nar) -> new Deriver(rules.apply(nar), nar);
     }
+
 
     public float derivationPriority(Task t, Derivation d) {
 
@@ -156,8 +154,14 @@ public class Deriver extends Causable {
     public final DeriverRoot deriver;
     private final NAR nar;
 
-    public Deriver(PremiseRuleSet rules, NAR n) {
-        this(TrieDeriver.the(rules), n);
+    public Deriver(NAR n, String... ruleFiles) {
+        this(PremiseRuleSet.rules(n, List.of(ruleFiles)), n);
+    }
+
+    public Deriver(PremiseRuleSet rules, NAR nar) {
+        this(TrieDeriver.the(rules), nar);
+        if (rules.isEmpty())
+            throw new RuntimeException("rules missing");
     }
 
     public Deriver(DeriverRoot deriver, NAR nar) {

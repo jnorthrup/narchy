@@ -4,20 +4,17 @@ import nars.subterm.util.Contains;
 import nars.term.Term;
 import nars.term.subst.Unify;
 
-/** X in Y:      X is recursive subterm of Y
- *  X inNeg Y: --X is recursive subterm of Y
- */
 public class SubOfConstraint extends MatchConstraint {
     private final Term y;
-    private final boolean reverse;
+    private final boolean forward;
 
     /** if the terms can be equal to be valid */
     private final boolean canEqual;
     private final Contains containment;
 
-    private final static int POSITIVE = 1;
-    private final static int NEGATIVE = -1;
-    private final static int ANY = 0;
+//    private final static int POSITIVE = 1;
+//    private final static int NEGATIVE = -1;
+//    private final static int ANY = 0;
 
     /** containment of the term positively (normal), negatively (negated), or either (must test both) */
     private final int polarityCompare;
@@ -28,17 +25,17 @@ public class SubOfConstraint extends MatchConstraint {
         this(x, y, reverse,canEqual, contains, +1);
     }
 
-    public SubOfConstraint(Term x, Term y, boolean reverse, boolean canEqual, Contains contains, int polarityCompare) {
+    public SubOfConstraint(Term x, Term y, /* HACK change to forward semantics */ boolean reverse, boolean canEqual, Contains contains, int polarityCompare) {
         super(x,
             contains.name() +
-            (reverse ? "->" : "<-") +
+            ((!reverse) ? "->" : "<-") +
             (canEqual ? "|=" : "") +
             (polarityCompare!=1 ? (polarityCompare==-1 ? "--" : "+-") : ""),
                 y);
         this.y = y;
 
         //TODO compile these as separate subclasses and assign each a different cost
-        this.reverse = reverse;
+        this.forward = !reverse;
         this.containment = contains;
         this.canEqual = canEqual;
         this.polarityCompare = polarityCompare;
@@ -56,7 +53,7 @@ public class SubOfConstraint extends MatchConstraint {
         if (yy == null)
             return false; //unknown yet
 
-        if (!canEqual && ((reverse?xx:yy).impossibleSubTerm(reverse?yy:xx)))
+        if (!canEqual && ((forward?xx:yy).impossibleSubTerm(forward?yy:xx)))
             return true;
 
         if (polarityCompare==-1)
@@ -74,10 +71,10 @@ public class SubOfConstraint extends MatchConstraint {
 
         if (polarityCompare==0) {
             //if posOrNeg, discover if the negative case is valid.  positive (normal) case is tested after
-            if (containment.test( reverse ? xx.neg() : yy,  reverse ? yy : xx.neg()))
+            if (containment.test( forward ? xx : yy.neg(),  forward ? yy.neg() : xx))
                 return false;
         }
 
-        return !containment.test( reverse ? xx : yy, reverse ? yy : xx);
+        return !containment.test( forward ? xx : yy, forward ? yy : xx);
     }
 }

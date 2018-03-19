@@ -741,8 +741,10 @@ public class Derivation extends ProtoDerivation {
             if (y != null && !(y instanceof Bool)) {
                 Term a = xx.sub(1);
                 Term b = xx.sub(2);
-                if (!a.equals(b))
-                    replaceXY(a, b);
+                if (!a.equals(b)) {
+                    //replaceXY(a, b);
+                    replaceXY(b, a); //reverse mapping
+                }
             }
             return y;
         }

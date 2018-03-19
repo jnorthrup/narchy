@@ -15,10 +15,12 @@ public class SoftMemoize<X, Y> extends CustomConcurrentHashMap<X, Object> implem
     final private Object NULL = new Object();
 
     public SoftMemoize(@NotNull Function<X, Y> g, int expSize, boolean softOrWeak) {
-        super(STRONG, EQUALS, softOrWeak ? SOFT : WEAK, EQUALS, expSize);
+        super(SOFT, EQUALS, softOrWeak ? SOFT : WEAK, EQUALS, expSize);
         this.f = (x) -> {
             Y y = g.apply(x);
-            return y == null ? NULL : y;
+            return y == null ?
+                    NULL :
+                    y;
         };
     }
 

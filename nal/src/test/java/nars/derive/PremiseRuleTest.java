@@ -81,7 +81,7 @@ public class PremiseRuleTest {
 //        );
             PremiseRule x = parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
-            assertEquals(vv, x.id.volume());
+            assertEquals(vv, x.term().volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Revision-->Belief),(Weak-->Desire))))", x.toString());
 
         }
@@ -92,7 +92,7 @@ public class PremiseRuleTest {
 //        );
             PremiseRule x = parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
-            assertEquals(vv, x.id.volume()); //same volume as previous block
+            assertEquals(vv, x.term().volume()); //same volume as previous block
             //assertEquals("(((%1-->%2),(%2-->%1)),((nonvar<->%1),((Revision-->Belief),(Weak-->Desire))))", x.toString());
         }
         {
@@ -102,7 +102,7 @@ public class PremiseRuleTest {
 //        );
             PremiseRule x = parse(" <A --> B>, <B --> A> |- <A <-> B>,  (Belief:Conversion, Punctuation:Belief)");
             //x = PremiseRule.rule(x);
-            assertEquals(vv, x.id.volume());
+            assertEquals(vv, x.term().volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Conversion-->Belief),(Judgment-->Punctuation))))", x.toString());
         }
 
@@ -121,7 +121,7 @@ public class PremiseRuleTest {
         PremiseRule x = parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Strong)");
         //x = PremiseRule.rule(x);
         //assertEquals("(((%1-->%2),(%3-->%2)),((%1<->%3),((Comparison-->Belief),(Strong-->Desire))))", x.toString());
-        assertEquals(vv, x.id.volume());
+        assertEquals(vv, x.term().volume());
 
     }
 
@@ -207,7 +207,7 @@ TODO - share unification state for different truth/conclusions
 //        return rule(
 //                r
 //        );
-        Compound y = (Compound) parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").id;
+        Compound y = (Compound) parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").term();
         PremiseRule.printRecursive(y);
     }
 

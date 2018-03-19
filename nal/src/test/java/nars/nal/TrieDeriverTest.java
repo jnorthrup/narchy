@@ -14,7 +14,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.test.TestNAR;
 import net.byteseek.utils.collections.IdentityHashSet;
-import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
@@ -109,7 +108,7 @@ public class TrieDeriverTest {
 
         PatternIndex pi = new PatternIndex();
 
-        Stream<Pair<PremiseRule, String>> parsed = PremiseRuleSet.parse(Stream.of(rules));
+        Stream<PremiseRule> parsed = PremiseRuleSet.parse(Stream.of(rules));
 
 
         PremiseRuleSet src =

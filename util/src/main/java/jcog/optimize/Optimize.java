@@ -151,7 +151,9 @@ public class Optimize<X> {
 
 
         if (trace)
-            csv = new CSVOutput(System.out, Stream.concat(tweaks.stream().map(t -> t.id), Stream.of("score")).toArray(String[]::new));
+            csv = new CSVOutput(System.out, Stream.concat(
+                    Stream.of("score"), tweaks.stream().map(t -> t.id)
+            ).toArray(String[]::new));
 
         experimentStart();
 

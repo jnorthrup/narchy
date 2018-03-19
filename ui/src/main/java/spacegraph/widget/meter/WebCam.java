@@ -43,7 +43,7 @@ public class WebCam {
 
 
     final static Logger logger = LoggerFactory.getLogger(WebCam.class);
-    public BufferedImage iimage;
+    public BufferedImage image;
     //public byte[] image;
 
 
@@ -108,7 +108,7 @@ public class WebCam {
                         //webcam.getgetImageBytes(image);
 
 
-                        WebCam.this.iimage = nextImage;
+                        WebCam.this.image = nextImage;
                         ///WebCam.this.image = iimage.data;
 
                         eventChange.emit(we);
@@ -260,7 +260,7 @@ public class WebCam {
                     if (x.getType()==WebcamEventType.CLOSED || x.getType()==WebcamEventType.DISPOSED) {
                         this.stop();
                     } else if (x.getType()==WebcamEventType.NEW_IMAGE) {
-                        ts.update(iimage);
+                        ts.update(image);
                     }
                 });
             }

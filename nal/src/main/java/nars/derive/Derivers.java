@@ -5,6 +5,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.index.term.PatternIndex;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -14,7 +15,7 @@ import java.util.function.Function;
  */
 public class Derivers {
 
-    /** range is inclusive */
+    /** HACK range is inclusive */
     public static Set<String> standard(int minLevel, int maxLevel, String... otherFiles) {
         Set<String> files = new TreeSet();
         for (int level = minLevel; level <= maxLevel; level++) {
@@ -65,10 +66,19 @@ public class Derivers {
 
         return Deriver.deriver(nar -> rules(minLevel, maxLevel, nar, extraFiles));
     }
+    public static Function<NAR, Deriver> deriver(String... extraFiles) {
+        return nar -> new Deriver(PremiseRuleSet.rules(nar,
+                List.of(extraFiles)
+        ), nar)
+        ;
+    }
+    public static Deriver deriver(NAR n, String... extraFiles) {
+        return new Deriver(n, extraFiles);
+    }
 
     /** standard ruleset */
     public static PremiseRuleSet rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
-        return PremiseRuleSet.rules(nar, new PatternIndex(),
+        return PremiseRuleSet.rules(new PatternIndex(), nar,
                 standard(minLevel, maxLevel, extraFiles)
         );
     }

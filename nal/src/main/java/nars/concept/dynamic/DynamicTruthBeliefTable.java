@@ -28,6 +28,12 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         this.model = model;
     }
 
+    @Override
+    public boolean isEmpty() {
+        /** since this is a dynamic evaluation, we have to assume it is not empty */
+        return false;
+    }
+
     public DynTruth truth(long start, long end, Term template, NAR n) {
         return model.eval(template, beliefOrGoal, start, end, n);
     }

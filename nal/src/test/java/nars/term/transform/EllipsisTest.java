@@ -9,6 +9,7 @@ import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.EllipsisOneOrMore;
 import nars.derive.match.EllipsisZeroOrMore;
+import nars.derive.rule.CompileablePremiseRule;
 import nars.derive.rule.PremiseRule;
 import nars.index.term.PatternIndex;
 import nars.term.Compound;
@@ -332,7 +333,6 @@ public class EllipsisTest {
 //        //TODO
 //    }
 
-    @NotNull
     public static String[] p(String a, String b) {
         return new String[]{a, b};
     }
@@ -346,7 +346,7 @@ public class EllipsisTest {
         assertTrue(_x instanceof PremiseRule, _x.toString());
         PremiseRule x = (PremiseRule) _x;
         //System.out.println(x);
-        x = x.normalize(new PatternIndex());
+        x = new CompileablePremiseRule(x, new PatternIndex());
         //System.out.println(x);
 
         assertEquals(

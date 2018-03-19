@@ -1,6 +1,7 @@
 package nars.perf;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import jcog.data.MultiOutputStream;
 import jcog.optimize.Result;
 import jcog.optimize.Tweaks;
 import nars.NAR;
@@ -8,11 +9,15 @@ import nars.NARLoop;
 import nars.NARS;
 import nars.Param;
 import nars.control.MetaGoal;
+import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
+import nars.nal.nal3.NAL3Test;
+import nars.nal.nal5.NAL5Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
+import java.io.*;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -26,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 public class NARTestOptimize {
 
     static final int threads =
-            5;
+            2;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
@@ -68,8 +73,8 @@ public class NARTestOptimize {
             NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
             t.nar = s.get(); //overwrite NAR with the supplier
             t.nar.random().setSeed(
-                //System.nanoTime()
-                1
+                System.nanoTime()
+                //1 //should change on each iteration so constant value wont work
             );
             m.invoke(t);
             try {
@@ -89,6 +94,14 @@ public class NARTestOptimize {
 
     public static void main(String[] args) {
 
+        PrintStream out = System.out;
+        OutputStream fout = null;
+        try {
+            fout = new FileOutputStream(new File("/tmp/" + NARTestOptimize.class.getSimpleName() + ".csv"));
+            System.setOut(new PrintStream(new MultiOutputStream(out, fout)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         while (true) {
             Result<NAR> r = new Tweaks<>(() -> {
@@ -102,13 +115,13 @@ public class NARTestOptimize {
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(1024, 2, (n) ->
+                .optimize(32*1024, 4, (n) ->
                         tests(n,
                                 NAL1Test.class,
-//                                NAL1MultistepTest.class
-                                NAL2Test.class
-//                                NAL3Test.class,
-//                                NAL5Test.class
+                                NAL1MultistepTest.class,
+                                NAL2Test.class,
+                                NAL3Test.class,
+                                NAL5Test.class
                                 //NAL6Test.class
 
                                 //NAL7Test.class,

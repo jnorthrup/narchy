@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 730;
+    public static final int cycles = 230;
 
 
     @BeforeEach
@@ -212,7 +212,7 @@ public class NAL8Test extends NALTest {
     public void testGoalConjunctionDecompose() {
 
         test
-                .log()
+                //.log()
                 .goal("((x) &&+3 (y))", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "(x)", 1f, 0.81f, 0)
                 //.mustNotOutput(cycles, "(y)", GOAL, 3)

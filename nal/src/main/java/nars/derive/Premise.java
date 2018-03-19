@@ -90,6 +90,7 @@ public class Premise extends Pri {
 
 
         Term taskTerm = task.term();
+        Term taskConcept = task.term().concept();
 
         final boolean[] beliefConceptCanAnswerTaskConcept = {false};
         boolean unifiedBelief = false;
@@ -97,7 +98,7 @@ public class Premise extends Pri {
         Op to = taskTerm.op();
         Op bo = beliefTerm.op();
         if (to == bo) {
-            if (taskTerm.equalsRoot(beliefTerm)) {
+            if (taskConcept.equals(beliefTerm.concept())) {
                 beliefConceptCanAnswerTaskConcept[0] = true;
             } else {
 
@@ -138,7 +139,11 @@ public class Premise extends Pri {
 //        float timeFocus = n.timeFocus.floatValue();
 //        int fRad = Math.round(Math.max(1,dur * timeFocus));
 
-        final Concept beliefConcept = beliefTerm.op().conceptualizable ? n.concept(beliefTerm) : null;
+
+        final Concept beliefConcept = beliefTerm.op().conceptualizable ?
+                n.conceptualize(beliefTerm) //conceptualize in case of dynamic concepts
+                :
+                null;
         if (beliefConcept != null) {
 
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
@@ -177,7 +182,7 @@ public class Premise extends Pri {
 
                 if ((belief == null) && !bb.isEmpty()) {
 
-                    Term taskConcept = task.term().concept();
+
                     belief = bb.match(
                             focus[0], focus[1],
                             beliefTerm,
@@ -189,7 +194,7 @@ public class Premise extends Pri {
 
 
             if (unifiedBelief) {
-                Concept originalBeliefConcept = n.concept(term);
+                Concept originalBeliefConcept = n.conceptualize(term);
                 if (originalBeliefConcept != null)
                     linkVariable(originalBeliefConcept, beliefConcept);
             }

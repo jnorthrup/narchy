@@ -115,24 +115,24 @@
 //Same as for inheritance again
 
 
-    (S ==> M), (C ==> M), is(C,"&&"), eventOf(S,C) |- (conjWithout(C,S) ==>+- M), (Belief:DecomposeNegativePositivePositive)
-    (S ==> M), (C ==> M), is(C,"&&"), eventOfNeg(S,C) |- (conjWithout(C,--S) ==>+- M), (Belief:DecomposeNegativePositivePositiveN)
+    (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==>+- M), (Belief:DecomposeNegativePositivePositive)
+    (S ==> M), (C ==> M), eventOfNeg(C,S) |- (conjWithout(C,--S) ==>+- M), (Belief:DecomposeNegativePositivePositiveN)
         //(S ==> M), ((&&,(--,%S),A..+) ==> M) |- ((&&,A..+) ==>+- M), (Belief:DecomposeNegativePositivePositiveN)
         //(S ==> M), ((||,S,A..+) ==> M) |- ((||,A..+) ==>+- M), (Belief:DecomposePositiveNegativeNegative)
 
-    (M ==> S), (M ==> C), is(C,"&&"), eventOf(S,C) |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
-    (M ==> S), (M ==> C), is(C,"&&"), eventOfNeg(S,C) |- (M ==>+- conjWithout(C,--S)), (Belief:DecomposePositiveNegativeNegativeN)
+    (M ==> S), (M ==> C), eventOf(C,S) |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
+    (M ==> S), (M ==> C), eventOfNeg(C,S) |- (M ==>+- conjWithout(C,--S)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (&&,(--,%S),A..+)) |- (M ==>+- (&&,A..+)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==>+- (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
-    (M ==> C), C, is(C,"&&") |- (M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
-    (M ==> C), C, is(C,"&&") |- (--,(M ==>+- dropAnyEvent(C))), (Belief:StructuralDeductionN)
+    (M ==> C), C, is(C,"&&") |- (M ==>+- dropAnyEvent(C)), (Belief:StructuralReduction)
+    //(M ==> C), C, is(C,"&&") |- (--,(M ==>+- dropAnyEvent(C))), (Belief:StructuralReductionN)
           //(M ==> C), D, belief("&&") |- (M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D)), (Belief:StructuralDeduction)
         //(--M ==> C), C, belief("&&") |- (--M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
           //(--M ==> C), D, belief("&&") |- (--M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D, strict)), (Belief:StructuralDeduction)
         //(M ==> (&&,(--,%S),A..+)), M |- (M ==>+- (&&,A..+)), (Belief:StructuralDeduction)
-    (C ==> M), C, is(C,"&&") |- (dropAnyEvent(C) ==>+- M), (Belief:StructuralDeduction)
-        ((--,C) ==> M), C, is(C,"&&") |- ((--,dropAnyEvent(C)) ==>+- M), (Belief:StructuralDeduction)
+    (C ==> M), C, is(C,"&&") |- (dropAnyEvent(C) ==>+- M), (Belief:StructuralReduction)
+        ((--,C) ==> M), C, is(C,"&&") |- ((--,dropAnyEvent(C)) ==>+- M), (Belief:StructuralReduction)
     //TODO StructuralDeductionN like previous?
 
           //(C ==> M), D, belief("&&") |- (subIfUnifiesAny(dropAnyEvent(C), same, D) ==>+- M), (Belief:StructuralDeduction)
@@ -174,21 +174,21 @@
 //   original:   ((&&,A_1..n) =\> C), M, not_implication_or_equivalence(M) |- ((&&,M,A_1..n) =\> C), (Truth:Induction)
 //   original:   ((&&,M,A_1..n) ==> C), ((&&,A,A_1..n) ==> C) |- (A ==> M), (Truth:Induction, Order:ForAllSame)
 
-    (X ==> C), M, is(X,"&&"), eventOf(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
-    (X ==> C), M, is(X,"&&"), eventOfNeg(M,X) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
+    (X ==> C), M, eventOf(X,M) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
+    (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
 
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), is(X,"&&"), eventOf(M,X) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), is(X,"&&"), eventOfNeg(M,X) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
+    (X ==> C), (B==>M), eventOf(X,M) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
+    (X ==> C), (B==>M), eventOfNeg(X,M) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
     (X ==> C), (Y==>C), is(X,"&&"), is(Y,"&&"), neq(X,Y)   |- differ(Y,X), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), is(X,"&&"), eventOf(Y,X)   |- conjWithout(X,Y), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), is(Y,"&&"), eventOf(X,Y)   |- conjWithout(Y,X), (Belief:AbductionPB)
+        (X ==> C), (Y==>C), eventOf(X,Y)   |- conjWithout(X,Y), (Belief:AbductionPB)
+        (X ==> C), (Y==>C), eventOf(Y,X)   |- conjWithout(Y,X), (Belief:AbductionPB)
         //((&&,M,A..+) ==> C), ((&&,A..+) ==> C)   |- M, (Belief:AbductionPB)
 
-    (X ==> C), (B==>M), is(X,"&&"), eventOf(B,X) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
-        (X ==> C), (--B==>M), is(X,"&&"), eventOfNeg(B,X) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
+    (X ==> C), (B==>M), eventOf(X,B) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
+        (X ==> C), (--B==>M), eventOfNeg(X,B) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //((&&,B,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,M,A..+) ==>+- C), (Belief:AbductionPB)
 
 
@@ -267,8 +267,8 @@
         (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
         //TODO reversals if they are included
 
-    (Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:Deduction)
-        (Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:DeductionN)
+    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:Deduction)
+        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:DeductionN)
 
     //(Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
         //(Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
@@ -295,19 +295,19 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), eventOf(X,C) |- ifNeqRoot(conjDropIfLatest(C,X),--X), (Goal:Strong)
+    X, C, belief("&&"), eventOf(C,X) |- ifNeqRoot(conjDropIfLatest(C,X),--X), (Goal:Strong)
     //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), eventOfNeg(X,C) |- ifNeqRoot(conjDropIfLatest(C,--X), X), (Goal:StrongN)
+    X, C, belief("&&"), eventOfNeg(C,X) |- ifNeqRoot(conjDropIfLatest(C,--X), X), (Goal:StrongN)
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), eventOfNeg(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,--X)), X), (Goal:Strong)
+    X, C, belief("&&"), eventOfNeg(C,X) |- ifNeqRoot((--,conjDropIfLatest(C,--X)), X), (Goal:Strong)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), eventOf(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,X)), --X), (Goal:StrongN)
+    X, C, belief("&&"), eventOf(C,X) |- ifNeqRoot((--,conjDropIfLatest(C,X)), --X), (Goal:StrongN)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
 
-    C, X, task("&&"), eventOf(X,C) |- conjDropIfEarliest(C,X), (Goal:Induction)
-    C, X, task("&&"), eventOfNeg(X,C) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
+    C, X, task("&&"), eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Induction)
+    C, X, task("&&"), eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
@@ -315,8 +315,8 @@
     //C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //C, X, task("&&"), eventOfPosOrNeg(X,C)  |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, task("&&"), eventOf(X,C)   |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, task("&&"), eventOfNeg(X,C) |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&"), eventOf(C,X)   |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&"), eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //C, X, task(negative), task("&&"), in(X,C)  |- (--,dropAnyEvent(C)), (Goal:StructuralDeduction)
 
@@ -333,9 +333,9 @@
 
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
-     (&&,X,A..+), Y    |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
+     (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
             //, isNot(X,"#")
-     (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+     (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,(--,Y),"#"), (Belief:AnonymousAnalogyPN)
             //, isNot(X,"#")
 
 
