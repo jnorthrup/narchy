@@ -2,7 +2,7 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.ql.DQN;
+import jcog.learn.ql.HaiQae;
 import jcog.meter.TemporalMetrics;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -55,7 +55,7 @@ public class TrackXY extends NAgent {
     public static void main(String[] args) {
 
         boolean nars = true;
-        boolean rl = false;
+        boolean rl = true;
 
         int dur = 2;
 
@@ -121,9 +121,9 @@ public class TrackXY extends NAgent {
 
         if (rl) {
             new RLBooster(t,
-                    DQN::new,
+                    //DQN::new,
                     //HaiQ::new,
-                    //HaiQae::new,
+                    HaiQae::new,
                     //RandomAgent::new,
                     1);
             t.curiosity.set(0);

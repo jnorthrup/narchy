@@ -529,13 +529,16 @@ public class CompileablePremiseRule extends PremiseRule {
 
     }
 
+
     static void eventPrefilter(Set<PrediTerm<ProtoDerivation>> pres, Term conj, Term taskPattern, Term beliefPattern) {
+        includesOp(pres, taskPattern, beliefPattern, conj, CONJ.bit, true, true);
+
         boolean isTask = taskPattern.equals(conj);
         boolean isBelief = beliefPattern.equals(conj);
         if (isTask || isBelief)
             pres.add(new TaskBeliefOp(CONJ, isTask, isBelief));
-        boolean inTask = !isTask && taskPattern.containsRecursively(conj);
-        boolean inBelief = !isBelief && beliefPattern.containsRecursively(conj);
+        boolean inTask = isTask || taskPattern.containsRecursively(conj);
+        boolean inBelief = isBelief || beliefPattern.containsRecursively(conj);
         if (inTask || inBelief) {
             pres.add(new TaskBeliefHasOrHasnt(CONJ.bit, inTask, inBelief, true));
         }
@@ -559,6 +562,11 @@ public class CompileablePremiseRule extends PremiseRule {
 //    }
 
     private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
+        boolean isTask = taskPattern.equals(x);
+        boolean isBelief = beliefPattern.equals(x);
+        if (isTask || isBelief)
+            pres.add(new TaskBeliefOp(o, isTask, isBelief));
+
         if (!o.atomic) // any atomic terms these will be Anon 'd and thus undetectable
             includesOp(pres, taskPattern, beliefPattern, x, o.bit, true, true);
         else
@@ -567,8 +575,13 @@ public class CompileablePremiseRule extends PremiseRule {
 
     private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude, boolean recurse) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
-        boolean inTask = taskPattern.equals(x) || (recurse && taskPattern.containsRecursively(x));
-        boolean inBelief = beliefPattern.equals(x) || (recurse && beliefPattern.containsRecursively(x));
+
+        boolean isTask = taskPattern.equals(x);
+        boolean isBelief = beliefPattern.equals(x);
+
+
+        boolean inTask = isTask || (recurse && taskPattern.containsRecursively(x));
+        boolean inBelief = isBelief || (recurse && beliefPattern.containsRecursively(x));
         if (inTask || inBelief)
             pres.add(new TaskBeliefHasOrHasnt(struct, inTask, inBelief, includeExclude));
     }

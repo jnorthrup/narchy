@@ -13,9 +13,15 @@ public final class TaskBeliefOp extends AbstractPred<ProtoDerivation> {
     public final byte op;
     public final boolean task;
     public final boolean belief;
+    public final boolean isOrIsNot;
 
     public TaskBeliefOp(Op op, boolean testTask, boolean testBelief) {
-        super($.func("op", $.quote(op.str), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
+        this(op, testTask, testBelief, true);
+    }
+
+    public TaskBeliefOp(Op op, boolean testTask, boolean testBelief, boolean isOrIsNot) {
+        super($.func("op", $.quote(op.str), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)).negIf(!isOrIsNot));
+        this.isOrIsNot = isOrIsNot;
         this.op = op.id;
         this.task = testTask;
         this.belief = testBelief;
@@ -28,9 +34,9 @@ public final class TaskBeliefOp extends AbstractPred<ProtoDerivation> {
 
     @Override
     public boolean test(ProtoDerivation derivation) {
-        return (!task || derivation._taskOp == op)
+        return (!task || (isOrIsNot ? derivation._taskOp == op : derivation._taskOp != op))
                 &&
-                (!belief || derivation._beliefOp == op);
+                (!belief || (isOrIsNot ? derivation._beliefOp == op: derivation._beliefOp != op));
     }
 
 //    static boolean isSequence(int dt) {
