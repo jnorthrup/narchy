@@ -100,7 +100,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * table of values influencing reasoner heuristics
      */
-    public final FasterList<Cause> causes = new FasterList(256);
+    public final FasterList<Cause> causes = new FasterList(256) {
+        @Override protected Object[] newArray(int newCapacity) {
+            return new Cause[newCapacity]; //ensure correct typing for direct array access
+        }
+    };
 
     protected final Random random;
 

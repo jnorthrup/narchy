@@ -10,7 +10,6 @@ import nars.control.MetaGoal;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -80,9 +79,9 @@ public abstract class ConceptIndex {
      */
     public abstract String summary();
 
-    public abstract void remove(@NotNull Term entry);
+    public abstract void remove(Term entry);
 
-    public void print(@NotNull PrintStream out) {
+    public void print(PrintStream out) {
         stream().forEach(out::println);
         out.println();
     }

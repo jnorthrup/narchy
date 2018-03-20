@@ -2,6 +2,7 @@ package nars.index.term.map;
 
 import com.github.benmanes.caffeine.cache.*;
 import nars.Param;
+import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
 import nars.term.Termed;
@@ -9,50 +10,44 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 
 public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Term, Termed>, RemovalListener<Term, Termed>, Executor {
 
-    /**
-     * holds compounds and subterm vectors
-     */
-    @NotNull
-    public final Cache<Term, Termed> concepts;
+    private final Cache<Term, Termed> concepts;
 
-    final static Weigher<? super Term, ? super Termed> w = (k, v) -> {
-        if (v instanceof PermanentConcept) return 0;
-        else return
-                //(v.complexity() + v.volume())/2;
-                //v.complexity();
-                v.volume();
-    };
-    //private final AsyncLoadingCache<Term, Termed> conceptsAsync;
+    public static CaffeineIndex soft() {
+        return new CaffeineIndex(Caffeine.newBuilder().softValues());
+    }
 
-    /**
-     * use the soft/weak option with CAUTION you may experience unexpected data loss and other weird symptoms
-     */
-    public CaffeineIndex(long capacity) {
+    public static CaffeineIndex weak() {
+        return new CaffeineIndex(Caffeine.newBuilder().weakValues());
+    }
+
+    @Deprecated public CaffeineIndex(long capacity) {
+        this(capacity, Termed::volume);
+    }
+
+    public CaffeineIndex(long capacity, ToIntFunction<Concept> w) {
+        this(Caffeine.newBuilder().maximumWeight(capacity * 10).weigher((k,v)->{
+            if (v instanceof PermanentConcept) return 0;
+            return w.applyAsInt((Concept)v);
+        }));
+    }
+
+    private CaffeineIndex(Caffeine builder) {
         super();
-
-
-        Caffeine<Term, Termed> builder = Caffeine.newBuilder().removalListener(this);
-        if (capacity > 0) {
-            //builder.maximumSize(capacity); //may not protect PermanentConcept's from eviction
-
-            builder.maximumWeight(capacity * 10);
-            builder.weigher(w);
-
-        } else
-            builder.softValues();
 
 //        if (Param.DEBUG)
 //            builder.recordStats();
-
+        builder.removalListener(this);
         builder.executor(this);
 
-        //this.conceptsAsync = builder.buildAsync(this);
         this.concepts = builder.build(this);
+
+        //this.conceptsAsync = builder.buildAsync(this);
         //this.concepts = conceptsAsync.synchronous();
     }
 
@@ -95,10 +90,13 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
 
     @Override
     public Termed get(Term x, boolean createIfMissing) {
+        Termed y;
         if (createIfMissing)
-            return concepts.get(x, nar.conceptBuilder::apply);
-        else
-            return concepts.getIfPresent(x);
+            y = concepts.get(x, nar.conceptBuilder::apply);
+        else {
+            y = concepts.getIfPresent(x);
+        }
+        return y;
     }
 
 //    @Override

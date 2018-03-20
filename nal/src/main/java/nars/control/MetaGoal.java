@@ -66,21 +66,23 @@ public enum MetaGoal {
 
     /**
      * learn that the given effects have a given value
+     * note: requires that the FasterList's internal array is correct Cause[] type for direct un-casting access
      */
     public void learn(short[] cause, float strength, FasterList<Cause> causes) {
+
+        if (Math.abs(strength) < Float.MIN_NORMAL)
+            return; //would have no effect
 
         int n = cause.length;
         if (n == 0)
             return;
 
-        if (Math.abs(strength) < Float.MIN_NORMAL)
-            return; //would have no effect
-
         float s = strength/n;
 
         int ordinal = ordinal();
+        Cause[] cc = causes.array();
         for (short c : cause) {
-            MetaGoal.learn(causes.get(c).goal, ordinal, s);
+            MetaGoal.learn(cc[c].goal, ordinal, s);
         }
     }
 

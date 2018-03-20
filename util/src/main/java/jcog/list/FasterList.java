@@ -30,8 +30,8 @@ public class FasterList<X> extends FastList<X> {
         super();
     }
 
-    public FasterList(int capacity) {
-        super(capacity);
+    public FasterList(int initialCapacity) {
+         this.items = initialCapacity == 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[])newArray(initialCapacity);
     }
 
     public FasterList(Object instance, String methodName, Object... mappedThru) {

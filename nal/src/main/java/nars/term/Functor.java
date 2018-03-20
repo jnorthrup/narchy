@@ -313,13 +313,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
             //only need to resolve for the predicate subterm of an INH
             if (subterm==1 && supertermOp==INH && x.op()==ATOM) {
                 Termed y = apply(x);
-                if (y == null)
-                    return x;
-                else
-                    return y.term();
-            } else {
-                return x;
+                if (y != null) {
+                    Term yt = y.term();
+                    if (yt instanceof Functor)
+                        return yt;
+                }
             }
+
+            return x;
         }
     }
 }
