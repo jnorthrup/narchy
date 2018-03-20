@@ -184,12 +184,20 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //250 * 1024
-                                250 * 1024
+                               // 250 * 1024,
                                 //200 * 1024
                                 //100 * 1024
                                 //50 * 1024
-                                //20 * 1024
+                                20 * 1024,
                                 //4096
+                        c -> {
+                            return Math.round(
+                                    ((float)c.voluplexity())
+                                        /
+                                    (1 + 100 * (c.termlinks().priSum() + c.tasklinks().priSum()))
+                                            //(c.beliefs().size() + c.goals().size()))
+                            );
+                        }
                         )
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)

@@ -720,7 +720,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         /*if (subterms().hasAll(opBits))*/
 
-        Subterms ss = subterms();
+        Subterms uu = subterms();
         Term[] xy = null;
         //any contained evaluables
         Op o = op();
@@ -728,8 +728,8 @@ public interface Compound extends Term, IPair, Subterms {
         //boolean recurseIfChanged = false;
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
-        for (int i = 0, evalSubsLength = ss.subs(); i < evalSubsLength; i++) {
-            Term xi = xy!=null ? xy[i] : ss.sub(i);
+        for (int i = 0, n = uu.subs(); i < n; i++) {
+            Term xi = xy!=null ? xy[i] : uu.sub(i);
             Term yi = xi.evalSafe(context, o, i, remain);
             if (yi == null) {
                 return Null;
@@ -740,34 +740,26 @@ public interface Compound extends Term, IPair, Subterms {
                     ellipsisRemoves++;
                 }
 
-                if (xi != yi) {
-                    if ((!xi.equals(yi) || xi.getClass() != yi.getClass())) {
-                        if (xy == null) {
-                            xy = arrayClone(); //begin clone copy
-                        }
-                        xy[i] = yi;
-//                    if (!recurseIfChanged)
-//                        recurseIfChanged |= yi.hasAll(possiblyFunctional);
-                    } else {
-                        //why TEMPORARY FOR DEBUGGING
-                        //System.out.println(xi + " " + yi);
-                        //xi.evalSafe(context, remain - 1);
+                if (xi != yi && (xi.getClass() != yi.getClass() || !xi.equals(yi))) {
+                    if (xy == null) {
+                        xy = arrayClone(); //begin clone copy
                     }
+                    xy[i] = yi;
                 }
             }
         }
 
-        boolean changed = xy!=null;
 
         if (ellipsisAdds > 0) {
             //flatten ellipsis
             xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
-            changed = true;
         }
 
         Term u;
-        if (changed) {
+        if (/*changed*/ xy!=null) {
             u = o.a(dt(), xy);
+            o = u.op(); //refresh root operator in case it has changed
+            uu = u.subterms(); //refresh subterms
         } else {
             u = this;
         }
@@ -775,9 +767,8 @@ public interface Compound extends Term, IPair, Subterms {
 
         //recursively compute contained subterm functors
         //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
-        if (u.op() == INH && u.hasAll(Op.funcBits)) {
+        if (o == INH && u.hasAll(Op.funcBits)) {
             Term pred, subj;
-            Subterms uu = u.subterms();
             if ((pred=uu.sub(1)) instanceof Functor && (subj=uu.sub(0)).op() == PROD) {
 
                 Term v = ((Functor)pred).apply(subj.subterms());
@@ -792,13 +783,9 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
         if (u!=this && (u.equals(this) && u.getClass()==getClass()))
-            u = this; //return to this, undoing any substitutions necessary to reach this eval
+            u = this; //return to this instance, undoing any substitutions necessary to reach this eval
 
         return u;
-
-
-        //it has been changed, so eval recursively until stable
-        //return context.intern(subsModified ? op.the(dt(), xy).evalSafe(context, remain) : this);
     }
 
     @Override

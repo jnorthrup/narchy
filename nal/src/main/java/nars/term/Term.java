@@ -641,12 +641,13 @@ public interface Term extends Termed, Comparable<Termed> {
     /**
      *
      * @param context
-     * @param subterm current subterm index being evaluated
+     * @param whichSubterm current subterm index being evaluated
      * @param remain recursion limit (valid until decreases to zero)
      * @return
      */
-    default Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
-        return remain <= 0 ? Null : context.applyTermIfPossible(this, supertermOp, subterm);
+    default Term evalSafe(TermContext context, Op supertermOp, int whichSubterm, int remain) {
+        return /*remain <= 0 ? Null : */
+                context.applyTermIfPossible(this, supertermOp, whichSubterm);
     }
 
 

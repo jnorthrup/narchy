@@ -14,7 +14,6 @@ import nars.term.Term;
 import nars.term.compound.util.Conj;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -23,7 +22,6 @@ import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
-import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * Created by me on 12/4/16.
@@ -152,12 +150,12 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         private final Term[] comp;
 
-        public Intersection(Term[] comp) {
+        public Intersection(@Nullable Term[] comp) {
             this.comp = comp;
         }
 
         @Override
-        @NotNull
+        /*@NotNull */
         public Term construct(Term superterm, List<TaskRegion> components) {
 
             int n = components.size();
@@ -214,7 +212,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             //sort by lowest expectation
             jcog.data.array.Arrays.sort(order, (i) -> l.get(i) != null ? (1f - f(l.get(i).expectation())) : Float.NEGATIVE_INFINITY);
 
-            float confMin = nar.confMin.floatValue();
+            float confMin =
+                    //nar.confMin.floatValue();
+                    Param.TRUTH_EPSILON; //use epsilon here because we only want to check nar.confMin of the result which this may contribute to
+
             float freqRes = nar.freqResolution.floatValue();
 
             float f = 1f, c = 1f;
@@ -318,14 +319,14 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         public Truth apply(DynTruth d, NAR n) {
             assert (d.size() == 2);
             TaskRegion a = d.get(0);
-//            if (((Task)a).truth()==null)
-//                return null;
             TaskRegion b = d.get(1);
-//            if (((Task)b).truth()==null)
-//                return null;
+
             float conf = a.confMin() * b.confMin();
+            if (conf < Param.TRUTH_EPSILON)
+                return null;
+
             float freq = a.freqMean() * (1f - b.freqMean());
-            return Truth.theDithered(freq, c2wSafe(conf), n);
+            return new PreciseTruth(freq, conf);
         }
     }
 
@@ -344,7 +345,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 return INH.the(superterm.sub(0), po.the(components[0].sub(1), components[1].sub(1)));
         }
 
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     private static Term inhConstructN(Term superterm, int bits, Term[] components) {
@@ -367,7 +368,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 );
         }
 
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -1,7 +1,6 @@
 package nars.concept;
 
 import jcog.bag.Bag;
-import jcog.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -13,7 +12,7 @@ import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -186,12 +185,25 @@ public class TaskConcept extends NodeConcept implements Concept {
 
     @Override
     public Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests) {
-        List<Stream<Task>> s = new FasterList<>();
-        if (includeBeliefs) s.add(beliefs.streamTasks());
-        if (includeGoals) s.add(goals.streamTasks());
-        if (includeQuestions) s.add(questions.streamTasks());
-        if (includeQuests) s.add(quests.streamTasks());
-        return s.stream().flatMap(x -> x);
+        int c = 0;
+        if (includeBeliefs) c++;
+        if (includeGoals) c++;
+        if (includeQuestions) c++;
+        if (includeQuests) c++;
+        assert(c>0);
+
+        Stream[] s = new Stream[c];
+        int j = 0;
+        if (includeBeliefs) s[j++] = (beliefs.streamTasks());
+        if (includeGoals) s[j++] = (goals.streamTasks());
+        if (includeQuestions) s[j++] = (questions.streamTasks());
+        if (includeQuests) s[j++] = (quests.streamTasks());
+
+        if (c == 1)
+            return s[0];
+        else
+            return Stream.of(s).flatMap(x -> x)
+                    .filter(Objects::nonNull); //HACK
     }
 
 

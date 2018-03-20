@@ -91,17 +91,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public final Topic<Task> eventTask = new ListTopic<>();
     public final Services<Term, NAR> services;
 
-    public final Emotion emotion;
-
     public final Time time;
 
     public final ConceptIndex concepts;
     public final NARLoop loop = new NARLoop(this);
+
+    public final Emotion emotion;
+
     /**
-     * table of values influencing reasoner heuristics
+     * cause->value table
      */
-    public final FasterList<Cause> causes = new FasterList(256) {
-        @Override protected Object[] newArray(int newCapacity) {
+    public final FasterList<Cause> causes = new FasterList<>(256) {
+        @Override protected Cause[] newArray(int newCapacity) {
             return new Cause[newCapacity]; //ensure correct typing for direct array access
         }
     };
@@ -1017,7 +1018,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     @Nullable
     public final Concept concept(/*@NotNull */Termed x, boolean createIfMissing) {
-        return concepts.concept(x, createIfMissing);
+        if (x instanceof Concept && Param.ELIDE_CONCEPT_LOOKUPS && !(((Concept) x).isDeleted())) {
+            return ((Concept)x);
+        }
+        return concepts.concept(x.term(), createIfMissing);
     }
 
 

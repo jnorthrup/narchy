@@ -25,7 +25,6 @@ public class FastCoWList<X> extends FasterList<X> {
     public FastCoWList(int capacity, IntFunction<X[]> arrayBuilder) {
         super(0, arrayBuilder.apply(capacity));
         this.copy = (this.arrayBuilder = arrayBuilder).apply(0);
-
     }
 
     @Override

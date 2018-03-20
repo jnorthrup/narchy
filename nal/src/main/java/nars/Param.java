@@ -44,6 +44,13 @@ public abstract class Param {
     public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
 
     /**
+     * for performance, if lookup of a Concept instance is performed using
+     * a supplied non-deleted Concept instance, return that Concept directly.
+     * ie. it assumes that the known Concept is the active one.
+     */
+    public static final boolean ELIDE_CONCEPT_LOOKUPS = true;
+
+    /**
      * proportion of a total activation necessary for emitting task activation events
      */
     @Range(min=0, max=0.5f)

@@ -1,7 +1,6 @@
 package nars.index.term;
 
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -10,6 +9,7 @@ import nars.control.MetaGoal;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -25,14 +25,13 @@ import static nars.Op.*;
 public abstract class ConceptIndex {
 
 
-    public NAR nar;
-
     public final TermContext functors = new Functor.FunctorResolver() {
         @Override
         public final Termed apply(Term term) {
             return get(term, false);
         }
     };
+    public NAR nar;
 
     /**
      * internal get procedure (synchronous)
@@ -100,36 +99,12 @@ public abstract class ConceptIndex {
      * term should be conceptualizable prior to calling this
      */
     @Nullable
-    public final Concept concept(Termed x, boolean createIfMissing) {
-
-        x = x.unneg();
-
-        Term y;
-        if (x instanceof Concept) {
-            Concept ct = (Concept) x;
-            if (!ct.isDeleted())
-                return ct; //assumes an existing Concept index isnt a different copy than what is being passed as an argument
-            //otherwise if it is deleted, continue
-            y = ct.term();
-        } else {
-            Term xx = x.term();
-            if (xx.op().conceptualizable) {
-                y = xx.concept();
-                Op yop = y.op();
-                if (!yop.conceptualizable || yop != x.op()) {
-                    //x.term().conceptual(); //HACK for debugging
-                    throw new RuntimeException("conceptualization fault: " + x + " -> " + y);
-                    //return null;
-                }
-            } else {
-                return null;
-            }
-        }
-
-        return (Concept) get(y, createIfMissing);
+    public final Concept concept(Term x, boolean createIfMissing) {
+        Term xx = x.concept();
+        return (xx instanceof Bool) ? null : (Concept) get(xx, createIfMissing);
     }
 
-    public final void conceptAsync(Termed x, boolean createIfMissing, Consumer<Concept> with) {
+    public final void conceptAsync(Term x, boolean createIfMissing, Consumer<Concept> with) {
 
         Term y;
         if (x instanceof Concept) {

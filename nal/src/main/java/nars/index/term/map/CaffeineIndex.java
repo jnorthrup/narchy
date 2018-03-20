@@ -96,6 +96,10 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
         else {
             y = concepts.getIfPresent(x);
         }
+
+        if (createIfMissing && /*isWeighing && */ y!=null)
+            concepts.put(x, y); //refresh weight
+
         return y;
     }
 
