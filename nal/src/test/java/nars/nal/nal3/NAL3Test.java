@@ -1,7 +1,6 @@
 package nars.nal.nal3;
 
 
-import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -9,9 +8,7 @@ import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
-import static nars.Op.DIFFe;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL3Test extends NALTest {
 

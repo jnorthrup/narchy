@@ -1,4 +1,4 @@
-package com.jujutsu.tsne;
+package com.jujutsu.tsne.matrix;
 
 import java.io.*;
 import java.util.ArrayList;

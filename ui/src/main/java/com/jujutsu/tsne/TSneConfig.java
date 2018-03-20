@@ -1,21 +1,37 @@
-package com.jujutsu.tsne.barneshut;
+package com.jujutsu.tsne;
+
+import com.jujutsu.tsne.barneshut.TSneConfiguration;
 
 public class TSneConfig implements TSneConfiguration {
-	private double[][] xin;
+
+	@Deprecated private double[][] xin;
+
 	private int outputDims;
-	private int initial_dims;
+
+	/**
+	 * The perplexity can be interpreted as a smooth measure of the effective number of neighbors. The
+	 * performance of SNE is fairly robust to changes in the perplexity, and typical values are between 5
+	 * and 50.
+	 */
 	private double perplexity;
+
 	private int max_iter;
+
 	private boolean use_pca;
+	private int pca_dims;
+
+	/** used for BHT */
 	private double theta;
+
 	private boolean silent;
 	private boolean print_error;
 
-	public TSneConfig(double[][] xin, int outputDims, int initial_dims, double perplexity, int max_iter,
-			boolean use_pca, double theta, boolean silent, boolean print_error) {
+
+	public TSneConfig(double[][] xin, int outputDims, int pca_dims, double perplexity, int max_iter,
+					  boolean use_pca, double theta, boolean silent, boolean print_error) {
 		this.xin = xin;
 		this.outputDims = outputDims;
-		this.initial_dims = initial_dims;
+		this.pca_dims = pca_dims;
 		this.perplexity = perplexity;
 		this.max_iter = max_iter;
 		this.use_pca = use_pca;
@@ -61,7 +77,7 @@ public class TSneConfig implements TSneConfiguration {
 	 */
 	@Override
 	public int getInitialDims() {
-		return initial_dims;
+		return pca_dims;
 	}
 
 	/* (non-Javadoc)
@@ -69,7 +85,7 @@ public class TSneConfig implements TSneConfiguration {
 	 */
 	@Override
 	public void setInitialDims(int initial_dims) {
-		this.initial_dims = initial_dims;
+		this.pca_dims = initial_dims;
 	}
 
 	/* (non-Javadoc)

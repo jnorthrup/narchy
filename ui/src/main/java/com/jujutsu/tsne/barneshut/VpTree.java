@@ -93,20 +93,23 @@ public class VpTree<StorageType> {
 	static void nth_element(DataPoint [] array, int low, int mid, int high,
 							Comparator<DataPoint> distanceComparator) {
 		DataPoint [] tmp = new DataPoint[high-low];
-        System.arraycopy(array, low + 0, tmp, 0, tmp.length);
+        System.arraycopy(array, low, tmp, 0, tmp.length);
 		Arrays.sort(tmp, distanceComparator);
-        System.arraycopy(tmp, 0, array, low + 0, tmp.length);
+        System.arraycopy(tmp, 0, array, low, tmp.length);
 	}
 	
 	static void nth_element(int [] array, int low, int mid, int high) {
 		int [] tmp = new int[high-low];
-        System.arraycopy(array, low + 0, tmp, 0, tmp.length);
+        System.arraycopy(array, low, tmp, 0, tmp.length);
 		Arrays.sort(tmp);
-        System.arraycopy(tmp, 0, array, low + 0, tmp.length);
+        System.arraycopy(tmp, 0, array, low, tmp.length);
 	}
 
 	private double distance(DataPoint dataPoint1, DataPoint dataPoint2) {
 		return distance.distance(dataPoint1, dataPoint2);
+	}
+	private double distanceSq(DataPoint dataPoint1, DataPoint dataPoint2) {
+		return distance.distanceSq(dataPoint1, dataPoint2);
 	}
 	
 	private static void swap(DataPoint[] items, int idx1, int idx2) {
@@ -124,9 +127,15 @@ public class VpTree<StorageType> {
     		this.dist = dist; 
     	}
 
-    	@Override
+		@Override
+		public boolean equals(Object obj) {
+			return this == obj;
+		}
+
+		@Override
 		public int compareTo(HeapItem o) {
-			return Double.compare(dist, o.dist);
+			if (this == o) return 0;
+    		return Double.compare(dist, o.dist);
 		}
     	
     	@Override

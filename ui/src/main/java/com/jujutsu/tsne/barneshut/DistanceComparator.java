@@ -18,6 +18,6 @@ public class DistanceComparator implements Comparator<DataPoint> {
 
 	@Override
 	public int compare(DataPoint o1, DataPoint o2) {
-		return Double.compare(dist.distance(o1, refItem), dist.distance(o2, refItem));
+		return Double.compare(dist.distanceSq(o1, refItem), dist.distanceSq(o2, refItem));
 	}
 }

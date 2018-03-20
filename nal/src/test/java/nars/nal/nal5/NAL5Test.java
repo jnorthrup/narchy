@@ -13,7 +13,7 @@ import static nars.time.Tense.ETERNAL;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 900;
+    final int cycles = 200;
 
     @Override
     protected NAR nar() {
@@ -166,13 +166,13 @@ public class NAL5Test extends NALTest {
         test
                 .believe("(a:#1 && y)")
                 .believe("a:x", 0.80f, 0.9f)
-                .mustBelieve(cycles * 2, "y", 0.80f, 0.43f);
+                .mustBelieve(cycles, "y", 0.80f, 0.43f);
     }
 
     @Test
     public void anonymous_analogy1_pos2() {
         test
-                .log()
+                //.log()
                 .believe("(x && y)")
                 .believe("x", 0.80f, 0.9f)
                 .mustBelieve(cycles*10, "y", 0.80f, 0.43f);
@@ -505,8 +505,8 @@ public class NAL5Test extends NALTest {
         test
         .believe("((a && b) ==> d)", 0.9f, 0.9f)
         .believe("((a && c) ==> d)", 1f, 0.9f)
-        .mustBelieve(cycles * 2, "(c ==> b)", 1f, 0.42f)
-        .mustBelieve(cycles * 2, "(b ==> c)", 0.90f, 0.45f);
+        .mustBelieve(cycles*2, "(c ==> b)", 1f, 0.42f)
+        .mustBelieve(cycles*2, "(b ==> c)", 0.90f, 0.45f);
     }
 
     @Test
@@ -608,8 +608,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((x&&a) ==> c)");
         tester.believe("(--(x&&b) ==> c)");
-        tester.mustBelieve(cycles, "(a ==> b)", 0.00f, 0.45f);
-        tester.mustBelieve(cycles, "(--b ==> a)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles*3, "(a ==> b)", 0.00f, 0.45f);
+        tester.mustBelieve(cycles*3, "(--b ==> a)", 1.00f, 0.45f);
     }
 
     /* will be moved to NAL multistep test file!!

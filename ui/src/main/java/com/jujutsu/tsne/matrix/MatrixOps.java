@@ -1,5 +1,6 @@
-package com.jujutsu.tsne;
+package com.jujutsu.tsne.matrix;
 
+import jcog.Texts;
 import org.ejml.data.DMatrixRBlock;
 import org.ejml.data.DMatrixRMaj;
 
@@ -18,69 +19,69 @@ public enum MatrixOps { ;
 	private static final String DEFAULT_TITLE  = "Vector";
 	private static final int noDigits = 4;
 
-	public static String arrToStr(int [] arr, String title) {
-		String res = "";
-		res += title + '[' +  arr.length + "]:";
-		for (int anArr : arr) {
-			res += anArr + ", ";
-		}
-		res += "\n";
-		return res;
-	}
-
-	public static String arrToStr(double [] arr) {
-		return arrToStr(arr, DEFAULT_TITLE, Integer.MAX_VALUE);
-	}
-
-	public static String arrToStr(double [] arr, int maxLen) {
-		return arrToStr(arr, DEFAULT_TITLE, maxLen);
-	}
-	
-	public static String arrToStr(double [] arr, String title) {
-		return arrToStr(arr, title, Integer.MAX_VALUE);
-	}
-
-	private static String arrToStr(double[] arr, String title, int maxLen) {
-		StringBuilder res = new StringBuilder();
-		res.append(title).append('[').append(arr.length).append("]:");
-		for (int j = 0; j < arr.length && j < maxLen; j++) {
-			res.append(formatDouble(arr[j])).append(", ");
-		}
-		return res.toString();
-	}
+//	public static String arrToStr(int [] arr, String title) {
+//		String res = "";
+//		res += title + '[' +  arr.length + "]:";
+//		for (int anArr : arr) {
+//			res += anArr + ", ";
+//		}
+//		res += "\n";
+//		return res;
+//	}
+//
+//	public static String arrToStr(double [] arr) {
+//		return arrToStr(arr, DEFAULT_TITLE, Integer.MAX_VALUE);
+//	}
+//
+//	public static String arrToStr(double [] arr, int maxLen) {
+//		return arrToStr(arr, DEFAULT_TITLE, maxLen);
+//	}
+//
+//	public static String arrToStr(double [] arr, String title) {
+//		return arrToStr(arr, title, Integer.MAX_VALUE);
+//	}
+//
+//	private static String arrToStr(double[] arr, String title, int maxLen) {
+//		StringBuilder res = new StringBuilder();
+//		res.append(title).append('[').append(arr.length).append("]:");
+//		for (int j = 0; j < arr.length && j < maxLen; j++) {
+//			res.append(formatDouble(arr[j])).append(", ");
+//		}
+//		return res.toString();
+//	}
 
 	public static String doubleArrayToPrintString(double[][] m) {
 		return doubleArrayToPrintString(m, ", ", Integer.MAX_VALUE, m.length, Integer.MAX_VALUE, "\n");
 	}
-
-	public static String doubleArrayToPrintString(double[][] m, int maxRows) {
-		return doubleArrayToPrintString(m, ", ", maxRows, maxRows, Integer.MAX_VALUE, "\n");
-	}
-
-	public static String doubleArrayToPrintString(double[][] m, String colDelimiter) {
-		return doubleArrayToPrintString(m, colDelimiter, Integer.MAX_VALUE, -1, Integer.MAX_VALUE, "\n");
-	}
-
-	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim) {
-		return doubleArrayToPrintString(m, colDelimiter, toprowlim, -1, Integer.MAX_VALUE, "\n");
-	}
+//
+//	public static String doubleArrayToPrintString(double[][] m, int maxRows) {
+//		return doubleArrayToPrintString(m, ", ", maxRows, maxRows, Integer.MAX_VALUE, "\n");
+//	}
+//
+//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter) {
+//		return doubleArrayToPrintString(m, colDelimiter, Integer.MAX_VALUE, -1, Integer.MAX_VALUE, "\n");
+//	}
+//
+//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim) {
+//		return doubleArrayToPrintString(m, colDelimiter, toprowlim, -1, Integer.MAX_VALUE, "\n");
+//	}
 
 	public static String doubleArrayToPrintString(double[][] m, int toprowlim, int btmrowlim) {
 		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
 	}
-
-	public static String doubleArrayToPrintString(double[][] m, int toprowlim, int btmrowlim, int collim) {
-		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, collim, "\n");
-	}
-
-	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim) {
-		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
-	}
-
-	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim) {
-		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, collim, "\n");
-	}
-	
+//
+//	public static String doubleArrayToPrintString(double[][] m, int toprowlim, int btmrowlim, int collim) {
+//		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, collim, "\n");
+//	}
+//
+//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim) {
+//		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
+//	}
+//
+//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim) {
+//		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, collim, "\n");
+//	}
+//
 	private static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim, String sentenceDelimiter) {
 		StringBuffer str = new StringBuffer(m.length * m[0].length);
 
@@ -132,137 +133,138 @@ public enum MatrixOps { ;
 
 	@Deprecated
 	private static String formatDouble(double d) {
-		if ( d == 0.0 ) return "<0.0>";
-		if ( d<0.0001 && d>0 || d > -0.0001 && d < 0) {
-			return mydecimalFormat.format(d);
-		} else {
-			String formatString = "%." + noDigits + 'f';
-			return String.format(formatString, d);
-		}
+	    return Texts.n4(d);
+//		if ( d == 0.0 ) return "<0.0>";
+//		if ( d<0.0001 && d>0 || d > -0.0001 && d < 0) {
+//			return mydecimalFormat.format(d);
+//		} else {
+//			String formatString = "%." + noDigits + 'f';
+//			return String.format(formatString, d);
+//		}
 	}
 
-	public static String doubleArrayToString(double[][] m) {
-		return doubleArrayToString(m, ",");
-	}
+//	public static String doubleArrayToString(double[][] m) {
+//		return doubleArrayToString(m, ",");
+//	}
 
-	private static String doubleArrayToString(double[][] m, String colDelimiter) {
-		StringBuffer str = new StringBuffer(m.length * m[0].length);
-		for (double[] aM : m) {
-			for (int j = 0; j < aM.length - 1; j++) {
-				str = str.append(Double.toString(aM[j]));
-				str = str.append(colDelimiter);
-			}
-			str = str.append(Double.toString(aM[aM.length - 1]));
-			str = str.append('\n');
-		}
-		return str.toString();
-	}
+//	private static String doubleArrayToString(double[][] m, String colDelimiter) {
+//		StringBuffer str = new StringBuffer(m.length * m[0].length);
+//		for (double[] aM : m) {
+//			for (int j = 0; j < aM.length - 1; j++) {
+//				str = str.append(Double.toString(aM[j]));
+//				str = str.append(colDelimiter);
+//			}
+//			str = str.append(Double.toString(aM[aM.length - 1]));
+//			str = str.append('\n');
+//		}
+//		return str.toString();
+//	}
 
-	public static double [] rep(double val, int times) {
-		double [] res = new double[times];
-		for (int i = 0; i < res.length; i++) {
-			res[i] = val;
-		}
-		return res;
-	}
-
-	public static double [] asVector(double [][] matrix) {
-		boolean isCol = matrix.length != 1;
-		int n = matrix.length == 1 ? matrix[0].length : matrix.length;
-		if(matrix.length != 1 && matrix[0].length!=1) {
-			throw new IllegalArgumentException("Cannot convert non-row or col matrix to vactor! Matrix dim: "
-					+ matrix.length + 'x' + matrix[0].length);
-		}
-
-		double [] res = new double[n];
-
-		if(isCol) {
-			for (int j = 0; j < matrix.length; j++) {				
-				res[j] = matrix[j][0]; 
-			}
-		} else {
-            System.arraycopy(matrix[0], 0, res, 0, matrix[0].length);
-		}
-
-		return res;
-	}
-
-	/**
-	 * This function returns a new matrix which is centered and scaled, i.e each
-	 * the global mean is subtracted from each element in the matrix and divided 
-	 * by the global matrix standard deviation   
-	 *
-	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
-	 */
-	public static double [][] centerAndScaleGlobal(double [][] matrix) {
-		double [][] res = new double[matrix.length][matrix[0].length]; 
-		double mean = mean(matrix);
-		double std = stdev(matrix);
-		for (int i = 0; i < res.length; i++) {
-			for (int j = 0; j < res[i].length; j++) {
-				res[i][j] = (matrix[i][j]-mean) / std; 
-			}
-		}
-		
-		return res;
-	}
-	
-	/**
-	 * This function returns a new matrix which is centered and scaled, i.e each
-	 * the column mean is subtracted from each column element in the matrix and 
-	 * divided by the respective column matrix standard deviation 
-	 *   
-	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
-	 */
-	public static double [][] centerAndScale(double [][] matrix) {
-		double [][] res = new double[matrix.length][matrix[0].length]; 
-		double [] means = colMeans(matrix);
-		for (int i = 0; i < res.length; i++) {
-			for (int j = 0; j < res[i].length; j++) {
-				res[i][j] = (matrix[i][j]-means[j]); 
-			}
-		}
-		
-		double [] std = colStddev(res);
-		for (int i = 0; i < res.length; i++) {
-			for (int j = 0; j < res[i].length; j++) {
-				res[i][j] = res[i][j] / (std[j] == 0 ? 1 : std[j]); 
-			}
-		}
-
-		return res;
-	}
-	
-	public static double [][] centerAndScaleSametime(double [][] matrix) {
-		double [][] res = new double[matrix.length][matrix[0].length]; 
-		double [] means = colMeans(matrix);
-		double [] std = colStddev(matrix);
-		for (int i = 0; i < res.length; i++) {
-			for (int j = 0; j < res[i].length; j++) {
-				res[i][j] = (matrix[i][j]-means[j]) / (std[j] == 0 ? 1 : std[j]); 
-			}
-		}
-
-		return res;
-	}
-	
-	/**
-	 * This function returns adds a small amount of noise to each column  
-	 * 
-	 * @return new matrix with added noise
-	 */
-	public static double [][] addNoise(double [][] matrix) {
-		double [][] res = new double[matrix.length][matrix[0].length]; 
-		double [] std = colStddev(matrix);
-		for (int i = 0; i < res.length; i++) {
-			for (int j = 0; j < res[i].length; j++) {
-				double noise = rnorm(0, std[j] == 0.0 ? 0.00001 : std[j]/5);
-				res[i][j] = matrix[i][j] + noise; 
-			}
-		}
-
-		return res;
-	}
+//	public static double [] rep(double val, int times) {
+//		double [] res = new double[times];
+//		for (int i = 0; i < res.length; i++) {
+//			res[i] = val;
+//		}
+//		return res;
+//	}
+//
+//	public static double [] asVector(double [][] matrix) {
+//		boolean isCol = matrix.length != 1;
+//		int n = matrix.length == 1 ? matrix[0].length : matrix.length;
+//		if(matrix.length != 1 && matrix[0].length!=1) {
+//			throw new IllegalArgumentException("Cannot convert non-row or col matrix to vactor! Matrix dim: "
+//					+ matrix.length + 'x' + matrix[0].length);
+//		}
+//
+//		double [] res = new double[n];
+//
+//		if(isCol) {
+//			for (int j = 0; j < matrix.length; j++) {
+//				res[j] = matrix[j][0];
+//			}
+//		} else {
+//            System.arraycopy(matrix[0], 0, res, 0, matrix[0].length);
+//		}
+//
+//		return res;
+//	}
+//
+//	/**
+//	 * This function returns a new matrix which is centered and scaled, i.e each
+//	 * the global mean is subtracted from each element in the matrix and divided
+//	 * by the global matrix standard deviation
+//	 *
+//	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
+//	 */
+//	public static double [][] centerAndScaleGlobal(double [][] matrix) {
+//		double [][] res = new double[matrix.length][matrix[0].length];
+//		double mean = mean(matrix);
+//		double std = stdev(matrix);
+//		for (int i = 0; i < res.length; i++) {
+//			for (int j = 0; j < res[i].length; j++) {
+//				res[i][j] = (matrix[i][j]-mean) / std;
+//			}
+//		}
+//
+//		return res;
+//	}
+//
+//	/**
+//	 * This function returns a new matrix which is centered and scaled, i.e each
+//	 * the column mean is subtracted from each column element in the matrix and
+//	 * divided by the respective column matrix standard deviation
+//	 *
+//	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
+//	 */
+//	public static double [][] centerAndScale(double [][] matrix) {
+//		double [][] res = new double[matrix.length][matrix[0].length];
+//		double [] means = colMeans(matrix);
+//		for (int i = 0; i < res.length; i++) {
+//			for (int j = 0; j < res[i].length; j++) {
+//				res[i][j] = (matrix[i][j]-means[j]);
+//			}
+//		}
+//
+//		double [] std = colStddev(res);
+//		for (int i = 0; i < res.length; i++) {
+//			for (int j = 0; j < res[i].length; j++) {
+//				res[i][j] = res[i][j] / (std[j] == 0 ? 1 : std[j]);
+//			}
+//		}
+//
+//		return res;
+//	}
+//
+//	public static double [][] centerAndScaleSametime(double [][] matrix) {
+//		double [][] res = new double[matrix.length][matrix[0].length];
+//		double [] means = colMeans(matrix);
+//		double [] std = colStddev(matrix);
+//		for (int i = 0; i < res.length; i++) {
+//			for (int j = 0; j < res[i].length; j++) {
+//				res[i][j] = (matrix[i][j]-means[j]) / (std[j] == 0 ? 1 : std[j]);
+//			}
+//		}
+//
+//		return res;
+//	}
+//
+//	/**
+//	 * This function returns adds a small amount of noise to each column
+//	 *
+//	 * @return new matrix with added noise
+//	 */
+//	public static double [][] addNoise(double [][] matrix) {
+//		double [][] res = new double[matrix.length][matrix[0].length];
+//		double [] std = colStddev(matrix);
+//		for (int i = 0; i < res.length; i++) {
+//			for (int j = 0; j < res[i].length; j++) {
+//				double noise = rnorm(0, std[j] == 0.0 ? 0.00001 : std[j]/5);
+//				res[i][j] = matrix[i][j] + noise;
+//			}
+//		}
+//
+//		return res;
+//	}
 
 	/**
 	 * Returns a new matrix which is the transpose of input matrix
@@ -471,15 +473,20 @@ public enum MatrixOps { ;
 	 * @return scalar inverse of matrix
 	 */
 	public static double [][] scalarInverse(double [][] m1) {
-		double[][] matrix = new double[m1.length][m1[0].length];
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				matrix[i][j] = 1/m1[i][j];
-			}
-		}
-		return matrix;
+		return scalarInverse(m1, null);
 	}
 
+	public static double [][] scalarInverse(double [][] m1, double[][] result) {
+		if (result == null)
+			result = new double[m1.length][m1[0].length];
+
+		for (int i = 0; i < result.length; i++) {
+			for (int j = 0; j < result[0].length; j++) {
+				result[i][j] = 1/m1[i][j];
+			}
+		}
+		return result;
+	}
 	// Unit Tested
 	/**
 	 * @param vector
@@ -751,9 +758,9 @@ public enum MatrixOps { ;
 		double sum = 0;
 //		double [] sums = new double[rows];
 //		if(rows < ll ) {
-			for (int row = 0; row < rows; row++)
-				for (int col = 0; col < cols; col++)
-					sum += matrix[row][col];
+        for (double[] aMatrix : matrix)
+            for (int col = 0; col < cols; col++)
+                sum += aMatrix[col];
 //		} else {
 //			MatrixSummer process = new MatrixSummer(matrix, sums, 0, rows, ll);
 //			pool.invoke(process);
@@ -1573,7 +1580,7 @@ public enum MatrixOps { ;
 	public static double [] extractRowFromFlatMatrix(double[] flatMatrix, int rowIdx, int dimension) {
 		double [] point = new double[dimension];
 		int offset = rowIdx * dimension;
-        System.arraycopy(flatMatrix, offset + 0, point, 0, dimension);
+        System.arraycopy(flatMatrix, offset, point, 0, dimension);
 		return point;
 	}
 

@@ -1,6 +1,6 @@
 package com.jujutsu.tsne.barneshut;
 
-import com.jujutsu.tsne.MatrixOps;
+import com.jujutsu.tsne.matrix.MatrixOps;
 
 import static java.lang.Math.max;
 import static java.lang.Math.sqrt;
@@ -244,7 +244,7 @@ public class SPTree {
 	{
 
 		// Gather indices in current quadrant
-        System.arraycopy(index, 0, indices, loc + 0, size);
+        System.arraycopy(index, 0, indices, loc, size);
 		loc += size;
 
 		// Gather indices in children
@@ -264,7 +264,7 @@ public class SPTree {
 
 
 	// Compute non-edge forces using Barnes-Hut algorithm
-	double computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
+	public double computeNonEdgeForces(int point_index, double theta, double[] neg_f, Object accumulator)
 	{
 		double [] sum_Q = (double []) accumulator;
 		double [] buff = new double[dimension];
@@ -302,7 +302,7 @@ public class SPTree {
 
 
 	// Computes edge forces
-	void computeEdgeForces(int [] row_P, int [] col_P, double [] val_P, int N, double [] pos_f)
+	public void computeEdgeForces(int [] row_P, int [] col_P, double [] val_P, int N, double [] pos_f)
 	{
 		// Loop over all edges in the graph
 		double [] buff = new double[dimension];

@@ -1,12 +1,14 @@
 package com.jujutsu.tsne;
 
+import com.jujutsu.tsne.matrix.MatrixOps;
+import com.jujutsu.tsne.matrix.MatrixUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
 
 import static com.jujutsu.tsne.EJMLVsPython.s;
-import static com.jujutsu.tsne.MatrixOps.*;
+import static com.jujutsu.tsne.matrix.MatrixOps.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

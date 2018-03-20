@@ -2,7 +2,7 @@ package com.jujutsu.tsne.barneshut;
 
 import static java.lang.Math.sqrt;
 
-class ParallelSPTree extends SPTree {
+public class ParallelSPTree extends SPTree {
 
 //	private static final int PAR_LIMIT = 100;
 //
@@ -57,7 +57,7 @@ class ParallelSPTree extends SPTree {
 
 	//double computeNonEdgeForcesStd(int point_index, double theta, double [] neg_f, Object accumulator)
 	@Override
-	double computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
+	public double computeNonEdgeForces(int point_index, double theta, double [] neg_f, Object accumulator)
 	{
 		Double sum_Q = (Double) accumulator;
 		double input_sum_Q = sum_Q;

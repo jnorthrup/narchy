@@ -124,21 +124,17 @@ public class PrincipalComponentAnalysis {
         this.numComponents = numComponents;
 
         // compute the mean of all the samples
-        for(int i = 0; i < rows; i++ ) {
-            for( int j = 0; j < mean.length; j++ ) {
+        for(int i = 0; i < rows; i++ )
+            for( int j = 0; j < mean.length; j++ )
                 mean[j] += A.get(i,j);
-            }
-        }
-        for( int j = 0; j < mean.length; j++ ) {
+
+        for( int j = 0; j < mean.length; j++ )
             mean[j] /= rows;
-        }
 
         // subtract the mean from the original data
-        for(int i = 0; i < rows; i++ ) {
-            for( int j = 0; j < mean.length; j++ ) {
+        for(int i = 0; i < rows; i++ )
+            for( int j = 0; j < mean.length; j++ )
                 A.add(i, j, -mean[j]);
-            }
-        }
 
         // Compute SVD and save time by not computing U
         SingularValueDecomposition<DMatrixRMaj> svd =
@@ -267,12 +263,13 @@ public class PrincipalComponentAnalysis {
         for (double[] aMatrix : matrix) {
             addSample(aMatrix);
         }
-		computeBasis(no_dims);
+
+        computeBasis(no_dims);
+
 		for (int i = 0; i < matrix.length; i++) {
-			trafoed[i] = sampleToEigenSpace(matrix[i]);
-			for (int j = 0; j < trafoed[i].length; j++) {
-				trafoed[i][j] *= -1;
-			}
+            double[] ti = trafoed[i] = sampleToEigenSpace(matrix[i]);
+			for (int j = 0; j < ti.length; j++)
+				ti[j] *= -1;
 		}
 		return trafoed;
     }

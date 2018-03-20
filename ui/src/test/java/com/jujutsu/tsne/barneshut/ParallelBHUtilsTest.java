@@ -1,6 +1,7 @@
 package com.jujutsu.tsne.barneshut;
 
 
+import com.google.common.util.concurrent.AtomicDouble;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ThreadLocalRandom;

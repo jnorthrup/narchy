@@ -1,13 +1,15 @@
 package com.jujutsu.tsne;
 
 
+import com.jujutsu.tsne.matrix.MatrixOps;
+import com.jujutsu.tsne.matrix.MatrixUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static com.jujutsu.tsne.MatrixOps.parScalarMultiply;
-import static com.jujutsu.tsne.MatrixOps.scalarMultiply;
+import static com.jujutsu.tsne.matrix.MatrixOps.parScalarMultiply;
+import static com.jujutsu.tsne.matrix.MatrixOps.scalarMultiply;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -1,5 +1,8 @@
 package com.jujutsu.tsne;
 
+import com.jujutsu.tsne.matrix.EjmlOps;
+import com.jujutsu.tsne.matrix.MatrixOps;
+import com.jujutsu.tsne.matrix.MatrixUtils;
 import org.ejml.data.DMatrixRMaj;
 import org.junit.jupiter.api.Test;
 

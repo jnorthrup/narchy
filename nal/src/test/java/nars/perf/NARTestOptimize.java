@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 public class NARTestOptimize {
 
     static final int threads =
-            2;
+            5;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 

@@ -2,7 +2,7 @@ package com.jujutsu.tsne;
 
 import com.jujutsu.tsne.barneshut.TSneConfiguration;
 
-import static com.jujutsu.tsne.MatrixOps.*;
+import static com.jujutsu.tsne.matrix.MatrixOps.*;
 
 /**
 *
@@ -12,102 +12,118 @@ import static com.jujutsu.tsne.MatrixOps.*;
 * dimensionality reduction technique that is particularly well suited 
 * for the visualization of high-dimensional datasets
 *
+ * http://www.cs.toronto.edu/~hinton/absps/tsne.pdf
+ *
+ * cost function parameters: perplexity Perp,
+ * optimization parameters: number of iterations T, learning rate η, momentum α(
 */
 public class SimpleTSne implements TSne {
 	private volatile boolean abort = false;
+	private double[][] P;
+	protected double[][] Y;
+	private double[][] dY;
+	private double[][] iY;
+	private double[][] gains;
+
+	double momentum = .5;
+	//double final_momentum   = 0.8;
+	double eta                 = 0.5;
+	double min_gain         = Double.MIN_NORMAL;
+	private double[][] X;
+
+	private double[][] numMatrix;
 
 	@Override
 	public double [][] tsne(TSneConfiguration config) {
-		double[][] X      = config.getXin();
+		X      = config.getXin();
 		int no_dims       = config.getOutputDims();
-		int initial_dims  = config.getInitialDims(); 
 		double perplexity = config.getPerplexity();
 		int max_iter      = config.getMaxIter();
-		boolean use_pca   = config.usePca();
-		
+
 		String IMPLEMENTATION_NAME = this.getClass().getSimpleName();
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
 		System.out.println("Running " + IMPLEMENTATION_NAME + '.');
 		// Initialize variables
-		if(use_pca && X[0].length > initial_dims && initial_dims > 0) {
-			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
-			X = pca.pca(X, initial_dims);
-			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
-		}
+//		boolean use_pca   = config.usePca();
+//		int initial_dims  = config.getInitialDims();
+//		if(use_pca && X[0].length > initial_dims && initial_dims > 0) {
+//			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
+//			X = pca.pca(X, initial_dims);
+//			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
+//		}
+
 
 		int n = X.length;
-		double momentum = .5;
-		double initial_momentum = 0.5;
-		double final_momentum   = 0.8;
-		int eta                 = 500;
-		double min_gain         = 0.01;
-		double [][] Y           = rnorm(n,no_dims);
-		double [][] dY          = fillMatrix(n,no_dims,0.0);
-		double [][] iY          = fillMatrix(n,no_dims,0.0);
-		double [][] gains       = fillMatrix(n,no_dims,1.0);
+		Y           = rnorm(n,no_dims);
+		dY          = fillMatrix(n,no_dims,0.0);
+		iY          = fillMatrix(n,no_dims,0.0);
+		gains       = fillMatrix(n,no_dims,1.0);
 		
 		// Compute P-values
-		double [][] P = x2p(X, 1e-5, perplexity).P;
+		P = x2p(X, 1e-5, perplexity).P;
 		P = plus(P , transpose(P));
 		P = scalarDivide(P,sum(P));
 		P = scalarMult(P , 4);					// early exaggeration
-		P = maximum(P, 1e-12);
+		P = maximum(P, Double.MIN_NORMAL);
 
 		System.out.println("Y:Shape is = " + Y.length + " x " + Y[0].length);
 		
 		// Run iterations
 		for (int iter = 0; iter < max_iter && !abort; iter++) {
-			// Compute pairwise affinities
-			double [][] sum_Y = transpose(sum(square(Y), 1));
-			double [][] num = scalarInverse(scalarPlus(addRowVector(transpose(addRowVector(scalarMult(
-					times(Y, transpose(Y)),
-					-2),
-					sum_Y)),
-					sum_Y),
-					1));
-			assignAtIndex(num, range(n), range(n), 0);
-			double [][] Q = scalarDivide(num , sum(num));
-
-			Q = maximum(Q, 1e-12);
-
-			// Compute gradient
-			double[][] L = scalarMultiply(minus(P , Q), num);
-		    dY = scalarMult(times(minus(diag(sum(L, 1)),L) , Y), 4);
-			
-			// Perform the update
-			if (iter < 20)
-				momentum = initial_momentum;
-			else
-				momentum = final_momentum;
-			gains = plus(scalarMultiply(scalarPlus(gains,.2), abs(negate(equal(biggerThan(dY,0.0),biggerThan(iY,0.0))))),
-					scalarMultiply(scalarMult(gains,.8), abs(equal(biggerThan(dY,0.0),biggerThan(iY,0.0)))));
-
-			assignAllLessThan(gains, min_gain, min_gain);
-			iY = minus(scalarMult(iY,momentum) , scalarMult(scalarMultiply(gains , dY),eta));
-			Y = plus(Y , iY);
-			//double [][] tile = tile(mean(Y, 0), n, 1);
-			Y = minus(Y , tile(mean(Y, 0), n, 1));
-
-			// Compute current value of cost function
-			if ((iter % 100 == 0))   {
-				double [][] logdivide = log(scalarDivide(P , Q));
-				logdivide = replaceNaN(logdivide,0);
-				double C = sum(scalarMultiply(P , logdivide));
-				System.out.println("Iteration " + (iter + 1) + ": error is " + C);
-			} else if((iter + 1) % 10 == 0) {
-				System.out.println("Iteration " + (iter + 1));
-			}
-
-			// Stop lying about P-values
-			if (iter == 100)
-				P = scalarDivide(P , 4);
+			next(iter);
 		}
 
 		// Return solution
 		return Y;
 	}
 
-	private R Hbeta(double[][] D, double beta){
+
+	protected void next(int iter) {
+		int n = X.length;
+
+		// Compute pairwise affinities
+		double [][] sum_Y = transpose(sum(square(Y), 1));
+
+		numMatrix = scalarInverse(scalarPlus(addRowVector(transpose(addRowVector(scalarMult(
+				times(Y, transpose(Y)),
+				-2),
+				sum_Y)),
+				sum_Y),
+				1), numMatrix);
+		assignAtIndex(numMatrix, range(n), range(n), 0);
+		double [][] Q = scalarDivide(numMatrix, sum(numMatrix));
+
+		Q = maximum(Q, Float.MIN_NORMAL /*1e-12*/);
+
+		// Compute gradient
+		double[][] L = scalarMultiply(minus(P , Q), numMatrix);
+		dY = scalarMult(times(minus(diag(sum(L, 1)),L) , Y), 4);
+
+		gains = plus(scalarMultiply(scalarPlus(gains,.2), abs(negate(equal(biggerThan(dY,0.0),biggerThan(iY,0.0))))),
+				scalarMultiply(scalarMult(gains,.8), abs(equal(biggerThan(dY,0.0),biggerThan(iY,0.0)))));
+
+		assignAllLessThan(gains, min_gain, min_gain);
+		iY = minus(scalarMult(iY,momentum) , scalarMult(scalarMultiply(gains , dY),eta));
+		Y = plus(Y , iY);
+		//double [][] tile = tile(mean(Y, 0), n, 1);
+		Y = minus(Y , tile(mean(Y, 0), n, 1));
+
+		// Compute current value of cost function
+		if (iter % 10 == 0 && logger.isInfoEnabled())   {
+			double error = sum(scalarMultiply(P, replaceNaN(log(scalarDivide(P , Q)),
+					0
+					//Double.MIN_VALUE
+			)));
+			logger.info("iteration {}: error={}", iter, error);
+		}
+
+//			// Stop lying about P-values
+//			if (iter == 100)
+//				P = scalarDivide(P , 4);
+
+	}
+
+	private static R Hbeta(double[][] D, double beta){
 		double [][] P = exp(scalarMult(scalarMult(D,beta),-1));
 		double sumP = sum(P);   // sumP confirmed scalar
 		double H = Math.log(sumP) + beta * sum(scalarMultiply(D,P)) / sumP;
@@ -118,7 +134,7 @@ public class SimpleTSne implements TSne {
 		return r;
 	}
 
-	private R x2p(double[][] X, double tol, double perplexity){
+	private static R x2p(double[][] X, double tol, double perplexity){
 		int n               = X.length;
 		double [][] sum_X   = sum(square(X), 1);
 		double [][] times   = scalarMult(times(X, transpose(X)), -2);
@@ -178,7 +194,7 @@ public class SimpleTSne implements TSne {
 	}
 
 	@Override
-	public void abort() {
+	public void stop() {
 		abort = true;
 	}
 }

@@ -19,7 +19,7 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 	}
 	
 	public List<Future<ParallelTreeNode.TreeSearchResult>> searchMultiple(ParallelVpTree<StorageType> tree, DataPoint [] targets, int k) {
-		Collection<ParallelTreeNode.ParallelTreeSearcher> searchers = new ArrayList<>();
+		Collection<ParallelTreeNode.ParallelTreeSearcher> searchers = new ArrayList<>(targets.length);
 		for(int n = 0; n < targets.length; n++) {
 			@SuppressWarnings("unchecked")
 			ParallelTreeNode node = (ParallelTreeNode) tree.getRoot();
@@ -33,9 +33,9 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 		return new ParallelTreeNode();
 	}
 
-	class ParallelTreeNode extends VpTree<StorageType>.Node {
+	public class ParallelTreeNode extends VpTree<StorageType>.Node {
 		
-		class TreeSearchResult {
+		public class TreeSearchResult {
 			final int n;
 			final List<Double> distances;
 			final List<DataPoint> indices;
@@ -89,9 +89,9 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 
 				// Gather final results
 				while(!heap.isEmpty()) {
-					indices.add(items[heap.peek().index]);
-					distances.add(heap.peek().dist);
-					heap.remove();
+					HeapItem h = heap.remove();
+					indices.add(items[h.index]);
+					distances.add(h.dist);
 				}
 				
 				// Results are in reverse order 

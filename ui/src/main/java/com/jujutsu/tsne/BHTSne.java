@@ -30,12 +30,13 @@
  * OF SUCH DAMAGE.
  *
  */
-package com.jujutsu.tsne.barneshut;
+package com.jujutsu.tsne;
 
-import com.jujutsu.tsne.MatrixOps;
-import com.jujutsu.tsne.PrincipalComponentAnalysis;
+import com.jujutsu.tsne.barneshut.*;
+import com.jujutsu.tsne.matrix.MatrixOps;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -56,7 +57,7 @@ public class BHTSne implements BarnesHutTSne {
 		int noCols = x[0].length;
 		double [] flat = new double[x.length*x[0].length];
 		for (int i = 0; i < x.length; i++) {
-            System.arraycopy(x[i], 0, flat, i * noCols + 0, x[i].length);
+            System.arraycopy(x[i], 0, flat, i * noCols, x[i].length);
 		}
 		return flat;
 	}
@@ -64,7 +65,7 @@ public class BHTSne implements BarnesHutTSne {
 	private static double [][] expand(double[] x, int N, int D) {
 		double [][] expanded = new double[N][D];
 		for (int row = 0; row < N; row++) {
-            System.arraycopy(x, row * D + 0, expanded[row], 0, D);
+            System.arraycopy(x, row * D, expanded[row], 0, D);
 		}
 		return expanded;
 	}
@@ -121,7 +122,7 @@ public class BHTSne implements BarnesHutTSne {
 		for(int i = 0; i < N * D; i++) X[i] /= max_X;
 
 		double [] P = null;
-		int K  = (int) (3 * perplexity);
+		int K  = (int) Math.round(3 * perplexity);
 		int [] row_P = new int[N+1];
 		int [] col_P = new int[N*K];
 		double [] val_P = new double[N*K];
@@ -251,12 +252,14 @@ public class BHTSne implements BarnesHutTSne {
 		double [][] neg_f = new double[N][D];
 
 		tree.computeEdgeForces(inp_row_P, inp_col_P, inp_val_P, N, pos_f);
-		for(int n = 0; n < N; n++) tree.computeNonEdgeForces(n, theta, neg_f[n], sum_Q);
+		for(int n = 0; n < N; n++)
+			tree.computeNonEdgeForces(n, theta, neg_f[n], sum_Q);
 
 		// Compute final t-SNE gradient
+		double sq0 = sum_Q[0];
 		for(int n = 0; n < N; n++) {
 			for(int d = 0; d < D; d++) {
-				dC[n*D+d] = pos_f[n*D+d] - (neg_f[n][d] / sum_Q[0]);
+				dC[n*D+d] = pos_f[n*D+d] - (neg_f[n][d] / sq0);
 			}
 		}
 	}
@@ -265,7 +268,7 @@ public class BHTSne implements BarnesHutTSne {
 	private static void computeExactGradient(double[] P, double[] Y, int N, int D, double[] dC) {
 
 		// Make sure the current gradient contains zeros
-		for(int i = 0; i < N * D; i++) dC[i] = 0.0;
+		Arrays.fill(dC, 0, N*D, 0.0);
 
 		// Compute the squared Euclidean distance matrix
 		double [] DD = new double[N * N];
@@ -278,8 +281,7 @@ public class BHTSne implements BarnesHutTSne {
 		for(int n = 0; n < N; n++) {
 			for(int m = 0; m < N; m++) {
 				if(n != m) {
-					Q[nN + m] = 1 / (1 + DD[nN + m]);
-					sum_Q += Q[nN + m];
+					sum_Q += (Q[nN + m] = 1 / (1 + DD[nN + m]));
 				}
 			}
 			nN += N;
@@ -353,7 +355,7 @@ public class BHTSne implements BarnesHutTSne {
 			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
 				Q = .0;
 				ind2 = col_P[i] * D;
-                System.arraycopy(Y, ind1 + 0, buff, 0, D);
+                System.arraycopy(Y, ind1, buff, 0, D);
 				for(int d = 0; d < D; d++) buff[d] -= Y[ind2 + d];
 				for(int d = 0; d < D; d++) Q += buff[d] * buff[d];
 				Q = (1.0 / (1.0 + Q)) / sum_Q[0];
@@ -547,7 +549,7 @@ public class BHTSne implements BarnesHutTSne {
 
 			// Compute the squared Euclidean distance matrix
 			for(int m = 0; m < N; m++) {
-                System.arraycopy(X, n * D + 0, buff, 0, D);
+                System.arraycopy(X, n * D, buff, 0, D);
 				for(int d = 0; d < D; d++) buff[d] -= X[m * D + d];
 				DD[m] = .0;
 				for(int d = 0; d < D; d++) DD[m] += buff[d] * buff[d];
@@ -624,7 +626,7 @@ public class BHTSne implements BarnesHutTSne {
 
 			// Compute the squared Euclidean distance matrix
 			for(int m = 0; m < N; m++) {
-                System.arraycopy(X, n * D + 0, buff, 0, D);
+                System.arraycopy(X, n * D, buff, 0, D);
 				for(int d = 0; d < D; d++) buff[d] -= X[m * D + d];
 				DD[m] = .0;
 				for(int d = 0; d < D; d++) DD[m] += buff[d] * buff[d];
@@ -857,7 +859,7 @@ public class BHTSne implements BarnesHutTSne {
 	}
 
 	@Override
-	public void abort() {
+	public void stop() {
 		abort = true;
 	}
 

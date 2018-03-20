@@ -1,4 +1,4 @@
-package com.jujutsu.tsne;
+package com.jujutsu.tsne.matrix;
 
 
 import org.ejml.data.DMatrixRMaj;

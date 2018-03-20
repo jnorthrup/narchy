@@ -81,7 +81,7 @@ public class BHUtilsTest {
 		DataPoint d1 = new DataPoint(3,0,p1);
 		double [] p2 = {4.0,5.0,6.0};
 		DataPoint d2 = new DataPoint(3,1,p2);
-		assertEquals(5.196152,d1.euclidean_distance(d2),0.000001);
+		assertEquals(5.196152,new EuclideanDistance().distance(d1, d2), 0.000001);
 	}
 	
 	@Test
