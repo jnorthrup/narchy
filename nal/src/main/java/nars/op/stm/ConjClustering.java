@@ -1,5 +1,6 @@
 package nars.op.stm;
 
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.Priority;
 import jcog.pri.VLink;
@@ -110,19 +111,27 @@ public class ConjClustering extends Causable {
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
         this.taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
 
-        FasterList gen = new FasterList();
+        int generatedExpectation = work * bag.net.centroids.length;
 
-        bag.commitGroups(1, Tuples.pair(nar, gen), this::conjoinCentroid);
+        float forgetRate = 1f - Util.unitize(((float)generatedExpectation)/bag.bag.capacity());
+        bag.bag.commit(t -> {
+            if (t.get().isDeleted())
+                t.delete();
+            else
+                t.priMult(forgetRate);
+        });
 
-        int gs = gen.size();
+        if (!bag.bag.isEmpty()) {
+            FasterList gen = new FasterList(generatedExpectation);
 
+            bag.commitGroups(1, Tuples.pair(nar, gen), this::conjoinCentroid);
 
-        if (gs > 0) {
-            float forgetRate = 1f - ((float)gs)/bag.bag.capacity();
-            bag.bag.commit(t -> t.priMult(forgetRate));
-//            System.out.println(gen);
-            in.input(gen);
-            return (int) Math.ceil(((float)gen.size())/bag.net.centroids.length);
+            int gs = gen.size();
+
+            if (gs > 0) {
+                in.input(gen);
+                return (int) Math.ceil(((float) gs) / bag.net.centroids.length);
+            }
         }
 
         return 0;

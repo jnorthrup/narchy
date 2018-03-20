@@ -25,8 +25,8 @@ public class Tasklinks {
 
     @Deprecated public static void linkTask(Task x, float p, Bag b) {
         TaskLink xx =
-                //new TaskLink.DirectTaskLink(x, p);
-                new TaskLink.GeneralTaskLink(x, p);
+                new TaskLink.DirectTaskLink(x, p);
+                //new TaskLink.GeneralTaskLink(x, p);
 
         linkTask(xx, b, null);
     }
@@ -55,7 +55,7 @@ public class Tasklinks {
         final float priCause = Math.max(_pri, Pri.EPSILON);
 
         //MutableFloat overflow = new MutableFloat();
-        linkTask(new TaskLink.GeneralTaskLink(t, priCause), src.tasklinks(),
+        linkTask(new TaskLink.GeneralTaskLink(t, nar, priCause), src.tasklinks(),
                 null);
                 //overflow);
 
@@ -100,7 +100,7 @@ public class Tasklinks {
         float pEach = p / ccs;
         if (pEach > Pri.EPSILON) {
 
-            Pair<Term, ByteLongPair> tlSeed = TaskLink.GeneralTaskLink.seed(t, false);
+            Pair<Term, ByteLongPair> tlSeed = TaskLink.GeneralTaskLink.seed(t, false, nar);
 
             final float headRoom = 1f - pEach;
             for (int i = 0; i < ccs; i++) {

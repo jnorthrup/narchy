@@ -174,7 +174,7 @@ public class BagClustering<X> {
             for (int i = 0; i < iterations; i++)
                 bag.forEach(this::learn);
 
-            x = new FasterList();
+            x = new FasterList<>(bag.size());
             bag.forEach(x::add);
 
             //Collections.sort(x, Comparator.comparingInt(v->v.centroid));

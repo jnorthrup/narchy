@@ -48,6 +48,7 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.container.Gridding.col;
 import static spacegraph.container.Gridding.grid;
 import static spacegraph.render.JoglPhysics.window;
@@ -105,8 +106,8 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                //fps * 2, //NYQUIST
-                fps * 1, //1:1
+                fps * 2, //NYQUIST
+                //fps * 1, //1:1
                 fps);
     }
 
@@ -184,13 +185,31 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //250 * 1024
-                               // 250 * 1024,
+                                250 * 1024,
                                 //200 * 1024
                                 //100 * 1024
                                 //50 * 1024
-                                20 * 1024,
+                                //20 * 1024,
                                 //4096
+                                //Integer.MAX_VALUE,
                         c -> {
+
+//                            int HISTORY = 1000;
+//                            AtomicHistogram a = c.meta("%");
+//                            int score;
+//                            if (a == null)
+//                                score = 0; //new
+//                            else {
+//
+//                                long now = clock.now();
+//                                long count = a.getCountBetweenValues(Math.max(0, now - HISTORY), now);
+//                                if (count >= Integer.MAX_VALUE)
+//                                    return 0;
+//                                score = (int)count;
+//                            }
+//                            return (Integer.MAX_VALUE - score) / (Integer.MAX_VALUE / (16*1024));
+
+
                             return Math.round(
                                     ((float)c.voluplexity())
                                         /
@@ -198,7 +217,23 @@ abstract public class NAgentX extends NAgent {
                                             //(c.beliefs().size() + c.goals().size()))
                             );
                         }
-                        )
+                        ) /*{
+                            @Override
+                            public Termed get(Term x, boolean createIfMissing) {
+
+                                Termed t = super.get(x, createIfMissing);
+
+                                if (createIfMissing) {
+                                    AtomicHistogram a = ((Concept)t).meta("%", (z)->new AtomicHistogram(Long.MAX_VALUE, 0));
+//                                    int a1 = a.getEstimatedFootprintInBytes();
+//                                    int a2 = a.getNeededByteBufferCapacity();
+                                    a.recordValueWithCount(clock.now(), 1);
+                                }
+
+                                return t;
+                            }
+                        }*/
+
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
@@ -313,9 +348,9 @@ abstract public class NAgentX extends NAgent {
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 16);
+        //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 16);
 
-        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true), 4, 16);
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true), 4, 16);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 

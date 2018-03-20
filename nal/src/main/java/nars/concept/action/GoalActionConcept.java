@@ -156,11 +156,10 @@ public class GoalActionConcept extends ActionConcept {
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief!=null) {
-//            long curiosityStamp = nar.time.nextStamp();
-//            curiosityGoal = this.curiosity(nar,
-//                    //goal,
-//                    Truth.theDithered(feedbackBelief.freqMean(dur, pStart, pEnd), goal.evi(), nar),
-//                    term, pStart, pEnd, curiosityStamp);
+            curiosityGoal = this.curiosity(nar,
+                    goal,
+                    //Truth.theDithered(feedbackBelief.freqMean(dur, pStart, pEnd), goal.evi(), nar),
+                    term, pStart, pEnd, nar.time.nextStamp());
         }
 
         return Stream.of(feedbackBelief, (ITask)curiosityGoal).filter(Objects::nonNull);

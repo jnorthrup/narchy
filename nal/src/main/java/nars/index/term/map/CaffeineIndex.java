@@ -31,7 +31,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     }
 
     public CaffeineIndex(long capacity, ToIntFunction<Concept> w) {
-        this(Caffeine.newBuilder().maximumWeight(capacity * 10).weigher((k,v)->{
+        this(Caffeine.newBuilder().maximumWeight(capacity).weigher((k,v)->{
             if (v instanceof PermanentConcept) return 0;
             return w.applyAsInt((Concept)v);
         }));

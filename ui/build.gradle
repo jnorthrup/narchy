@@ -18,15 +18,17 @@ dependencies {
             name: 'jogl-all-noawt-main',
             version: '2.3.2')
 
-    compile(group: 'org.boofcv', name: 'io', version: '0.26') {
+    compile(group: 'org.boofcv', name: 'boofcv-ip', version: '0.29')
+
+
+    compile(group: 'org.boofcv', name: 'boofcv-io', version: '0.29') {
         exclude(module: 'snakeyaml')
         exclude(module: 'xstream')
+//        exclude(module: 'georegression')
     }
-    compile(group: 'org.boofcv', name: 'WebcamCapture', version: '0.26') {
+    compile(group: 'org.boofcv', name: 'boofcv-WebcamCapture', version: '0.29'){
         exclude(module: 'visualize')
-        exclude(module: 'ip')
         exclude(module: 'lo')
-        exclude(module: 'io')
     }
 
 //    compile group: 'org.jfxvnc', name: 'jfxvnc-net', version: '1.2.0'

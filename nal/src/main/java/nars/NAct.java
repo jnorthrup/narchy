@@ -158,17 +158,17 @@ public interface NAct {
      * tri-state implemented as delta version memory of last state.
      * initial state is neutral.
      */
-    default void actionTriState(@NotNull Term cc, @NotNull IntPredicate i) {
+    default GoalActionAsyncConcept[] actionTriState(@NotNull Term cc, @NotNull IntPredicate i) {
         //final int[] state = {0};
         //new GoalActionConcept(cc, this, (b, d) -> {
-        actionBipolar(cc, true, (float f) -> {
+        GoalActionAsyncConcept[] g = actionBipolar(cc, true, (float f) -> {
 
             f = f / 2f + 0.5f;
 
             //radius of center dead zone; diameter = 2x this
             float deadZoneFreqRadius =
                     1 / 6f;
-                    //1/4f;
+            //1/4f;
             int s;
             if (f > 0.5f + deadZoneFreqRadius)
                 s = +1;
@@ -196,10 +196,13 @@ public interface NAct {
 
             }
 
-            return Float.NaN;
+            return 0f;
+            //return Float.NaN;
         });
-        //m.resolution(1f);
-        //return addAction(m);
+        float res = 0.5f; //0.0, 0.5, 1.0
+        g[0].resolution.set(res);
+        g[1].resolution.set(res);
+        return g;
     }
 
     default <A extends ActionConcept> A addAction(A c) {
@@ -348,8 +351,8 @@ public interface NAct {
     }
     default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
         float thresh =
-                //nar().freqResolution.get();
-                0f;
+                nar().freqResolution.get();
+                //0f;
 
         actionUnipolar(t, true, (x)->0, (f) -> {
             boolean positive = f >= 0.5f + thresh;

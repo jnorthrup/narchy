@@ -45,13 +45,14 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
      */
     interface TimeSeries {
 
-        SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, FloatSupplier res, NAR nar);
+        /** the provided truth value should already be dithered */
+        SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, NAR nar);
 
         @Nullable DynTruth truth(long start, long end, long dur, NAR nar);
 
         int size();
 
-        void forEach(long minT, long maxT, Consumer<? super Task> x);
+        void forEach(long minT, long maxT, boolean exactRange, Consumer<? super Task> x);
 
         void clear();
 
@@ -60,7 +61,11 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         int forEach(long start, long end, Supplier<Random> rng, int limit, Consumer<Task> target);
 
         default FasterList<Task> toList(long start, long end, Supplier<Random> rng, int limit) {
-            FasterList<Task> l = new FasterList<>(limit);
+            int size = size();
+            if (size == 0)
+                return new FasterList(0);
+
+            FasterList<Task> l = new FasterList<>(Math.min(size, limit));
             forEach(start, end, rng, limit, l::addWithoutResizeCheck);
             l.compact();
             return l;
@@ -120,12 +125,30 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         @Override
-        public void forEach(long minT, long maxT, Consumer<? super Task> x) {
-            at.subMap(minT, maxT).values().forEach(x);
+        public void forEach(final long minT, final long maxT, boolean exactRange, Consumer<? super Task> x) {
+            if (at.isEmpty())
+                return;
+            Long low, high;
+            low = at.lowerKey(minT);
+            if (low == null)
+                low = at.floorKey(minT); //TODO is this necessary?
+            if (low == null)
+                low = minT;
+
+            high = at.higherKey(maxT);
+            if (high == null)
+                high = at.ceilingKey(maxT); //TODO is this necessary?
+            if (high == null)
+                high = maxT;
+
+            at.subMap(low, high).values().forEach(exactRange ? xx -> {
+                if (xx.intersects(minT, maxT))
+                    x.accept(xx);
+            } : x);
         }
 
         @Override
-        public SignalTask add(Term term, byte punc, long nextStart, long nextEnd, Truth next, FloatSupplier res, NAR nar) {
+        public SignalTask add(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
 
             int dur = nar.dur();
 
@@ -137,20 +160,16 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 boolean removePrev = false;
                 long lastStamp = Long.MIN_VALUE;
                 long lastEntryKey;
-                if (lastEntry!=null) {
+                if (next!=null && lastEntry!=null) {
                     Task last = lastEntry.getValue();
                     lastEntryKey = lastEntry.getKey();
                     long lastStart = last.start();
                     if (lastStart > nextStart)
                         return null; //too late
 
-                    if (nextStart - last.end() < dur) {
+                    if (nextStart - last.end() <= dur) {
                         Truth lastEnds = last.truth(nextStart, dur);
-                        if (lastEnds.equals(next) ||
-                                (Math.abs(lastEnds.freq() - next.freq()) < Math.max(nar.freqResolution.floatValue(), res.asFloat())
-                                    &&
-                                Math.abs(lastEnds.conf() - next.conf()) < Math.max(nar.confResolution.floatValue(), res.asFloat()))
-                        ) {
+                        if (lastEnds.equals(next)) {
                             //stretch previous task
                             nextStart = lastStart;
                             lastStamp = last.stamp()[0];
@@ -164,18 +183,21 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
                 assert(nextStart <= nextEnd);
 
-                nextTask = new ScalarSignalTask(
-                        term,
-                        punc,
-                        next,
-                        nextStart, nextEnd,
-                        removePrev ? lastStamp : nar.time.nextStamp());
+                if (next!=null) {
+                    nextTask = new ScalarSignalTask(
+                            term,
+                            punc,
+                            next,
+                            nextStart, nextEnd,
+                            removePrev ? lastStamp : nar.time.nextStamp());
+                }
 
                 if (removePrev) {
                     at.remove(lastEntryKey);
                 }
 
-                at.put((nextStart + nextEnd) / 2L, nextTask);
+                if (nextTask!=null)
+                    at.put((nextStart + nextEnd) / 2L, nextTask);
 
             }
 
@@ -222,9 +244,9 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         @Override public int forEach(long start, long end, Supplier<Random> rng, int limit, Consumer<Task> target) {
-            SortedMap<Long, Task> range = at.subMap(start, end);
+            FasterList<Task> inner = new FasterList(limit);
+            forEach(start, end, false, inner::add);
 
-            Collection<Task> inner = range.values();
             int inners = inner.size();
             int n = 0;
             if (inners > 0) {
@@ -244,15 +266,15 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 }
             }
 
-            if (n < 1 /*MIN_TASKS_TRUTHPOLATED */) {
-                Map.Entry<Long, Task> above = at.higherEntry(end);
-                if (above != null) { target.accept(above.getValue()); n++; }
-
-                if (n < limit) {
-                    Map.Entry<Long, Task> below = at.lowerEntry(start);
-                    if (below != null) { target.accept(below.getValue()); n++; }
-                }
-            }
+//            if (n < 1 /*MIN_TASKS_TRUTHPOLATED */) {
+//                Map.Entry<Long, Task> above = at.higherEntry(end);
+//                if (above != null) { target.accept(above.getValue()); n++; }
+//
+//                if (n < limit) {
+//                    Map.Entry<Long, Task> below = at.lowerEntry(start);
+//                    if (below != null) { target.accept(below.getValue()); n++; }
+//                }
+//            }
             return n;
         }
     }
@@ -312,7 +334,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     @Override
     public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
         super.forEachTask(includeEternal, minT, maxT, x);
-        series.forEach(minT, maxT, x);
+        series.forEach(minT, maxT, true, x);
     }
 
     @Override
@@ -341,7 +363,8 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
     public SignalTask add(Truth value, long start, long end, NAR nar) {
 
-        SignalTask t = series.add(term, punc(), start, end, value, res, nar);
+        value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
+        SignalTask t = series.add(term, punc(), start, end, value, nar);
 
         if (t!=null)
             t.pri(pri.asFloat());

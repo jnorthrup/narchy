@@ -78,7 +78,7 @@ public class TrackXY extends NAgent {
 //        n.forgetRate.set(0.9f);
 
 
-        TrackXY t = new TrackXY(8, 8);
+        TrackXY t = new TrackXY(6, 6);
         n.on(t);
 
         int experimentTime = 8048;
@@ -149,9 +149,9 @@ public class TrackXY extends NAgent {
         n.timeFocus.set(2);
 
         ConjClustering cjB = new ConjClustering(n, BELIEF,
-                (tt)->true,
-                //(tt) -> tt.isInput(),
-                5, 16);
+                //(tt)->true,
+                (tt) -> tt.isInput(),
+                4, 16);
 
 //            ConjClustering cjG = new ConjClustering(n, GOAL,
 //                    (tt)->true,
@@ -205,6 +205,39 @@ public class TrackXY extends NAgent {
     protected void start(NAR nar) {
         super.start(nar);
 
+        actionTriState();
+        //actionPushButton();
+
+        this.cam = new Bitmap2DSensor(id /* (Term) null*/, view, nar);
+        this.cam.pixelPri.set(0.2f);
+        //this.cam.resolution(0.1f);
+        sensorCam.add(cam);
+
+        //senseNumber($.the("x"), ()->sx/(view.width()-1));
+        //senseNumber($.the("y"), ()->sy/(view.height()-1));
+
+
+        randomize();
+    }
+
+    private void actionTriState() {
+
+        if (view.height() > 1) {
+            actionTriState($.the("Y"), (dy) -> {
+                float py = sy;
+                sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
+                return !Util.equals(py,sy, 0.01f);
+            });
+        }
+
+        actionTriState($.the("X"), (dx) -> {
+            float px = sx;
+            sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
+            return !Util.equals(px,sx, 0.01f);
+        });
+    }
+
+    private void actionPushButton() {
         if (view.height() > 1) {
             actionPushButton(PROD.the($.the("up"),id), () -> {
                 sy = Util.clamp(sy + controlSpeed, 0, view.height() - 1);
@@ -221,17 +254,6 @@ public class TrackXY extends NAgent {
         actionPushButton(PROD.the($.the("left"), id), () -> {
             sx = Util.clamp(sx - controlSpeed, 0, view.width() - 1);
         });
-
-        this.cam = new Bitmap2DSensor(id /* (Term) null*/, view, nar);
-        this.cam.pixelPri.set(0.2f);
-        //this.cam.resolution(0.1f);
-        sensorCam.add(cam);
-
-        //senseNumber($.the("x"), ()->sx/(view.width()-1));
-        //senseNumber($.the("y"), ()->sy/(view.height()-1));
-
-
-        randomize();
     }
 
     protected void randomize() {
@@ -334,7 +356,7 @@ public static class CircleTarget implements Consumer<TrackXY> {
 
                 float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
                 float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-                return Math.max(0,
+                return Util.unitize(
                         Math.max(1 - distOther * visionContrast,
                                 1 - distSelf * visionContrast
                         ));

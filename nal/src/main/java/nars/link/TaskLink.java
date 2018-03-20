@@ -10,6 +10,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.time.Tense;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ByteLongPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -38,12 +39,12 @@ public interface TaskLink extends Priority, Termed {
 //            this(template.term().concept(), template.punc(), Tense.dither(template.mid(), nar), pri);
 //        }
 
-        public GeneralTaskLink(Task t, float pri) {
-            this(t, false, pri);
+        public GeneralTaskLink(Task t, NAR n, float pri) {
+            this(t, false, n, pri);
         }
 
-        public GeneralTaskLink(Task t, boolean polarizeBeliefsAndGoals, float pri) {
-            this(seed(t, polarizeBeliefsAndGoals), pri);
+        public GeneralTaskLink(Task t, boolean polarizeBeliefsAndGoals, NAR n, float pri) {
+            this(seed(t, polarizeBeliefsAndGoals, n), pri);
         }
 
         public GeneralTaskLink(Term t, byte punc, long when, float pri) {
@@ -58,9 +59,9 @@ public interface TaskLink extends Priority, Termed {
             return new HashCachedPair<>(t, PrimitiveTuples.pair(punc, when));
         }
 
-        public static Pair<Term, ByteLongPair> seed(Task t, boolean polarizeBeliefsAndGoals) {
+        public static Pair<Term, ByteLongPair> seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
             return seed(t.term().negIf(polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()),
-                    t.punc(), t.mid());
+                    t.punc(), Tense.dither(t.mid(), n));
         }
 
 

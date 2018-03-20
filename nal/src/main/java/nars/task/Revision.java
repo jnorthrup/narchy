@@ -999,6 +999,14 @@ public class Revision {
             d += (1f + rangeDiff) * (1f + seqDiff);
 
         } else {
+            if (!aSubsEqualsBSubs) {
+                if (aa.subs()!=bb.subs())
+                    return Float.POSITIVE_INFINITY;
+
+                for (int i = 0; i < len; i++)
+                    d += dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+            }
+
             int adt = a.dt();
             int bdt = b.dt();
 
@@ -1023,10 +1031,7 @@ public class Revision {
                 d += Math.abs(adt - bdt);
             }
 
-            if (!aSubsEqualsBSubs) {
-                for (int i = 0; i < len; i++)
-                    d += dtDiff(aa.sub(i), bb.sub(i), depth + 1);
-            }
+
         }
 
         return d / depth;

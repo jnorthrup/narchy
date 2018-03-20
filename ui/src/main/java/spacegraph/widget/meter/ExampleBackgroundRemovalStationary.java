@@ -1,5 +1,6 @@
 package spacegraph.widget.meter;
 
+
 import boofcv.alg.background.BackgroundModelStationary;
 import boofcv.factory.background.ConfigBackgroundGaussian;
 import boofcv.factory.background.FactoryBackgroundModel;

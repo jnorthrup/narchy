@@ -106,7 +106,8 @@ public class NARio extends NAgentX {
 
 
         //initBipolar();
-        initToggle();
+        initButton();
+        //initTriState();
 
 
         Scalar dvx = senseNumberDifference($$("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
@@ -132,7 +133,7 @@ public class NARio extends NAgentX {
 //        frame.addFocusListener(mario);
     }
 
-    private void initToggle() {
+    private void initButton() {
 
         actionPushButton($$("left"),
                 n -> mario.scene.key(Mario.KEY_LEFT, n));
@@ -145,55 +146,58 @@ public class NARio extends NAgentX {
         actionPushButton($$("speed"),
                 n -> mario.scene.key(Mario.KEY_SPEED, n));
 
-//        actionTriState($("x"), i -> {
-//            boolean n, p;
-//            switch (i) {
-//                case -1:
-//                    p = false;
-//                    n = true;
-//                    break;
-//                case +1:
-//                    p = true;
-//                    n = false;
-//                    break;
-//                case 0:
-//                    p = false;
-//                    n = false;
-//                    break;
-//                default:
-//                    throw new RuntimeException();
-//            }
-//            mario.scene.key(Mario.KEY_LEFT, n);
-//            mario.scene.key(Mario.KEY_RIGHT, p);
-//            return true;
-//        });
-//        actionTriState($("y"), i -> {
-//            boolean n, p;
-//            switch (i) {
-//                case -1:
-//                    p = false;
-//                    n = true;
-//                    break;
-//                case +1:
-//                    p = true;
-//                    n = false;
-//                    break;
-//                case 0:
-//                    p = false;
-//                    n = false;
-//                    break;
-//                default:
-//                    throw new RuntimeException();
-//            }
-//            mario.scene.key(Mario.KEY_DOWN, n);
-//            //mario.scene.key(Mario.KEY_UP, p);
-//            mario.scene.key(Mario.KEY_JUMP, p);
-//            return true;
-//        });
-//
 
     }
 
+    public void initTriState() {
+        actionTriState($.the("x"), i -> {
+            boolean n, p;
+            switch (i) {
+                case -1:
+                    p = false;
+                    n = true;
+                    break;
+                case +1:
+                    p = true;
+                    n = false;
+                    break;
+                case 0:
+                    p = false;
+                    n = false;
+                    break;
+                default:
+                    throw new RuntimeException();
+            }
+            mario.scene.key(Mario.KEY_LEFT, n);
+            mario.scene.key(Mario.KEY_RIGHT, p);
+            return true;
+        });
+        actionTriState($.the("y"), i -> {
+            boolean n, p;
+            switch (i) {
+                case -1:
+                    p = false;
+                    n = true;
+                    break;
+                case +1:
+                    p = true;
+                    n = false;
+                    break;
+                case 0:
+                    p = false;
+                    n = false;
+                    break;
+                default:
+                    throw new RuntimeException();
+            }
+            mario.scene.key(Mario.KEY_DOWN, n);
+            //mario.scene.key(Mario.KEY_UP, p);
+            mario.scene.key(Mario.KEY_JUMP, p);
+            return true;
+        });
+
+
+    }
     public void initBipolar() {
         float thresh = 0.33f;
 

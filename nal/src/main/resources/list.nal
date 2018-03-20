@@ -24,3 +24,9 @@
 //    //(C-->P), X, is(P,"*"), subOf(X,P), task(containsBeliefRecursively) |- (P-->(X,indicesOf(P,X))), (Belief:Identity, Goal:Identity)
 
 
+//((x,y,z)-->a)
+//    ((a,(),y,z)-->x)
+//    ((((),y,z)-->x)-->a)
+//    ( (((),y,z),x) -->a)
+//    ( (((),y,z),x) -->a)
+//    (x-->((),y,z,a))
