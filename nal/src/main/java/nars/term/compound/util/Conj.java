@@ -103,6 +103,19 @@ public class Conj {
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return Null;
 
+        int cdt = conj.dt();
+        if (cdt ==DTERNAL || cdt == 0) {
+            Term[] csDropped = conj.subterms().termsExcept(event);
+            if (csDropped!=null) {
+                if (csDropped.length == 1)
+                    return csDropped[0];
+                else
+                    return CONJ.the(cdt, csDropped);
+            }
+            if (cdt == DTERNAL)
+                throw new UnsupportedOperationException(); //shouldnt proceed below with event recomposition
+        }
+
         Conj c = Conj.from(conj);
         long targetTime;
         if (c.event.size()==1) {
@@ -118,7 +131,9 @@ public class Conj {
         }
         assert(targetTime!=XTERNAL);
         boolean removed = c.remove(event, targetTime);
-        assert(removed);
+        if (!removed) {
+            return Null; //the event was not at the target time
+        }
 
         return c.term();
 
@@ -322,11 +337,16 @@ public class Conj {
     }
 
     public boolean remove(Term t, long at) {
+
+
         Object o = event.get(at);
         if (o == null)
             return false; //nothing at that time
 
+        boolean neg= t.op()==NEG;
         int i = add(t); //should be get(), add doesnt apply
+        if (neg)
+            i = -i;
         if (o instanceof RoaringBitmap) {
             return ((RoaringBitmap)o).checkedRemove(i);
         } else {

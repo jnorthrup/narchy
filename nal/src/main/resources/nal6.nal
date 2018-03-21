@@ -25,9 +25,11 @@
         B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:Deduction, Goal:Induction)
         B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:DeductionN, Goal:InductionN)
             B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:Deduction)
-            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:Deduction)
             B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:DeductionN)
-            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:DeductionN)
+        B, (X ==> (&&,C,A..+)), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:Abduction, Goal:Deduction)
+        B, (X ==> (&&,--C,A..+)), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:AbductionN, Goal:DeductionN)
+            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:Abduction)
+            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:AbductionN)
 
             //(Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
               //  (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
@@ -195,19 +197,22 @@
     (X ==> C), (B==>M), eventOfNeg(X,M) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
-    (X ==> C), (Y==>C), is(X,"&&"), is(Y,"&&"), neq(X,Y)   |- differ(Y,X), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), eventOf(X,Y)   |- conjWithout(X,Y), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), eventOf(Y,X)   |- conjWithout(Y,X), (Belief:AbductionPB)
-        //((&&,M,A..+) ==> C), ((&&,A..+) ==> C)   |- M, (Belief:AbductionPB)
+
+    (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (X ==>+- Y), (Belief:Abduction)
+    (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (Y ==>+- X), (Belief:Abduction)
+        ((&&,M,A..+) ==> C), ((&&,A..+) ==> C)   |- M, (Belief:AbductionPB)
+        ((&&,M,A) ==> C),    (A ==> C)           |- M, (Belief:AbductionPB)
+
+
+    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
+    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
 
     (X ==> C), (B==>M), eventOf(X,B) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
-        (X ==> C), (--B==>M), eventOfNeg(X,B) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
+        (X ==> C), (B==>M), eventOfNeg(X,B) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //((&&,B,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,M,A..+) ==>+- C), (Belief:AbductionPB)
 
 
         //((&&,A..+) ==> C), M,                    |- ((&&,M,A..+) ==>+- C), (Belief:Induction)
-    (X ==> C), (Y ==> C), is(X,"&&"),is(Y,"&&"), neq(X,Y) |- (differ(Y,X) ==>+- differ(X,Y)), (Belief:InductionPB)
-        //((&&,M,A..+) ==> C), ((&&,B,A..+)==>C)   |- (B ==>+- M), (Belief:Induction)
 
 
 
@@ -232,6 +237,9 @@
     ((&&,M,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- B) ==>+- C), (Belief:Deduction)
     ((&&,B,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
     //(X ==> C), Y,  notImpl(M) |- ((X &&+- Y) ==>+- C), (Belief:Induction)
+
+    //ConjunctionContradictionInduction
+    ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==>+- C), (Belief:Induction)
 
 
 //precondition combiner inference rule (variable_unification6):

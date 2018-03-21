@@ -253,8 +253,8 @@ public class Premise extends Pri {
 //                * (1f/lessConstantTerm.volume());
 //                //* Util.unitize(lessConstantTerm.complexity() / ((float) moreConstantTerm.complexity()));
 //
-        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri));
-        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2f));
+        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2f));
 //        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
 //        //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
 //

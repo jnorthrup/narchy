@@ -2,6 +2,7 @@ package nars.nal.nal6;
 
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Disabled;
@@ -264,7 +265,7 @@ public class NAL6Test extends NALTest {
                 .believe("flyer:Tweety")
                 .mustBelieve(cycles, "((chirping:Tweety && food:worms) ==> bird:Tweety)",
                         1.0f,
-                        0.73f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
+                        0.81f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
         //0.81f); //en("If Tweety can chirp and eats worms, then it is a bird.");
 
     }
@@ -421,7 +422,6 @@ public class NAL6Test extends NALTest {
     public void variables_introduction() {
 
         test
-
                 .believe("open({key1},{lock1})") //en("Key-1 opens Lock-1.");
                 .believe("key:{key1}") //en("Key-1 is a key.");
                 .mustBelieve(cycles, "(key:$1 ==> open($1,{lock1}))", 1.00f, 0.45f) //en("I guess every key can open Lock-1.");
@@ -429,6 +429,15 @@ public class NAL6Test extends NALTest {
 
     }
 
+    @Test public void testConjunctionContradictionInduction() {
+        Param.DEBUG = true;
+        test
+                .log()
+                .believe("((x && y) ==> z)")
+                .believe("((x && --y) ==> z)")
+                .mustBelieve(cycles, "(x ==> z)", 1.00f, 0.45f);
+
+    }
 
     @Test
     public void multiple_variables_introduction() {

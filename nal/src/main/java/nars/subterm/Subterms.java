@@ -1162,6 +1162,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return Util.hashCombine(this.hashCodeSubterms(), op.id);
     }
 
+    @Nullable default Term[] termsExcept(Term x) {
+        int index = indexOf(x);
+        if (index == -1) return null;
+        return termsExcept(index);
+    }
+
+
 
     //    /**
 //     * returns a sorted and de-duplicated version of this container

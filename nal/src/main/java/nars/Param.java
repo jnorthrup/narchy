@@ -138,8 +138,8 @@ public abstract class Param {
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            Util::and;
-            //Util::or;
+            //Util::and;
+            Util::or;
     //UtilityFunctions::aveAri;
     //Math::max;
 
