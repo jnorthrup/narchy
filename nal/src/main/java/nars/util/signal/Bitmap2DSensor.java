@@ -276,8 +276,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
                 //wrap around
                 int extra = end - totalPixels;
                 s = Stream.concat(
-                        Bitmap2DSensor.this.stream(mode, start, totalPixels, nar), //last 'half'
-                        Bitmap2DSensor.this.stream(mode, 0, extra, nar) //first half after wrap around
+                        stream(mode, start, totalPixels, nar), //last 'half'
+                        stream(mode, 0, extra, nar) //first half after wrap around
                 );
                 this.lastPixel = extra;
             } else {

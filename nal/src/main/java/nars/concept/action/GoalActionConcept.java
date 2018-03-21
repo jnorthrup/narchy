@@ -74,7 +74,9 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth goal;
 
-        goal = this.goals().truth(pStart, pEnd, nar);
+        long gStart = pEnd;
+        long gEnd = pEnd + dur;
+        goal = this.goals().truth(gStart, gEnd, nar);
 
 //        if (goals.size() > 0)
 //            System.err.println(term + " " + goal.freq() + " " + goal.evi() + " " + goal.conf());
@@ -152,7 +154,7 @@ public class GoalActionConcept extends ActionConcept {
         Truth feedback = this.motor.apply(belief, goal);
 
         Task feedbackBelief = feedback!=null ?
-                this.feedback.add(feedback, pStart, pEnd, nar) : null;
+                this.feedback.add(feedback, gStart,gEnd, nar) : null;
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief!=null) {

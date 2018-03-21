@@ -69,8 +69,8 @@ public class FZero extends NAgentX {
                 24, 16
                 //10,4
                 //16,8
-        )/*.blur()*/).resolution(0.02f);
-        c.pixelPri.set(0.05f);
+        )/*.blur()*/).resolution(0.05f);
+        //c.pixelPri.set(0.05f);
 
 //        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
 //                //32, 24
@@ -328,7 +328,8 @@ public class FZero extends NAgentX {
 
         final float[] left = new float[1];
         final float[] right = new float[1];
-        actionUnipolar($.the("left"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
+        //actionUnipolar($.the("left"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
+        actionUnipolar($.the("left"), (x) -> {
             float power = (x - 0.5f)*2f;
             left[0] = power;
             fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed;
@@ -339,7 +340,8 @@ public class FZero extends NAgentX {
                             * fwdSpeed/2f;
             return x;
         }).resolution.set(res);
-        actionUnipolar($.the("right"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
+        //actionUnipolar($.the("right"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
+        actionUnipolar($.the("right"), (x) -> {
             float power = (x - 0.5f)*2f;
             right[0] = power;
             fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed;

@@ -737,7 +737,7 @@ public interface NAct {
     }
 
     default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
-        return actionUnipolar(s, false, (x)->Float.NaN, update);
+        return actionUnipolar(s, true, (x)->Float.NaN, update);
     }
 
 

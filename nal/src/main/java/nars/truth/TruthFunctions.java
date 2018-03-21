@@ -265,7 +265,9 @@ public final class TruthFunctions {
      */
     @Nullable public static Truth desireStrongNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float c = and(a.conf(), b.conf(), b.freq());
-        return c < minConf ? null : $.t(a.freq(), c);
+        //return c < minConf ? null : $.t(a.freq(), c);
+        return c < minConf ? null : $.t(Util.lerp(b.freq(), 0.5f, a.freq()), c);
+
 
 //        float c = a.conf() * b.freq();
 //        return c < minConf ? null : $.t(a.freq(), c);
@@ -282,7 +284,8 @@ public final class TruthFunctions {
     }
     public static Truth desireWeakNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float c = and(a.conf(), b.conf(), b.freq(), w2c(1.0f));
-        return c < minConf ? null : $.t(a.freq(), c);
+        //return c < minConf ? null : $.t(a.freq(), c);
+        return c < minConf ? null : $.t(Util.lerp(b.freq(), 0.5f, a.freq()), c);
 
 //        float c = and(a.conf(), b.freq(), w2c(1.0f));
 //        return c < minConf ? null : $.t(a.freq(), c);

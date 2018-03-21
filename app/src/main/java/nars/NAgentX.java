@@ -50,7 +50,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.container.Gridding.col;
 import static spacegraph.container.Gridding.grid;
 import static spacegraph.render.JoglPhysics.window;
@@ -89,8 +88,8 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                fps * 2, //NYQUIST
-                //fps * 1, //1:1
+                //fps * 2, //NYQUIST
+                fps * 1, //1:1
                 fps);
     }
 
@@ -326,7 +325,7 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
         //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 16);
 
-        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 16);
+        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 16);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
