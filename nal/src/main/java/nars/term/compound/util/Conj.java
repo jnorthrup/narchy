@@ -4,6 +4,7 @@ import jcog.list.FasterList;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
@@ -102,23 +103,87 @@ public class Conj {
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return Null;
 
-        FasterList<LongObjectPair<Term>> events = Conj.decompose(conj);
-        Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
-        int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
-
-        LongObjectPair<Term> ev = events.get(eMax);
-        if (ev.getTwo().equals(event)) {
-            events.removeFast(eMax);
-            return Op.conj(events);
+        Conj c = Conj.from(conj);
+        long targetTime;
+        if (c.event.size()==1) {
+            //TODO maybe prefer the subevent with the shortest range()
+            targetTime = c.event.keysView().longIterator().next();
+        } else if (earlyOrLate) {
+            Object eternalTemporarilyRemoved = c.event.remove(ETERNAL);
+            targetTime = c.event.keysView().min();
+            if (eternalTemporarilyRemoved!=null)
+                c.event.put(ETERNAL, eternalTemporarilyRemoved);
         } else {
-            return Null;
+            targetTime = c.event.keysView().max();
         }
+        assert(targetTime!=XTERNAL);
+        boolean removed = c.remove(event, targetTime);
+        assert(removed);
+
+        return c.term();
+
+//        FasterList<LongObjectPair<Term>> events = Conj.decompose(conj);
+//        Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
+//        int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
+//
+//        LongObjectPair<Term> ev = events.get(eMax);
+//        if (ev.getTwo().equals(event)) {
+//            events.removeFast(eMax);
+//            return Op.conj(events);
+//        } else {
+//            return Null;
+//        }
     }
 
-    public static FasterList<LongObjectPair<Term>> decompose(Term t) {
+    public static FasterList<LongObjectPair<Term>> eventList(Term t) {
         return t.eventList(t.dt()==DTERNAL ? ETERNAL : 0, 1, true, true);
     }
 
+    public static Conj from(Term t) {
+        return from(t, t.dt()==DTERNAL ? DTERNAL : 0);
+    }
+
+    public static Conj from(Term t, long rootTime) {
+        Conj x = new Conj();
+        x.add(t, rootTime);
+        return x;
+    }
+
+    public static Term conj(FasterList<LongObjectPair<Term>> events) {
+        int eventsSize = events.size();
+        switch (eventsSize) {
+            case 0: return Null;
+            case 1: return events.get(0).getTwo();
+        }
+
+        Conj ce = new Conj();
+
+        for (int i = 0; i < eventsSize; i++) {
+            LongObjectPair<Term> o = events.get(i);
+            if (!ce.add(o.getTwo(), o.getOne())) {
+                break;
+            }
+        }
+
+        return ce.term();
+    }
+    public static Term conj(Collection<LongObjectPair<Term>> events) {
+        int eventsSize = events.size();
+        switch (eventsSize) {
+            case 0: return Null;
+            case 1: return events.iterator().next().getTwo();
+        }
+
+        Conj ce = new Conj();
+
+        for (LongObjectPair<Term> o : events) {
+            if (!ce.add(o.getTwo(), o.getOne())) {
+                break;
+            }
+        }
+
+        return ce.term();
+    }
 
     /**
      * returns false if contradiction occurred, in which case this
@@ -248,12 +313,32 @@ public class Conj {
 
     public int add(Term t) {
         assert (t != null && !(t instanceof Bool));
-        return terms.getIfAbsentPutWithKey(t, tt -> {
+        return terms.getIfAbsentPutWithKey(t.unneg(), tt -> {
             int s = terms.size();
             termsIndex.add(tt);
             assert (s < Byte.MAX_VALUE);
             return (byte) s;
         }) + 1;
+    }
+
+    public boolean remove(Term t, long at) {
+        Object o = event.get(at);
+        if (o == null)
+            return false; //nothing at that time
+
+        int i = add(t); //should be get(), add doesnt apply
+        if (o instanceof RoaringBitmap) {
+            return ((RoaringBitmap)o).checkedRemove(i);
+        } else {
+            byte[] b = (byte[]) o;
+            int bi = ArrayUtils.indexOf(b, (byte)i);
+            if (bi!=-1) {
+                event.put(at, ArrayUtils.remove(b, bi));
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
 //    private byte id(long w) {
@@ -468,7 +553,8 @@ public class Conj {
         int ts = t.size();
         switch (ts) {
             case 0:
-                throw new RuntimeException("fault");
+                //throw new RuntimeException("fault");
+                return True;
             case 1:
                 return t.first();
             default:

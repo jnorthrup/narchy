@@ -356,9 +356,9 @@ public class Builtin {
             if (oo != CONJ)
                 return Null;//returning the original value may cause feedback loop in callees expcting a change in value
 
-            FasterList<LongObjectPair<Term>> ee = Conj.decompose(t);
+            FasterList<LongObjectPair<Term>> ee = Conj.eventList(t);
             ee.remove(nar.random().nextInt(ee.size()));
-            return Op.conj(ee);
+            return Conj.conj(ee);
 
 //            }
 
@@ -400,7 +400,7 @@ public class Builtin {
                 return Null;
 
 
-            FasterList<LongObjectPair<Term>> events = Conj.decompose(conj);
+            FasterList<LongObjectPair<Term>> events = Conj.eventList(conj);
             IntArrayList found = new IntArrayList(2);
             int es = events.size();
             assert (es > 1);
@@ -423,7 +423,7 @@ public class Builtin {
                     break;
             }
             events.remove(r);
-            return Op.conj(events);
+            return Conj.conj(events);
 //            } else {
 //                return nullToNull(Op.without(conj, event::equalsRoot, nar.random()));
 //            }

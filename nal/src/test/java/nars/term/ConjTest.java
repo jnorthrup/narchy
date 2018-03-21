@@ -3,7 +3,6 @@ package nars.term;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
-import nars.Op;
 import nars.term.compound.util.Conj;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.junit.jupiter.api.Test;
@@ -11,13 +10,15 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
 
+import static nars.$.$$;
 import static nars.Op.False;
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestConj {
+public class ConjTest {
 
     @Test public void testSimpleEternals() {
         Conj c = new Conj();
@@ -77,7 +78,7 @@ public class TestConj {
     }
     @Test public void testEventContradictionAmongNonContradictionsRoaring() {
         Conj c = new Conj();
-        c.add($.$$("(&&,a,b,c,d,e,f,g,h)"), ETERNAL);
+        c.add($$("(&&,a,b,c,d,e,f,g,h)"), ETERNAL);
         boolean added = c.add($.the("a").neg(), 1);
         assertEquals(False, c.term());
     }
@@ -112,7 +113,7 @@ public class TestConj {
     private void assertConsistentConj(int variety, int start, int end) {
         FasterList<LongObjectPair<Term>> x = newRandomEvents(variety, start, end);
 
-        Term y = Op.conj(x.clone());
+        Term y = Conj.conj(x.clone());
         FasterList<LongObjectPair<Term>> z = y.eventList();
 
 
@@ -120,7 +121,7 @@ public class TestConj {
 
         //for debugging to see why
         if (!x.equals(z)) {
-            Term y2 = Op.conj(x.clone());
+            Term y2 = Conj.conj(x.clone());
         }
 
         assertEquals(x, z);
@@ -141,6 +142,22 @@ public class TestConj {
         return e;
     }
 
+    @Test public void testConjComplexAddRemove() {
+        Term x = $$("(( ( ((_1-->_2),_3) &| (--,_4)) &| (_5 &| _6)) &&+8 ( (((_1-->_2),_3) &| (--,_4)) &| (_5 &|_6))))");
+        Conj c = Conj.from(x);
+        assertEquals(x, c.term());
+        boolean removedLast = c.remove($$("((_1-->_2),_3)"), c.event.keysView().max());
+        assertTrue(removedLast);
+        assertEquals(
+                "((&|,((_1-->_2),_3),(--,_4),_5,_6) &&+8 (&|,(--,_4),_5,_6))",
+                c.term().toString());
+        boolean removedFirst = c.remove($$("((_1-->_2),_3)"), c.event.keysView().min());
+        assertTrue(removedFirst);
+        assertEquals(
+                "((&|,(--,_4),_5,_6) &&+8 (&|,(--,_4),_5,_6))",
+                c.term().toString());
+
+    }
 
     @Test
     public void testWrappingCommutiveConjunction() {
@@ -148,49 +165,49 @@ public class TestConj {
         {
 
             //AND, valid
-            Term xEternal = $.$$("((((--,angX) &&+4 x) &&+10244 angX) && y)");
+            Term xEternal = $$("((((--,angX) &&+4 x) &&+10244 angX) && y)");
             assertEquals("((((--,angX) &&+4 x) &&+10244 angX)&&y)",
                     xEternal.toString());
 
             //AND, valid after factoring
-            Term xFactored = $.$$("((x&&y) &&+1 (y&&z))");
+            Term xFactored = $$("((x&&y) &&+1 (y&&z))");
             assertEquals("((x &&+1 z)&&y)", xFactored.toString());
 
             //AND, contradict
-            Term xAndContradict = $.$$("((x &&+1 x)&&--x)");
+            Term xAndContradict = $$("((x &&+1 x)&&--x)");
             assertEquals(False,
                     xAndContradict);
 
             //AND, redundant
-            Term xAndRedundant = $.$$("((x &&+1 x)&&x)");
+            Term xAndRedundant = $$("((x &&+1 x)&&x)");
             assertEquals("(x &&+1 x)",
                     xAndRedundant.toString());
 
             //AND, redundant parallel
-            Term xAndRedundantParallel = $.$$("(((x &| y) &| z)&&x)");
+            Term xAndRedundantParallel = $$("(((x &| y) &| z)&&x)");
             assertEquals("(&|,x,y,z)",
                     xAndRedundantParallel.toString());
 
             //AND, contradiction parallel
-            Term xAndContradictParallel = $.$$("(((x &| y) &| z)&&--x)");
+            Term xAndContradictParallel = $$("(((x &| y) &| z)&&--x)");
             assertEquals(False,
                     xAndContradictParallel);
 
             //AND, contradiction parallel multiple
-            Term xAndContradictParallelMultiple = $.$$("(&&,x,y,((x &| y) &| z))");
+            Term xAndContradictParallelMultiple = $$("(&&,x,y,((x &| y) &| z))");
             assertEquals("(&|,x,y,z)",
                     xAndContradictParallelMultiple.toString());
 
             //AND contradiction
-            Term xAndContradict2 = $.$$("((((--,angX) &&+4 x) &&+10244 angX) && --x)");
+            Term xAndContradict2 = $$("((((--,angX) &&+4 x) &&+10244 angX) && --x)");
             assertEquals(False, xAndContradict2);
 
             //AND contradiction2
-            Term xAndContradict3 = $.$$("((((--,angX) &&+4 x) &&+10244 angX) && angX)");
+            Term xAndContradict3 = $$("((((--,angX) &&+4 x) &&+10244 angX) && angX)");
             assertEquals(False, xAndContradict3);
 
             //Ambiguous
-            Term xParallel = $.$$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 y)");
+            Term xParallel = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 y)");
             assertEquals(False, xParallel);
 
         }
@@ -198,14 +215,14 @@ public class TestConj {
         {
             //ambiguous simultaneity
 
-            Term xParallelContradiction4 = $.$$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 angX)");
+            Term xParallelContradiction4 = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 angX)");
             assertEquals(False, xParallelContradiction4);
         }
 
 
         {
-            Term x = $.$$("((((--,angX) &&+4 x) &&+10244 angX) &| angX)");
-            Term y = $.$$("(angX &| (((--,angX) &&+4 x) &&+10244 angX))");
+            Term x = $$("((((--,angX) &&+4 x) &&+10244 angX) &| angX)");
+            Term y = $$("(angX &| (((--,angX) &&+4 x) &&+10244 angX))");
             assertEquals(x, y);
             //.
         }
@@ -213,19 +230,19 @@ public class TestConj {
 
     @Test
     public void testFactorFromEventSequence() {
-        Term yParallel1 = $.$$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 y)");
+        Term yParallel1 = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 y)");
         String yParallel2Str = "((((--,angX)&|y) &&+4 (x&|y)) &&+10244 (angX&|y))";
-        Term yParallel2 = $.$$(yParallel2Str);
+        Term yParallel2 = $$(yParallel2Str);
         assertEquals(yParallel1, yParallel2);
         assertEquals(yParallel2Str, yParallel1.toString());
     }
     @Test
     public void testFactorFromEventParallel() {
-        Term yParallelOK = $.$$("(((a&&x) &| (b&&x)) &| (c&&x))");
+        Term yParallelOK = $$("(((a&&x) &| (b&&x)) &| (c&&x))");
         assertEquals("", yParallelOK.toString());
         //not: (&|,a,b,c,x)
 
-        Term yParallelContradict = $.$$("((a&&x) &| (b&&--x))");
+        Term yParallelContradict = $$("((a&&x) &| (b&&--x))");
         assertEquals(False, yParallelContradict);
     }
 

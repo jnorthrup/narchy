@@ -5,6 +5,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.pri.PLink;
 import jcog.pri.Pri;
 import nars.NAR;
 import nars.Op;
@@ -246,14 +247,14 @@ public class Premise extends Pri {
 //         *  unified variable.  ie. $x -> (y)  would get a stronger link than  $x -> (y,z)
 //         */
 //        PriReference taskLink = this;
-//        Term moreConstantTerm = moreConstant.term();
-//        Term lessConstantTerm = lessConstant.term();
+        Term moreConstantTerm = moreConstant.term();
+        Term lessConstantTerm = lessConstant.term();
 //        float pri = taskLink.priElseZero()
 //                * (1f/lessConstantTerm.volume());
 //                //* Util.unitize(lessConstantTerm.complexity() / ((float) moreConstantTerm.complexity()));
 //
-//        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri));
-//        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri));
+        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
 //        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
 //        //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
 //

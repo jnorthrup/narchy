@@ -255,6 +255,21 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
+    public void variable_elimination6simpler() {
+
+        ////  ((%1,((%3&&%1073742338..+)==>%4),task(".")),(subIfUnifiesAny(((&&,%1073742338..+) ==>+- %4),%3,%1,"$"),((DeductionPB-->Belief))))
+
+        test
+                .believe("((&&, flyer:$x, chirping:$x, food:worms) ==> bird:$x)")
+                .believe("flyer:Tweety")
+                .mustBelieve(cycles, "((chirping:Tweety && food:worms) ==> bird:Tweety)",
+                        1.0f,
+                        0.73f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
+        //0.81f); //en("If Tweety can chirp and eats worms, then it is a bird.");
+
+    }
+
+    @Test
     public void variable_elimination6() {
 
         ////  ((%1,((%3&&%1073742338..+)==>%4),task(".")),(subIfUnifiesAny(((&&,%1073742338..+) ==>+- %4),%3,%1,"$"),((DeductionPB-->Belief))))
@@ -262,7 +277,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("((&&, flyer:$x, [chirping]:$x, food($x, worms)) ==> bird:$x)")
                 .believe("flyer:Tweety")
-                .mustBelieve(cycles * 2, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
+                .mustBelieve(cycles * 4, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
                         1.0f,
                         0.73f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
         //0.81f); //en("If Tweety can chirp and eats worms, then it is a bird.");
@@ -313,10 +328,10 @@ public class NAL6Test extends NALTest {
         tester.believe("({lock1} --> lock)"); //en("Lock-1 is a lock.");
         tester.mustBelieve(cycles, "(<#1 --> key> && open(#1,{lock1}))",
                 1.00f,
-                0.81f
+                0.43f
+                //0.81f
                 //0.73f
         ); //en("I guess there is a key that can open Lock-1.");
-
     }
 
 //    @Test

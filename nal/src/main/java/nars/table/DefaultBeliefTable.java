@@ -73,7 +73,7 @@ public class DefaultBeliefTable implements BeliefTable {
 //    }
 
     @Override
-    public final void forEachTask(Consumer<? super Task> action) {
+    public void forEachTask(Consumer<? super Task> action) {
         eternal.forEachTask(action);
         temporal.forEachTask(action);
     }

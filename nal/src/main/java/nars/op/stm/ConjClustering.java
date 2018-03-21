@@ -5,7 +5,6 @@ import jcog.list.FasterList;
 import jcog.pri.Priority;
 import jcog.pri.VLink;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
@@ -16,6 +15,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
+import nars.term.compound.util.Conj;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -303,7 +303,7 @@ public class ConjClustering extends Causable {
                 final Truth t = Truth.theDithered(freq, e, nar);
                 if (t != null) {
 
-                    Term cj = Op.conj(new FasterList(vv.keySet()));
+                    Term cj = Conj.conj(vv.keySet());
                     if (cj != null) {
 
                         cj = cj.normalize();

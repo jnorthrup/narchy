@@ -56,6 +56,11 @@ public final class Termify extends AbstractPred<Derivation> {
             return false;
         }
 
+        if (c1.volume() > d.termVolMax) {
+            d.nar.emotion.deriveFailVolLimit.increment();
+            return false;
+        }
+
         if (c1.op() == NEG) {
             c1 = c1.unneg();
             if (d.concTruth != null) //belief or goal

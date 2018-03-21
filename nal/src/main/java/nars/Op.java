@@ -981,25 +981,6 @@ public enum Op {
         return c.term();
     }
 
-    public static Term conj(FasterList<LongObjectPair<Term>> events) {
-        int eventsSize = events.size();
-        switch (eventsSize) {
-            case 0: return Null;
-            case 1: return events.get(0).getTwo();
-        }
-
-        Conj ce = new Conj();
-
-        for (int i = 0; i < eventsSize; i++) {
-            LongObjectPair<Term> o = events.get(i);
-            if (!ce.add(o.getTwo(), o.getOne())) {
-                break;
-            }
-        }
-
-        return ce.term();
-    }
-
     /**
      * constructs a correctly merged conjunction from a list of events
      * note: this modifies the event list
@@ -1642,7 +1623,7 @@ public enum Op {
                         }
                         newPredicate = c.term();
                     } else {
-                        newPredicate = Op.conj(pe);
+                        newPredicate = Conj.conj(pe);
                     }
 
                     return IMPL.the(ndt, subject, newPredicate);

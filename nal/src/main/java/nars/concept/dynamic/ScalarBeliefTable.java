@@ -70,6 +70,9 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             l.compact();
             return l;
         }
+
+        void forEach(Consumer<? super Task> action);
+
     }
 
     /**
@@ -120,6 +123,11 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         @Override
         public Stream<Task> stream() {
             return at.values().stream();
+        }
+
+        @Override
+        public void forEach(Consumer<? super Task> action) {
+            at.values().forEach(action);
         }
 
         @Override
@@ -338,6 +346,12 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
         super.forEachTask(includeEternal, minT, maxT, x);
         series.forEach(minT, maxT, true, x);
+    }
+
+    @Override
+    public void forEachTask(Consumer<? super Task> action) {
+        super.forEachTask(action);
+        series.forEach(action);
     }
 
     @Override

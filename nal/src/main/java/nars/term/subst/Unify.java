@@ -354,13 +354,13 @@ public abstract class Unify extends Versioning implements Subst {
                 if (y0.equals(y))
                     return true;
 
-                if (y.equalsRoot(x)) {
+                if (y0.equalsRoot(y)) {
                     int ydt = y.dt();
                     if (ydt != XTERNAL) {
-                        int xdt = x.dt();
-                        if ((xdt == XTERNAL) || (xdt == DTERNAL && ydt != DTERNAL)) {
+                        int y0dt = y0.dt();
+                        if ((y0dt == XTERNAL) || (y0dt == DTERNAL && ydt != DTERNAL)) {
                             //replace because y is more temporally specific
-                            xy.replace(x, y);
+                            replaceXY(x, y);
                         }
                     }
                     return true; //keep X, but continue

@@ -80,8 +80,9 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
         add(new TaskComponent(t));
 
-        long dd = //t.minDistanceTo(start, end);
-                t.meanDistanceTo((start + end)/2L);
+        long dd =
+                t.minDistanceTo(start, end);
+                //t.meanDistanceTo((start + end)/2L);
 
         if (dur > 0) {
             if (dd < dur)

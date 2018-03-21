@@ -5,6 +5,7 @@ import nars.*;
 import nars.io.NarseseTest;
 import nars.task.util.InvalidTaskException;
 import nars.term.atom.Atomic;
+import nars.term.compound.util.Conj;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -326,7 +327,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEvents1a() throws Narsese.NarseseException {
         assertEquals(
                 "(a &&+16 ((--,a)&|b))",
-                Op.conj(
+                Conj.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(298L, $.$("a")),
                                 pair(314L, $.$("b")),
@@ -338,7 +339,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEvents1b() throws Narsese.NarseseException {
         assertEquals(
                 "((a&|b) &&+1 (--,a))",
-                Op.conj(
+                Conj.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(1L, $.$("b")),
@@ -350,7 +351,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEvents2() throws Narsese.NarseseException {
         assertEquals(
                 "((a &&+1 (&|,b1,b2,b3)) &&+1 (c &&+1 (d1&|d2)))",
-                Op.conj(
+                Conj.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(2L, $.$("b1")),
@@ -367,7 +368,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEventsWithFalse() throws Narsese.NarseseException {
         assertEquals(
                 False,
-                Op.conj(
+                Conj.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(2L, $.$("b1")),
@@ -375,7 +376,7 @@ public class TermReductionsTest extends NarseseTest {
                         })));
         assertEquals(
                 False,
-                Op.conj(
+                Conj.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(1L, $.$("--a"))

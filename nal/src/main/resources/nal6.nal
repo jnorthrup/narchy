@@ -14,6 +14,7 @@
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
     B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
+
     B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:InductionPN)
 
     B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:DeciInductionN)
@@ -21,6 +22,17 @@
 
     B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
     B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN)
+        B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:Deduction, Goal:Induction)
+        B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:DeductionN, Goal:InductionN)
+            B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:Deduction)
+            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:Deduction)
+            B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:DeductionN)
+            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:DeductionN)
+
+            //(Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
+              //  (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
+            //(Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
+              //  (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
 
     //Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:Deduction)
     //Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:DeductionN)
@@ -125,6 +137,7 @@
         //(M ==> S), (M ==> (&&,(--,%S),A..+)) |- (M ==>+- (&&,A..+)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==>+- (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
+
     (M ==> C), C, is(C,"&&") |- (M ==>+- dropAnyEvent(C)), (Belief:StructuralReduction)
     //(M ==> C), C, is(C,"&&") |- (--,(M ==>+- dropAnyEvent(C))), (Belief:StructuralReductionN)
           //(M ==> C), D, belief("&&") |- (M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D)), (Belief:StructuralDeduction)
@@ -218,7 +231,7 @@
 
     ((&&,M,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- B) ==>+- C), (Belief:Deduction)
     ((&&,B,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
-    ////((&&,A..+) ==> C), M,  notImpl(M) |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
+    //(X ==> C), Y,  notImpl(M) |- ((X &&+- Y) ==>+- C), (Belief:Induction)
 
 
 //precondition combiner inference rule (variable_unification6):
@@ -275,13 +288,9 @@
       //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
         //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
 
-    (Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
-        (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
       //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
           //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
 
-    (Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
-        (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
       //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
         //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
 
@@ -335,7 +344,7 @@
     //originally this only unified depvar (dep var elimination)
      (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
             //, isNot(X,"#")
-     (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,(--,Y),"#"), (Belief:AnonymousAnalogyPN)
+     (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
             //, isNot(X,"#")
 
 

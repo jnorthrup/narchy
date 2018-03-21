@@ -1,6 +1,5 @@
 package nars.concept.dynamic;
 
-import jcog.decide.Roulette;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -12,15 +11,9 @@ import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
-import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
-
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
@@ -118,39 +111,6 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     @Nullable
     protected abstract Term template(long start, long end, Term template, NAR nar);
 
-    /**
-     * returns an appropriate dt for the root term
-     * of beliefs held in the table.  returns 0 if no other value can
-     * be computed.
-     */
-    protected int matchDT(long start, long end, boolean commutive, NAR nar) {
-
-        int s = size();
-        if (s == 0)
-            return 0;
-
-        int dur = nar.dur();
-
-        IntFloatHashMap dtEvi = new IntFloatHashMap(s);
-        forEachTask(t -> {
-            int tdt = t.dt();
-            if (tdt != DTERNAL) {
-                if (tdt == XTERNAL)
-                    throw new RuntimeException("XTERNAL should not be present in " + t);
-                if ((t.term().subs() > 2) == commutive)
-                    dtEvi.addToValue(tdt, t.evi(start, end, dur)); //maybe evi
-            }
-        });
-        int n = dtEvi.size();
-        if (n == 0) {
-            return 0;
-        } else {
-            MutableList<IntFloatPair> ll = dtEvi.keyValuesView().toList();
-            int selected = n != 1 ?
-                    Roulette.decideRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
-            return ll.get(selected).getOne();
-        }
-    }
 
     @Override
     public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {

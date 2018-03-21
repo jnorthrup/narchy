@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
-import nars.op.ArithmeticIntroduction;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
@@ -91,18 +90,18 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 2;
+        final int DUR = 1;
 
         final int subTrainings = 2;
-        final int thinkDurs = 1;
+        final int thinkDurs = 2;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        //n.timeFocus.set(4);
+        n.timeFocus.set(1);
         n.termVolumeMax.set(30);
         n.freqResolution.set(0.02f);
-        n.confResolution.set(0.02f);
+        n.confResolution.set(0.01f);
         //n.deep.set(0.8);
 
 
@@ -112,7 +111,7 @@ public class ThermostatTest {
 
         float exeThresh = 0.51f;
 
-        new ArithmeticIntroduction(8, n);
+        //new ArithmeticIntroduction(8, n);
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
         //n.priDefault(BELIEF, 0.3f);

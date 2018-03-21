@@ -424,7 +424,7 @@ public class Revision {
                 }
             }
         }
-        return Op.conj(x);
+        return Conj.conj(x);
     }
 
 
