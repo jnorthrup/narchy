@@ -1,5 +1,6 @@
 package nars;
 
+import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.event.On;
 import jcog.exe.Loop;
@@ -11,6 +12,7 @@ import nars.concept.scalar.ChronicScalar;
 import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
+import nars.control.Activate;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.control.NARService;
@@ -33,6 +35,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -394,32 +397,37 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             logger.info(summary());
     }
 
-//    /** creates an activator specific to this agent context */
-//    public Consumer<Predicate<Activate>> fire() {
-//        return p -> {
-//            Activate a;
-//
-//            final int numConcepts = concepts.size();
-//            int remainMissing = numConcepts;
-//            if (remainMissing == 0) return;
-//
-//            float pri = motivation.floatValue();
-//            Random rng = nar.random();
-//            do {
-//                Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));
-//                if (cc!=null) {
-//                    a = new Activate(cc, 0);
-//                    a.delete(); //prevents termlinking
-//                } else {
-//                    a = null;
-//                    if (remainMissing-- <= 0) //safety exit
-//                        break;
-//                    else
-//                        continue;
-//                }
-//            } while (a==null || p.test(a));
-//        };
-//    }
+    /** creates an activator specific to this agent context */
+    public Consumer<Predicate<Activate>> fire() {
+        List<Concept> concepts = new FasterList();
+        concepts.addAll(actions.keySet());
+        concepts.addAll(sensors.keySet());
+        always.forEach(t -> concepts.add(t.concept(nar,true)));
+        Iterables.addAll(concepts, happy);
+        return p -> {
+            Activate a;
+
+            final int numConcepts = concepts.size();
+            int remainMissing = numConcepts;
+            if (remainMissing == 0) return;
+
+            float pri = motivation.floatValue();
+            Random rng = nar.random();
+            do {
+                Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));
+                if (cc!=null) {
+                    a = new Activate(cc, 0);
+                    a.delete(); //prevents termlinking
+                } else {
+                    a = null;
+                    if (remainMissing-- <= 0) //safety exit
+                        break;
+                    else
+                        continue;
+                }
+            } while (a==null || p.test(a));
+        };
+    }
 
 
     /** default rate = 1 dur/ 1 frame */

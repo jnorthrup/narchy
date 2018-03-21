@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import static nars.Op.DIFFi;
-import static nars.Op.INH;
-import static nars.Op.goalable;
+import static nars.Op.*;
 
 
 /**

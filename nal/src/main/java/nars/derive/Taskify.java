@@ -67,6 +67,12 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
         Term x0 = d.derivedTerm.get();
+
+        if (x0.volume() > d.termVolMax) {
+            d.nar.emotion.deriveFailVolLimit.increment();
+            return false;
+        }
+
         Term x = d.anon.get(x0).normalize();
 //        if (x == null || !Termify.valid((x = x.normalize()))) {
 //            d.nar.emotion.deriveFailTaskify.increment();

@@ -4,27 +4,33 @@ import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
-import nars.derive.*;
-import nars.derive.constraint.*;
-import nars.derive.op.*;
-import nars.index.term.PatternIndex;
+import nars.derive.Derivation;
+import nars.derive.PostCondition;
+import nars.derive.ProtoDerivation;
+import nars.derive.Solve;
+import nars.derive.constraint.MatchConstraint;
+import nars.derive.op.TaskPolarity;
 import nars.subterm.Subterms;
-import nars.term.*;
-import nars.term.atom.Atom;
+import nars.term.Compound;
+import nars.term.ProxyTerm;
+import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
-import nars.term.transform.TermTransform;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.GoalFunction;
 import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.Collections.addAll;
-import static nars.$.*;
+import static nars.$.newHashSet;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**

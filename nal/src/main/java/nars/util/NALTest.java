@@ -2,7 +2,6 @@ package nars.util;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.control.MetaGoal;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
@@ -17,9 +16,6 @@ import java.util.function.Supplier;
 //@ExtendWith(NALTestStats.class)
 public abstract class NALTest {
 
-    static {
-        Param.DEBUG = true;
-    }
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
@@ -50,7 +46,7 @@ public abstract class NALTest {
 
     @BeforeEach
     void init() {
-        Param.DEBUG = true;
+        //Param.DEBUG = true;
     }
 
 
@@ -70,7 +66,7 @@ public abstract class NALTest {
 
         nar.stop();
 
-        metagoals.add(nar.causes).print(System.out);
+//        metagoals.add(nar.causes).print(System.out);
 
 
         //        c.publishEntry(t.toString() /*context.getUniqueId() */ + ".NAR.stats",

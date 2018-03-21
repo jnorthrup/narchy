@@ -17,11 +17,11 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
@@ -58,15 +58,15 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         Stream<Task> stream();
 
-        int forEach(long start, long end, Supplier<Random> rng, int limit, Consumer<Task> target);
+        int forEach(long start, long end, int limit, Consumer<Task> target);
 
-        default FasterList<Task> toList(long start, long end, Supplier<Random> rng, int limit) {
+        default FasterList<Task> toList(long start, long end, int limit) {
             int size = size();
             if (size == 0)
                 return new FasterList(0);
 
             FasterList<Task> l = new FasterList<>(Math.min(size, limit));
-            forEach(start, end, rng, limit, l::addWithoutResizeCheck);
+            forEach(start, end, limit, l::addWithoutResizeCheck);
             l.compact();
             return l;
         }
@@ -81,15 +81,18 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
     @Override
     public Task sample(long start, long end, Term template, NAR nar) {
-        Task tmp = super.sample(start, end, template, nar);
+        Task x = super.sample(start, end, template, nar);
         if (start != ETERNAL) {
-            Random rng = nar.random();
+            FasterList<Task> batch = series.toList(start, end, SAMPLE_BATCH_SIZE);
+            //TODO fair roulette select according to task value
             return Task.eviMax(
-                        series.toList(start, end, ()->rng, SAMPLE_BATCH_SIZE).get(rng),
-                        tmp,
+                        !batch.isEmpty() ? batch.get(nar.random()) : null,
+                        x,
                         start, end);
+        } else {
+            return x;
         }
-        return tmp;
+
     }
 
     static class DefaultTimeSeries implements TimeSeries {
@@ -167,8 +170,9 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                     if (lastStart > nextStart)
                         return null; //too late
 
-                    if (nextStart - last.end() <= dur) {
-                        Truth lastEnds = last.truth(nextStart, dur);
+                    long lastEnd = last.end();
+                    if (nextStart - lastEnd <= dur) {
+                        Truth lastEnds = last.truth(lastEnd, dur);
                         if (lastEnds.equals(next)) {
                             //stretch previous task
                             nextStart = lastStart;
@@ -223,7 +227,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             }
         }
 
-        final static int SELECT_ALL_THRESHOLD = 3;
+//        final static int SELECT_ALL_THRESHOLD = 3;
         final static int MAX_TASKS_TRUTHPOLATED = Param.STAMP_CAPACITY - 1;
 
         @Override
@@ -234,33 +238,32 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 return null;
 
             DynTruth d = new DynTruth(MAX_TASKS_TRUTHPOLATED);
-            if (size <= SELECT_ALL_THRESHOLD) {
-                at.values().forEach(d::add);
-            } else {
-                forEach(start, end, nar::random, MAX_TASKS_TRUTHPOLATED, d::add);
-            }
+//            if (size <= SELECT_ALL_THRESHOLD) {
+//                at.values().forEach(d::add);
+//            } else {
+                forEach(start, end, MAX_TASKS_TRUTHPOLATED, d::add);
+//            }
 
             return d;
         }
 
-        @Override public int forEach(long start, long end, Supplier<Random> rng, int limit, Consumer<Task> target) {
+        @Override public int forEach(long start, long end, int limit, Consumer<Task> target) {
             FasterList<Task> inner = new FasterList(limit);
             forEach(start, end, false, inner::add);
 
             int inners = inner.size();
             int n = 0;
             if (inners > 0) {
-                if (inners < limit) {
+                if (inners <= limit) {
                     for (Task x : inner) {
                         target.accept(x);
                         n++;
                     }
                 } else {
-                    //HACK sample random subset
-                    FasterList<Task> all = new FasterList(inner);
-                    Random r = rng.get();
+                    long mid = (start+end)/2L;
+                    inner.sortThisByLong(x -> x.meanDistanceTo(mid));
                     for (int i = 0; i < limit; i++) {
-                        target.accept(all.remove(r.nextInt(all.size())));
+                        target.accept(inner.get(i));
                         n++;
                     }
                 }
@@ -317,7 +320,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
         float confRes =
                 0; //nar.confResolution.floatValue();
-        float eviMin = Truth.EVIMIN;
+        float eviMin = Truth.EVI_MIN;
         return d.eval(term, (dd, n) -> pp, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
     }
 

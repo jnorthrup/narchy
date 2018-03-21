@@ -33,7 +33,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.PROD;
+import static nars.Op.internable;
 
 
 /**

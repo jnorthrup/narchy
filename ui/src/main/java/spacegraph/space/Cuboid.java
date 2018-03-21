@@ -136,7 +136,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
                     fingered = finger;
                     //System.out.println(localPoint + " " + thick);
 
-                    return fingered.on(front, Float.NaN, Float.NaN, localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f, buttons);
+                    return fingered.on(front, localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f, buttons);
                     //return mouseFront.update(null, localPoint.x, localPoint.y, buttons);
                 }
             } else {

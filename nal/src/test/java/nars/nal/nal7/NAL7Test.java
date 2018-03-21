@@ -160,6 +160,22 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
+    public void testConjDecomposeParallelBelief() {
+        test
+                .inputAt(1, "(a &| b). :|:")
+                .mustBelieve(cycles, "a", 1.00f, 0.81f, 1)
+                .mustBelieve(cycles, "b", 1.00f, 0.81f, 1)
+        ;
+    }
+    @Test
+    public void testConjDecomposeParallelGoal() {
+        test
+                .inputAt(1, "(a &| b)! :|:")
+                .mustGoal(cycles, "a", 1.00f, 0.81f, 1)
+                .mustGoal(cycles, "b", 1.00f, 0.81f, 1)
+        ;
+    }
+    @Test
     public void testDropAnyEventSimple() {
         /*
           instability:

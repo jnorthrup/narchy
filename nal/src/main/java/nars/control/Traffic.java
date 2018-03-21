@@ -17,10 +17,11 @@ public class Traffic extends AtomicFloat {
     public volatile double total;
 
     public final void commit() {
-        zero(cur->{
-//          this.prev = this.current;
-            this.total += (this.last = cur);
-        });
+        zero(this::commit);
+    }
+
+    protected final void commit(float cur) {
+        this.total += (this.last = cur);
     }
 
     @Override

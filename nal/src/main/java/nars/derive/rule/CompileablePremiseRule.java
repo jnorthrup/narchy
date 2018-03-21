@@ -29,9 +29,7 @@ import java.util.TreeSet;
 import static nars.$.newArrayList;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
-import static nars.subterm.util.Contains.Event;
-import static nars.subterm.util.Contains.Recursive;
-import static nars.subterm.util.Contains.Subterm;
+import static nars.subterm.util.Contains.*;
 
 /** an intermediate representation of a premise rule
  * with fully expanded opcodes

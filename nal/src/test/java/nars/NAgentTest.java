@@ -26,9 +26,9 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(30);
         n.freqResolution.set(0.1f);
-        n.confResolution.set(0.04f);
+        n.confResolution.set(0.01f);
         n.time.dur(1);
 
         //n.emotion.deriveFailTemporal.why.on(new Meter.ReasonCollector());
@@ -74,7 +74,7 @@ public class NAgentTest {
 //            }
 //        });
 
-        a.runSynch(4000);
+        a.runSynch(2000);
 
         assertTrue(a.avgReward() > 0.2f);
         assertTrue(a.dex.getMean() > 0.02f);

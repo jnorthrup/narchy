@@ -12,9 +12,7 @@ import nars.time.Tense;
 
 import java.util.Map;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
-import static nars.Op.QUESTION;
+import static nars.Op.*;
 
 public class TaskLinkCurveBag extends CurveBag<TaskLink> {
 
@@ -97,7 +95,7 @@ public class TaskLinkCurveBag extends CurveBag<TaskLink> {
                         if (removed.size() > 1) {
                             Concept cc = nar.conceptualize(c);
                             if (cc!=null) {
-                                put(new TaskLink.GeneralTaskLink(c, punc, when, pri[0]));
+                                put(new TaskLink.GeneralTaskLink(c, punc, Tense.dither(when, nar), pri[0]));
                                 //TODO check it was actually inserted
                                 return; //SUCCESS
                             }

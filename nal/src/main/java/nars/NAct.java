@@ -27,7 +27,8 @@ import java.util.function.IntPredicate;
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.*;
+import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.w2c;
 
 /**
  * Created by me on 9/30/16.

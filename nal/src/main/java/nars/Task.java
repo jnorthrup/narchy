@@ -429,7 +429,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     @Nullable
     static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> res) {
-        if ((punc == BELIEF || punc == GOAL) && tr.evi() < Truth.EVIMIN)
+        if ((punc == BELIEF || punc == GOAL) && tr.evi() < Truth.EVI_MIN)
             throw new InvalidTaskException(t, "insufficient evidence");
 
         ObjectBooleanPair<Term> x = tryContent(t, punc, !Param.DEBUG_EXTRA);
@@ -507,7 +507,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * WARNING check that you arent calling this with (start,end) values
      *
      * @param when time
-     * @param dur  duration period across which evidence can decay before and after its defined start/stop time
+     * @param dur  duration period across which evidence can decay before and after its defined start/stop time.
+     *             if (dur <= 0) then no extrapolation is computed
+     *
      * @return value >= 0 indicating the evidence
      */
     default float evi(long when, final long dur) {
@@ -526,12 +528,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             long dist = minDistanceTo(when);
             if (dist > 0) {
-                assert (dur > 0) : "dur<=0 is invalid";
-
                 float ete = eternalizability();
                 float ecw = ete > 0 ? eviEternalized() * ete : 0;
-                float dcw = cw - ecw; //delta to eternalization
-                cw = (float) (ecw + Param.evi(dcw, dist, dur)); //decay
+                cw = ecw + dur > 0 ?
+                        (float) Param.evi(
+                            cw - ecw /* delta to eternalization, >= 0 */,
+                                dist, dur)
+                        :
+                        0;
             }
 
             return cw;

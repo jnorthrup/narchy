@@ -96,9 +96,7 @@ public abstract class Time implements Clock, Serializable {
 //        }
 
         long w = event.when;
-        if (scheduledNext.get() > w) {
-            scheduledNext.updateAndGet(z -> Math.min(z, w));
-        }
+        scheduledNext.updateAndGet(z -> Math.min(z, w));
     }
 
 

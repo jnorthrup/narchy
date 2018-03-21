@@ -24,13 +24,13 @@ class ScalarBeliefTableTest {
 
         n.run(1);
         assertEquals(1, xb.series.size());
-        assertEquals(0, xb.size());
+        assertEquals(1, xb.size());
 
         xx.set(0.5f);
         n.run(1);
 
         assertEquals(2, xb.series.size());
-        assertEquals(0, xb.size());
+        assertEquals(2, xb.size());
 
     }
 

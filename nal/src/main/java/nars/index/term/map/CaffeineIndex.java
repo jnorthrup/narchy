@@ -17,13 +17,14 @@ import java.util.stream.Stream;
 public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Term, Termed>, RemovalListener<Term, Termed>, Executor {
 
     private final Cache<Term, Termed> concepts;
+    private final boolean weightDynamic;
 
     public static CaffeineIndex soft() {
-        return new CaffeineIndex(Caffeine.newBuilder().softValues());
+        return new CaffeineIndex(Caffeine.newBuilder().softValues(), false);
     }
 
     public static CaffeineIndex weak() {
-        return new CaffeineIndex(Caffeine.newBuilder().weakValues());
+        return new CaffeineIndex(Caffeine.newBuilder().weakValues(), false);
     }
 
     @Deprecated public CaffeineIndex(long capacity) {
@@ -31,15 +32,19 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     }
 
     public CaffeineIndex(long capacity, ToIntFunction<Concept> w) {
+        this(capacity, false, w);
+    }
+    public CaffeineIndex(long capacity, boolean weightDynamic, ToIntFunction<Concept> w) {
         this(Caffeine.newBuilder().maximumWeight(capacity).weigher((k,v)->{
             if (v instanceof PermanentConcept) return 0;
             return w.applyAsInt((Concept)v);
-        }));
+        }), weightDynamic);
+
     }
 
-    private CaffeineIndex(Caffeine builder) {
+    private CaffeineIndex(Caffeine builder, boolean weightDynamic) {
         super();
-
+        this.weightDynamic = weightDynamic;
 //        if (Param.DEBUG)
 //            builder.recordStats();
         builder.removalListener(this);
@@ -97,7 +102,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
             y = concepts.getIfPresent(x);
         }
 
-        if (createIfMissing && /*isWeighing && */ y!=null)
+        if (createIfMissing && weightDynamic && y!=null)
             concepts.put(x, y); //refresh weight
 
         return y;

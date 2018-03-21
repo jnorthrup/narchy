@@ -207,19 +207,18 @@ public class ShapeSensor implements Runnable {
         int k = 0;
         for (Contour c : contours) {
             // Fit the polygon to the found external contour.  Note loop = true
-            List<PointIndex_I32> outer = ShapeFittingOps.fitPolygon(c.external, true,
-                    splitFraction, minimumSideFraction, 100);
+            List<PointIndex_I32> outer = ShapeFittingOps.fitPolygon(c.external,
+                    true, 100, minimumSideFraction);
 
 
             if (debug) {
-                g2.setColor(Color.getHSBColor(c.id / 10f, 0.8f, 0.8f));
+                g2.setColor(Color.getHSBColor(k / 10f, 0.8f, 0.8f));
                 g2.setStroke(new BasicStroke(2));
                 drawPolygon(outer, true, g2);
                 //System.out.println(c + ": " + polygon);
             }
 
-            int pk = k++;
-            g.addPoly(pk, outer, true);
+            g.addPoly(k++, outer, true);
 
 //            // handle internal contours
 //            for (List<Point2D_I32> internal : c.internal) {

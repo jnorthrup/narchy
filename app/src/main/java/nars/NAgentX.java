@@ -3,6 +3,8 @@ package nars;
 import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
+import nars.derive.Deriver;
+import nars.derive.Derivers;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
@@ -76,33 +78,14 @@ abstract public class NAgentX extends NAgent {
 //                }
 //            });
 
-                nar.onTask(t -> {
-                    if (t.isGoal() && t.isNegative() && t.term().equals(happy.term())) {
-                        System.err.println("MASOCHISM DETECTED:\n" + t.proof());
-                    }
-                });
+            nar.onTask(t -> {
+                if (t.isGoal() && t.isNegative() && t.term().equals(happy.term())) {
+                    System.err.println("MASOCHISM DETECTED:\n" + t.proof());
+                }
+            });
 
         }
     }
-
-    @Override
-    protected void start(NAR nar) {
-        super.start(nar);
-
-//        ActionInfluencingScalar joy = new ActionInfluencingScalar(
-//                id != null ?
-//                        //$.prop($.the(id), $.the("joy"))
-//                        $.inh($.the(id), $.the("joy"))
-//                        :
-//                        $.the("joy"),
-//                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
-//                        () -> reward)).relax(0.01f));
-        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
-//        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
-
-
-    }
-
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
@@ -110,7 +93,6 @@ abstract public class NAgentX extends NAgent {
                 //fps * 1, //1:1
                 fps);
     }
-
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
@@ -185,14 +167,14 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //250 * 1024
-                                250 * 1024,
+                                2500 * 1024,
                                 //200 * 1024
                                 //100 * 1024
                                 //50 * 1024
                                 //20 * 1024,
                                 //4096
                                 //Integer.MAX_VALUE,
-                        c -> {
+                                c -> {
 
 //                            int HISTORY = 1000;
 //                            AtomicHistogram a = c.meta("%");
@@ -209,14 +191,13 @@ abstract public class NAgentX extends NAgent {
 //                            }
 //                            return (Integer.MAX_VALUE - score) / (Integer.MAX_VALUE / (16*1024));
 
-
-                            return Math.round(
-                                    ((float)c.voluplexity())
-                                        /
-                                    (1 + 100 * (c.termlinks().priSum() + c.tasklinks().priSum()))
-                                            //(c.beliefs().size() + c.goals().size()))
-                            );
-                        }
+                                    return (int) Math.ceil(c.voluplexity());
+//                            return Math.round(
+//                                    ((float)c.voluplexity())
+//                                        / (1 + 100 * (c.termlinks().priSum() + c.tasklinks().priSum()))
+//                                            //(c.beliefs().size() + c.goals().size()))
+//                            );
+                                }
                         ) /*{
                             @Override
                             public Termed get(Term x, boolean createIfMissing) {
@@ -252,7 +233,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(40);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -270,10 +251,7 @@ abstract public class NAgentX extends NAgent {
 
 //        new RLBooster(a, HaiQAgent::new, 1);
 
-//        new Deriver(a.fire(), Derivers.deriver(1, 8,
-//                "motivation.nal"
-//                //, "goal_analogy.nal"
-//        ).apply(n).deriver, n) {
+
 ////            @Override
 ////            protected long matchTime(Task task) {
 ////
@@ -283,8 +261,6 @@ abstract public class NAgentX extends NAgent {
 ////
 ////            }
 //        };
-
-
 
 
 //        {
@@ -350,7 +326,7 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
         //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 16);
 
-        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true), 4, 16);
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 16);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
@@ -438,88 +414,152 @@ abstract public class NAgentX extends NAgent {
             //START AGENT
             Loop aLoop = a.runFPS(agentFPS);
 
+            n.runLater(() -> {
+                new Deriver(a.fire(), Derivers.deriver(6, 8,
+                        "motivation.nal"
+                        //, "goal_analogy.nal"
+                ).apply(n).deriver, n); //{
+            });
         });
 
         return n;
     }
 
+    public static void chart(NAgent a) {
+        NAR nar = a.nar;
+        a.nar.runLater(() -> {
+            window(
+                    new Splitting(
+                            new Vis.EmotionPlot(64, a),
+                            grid(
 
-    /**
-     * increments/decrements within a finite set of powers-of-two so that harmonics
-     * wont interfere as the resolution changes
-     * <p>
-     * TODO allow powers other than 2, ex: 1.618
-     */
-    public static class StepController implements IntConsumer, IntObjectPair<StepController> {
+                                    //new WindowButton("log", () -> Vis.logConsole(nar, 80, 25, new FloatParam(0f))),
+                                    new PushButton("dump", () -> {
+                                        try {
+                                            nar.output(Files.createTempFile(a.toString(), "" + System.currentTimeMillis()).toFile(), false);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }),
+                                    new PushButton("prune", () -> {
+                                        nar.runLater(() -> {
+                                            DoubleHistogram i = new DoubleHistogram(2);
+                                            nar.tasks(true, false, false, false).forEach(t ->
+                                                    i.recordValue(t.conf())
+                                            );
+                                            float confThresh = (float) i.getValueAtPercentile(25);
+                                            nar.tasks(true, false, false, false).filter(t ->
+                                                    t.conf() < confThresh
+                                            ).forEach(Task::delete);
+                                        });
+                                    }),
 
-        private final FloatProcedure update;
-        final float[] v;
-        int x;
+                                    new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
 
-        public StepController(FloatProcedure update, float... steps) {
-            v = steps;
-            this.update = update;
-        }
+                                    new WindowToggleButton("concept graph", () -> {
+                                        DynamicConceptSpace sg;
+                                        JoglPhysics s = new JoglPhysics<>(
+                                                sg = new DynamicConceptSpace(nar, () -> nar.exe.active().iterator(),
+                                                        128, 16)
+                                        );
+                                        EdgeDirected fd = new EdgeDirected();
+                                        s.dyn.addBroadConstraint(fd);
+                                        fd.attraction.set(fd.attraction.get() * 8);
 
-        public static StepController harmonic(FloatProcedure update, float min, float max) {
+                                        s.add(new SubOrtho(
+                                                //window(
+                                                grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
 
-            FloatArrayList f = new FloatArrayList();
-            float x = min;
-            while (x <= max) {
-                f.add(x);
-                x *= 2;
-            }
-            assert (f.size() > 1);
-            return new StepController(update, f.toArray());
-            //set(0);
-        }
+                                        }.posWindow(0, 0, 1f, 0.2f));
 
-        private void set(int i) {
-            if (i < 0) i = 0;
-            if (i >= v.length) i = v.length - 1;
-            //if (this.x != i) {
-            update.value(v[x = i]);
-            //}
-        }
+                                        //,  400, 400);
+                                        //.pos(0, 0, 0.5f, 0.5f)
 
-        @Override
-        public void accept(int aa) {
-            //System.out.println(aa);
+                                        s.camPos(0, 0, 90);
+                                        return s;
+                                    }),
 
-            switch (aa) {
-                case 0:
-                    set(x - 1);
-                    break;
-                case 1:
-                    set(x + 1);
-                    break;
-                default:
-                    throw new RuntimeException("OOB");
-//                case 1:
-//                    break; //nothing
-            }
-        }
 
-        /**
-         * number actions
-         */
-        @Override
-        public int getOne() {
-            return 2;
-        }
+                                    //new WindowButton("prompt", () -> Vis.newInputEditor(), 300, 60)
 
-        @Override
-        public StepController getTwo() {
-            return this;
-        }
+                                    //Vis.beliefCharts(16, nar, a.reward),
+                                    new WindowToggleButton("agent", () -> (a)),
+                                    col(
+                                            new WindowToggleButton("actionShort", () -> Vis.beliefCharts(a.nar.dur() * 16, a.actions.keySet(), a.nar)),
+                                            new WindowToggleButton("actionMed", () -> Vis.beliefCharts(a.nar.dur() * 64, a.actions.keySet(), a.nar)),
+                                            new WindowToggleButton("actionLong", () -> Vis.beliefCharts(a.nar.dur() * 256, a.actions.keySet(), a.nar))
+                                    ),
+                                    //new WindowButton("predict", () -> Vis.beliefCharts(200, a.predictors, a.nar)),
+                                    //"agentActions",
+                                    //"agentPredict",
 
-        @Override
-        public int compareTo(IntObjectPair<StepController> o) {
-            throw new UnsupportedOperationException();
-        }
+                                    a instanceof NAgentX ?
+                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width, cs.height))
+                                                    .toArray(Surface[]::new))
+                                            ) : grid()
+
+//                    grid(
+////                    new WindowButton( "conceptBudget",
+////                            ()->{
+////
+////                                double[] d = new double[32];
+////                                return new HistogramChart(
+////                                        ()->d,
+////                                        //()->h.uniformProb(32, 0, 1.0)
+////                                        new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.25f)) {
+////
+////                                    On on = a.onFrame((r) -> {
+////                                        Bag.priHistogram(r.nar.focus().concepts(), d);
+////                                    });
+////
+////                                    @Override
+////                                    public Surface hide() {
+////                                        on.off();
+////                                        return this;
+////                                    }
+////                                };
+////                            }
+////                        //Vis.budgetHistogram(nar, 64)
+////                    ),
+//
+////                    new WindowButton( "conceptTreeMap", () -> {
+////
+////                        BagChart tc = new Vis.ConceptBagChart(new Bagregate(
+////                                ((NARS)a.nar).sub.stream().flatMap(x ->
+////                                        (((BufferedSynchronousExecutorHijack)(x.exe)).active.stream().map(
+////                                    y -> (y instanceof ConceptFire) ? ((ConceptFire)y) : null
+////                                ).filter(Objects::nonNull)), 128, 0.5f), 128, nar);
+////
+////                        return tc;
+////                    })
+//
+//                            //"tasks", ()-> taskChart,
+//
+//                            new WindowButton("conceptGraph", () ->
+//                                    Vis.conceptsWindow3D(nar, 128, 4))
+//
+//                    )
+                            ), 0.1f), 900, 600);
+        });
     }
 
+    @Override
+    protected void start(NAR nar) {
+        super.start(nar);
 
+//        ActionInfluencingScalar joy = new ActionInfluencingScalar(
+//                id != null ?
+//                        //$.prop($.the(id), $.the("joy"))
+//                        $.inh($.the(id), $.the("joy"))
+//                        :
+//                        $.the("joy"),
+//                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
+//                        () -> reward)).relax(0.01f));
+        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
+//        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
+
+
+    }
 
 
     //    public static class NARSView extends Grid {
@@ -597,123 +637,11 @@ abstract public class NAgentX extends NAgent {
 //        return nar;
 //    }
 
-
-    public static void chart(NAgent a) {
-        NAR nar = a.nar;
-        a.nar.runLater(() -> {
-            window(
-                    new Splitting(
-                            new Vis.EmotionPlot(64, a),
-                    grid(
-
-                    //new WindowButton("log", () -> Vis.logConsole(nar, 80, 25, new FloatParam(0f))),
-                    new PushButton("dump", () -> {
-                        try {
-                            nar.output(Files.createTempFile(a.toString(), "" + System.currentTimeMillis()).toFile(), false);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }),
-                    new PushButton("prune", () -> {
-                        nar.runLater(() -> {
-                            DoubleHistogram i = new DoubleHistogram(2);
-                            nar.tasks(true, false, false, false).forEach(t ->
-                                    i.recordValue(t.conf())
-                            );
-                            float confThresh = (float) i.getValueAtPercentile(25);
-                            nar.tasks(true, false, false, false).filter(t ->
-                                    t.conf() < confThresh
-                            ).forEach(Task::delete);
-                        });
-                    }),
-
-                    new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
-
-                    new WindowToggleButton("concept graph", () -> {
-                        DynamicConceptSpace sg;
-                        JoglPhysics s = new JoglPhysics<>(
-                                sg = new DynamicConceptSpace(nar, ()->nar.exe.active().iterator(),
-                                        128, 16)
-                        );
-                        EdgeDirected fd = new EdgeDirected();
-                        s.dyn.addBroadConstraint(fd);
-                        fd.attraction.set(fd.attraction.get() * 8);
-
-                        s.add(new SubOrtho(
-                                //window(
-                                grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
-
-                        }.posWindow(0, 0, 1f, 0.2f));
-
-                        //,  400, 400);
-                        //.pos(0, 0, 0.5f, 0.5f)
-
-                        s.camPos(0, 0, 90);
-                        return s;
-                    }),
-
-
-                    //new WindowButton("prompt", () -> Vis.newInputEditor(), 300, 60)
-
-                    //Vis.beliefCharts(16, nar, a.reward),
-                    new WindowToggleButton("agent", () -> (a)),
-                    col(
-                            new WindowToggleButton("actionShort", () -> Vis.beliefCharts(a.nar.dur() * 16, a.actions.keySet(), a.nar)),
-                            new WindowToggleButton("actionMed", () -> Vis.beliefCharts(a.nar.dur() * 64, a.actions.keySet(), a.nar)),
-                            new WindowToggleButton("actionLong", () -> Vis.beliefCharts(a.nar.dur() * 256, a.actions.keySet(), a.nar))
-                    ),
-                    //new WindowButton("predict", () -> Vis.beliefCharts(200, a.predictors, a.nar)),
-                    //"agentActions",
-                    //"agentPredict",
-
-                    a instanceof NAgentX ?
-                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width, cs.height))
-                                    .toArray(Surface[]::new))
-                            ) : grid()
-
-//                    grid(
-////                    new WindowButton( "conceptBudget",
-////                            ()->{
-////
-////                                double[] d = new double[32];
-////                                return new HistogramChart(
-////                                        ()->d,
-////                                        //()->h.uniformProb(32, 0, 1.0)
-////                                        new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.25f)) {
-////
-////                                    On on = a.onFrame((r) -> {
-////                                        Bag.priHistogram(r.nar.focus().concepts(), d);
-////                                    });
-////
-////                                    @Override
-////                                    public Surface hide() {
-////                                        on.off();
-////                                        return this;
-////                                    }
-////                                };
-////                            }
-////                        //Vis.budgetHistogram(nar, 64)
-////                    ),
-//
-////                    new WindowButton( "conceptTreeMap", () -> {
-////
-////                        BagChart tc = new Vis.ConceptBagChart(new Bagregate(
-////                                ((NARS)a.nar).sub.stream().flatMap(x ->
-////                                        (((BufferedSynchronousExecutorHijack)(x.exe)).active.stream().map(
-////                                    y -> (y instanceof ConceptFire) ? ((ConceptFire)y) : null
-////                                ).filter(Objects::nonNull)), 128, 0.5f), 128, nar);
-////
-////                        return tc;
-////                    })
-//
-//                            //"tasks", ()-> taskChart,
-//
-//                            new WindowButton("conceptGraph", () ->
-//                                    Vis.conceptsWindow3D(nar, 128, 4))
-//
-//                    )
-                    ), 0.1f), 900, 600);
-        });
+    /**
+     * pixelTruth defaults to linear monochrome brightness -> frequency
+     */
+    protected Bitmap2DSensor senseCamera(String id, Container w, int pw, int ph) {
+        return senseCamera(id, new SwingBitmap2D(w), pw, ph);
     }
 
 //    public static void chart(NAgent a) {
@@ -749,35 +677,28 @@ abstract public class NAgentX extends NAgent {
 //        });
 //    }
 
-    /**
-     * pixelTruth defaults to linear monochrome brightness -> frequency
-     */
-    protected Bitmap2DSensor senseCamera(String id, Container w, int pw, int ph) {
-        return senseCamera(id, new SwingBitmap2D(w), pw, ph);
-    }
-
-    protected Bitmap2DSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph)  {
+    protected Bitmap2DSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) {
         return senseCamera(id, new Scale(w, pw, ph));
     }
-
-//    protected CameraSensor<Scale> senseCamera(String id, Container w, int pw, int ph) throws Narsese.NarseseException {
-//        return senseCamera(id, new Scale(new SwingBitmap2D(w), pw, ph));
-//    }
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph) throws
             Narsese.NarseseException {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
 
-//    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<
-//            Truth> pixelTruth) throws Narsese.NarseseException {
-//        return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
+//    protected CameraSensor<Scale> senseCamera(String id, Container w, int pw, int ph) throws Narsese.NarseseException {
+//        return senseCamera(id, new Scale(new SwingBitmap2D(w), pw, ph));
 //    }
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
             Narsese.NarseseException {
         return senseCameraRetina($(id), w, pw, ph);
     }
+
+//    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<
+//            Truth> pixelTruth) throws Narsese.NarseseException {
+//        return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
+//    }
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
         PixelBag pb = PixelBag.of(w, pw, ph);
@@ -799,7 +720,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCameraReduced(@Nullable Term
-                                                                              id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
+                                                                                id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
         return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), nar()));
     }
 
@@ -812,6 +733,81 @@ abstract public class NAgentX extends NAgent {
         sensorCam.add(c);
         c.readAdaptively();
         return c;
+    }
+
+    /**
+     * increments/decrements within a finite set of powers-of-two so that harmonics
+     * wont interfere as the resolution changes
+     * <p>
+     * TODO allow powers other than 2, ex: 1.618
+     */
+    public static class StepController implements IntConsumer, IntObjectPair<StepController> {
+
+        final float[] v;
+        private final FloatProcedure update;
+        int x;
+
+        public StepController(FloatProcedure update, float... steps) {
+            v = steps;
+            this.update = update;
+        }
+
+        public static StepController harmonic(FloatProcedure update, float min, float max) {
+
+            FloatArrayList f = new FloatArrayList();
+            float x = min;
+            while (x <= max) {
+                f.add(x);
+                x *= 2;
+            }
+            assert (f.size() > 1);
+            return new StepController(update, f.toArray());
+            //set(0);
+        }
+
+        private void set(int i) {
+            if (i < 0) i = 0;
+            if (i >= v.length) i = v.length - 1;
+            //if (this.x != i) {
+            update.value(v[x = i]);
+            //}
+        }
+
+        @Override
+        public void accept(int aa) {
+            //System.out.println(aa);
+
+            switch (aa) {
+                case 0:
+                    set(x - 1);
+                    break;
+                case 1:
+                    set(x + 1);
+                    break;
+                default:
+                    throw new RuntimeException("OOB");
+//                case 1:
+//                    break; //nothing
+            }
+        }
+
+        /**
+         * number actions
+         */
+        @Override
+        public int getOne() {
+            return 2;
+        }
+
+        @Override
+        public StepController getTwo() {
+            return this;
+        }
+
+        @Override
+        public int compareTo(IntObjectPair<StepController> o) {
+            throw new UnsupportedOperationException();
+        }
     }
 
 //    static Surface mixPlot(NAgent a, MixContRL m, int history) {
@@ -843,8 +839,8 @@ abstract public class NAgentX extends NAgent {
         public Metronome(Clock cc, NAR n) {
             cc.on(new Auvent<Clock>() {
 
-                AudioContext ac = cc.getContext();
                 public final Envelope kickEnv, snareEnv;
+                AudioContext ac = cc.getContext();
 
                 {
                     kickEnv = new Envelope(ac, 0.0f); //gain of kick drum
@@ -904,8 +900,6 @@ abstract public class NAgentX extends NAgent {
             });
         }
     }
-
-
 
 
     //    private static class CorePanel extends Surface{

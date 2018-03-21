@@ -12,6 +12,7 @@ import nars.derive.Derivers;
 import nars.exe.UniExec;
 import nars.gui.Vis;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.ArithmeticIntroduction;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
@@ -71,14 +72,14 @@ public class TrackXY extends NAgent {
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(34);
+        n.termVolumeMax.set(40);
 //        n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
-        n.conceptActivation.set(0.5f);
+        n.conceptActivation.set(0.2f);
 //        n.forgetRate.set(0.9f);
 
 
-        TrackXY t = new TrackXY(6, 6);
+        TrackXY t = new TrackXY(2, 1);
         n.on(t);
 
         int experimentTime = 8048;
@@ -160,7 +161,7 @@ public class TrackXY extends NAgent {
 
 //            Implier ii = new Implier(t , 0, 1);
 
-            //ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
+            ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
 
         window(new Gridding(
                 new AutoSurface(d),
@@ -176,7 +177,7 @@ public class TrackXY extends NAgent {
         });
     }
 
-    //n.log();
+    n.log();
 
 //        n.startFPS(fps);
 //        t.runFPS(fps);

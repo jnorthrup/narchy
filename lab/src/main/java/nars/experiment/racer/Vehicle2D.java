@@ -1,7 +1,9 @@
 package nars.experiment.racer;
 
 import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.Body2D;
+import org.jbox2d.dynamics.Dynamics2D;
+import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;

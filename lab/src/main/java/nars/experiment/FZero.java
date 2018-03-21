@@ -324,11 +324,11 @@ public class FZero extends NAgentX {
     }
     private void initTankContinuous() {
 
-        float res = 0.02f;
+        float res = 0.05f;
 
         final float[] left = new float[1];
         final float[] right = new float[1];
-        actionUnipolar($.the("left"), false, (x)->Util.lerp(0.1f, x, 0.5f), (x) -> {
+        actionUnipolar($.the("left"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
             float power = (x - 0.5f)*2f;
             left[0] = power;
             fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed;
@@ -339,7 +339,7 @@ public class FZero extends NAgentX {
                             * fwdSpeed/2f;
             return x;
         }).resolution.set(res);
-        actionUnipolar($.the("right"), false, (x)->Util.lerp(0.1f, x, 0.5f), (x) -> {
+        actionUnipolar($.the("right"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
             float power = (x - 0.5f)*2f;
             right[0] = power;
             fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed;

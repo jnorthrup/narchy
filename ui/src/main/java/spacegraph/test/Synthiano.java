@@ -4,7 +4,6 @@ import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
-import spacegraph.SpaceGraph;
 import spacegraph.input.Finger;
 import spacegraph.render.JoglSpace;
 import spacegraph.widget.meter.BitmapMatrixView;

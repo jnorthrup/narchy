@@ -176,7 +176,6 @@ public interface LongInterval {
      *  returned distance is zero, regardless of how far it may extend before or after it */
     default long minDistanceTo(long a, long b) {
 
-
         assert (a != ETERNAL && b != ETERNAL && b >= a);
 
         long s = start();
@@ -202,6 +201,19 @@ public interface LongInterval {
                     return Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
                 }
             }
+        }
+    }
+
+    default long meanDistanceTo(long x) {
+        long start = start();
+        if (start == ETERNAL) return 0;
+        long end = end();
+        long distToStart = Math.abs(start - x);
+        if (end == start) {
+            return distToStart;
+        } else {
+            long distToEnd = Math.abs(end - x);
+            return (distToStart + distToEnd)/2L;
         }
     }
 

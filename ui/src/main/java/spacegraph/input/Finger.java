@@ -55,7 +55,7 @@ public class Finger {
 
     }
 
-    public synchronized Surface on(Surface root, float sx, float sy, float lx, float ly, short[] nextButtonDown) {
+    public synchronized Surface on(Surface root, float lx, float ly, short[] nextButtonDown) {
 
         Fingering ff = this.fingering.get();
         Fingering f0 = ff;
@@ -63,7 +63,6 @@ public class Finger {
 
         try {
             this.pos.set(lx, ly);
-            this.posGlobal.set(sx, sy);
 
             arraycopy(this.buttonDown, 0, prevButtonDown, 0, buttonDown.length);
 

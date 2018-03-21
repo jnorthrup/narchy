@@ -8,8 +8,8 @@ import nars.derive.mutate.Choose2;
 import nars.derive.mutate.CommutivePermutations;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.compound.LightCompoundDT;
 import nars.term.Term;
+import nars.term.compound.LightCompoundDT;
 import nars.term.subst.Unify;
 
 import java.util.SortedSet;

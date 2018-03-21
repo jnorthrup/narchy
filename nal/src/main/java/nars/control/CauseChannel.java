@@ -2,8 +2,8 @@ package nars.control;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import jcog.util.ArrayIterator;
 import jcog.pri.Priority;
+import jcog.util.ArrayIterator;
 import nars.NAR;
 import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;

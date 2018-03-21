@@ -80,10 +80,12 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
         add(new TaskComponent(t));
 
-        long dd = t.minDistanceTo(start, end);
+        long dd = //t.minDistanceTo(start, end);
+                t.meanDistanceTo((start + end)/2L);
 
-        if (dur > 1) {
-            if (dd < dur) dur = Math.max(1, (int) dd);
+        if (dur > 0) {
+            if (dd < dur)
+                dur = (int) dd;
 
 //            if (computeDensity) {
 //                long ts = Util.clamp(t.start(), start, end);
@@ -105,7 +107,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         {
             removeIf(tc -> {
                 Task t = tc.task;
-                Truth tt = t.truth(start, end, dur, 0);
+                Truth tt = t.truth(start, end, dur, Truth.EVI_MIN);
                 if (tt != null) {
                     tc.freq = tt.freq(); //not necessarily the task's reported "average" freq in case of Truthlets
                     tc.evi = tt.evi();

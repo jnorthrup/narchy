@@ -17,7 +17,6 @@ import nars.table.QuestionTable;
 import nars.term.Term;
 import nars.term.Termed;
 
-import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 

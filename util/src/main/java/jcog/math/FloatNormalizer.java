@@ -10,7 +10,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     protected final float minStart;
     protected final float maxStart;
     protected float min;
-    private float max;
+    protected float max;
     /** relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables */
     private float relax;
 
@@ -65,30 +65,22 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     }
 
     public FloatNormalizer updateRange(float raw) {
+        if (relax > 0) {
+            float range = max - min;
+            if (range > Pri.EPSILON) {
+                float mid = (max+min)/2;
+                max = Util.lerp(relax, max, mid);
+                min = Util.lerp(relax, min, mid);
+            }
+        }
 
-        boolean incMin = false, incMax = false;
 
         if (min > raw) {
             min = raw;
-        } else {
-            incMin = true;
         }
 
         if (max < raw) {
             max = raw;
-        } else {
-            incMax = true;
-        }
-
-        if (relax > 0) {
-            float range = max - min;
-            if (range > Pri.EPSILON) {
-                float max0 = max;
-                if (incMax)
-                    max = Util.lerp(relax, max, min);
-                if (incMin)
-                    min = Util.lerp(relax, min, max0);
-            }
         }
 
         return this;

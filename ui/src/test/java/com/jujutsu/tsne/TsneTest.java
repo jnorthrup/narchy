@@ -3,6 +3,7 @@ package com.jujutsu.tsne;
 import com.jogamp.opengl.GL2;
 import com.jujutsu.tsne.matrix.MatrixOps;
 import jcog.Util;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spacegraph.Surface;
 import spacegraph.render.Draw;
@@ -10,6 +11,7 @@ import spacegraph.render.JoglSpace;
 
 public class TsneTest {
 
+    @Disabled
     @Test
     public void test1() {
 

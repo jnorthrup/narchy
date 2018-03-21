@@ -118,6 +118,7 @@ public class ZoomOrtho extends Ortho {
         int windowHeight = window.getHeight();
         pmx = e.getX();
         pmy = windowHeight - e.getY();
+        finger.posGlobal.set(pmx, pmy);
 
         if ((pmx < Windo.resizeBorder) && (pmy < Windo.resizeBorder)) {
             hud.potentialDragMode = Windo.DragEdit.RESIZE_SW; //&& window.isResizable()

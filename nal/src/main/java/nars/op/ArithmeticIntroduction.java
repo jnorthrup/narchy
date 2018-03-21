@@ -2,7 +2,10 @@ package nars.op;
 
 import jcog.Util;
 import jcog.list.FasterList;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.term.Term;
 import nars.term.anon.Anom;

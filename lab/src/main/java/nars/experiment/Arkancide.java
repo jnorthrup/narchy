@@ -3,7 +3,9 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.math.FloatRange;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NAgentX;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;

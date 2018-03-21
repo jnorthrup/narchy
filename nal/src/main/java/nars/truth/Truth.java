@@ -33,16 +33,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.Util.*;
-import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.TruthFunctions.*;
 
 
 /** scalar (1D) truth value "frequency", stored as a floating point value */
 public interface Truth extends Truthed {
 
 
-    float EVIMIN = c2w(Param.TRUTH_EPSILON);
+    float EVI_MIN = c2w(Param.TRUTH_EPSILON);
 
     @Override
     float freq();

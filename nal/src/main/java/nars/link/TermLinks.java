@@ -9,7 +9,7 @@ import nars.term.Term;
 
 import java.util.Set;
 
-import static nars.Op.*;
+import static nars.Op.PROD;
 
 public enum TermLinks {
     ;
