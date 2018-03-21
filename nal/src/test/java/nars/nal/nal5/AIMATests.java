@@ -87,7 +87,7 @@ public class AIMATests {
 //                n.input("Criminal(?x)?");
 
         n.run(500);
-        //n.clear();
+        n.clear();
         n.question($.$(
                 "Criminal(?x)"
                 //"Criminal:?x"
