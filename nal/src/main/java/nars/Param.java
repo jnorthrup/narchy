@@ -50,13 +50,13 @@ public abstract class Param {
      */
     public static final boolean ELIDE_CONCEPT_LOOKUPS = true;
 
-    /**
-     * proportion of a total activation necessary for emitting task activation events
-     */
-    @Range(min=0, max=0.5f)
-    public static float TASK_ACTIVATION_THRESHOLD =
-            //0;
-            0.5f;
+//    /**
+//     * proportion of a total activation necessary for emitting task activation events
+//     */
+//    @Range(min=0, max=0.5f)
+//    public static float TASK_ACTIVATION_THRESHOLD =
+//            //0;
+//            0.5f;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
@@ -71,7 +71,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 16;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
 
 //    public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
@@ -248,7 +248,7 @@ public abstract class Param {
 //     */
     public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
-    public final FloatRange conceptActivation = new FloatRange(1f, 0, 1f);
+    public final FloatRange activationRate = new FloatRange(1f, 0, 1f);
 
 
     /**

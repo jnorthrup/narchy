@@ -5,7 +5,6 @@ import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriForget;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -17,11 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 
 public class Tasklinks {
-
-
-//    public static void linkTask(Task t, float pri, Concept cc) {
-//        linkTask(t, pri, cc, null);
-//    }
 
     @Deprecated public static void linkTask(Task x, float p, Bag b) {
         TaskLink xx =
@@ -52,7 +46,7 @@ public class Tasklinks {
     public static void linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
 
         /** non-zero for safety */
-        final float priCause = Math.max(_pri * nar.conceptActivation.floatValue(), Pri.EPSILON);
+        final float priCause = Math.max(_pri * nar.activationRate.floatValue(), Pri.EPSILON);
 
         float balance = nar.termlinkBalance.floatValue();
 
@@ -71,7 +65,7 @@ public class Tasklinks {
         nar.activate(src, balance * priEffect);
 
         //activate the task concept templates
-        src.templates().activate(src, (1f-balance) * priEffect * nar.conceptActivation.floatValue(), nar);
+        src.templates().activate(src, (1f-balance) * priEffect * nar.activationRate.floatValue(), nar);
 
         {
             //adjust the cause values according to the input's actual demand
@@ -84,8 +78,8 @@ public class Tasklinks {
 
         //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
         //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
-        float effectiveness = priEffect / priCause;
-        if (effectiveness >= Param.TASK_ACTIVATION_THRESHOLD)
+//        float effectiveness = priEffect / priCause;
+//        if (effectiveness >= Param.TASK_ACTIVATION_THRESHOLD)
             nar.eventTask.emit(t);
 
     }

@@ -26,7 +26,7 @@
  *               \/           \/          \/         \/        \/  \/
  */
 
-package org.boon.collections;
+package jcog.data.map;
 
 
 import jcog.util.ArrayIterator;

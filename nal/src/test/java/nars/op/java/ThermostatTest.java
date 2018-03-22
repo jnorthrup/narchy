@@ -102,7 +102,7 @@ public class ThermostatTest {
         n.termVolumeMax.set(30);
         n.freqResolution.set(0.05f);
         n.confResolution.set(0.01f);
-        n.conceptActivation.set(0.1f);
+        n.activationRate.set(0.1f);
 //        n.forgetRate.set(2f);
         //n.deep.set(0.8);
 

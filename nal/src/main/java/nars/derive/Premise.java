@@ -104,7 +104,7 @@ public class Premise extends Pri {
             } else {
 
                 //non-symmetric unify only variables in the task by belief contents
-                if ((!beliefTerm.op().conceptualizable) && (taskTerm.hasAny(var))) {
+                if ((beliefTerm.op().conceptualizable) && (taskTerm.hasAny(var))) {
 
                     Term _beliefTerm = beliefTerm;
                     final Term[] unifiedBeliefTerm = new Term[]{null};

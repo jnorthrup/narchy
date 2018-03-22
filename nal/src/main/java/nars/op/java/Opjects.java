@@ -8,6 +8,7 @@ import javassist.util.proxy.ProxyObject;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
+import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
@@ -26,7 +27,6 @@ import nars.task.signal.TruthletTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
-import org.boon.collections.ConcurrentFastIteratingHashSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -108,7 +108,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //     */
 //    boolean pretend = false;
 
-    @NotNull
     public final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
             "hashCode",
             "notify",

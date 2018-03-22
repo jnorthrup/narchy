@@ -24,9 +24,9 @@
 package org.jbox2d.dynamics;
 
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.list.FasterList;
 import jcog.math.FloatSupplier;
-import org.boon.collections.ConcurrentFastIteratingHashSet;
 import org.jbox2d.callbacks.*;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;

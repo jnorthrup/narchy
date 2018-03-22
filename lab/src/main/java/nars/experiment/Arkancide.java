@@ -66,7 +66,7 @@ public class Arkancide extends NAgentX {
 
             return a;
 
-        }, 50);
+        }, 30);
 
 
 //        nar.forEachActiveConcept(c -> {
@@ -309,7 +309,6 @@ public class Arkancide extends NAgentX {
         /* GAME VARIABLES */
 
 
-        private boolean running;
 
         public final Paddle paddle = new Paddle(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PADDLE_HEIGHT);
         public final Ball ball = new Ball(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
@@ -603,8 +602,8 @@ public class Arkancide extends NAgentX {
             this.setUndecorated(false);
             this.setResizable(false);
 
-            this.setLocationRelativeTo(null);
-            setIgnoreRepaint(true);
+//            this.setLocationRelativeTo(null);
+            //setIgnoreRepaint(true);
 
             canvas = new Canvas();
             canvas.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -672,15 +671,17 @@ public class Arkancide extends NAgentX {
 
             //}
 
-            Graphics g = canvas.getGraphics();
-            g.setColor(Color.black);
-            g.fillRect(0, 0, getWidth(), getHeight());
+            SwingUtilities.invokeLater(()->{
+                Graphics g = canvas.getGraphics();
+                g.setColor(Color.black);
+                g.fillRect(0, 0, getWidth(), getHeight());
 
-            ball.draw(g);
-            paddle.draw(g);
-            for (Brick brick : bricks) {
-                brick.draw(g);
-            }
+                ball.draw(g);
+                paddle.draw(g);
+                for (Brick brick : bricks) {
+                    brick.draw(g);
+                }
+            });
 
 
             return score;
@@ -689,9 +690,7 @@ public class Arkancide extends NAgentX {
 
         @Override
         public void keyPressed(KeyEvent event) {
-            if (event.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                running = false;
-            }
+
 
             switch (event.getKeyCode()) {
                 case KeyEvent.VK_LEFT:

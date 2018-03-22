@@ -2,7 +2,6 @@ package jcog.list;
 
 import jcog.Util;
 import org.apache.commons.lang3.ArrayUtils;
-import org.boon.core.reflection.Invoker;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.impl.list.mutable.FastList;
@@ -34,53 +33,53 @@ public class FasterList<X> extends FastList<X> {
          this.items = initialCapacity == 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[])newArray(initialCapacity);
     }
 
-    public FasterList(Object instance, String methodName, Object... mappedThru) {
-        super(mappedThru.length);
-        for (Object o : mappedThru) {
-            if (o != null)
-                add((X) Invoker.invoke(instance, methodName, o));
-        }
-    }
-
-    public FasterList(Object instance, String methodName, Iterable<Object> mappedThru) {
-        super();
-        for (Object o : mappedThru) {
-            if (o != null)
-                add((X) Invoker.invoke(instance, methodName, o));
-        }
-    }
-
-    public FasterList(Object instance, String methodName, Collection<Object> mappedThru) {
-        super(mappedThru.size());
-        for (Object o : mappedThru) {
-            if (o != null)
-                add((X) Invoker.invoke(instance, methodName, o));
-        }
-    }
-
-    public FasterList(Class<?> cls, String staticMethodName, Object... mappedThru) {
-        super(mappedThru.length);
-        for (Object o : mappedThru) {
-            if (o != null)
-                add((X) Invoker.invoke(cls, staticMethodName, o));
-        }
-    }
-
-    public FasterList(Class<?> cls, String staticMethodName, Iterable<Object> mappedThru) {
-        super();
-        for (Object o : mappedThru) {
-            if (o != null)
-                add((X) Invoker.invoke(cls, staticMethodName, o));
-        }
-    }
-
-    public FasterList(Class<?> cls, String staticMethodName, Collection<Object> mappedThru) {
-        super(mappedThru.size());
-        for (Object o : mappedThru) {
-            if (o != null)
-                add((X) Invoker.invoke(cls, staticMethodName, o));
-        }
-    }
+//    public FasterList(Object instance, String methodName, Object... mappedThru) {
+//        super(mappedThru.length);
+//        for (Object o : mappedThru) {
+//            if (o != null)
+//                add((X) Invoker.invoke(instance, methodName, o));
+//        }
+//    }
+//
+//    public FasterList(Object instance, String methodName, Iterable<Object> mappedThru) {
+//        super();
+//        for (Object o : mappedThru) {
+//            if (o != null)
+//                add((X) Invoker.invoke(instance, methodName, o));
+//        }
+//    }
+//
+//    public FasterList(Object instance, String methodName, Collection<Object> mappedThru) {
+//        super(mappedThru.size());
+//        for (Object o : mappedThru) {
+//            if (o != null)
+//                add((X) Invoker.invoke(instance, methodName, o));
+//        }
+//    }
+//
+//    public FasterList(Class<?> cls, String staticMethodName, Object... mappedThru) {
+//        super(mappedThru.length);
+//        for (Object o : mappedThru) {
+//            if (o != null)
+//                add((X) Invoker.invoke(cls, staticMethodName, o));
+//        }
+//    }
+//
+//    public FasterList(Class<?> cls, String staticMethodName, Iterable<Object> mappedThru) {
+//        super();
+//        for (Object o : mappedThru) {
+//            if (o != null)
+//                add((X) Invoker.invoke(cls, staticMethodName, o));
+//        }
+//    }
+//
+//    public FasterList(Class<?> cls, String staticMethodName, Collection<Object> mappedThru) {
+//        super(mappedThru.size());
+//        for (Object o : mappedThru) {
+//            if (o != null)
+//                add((X) Invoker.invoke(cls, staticMethodName, o));
+//        }
+//    }
 
     public FasterList(Iterable<X> copy) {
         this(copy, 0);

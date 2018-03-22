@@ -285,7 +285,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                 HyperRegion childMbr = tRect.mbr(cir);
                 final double nodeEnlargement =
                         (cir!=childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
-                assert(nodeEnlargement==nodeEnlargement && nodeEnlargement >= 0);
+                //assert(nodeEnlargement==nodeEnlargement && nodeEnlargement >= 0); //doesnt apply when infinites are involved
                 int dc = Double.compare(nodeEnlargement, leastEnlargement);
                 if (dc == -1) { //(nodeEnlargement < leastEnlargement) {
                     leastEnlargement = nodeEnlargement;

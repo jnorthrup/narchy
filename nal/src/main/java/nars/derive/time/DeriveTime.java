@@ -13,7 +13,6 @@ import nars.task.EviDensity;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import nars.term.compound.util.Conj;
 import nars.term.var.VarPattern;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -535,22 +534,23 @@ public class DeriveTime extends TimeGraph {
             }
         });
 
-        if (choices.size() > 1) { //attempt sequence
-            Conj c = new Conj();
-            for (Pair<Term, long[]> x : choices){
-                long[] tt = x.getTwo();
-                if (!c.add(x.getOne(), tt[0],tt[1],2,dur))
-                    break;
-            }
-            Term seq = c.term();
-            if (seq.op().conceptualizable && seq.volume() < d.termVolMax) {
-                return (w) -> {
-                    long when = c.shift();
-                    w[0] = when;
-                    w[1] = when;
-                    return seq;
-                };
-            }
+        if (choices.size() > 1) {
+//            //attempt sequence construction
+//            Conj c = new Conj();
+//            for (Pair<Term, long[]> x : choices){
+//                long[] tt = x.getTwo();
+//                if (!c.add(x.getOne(), tt[0],tt[1],2,dur))
+//                    break;
+//            }
+//            Term seq = c.term();
+//            if (seq.op().conceptualizable && seq.volume() < d.termVolMax) {
+//                return (w) -> {
+//                    long when = c.shift();
+//                    w[0] = when;
+//                    w[1] = when;
+//                    return seq;
+//                };
+//            }
 
             //random fallback
             return (w) -> {

@@ -240,7 +240,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(1f * priFactor);
         n.questPriDefault.set(1f * priFactor);
 
-        n.conceptActivation.set(0.5f);
+        n.activationRate.set(0.5f);
 
         NAgent a = init.apply(n);
 

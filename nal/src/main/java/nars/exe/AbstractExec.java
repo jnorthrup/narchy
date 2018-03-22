@@ -40,7 +40,7 @@ abstract public class AbstractExec extends Exec {
 
     @Override
     public void activate(Concept c, float activationApplied) {
-        active.putAsync(new Activate(c, activationApplied * nar.conceptActivation.floatValue()));
+        active.putAsync(new Activate(c, activationApplied * nar.activationRate.floatValue()));
         //active.put(c, activationApplied);
     }
 
