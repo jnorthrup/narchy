@@ -62,8 +62,8 @@ public class ConceptSurface extends TabPane {
                     });
                 },
                 "beliefs", () -> Vis.beliefCharts(64, n, n.concept(id)),
-                "termlinks", () -> Vis.bagHistogram((Iterable) (n.concept(id).termlinks()::iterator), 10),
-                "tasklinks", () -> Vis.bagHistogram((Iterable) (n.concept(id).tasklinks()::iterator), 10),
+                "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
+                "tasklinks", () -> new BagView("TaskLinks", n.concept(id).tasklinks(), n),
                 "goal", () -> {
                     return new Gridding(
                             new PushButton("gOAL tRUE").click((b) -> {

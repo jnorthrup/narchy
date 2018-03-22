@@ -32,7 +32,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     }
 
     public Bagregate(Iterable<X> src, int capacity, float scale) {
-        this.bag = new PLinkArrayBag(PriMerge.plus, capacity) {
+        this.bag = new PLinkArrayBag(/*PriMerge.plus*/ PriMerge.replace, capacity) {
             @Override
             public void onRemove(Object value) {
                 Bagregate.this.onRemove((PriReference<X>) value);

@@ -3,8 +3,6 @@ package nars;
 import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
-import nars.derive.Deriver;
-import nars.derive.Derivers;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
@@ -32,7 +30,6 @@ import spacegraph.SubOrtho;
 import spacegraph.Surface;
 import spacegraph.container.AspectAlign;
 import spacegraph.container.EdgeDirected;
-import spacegraph.container.Splitting;
 import spacegraph.render.JoglPhysics;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
@@ -50,7 +47,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static spacegraph.container.Gridding.col;
 import static spacegraph.container.Gridding.grid;
 import static spacegraph.render.JoglPhysics.window;
 
@@ -413,12 +409,12 @@ abstract public class NAgentX extends NAgent {
             //START AGENT
             Loop aLoop = a.runFPS(agentFPS);
 
-            n.runLater(() -> {
-                new Deriver(a.fire(), Derivers.deriver(6, 8,
-                        "motivation.nal"
-                        //, "goal_analogy.nal"
-                ).apply(n).deriver, n); //{
-            });
+//            n.runLater(() -> {
+//                new Deriver(a.fire(), Derivers.deriver(6, 8,
+//                        "motivation.nal"
+//                        //, "goal_analogy.nal"
+//                ).apply(n).deriver, n); //{
+//            });
         });
 
         return n;
@@ -428,7 +424,11 @@ abstract public class NAgentX extends NAgent {
         NAR nar = a.nar;
         a.nar.runLater(() -> {
             window(
-                    new Splitting(
+                    grid(
+                            new AutoSurface(a),
+
+                            Vis.beliefCharts(a.nar.dur() * 64, a.actions.keySet(), a.nar),
+
                             new Vis.EmotionPlot(64, a),
                             grid(
 
@@ -440,6 +440,11 @@ abstract public class NAgentX extends NAgent {
                                             e.printStackTrace();
                                         }
                                     }),
+
+                                    new PushButton("clear", () -> {
+                                        nar.runLater(NAR::clear);
+                                    }),
+
                                     new PushButton("prune", () -> {
                                         nar.runLater(() -> {
                                             DoubleHistogram i = new DoubleHistogram(2);
@@ -482,12 +487,12 @@ abstract public class NAgentX extends NAgent {
                                     //new WindowButton("prompt", () -> Vis.newInputEditor(), 300, 60)
 
                                     //Vis.beliefCharts(16, nar, a.reward),
-                                    new WindowToggleButton("agent", () -> (a)),
-                                    col(
-                                            new WindowToggleButton("actionShort", () -> Vis.beliefCharts(a.nar.dur() * 16, a.actions.keySet(), a.nar)),
-                                            new WindowToggleButton("actionMed", () -> Vis.beliefCharts(a.nar.dur() * 64, a.actions.keySet(), a.nar)),
-                                            new WindowToggleButton("actionLong", () -> Vis.beliefCharts(a.nar.dur() * 256, a.actions.keySet(), a.nar))
-                                    ),
+//                                    new WindowToggleButton("agent", () -> (a)),
+//                                    col(
+//                                            new WindowToggleButton("actionShort", () -> Vis.beliefCharts(a.nar.dur() * 16, a.actions.keySet(), a.nar)),
+//                                            new WindowToggleButton("actionMed", () -> Vis.beliefCharts(a.nar.dur() * 64, a.actions.keySet(), a.nar)),
+//                                            new WindowToggleButton("actionLong", () -> Vis.beliefCharts(a.nar.dur() * 256, a.actions.keySet(), a.nar))
+//                                    ),
                                     //new WindowButton("predict", () -> Vis.beliefCharts(200, a.predictors, a.nar)),
                                     //"agentActions",
                                     //"agentPredict",
@@ -496,6 +501,8 @@ abstract public class NAgentX extends NAgent {
                                             new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width, cs.height))
                                                     .toArray(Surface[]::new))
                                             ) : grid()
+                            )
+                    ),
 
 //                    grid(
 ////                    new WindowButton( "conceptBudget",
@@ -537,28 +544,27 @@ abstract public class NAgentX extends NAgent {
 //                            new WindowButton("conceptGraph", () ->
 //                                    Vis.conceptsWindow3D(nar, 128, 4))
 //
-//                    )
-                            ), 0.1f), 900, 600);
+                    900, 600);
         });
     }
 
-    @Override
-    protected void start(NAR nar) {
-        super.start(nar);
-
-//        ActionInfluencingScalar joy = new ActionInfluencingScalar(
-//                id != null ?
-//                        //$.prop($.the(id), $.the("joy"))
-//                        $.inh($.the(id), $.the("joy"))
-//                        :
-//                        $.the("joy"),
-//                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
-//                        () -> reward)).relax(0.01f));
-        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
-//        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
-
-
-    }
+//    @Override
+//    protected void start(NAR nar) {
+//        super.start(nar);
+//
+////        ActionInfluencingScalar joy = new ActionInfluencingScalar(
+////                id != null ?
+////                        //$.prop($.the(id), $.the("joy"))
+////                        $.inh($.the(id), $.the("joy"))
+////                        :
+////                        $.the("joy"),
+////                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
+////                        () -> reward)).relax(0.01f));
+//        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
+////        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
+//
+//
+//    }
 
 
     //    public static class NARSView extends Grid {

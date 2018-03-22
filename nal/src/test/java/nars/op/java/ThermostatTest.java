@@ -90,18 +90,20 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 1;
+        final int DUR = 5;
 
         final int subTrainings = 2;
-        final int thinkDurs = 2;
+        final int thinkDurs = 4; //pause between episodes
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
         n.timeFocus.set(1);
         n.termVolumeMax.set(30);
-        n.freqResolution.set(0.02f);
+        n.freqResolution.set(0.05f);
         n.confResolution.set(0.01f);
+        n.conceptActivation.set(0.1f);
+//        n.forgetRate.set(2f);
         //n.deep.set(0.8);
 
 
@@ -112,7 +114,7 @@ public class ThermostatTest {
         float exeThresh = 0.51f;
 
         //new ArithmeticIntroduction(8, n);
-        new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
+        new ConjClustering(n, BELIEF, (t) -> true, 8, 32);
 
         //n.priDefault(BELIEF, 0.3f);
 
@@ -188,6 +190,10 @@ public class ThermostatTest {
             op.exeThresh.set(1f);
             for (int i = 0; i < subTrainings; i++) {
                 for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
+
+                    System.out.println("EPISODE START");
+                    n.clear();
+
                     env.teach("down", condition, x -> {
                         x.up(); //demonstrate no change
                         x.report();
@@ -196,9 +202,17 @@ public class ThermostatTest {
                         x.down(); //demonstrate no change
                         x.report();
                     }, isCold);
+                    System.out.println("EPISODE END");
+                    n.run(thinkDurs * n.dur());
+
+//                    n.concept("do(down)").print();
                 }
 
                 for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
+
+                    System.out.println("EPISODE START");
+                    n.clear();
+
                     env.teach("up", condition, x -> {
                         x.down(); //demonstrate no change
                         x.report();
@@ -207,9 +221,11 @@ public class ThermostatTest {
                         x.up(); //demonstrate no change
                         x.report();
                     }, isHot);
+
+                    System.out.println("EPISODE END");
+                    n.run(thinkDurs * n.dur());
                 }
 
-                n.run(thinkDurs * n.dur());
             }
 
 

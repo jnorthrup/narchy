@@ -16,8 +16,12 @@ import nars.truth.Truth;
 import nars.truth.TruthFunctions;
 import nars.truth.TruthWave;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.Surface;
 import spacegraph.SurfaceBase;
+import spacegraph.container.Gridding;
 import spacegraph.render.Draw;
+import spacegraph.widget.button.PushButton;
+import spacegraph.widget.meta.MetaFrame;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
@@ -27,10 +31,10 @@ import static java.lang.Math.PI;
 import static nars.time.Tense.ETERNAL;
 
 
-public class BeliefTableChart extends Widget {
+public class BeliefTableChart extends Widget implements MetaFrame.Menu {
 
-    public static final float baseTaskSize = 0.04f;
-    public static final float CROSSHAIR_THICK = 3;
+    static final float baseTaskSize = 0.04f;
+    static final float CROSSHAIR_THICK = 3;
     final Term term;
     final TruthWave beliefs;
     final TruthWave beliefProj;
@@ -447,6 +451,14 @@ public class BeliefTableChart extends Widget {
 
 
         });
+    }
+
+    @Override
+    public Surface menu() {
+        return new Gridding(
+            new PushButton("Expand", ()->Vis.conceptWindow(term, nar))
+            //...
+        );
     }
 
     interface Colorize {

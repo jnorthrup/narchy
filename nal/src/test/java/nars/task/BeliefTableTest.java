@@ -135,10 +135,10 @@ public class BeliefTableTest {
         }
 
         //measure midpoint interpolation
-        for (int i = 0; i < c - 1; i++) {
-            float f = (freqPattern[i] + freqPattern[i + 1]) / 2f;
-            long w = (timing[i] + timing[i + 1]) / 2;
-            assertEquals(f, table.truth(w, n).freq(), 0.1f);
+        for (int i = 1; i < c - 1; i++) {
+            float f = (freqPattern[i-1] + freqPattern[i] + freqPattern[i + 1]) / 3f;
+            long w = timing[i];
+            assertEquals(f, table.truth(w, n).freq(), 0.1f, ()->"t=" + w);
         }
 
 
@@ -325,7 +325,7 @@ public class BeliefTableTest {
 
         float a52 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+2 y) &&+1 z)");
         float a54 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+4 y) &&+1 z)");
-        assertEquals(4, a52, 0.001f);
+        assertEquals(4.66f, a52, 0.01f);
         assertEquals(2, a54, 0.001f);
         assertTrue(a52 > a54);
     }

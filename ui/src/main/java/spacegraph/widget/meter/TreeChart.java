@@ -319,6 +319,7 @@ public class TreeChart<X> extends Surface {
 
     /**
      * @author Tadas Subonis <tadas.subonis@gmail.com>
+     *     TODO extend Surface
      */
     public static class ItemVis<X> implements Comparable<ItemVis> {
 

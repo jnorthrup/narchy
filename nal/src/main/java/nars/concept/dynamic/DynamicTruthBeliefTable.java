@@ -68,8 +68,6 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
             return null;
     }
 
-
-    @Override
     @Nullable
     protected Term template(long start, long end, Term template, NAR nar) {
         Op templateOp = template.op();

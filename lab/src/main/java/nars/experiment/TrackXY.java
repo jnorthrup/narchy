@@ -72,14 +72,14 @@ public class TrackXY extends NAgent {
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(20);
 //        n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.2f);
 //        n.forgetRate.set(0.9f);
 
 
-        TrackXY t = new TrackXY(2, 1);
+        TrackXY t = new TrackXY(4, 4);
         n.on(t);
 
         int experimentTime = 8048;
@@ -224,14 +224,14 @@ public class TrackXY extends NAgent {
     private void actionTriState() {
 
         if (view.height() > 1) {
-            actionTriState($.the("Y"), (dy) -> {
+            actionTriState($.inh($.the("Y"), id), (dy) -> {
                 float py = sy;
                 sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
                 return !Util.equals(py,sy, 0.01f);
             });
         }
 
-        actionTriState($.the("X"), (dx) -> {
+        actionTriState($.inh($.the("X"), id), (dx) -> {
             float px = sx;
             sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
             return !Util.equals(px,sx, 0.01f);

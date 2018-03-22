@@ -212,7 +212,8 @@ public interface BeliefTable extends TaskTable {
 
     @Override
     default Task match(long start, long end, Term template, NAR nar) {
-        return match(start, end, template, nar, (t) -> true);
+        return match(start, end, template, nar,
+                t -> true);
     }
 
     /**

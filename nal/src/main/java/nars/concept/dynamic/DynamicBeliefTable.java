@@ -103,13 +103,10 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
 
-    public final Truth truthStored(long start, long end, NAR nar) {
+    protected final Truth truthStored(long start, long end, NAR nar) {
         return super.truth(start, end, nar);
     }
 
-
-    @Nullable
-    protected abstract Term template(long start, long end, Term template, NAR nar);
 
 
     @Override

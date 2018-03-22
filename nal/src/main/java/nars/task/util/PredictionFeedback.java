@@ -3,6 +3,7 @@ package nars.task.util;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.Task;
+import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
@@ -10,19 +11,13 @@ import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class PredictionFeedback {
 
     //final BeliefTable table;
 
-
     static final boolean delete = true;
-
-    /*public PredictionFeedback(BeliefTable table) {
-        this.table = table;
-    }*/
-
-
 
     /**
      * punish any held non-signal beliefs during the current signal task which has just been input.
@@ -38,21 +33,28 @@ public class PredictionFeedback {
         int dur = nar.dur();
         float fThresh = nar.freqResolution.floatValue();
 
-        List<Task> trash = new FasterList(0);
-        ((DefaultBeliefTable) table).temporal.whileEach(start, end, (y) -> {
-
-            if (y instanceof SignalTask)
-                return true; //ignore previous signaltask
-
-            if (absorb(x, y, start, end, dur, fThresh, nar)) {
-                trash.add(y);
+        List<Task> trash = new FasterList(8);
+        Consumer<Task> each = y -> {
+            if (!(y instanceof SignalTask)) {
+                if (absorb(x, y, start, end, dur, fThresh, nar)) {
+                    trash.add(y);
+                }
             }
+        };
 
-            return true; //continue
-        });
+        scan(table, start, end, each);
+
 
         trash.forEach(table::removeTask);
 
+    }
+
+    public static void scan(BeliefTable table, long start, long end, Consumer<Task> each) {
+        if (table instanceof ScalarBeliefTable) {
+            ((ScalarBeliefTable)table).series.forEach(start, end, false, each);
+        } else {
+            ((DefaultBeliefTable) table).temporal.whileEach(start, end, (tt)->{ each.accept(tt); return true; });
+        }
     }
 
 
@@ -65,13 +67,16 @@ public class PredictionFeedback {
         long end = y.end();
         int dur = nar.dur();
 
-        List<Task> signals = new FasterList<>(8);
-        table.forEachTask(false, start, end, (existing) -> {
+        List<SignalTask> signals = new FasterList<>(8);
+        Consumer<Task> each = existing -> {
             //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
             if (existing instanceof SignalTask) {
-                signals.add(existing);
+                signals.add((SignalTask) existing);
             }
-        });
+        };
+
+        scan(table, start, end, each);
+
         if (signals.isEmpty())
             return;
         else {
@@ -122,8 +127,10 @@ public class PredictionFeedback {
      * then removes it in favor of a stronger sensor signal
      * returns whether the 'y' task was absorbed into 'x'
      */
-    public static boolean absorb(Task x, Task y, long start, long end, int dur, float fThresh, NAR nar) {
+    static boolean absorb(SignalTask x, Task y, long start, long end, int dur, float fThresh, NAR nar) {
         if (x == y)
+            return false;
+        if (!x.intersects(y))
             return false;
 
         //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap

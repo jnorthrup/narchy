@@ -114,7 +114,8 @@ public interface TaskTable {
     default int match(TaskMatch m, Task[] target) {
         final int[] i = {0};
         match(m, (x)->{
-            target[i[0]++] = x;
+            if (x!=null) //HACK
+                target[i[0]++] = x;
         });
         return i[0];
     }

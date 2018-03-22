@@ -74,16 +74,16 @@ public abstract class Param {
     public static int TEMPORAL_SOLVER_ITERATIONS = 16;
 
 
-    public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
+//    public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
 
 
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
 
-    /**
-     * hard limit to prevent infinite looping
-     */
-    public static final int MAX_TASK_FORWARD_HOPS = 4;
+//    /**
+//     * hard limit to prevent infinite looping
+//     */
+//    public static final int MAX_TASK_FORWARD_HOPS = 4;
 
 
     public final ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
@@ -140,8 +140,8 @@ public abstract class Param {
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             //Util::and;
             Util::or;
-    //UtilityFunctions::aveAri;
-    //Math::max;
+            //Util::mean;
+            //Math::max;
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget

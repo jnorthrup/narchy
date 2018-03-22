@@ -89,10 +89,9 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     public final void setCapacity(int newCapacity) {
         if (newCapacity != this.capacity) {
             this.capacity = newCapacity;
-            //synchronized (items) {
 
             commit(null);
-            //}
+
             //return true;
         }
         //return false;
@@ -479,18 +478,18 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
             //clear the entries from the map right away
             //this should be done in a synchronized block along with what happens above
-            trash.forEach(x -> {
-                if (x != incoming)
+            trash.removeIf(x -> {
+                if (x != incoming) {
                     mapRemove(x);
+                    return false; //remain here until onRemove below
+                }
+                return true;
             });
 
         }
 
         //this can be done outside critical section
-        trash.forEach(x -> {
-            if (x != incoming)
-                onRemove(x);
-        });
+        trash.forEach(this::onRemove);
 
         if (inserted == null) {
             onReject(incoming);
@@ -584,7 +583,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     /** will not need to be sorted after calling this; the index is automatically updated */
-    private final Y merge(Y existing, Y incoming, @Nullable MutableFloat overflow) {
+    private Y merge(Y existing, Y incoming, @Nullable MutableFloat overflow) {
 
 //        int s = size();
 //        boolean atCap = s == capacity;
@@ -605,7 +604,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         } else {
             float oo = merge(existing, incoming);
             delta = existing.priElseZero() - priBefore;
-            if (oo >= Pri.EPSILON && overflow != null)
+            if (overflow != null)
                 overflow.add(oo);
             result = existing; //re-use the existing ref
         }
@@ -615,14 +614,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             items.adjust(posBefore, this);
 
             this.mass.add(this, delta);
-//            if (delta >= Prioritized.EPSILON) {
-//                if (atCap) {
-//                    pressurize(delta);
-//                }
-//            }
         }
-
-
 
         return result;
     }
@@ -762,7 +754,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public void forEach(Consumer<? super Y> action) {
 
-        synchronized (items) {
+        //synchronized (items) {
             Object[] x = items.array();
             for (int i = 0; i < Math.min(x.length, size()); i++) {
                 Object a = x[i];
@@ -774,7 +766,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     }
                 }
             }
-        }
+        //}
 
     }
 

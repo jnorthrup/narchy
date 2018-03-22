@@ -32,6 +32,9 @@ import static nars.time.Tense.ETERNAL;
  */
 public class ScalarBeliefTable extends DynamicBeliefTable {
 
+    /** if true, a time-series match from this table overrides anything stored in the superclass's tables */
+    private static final boolean SERIES_OVERRIDES = false;
+
     /**
      * prioritizes generated tasks
      */
@@ -43,7 +46,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     /**
      * TODO implement TaskTable
      */
-    interface TimeSeries {
+    public interface TimeSeries {
 
         /** the provided truth value should already be dithered */
         SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, NAR nar);
@@ -88,8 +91,12 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         if (start != ETERNAL) {
             FasterList<Task> batch = series.toList(start, end, SAMPLE_BATCH_SIZE);
             //TODO fair roulette select according to task value
+            Task seriesTask = !batch.isEmpty() ? batch.get(nar.random()) : null;
+            if (SERIES_OVERRIDES && seriesTask!=null) {
+                return seriesTask;
+            }
             return Task.eviMax(
-                        !batch.isEmpty() ? batch.get(nar.random()) : null,
+                    seriesTask,
                         x,
                         start, end);
         } else {
@@ -290,7 +297,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
     }
 
-    final TimeSeries series;
+    public final TimeSeries series;
 
     public ScalarBeliefTable(Term term, boolean beliefOrGoal, ConceptBuilder conceptBuilder) {
         this(term, beliefOrGoal, conceptBuilder.newTemporalTable(term));
@@ -363,13 +370,6 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     protected @Nullable Truth truthDynamic(long start, long end, NAR nar) {
         return (Truth) (eval(false, start, end, nar));
     }
-
-    @Override
-    protected @Nullable Term template(long start, long end, Term template, NAR nar) {
-        return term;
-    }
-
-
 
     public void pri(FloatSupplier pri) {
         this.pri = pri;

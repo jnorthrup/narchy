@@ -5,7 +5,6 @@ import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import jcog.util.HashCachedPair;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
@@ -21,12 +20,12 @@ public interface TaskLink extends Priority, Termed {
      * resolves a task in the provided NAR
      */
     Task get(NAR n);
-
-    /**
-     * after it has been deleted, give an opportunity to re-insert
-     * any forwarded task in a bag where it was just removed
-     */
-    void reincarnate(TaskLinkCurveBag taskLinks);
+//
+//    /**
+//     * after it has been deleted, give an opportunity to re-insert
+//     * any forwarded task in a bag where it was just removed
+//     */
+//    void reincarnate(TaskLinkCurveBag taskLinks);
 
     /**
      * dynamically resolves a task.
@@ -98,10 +97,10 @@ public interface TaskLink extends Priority, Termed {
             return id.getTwo().getTwo();
         }
 
-        @Override
-        public final void reincarnate(TaskLinkCurveBag taskLinks) {
-            //N/A
-        }
+//        @Override
+//        public final void reincarnate(TaskLinkCurveBag taskLinks) {
+//            //N/A
+//        }
 
         @Override
         public Task get(NAR n) {
@@ -140,32 +139,32 @@ public interface TaskLink extends Priority, Termed {
             return get();
         }
 
-        @Override
-        public void reincarnate(TaskLinkCurveBag bag) {
-            float p = this.priBeforeDeletion;
-            if (p == p) {
-                // this link was deleted due to the referent being deleted,
-                // not because the link was deleted.
-                // so see if a forwarding exists
-
-                Task x = this.get();
-                Task px = x;
-                Task y;
-
-                //TODO maybe a hard limit should be here for safety in case anyone wants to create loops of forwarding tasks
-                int hopsRemain = Param.MAX_TASK_FORWARD_HOPS;
-                do {
-                    y = x.meta("@");
-                    if (y != null)
-                        x = y;
-                } while (y != null && --hopsRemain > 0);
-
-                if (x != px && !x.isDeleted()) {
-                    Tasklinks.linkTask(x, p, bag);
-                }
-            }
-
-        }
+//        @Override
+//        public void reincarnate(TaskLinkCurveBag bag) {
+//            float p = this.priBeforeDeletion;
+//            if (p == p) {
+//                // this link was deleted due to the referent being deleted,
+//                // not because the link was deleted.
+//                // so see if a forwarding exists
+//
+//                Task x = this.get();
+//                Task px = x;
+//                Task y;
+//
+//                //TODO maybe a hard limit should be here for safety in case anyone wants to create loops of forwarding tasks
+//                int hopsRemain = Param.MAX_TASK_FORWARD_HOPS;
+//                do {
+//                    y = x.meta("@");
+//                    if (y != null)
+//                        x = y;
+//                } while (y != null && --hopsRemain > 0);
+//
+//                if (x != px && !x.isDeleted()) {
+//                    Tasklinks.linkTask(x, p, bag);
+//                }
+//            }
+//
+//        }
     }
 
 }

@@ -32,7 +32,7 @@ public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart
     }
 
     protected ItemVis<X> newItem(X i) {
-        return new ItemVis<>(i, label(i, 24));
+        return new ItemVis<>(i, label(i, 50));
     }
 
     //TODO
@@ -42,7 +42,7 @@ public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart
 
 
 
-    protected static <X> String label( X i, int MAX_LEN) {
+    protected String label( X i, int MAX_LEN) {
         String s = i.toString();
         if (s.length() > MAX_LEN)
             s = s.substring(0, MAX_LEN);

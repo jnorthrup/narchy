@@ -113,8 +113,8 @@ public class TaskLinkCurveBag extends CurveBag<TaskLink> {
 
     }
 
-    @Override
-    public void onRemove(TaskLink _value) {
-        _value.reincarnate(this);
-    }
+//    @Override
+//    public void onRemove(TaskLink _value) {
+//        _value.reincarnate(this);
+//    }
 }

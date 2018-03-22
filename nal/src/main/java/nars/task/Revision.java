@@ -24,6 +24,8 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.IntIterator;
+import org.roaringbitmap.RoaringBitmap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -755,6 +757,26 @@ public class Revision {
 
     @Nullable public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
         return mergeTemporal(nar, tt, tt.length);
+    }
+
+    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, FasterList<TaskRegion> tt, int results) {
+        //filter the task set:
+        // if there are any exact matches to the interval, remove any others
+        RoaringBitmap oob = new RoaringBitmap();
+        for (int i = 0, ttSize = tt.size(); i < ttSize; i++) {
+            TaskRegion x = tt.get(i);
+            if (x == null || !x.intersects(start, end))
+                oob.add(i);
+        }
+        int numRemoved = oob.getCardinality();
+        if (numRemoved!=0 && numRemoved!=tt.size()) {
+            IntIterator ii = oob.getReverseIntIterator();
+            while (ii.hasNext()) {
+                tt.remove(ii.next());
+            }
+        }
+
+        return mergeTemporal(nar, tt.array(), results);
     }
 
     @Nullable public static Task mergeTemporal(NAR nar, TaskRegion[] tt, int results) {

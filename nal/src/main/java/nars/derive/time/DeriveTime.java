@@ -13,6 +13,7 @@ import nars.task.EviDensity;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import nars.term.compound.util.Conj;
 import nars.term.var.VarPattern;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -497,7 +498,7 @@ public class DeriveTime extends TimeGraph {
         }
         FasterList<Pair<Term, long[]>> choices = new FasterList(ms);
 
-        //compact
+        //coalesce adjacent events
         m.asMap().forEach((t, cw) -> {
             int cws = cw.size();
             if (cws > 1) {
@@ -516,7 +517,7 @@ public class DeriveTime extends TimeGraph {
                         assert (j == 1);
                         assert (ct[0][0] == ETERNAL);
                         ct[0] = null; //ignore eternal solution amongst other temporal solutions
-                    } else if (Math.abs(prev[1] - next[0]) < dur) {
+                    } else if (Math.abs(prev[1] - next[0]) <= dur) {
                         prev[1] = next[1]; //stretch
                         ct[j] = null;
                         continue;
@@ -534,14 +535,32 @@ public class DeriveTime extends TimeGraph {
             }
         });
 
-        if (choices.size() > 1) {
+        if (choices.size() > 1) { //attempt sequence
+            Conj c = new Conj();
+            for (Pair<Term, long[]> x : choices){
+                long[] tt = x.getTwo();
+                if (!c.add(x.getOne(), tt[0],tt[1],2,dur))
+                    break;
+            }
+            Term seq = c.term();
+            if (seq.op().conceptualizable && seq.volume() < d.termVolMax) {
+                return (w) -> {
+                    long when = c.shift();
+                    w[0] = when;
+                    w[1] = when;
+                    return seq;
+                };
+            }
+
+            //random fallback
             return (w) -> {
-                Pair<Term, long[]> c = choices.get(d.random);
-                long[] cw = c.getTwo();
+                Pair<Term, long[]> pp = choices.get(d.random);
+                long[] cw = pp.getTwo();
                 w[0] = cw[0];
                 w[1] = cw[1];
-                return c.getOne();
+                return pp.getOne();
             };
+
         } else {
             Pair<Term, long[]> c = choices.get(0);
             long[] cw = c.getTwo();

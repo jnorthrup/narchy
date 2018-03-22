@@ -47,7 +47,9 @@ public class GoalActionAsyncConcept extends ActionConcept {
 //                start + dur/2;
 //                //now + dur;
 
-        Truth goal = this.goals().truth(pStart, pEnd, nar);
+        long gStart = pEnd;
+        long gEnd = pEnd + dur;
+        Truth goal = this.goals().truth(gStart, gEnd, nar);
 
 //            //HACK EXPERIMENT combine belief and goal
 //            int shift =
@@ -78,11 +80,12 @@ public class GoalActionAsyncConcept extends ActionConcept {
         int dur = nar.dur();
 
 
-        long start =
-                now - dur/2;
-        long end =
-                now + dur/2;
-
+//        long start =
+//                now - dur/2;
+//        long end =
+//                now + dur/2;
+        long start = now;
+        long end = now + dur;
 
         Task fg;
         if (g!=null) {

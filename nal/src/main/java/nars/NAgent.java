@@ -346,11 +346,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         for (int i = 0, alwaysSize = always.size(); i < alwaysSize; i++) {
             Task x = always.get(i);
             x.pri(
-                    //nar.priDefault(GOAL)
-                    activation
+                activation * nar.priDefault(x.punc())
             );
-
-            //nar.activate(x, activation);
         }
 
         in.input(always);
