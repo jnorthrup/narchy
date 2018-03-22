@@ -6,7 +6,7 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.pri.PLink;
-import jcog.pri.Pri;
+import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -26,21 +26,25 @@ import static nars.Op.BELIEF;
  * It is meant to be disposable and should not be kept referenced longer than necessary
  * to avoid GC loops, so it may need to be weakly referenced.
  */
-public class Premise extends Pri {
+public class Premise {
 
     public final Task task;
-    public final Term term;
+    public final PriReference<Term> termLink;
     private final int hash;
 
     //TODO make global param
 
 
 
-    Premise(Task task, Term term) {
+    Premise(Task task, PriReference<Term> termLink) {
         super();
         this.task = task;
-        this.term = term;
-        this.hash = Util.hashCombine(task, term);
+        this.termLink = termLink;
+        this.hash = Util.hashCombine(task, term());
+    }
+
+    public Term term() {
+        return termLink.get();
     }
 
     final static int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
@@ -87,7 +91,7 @@ public class Premise extends Pri {
 
         int dur = d.dur;
 
-        Term beliefTerm = term;
+        Term beliefTerm = term();
 
 
         Term taskTerm = task.term();
@@ -104,12 +108,12 @@ public class Premise extends Pri {
             } else {
 
                 //non-symmetric unify only variables in the task by belief contents
-                if ((beliefTerm.op().conceptualizable) && (taskTerm.hasAny(var))) {
+                if ((beliefTerm.op().conceptualizable) && (beliefTerm.hasAny(var) && taskTerm.hasAny(var))) {
 
                     Term _beliefTerm = beliefTerm;
                     final Term[] unifiedBeliefTerm = new Term[]{null};
                     UnifySubst u = new UnifySubst(null, n, (y) -> {
-                        if (y.op().conceptualizable && !y.hasAny(Op.BOOL)) {
+                        if (y.op().conceptualizable) {
                             y = y.normalize();
 
                             beliefConceptCanAnswerTaskConcept[0] = true;
@@ -121,14 +125,14 @@ public class Premise extends Pri {
                         }
                         return true; //keep going
                     }, matchTTL);
-                    u.varSymmetric = false;
+                    u.varSymmetric = true;
                     u.varCommonalize = true;
-                    if (u.unify(taskTerm, beliefTerm, true)) {
-                        if (unifiedBeliefTerm[0] != null) {
-                            beliefTerm = unifiedBeliefTerm[0];
-                            unifiedBelief = true;
-                        }
+                    u.unify(taskTerm, beliefTerm, true);
+                    if (unifiedBeliefTerm[0] != null) {
+                        beliefTerm = unifiedBeliefTerm[0];
+                        unifiedBelief = true;
                     }
+
                 }
             }
         }
@@ -195,7 +199,7 @@ public class Premise extends Pri {
 
 
             if (unifiedBelief) {
-                Concept originalBeliefConcept = n.conceptualize(term);
+                Concept originalBeliefConcept = n.conceptualize(term());
                 if (originalBeliefConcept != null)
                     linkVariable(originalBeliefConcept, beliefConcept);
             }
@@ -228,7 +232,7 @@ public class Premise extends Pri {
 
     @Override
     public boolean equals(Object obj) {
-        return hash == obj.hashCode() && ((Premise)obj).task.equals(task) && ((Premise)obj).term.equals(term);
+        return hash == obj.hashCode() && ((Premise)obj).task.equals(task) && ((Premise)obj).term().equals(term());
     }
 
     @Override
@@ -241,6 +245,9 @@ public class Premise extends Pri {
      */
     private void linkVariable(Concept lessConstant, Concept moreConstant) {
 
+        //split the source termlink's budget
+        float pri = termLink.priElseZero() * 0.5f;
+        termLink.priMult(0.5f);
 
 //        /** creates a tasklink/termlink proportional to the tasklink's priority
 //         *  and inversely proportional to the increase in term complexity of the
@@ -253,6 +260,7 @@ public class Premise extends Pri {
 //                * (1f/lessConstantTerm.volume());
 //                //* Util.unitize(lessConstantTerm.complexity() / ((float) moreConstantTerm.complexity()));
 //
+        //share the budget in 2 opposite links: specific -> general & general -> specific
         moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2f));
         lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2f));
 //        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
@@ -267,7 +275,7 @@ public class Premise extends Pri {
     public String toString() {
         return "Premise(" +
                 task +
-                " * " + term +
+                " * " + term() +
                 ')';
     }
 

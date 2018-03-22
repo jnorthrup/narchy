@@ -104,6 +104,7 @@ public class Conj {
             return Null;
 
         int cdt = conj.dt();
+        //quick test for first layer subterm of a commutive conjunction
         if (cdt ==DTERNAL || cdt == 0) {
             Term[] csDropped = conj.subterms().termsExcept(event);
             if (csDropped!=null) {
@@ -112,8 +113,6 @@ public class Conj {
                 else
                     return CONJ.the(cdt, csDropped);
             }
-            if (cdt == DTERNAL)
-                throw new UnsupportedOperationException(); //shouldnt proceed below with event recomposition
         }
 
         Conj c = Conj.from(conj);

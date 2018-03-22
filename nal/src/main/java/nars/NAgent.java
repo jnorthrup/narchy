@@ -102,12 +102,12 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     private int dur;
 
-    public final FloatRange motivation = new FloatRange(0f, 0f, 1f);
+    public final FloatRange motivation = new FloatRange(1f, 0f, 2f);
     protected List<Task> always = $.newArrayList();
 
 
 
-    protected NAgent(@NotNull NAR nar) {
+    protected NAgent(NAR nar) {
         this("", nar);
     }
 
@@ -242,8 +242,6 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             super.start(nar);
 
-            motivation.set(nar.priDefault(GOAL));
-
             Term happyTerm = id == null ?
                     $.the("happy") : //generally happy
                     $.inh(id, $.the("happy")); //happy in this environment
@@ -315,7 +313,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                             )
                     );
 
-            //onFrame(happy);
+            happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));
 
             alwaysWant((Iterable)happy, nar.confDefault(GOAL));
 
@@ -343,7 +341,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
     protected void always(float activation) {
-        for (int i = 0, alwaysSize = always.size(); i < alwaysSize; i++) {
+        int n = always.size();
+        if (n == 0)
+            return;
+
+        for (int i = 0; i < n; i++) {
             Task x = always.get(i);
             x.pri(
                 activation * nar.priDefault(x.punc())
@@ -375,7 +377,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             sc.getValue().input(sc.getKey().update(last, now, truther, nar));
         });
 
-        always(motivation.floatValue() );
+        always( motivation.floatValue() );
 
         //HACK TODO compile this to re-used array on init like before
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
@@ -408,7 +410,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             int remainMissing = numConcepts;
             if (remainMissing == 0) return;
 
-            float pri = motivation.floatValue();
+            //float pri = motivation.floatValue();
             Random rng = nar.random();
             do {
                 Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));

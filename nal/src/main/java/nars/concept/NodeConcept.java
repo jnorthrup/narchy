@@ -10,7 +10,6 @@ import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
 import nars.link.TaskLink;
-import nars.link.TermLinks;
 import nars.link.TermlinkTemplates;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
@@ -72,7 +71,7 @@ public class NodeConcept implements Concept {
 
     /** called during initializer to cache the templates. override to define custom template patterns */
     protected TermlinkTemplates buildTemplates(Term term) {
-        return TermLinks.templates(term);
+        return TermlinkTemplates.templates(term);
     }
 
 

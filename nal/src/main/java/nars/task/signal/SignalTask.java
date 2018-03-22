@@ -17,10 +17,10 @@ public class SignalTask extends NALTask {
         this(t, punct, truth, start, start, end, stamp);
     }
 
-    @Override
-    public float eternalizability() {
-        return 0;
-    }
+//    @Override
+//    public float eternalizability() {
+//        return 0;
+//    }
 
     @Override
     public final boolean isInput() {

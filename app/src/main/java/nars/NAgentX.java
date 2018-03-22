@@ -161,8 +161,8 @@ abstract public class NAgentX extends NAgent {
 
                 .index(
                         new CaffeineIndex(
-                                //250 * 1024
-                                2500 * 1024,
+                                800 * 1024,
+                                //2500 * 1024,
                                 //200 * 1024
                                 //100 * 1024
                                 //50 * 1024

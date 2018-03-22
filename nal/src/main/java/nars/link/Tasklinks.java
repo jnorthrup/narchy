@@ -51,9 +51,9 @@ public class Tasklinks {
         float balance = nar.termlinkBalance.floatValue();
 
         //MutableFloat overflow = new MutableFloat();
-        linkTask(new TaskLink.GeneralTaskLink(t, nar, balance * priCause), src.tasklinks(),
-                null);
-                //overflow);
+        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, balance * priCause);
+
+        linkTask(link, src.tasklinks(), null);
 
         float priEffect =
                 priCause;

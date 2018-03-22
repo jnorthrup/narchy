@@ -401,7 +401,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
             n.emotion.onInput(this, n);
 
-            //just activate
+            //only activate
             Concept c = n.concept(term);
             if (c!=null) //shouldnt be null, ever
                 Tasklinks.linkTask(this, pri, c, n);

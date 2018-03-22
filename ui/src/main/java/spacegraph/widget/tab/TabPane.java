@@ -47,7 +47,7 @@ public class TabPane extends Splitting {
             Supplier<Surface> creator = x.getValue();
             String label = x.getKey();
             ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
-                synchronized (content) {
+                {
                     if (a) {
                         Surface cx;
                         try {
@@ -59,15 +59,19 @@ public class TabPane extends Splitting {
                             cx = new Label(msg);
                         }
 
-                        content.add(created[0] = cx);
-                        split(CONTENT_VISIBLE_SPLIT); //hide empty content area
-                    } else {
-                        if (created[0] != null) {
-                            content.remove(created[0]);
-                            created[0] = null;
+                        synchronized (content) {
+                            content.add(created[0] = cx);
+                            split(CONTENT_VISIBLE_SPLIT); //hide empty content area
                         }
-                        if (content.isEmpty()) {
-                            split(0f); //hide empty content area
+                    } else {
+                        synchronized (content) {
+                            if (created[0] != null) {
+                                content.remove(created[0]);
+                                created[0] = null;
+                            }
+                            if (content.isEmpty()) {
+                                split(0f); //hide empty content area
+                            }
                         }
                     }
                 }

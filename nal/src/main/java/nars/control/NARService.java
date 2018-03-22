@@ -59,6 +59,7 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
             logger.debug("stop {}", id);
             stopping(nar);
             nar.services.remove(this.id);
+            ons = null;
         }
     }
 

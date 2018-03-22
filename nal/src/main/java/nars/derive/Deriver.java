@@ -214,7 +214,7 @@ public class Deriver extends Causable {
 
             fired += selectPremises(burstSize, (t, termlink) -> {
 
-                Premise premise = new Premise(t, termlink.get());
+                Premise premise = new Premise(t, termlink);
                 if (!premiseBurst.add(premise)) {
                     n.emotion.premiseBurstDuplicate.increment();
                 }

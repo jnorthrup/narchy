@@ -66,4 +66,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
         in.input(Iterables.transform(this, x -> x.update(start, end, truther, n)));
     }
 
+    public void pri(FloatSupplier p) {
+        forEach(x -> x.pri(p));
+    }
 }

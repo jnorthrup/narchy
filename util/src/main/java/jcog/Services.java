@@ -13,6 +13,7 @@
  */
 package jcog;
 
+import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -23,13 +24,13 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import static jcog.data.map.CustomConcurrentHashMap.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -246,7 +247,7 @@ public class Services<X, C>  {
         this.id = id == null ? (C)this : id;
         this.logger = LoggerFactory.getLogger(id.toString());
         this.exe = exe;
-        this.services = new ConcurrentHashMap<>();
+        this.services = new CustomConcurrentHashMap<>(WEAK, EQUALS, WEAK, IDENTITY, 64);
     }
 
     public Stream<Service<C>> stream() {
@@ -260,20 +261,6 @@ public class Services<X, C>  {
         add(key, s, true);
     }
 
-
-    public final void on(X key) {
-        Service<C> s = services.get(key);
-        if (s.isOff()) {
-            s.start(this, exe);
-        }
-    }
-
-    public void off(X key) {
-        Service<C> s = services.get(key);
-        if (s.isOn()) {
-            s.stop(this, exe, null);
-        }
-    }
     public void add(X key, Service<C> s, boolean start) {
         Service<C> removed = services.put(key, s);
 
@@ -291,6 +278,20 @@ public class Services<X, C>  {
 
 
     }
+    public final void on(X key) {
+        Service<C> s = services.get(key);
+        if (s.isOff()) {
+            s.start(this, exe);
+        }
+    }
+
+    public void off(X key) {
+        Service<C> s = services.get(key);
+        if (s.isOn()) {
+            s.stop(this, exe, null);
+        }
+    }
+
 
 
 
@@ -314,9 +315,9 @@ public class Services<X, C>  {
         return this;
     }
 
-    public void delete() {
-        services.values().removeIf(x -> { x.stop(this, exe, ()->{}); return true; });
-    }
+//    public void delete() {
+//        services.values().removeIf(x -> { x.stop(this, exe, ()->{}); return true; });
+//    }
 
 
 //    /**
