@@ -172,9 +172,11 @@ public class Tetris extends NAgentX implements Bitmap2D {
         oo.exeThresh.set(0.6f);
 
         oo.methodExclusions.add("toVector");
-        state =
-                //oo.the("tetris", this.state);
-                oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
+
+        state = new TetrisState(tetris_width, tetris_height, 2);
+//        state =
+//                //oo.the("tetris", this.state);
+//                oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
 
     }
 

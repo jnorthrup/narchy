@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OpjectsTest {
 
-    static class SimpleClass {
-        private int v;
+    public static class SimpleClass {
+        protected int v;
 
         public void set(int x) {
             System.err.println("set: " + x);
@@ -53,7 +53,7 @@ public class OpjectsTest {
             }
         };
 
-        final SimpleClass x = objs.a("x", SimpleClass.class);
+        final SimpleClass x = objs.the("x", new SimpleClass());
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
         n.log();

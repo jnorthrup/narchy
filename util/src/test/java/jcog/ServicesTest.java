@@ -13,18 +13,18 @@ public class ServicesTest {
         s.add("x", new DummyService(sb), true);
         s.add("y", new DummyService(sb), true);
 
-        s.printServices(System.out);
+        s.print(System.out);
 
         //ForkJoinPool.commonPool().awaitQuiescence()
 
         s.stop();
 
-        s.printServices(System.out);
+        s.print(System.out);
 
         //System.out.println(sb);
     }
 
-    private static class DummyService extends Services.AbstractService {
+    private static class DummyService extends Service {
         private final StringBuilder sb;
 
         public DummyService(StringBuilder sb) {

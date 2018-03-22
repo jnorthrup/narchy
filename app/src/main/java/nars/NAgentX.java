@@ -8,7 +8,6 @@ import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -33,6 +32,7 @@ import spacegraph.container.EdgeDirected;
 import spacegraph.render.JoglPhysics;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
+import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meta.WindowToggleButton;
 
@@ -240,7 +240,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(1f * priFactor);
         n.questPriDefault.set(1f * priFactor);
 
-        n.activationRate.set(0.5f);
+        n.activationRate.set(0.1f);
 
         NAgent a = init.apply(n);
 
@@ -319,11 +319,11 @@ abstract public class NAgentX extends NAgent {
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
-        //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 16);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 16);
 
         //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 16);
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
+        //ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
 //        RelationClustering relCluster = new RelationClustering(n,
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
@@ -431,6 +431,20 @@ abstract public class NAgentX extends NAgent {
 
                             new Vis.EmotionPlot(64, a),
                             grid(
+                                    //concept query box
+                                    new TextEdit() {
+                                        @Override
+                                        protected void onKeyEnter() {
+                                            String s = text();
+                                            text("");
+                                            try {
+                                                nar.conceptualize(s);
+                                            } catch (Narsese.NarseseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            Vis.conceptWindow(s, nar);
+                                        }
+                                    }.surface(),
 
                                     //new WindowButton("log", () -> Vis.logConsole(nar, 80, 25, new FloatParam(0f))),
                                     new PushButton("dump", () -> {

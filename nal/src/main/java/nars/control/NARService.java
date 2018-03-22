@@ -1,6 +1,6 @@
 package nars.control;
 
-import jcog.Services;
+import jcog.Service;
 import jcog.event.Ons;
 import nars.$;
 import nars.NAR;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NARService extends Services.AbstractService<NAR> implements Termed {
+public class NARService extends Service<NAR> implements Termed {
 
     static final Logger logger = LoggerFactory.getLogger(NARService.class);
 

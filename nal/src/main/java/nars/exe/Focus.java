@@ -1,6 +1,6 @@
 package nars.exe;
 
-import jcog.Services;
+import jcog.Service;
 import jcog.Util;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
@@ -63,7 +63,7 @@ public class Focus extends AtomicRoulette<Causable> {
         this.revaluator = r;
 
         n.services.change.on((xa) -> {
-            Services.Service<NAR> x = xa.getOne();
+            Service<NAR> x = xa.getOne();
             if (x instanceof Causable) {
                 Causable c = (Causable) x;
                 if (xa.getTwo())

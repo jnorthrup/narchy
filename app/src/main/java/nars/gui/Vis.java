@@ -1,16 +1,12 @@
 package nars.gui;
 
 import com.google.common.collect.Lists;
-import com.jogamp.opengl.GL2;
 import jcog.pri.PriReference;
-import jcog.tree.rtree.rect.RectFloat2D;
-import nars.$;
 import nars.NAR;
 import nars.NAgent;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.term.Termed;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.container.Gridding;
@@ -132,50 +128,50 @@ public class Vis {
 //        return grid;
 //    }
 
-    public static Gridding conceptBeliefPlots(NAgent a, Iterable<? extends Termed> concepts, int plotHistory) {
-
-        //TODO make a lambda Grid constructor
-        Gridding grid = new Gridding();
-        List<Plot2D> plots = $.newArrayList();
-        for (Termed t : concepts) {
-            final Truth[] bb = {$.t(0.5f, 0.5f)};
-            Plot2D p = new Plot2D(plotHistory, Plot2D.Line /*BarWave*/) {
-
-                @Override
-                protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-                    Concept concept = a.nar.concept(t);
-
-                    bb[0] = a.nar.beliefTruth(concept, a.nar.time());
-                    float b;
-                    b = bb[0] == null ? 0f : 2f * (bb[0].freq()) - 1f;
-
-                    backgroundColor[0] = b < 0 ? -b / 4f : 0;
-                    backgroundColor[1] = 0;
-                    backgroundColor[2] = b >= 0 ? b / 4f : 0;
-                    backgroundColor[3] = 0.9f;
-                }
-            };
-            p.setTitle(t.toString());
-//            p.add("P", () -> a.nar.pri(t, Float.NaN), 0f, 1f);
-//            p.add("G", () -> a.nar.concept(t).goalFreq(nar.time(), nar.dur()), 0f, 1f);
-            p.add("B", () -> {
-                return bb[0] != null ? bb[0].freq() : Float.NaN;
-            }, 0f, 1f);
-            p.add("G", () -> {
-                Truth b = a.nar.goalTruth(t, a.nar.time());
-                return b != null ? b.freq() : Float.NaN;
-            }, 0f, 1f);
-
-            plots.add(p);
-        }
-        grid.set(plots);
-
-        a.onFrame(f -> {
-            plots.forEach(Plot2D::update);
-        });
-
-        return grid;
-    }
+//    public static Gridding conceptBeliefPlots(NAgent a, Iterable<? extends Termed> concepts, int plotHistory) {
+//
+//        //TODO make a lambda Grid constructor
+//        Gridding grid = new Gridding();
+//        List<Plot2D> plots = $.newArrayList();
+//        for (Termed t : concepts) {
+//            final Truth[] bb = {$.t(0.5f, 0.5f)};
+//            Plot2D p = new Plot2D(plotHistory, Plot2D.Line /*BarWave*/) {
+//
+//                @Override
+//                protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+//                    Concept concept = a.nar.concept(t);
+//
+//                    bb[0] = a.nar.beliefTruth(concept, a.nar.time());
+//                    float b;
+//                    b = bb[0] == null ? 0f : 2f * (bb[0].freq()) - 1f;
+//
+//                    backgroundColor[0] = b < 0 ? -b / 4f : 0;
+//                    backgroundColor[1] = 0;
+//                    backgroundColor[2] = b >= 0 ? b / 4f : 0;
+//                    backgroundColor[3] = 0.9f;
+//                }
+//            };
+//            p.setTitle(t.toString());
+////            p.add("P", () -> a.nar.pri(t, Float.NaN), 0f, 1f);
+////            p.add("G", () -> a.nar.concept(t).goalFreq(nar.time(), nar.dur()), 0f, 1f);
+//            p.add("B", () -> {
+//                return bb[0] != null ? bb[0].freq() : Float.NaN;
+//            }, 0f, 1f);
+//            p.add("G", () -> {
+//                Truth b = a.nar.goalTruth(t, a.nar.time());
+//                return b != null ? b.freq() : Float.NaN;
+//            }, 0f, 1f);
+//
+//            plots.add(p);
+//        }
+//        grid.set(plots);
+//
+//        a.onFrame(f -> {
+//            plots.forEach(Plot2D::update);
+//        });
+//
+//        return grid;
+//    }
 
 
 //    public static Grid agentBudgetPlot(NAgent t, int history) {

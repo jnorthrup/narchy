@@ -2,6 +2,8 @@ package jcog.util;
 
 /** from: https://github.com/jOOQ/jOOR/blob/master/jOOR/src/main/java/org/joor/Reflect.java */
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.Arrays;
@@ -592,7 +594,12 @@ public class Reflect {
             }
         };
 
-        return (P) Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[] { proxyType }, handler);
+        return (P) as(proxyType, handler);
+    }
+
+    @NotNull
+    public Object as(Class proxyType, InvocationHandler handler) {
+        return Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[] { proxyType }, handler);
     }
 
     /**

@@ -521,7 +521,8 @@ public class Builtin {
     }
 
     public static void registerOperators(NAR nar) {
-        new System(nar);
+
+        //new System(nar);
 
         nar.onOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)

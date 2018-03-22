@@ -11,6 +11,7 @@ import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
+import nars.task.NALTask;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
@@ -21,6 +22,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static nars.$.$$;
+import static nars.Op.BELIEF;
+import static nars.time.Tense.ETERNAL;
 import static spacegraph.render.JoglPhysics.window;
 
 /**
@@ -99,8 +103,8 @@ public class FZero extends NAgentX {
 
 
         //initTankDiscrete();
-        initTankContinuous();
-        //initToggle();
+        //initTankContinuous();
+        initToggle();
         //initBipolar(true);
         //initBipolar(true);
 
@@ -142,6 +146,13 @@ public class FZero extends NAgentX {
                 //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
         ).resolution(0.04f);
+
+
+        always.add(new NALTask($$("({(ang,#a),angVel,accel,cam(#x,#y)}-->fz)"),
+                BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
+        always.add(new NALTask($$("(({#x}-->fz)==>happy(fz,#y))"),
+                BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
+
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 

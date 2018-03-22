@@ -13,7 +13,6 @@
  */
 package jcog;
 
-import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -24,14 +23,11 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
-
-import static jcog.data.map.CustomConcurrentHashMap.*;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Modifications to guava's ServiceManager
@@ -90,7 +86,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public class Services<X, C>  {
 
     final Logger logger;
-    private final C id;
+    public final C id;
     private final Executor exe;
     public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
 
@@ -120,120 +116,20 @@ public class Services<X, C>  {
         On {
             @Override public String toString() { return "+"; }
         },
-        OnToOff, Deleted
+        OnToOff,
+        Deleted
     }
 
-    public interface Service<C> {
-
-        ServiceState state();
-
-        void start(Services<?,C> x, Executor exe);
-
-        void stop(Services<?,C> x, Executor exe, @Nullable Runnable afterDelete);
-
-        default void delete() {        }
-
-
-        default boolean isOn() {
-            return state() == Services.ServiceState.On;
-        }
-
-        default boolean isOff() {
-            return state() == Services.ServiceState.Off;
-        }
-
-    }
-
-    public static abstract class AbstractService<C> extends AtomicReference<ServiceState> implements Service<C> {
-
-        protected AbstractService() {
-            super(ServiceState.Off);
-        }
-
-        @Override
-        public String toString() {
-            String nameString = getClass().getName();
-
-            //quick common package name filters
-            if (nameString.startsWith("jcog."))
-                nameString = getClass().getSimpleName();
-            else if (nameString.startsWith("nars."))
-                nameString = getClass().getSimpleName();
-
-            return nameString + ':' + super.toString();
-        }
-
-        @Override
-        public final void start(Services<?,C> x, Executor exe) {
-            if (compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
-                exe.execute(() -> {
-                    try {
-                        start(x.id);
-                        assert (
-                                compareAndSet(ServiceState.OffToOn, ServiceState.On)
-                        );
-                        x.change.emit(pair(AbstractService.this, true));
-                    } catch (Throwable e) {
-                        delete();
-                        x.logger.error("{} {}", this, e);
-                    }
-                });
-            }
-        }
-
-        @Override
-        public Services.ServiceState state() {
-            return get();
-        }
-
-        @Override
-        public final void stop(Services<?,C> x, Executor exe, @Nullable Runnable afterDelete) {
-            if (compareAndSet(ServiceState.On, ServiceState.OnToOff)) {
-                exe.execute(() -> {
-                    try {
-                        x.change.emit(pair(this, false));
-                        stop(x.id);
-                        assert (
-                                compareAndSet(ServiceState.OnToOff, ServiceState.Off)
-                        );
-                        if (afterDelete!=null) {
-                            delete();
-                            afterDelete.run();
-                        }
-                    } catch (Throwable e) {
-                        delete();
-                        x.logger.error("{} {}", this, e);
-                    }
-                });
-            }
-        }
-
-        @Override
-        public void delete() {
-            set(ServiceState.Deleted);
-        }
-
-        abstract protected void start(C x);
-
-        abstract protected void stop(C x);
-
-
-    }
-
-    public void printServices(PrintStream out) {
-        services.forEach((k, s) -> out.println(k + " " + s.state()));
+    public void print(PrintStream out) {
+        services.forEach((k, s) -> out.println(k + " " + s.get()));
     }
 
 
-    public final ConcurrentMap<X, Service<C>> services;
+    private final ConcurrentMap<X, Service<C>> services;
 
     public Services(C id) {
         this(id, ForkJoinPool.commonPool());
     }
-
-//    protected Services() {
-//        this(null, ForkJoinPool.commonPool());
-//    }
 
     /**
      * Constructs a new instance for managing the given services.
@@ -247,12 +143,13 @@ public class Services<X, C>  {
         this.id = id == null ? (C)this : id;
         this.logger = LoggerFactory.getLogger(id.toString());
         this.exe = exe;
-        this.services = new CustomConcurrentHashMap<>(WEAK, EQUALS, WEAK, IDENTITY, 64);
+        this.services = new ConcurrentHashMap(64);
     }
 
     public Stream<Service<C>> stream() {
         return services.values().stream();
     }
+
     public Set<Map.Entry<X, Service<C>>> entrySet() {
         return services.entrySet();
     }
@@ -278,27 +175,28 @@ public class Services<X, C>  {
 
 
     }
-    public final void on(X key) {
-        Service<C> s = services.get(key);
-        if (s.isOff()) {
-            s.start(this, exe);
-        }
-    }
-
-    public void off(X key) {
-        Service<C> s = services.get(key);
-        if (s.isOn()) {
-            s.stop(this, exe, null);
-        }
-    }
-
-
-
+//    public final boolean on(X key) {
+//        Service<C> s = services.get(key);
+//        if (s.isOff()) {
+//            s.start(this, exe);
+//        }
+//    }
+//
+//    public void off(X key) {
+//        Service<C> s = services.get(key);
+//        if (s.isOn()) {
+//            s.stop(this, exe, null);
+//        }
+//    }
 
     public void remove(X serviceID) {
         Service<C> s = services.get(serviceID);
         if (s!=null) {
-            s.stop(this, exe, null);
+            s.stop(this, exe, ()->{
+                services.remove(serviceID);
+            });
+        } else {
+            logger.error("can not remove unknown service: {}", serviceID);
         }
     }
 
@@ -314,68 +212,5 @@ public class Services<X, C>  {
         }
         return this;
     }
-
-//    public void delete() {
-//        services.values().removeIf(x -> { x.stop(this, exe, ()->{}); return true; });
-//    }
-
-
-//    /**
-//     * Waits for the all the services to reach a terminal state. After this method returns all
-//     * services will either be {@linkplain Service.State#TERMINATED terminated} or
-//     * {@linkplain Service.State#FAILED failed}.
-//     */
-//    public void awaitStopped() {
-//        state.awaitStopped();
-//    }
-//
-//    /**
-//     * Waits for the all the services to reach a terminal state for no more than the given time. After
-//     * this method returns all services will either be {@linkplain Service.State#TERMINATED
-//     * terminated} or {@linkplain Service.State#FAILED failed}.
-//     *
-//     * @param timeout the maximum time to wait
-//     * @param unit    the time unit of the timeout argument
-//     * @throws TimeoutException if not all of the services have stopped within the deadline
-//     */
-//    public void awaitStopped(long timeout, TimeUnit unit) throws TimeoutException {
-//        state.awaitStopped(timeout, unit);
-//    }
-//
-//    /**
-//     * Returns true if all services are currently in the {@linkplain State#RUNNING running} state.
-//     * <p>
-//     * <p>Users who want more detailed information should use the {@link #servicesByState} method to
-//     * get detailed information about which services are not running.
-//     */
-//    public boolean isHealthy() {
-//        for (Service service : services) {
-//            if (!service.isRunning()) {
-//                return false;
-//            }
-//        }
-//        return true;
-////    }
-//
-//    /**
-//     * Provides a snapshot of the current state of all the services under management.
-//     * <p>
-//     * <p>N.B. This snapshot is guaranteed to be consistent, i.e. the set of states returned will
-//     * correspond to a point in time view of the services.
-//     */
-//    public ImmutableMultimap<State, Service> servicesByState() {
-//        return state.servicesByState();
-//    }
-//
-//    /**
-//     * Returns the service load times. This value will only return startup times for services that
-//     * have finished starting.
-//     *
-//     * @return Map of services and their corresponding startup time in millis, the map entries will be
-//     * ordered by startup time.
-//     */
-//    public ImmutableMap<Service, Long> startupTimes() {
-//        return state.startupTimes();
-//    }
 
 }

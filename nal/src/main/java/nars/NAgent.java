@@ -8,9 +8,9 @@ import jcog.list.FasterList;
 import jcog.math.*;
 import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
-import nars.concept.scalar.ChronicScalar;
 import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
+import nars.concept.scalar.FilteredScalar;
 import nars.concept.scalar.Scalar;
 import nars.control.Activate;
 import nars.control.CauseChannel;
@@ -44,6 +44,7 @@ import static jcog.Util.compose;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * explicit management of sensor concepts and motor functions
@@ -242,10 +243,13 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             super.start(nar);
 
-            Term happyTerm = id == null ?
-                    $.the("happy") : //generally happy
-                    $.inh(id, $.the("happy")); //happy in this environment
-                    //$.prop(id, $.the("happy")); //happiness of this environment
+            Term id = (this.id == null) ? nar.self() : this.id;
+
+//            Term happyTerm = id == null ?
+//                    $.the("happy") : //generally happy
+//                    $.p(id, $.the("happy"));
+//                    //$.inh(id, $.the("happy")); //happy in this environment
+//                    //$.prop(id, $.the("happy")); //happiness of this environment
 
 //            FloatSupplier happyValue = new FloatCached(
 //                    new FloatNormalized(
@@ -291,26 +295,25 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             this.happy =
                     //new ActionInfluencingScalar(happyTerm, happyValue);
-                    ChronicScalar.filter(
-                            happyTerm,
+                    new FilteredScalar(
                             happyValue,
                             nar,
 
-                            //happiness (raw)
-                            new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+                            //happiness (raw value)
+                            pair($.inh($.p("happy", "raw"), id),
+                                new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
-                            //long-term happiness
-                            compose(
+                            //long-term happiness: chronic / satisfaction
+                            pair($.inh($.p("happy", "chronic"), id), compose(
+                                new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
+                                new FloatExpMovingAverage(0.02f)
+                            )),
 
-                                    new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-                                    new FloatExpMovingAverage(0.02f)
-                            ),
-
-                            //joy
-                            compose(
+                            //short-term happiness: acute / joy
+                            pair($.inh($.p("happy", "acute"), id), compose(
                                 new FloatExpMovingAverage(0.1f, false),
                                 new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
-                            )
+                            ))
                     );
 
             happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));

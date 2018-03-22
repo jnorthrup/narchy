@@ -2,6 +2,7 @@ package nars;
 
 
 import com.google.common.primitives.Longs;
+import jcog.Service;
 import jcog.Services;
 import jcog.Util;
 import jcog.event.ListTopic;
@@ -1541,7 +1542,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return c;
     }
 
-    public Stream<Services.Service<NAR>> services() {
+    public Stream<Service<NAR>> services() {
         return services.stream();
     }
 

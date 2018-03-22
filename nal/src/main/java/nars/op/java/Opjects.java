@@ -3,8 +3,6 @@ package nars.op.java;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
 import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
@@ -26,9 +24,12 @@ import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.InvocationHandlerAdapter;
+import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.platform.commons.util.Preconditions;
 import org.slf4j.LoggerFactory;
@@ -74,9 +75,11 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 @Paper
 @Skill({"Metaprogramming", "Reinforcement_learning"})
-public class Opjects extends DefaultTermizer implements MethodHandler {
+public class Opjects extends DefaultTermizer implements MethodHandler, InvocationHandler {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
+
+    final ByteBuddy bb = new ByteBuddy();
 
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
 
@@ -183,10 +186,10 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         return isPublic(m); //disallows invoking protected
     }
 
-    /** whether NAR sees method activity when invoked extrenally */
-    public boolean methodInvokeObservable(Method wrapped) {
-        return !Modifier.isPrivate(wrapped.getModifiers()); //allows seeing protected
-    }
+//    /** whether NAR sees method activity when invoked extrenally */
+//    public boolean methodInvokeObservable(Method wrapped) {
+//        return !Modifier.isPrivate(wrapped.getModifiers()); //allows seeing protected
+//    }
 
 
     static boolean isPublic(Method m) {
@@ -240,6 +243,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 $.func(method, instance, s.subs()==1 ? s.sub(0) : PROD.the(s))
         );
     }
+
+
 
 //    static class ValueSignalTask extends LatchingSignalTask {
 //
@@ -732,21 +737,38 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //            return p.createClass();
 //        });
 
-        ProxyFactory f = new ProxyFactory();
-        f.setSuperclass(instance.getClass());
+//        ProxyFactory f = new ProxyFactory();
+//        f.setSuperclass(instance.getClass());
+//        f.setUseCache(true);
 
         reflect(instance.getClass());
 
         try {
+            Class cl = bb
+                    .subclass(instance.getClass())
+                    .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
+                    .intercept(InvocationHandlerAdapter.of((objIgnored, method, margs) ->
+                            invoke(instance, method, margs)))
+                    .make()
+                    .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+                    .getLoaded();
+            T inst = (T) cl.getConstructor(typesOfArray(args)).newInstance(args);
 
-            T wrapped = (T) f.create(typesOfArray(args), args,
-                    (self, thisMethod, proceed, aa) ->
-                            tryInvoked(self, thisMethod, aa, thisMethod.invoke(instance, aa))
-            );
 
-            register(id, wrapped);
 
-            return wrapped;
+            register(id, instance);
+
+            return inst;
+
+//
+//            T wrapped = (T)Reflect.on(instance.getClass()).as(instance.getClass(),  ///  Reflect.on(instance)//(T) Proxy.newProxyInstance(instance.getClass().getClassLoader(), )f.create(typesOfArray(args), args,
+//                    (self, thisMethod, aa) ->
+//                            tryInvoked(self, thisMethod, aa, thisMethod.invoke(instance, aa))
+//            );
+//
+//            register(id, wrapped);
+//
+//            return wrapped;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -779,6 +801,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         if (!validMethod(m))
             return null;
 
+        m.setAccessible(true);
+
         String n = m.getName();
         return opCache.computeIfAbsent(n, (mn) -> {
             MethodExec methodExec = new MethodExec(mn);
@@ -795,30 +819,55 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     /**
      * creates a new instance to be managed by this
      */
-    @NotNull
     public <T> T a(Term id, Class<? extends T> cl, Object... args) {
 
-        Class clazz = proxyCache.computeIfAbsent(cl, (c) -> {
+        Class ccc = proxyCache.computeIfAbsent(cl, (c) -> {
+
+            Class cc = bb
+                    .subclass(cl)
+                    .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
+                    .intercept(InvocationHandlerAdapter.of(Opjects.this, null))
+                    .make()
+                    .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+                    .getLoaded();
 
             reflect(c);
 
-            ProxyFactory p = new ProxyFactory();
-            p.setSuperclass(c);
-
-            return p.createClass();
+            return cc;
+//            return ;
+//            ProxyFactory p = new ProxyFactory();
+//            p.setSuperclass(c);
+//            return p.createClass();
+//            return c;
         });
 
 
+
         try {
-
-            T newInstance = (T) clazz.getDeclaredConstructor(typesOfArray(args)).newInstance(args);
-            ((ProxyObject) newInstance).setHandler(this);
-
-            return register(id, newInstance);
-
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            T inst = (T) ccc.getConstructor(typesOfArray(args)).newInstance(args);
+            return register(id, inst);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+
+
+
+//        //return Proxy.getProxyClass(cl.getClassLoader(), new Class[] { cl } , Opjects.this)
+//        T newInstance = (T) Proxy.newProxyInstance(cl.getClassLoader(), new Class[] { cl } , Opjects.this);
+//        return register(id, newInstance);
+
+//
+//        try {
+//
+//            T newInstance = (T) clazz.getDeclaredConstructor(typesOfArray(args)).newInstance(args);
+//            ((ProxyObject) newInstance).setHandler(this);
+//
+//            return register(id, newInstance);
+//
+//        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     private <T> T register(Term id, T wrappedInstance) {
@@ -829,16 +878,16 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
 
-    /**
-     * dispatcher for all methods with the given name, regardless of class (this is specified by the class of the instance parameter)
-     */
-    private BiConsumer<Term, NAR> operator(Term method) {
-
-        return (term, n) -> {
-
-
-        };
-    }
+//    /**
+//     * dispatcher for all methods with the given name, regardless of class (this is specified by the class of the instance parameter)
+//     */
+//    private BiConsumer<Term, NAR> operator(Term method) {
+//
+//        return (term, n) -> {
+//
+//
+//        };
+//    }
 
     protected boolean evoked(Term method, Object instance, Object[] params) {
         return true;
@@ -1004,7 +1053,21 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         return type instanceof TypeVariable || type instanceof GenericArrayType;
     }
 
-    @Nullable
+    @Override
+    public final Object invoke(Object obj, Method method, Object[] args)  {
+
+        Object result;
+        try {
+            result = method.invoke(obj, args);
+        } catch (Throwable t) {
+            logger.error("{} args={}: {}", obj, args, t);
+            result = t;
+        }
+
+        return tryInvoked(obj, method, args, result);
+    }
+
+    @Deprecated @Nullable
     @Override
     public final Object invoke(Object obj, Method wrapper, Method wrapped, Object[] args) {
 
@@ -1016,27 +1079,27 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             result = t;
         }
 
-        return tryInvoked(obj, wrapper, args, result);
+        return tryInvoked(obj, wrapped, args, result);
     }
 
     @Nullable
-    protected final Object tryInvoked(Object obj, Method wrapped, Object[] args, Object result) {
-        if (methodExclusions.contains(wrapped.getName()))
+    protected final Object tryInvoked(Object obj, Method m, Object[] args, Object result) {
+        if (methodExclusions.contains(m.getName()))
             return result;
 
-        if (methodInvokeObservable(wrapped))
-            return invoked(obj, wrapped, args, result);
-        else
-            return result; //bypass
+//        if (methodInvokeObservable(wrapped))
+            return invoked(obj, m, args, result);
+//        else
+//            return result; //bypass
     }
 
 
 
-    protected Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
+    protected Object invoked(Object obj, Method m, Object[] args, Object result) {
         Instance in = (Instance) objToTerm.get(obj);
         return (in == null) ?
                 result :
-                in.update(obj, wrapped, args, result);
+                in.update(obj, m, args, result);
 
     }
 

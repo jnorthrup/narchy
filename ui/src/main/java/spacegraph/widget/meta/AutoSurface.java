@@ -1,6 +1,7 @@
 package spacegraph.widget.meta;
 
 import com.google.common.collect.Sets;
+import jcog.Service;
 import jcog.Services;
 import jcog.event.Ons;
 import jcog.list.FasterList;
@@ -145,7 +146,7 @@ public class AutoSurface<X> extends Gridding {
 //        Map<Services.Service, FloatSlider> controls = new HashMap();
         x.entrySet().forEach((ks) -> {
 //            Object key = ks.getKey();
-            Services.Service<?> s = ks.getValue();
+            Service<?> s = ks.getValue();
 
             if (seen.add(s)) {
                 String label = s.toString(); //StringUtils.abbreviate(s.toString(), 16);

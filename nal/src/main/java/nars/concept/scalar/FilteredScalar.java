@@ -3,49 +3,52 @@ package nars.concept.scalar;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.util.ArrayIterator;
-import nars.$;
 import nars.NAR;
+import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-import org.jetbrains.annotations.Nullable;
+import org.eclipse.collections.api.tuple.Pair;
 
 import java.util.Iterator;
-import java.util.function.IntFunction;
 
 /** calculates a set of derived scalars from an input scalar */
 public class FilteredScalar extends DemultiplexedScalar {
 
-    final Filter[] window;
+    final Filter[] filter;
 
-//    public FilteredScalar(FloatSupplier input, @Nullable Term id, NAR nar) {
-//        super(input, id, nar);
-//    }
+    public FilteredScalar(FloatSupplier input, NAR nar, Pair<Term,FloatToFloatFunction>... filters) {
+        super(input, Op.SETe.the(Util.map(Pair::getOne, Term[]::new, filters)), nar);
 
-    public FilteredScalar(@Nullable Term id, FloatSupplier input, int filters, IntFunction<Filter> windowBuilder, NAR nar) {
-        super(input, id, nar);
-        this.window = Util.map(0, filters, windowBuilder, Filter[]::new);
+        this.filter = new Filter[filters.length];
 
-        for (Scalar s : window)
+        int j = 0;
+        for (Pair<Term,FloatToFloatFunction> p : filters) {
+            filter[j++] = new Filter(p.getOne(), input, p.getTwo(), nar);
+        }
+
+        for (Scalar s : filter)
             nar.on(s);
 
         nar.on(this);
     }
 
-    public static FilteredScalar filter(@Nullable Term id,
-                                       FloatSupplier input,
-                                       NAR nar,
-                                       FloatToFloatFunction... filters) {
-        return new FilteredScalar(id, input, filters.length,
-                (f) -> new Filter(f == 0 ? id : $.p(id, $.the("f" + f)),
-                input, filters[f], nar), nar);
-    }
+//    public static FilteredScalar filter(@Nullable Term id,
+//                                       FloatSupplier input,
+//                                       NAR nar,
+//
+//                                       IntFunction<Term> filterTerm,
+//                                       FloatToFloatFunction... filters) {
+//        return new FilteredScalar(id, input, filters.length,
+//                (f) -> new Filter(f == 0 ? id : filterTerm.applyAsInt(f),
+//                input, filters[f], nar), nar);
+//    }
 
     @Override
     public Iterator<Scalar> iterator() {
-        return ArrayIterator.get(window);
+        return ArrayIterator.get(filter);
     }
 
-    static class Filter extends Scalar {
+    public static class Filter extends Scalar {
 
         //TODO
         //public float belief; //relative priority of generated beliefs

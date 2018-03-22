@@ -1,5 +1,6 @@
 package nars.op.java;
 
+import nars.$;
 import nars.NAR;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +17,8 @@ public class Teacher<X> {
         this(new Opjects(n), c);
     }
 
-    public Teacher(NAR n, Class<? extends X> c, Object... args) {
-        this(new Opjects(n), c, args);
+    public Teacher(NAR n, Class<? extends X> c) {
+        this(new Opjects(n), c);
     }
 
     public Teacher(Opjects objs, X instance) {
@@ -25,9 +26,9 @@ public class Teacher<X> {
         this.x = objs.the("a_" + instance.getClass().getSimpleName(), instance);
     }
 
-    public Teacher(Opjects objs, Class<? extends X> clazz, Object... args) {
+    public Teacher(Opjects objs, Class<? extends X> clazz) {
         this.n = objs.nar;
-        this.x = objs.a("a_" + clazz.getSimpleName(), clazz, args);
+        this.x = objs.a($.the("a_" + clazz.getSimpleName()), clazz);
     }
 
     public Trick<X> teach(String taskName,
