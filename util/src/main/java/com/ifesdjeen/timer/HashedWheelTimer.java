@@ -136,7 +136,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         long deadline = System.nanoTime();
 
         int c;
-        while ((c = cursor.getAndUpdate((cc) -> cc > 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE))>=0) {
+        while ((c = cursor.getAndUpdate((cc) -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE))>=0) {
 
             if (c == 0) {
                 //synch deadline

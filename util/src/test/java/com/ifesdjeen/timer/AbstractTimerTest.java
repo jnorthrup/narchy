@@ -92,7 +92,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void fixedRateFirstFireTest() throws InterruptedException, TimeoutException, ExecutionException {
+    public void fixedRateFirstFireTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
         long start = System.currentTimeMillis();
         timer.scheduleAtFixedRate(() -> {
@@ -107,7 +107,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void delayBetweenFixedRateEvents() throws InterruptedException, TimeoutException, ExecutionException {
+    public void delayBetweenFixedRateEvents() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
         timer.scheduleAtFixedRate(() -> {
@@ -136,7 +136,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void delayBetweenFixedDelayEvents() throws InterruptedException, TimeoutException, ExecutionException {
+    public void delayBetweenFixedDelayEvents() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(2);
         List<Long> r = new ArrayList<>();
         timer.scheduleWithFixedDelay(() -> {
@@ -165,7 +165,7 @@ public abstract class AbstractTimerTest {
     }
 
     @Test
-    public void fixedRateSubsequentFireTest() throws InterruptedException, TimeoutException, ExecutionException {
+    public void fixedRateSubsequentFireTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(10);
         long start = System.currentTimeMillis();
         timer.scheduleAtFixedRate(() -> {
