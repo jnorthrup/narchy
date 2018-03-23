@@ -2,7 +2,6 @@ package jcog.exe;
 
 import com.ifesdjeen.timer.FixedRateTimedFuture;
 import com.ifesdjeen.timer.HashedWheelTimer;
-import com.ifesdjeen.timer.WaitStrategy;
 import jcog.math.MutableInteger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
@@ -30,8 +29,8 @@ abstract public class Loop {
         new HashedWheelTimer(Loop.class.getName(),
              TimeUnit.MILLISECONDS.toNanos(2),
              64,
-            // new WaitStrategy.YieldingWait(),
-                new WaitStrategy.SleepWait(),
+            // HashedWheelTimer.WaitStrategy.YieldingWait,
+                HashedWheelTimer.WaitStrategy.SleepWait,
             ForkJoinPool.commonPool());
 
 

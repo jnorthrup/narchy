@@ -34,10 +34,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
 
-    final static int wheelCapacity = 128;
+    @Deprecated final static int wheelCapacity = 128;
 
-    static final long DEFAULT_RESOLUTION = TimeUnit.NANOSECONDS.convert(10, TimeUnit.MILLISECONDS);
-    static final int DEFAULT_WHEEL_SIZE = 512;
     private static final String DEFAULT_TIMER_NAME = "hashed-wheel-timer";
 
     private final ConcurrentQueue<TimedFuture<?>>[] wheel;
@@ -47,25 +45,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     private final ExecutorService executor;
     private final WaitStrategy waitStrategy;
 
-    private final AtomicInteger cursor = new AtomicInteger();
-
-    /**
-     * Create a new {@code HashedWheelTimer} using the given with default resolution of 10 MILLISECONDS and
-     * default wheel size.
-     */
-    public HashedWheelTimer() {
-        this(DEFAULT_RESOLUTION, DEFAULT_WHEEL_SIZE, new WaitStrategy.SleepWait());
-    }
-
-    /**
-     * Create a new {@code HashedWheelTimer} using the given timer resolution. All times will rounded up to the closest
-     * multiple of this resolution.
-     *
-     * @param resolution the resolution of this timer, in NANOSECONDS
-     */
-    public HashedWheelTimer(long resolution) {
-        this(resolution, DEFAULT_WHEEL_SIZE, new WaitStrategy.SleepWait());
-    }
+    private final AtomicInteger cursor = new AtomicInteger(0);
 
     /**
      * Create a new {@code HashedWheelTimer} using the given timer resolution and wheelSize. All times will
@@ -135,14 +115,29 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         this.executor = exec;
     }
 
+    private static void isTrue(boolean expression, String message) {
+        if (!expression) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    private static Callable<?> constantlyNull(Runnable r) {
+        return () -> {
+            r.run();
+            return null;
+        };
+    }
+
     @Override
     public void run() {
-        long deadline = System.nanoTime();
 
         long toleranceNS = resolution / 2;
 
-        while (true) {
-            int c = cursor.getAndUpdate((cc)->(cc + 1) % numWheels);
+        long deadline = System.nanoTime();
+
+        int c;
+        while ((c = cursor.getAndUpdate((cc) -> cc > 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE))>=0) {
+
             if (c == 0) {
                 //synch deadline
                 long now = System.nanoTime();
@@ -166,9 +161,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                         registrations.poll(); //remove this one
                         executor.execute(r);
 
-
-                        if (!r.isCancelAfterUse()) {
-                            reschedule(r);
+                        if (!r.runOnce()) {
+                            reschedule(c, r);
                         }
                     } else {
                         r.decrement();
@@ -181,25 +175,13 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             try {
                 waitStrategy.waitUntil(deadline);
             } catch (InterruptedException e) {
-                return;
+                logger.error("interrupted: {}", e);
+                shutdownNow();
+                break;
             }
 
 
         }
-    }
-
-
-    private static void isTrue(boolean expression, String message) {
-        if (!expression) {
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    private static Callable<?> constantlyNull(Runnable r) {
-        return () -> {
-            r.run();
-            return null;
-        };
     }
 
     @Override
@@ -253,12 +235,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public void shutdown() {
+        cursor.set(Integer.MIN_VALUE);
         this.loop.shutdown();
         this.executor.shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
+        cursor.set(Integer.MIN_VALUE);
         this.loop.shutdownNow();
         return this.executor.shutdownNow();
     }
@@ -491,8 +475,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * Rechedule a {@link TimedFuture} for the next fire
      */
     private void reschedule(TimedFuture<?> r) {
-        r.reset();
-        add(idx(cursor.get() + r.getOffset() + 1), r);
+        reschedule(cursor.get(), r);
+    }
+
+    private void reschedule(int c, TimedFuture<?> r) {
+        if (c >= 0) {
+            r.reset();
+            add(idx(c + r.getOffset() + 1), r);
+        }
     }
 
     private int idx(int cursor) {
@@ -500,9 +490,64 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     private void assertRunning() {
-        if (this.loop.isTerminated()) {
+        if (cursor.get() < 0) {
+//        if (this.loop.isTerminated()) {
             throw new IllegalStateException("Timer is not running");
         }
     }
 
+    @FunctionalInterface
+    public interface WaitStrategy {
+
+        /**
+         * Yielding wait strategy.
+         * <p>
+         * Spins in the loop, until the deadline is reached. Releases the flow control
+         * by means of Thread.yield() call. This strategy is less precise than BusySpin
+         * one, but is more scheduler-friendly.
+         */
+        WaitStrategy YieldingWait = (deadline) -> {
+            while (deadline >= System.nanoTime()) {
+                Thread.yield();
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException();
+                }
+            }
+        };
+        /**
+         * BusySpin wait strategy.
+         * <p>
+         * Spins in the loop until the deadline is reached. In a multi-core environment,
+         * will occupy an entire core. Is more precise than Sleep wait strategy, but
+         * consumes more resources.
+         */
+        WaitStrategy BusySpinWait = (long deadline) -> {
+            while (deadline >= System.nanoTime()) {
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException();
+                }
+            }
+        };
+        /**
+         * Sleep wait strategy.
+         * <p>
+         * Will release the flow control, giving other threads a possibility of execution
+         * on the same processor. Uses less resources than BusySpin wait, but is less
+         * precise.
+         */
+        WaitStrategy SleepWait = (long deadline) -> {
+
+            long sleepTimeNanos = deadline - System.nanoTime();
+            Util.sleepNano(sleepTimeNanos);
+        };
+
+        /**
+         * Wait until the given deadline, deadlineNanoseconds
+         *
+         * @param deadlineNanoseconds deadline to wait for, in milliseconds
+         */
+        void waitUntil(long deadlineNanoseconds) throws InterruptedException;
+
+
+    }
 }

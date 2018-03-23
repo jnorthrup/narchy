@@ -36,7 +36,7 @@ public class FixedRateTimedFuture<T> extends OneShotTimedFuture<T> {
     }
 
     @Override
-    public boolean isCancelAfterUse() {
+    public boolean runOnce() {
         return false;
     }
 

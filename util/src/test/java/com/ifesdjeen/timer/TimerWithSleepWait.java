@@ -2,7 +2,7 @@ package com.ifesdjeen.timer;
 
 public class TimerWithSleepWait extends AbstractTimerTest {
   @Override
-  public WaitStrategy waitStrategy() {
-    return new WaitStrategy.SleepWait();
+  public HashedWheelTimer.WaitStrategy waitStrategy() {
+    return HashedWheelTimer.WaitStrategy.SleepWait;
   }
 }

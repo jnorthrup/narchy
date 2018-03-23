@@ -48,7 +48,7 @@ public interface TimedFuture<T> extends ScheduledFuture<T>, Runnable {
    */
   int getOffset();
 
-  boolean isCancelAfterUse();
+  boolean runOnce();
 
   long getDelay(TimeUnit unit);
 

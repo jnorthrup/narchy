@@ -19,7 +19,7 @@ public abstract class AbstractTimerTest {
 
     HashedWheelTimer timer;
 
-    public abstract WaitStrategy waitStrategy();
+    public abstract HashedWheelTimer.WaitStrategy waitStrategy();
 
     @BeforeEach
     public void before() {
