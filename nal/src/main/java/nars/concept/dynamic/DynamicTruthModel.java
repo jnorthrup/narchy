@@ -224,11 +224,14 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 TaskRegion ii = l.get(order[i]);
                 if (ii == null)
                     continue;
-                float cx = ii.confMin();
+
+                Truth tt = ((Task)ii).truth(); //either the default truth, or the cached proxied/projected truth
+
+                float cx = tt.conf();
                 c *= cx;
                 if (c < confMin)
                     return null;
-                float fx = ii.freqMean();
+                float fx = tt.freq();
                 f *= f(fx);
                 considered++;
                 if (f < freqRes) {
@@ -318,14 +321,14 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         @Override
         public Truth apply(DynTruth d, NAR n) {
             assert (d.size() == 2);
-            TaskRegion a = d.get(0);
-            TaskRegion b = d.get(1);
+            Truth a = ((Task)d.get(0)).truth();
+            Truth b = ((Task)d.get(1)).truth();
 
-            float conf = a.confMin() * b.confMin();
+            float conf = a.conf() * b.conf();
             if (conf < Param.TRUTH_EPSILON)
                 return null;
 
-            float freq = a.freqMean() * (1f - b.freqMean());
+            float freq = a.freq() * (1f - b.freq());
             return new PreciseTruth(freq, conf);
         }
     }

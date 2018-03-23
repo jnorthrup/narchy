@@ -127,45 +127,45 @@ public class TaskProxy implements Task {
         return task.truth();
     }
 
-    @Override
-    public float freq() {
-        return task.freq();
-    }
-
-    @Override
-    public float freqMean() {
-        return task.freqMean();
-    }
-
-    @Override
-    public float freqMax() {
-        return task.freqMax();
-    }
-
-    @Override
-    public float freqMin() {
-        return task.freqMin();
-    }
-
-    @Override
-    public float conf() {
-        return task.conf();
-    }
-
-    @Override
-    public float evi() {
-        return task.evi();
-    }
-
-    @Override
-    public float evi(long when, long dur) {
-        return task.evi(when, dur);
-    }
-
-    @Override
-    public float eviInteg() {
-        return task.eviInteg();
-    }
+//    @Override
+//    public float freq() {
+//        return task.freq();
+//    }
+//
+//    @Override
+//    public float freqMean() {
+//        return task.freqMean();
+//    }
+//
+//    @Override
+//    public float freqMax() {
+//        return task.freqMax();
+//    }
+//
+//    @Override
+//    public float freqMin() {
+//        return task.freqMin();
+//    }
+//
+//    @Override
+//    public float conf() {
+//        return task.conf();
+//    }
+//
+//    @Override
+//    public float evi() {
+//        return task.evi();
+//    }
+//
+//    @Override
+//    public float evi(long when, long dur) {
+//        return task.evi(when, dur);
+//    }
+//
+//    @Override
+//    public float eviInteg() {
+//        return task.eviInteg();
+//    }
 
     @Override
     public byte punc() {
@@ -279,27 +279,10 @@ public class TaskProxy implements Task {
         }
 
         @Override
-        public float freq() {
-            float f = super.freq();
-            return negated ? 1 - f : f;
+        public float evi(long targetStart, long targetEnd, long dur) {
+            throw new UnsupportedOperationException();
         }
 
-        @Override
-        public float freqMax() {
-            float f = super.freqMax();
-            return negated ? 1 - f : f;
-        }
-        @Override
-        public float freqMin() {
-            float f = super.freqMin();
-            return negated ? 1 - f : f;
-        }
-
-        @Override
-        public float freqMean() {
-            float f = super.freqMean();
-            return negated ? 1 - f : f;
-        }
 
         @Override
         public @Nullable Truth truth() {

@@ -16,9 +16,8 @@ import spacegraph.audio.WaveCapture;
 import spacegraph.container.Gridding;
 import spacegraph.container.MutableContainer;
 import spacegraph.render.Draw;
-import spacegraph.render.ImageTexture;
 import spacegraph.widget.button.CheckBox;
-import spacegraph.widget.button.IconToggle;
+import spacegraph.widget.button.IconToggleButton;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.meter.WebCam;
@@ -136,7 +135,7 @@ public class ProtoWidget extends Widget {
             }
 
             if (icon!=null) {
-                return new IconToggle(new ImageTexture("fontawesome://" + icon ));
+                return IconToggleButton.awesome(icon );
             } else {
                 return new CheckBox(l);
             }

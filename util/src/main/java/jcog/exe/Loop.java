@@ -1,11 +1,16 @@
 package jcog.exe;
 
-import jcog.Util;
+import com.ifesdjeen.timer.FixedRateTimedFuture;
+import com.ifesdjeen.timer.HashedWheelTimer;
+import com.ifesdjeen.timer.WaitStrategy;
 import jcog.math.MutableInteger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 
 import java.util.SortedMap;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -16,7 +21,18 @@ abstract public class Loop {
 
     protected static final Logger logger = getLogger(Loop.class);
 
-    private volatile Thread thread = null;
+    //private volatile Thread thread = null;
+    private volatile FixedRateTimedFuture task = null;
+    private final AtomicBoolean executing = new AtomicBoolean(false);
+
+    /** global timer */
+    final static HashedWheelTimer timer =
+        new HashedWheelTimer(Loop.class.getName(),
+             TimeUnit.MILLISECONDS.toNanos(2),
+             64,
+            // new WaitStrategy.YieldingWait(),
+                new WaitStrategy.SleepWait(),
+            ForkJoinPool.commonPool());
 
 
 //    private float lag, lagSum;
@@ -75,10 +91,11 @@ abstract public class Loop {
     public Loop(int periodMS) {
         this();
         setPeriodMS(periodMS);
+        //timer.scheduleWithFixedDelay()
     }
 
     public boolean isRunning() {
-        return thread != null;
+        return task != null;
     }
 
     public final Loop runFPS(float fps) {
@@ -86,26 +103,26 @@ abstract public class Loop {
         return this;
     }
 
-    public final Loop runMS(int periodMS) {
-        setPeriodMS(periodMS);
-        return this;
-    }
 
     public final boolean setPeriodMS(int nextPeriodMS) {
         int prevPeriodMS;
         if ((prevPeriodMS = periodMS.getAndSet(nextPeriodMS)) != nextPeriodMS) {
             if (prevPeriodMS < 0 && nextPeriodMS >= 0) {
                 synchronized (periodMS) {
-                    Thread myNewThread = newThread();
-                    myNewThread.start();
+//                    Thread myNewThread = newThread();
+//                    myNewThread.start();
+                    task = timer.scheduleAtFixedRate(this::_next, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
                 synchronized (periodMS) {
-                    Thread prevThread = this.thread;
-                    if (prevThread != null) {
-                        this.thread = null;
+                    //Thread prevThread = this.thread;
+                    FixedRateTimedFuture prevTask = this.task;
+                    if (prevTask != null) {
+                        //this.thread = null;
+                        this.task = null;
                         try {
-                            prevThread.interrupt();
+                            prevTask.cancel(false);
+                            //prevThread.interrupt();
                             //prevThread.stop();
                         } catch (Throwable ii) {
                             ii.printStackTrace();
@@ -115,6 +132,10 @@ abstract public class Loop {
                 }
             } else if (prevPeriodMS >= 0) {
                 //change speed
+                FixedRateTimedFuture task = this.task;
+                if (task!=null) {
+                    task.setPeriodMS(nextPeriodMS);
+                }
                 logger.debug("{} period={}ms", this, nextPeriodMS);
             }
             return true;
@@ -122,14 +143,14 @@ abstract public class Loop {
         return false;
     }
 
-    private synchronized Thread newThread() {
-        if (this.thread!=null)
-            throw new RuntimeException("thread already started: " + thread);
-
-        Thread t = new Thread(this::run);
-        this.thread = t;
-        return t;
-    }
+//    private synchronized Thread newThread() {
+//        if (this.thread!=null)
+//            throw new RuntimeException("thread already started: " + thread);
+//
+//        Thread t = new Thread(this::run);
+//        this.thread = t;
+//        return t;
+//    }
 
     public final void stop() {
         setPeriodMS(-1);
@@ -149,19 +170,68 @@ abstract public class Loop {
 
     }
 
-    /**
-     * dont call this directly
-     */
-    private void run() {
+//    /**
+//     * dont call this directly
+//     */
+//    private void run() {
+//
+//        onStart();
+//
+//        logger.info("start {} each {}ms", this, this.periodMS.intValue());
+//
+//        int periodMS;
+//        while ((periodMS = this.periodMS.intValue()) >= 0) {
+//
+//            long beforeTimeNS = System.nanoTime();
+//
+//            try {
+//                if (!next()) {
+//                    stop(); //will exit after statistics at the end of this loop
+//                }
+//            } catch (Throwable e) {
+//                thrown(e);
+//            }
+//
+//            long dutyTimeNS = System.nanoTime() - beforeTimeNS;
+//            double dutyTimeS = (dutyTimeNS) / 1.0E9;
+//
+//            double cycleTimeS;
+//            long sleepTime = Math.round(periodMS - (dutyTimeNS / 1E6 /* to MS */));
+//            if (sleepTime > 0) {
+//                Util.sleep(sleepTime); //((long) this.dutyTime.getMean()) ));
+//                cycleTimeS = (System.nanoTime() - beforeTimeNS) / 1.0E9;
+//            } else {
+//                cycleTimeS = dutyTimeS; //100% duty cycle
+//            }
+//
+//            this.dutyTime.addValue(dutyTimeS);
+//            this.cycleTime.addValue(cycleTimeS);
+//        }
+//
+//        stop();
+//
+//        logger.info("stop {} each {}ms", this);
+//
+//        onStop();
+//
+////        lag = lagSum = 0;
+//    }
 
-        onStart();
+    protected void thrown(Throwable e) {
+        logger.error(" {}", e);
+    }
 
-        logger.info("start {} each {}ms", this, this.periodMS.intValue());
 
-        int periodMS;
-        while ((periodMS = this.periodMS.intValue()) >= 0) {
 
-            long beforeTimeNS = System.nanoTime();
+    protected final void _next() {
+
+        if (!executing.compareAndSet(false, true)) {
+            //already in-progress
+            return;
+        }
+
+        try {
+            long beforeIteration = System.nanoTime();
 
             try {
                 if (!next()) {
@@ -171,49 +241,38 @@ abstract public class Loop {
                 thrown(e);
             }
 
-            long dutyTimeNS = System.nanoTime() - beforeTimeNS;
+            long lastIteration = this.last;
+            long afterIteration = System.nanoTime();
+            this.last = afterIteration;
+
+            long dutyTimeNS = afterIteration - beforeIteration;
             double dutyTimeS = (dutyTimeNS) / 1.0E9;
 
-            double cycleTimeS;
-            long sleepTime = Math.round(periodMS - (dutyTimeNS / 1E6 /* to MS */));
-            if (sleepTime > 0) {
-                Util.sleep(sleepTime); //((long) this.dutyTime.getMean()) ));
-                cycleTimeS = (System.nanoTime() - beforeTimeNS) / 1.0E9;
-            } else {
-                cycleTimeS = dutyTimeS; //100% duty cycle
-            }
+            double cycleTimeS = (afterIteration - lastIteration) / 1.0E9;
 
             this.dutyTime.addValue(dutyTimeS);
             this.cycleTime.addValue(cycleTimeS);
+        } finally {
+            executing.set(false);
         }
-
-        stop();
-
-        logger.info("stop {} each {}ms", this);
-
-        onStop();
-
-//        lag = lagSum = 0;
     }
 
-    protected void thrown(Throwable e) {
-        logger.error(" {}", e);
-    }
+    volatile long last = System.nanoTime();
 
     abstract public boolean next();
 
-    public void join() {
-        try {
-            Thread t = thread;
-            if (t != null) {
-                t.join();
-            } else {
-                throw new RuntimeException("not started");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void join() {
+//        try {
+//            Thread t = thread;
+//            if (t != null) {
+//                t.join();
+//            } else {
+//                throw new RuntimeException("not started");
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
 //    /**
@@ -235,5 +294,13 @@ abstract public class Loop {
         x.put(prefix + " duty time mean", dutyTime.getMean()); //in seconds
         x.put(prefix + " duty time vary", dutyTime.getVariance()); //in seconds
         //x.put(prefix + " lag", lag);
+    }
+
+    public float getFPS() {
+        if (isRunning()) {
+            return 1000f/periodMS.intValue();
+        } else {
+            return 0;
+        }
     }
 }

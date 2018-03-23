@@ -775,24 +775,24 @@ public enum Util {
     }
 
 
-
-    private final static Object waitLock = new Object();
-
-    public static long pauseWaitUntil(long untilTargetTime) {
-        long now = System.currentTimeMillis();
-        long dt = untilTargetTime - now;
-        if (dt > 0) {
-            synchronized (waitLock) {
-                try {
-                    waitLock.wait(dt);
-                } catch (InterruptedException e) {
-                }
-            }
-
-            now = System.currentTimeMillis();
-        }
-        return now;
-    }
+//
+//    private final static Object waitLock = new Object();
+//
+//    public static long pauseWaitUntil(long untilTargetTimeMS) {
+//        long now = System.currentTimeMillis();
+//        long dt = untilTargetTimeMS - now;
+//        if (dt > 0) {
+//            synchronized (waitLock) {
+//                try {
+//                    waitLock.wait(dt);
+//                } catch (InterruptedException e) {
+//                }
+//            }
+//
+//            now = System.currentTimeMillis();
+//        }
+//        return now;
+//    }
 
 //    /** from: http://stackoverflow.com/a/1205300 */
 //    public static long pauseLockUntil(long untilTargetTime) {
@@ -1647,7 +1647,9 @@ public enum Util {
         if (periodMS <= 0) {
             Thread.yield();
         } else {
-            if (periodMS > 10) {
+//            long start = System.nanoTime();
+
+            if (periodMS > 20) {
                 try {
                     Thread.sleep(periodMS);
                 } catch (InterruptedException e) {
@@ -1655,10 +1657,29 @@ public enum Util {
                     return false;
                 }
             } else {
-                long timeNanos = periodMS * 1000000;
-                LockSupport.parkNanos(timeNanos);
+                LockSupport.parkNanos(periodMS * 1000000);
             }
 
+//            long end = System.nanoTime();
+//            if (end - start < periodMS * 1000000) {
+//                System.out.println("too short sleep");
+//            }
+        }
+        return true;
+    }
+
+    public static boolean sleepNano(long periodNS) {
+        if (periodNS <= 100000 /** 100uS = 0.1ms */ ) {
+            Thread.yield();
+        } else {
+//            long start = System.nanoTime();
+
+            LockSupport.parkNanos(periodNS);
+
+//            long end = System.nanoTime();
+//            if (end - start < periodMS * 1000000) {
+//                System.out.println("too short sleep");
+//            }
         }
         return true;
     }

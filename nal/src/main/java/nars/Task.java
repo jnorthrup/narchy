@@ -427,14 +427,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //    }
 
 
+    static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> withResult) {
+        return tryTask(t, punc, tr, withResult, !Param.DEBUG_EXTRA);
+    }
+
     @Nullable
-    static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> res) {
+    static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> withResult, boolean safe) {
         if ((punc == BELIEF || punc == GOAL) && tr.evi() < Truth.EVI_MIN)
             throw new InvalidTaskException(t, "insufficient evidence");
 
-        ObjectBooleanPair<Term> x = tryContent(t, punc, !Param.DEBUG_EXTRA);
+        ObjectBooleanPair<Term> x = tryContent(t, punc, safe);
         if (x != null)
-            return res.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null);
+            return withResult.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null);
         else
             return null;
     }

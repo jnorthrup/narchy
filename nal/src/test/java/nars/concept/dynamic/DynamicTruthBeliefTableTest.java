@@ -10,6 +10,7 @@ import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -22,7 +23,7 @@ public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicConjunction2() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("a:x", 1f, 0.9f);
         n.believe("a:y", 1f, 0.9f);
         n.believe("b:x", 0f, 0.9f);
@@ -37,6 +38,45 @@ public class DynamicTruthBeliefTableTest {
         assertEquals($.t(0f, 0.90f), n.beliefTruth("(b:x && a:y)", now));
         assertEquals($.t(1f, 0.81f), n.beliefTruth("((--,b:x) && a:y)", now));
         assertEquals($.t(0f, 0.90f), n.beliefTruth("((--,b:x) && (--,a:y))", now));
+    }
+
+    @Test
+    public void testDynamicConjunctionEternalOverride() throws Narsese.NarseseException {
+        NAR n = NARS.shell()
+         .believe($$("a:x"), 0)
+         .believe($$("a:y"), 0);
+
+        long now = n.time();
+        assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now)); //truth only
+
+        n.believe("--(a:x && a:y)"); //contradict
+
+        n.concept("(a:x && a:y)").beliefs().print();
+
+        Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
+        assertTrue($.t(0.32f, 0.93f).equals(tNow, n));
+
+        Truth tAfter = n.beliefTruth($("(a:x && a:y)"), now+2);
+        assertTrue($.t(0.11f, 0.91f).equals(tAfter, n));
+
+        Truth tLater = n.beliefTruth($("(a:x && a:y)"), now+5);
+        assertTrue($.t(0.05f, 0.9f).equals(tLater, n)); //more certainly negative because the eternal will override
+    }
+
+    @Test
+    public void testDynamicConjunctionTemporalOverride() throws Narsese.NarseseException {
+        NAR n = NARS.shell()
+                .believe("a:x", 1f, 0.9f)
+                .believe("a:y", 1f, 0.9f);
+
+        n.run(1);
+        long now = n.time();
+        assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now));
+
+        n.believe($$("--(a:x && a:y)"), now); //contradict
+
+        //n.concept("(a:x && a:y)").beliefs().print();
+        assertTrue($.t(0.32f, 0.93f).equals( n.beliefTruth($("(a:x && a:y)"), now), n));
     }
 
     @Test
@@ -146,7 +186,7 @@ public class DynamicTruthBeliefTableTest {
         n.believe("a:y", 0, 0.95f);
         n.run(1);
         n.concept("a:y").print();
-        Task ay = n.belief($.$$("a:y"));
+        Task ay = n.belief($$("a:y"));
         assertTrue(ay.freq() < 0.5f);
 
         Task bb = n.belief(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time());
@@ -175,10 +215,9 @@ public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicConjunction2Temporal() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
-        n.believe($("(x)"), (long) 0, 1f, 0.9f);
-        n.believe($("(y)"), (long) 4, 1f, 0.9f);
-        n.run(2);
+        NAR n = NARS.shell();
+        n.believe($("(x)"), (long) 0);
+        n.believe($("(y)"), (long) 4);
         n.time.dur(8);
         TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
 

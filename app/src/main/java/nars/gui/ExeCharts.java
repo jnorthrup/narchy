@@ -21,10 +21,12 @@ import spacegraph.container.Splitting;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.meta.AutoSurface;
+import spacegraph.widget.meta.LoopPanel;
 import spacegraph.widget.meter.BitmapMatrixView;
 import spacegraph.widget.meter.TreeChart;
 import spacegraph.widget.slider.BaseSlider;
 import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.text.Label;
 
 import java.util.List;
 import java.util.function.Function;
@@ -74,24 +76,24 @@ public class ExeCharts {
         Gridding g = grid(
 //                Stream.concat(
 //                        Stream.of(auto),
-                        IntStream.range(0, want.length).mapToObj(
-                                w -> new FloatSlider(want[w], -1f, +1f) {
+                IntStream.range(0, want.length).mapToObj(
+                        w -> new FloatSlider(want[w], -1f, +1f) {
 
-                                    @Override
-                                    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-                                        if (auto.on()) {
-                                            value(want[w]);
-                                        }
-
-                                    }
+                            @Override
+                            protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+                                if (auto.on()) {
+                                    value(want[w]);
                                 }
-                                        .text(MetaGoal.values()[w].name())
-                                        .type(BaseSlider.Knob)
-                                        .on((s, v) -> {
-                                            if (!auto.on())
-                                                want[w] = v;
-                                        })
-                        ).toArray(Surface[]::new));
+
+                            }
+                        }
+                                .text(MetaGoal.values()[w].name())
+                                .type(BaseSlider.Knob)
+                                .on((s, v) -> {
+                                    if (!auto.on())
+                                        want[w] = v;
+                                })
+                ).toArray(Surface[]::new));
 
         return g;
     }
@@ -109,27 +111,26 @@ public class ExeCharts {
 
     public static Surface causePanel(NAR nar) {
 
-        TreeChart<Causable> x = new TreeChart();
+        TreeChart<Causable> tc = new TreeChart();
         List<Causable> s = $.newArrayList();
         Function<Causable, TreeChart.ItemVis<Causable>> updater = TreeChart.cached();
 
-        return new DurSurface(x, nar) {
+        return DurSurface.get(tc, nar, () -> {
 
-            @Override protected void update() {
-                s.clear();
-                nar.services.stream().filter(Causable.class::isInstance)
-                        .map(x -> (Causable)x)
-                        .collect(Collectors.toCollection(()->s));
+            s.clear();
+            nar.services.stream().filter(Causable.class::isInstance)
+                    .map(x -> (Causable) x)
+                    .collect(Collectors.toCollection(() -> s));
 
-                x.update(s, (x, y)-> {
-                    float v = x.value();
-                    y.updateMomentum(x.can.sumPrev()/1000000f,
-                            0.1f, v < 0 ? -v : 0, 0,v > 0 ? +v : 0);
+            tc.update(s, (x, y) -> {
+                float v = x.value();
+                y.updateMomentum(x.can.sumPrev() / 1000000f,
+                        0.1f, v < 0 ? -v : 0, 0, v > 0 ? +v : 0);
 
-                }, updater);
+            }, updater);
 
-            }
-        };
+
+        });
 
     }
 
@@ -201,6 +202,18 @@ public class ExeCharts {
                 on.off();
             }
         };
+    }
+
+    public static Surface runPanel(NAR n) {
+        Label nameLabel;
+        LoopPanel control = new LoopPanel(n.loop);
+        Surface p = new Gridding(
+                nameLabel = new Label(n.self().toString()),
+                control
+        );
+        return DurSurface.get(p, n, () -> {
+            control.update();
+        });
     }
 
     private static class CauseVis extends TreeChart.ItemVis<Cause> {

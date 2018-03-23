@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.*;
+import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
@@ -143,7 +144,7 @@ public class Line1D {
                                                 ,
                                                 history),
                                         col(
-                                                new Vis.EmotionPlot(history, a),
+                                                new EmotionPlot(history, a),
                                                 new AutoSurface<>(a),
                                                 Vis.beliefCharts(history,
                                                         Iterables.concat(a.sensors.keySet(), a.actions.keySet()), a.nar)

@@ -61,7 +61,7 @@ public class NALTask extends Pri implements Task {
 
         this.stamp = stamp;
 
-        this.hash = Task.hash(term, this.truth, punc, start, end, stamp);
+        this.hash = Task.hash(term, truth(), punc, start, end, stamp);
 
         this.meta = new CompactArrayMap();
     }
@@ -233,22 +233,6 @@ public class NALTask extends Pri implements Task {
     }
 
     @Override
-    public float freq() {
-        return truth.freq();
-    }
-
-    @Override
-    public float conf() {
-        return truth.conf();
-    }
-
-    @Override
-    public float evi() {
-        return truth.evi();
-    }
-
-
-    @Override
     public double coord(boolean maxOrMin, int dimension) {
         return coordF(maxOrMin, dimension);
     }
@@ -259,9 +243,9 @@ public class NALTask extends Pri implements Task {
             case 0:
                 return maxOrMin ? end() : start();
             case 1:
-                return truth.freq();
+                return freq();
             case 2:
-                return truth.conf();
+                return conf();
             default:
                 throw new UnsupportedOperationException();
         }

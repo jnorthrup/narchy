@@ -710,11 +710,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private static class Complex extends RTreeBeliefTable {
 
-        @Override
-        public Truth truth(long start, long end, EternalTable eternal, int dur) {
-            //disallows computing point truth values on temporal concepts (compound events can not be compared directly)
-            return null;
-        }
+//        @Override
+//        public Truth truth(long start, long end, EternalTable eternal, int dur) {
+//            //disallows computing point truth values on temporal concepts (compound events can not be compared directly)
+//            return null;
+//        }
 
         @Override
         protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {

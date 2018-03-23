@@ -164,9 +164,9 @@ public class TermlinkTemplates extends FasterList<Term> {
         switch (b.op()) {
             case INH:
             case SIM:
-                return b.hasAny(Op.SETe,Op.SETi,Op.SECTe,Op.SECTi);
+                //return b.hasAny(Op.SETe,Op.SETi,Op.SECTe,Op.SECTi);
                 //return true;
-                //return false;
+                return false;
 
             case IMPL: //<- check if IMPL needs it
                 return false;

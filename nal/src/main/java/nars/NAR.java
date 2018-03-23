@@ -515,27 +515,30 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return goal(term, trueOrFalse ? 1.0f : 0f, conf);
     }
 
-    @Nullable
+
+    public NAR believe(Term term, long occurrenceTime) throws InvalidTaskException {
+        input(priDefault(BELIEF), term, BELIEF, occurrenceTime, 1f, confDefault(BELIEF));
+        return this;
+    }
+
     public Task believe(float pri,  Term term, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
         return input(pri, term, BELIEF, occurrenceTime, freq, conf);
     }
 
-    @Nullable
+
     public Task goal(float pri,  Term goal, long when, float freq, float conf) throws InvalidTaskException {
         return input(pri, goal, GOAL, when, when, freq, conf);
     }
 
-    @Nullable
+
     public Task goal(float pri,  Term goal, long start, long end, float freq, float conf) throws InvalidTaskException {
         return input(pri, goal, GOAL, start, end, freq, conf);
     }
 
-    @Nullable
     public Task input(float pri,  Term term, byte punc, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
         return input(pri, term, punc, occurrenceTime, occurrenceTime, freq, conf);
     }
 
-    @Nullable
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws InvalidTaskException {
 
         PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
@@ -543,10 +546,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             Task y = new NALTask(c, punc, truth, time(), start, end, new long[]{time.nextStamp()});
             y.priSet(pri);
             return y;
-        });
+        }, false);
 
-        if (z!=null)
-            input(z);
+        input(z);
 
         return z;
     }

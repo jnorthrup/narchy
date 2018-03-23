@@ -17,7 +17,7 @@ abstract public class DurSurface extends Scale {
     private final NAR nar;
     DurService on;
 
-    public DurSurface(Surface x, NAR nar) {
+    private DurSurface(Surface x, NAR nar) {
         super(x, 1f);
         this.nar = nar;
     }
@@ -42,6 +42,10 @@ abstract public class DurSurface extends Scale {
         }
     }
 
+    public static DurSurface get(Surface x, NAR n, Runnable eachDur) {
+        return get(x, n, (nn)->eachDur.run());
+    }
+
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {
         return new DurSurface(x, n) {
             @Override
@@ -51,13 +55,8 @@ abstract public class DurSurface extends Scale {
         };
     }
 
-    public static DurSurface get(Surface x, NAR n) {
-        return new DurSurface(x, n) {
-            @Override
-            protected void update() {
-                ((Consumer<NAR>) x).accept(n);
-            }
-        };
+    public static DurSurface get(Surface narConsumer, NAR n) {
+        return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }
 
 }

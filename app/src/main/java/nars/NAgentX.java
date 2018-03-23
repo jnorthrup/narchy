@@ -5,6 +5,7 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
+import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.term.map.CaffeineIndex;
@@ -429,7 +430,7 @@ abstract public class NAgentX extends NAgent {
 
                             Vis.beliefCharts(a.nar.dur() * 64, a.actions.keySet(), a.nar),
 
-                            new Vis.EmotionPlot(64, a),
+                            new EmotionPlot(64, a),
                             grid(
                                     //concept query box
                                     new TextEdit() {

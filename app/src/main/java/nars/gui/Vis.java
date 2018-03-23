@@ -3,19 +3,15 @@ package nars.gui;
 import com.google.common.collect.Lists;
 import jcog.pri.PriReference;
 import nars.NAR;
-import nars.NAgent;
-import nars.concept.Concept;
-import nars.control.DurService;
 import nars.term.Termed;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.container.Gridding;
+import spacegraph.container.Splitting;
 import spacegraph.container.Stacking;
 import spacegraph.math.Color3f;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.AutoSurface;
-import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.text.LabeledPane;
@@ -28,7 +24,6 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
-import static spacegraph.container.Gridding.col;
 import static spacegraph.render.JoglPhysics.window;
 
 /**
@@ -84,13 +79,13 @@ public class Vis {
 //        }
 //    }
 
-    public static Surface bagHistogram(Iterable<PriReference<?>> bag, int bins) {
+    public static Surface bagHistogram(Iterable<PriReference<?>> bag, int bins, NAR n) {
         //new SpaceGraph().add(new Facial(
 
+
         float[] d = new float[bins];
-        return col(
-                new HistogramChart(
-                        () -> PriReference.histogram(bag, d),
+        return DurSurface.get(new HistogramChart(
+                        () -> d,
                         new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
 
 //                Vis.pane("Concept Volume",
@@ -98,7 +93,9 @@ public class Vis {
 //                                () -> Bag.priHistogram(bag, d),
 //                                new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
 //                )
-        );
+        , n, ()->{
+            PriReference.histogram(bag, d);
+        });
 
 //                PanelSurface.of("Concept Durability Distribution (0..1)", new HistogramChart(nar, c -> {
 //                    if (c != null)
@@ -305,14 +302,17 @@ public class Vis {
 //    }
 
     public static Surface top(NAR n) {
-        return new TabPane(Map.of(
+        return
+        new Splitting(
+            ExeCharts.runPanel(n),
+            new TabPane(Map.of(
                 "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
                 "nar", () -> new AutoSurface<>(n),
                 "exe", () -> ExeCharts.exePanel(n),
                 "can", () -> ExeCharts.causePanel(n),
                 "svc", () -> new AutoSurface<>(n.services),
-                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8)
-        ));
+                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n)
+        )),0.9f);
     }
 
     public static void conceptWindow(String t, NAR n) {
@@ -322,79 +322,6 @@ public class Vis {
         window(new ConceptSurface(t, n), 500, 500);
     }
 
-
-    public static class EmotionPlot extends Gridding {
-
-        private final int plotHistory;
-        @Deprecated
-        private DurService on; //TODO use DurSurface
-        Plot2D plot1, plot2, plot3;
-
-        public EmotionPlot(int plotHistory, NAgent a) {
-            this(plotHistory, a, a.nar);
-        }
-
-        public EmotionPlot(int plotHistory, NAgent a, NAR x) {
-            super();
-
-            NAR nar = x;
-
-            this.plotHistory = plotHistory;
-            plot1 = new Plot2D(plotHistory, Plot2D.Line);
-            plot2 = new Plot2D(plotHistory, Plot2D.Line);
-            plot3 = new Plot2D(plotHistory, Plot2D.Line);
-
-            TextEdit console = new TextEdit(20, 3);
-            console.textBox.setCaretWarp(true);
-            set(plot1, plot2, plot3, console.surface());
-
-            //plot1.add("Conf", nar.emotion.confident::getSum);
-            plot2.add("Busy", nar.emotion.busyVol::getSum);
-
-            plot1.add("Dex+0", () -> a.dexterity(a.now), 0f, 1f);
-            plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar.dur()), 0f, 1f);
-            plot1.add("Dex+4", () -> a.dexterity(a.now + 4 * a.nar.dur()), 0f, 1f);
-
-            a.happy.forEach(h -> {
-                @Nullable Concept hc = nar.concept(h);
-                plot3.add(h.toString(), () -> {
-                    return hc.beliefs().freq(a.now, a.nar);
-                }, 0, 1f);
-//                plot3.add("WantHpy", () -> {
-//                    return hc.goals().freq(a.now, a.nar);
-//                }, 0, 1f);
-            });
-
-//            plot4.add("Sad", () -> {
-//                return a.sad.beliefs().freq(a.now, a.nar);
-//            }, 0, 1f);
-//            plot4.add("WantSad", () -> {
-//                return a.sad.goals().exp(a.now, a.nar);
-//            }, 0, 1f);
-
-//            plot4.add("Hapy", nar.emotion.happy::getSum);
-//            plot4.add("Sad", nar.emotion.sad::getSum);
-//                plot4.add("Errr", ()->nar.emotion.errr.getSum());
-
-            on = a.onFrame((aa)->{
-                plot1.update();
-                plot2.update();
-                plot3.update();
-            });
-        }
-
-        @Override
-        public void stop() {
-            synchronized (this) {
-                if (on != null) {
-                    on.off();
-                    on = null;
-                }
-                super.stop();
-            }
-        }
-
-    }
 
     public static class BeliefChartsGrid extends Gridding implements Consumer<NAR> {
 
