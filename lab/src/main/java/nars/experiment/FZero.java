@@ -147,6 +147,7 @@ public class FZero extends NAgentX {
                 //ScalarConcepts.Fluid
         ).resolution(0.04f);
 
+        //new RLBooster(this, HaiQae::new, 1);
 
         always.add(new NALTask($$("({(ang,#a),angVel,accel,cam(#x,#y)}-->fz)"),
                 BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));

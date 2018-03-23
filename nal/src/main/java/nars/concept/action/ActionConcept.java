@@ -9,7 +9,6 @@ import nars.control.MetaGoal;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
@@ -20,7 +19,7 @@ import static nars.Op.BELIEF;
 
 public abstract class ActionConcept extends Sensor {
 
-    protected ActionConcept(@NotNull Term term, @NotNull NAR n) {
+    protected ActionConcept(Term term, NAR n) {
         super(term,
                 new ScalarBeliefTable(term, true, n.conceptBuilder),
                 n.conceptBuilder.newTable(term, false),

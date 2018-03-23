@@ -2,7 +2,6 @@ package nars.op.java;
 
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
-import javassist.util.proxy.MethodHandler;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
@@ -27,6 +26,11 @@ import nars.term.Term;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.bind.annotation.AllArguments;
+import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import net.bytebuddy.implementation.bind.annotation.SuperMethod;
+import net.bytebuddy.implementation.bind.annotation.This;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
@@ -75,7 +79,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 @Paper
 @Skill({"Metaprogramming", "Reinforcement_learning"})
-public class Opjects extends DefaultTermizer implements MethodHandler, InvocationHandler {
+public class Opjects extends DefaultTermizer implements InvocationHandler {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
 
@@ -566,8 +570,18 @@ public class Opjects extends DefaultTermizer implements MethodHandler, Invocatio
             }
         }
 
-            return $.func(method.getName(), x).negIf(negate).normalize();
+            return $.func(methodName(method), x).negIf(negate).normalize();
 
+    }
+
+    static String methodName(Method method) {
+        String n = method.getName();
+        int i = n.indexOf("$accessor$");
+        if (i!=-1) {
+            return n.substring(0, i);
+        } else {
+            return n;
+        }
     }
 
     private class MethodExec extends AtomicExec implements BiConsumer<Term, NAR> {
@@ -727,20 +741,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler, Invocatio
      */
     public <T> T the(Term id, T instance, Object... args) {
 
-//        Class clazz = proxyCache.computeIfAbsent(cl, (c) -> {
-//
-//            reflect(c);
-//
-//            ProxyFactory p = new ProxyFactory();
-//            p.setSuperclass(c);
-//
-//            return p.createClass();
-//        });
-
-//        ProxyFactory f = new ProxyFactory();
-//        f.setSuperclass(instance.getClass());
-//        f.setUseCache(true);
-
         reflect(instance.getClass());
 
         try {
@@ -753,8 +753,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler, Invocatio
                     .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                     .getLoaded();
             T inst = (T) cl.getConstructor(typesOfArray(args)).newInstance(args);
-
-
 
             register(id, instance);
 
@@ -821,17 +819,17 @@ public class Opjects extends DefaultTermizer implements MethodHandler, Invocatio
      */
     public <T> T a(Term id, Class<? extends T> cl, Object... args) {
 
-        Class ccc = proxyCache.computeIfAbsent(cl, (c) -> {
+        Class ccc = proxyCache.computeIfAbsent(cl, (baseClass) -> {
 
             Class cc = bb
-                    .subclass(cl)
+                    .subclass(baseClass)
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
-                    .intercept(InvocationHandlerAdapter.of(Opjects.this, null))
+                    .intercept(MethodDelegation.to(this))
                     .make()
                     .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                     .getLoaded();
 
-            reflect(c);
+            reflect(baseClass); //the original class
 
             return cc;
 //            return ;
@@ -869,6 +867,22 @@ public class Opjects extends DefaultTermizer implements MethodHandler, Invocatio
 //            throw new RuntimeException(e);
 //        }
     }
+
+
+    //public static class Interceptor {
+
+        @RuntimeType
+        public Object intercept(@AllArguments Object[] args, @SuperMethod  Method method, @This Object obj) {
+            Object result = null;
+            try {
+                result = method.invoke(obj, args);
+                return tryInvoked(obj, method, args, result);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                logger.error("{} args={}", obj, args);
+                return null;
+            }
+        }
+    //}
 
     private <T> T register(Term id, T wrappedInstance) {
 
@@ -1067,20 +1081,20 @@ public class Opjects extends DefaultTermizer implements MethodHandler, Invocatio
         return tryInvoked(obj, method, args, result);
     }
 
-    @Deprecated @Nullable
-    @Override
-    public final Object invoke(Object obj, Method wrapper, Method wrapped, Object[] args) {
-
-        Object result;
-        try {
-            result = wrapped.invoke(obj, args);
-        } catch (Throwable t) {
-            logger.error("{} args={}: {}", obj, args, t);
-            result = t;
-        }
-
-        return tryInvoked(obj, wrapped, args, result);
-    }
+//    @Deprecated @Nullable
+//    @Override
+//    public final Object invoke(Object obj, Method wrapper, Method wrapped, Object[] args) {
+//
+//        Object result;
+//        try {
+//            result = wrapped.invoke(obj, args);
+//        } catch (Throwable t) {
+//            logger.error("{} args={}: {}", obj, args, t);
+//            result = t;
+//        }
+//
+//        return tryInvoked(obj, wrapped, args, result);
+//    }
 
     @Nullable
     protected final Object tryInvoked(Object obj, Method m, Object[] args, Object result) {

@@ -38,8 +38,8 @@ public class DefaultTermizer implements Termizer {
 //    final Map<Class, Term> classes = new HashMap();
 
 
-    final Map<Term, Object> termToObj = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64); //cache: (class,method) -> Method
-    final Map<Object, Term> objToTerm = new CustomConcurrentHashMap(SOFT, IDENTITY, STRONG, EQUALS, 64); //cache: (class,method) -> Method
+    final Map<Term, Object> termToObj = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG /*SOFT*/, IDENTITY, 64); //cache: (class,method) -> Method
+    final Map<Object, Term> objToTerm = new CustomConcurrentHashMap(STRONG /*SOFT*/, IDENTITY, STRONG, EQUALS, 64); //cache: (class,method) -> Method
 
     /*final HashMap<Term, Object> instances = new HashMap();
     final HashMap<Object, Term> objects = new HashMap();*/

@@ -7,9 +7,11 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.table.DefaultBeliefTable;
 import nars.table.TemporalBeliefTable;
+import nars.task.Revision;
 import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,27 +29,40 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         this.term = c;
     }
 
-    /** generates a dynamic matching task */
+    /**
+     * generates a dynamic matching task
+     */
     protected abstract Task taskDynamic(long start, long end, Term template, NAR nar);
 
     @Override
-    @Nullable public final Truth truth(long start, long end, NAR nar) {
+    @Nullable
+    public final Truth truth(long start, long end, NAR nar) {
         Truth d = truthDynamic(start, end, nar);
-        return Truth.maxConf(d, truthStored(start, end, nar));
+        Truth e = truthStored(start, end, nar);
+        if (e == null || d == e)
+            return d;
+        if (d == null)
+            return e;
+
+        return Revision.revise(d, e); //<- this is optimistic that the truths dont overlap
+        //return Truth.maxConf(d, e); //<- this is conservative disallowing any overlap
     }
 
-    /** generates a dynamic matching truth */
-    @Nullable protected abstract Truth truthDynamic(long start, long end, NAR nar);
+    /**
+     * generates a dynamic matching truth
+     */
+    @Nullable
+    protected abstract Truth truthDynamic(long start, long end, NAR nar);
 
     @Override
     public boolean add(final Task input, TaskConcept concept, NAR nar) {
 
         if (Param.FILTER_DYNAMIC_MATCHES) {
-            if (!(input instanceof SignalTask) && input.punc()==punc()  && !input.isInput()) {
+            if (!(input instanceof SignalTask) && input.punc() == punc() && !input.isInput()) {
 
-                    PredictionFeedback.feedbackNewBelief(input, this, nar);
-                    if (input.isDeleted())
-                        return false;
+                PredictionFeedback.feedbackNewBelief(input, this, nar);
+                if (input.isDeleted())
+                    return false;
 
             }
         }
@@ -108,7 +123,6 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
 
-
     @Override
     public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
 
@@ -119,9 +133,19 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         if (y == null || y.equals(x))
             return x;
 
-        if (filter!=null && !filter.test(y))
+        if (filter != null && !filter.test(y))
             return x;
 
+        if (x!=null && !Stamp.overlapping(x, y)) {
+            //try to revise
+            Task xy = Revision.mergeTemporal(nar, x, y);
+            if (xy != null) {
+                float eye = xy.eviInteg();
+                if (eye > x.eviInteg() && eye > y.eviInteg()) {
+                    return xy;
+                }
+            }
+        }
 
         boolean dyn;
         if (x == null) {
@@ -142,6 +166,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         } else {
             return x;
         }
+
 
     }
 

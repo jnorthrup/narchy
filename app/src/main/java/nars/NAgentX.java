@@ -161,8 +161,8 @@ abstract public class NAgentX extends NAgent {
 
                 .index(
                         new CaffeineIndex(
-                                800 * 1024,
-                                //2500 * 1024,
+                                //800 * 1024,
+                                2500 * 1024,
                                 //200 * 1024
                                 //100 * 1024
                                 //50 * 1024
@@ -240,7 +240,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(1f * priFactor);
         n.questPriDefault.set(1f * priFactor);
 
-        n.activationRate.set(0.1f);
+        n.activationRate.set(0.2f);
 
         NAgent a = init.apply(n);
 

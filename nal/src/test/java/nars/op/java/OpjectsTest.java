@@ -102,21 +102,22 @@ public class OpjectsTest {
         n.log();
         final Opjects objs = new Opjects(n);
 
-        final SimpleClass x = objs.a("x", SimpleClass.class);
+        final SimpleClass y = objs.a("y", SimpleClass.class);
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
         n.run(1);
         {
-            x.get();
+            y.get();
         }
         n.run(1);
         {
-            x.set(1);
+            y.set(1);
         }
         n.run(1);
         String s = sb.toString();
-        assertTrue(s.contains("get(x,0)."));
-        assertTrue(s.contains("set(x,1)."));
+        System.out.println("log:\n" + s);
+        assertTrue(s.contains("get(y,0)."));
+        assertTrue(s.contains("set(y,1)."));
     }
 
     @Disabled

@@ -1,19 +1,20 @@
 package nars.op;
 
+import jcog.Util;
 import jcog.learn.Agent;
+import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntIntToObjectFunc;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
 import nars.Task;
-import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
 import nars.concept.scalar.Scalar;
 import nars.control.CauseChannel;
 import nars.task.ITask;
+import nars.task.signal.SignalTask;
 import nars.truth.Truth;
-import nars.util.signal.Signal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,33 +33,32 @@ public class RLBooster implements Consumer<NAR> {
 
     public final NAgent env;
     public final Agent rl;
+    public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
     final float[] input;
-
-    @Deprecated final Runnable[] output;
-
     final int inD, outD;
+    final ActionConcept[] actions;
     private final CauseChannel<ITask> in;
     private final List<Scalar> inputs;
-    public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
+    private final int actionDiscretization;
 
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
         this(env, rl, actionDiscretization, true);
     }
 
-    public int actions() { return outD; }
-
     /**
-     *
      * @param env
      * @param rl
      * @param actionDiscretization
-     * @param nothingAction reserve 0 for nothing
+     * @param nothingAction        reserve 0 for nothing
      */
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization, boolean nothingAction) {
-        assert(actionDiscretization>=1);
+        actionDiscretization = 1; //HACK
+        //assert(actionDiscretization>=1);
 
         this.env = env;
 
+
+        conf.set(Util.lerp(0.5f, env.nar.confMin.floatValue(), env.nar.confDefault(GOAL)));
 
 //        env.curiosity().setValue(0f);
 
@@ -75,70 +75,28 @@ public class RLBooster implements Consumer<NAR> {
 
         input = new float[inD];
 
-
-
-        this.outD = (nothingAction ? 1 : 0) /* nothing */ + env.actions.size() * actionDiscretization /* pos/neg for each action */;
-        this.output = new Runnable[outD];
-
-        int i = 0;
-        if (nothingAction) {
-            output[i++] = () -> {            };
-        }
+        this.actionDiscretization = actionDiscretization;
+        this.actions = env.actions().keySet().toArray(new ActionConcept[0]);
+        this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * actionDiscretization /* pos/neg for each action */;
 
         logger.info("{} {} in={} out={}", rl, env, inD, outD);
-        this.rl = rl.apply(inD, outD);
+
+//        this.output = new Runnable[outD];
+//
+//        int i = 0;
+//        if (nothingAction) {
+//            output[i++] = () -> {            };
+//        }
 
         in = env.nar.newCauseChannel(this);
 
-        Concept[] ca = new Concept[env.actions.size()];
-        Signal[] ag = new Signal[ca.length];
-        int agN = 0;
-
-        float OFFfreq
-                = 0f;
-                // = Float.NaN;
-
-        for (ActionConcept a : env.actions.keySet()) {
-            //TODO
-//            Scalar aGoal = new Scalar($.p(a.term(), $.the("agent")), GOAL env.nar.freqResolution)
-//                    .pri(() -> env.nar.priDefault(GOAL));
-            Signal aGoal = new Signal(GOAL, env.nar.freqResolution)
-                    .pri(() -> env.nar.priDefault(GOAL));
-            final int aa = agN;
-            ca[agN] = a;
-            ag[agN++] = aGoal;
-
-            for (int j = 0; j < actionDiscretization; j++) {
-
-                /** TODO support other discretizations */
-                float value = actionDiscretization==1 ? 1f /* full */ :
-                        ((float)(j)) / (actionDiscretization-1);
-
-                output[i++] = () -> {
-                    NAR nar = env.nar;
-                    List<Task> toInput = $.newArrayList(ca.length);
-                    long now = nar.time();
-                    int dur = nar.dur();
-                    Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf.floatValue()) : null;
-                    for (int k = 0; k < ag.length; k++) {
-                        Truth tK;
-                        if (k == aa) {
-                            tK = $.t(value, conf.floatValue());
-                        } else {
-                            tK = off; //cancel all other concept goal signals
-                        }
-                        Task tt = ag[k].set(ca[k], tK, nar.time::nextStamp, now, dur, nar);
-                        if (tt!=null)
-                            toInput.add( tt );
-                    }
-                    if (!toInput.isEmpty())
-                        in.input(toInput);
-                };
-            }
-        }
-        assert(actionDiscretization>1 || agN>1);
+        this.rl = rl.apply(inD, outD);
 
         env.onFrame(this);
+    }
+
+    public int actions() {
+        return outD;
     }
 
     float[] input() {
@@ -160,10 +118,37 @@ public class RLBooster implements Consumer<NAR> {
         //NAgent's happiness value, normalized to -1..+1
         float reward = (env.happy.asFloat() - 0.5f) * 2f;
 
-        int o = rl.act(reward, input());
+        int O = rl.act(reward, input());
         //System.out.println(now + " "  + o + " " + a.o.floatValue() + " " + " " + a.rewardValue);
 
-        output[o].run();
+        float OFFfreq
+                = 0f;
+        // = Float.NaN;
 
+
+        NAR nar = env.nar();
+        long start = env.last;
+        long end = env.now;
+        //int dur = nar.dur();
+        List<Task> e = new FasterList(actions.length);
+        for (int o = 0; o < actions.length; o++) {
+            Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf.floatValue()) : null;
+//            float value = actionDiscretization==1 ? 1f /* full */ :
+//                    ((float)(j)) / (actionDiscretization-1);
+            float value = 1f;
+
+            Truth tK;
+            if (o == O) {
+                tK = $.t(value, conf.floatValue());
+            } else {
+                tK = off; //cancel all other concept goal signals
+            }
+            Task tt = new SignalTask(actions[o].term(), GOAL, tK, start, start, end, nar.time.nextStamp());
+            if (tt != null)
+                e.add(tt);
+        }
+        in.input(e);
     }
+
+
 }

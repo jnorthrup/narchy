@@ -779,6 +779,7 @@ public class Revision {
         return mergeTemporal(nar, tt.array(), results);
     }
 
+
     @Nullable public static Task mergeTemporal(NAR nar, TaskRegion[] tt, int results) {
         switch (results) {
             case 0:
@@ -796,6 +797,8 @@ public class Revision {
         }
 
     }
+
+
     /** assumes:
      *          the tasks to be sorted in descending strength
      * the input minEvi corresponds to the absolute minimum accepted

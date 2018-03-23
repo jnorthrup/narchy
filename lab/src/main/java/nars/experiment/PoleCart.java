@@ -220,7 +220,7 @@ public class PoleCart extends NAgentX {
                 sensors,
                 nar), 900, 900);
 
-        //new RLBooster(this, HaiQAgent::new, 2);
+        //new RLBooster(this, HaiQae::new, 2);
 
         this.panel = new JPanel(new BorderLayout()) {
             public Stroke stroke = new BasicStroke(4);
