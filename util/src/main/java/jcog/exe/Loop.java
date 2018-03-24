@@ -21,13 +21,17 @@ abstract public class Loop {
     protected static final Logger logger = getLogger(Loop.class);
 
     //private volatile Thread thread = null;
-    private volatile FixedRateTimedFuture task = null;
+
+    //make Loop extend FixedRateFuture...
+    @Deprecated private volatile FixedRateTimedFuture task = null;
+
+    /** busy lock */
     private final AtomicBoolean executing = new AtomicBoolean(false);
 
     /** global timer */
     final static HashedWheelTimer timer =
         new HashedWheelTimer(Loop.class.getName(),
-             TimeUnit.MILLISECONDS.toNanos(2),
+             TimeUnit.MILLISECONDS.toNanos(1),
              64,
             // HashedWheelTimer.WaitStrategy.YieldingWait,
                 HashedWheelTimer.WaitStrategy.SleepWait,
@@ -118,15 +122,18 @@ abstract public class Loop {
                     FixedRateTimedFuture prevTask = this.task;
                     if (prevTask != null) {
                         //this.thread = null;
+
+                        logger.info("stop {}", this);
+
                         this.task = null;
-                        try {
+                        //try {
                             prevTask.cancel(false);
                             //prevThread.interrupt();
                             //prevThread.stop();
-                        } catch (Throwable ii) {
-                            ii.printStackTrace();
-                        }
-                        logger.info("stop {}", this);
+//                        } catch (Throwable ii) {
+//                            ii.printStackTrace();
+//                        }
+
                     }
                 }
             } else if (prevPeriodMS >= 0) {

@@ -26,7 +26,7 @@ public class TermTree extends MyConcurrentRadixTree<Termed> {
 
     @NotNull
     public static TermKey key(@NotNull Termed value) {
-        return TermKey.term(value.term());
+        return TermKey.termByVolume(value.term());
     }
 
     public Termed get(TermKey term) {

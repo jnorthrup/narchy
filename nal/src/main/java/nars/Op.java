@@ -1,9 +1,11 @@
 package nars;
 
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.byt.HashCachedBytes;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
 import jcog.pri.AbstractPLink;
@@ -13,7 +15,6 @@ import nars.derive.match.Ellipsislike;
 import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
-import nars.subterm.TermVector;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -2330,12 +2331,18 @@ public enum Op {
 //            return y;
 //        }
 
+
     final static class InternedCompound extends AbstractPLink<Term> implements HijackMemoize.Computation<InternedCompound, Term> {
         //X
         public final Op op;
         public final int dt;
         private final int hash;
-        public Term[] subs;
+
+        //public Term[] subs;
+        final byte[] subs;
+
+        private transient Term[] rawSubs;
+
         //Y
         public Term y = null;
 
@@ -2343,13 +2350,16 @@ public enum Op {
             super();
             this.op = o;
             this.dt = dt;
-            this.subs = subs;
+            this.rawSubs = subs;
 
-            int h = Util.hashCombine(o.bit, dt);
-            for (Term x : subs)
-                h = Util.hashCombine(h, x.hashCode());
+            HashCachedBytes key = new HashCachedBytes(4 * subs.length);
+            key.writeByte(o.id);
+            key.writeInt(dt);
+            for (Term s : subs)
+                s.append((ByteArrayDataOutput) key);
 
-            this.hash = h;
+            this.subs = key.array();
+            this.hash = key.hashCode();
         }
 
         @Override
@@ -2385,8 +2395,9 @@ public enum Op {
 
         @Override
         public boolean equals(Object obj) {
+            //op == p.op && dt == p.dt &&
             InternedCompound p = (InternedCompound) obj;
-            return hash == p.hash && op == p.op && dt == p.dt && Arrays.equals(subs, p.subs);
+            return hash == p.hash && Arrays.equals(subs, p.subs);
         }
 
         public float value() {
@@ -2416,24 +2427,30 @@ public enum Op {
         public void set(Term y) {
             this.y = y;
 
-            //HACK extended interning
-            int n = subs.length;
-            if (y != null && y.subs() == n) {
-                if (n > 1) {
-                    Subterms ys = y.subterms();
-                    if (ys instanceof TermVector) {
-                        Term[] yy = ys.arrayShared();
-                        if (subs != yy && Arrays.equals(subs, yy)) {
-                            subs = yy;
-                        }
-                    }
-                } else if (n == 1) {
-                    Term y0 = y.sub(0);
-                    Term s0 = subs[0];
-                    if (s0 != y0 && s0.equals(y0))
-                        subs[0] = y0;
-                }
-            }
+//            //HACK extended interning
+//            int n = subs.length;
+//            if (y != null && y.subs() == n) {
+//                if (n > 1) {
+//                    Subterms ys = y.subterms();
+//                    if (ys instanceof TermVector) {
+//                        Term[] yy = ys.arrayShared();
+//                        if (subs != yy && Arrays.equals(subs, yy)) {
+//                            subs = yy;
+//                        }
+//                    }
+//                } else if (n == 1) {
+//                    Term y0 = y.sub(0);
+//                    Term s0 = subs[0];
+//                    if (s0 != y0 && s0.equals(y0))
+//                        subs[0] = y0;
+//                }
+//            }
+        }
+
+        public Term term() {
+            Term[] rawSubs = this.rawSubs;
+            this.rawSubs = null;
+            return op.compound(dt, rawSubs);
         }
     }
 
@@ -2441,7 +2458,7 @@ public enum Op {
     public static class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound, Term> {
 
         public TermCache(int capacity, int reprobes, boolean soft) {
-            super(x -> x.op.compound(x.dt, x.subs), capacity, reprobes, soft);
+            super(x -> x.term(), capacity, reprobes, soft);
         }
 
         @Override

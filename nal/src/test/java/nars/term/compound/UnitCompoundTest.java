@@ -42,7 +42,7 @@ public class UnitCompoundTest {
         assertEquals(0, u.compareTo(g));
         assertEquals(0, g.compareTo(u));
         assertEquals(g.toString(), u.toString());
-        assertTrue(Arrays.equals(TermKey.term(g).array(), TermKey.term(u).array()));
+        assertTrue(Arrays.equals(TermKey.termByVolume(g).array(), TermKey.termByVolume(u).array()));
         assertTrue(Arrays.equals(IO.termToBytes(g), IO.termToBytes(u)));
     }
 

@@ -30,7 +30,6 @@ package jcog.data.map;
 
 
 import jcog.util.ArrayIterator;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
@@ -67,7 +66,7 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
         /** without synchronizing this entire method, the best this can do is
          * a near atomic invalidation of the list after the hashmap method returns */
         @Override
-        public T remove(@NotNull Object key) {
+        public T remove(Object key) {
             T r = super.remove(key);
             if (r != null) {
                 list = null;

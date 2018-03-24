@@ -1,15 +1,17 @@
 package com.ifesdjeen.timer;
 
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,11 +36,15 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
 
-    @Deprecated final static int wheelCapacity = 128;
+    private static final String DEFAULT_TIMER_NAME = HashedWheelTimer.class.getSimpleName();
 
-    private static final String DEFAULT_TIMER_NAME = "hashed-wheel-timer";
+    /** used for fast test for incoming items */
+    final AtomicInteger incomingCount = new AtomicInteger();
 
-    private final ConcurrentQueue<TimedFuture<?>>[] wheel;
+    private final ConcurrentQueue<TimedFuture<?>> incoming = new DisruptorBlockingQueue<>(1024);
+
+
+    private final Queue<TimedFuture<?>>[] wheel;
     private final int numWheels;
     private final long resolution;
     private final ExecutorService loop;
@@ -99,10 +105,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                             ThreadFactory factory) {
         this.waitStrategy = strategy;
 
-        this.wheel = new ConcurrentQueue[numWheels];
+        this.wheel = new Queue[numWheels];
 
         for (int i = 0; i < numWheels; i++) {
-            wheel[i] = new MultithreadConcurrentQueue<>(wheelCapacity);
+            wheel[i] = new ArrayDeque();
         }
 
         this.numWheels = numWheels;
@@ -135,8 +141,20 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         long deadline = System.nanoTime();
 
+        TimedFuture[] buffer = new TimedFuture[1024];
+
         int c;
         while ((c = cursor.getAndUpdate((cc) -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE))>=0) {
+
+            if (incomingCount.get() > 0) {
+                int count = incoming.remove(buffer);
+                incomingCount.addAndGet(-count);
+                for (int i = 0; i < count; i++) {
+                    TimedFuture b = buffer[i];
+                    buffer[i] = null;
+                    _schedule(b);
+                }
+            }
 
             if (c == 0) {
                 //synch deadline
@@ -150,22 +168,23 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             }
 
             // TODO: consider extracting processing until deadline for test purposes
-            ConcurrentQueue<TimedFuture<?>> registrations = wheel[c];
-            int limit = registrations.size();
+            Queue<TimedFuture<?>> w = wheel[c];
+            int limit = !w.isEmpty() ? w.size() : 0;
             if (limit > 0) {
                 TimedFuture<?> r;
-                while (limit-- > 0 && ((r = registrations.peek()) != null)) {
-                    if (r.isCancelled()) {
-                        registrations.poll(); //remove this one
-                    } else if (r.ready()) {
-                        registrations.poll(); //remove this one
-                        executor.execute(r);
+                while (limit-- > 0 && ((r = w.peek()) != null)) {
 
-                        if (!r.runOnce()) {
-                            reschedule(c, r);
-                        }
-                    } else {
-                        r.decrement();
+                    switch (r.state()) {
+                        case CANCELLED:
+                            w.poll();
+                            break;
+                        case READY:
+                            w.poll();
+                            r.execute(this);
+                            break;
+                        case PENDING:
+                            break;
+
                     }
                 }
             }
@@ -229,7 +248,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      */
 
     @Override
-    public void execute(Runnable command) {
+    public final void execute(Runnable command) {
         executor.execute(command);
     }
 
@@ -419,36 +438,37 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         int firstFireOffset = (int) (firstDelay / resolution);
         int firstFireRounds = firstFireOffset / numWheels;
 
-        TimedFuture<V> r = new OneShotTimedFuture<>(firstFireRounds, callable, firstDelay);
+        TimedFuture<V> r = new OneShotTimedFuture<>(firstFireOffset, firstFireRounds, callable, firstDelay);
         // We always add +1 because we'd like to keep to the right boundary of event on execution, not to the left:
         //
         // For example:
         //    |          now          |
         // res start               next tick
         // The earliest time we can tick is aligned to the right. Think of it a bit as a `ceil` function.
-        add(idx(cursor.get() + firstFireOffset + 1), r);
+        schedule(r);
         return r;
     }
 
-    private <V> void add(int wheel, TimedFuture<V> r) {
-        if (!this.wheel[wheel].offer(r)) {
-            throw new TODO("grow wheel capacity");
-        }
-    }
 
     private <V> FixedRateTimedFuture<V> scheduleFixedRate(long recurringTimeout,
                                                           long firstDelay,
                                                           Callable<V> callable) {
-        assertRunning();
+
         isTrue(recurringTimeout >= resolution,
                 "Cannot schedule tasks for amount of time less than timer precision.");
 
-        int firstFireOffset = (int) (firstDelay / resolution);
-        int firstFireRounds = firstFireOffset / numWheels;
-
-        FixedRateTimedFuture<V> r = new FixedRateTimedFuture(firstFireRounds, callable,
+        FixedRateTimedFuture<V> r = new FixedRateTimedFuture(0, callable,
                 recurringTimeout, resolution, numWheels);
-        add(idx(cursor.get() + firstFireOffset + 1), r);
+
+        if (firstDelay > 0) {
+            scheduleOneShot(firstDelay, () -> {
+                schedule(r);
+                return null;
+            });
+        }  else {
+            schedule(r);
+        }
+
         return r;
     }
 
@@ -462,26 +482,42 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         int offset = (int) (recurringTimeout / resolution);
         int rounds = offset / numWheels;
 
-        int firstFireOffset = (int) (firstDelay / resolution);
-        int firstFireRounds = firstFireOffset / numWheels;
+        FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(0, callable, recurringTimeout, rounds, offset,
+                this::schedule);
+        if (firstDelay > 0) {
+            scheduleOneShot(firstDelay, () -> {
+                schedule(r);
+                return null;
+            });
+        } else {
+            schedule(r);
+        }
 
-        FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(firstFireRounds, callable, recurringTimeout, rounds, offset,
-                this::reschedule);
-        add(idx(cursor.get() + firstFireOffset + 1), r);
         return r;
+    }
+
+    protected void schedule(TimedFuture<?> r) {
+        boolean added = incoming.offer(r);
+        if (!added) {
+            throw new RuntimeException("incoming queue overloaded");
+        }
+
+        incomingCount.incrementAndGet();
     }
 
     /**
      * Rechedule a {@link TimedFuture} for the next fire
      */
-    private void reschedule(TimedFuture<?> r) {
-        reschedule(cursor.get(), r);
+    protected void _schedule(TimedFuture<?> r) {
+        int c = cursor.get();
+        if (c >= 0) {
+            add(idx(c + r.getOffset() + 1), r);
+        }
     }
 
-    private void reschedule(int c, TimedFuture<?> r) {
-        if (c >= 0) {
-            r.reset();
-            add(idx(c + r.getOffset() + 1), r);
+    private <V> void add(int wheel, TimedFuture<V> r) {
+        if (!this.wheel[wheel].offer(r)) {
+            throw new TODO("grow wheel capacity");
         }
     }
 

@@ -1,33 +1,56 @@
 package com.ifesdjeen.timer;
 
+import jcog.Util;
+
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class OneShotTimedFuture<T> extends CompletableFuture<T> implements TimedFuture<T> {
+import static com.ifesdjeen.timer.TimedFuture.Status.PENDING;
+import static com.ifesdjeen.timer.TimedFuture.Status.READY;
 
-    protected final AtomicInteger rounds = new AtomicInteger(); // rounds is only visible to one thread
+public class OneShotTimedFuture<T> implements TimedFuture<T> {
+
+    final AtomicInteger rounds = new AtomicInteger(); // rounds is only visible to one thread
     private final Callable<T> callable;
     private final long initialDelay;
+    private final int firstFireOffset;
     protected volatile Status status;
+    private volatile Object result = null;
 
-    public OneShotTimedFuture(int rounds, Callable<T> callable, long initialDelay) {
+    @Deprecated public OneShotTimedFuture(int rounds, Callable<T> callable, long initialDelay) {
+        this(-1, rounds, callable, initialDelay);
+    }
+    public OneShotTimedFuture(int firstFireOffset, int rounds, Callable<T> callable, long initialDelay) {
+        this.firstFireOffset = firstFireOffset;
         this.rounds.set(rounds);
-        this.status = Status.READY;
+        this.status = PENDING;
         this.callable = callable;
         this.initialDelay = initialDelay;
+    }
+
+
+    @Override
+    public Status state() {
+        Status s = status;
+        if (s == PENDING && rounds.getAndDecrement()<=0) {
+            return READY;
+        }
+        return s;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return status == Status.CANCELLED;
+    }
+    @Override
+    public boolean isDone() {
+        return result!=null;
     }
 
     @Override
     public void decrement() {
         rounds.decrementAndGet();
-    }
-
-    @Override
-    public boolean ready() {
-        // Check for READY here would be redundant, since if it was cancelled it'd be removed before this check
-        return rounds.get() == 0;
     }
 
     @Override
@@ -41,20 +64,12 @@ class OneShotTimedFuture<T> extends CompletableFuture<T> implements TimedFuture<
         return true;
     }
 
-    @Override
-    public boolean isCancelled() {
-        return status == Status.CANCELLED;
-    }
 
     @Override
     public int getOffset() {
-        throw new RuntimeException("One Shot Registration can not be rescheduled");
+        return firstFireOffset;
     }
 
-    @Override
-    public boolean runOnce() {
-        return true;
-    }
 
     @Override
     public long getDelay(TimeUnit unit) {
@@ -69,10 +84,36 @@ class OneShotTimedFuture<T> extends CompletableFuture<T> implements TimedFuture<
     @Override
     public void run() {
         try {
-            this.complete(callable.call());
+            Object r = callable.call();
+            if (r == null)
+                r = this;
+            this.result = r;
         } catch (Exception e) {
-            this.completeExceptionally(e);
+            result = e;
         }
     }
 
+    @Override
+    public T get() {
+        Object r = result;
+        return r == this ? null : (T) r;
+    }
+
+    @Override
+    public T get(long timeout, TimeUnit unit) {
+        T r;
+        int POLL_PERIOD_MS = 50;
+        long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
+        while ((r = get()) == null) {
+            Util.sleep(POLL_PERIOD_MS);
+            if (System.currentTimeMillis() >= deadline)
+                break;
+        }
+        return r == this ? null : (T) r;
+    }
+
+    @Override
+    public boolean isPeriodic() {
+        return false;
+    }
 }

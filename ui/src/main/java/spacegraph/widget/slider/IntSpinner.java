@@ -38,10 +38,18 @@ public class IntSpinner extends Widget {
         update(0);
     }
 
-    public synchronized void update(int delta) {
-        int nextValue = Util.clamp(i.intValue() + delta, min, max);
-        label.text(labeller.apply(nextValue));
-        i.set(nextValue);
+    public void update(int delta) {
+        synchronized (i) {
+            set(i.intValue() + delta);
+        }
+    }
+
+    public void set(int nextValue) {
+        synchronized (i) {
+            nextValue = Util.clamp(nextValue, min, max);
+            label.text(labeller.apply(nextValue));
+            i.set(nextValue);
+        }
     }
 
 }

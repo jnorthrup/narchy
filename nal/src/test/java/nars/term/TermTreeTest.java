@@ -27,19 +27,19 @@ public class TermTreeTest {
 
         Function<Term, Term> cb = (t)->t;
 
-        tree.computeIfAbsent(TermKey.term($("concept")), cb);
-        tree.computeIfAbsent(TermKey.term($("term")), cb);
-        tree.computeIfAbsent(TermKey.term($("termutator")), cb);
+        tree.computeIfAbsent(TermKey.termByVolume($("concept")), cb);
+        tree.computeIfAbsent(TermKey.termByVolume($("term")), cb);
+        tree.computeIfAbsent(TermKey.termByVolume($("termutator")), cb);
         //tree.print(System.out);
 
-        assertNotNull(tree.get(TermKey.term($("term"))));
-        assertNull(tree.get(TermKey.term($("xerm"))));
-        assertNull(tree.get(TermKey.term($("te")))); //partial
+        assertNotNull(tree.get(TermKey.termByVolume($("term"))));
+        assertNull(tree.get(TermKey.termByVolume($("xerm"))));
+        assertNull(tree.get(TermKey.termByVolume($("te")))); //partial
 
-        assertNotNull(tree.computeIfAbsent(TermKey.term($("term")), cb));
+        assertNotNull(tree.computeIfAbsent(TermKey.termByVolume($("term")), cb));
         assertEquals(3, tree.size());
 
-        assertNotNull(tree.computeIfAbsent(TermKey.term($("termunator")), cb));
+        assertNotNull(tree.computeIfAbsent(TermKey.termByVolume($("termunator")), cb));
 
         tree.prettyPrint(System.out);
 

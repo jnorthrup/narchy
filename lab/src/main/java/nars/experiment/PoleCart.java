@@ -86,7 +86,9 @@ public class PoleCart extends NAgentX {
     static final double forceMag = 100.;
     static final double tau = 0.01;
     static final double fricCart = 0.00005;
-    static final double fricPole = 0.005;
+    static final double fricPole =
+            //0.005;
+            0.01f;
     static final double totalMass = cartMass + poleMass;
     static final double halfPole = 0.5 * poleLength;
     static final double poleMassLength = halfPole * poleMass;

@@ -18,6 +18,18 @@ public class FixedRateTimedFuture<T> extends OneShotTimedFuture<T> {
         reset();
     }
 
+    @Override
+    public void execute(HashedWheelTimer t) {
+        super.execute(t);
+        reset();
+        t._schedule(this);
+    }
+
+    @Override
+    public boolean isPeriodic() {
+        return true;
+    }
+
     public void setPeriodMS(long periodMS) {
         setPeriodNS(periodMS * 1000 * 1000);
     }
@@ -31,13 +43,7 @@ public class FixedRateTimedFuture<T> extends OneShotTimedFuture<T> {
     }
 
     public void reset() {
-        this.status = Status.READY;
         this.rounds.set(getOffset() / wheelSize);
-    }
-
-    @Override
-    public boolean runOnce() {
-        return false;
     }
 
 }

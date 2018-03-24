@@ -19,6 +19,8 @@ public class LoopPanel extends Widget {
     private final Plot2D cycleTimePlot;
     MutableInteger fps;
 
+    private volatile boolean pause = false;
+
     public LoopPanel(Loop loop) {
         this.loop = loop;
         fps = new MutableInteger(Math.round(loop.getFPS()));
@@ -32,15 +34,17 @@ public class LoopPanel extends Widget {
                 new ButtonSet(ButtonSet.Mode.One,
                     IconToggleButton.awesome("play").on((b) -> {
                         if (b) {
-                            synchronized (loop) {
-                                loop.runFPS(fps.intValue());
+                            if (pause) {
+                                pause = false;
                                 update();
                             }
+
                         }
                     }), IconToggleButton.awesome("pause").on((b) -> {
                         if (b) {
-                            synchronized (loop) {
-                                loop.stop();
+
+                            if (!pause) {
+                                pause = true;
                                 update(); //update because this view wont be updated while paused
                             }
                         }
@@ -52,13 +56,20 @@ public class LoopPanel extends Widget {
         update();
     }
 
-    public void update() {
-        int f = fps.intValue();
-        int g = Math.round(loop.getFPS());
-        if (f!=g) {
-            loop.runFPS(f);
-            fpsLabel.update(0);
+    public synchronized void update() {
+        if (!pause) {
+            int f = fps.intValue();
+            int g = Math.round(loop.getFPS());
+            if (f != g) {
+                loop.runFPS(f);
+                fpsLabel.set(f);
+            }
+            cycleTimePlot.update();
+        } else {
+            if (loop.isRunning())
+                loop.stop();
+            //TODO fpsLabel.disable(); // but don't: set(0)
         }
-        cycleTimePlot.update();
+
     }
 }

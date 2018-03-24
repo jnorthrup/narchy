@@ -123,9 +123,13 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 //        if (values.length == 0) return Stream.empty();
 //        else return Stream.of(values);
 
-        Task[] list = this.list;
-        //TODO may not be null filtered properly for certain multithread cases of removal
-        return Streams.stream(ArrayIterator.get(list, Math.min(list.length, size)));
+        Object[] list = this.list;
+        if (list.length == 0)
+            return Stream.empty();
+        else {
+            //TODO may not be null filtered properly for certain multithread cases of removal
+            return Streams.stream(ArrayIterator.get((Task[])list, Math.min(list.length, size)));
+        }
     }
 
     @Override

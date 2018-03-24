@@ -10,7 +10,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutput;
 import java.io.IOException;
@@ -32,23 +31,22 @@ public class TermKey extends HashCachedBytes {
     /**
      * term with volume byte prepended for sorting by volume
      */
-    @NotNull
-    public static TermKey term(Term x) {
+    public static TermKey termByVolume(Term x) {
         TermKey y = new TermKey(x.volume() * 4 + 64 /* ESTIMATE */);
         try {
 
             //volume byte: pre-sorts everything by complexity or volume from the root, so that items of certain sizes can
             //be selected
-            int c = x.complexity();
+            int c = x.volume();
             y.writeByte(c);
 
             writeTermSeq(y, x, false);
 
             //int before = length();
-            if (COMPRESS && c > 1 && y.compress(1)!=-1) {
-                //int after = length();
-                //System.out.println(conceptualizable + "\t" + before + " -> " + after + "\t" + new String(array()));
-            }
+//            if (COMPRESS && c > 1 && y.compress(1)!=-1) {
+//                //int after = length();
+//                //System.out.println(conceptualizable + "\t" + before + " -> " + after + "\t" + new String(array()));
+//            }
 
             //this.writeByte(0); //null terminator, signifying end-of-term
             y.compact();
@@ -57,6 +55,7 @@ public class TermKey extends HashCachedBytes {
             throw new RuntimeException(e);
         }
     }
+
 
     protected TermKey(int len) {
         super(len);
@@ -101,7 +100,7 @@ public class TermKey extends HashCachedBytes {
         throw new UnsupportedOperationException();
     }
 
-    static void writeTermSeq(@NotNull DataOutput out, Term term, boolean includeTemporal) throws IOException {
+    static void writeTermSeq(DataOutput out, Term term, boolean includeTemporal) throws IOException {
 
 
         if (term instanceof Atomic) {
@@ -124,16 +123,16 @@ public class TermKey extends HashCachedBytes {
         return s.getBytes(utf8); //SAFE access:
     }
 
-    static void writeStringBytes(@NotNull DataOutput out, @NotNull Object o) throws IOException {
+    static void writeStringBytes(DataOutput out, Object o) throws IOException {
         out.write(bytes(o.toString()));
     }
 
-    static void writeStringBytes(@NotNull DataOutput out, String s) throws IOException {
-        out.write(bytes(s));
-    }
+//    static void writeStringBytes(DataOutput out, String s) throws IOException {
+//        out.write(bytes(s));
+//    }
 
 
-    static void writeCompoundSeq(@NotNull DataOutput out, @NotNull Compound c, boolean includeTemporal) throws IOException {
+    static void writeCompoundSeq(DataOutput out, Compound c, boolean includeTemporal) throws IOException {
 
         out.writeByte('(');
         writeTermContainerSeq(out, c.subterms(), includeTemporal);
@@ -148,7 +147,7 @@ public class TermKey extends HashCachedBytes {
     }
 
 
-    static void writeTermContainerSeq(@NotNull DataOutput out, @NotNull Subterms c, boolean includeTemporal) throws IOException {
+    static void writeTermContainerSeq(DataOutput out, Subterms c, boolean includeTemporal) throws IOException {
 
         int siz = c.subs();
         for (int i = 0; i < siz; i++) {
