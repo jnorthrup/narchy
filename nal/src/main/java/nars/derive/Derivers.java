@@ -1,8 +1,7 @@
 package nars.derive;
 
 import nars.NAR;
-import nars.derive.rule.PremiseRuleSet;
-import nars.index.term.PatternIndex;
+import nars.derive.rule.DeriveRuleSet;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,21 +63,18 @@ public class Derivers {
     public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
         assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
 
-        return Deriver.deriver(nar -> rules(minLevel, maxLevel, nar, extraFiles));
+        return (nar)->new Deriver(rules(minLevel, maxLevel, nar, extraFiles), nar);
     }
     public static Function<NAR, Deriver> deriver(String... extraFiles) {
-        return nar -> new Deriver(PremiseRuleSet.rules(nar,
+        return nar -> new Deriver(DeriveRuleSet.rules(nar,
                 List.of(extraFiles)
         ), nar)
         ;
     }
-    public static Deriver deriver(NAR n, String... extraFiles) {
-        return new Deriver(n, extraFiles);
-    }
 
     /** standard ruleset */
-    public static PremiseRuleSet rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
-        return PremiseRuleSet.rules(new PatternIndex(), nar,
+    public static DeriveRuleSet rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
+        return DeriveRuleSet.rules(nar,
                 standard(minLevel, maxLevel, extraFiles)
         );
     }

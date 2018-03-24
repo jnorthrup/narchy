@@ -2,12 +2,11 @@ package nars.derive.rule;
 
 import com.google.common.collect.Sets;
 import jcog.TODO;
+import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.derive.Conclude;
-import nars.derive.PostCondition;
-import nars.derive.ProtoDerivation;
+import nars.derive.*;
 import nars.derive.constraint.*;
 import nars.derive.op.*;
 import nars.index.term.PatternIndex;
@@ -17,8 +16,13 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Atom;
+import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
 import nars.term.transform.TermTransform;
+import nars.truth.func.BeliefFunction;
+import nars.truth.func.GoalFunction;
+import nars.truth.func.TruthOperator;
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -26,22 +30,41 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static java.util.Collections.addAll;
 import static nars.$.newArrayList;
+import static nars.$.newHashSet;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
 import static nars.subterm.util.Contains.*;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /** an intermediate representation of a premise rule
  * with fully expanded opcodes
  */
-public class CompileablePremiseRule extends PremiseRule {
+public class DeriveRuleProto extends DeriveRuleSource {
 
 
-    public CompileablePremiseRule(PremiseRule raw, PatternIndex index) {
+    /**
+     * conditions which can be tested before unification
+     */
+    public PrediTerm<PreDerivation>[] PRE;
+
+    /**
+     * consequences applied after unification
+     */
+    public PostCondition[] POST;
+
+
+    final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
+    final List<PrediTerm<PreDerivation>> pre = new FasterList(8);
+    final List<PrediTerm<Derivation>> post = new FasterList(8);
+
+
+    public DeriveRuleProto(DeriveRuleSource raw, PatternIndex index) {
         this(raw.term(), raw.source, index);
     }
 
-    CompileablePremiseRule(Term rule, String src, PatternIndex index) {
+    DeriveRuleProto(Term rule, String src, PatternIndex index) {
         super(((Compound)index.pattern(rule.transform(UppercaseAtomsToPatternVariables))), src);
 
         NAR nar = index.nar;
@@ -60,7 +83,7 @@ public class CompileablePremiseRule extends PremiseRule {
         Term[] postcons = ((Subterms) term().sub(1)).arrayShared();
 
 
-        Set<PrediTerm<ProtoDerivation>> pres =
+        Set<PrediTerm<PreDerivation>> pres =
                 //Global.newArrayList(precon.length);
                 new TreeSet(); //for consistent ordering to maximize folding
 
@@ -465,7 +488,7 @@ public class CompileablePremiseRule extends PremiseRule {
         assert (Sets.newHashSet(postConditions).size() == pcs) :
                 "postcondition duplicates:\n\t" + postConditions;
 
-        POST = postConditions.toArray(new PostCondition[pcs]);
+        this.POST = postConditions.toArray(new PostCondition[pcs]);
 
         if (taskPunc == 0) {
             //default: add explicit no-questions rule
@@ -528,7 +551,29 @@ public class CompileablePremiseRule extends PremiseRule {
     }
 
 
-    static void eventPrefilter(Set<PrediTerm<ProtoDerivation>> pres, Term conj, Term taskPattern, Term beliefPattern) {
+    /**
+     * the task-term pattern
+     */
+    public final Term getTask() {
+        return (match().sub(0));
+    }
+
+    public Compound match() {
+        return (Compound) term().sub(0);
+    }
+
+    public Compound conclusion() {
+        return (Compound) term().sub(1);
+    }
+
+    /**
+     * the belief-term pattern
+     */
+    public final Term getBelief() {
+        return (match().sub(1));
+    }
+
+    static void eventPrefilter(Set<PrediTerm<PreDerivation>> pres, Term conj, Term taskPattern, Term beliefPattern) {
         includesOp(pres, taskPattern, beliefPattern, conj, CONJ.bit, true, true);
 
         boolean isTask = taskPattern.equals(conj);
@@ -542,7 +587,7 @@ public class CompileablePremiseRule extends PremiseRule {
         }
     }
 
-    static private void neqPrefilter(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Term y) {
+    static private void neqPrefilter(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Term y) {
         //TODO maybe structure non-overlap test
         assert(!taskPattern.equals(beliefPattern));
         if ((taskPattern.equalsRoot(x) && beliefPattern.equalsRoot(y)) || (taskPattern.equalsRoot(y) && beliefPattern.equalsRoot(x))) {
@@ -550,7 +595,7 @@ public class CompileablePremiseRule extends PremiseRule {
         }
     }
 
-    private static void termIs(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, Op v) {
+    private static void termIs(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, Op v) {
         constraints.add(OpIs.the(x, v));
         includesOp(pres, taskPattern, beliefPattern, x, v);
     }
@@ -559,7 +604,7 @@ public class CompileablePremiseRule extends PremiseRule {
 //        includesOp(pres, taskPattern, beliefPattern, x, struct, true);
 //    }
 
-    private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
+    private static void includesOp(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
         boolean isTask = taskPattern.equals(x);
         boolean isBelief = beliefPattern.equals(x);
         if (isTask || isBelief)
@@ -571,7 +616,7 @@ public class CompileablePremiseRule extends PremiseRule {
             throw new TODO("is this valid");
     }
 
-    private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude, boolean recurse) {
+    private static void includesOp(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude, boolean recurse) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
 
         boolean isTask = taskPattern.equals(x);
@@ -585,7 +630,7 @@ public class CompileablePremiseRule extends PremiseRule {
     }
 
 
-    private static void termIsNot(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
+    private static void termIsNot(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
         constraints.add(new OpIsNot(x, struct));
         includesOp(pres, taskPattern, beliefPattern, x, struct, false, false);
@@ -622,6 +667,84 @@ public class CompileablePremiseRule extends PremiseRule {
 
 
     };
+
+    /**
+     * compiles the conditions which are necessary to activate this rule
+     */
+    public Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> build(PostCondition post) {
+
+        byte puncOverride = post.puncOverride;
+
+        TruthOperator belief = BeliefFunction.get(post.beliefTruth);
+        if ((post.beliefTruth != null) && !post.beliefTruth.equals(TruthOperator.NONE) && (belief == null)) {
+            throw new RuntimeException("unknown BeliefFunction: " + post.beliefTruth);
+        }
+        TruthOperator goal = GoalFunction.get(post.goalTruth);
+        if ((post.goalTruth != null) && !post.goalTruth.equals(TruthOperator.NONE) && (goal == null)) {
+            throw new RuntimeException("unknown GoalFunction: " + post.goalTruth);
+        }
+
+        //if (puncOverride==0) {
+        if (belief!=null && goal!=null) {
+            if (!belief.single() && !goal.single()) {
+                pre.add(TaskPolarity.belief);
+            } else if (belief.single() ^ goal.single()){
+                throw new TODO();
+            }
+        } else if (belief!=null && !belief.single()) {
+            pre.add(TaskPolarity.belief);
+        } else if (goal!=null && !goal.single()) {
+            pre.add(TaskPolarity.belief);
+        }
+
+        //TODO add more specific conditions that also work
+        //}
+
+
+
+        String beliefLabel = belief != null ? belief.toString() : "_";
+        String goalLabel = goal != null ? goal.toString() : "_";
+
+        FasterList<Term> args = new FasterList();
+        args.add($.the(beliefLabel));
+        args.add($.the(goalLabel));
+        if (puncOverride != 0)
+            args.add($.quote(((char) puncOverride)));
+
+        Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
+
+
+        Solve truth = (puncOverride == 0) ?
+                new Solve.SolvePuncFromTask(ii, belief, goal) :
+                new Solve.SolvePuncOverride(ii, puncOverride, belief, goal);
+
+        //PREFIX
+        Set<PrediTerm<PreDerivation>> precon = newHashSet(4); //for ensuring uniqueness / no duplicates
+
+        addAll(precon, PRE);
+
+        precon.addAll(this.pre);
+
+
+        ////-------------------
+        //below here are predicates which affect the derivation
+
+
+        //SUFFIX (order already determined for matching)
+        int n = 1 + this.constraints.size() + this.post.size();
+
+        PrediTerm[] suff = new PrediTerm[n];
+        int k = 0;
+        suff[k++] = truth;
+        for (PrediTerm p : this.constraints) {
+            suff[k++] = p;
+        }
+        for (PrediTerm p : this.post) {
+            suff[k++] = p;
+        }
+
+        return pair(precon, (PrediTerm<Derivation>) AndCondition.the(suff));
+    }
 
 
 //    /**

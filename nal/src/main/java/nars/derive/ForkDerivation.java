@@ -5,7 +5,7 @@ import nars.term.pred.PrediTerm;
 
 import java.util.function.Function;
 
-public class ForkDerivation<D extends ProtoDerivation> extends Fork<D> {
+public class ForkDerivation<D extends PreDerivation> extends Fork<D> {
 
     protected ForkDerivation(PrediTerm<D>[] actions) {
         super(actions);
@@ -20,7 +20,7 @@ public class ForkDerivation<D extends ProtoDerivation> extends Fork<D> {
      * simple exhaustive impl
      */
     @Override
-    public boolean test(ProtoDerivation m) {
+    public boolean test(PreDerivation m) {
 
         int before = m.now();
 

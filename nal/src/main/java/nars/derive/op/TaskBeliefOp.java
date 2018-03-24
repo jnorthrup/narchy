@@ -2,14 +2,14 @@ package nars.derive.op;
 
 import nars.$;
 import nars.Op;
-import nars.derive.ProtoDerivation;
+import nars.derive.PreDerivation;
 import nars.term.pred.AbstractPred;
 
 
 /**
  * Created by me on 5/19/17.
  */
-public final class TaskBeliefOp extends AbstractPred<ProtoDerivation> {
+public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
     public final byte op;
     public final boolean task;
     public final boolean belief;
@@ -33,7 +33,7 @@ public final class TaskBeliefOp extends AbstractPred<ProtoDerivation> {
     }
 
     @Override
-    public boolean test(ProtoDerivation derivation) {
+    public boolean test(PreDerivation derivation) {
         return (!task || (isOrIsNot ? derivation._taskOp == op : derivation._taskOp != op))
                 &&
                 (!belief || (isOrIsNot ? derivation._beliefOp == op: derivation._beliefOp != op));

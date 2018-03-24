@@ -1,10 +1,10 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.derive.ProtoDerivation;
+import nars.derive.PreDerivation;
 import nars.term.pred.AbstractPred;
 
-public class TaskBeliefInequal extends AbstractPred<ProtoDerivation> {
+public class TaskBeliefInequal extends AbstractPred<PreDerivation> {
 
     public static TaskBeliefInequal the = new TaskBeliefInequal();
 
@@ -13,7 +13,7 @@ public class TaskBeliefInequal extends AbstractPred<ProtoDerivation> {
     }
 
     @Override
-    public boolean test(ProtoDerivation d) {
+    public boolean test(PreDerivation d) {
         return !d.taskTerm.equalsRoot(d.beliefTerm);
     }
 

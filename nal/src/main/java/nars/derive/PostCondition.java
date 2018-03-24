@@ -1,7 +1,7 @@
 package nars.derive;
 
 import nars.Op;
-import nars.derive.rule.PremiseRule;
+import nars.derive.rule.DeriveRuleProto;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -69,7 +69,7 @@ public class PostCondition implements Serializable //since there can be multiple
      * @throws RuntimeException
      */
     @NotNull
-    public static PostCondition make(@NotNull PremiseRule rule, @NotNull Term pattern,
+    public static PostCondition make(DeriveRuleProto rule, Term pattern,
                                      @NotNull Term... modifiers) throws RuntimeException {
 
 

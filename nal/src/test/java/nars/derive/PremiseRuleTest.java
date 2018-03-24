@@ -3,10 +3,11 @@ package nars.derive;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.rule.PremiseRule;
-import nars.derive.rule.PremiseRuleSet;
+import nars.derive.rule.DeriveRuleSource;
+import nars.derive.rule.DeriveRuleSet;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +21,8 @@ public class PremiseRuleTest {
 
 
     @NotNull
-    public static PremiseRule parse(@NotNull String src) throws Narsese.NarseseException {
-        return PremiseRuleSet.parse(src);
+    public static DeriveRuleSource parse(@NotNull String src) throws Narsese.NarseseException {
+        return DeriveRuleSet.parse(src);
     }
 
     @Test
@@ -66,7 +67,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            PremiseRule x = parse("A, A |- A, (Belief:Revision, Goal:Weak)");
+            DeriveRuleSource x = parse("A, A |- A, (Belief:Revision, Goal:Weak)");
             assertNotNull(x);
             //assertEquals("((A,A),(A,((Revision-->Belief),(Weak-->Desire))))", x.toString());
             // assertEquals(12, x.getVolume());
@@ -79,7 +80,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            PremiseRule x = parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Revision, Goal:Weak)");
+            DeriveRuleSource x = parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
             assertEquals(vv, x.term().volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Revision-->Belief),(Weak-->Desire))))", x.toString());
@@ -90,7 +91,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            PremiseRule x = parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Revision, Goal:Weak)");
+            DeriveRuleSource x = parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
             assertEquals(vv, x.term().volume()); //same volume as previous block
             //assertEquals("(((%1-->%2),(%2-->%1)),((nonvar<->%1),((Revision-->Belief),(Weak-->Desire))))", x.toString());
@@ -100,7 +101,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            PremiseRule x = parse(" <A --> B>, <B --> A> |- <A <-> B>,  (Belief:Conversion, Punctuation:Belief)");
+            DeriveRuleSource x = parse(" <A --> B>, <B --> A> |- <A <-> B>,  (Belief:Conversion, Punctuation:Belief)");
             //x = PremiseRule.rule(x);
             assertEquals(vv, x.term().volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Conversion-->Belief),(Judgment-->Punctuation))))", x.toString());
@@ -118,7 +119,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-        PremiseRule x = parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Strong)");
+        DeriveRuleSource x = parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Strong)");
         //x = PremiseRule.rule(x);
         //assertEquals("(((%1-->%2),(%3-->%2)),((%1<->%3),((Comparison-->Belief),(Strong-->Desire))))", x.toString());
         assertEquals(vv, x.term().volume());
@@ -143,8 +144,7 @@ public class PremiseRuleTest {
     public void testMinSubsRulePredicate() {
         //test that the constraint on %2 being of size > 1 is testable in the Proto phase
 
-        DeriverRoot d = TrieDeriver.the(NARS.shell(),
-                "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)");
+        DeriveRules d = new DeriveRuleSet(NARS.shell(), "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)").compile();
         d.printRecursive();
         assertNotNull(d);
     }
@@ -153,8 +153,7 @@ public class PremiseRuleTest {
     public void testDoubleOnlyTruthAddsRequiresBeliefPredicate() {
         //test that the constraint on %2 being of size > 1 is testable in the Proto phase
 
-        DeriverRoot d = TrieDeriver.the(NARS.shell(),
-                "X,Y |- (X&&Y), (Belief:Intersection)");
+        DeriveRules d = new DeriveRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)").compile();
 
         d.printRecursive();
         assertEquals("((\".!\"-->task),Belief,can({0}))", d.what.toString());
@@ -163,10 +162,7 @@ public class PremiseRuleTest {
     @Test
     public void testTryFork() {
 
-        DeriverRoot d = TrieDeriver.the(NARS.shell(),
-                "X,Y |- (X&&Y), (Belief:Intersection)",
-                "X,Y |- (||,X,Y), (Belief:Union)"
-        );
+        DeriveRules d = new DeriveRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)", "X,Y |- (||,X,Y), (Belief:Union)").compile();
 /*
 TODO - share unification state for different truth/conclusions
     TruthFork {
@@ -195,10 +191,7 @@ TODO - share unification state for different truth/conclusions
 
     @Test public void testConjWithEllipsisIsXternal() {
 
-            DeriverRoot d = TrieDeriver.the(NARS.shell(),
-                "X,Y |- (&&,X,%A..+), (Belief:Analogy)",
-                    "X,Y |- (&&,%A..+), (Belief:Analogy)"
-            );
+        DeriveRules d = new DeriveRuleSet(NARS.shell(), "X,Y |- (&&,X,%A..+), (Belief:Analogy)", "X,Y |- (&&,%A..+), (Belief:Analogy)").compile();
             d.printRecursive();
     }
     @Test
@@ -208,7 +201,7 @@ TODO - share unification state for different truth/conclusions
 //                r
 //        );
         Compound y = (Compound) parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").term();
-        PremiseRule.printRecursive(y);
+        Terms.printRecursive(System.out, y);
     }
 
 

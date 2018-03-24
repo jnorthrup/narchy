@@ -11,7 +11,8 @@ import nars.derive.op.AbstractPatternOp;
 import nars.derive.op.SubTermStructure;
 import nars.derive.op.TaskBeliefOp;
 import nars.derive.op.UnifyTerm;
-import nars.derive.rule.PremiseRule;
+import nars.derive.rule.DeriveRuleProto;
+import nars.derive.rule.DeriveRuleSource;
 import nars.index.term.PatternIndex;
 import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
@@ -37,9 +38,49 @@ public final class Conclude {
     public static final IntroVars introVars = new IntroVars();
 
 
-    public static void match(final PremiseRule rule, List<PrediTerm<ProtoDerivation>> pre, List<PrediTerm<Derivation>> post, @NotNull SortedSet<MatchConstraint> constraints, PatternIndex index, NAR nar) {
+    public static void match(final DeriveRuleProto rule, List<PrediTerm<PreDerivation>> pre, List<PrediTerm<Derivation>> post, @NotNull SortedSet<MatchConstraint> constraints, PatternIndex index, NAR nar) {
 
-        PrediTerm<Derivation> conc = the(rule, index, nar);
+        Term pattern = rule.conclusion().sub(0);
+
+        //TODO may interfere with constraints, functors, etc or other features, ie.
+        // if the pattern is a product for example?
+        //            pattern = pattern.replace(ta, Derivation._taskTerm);
+        // determine if any cases where a shortcut like this can work (ie. no constraints, not a product etc)
+
+        //        //substitute compound occurrences of the exact task and belief terms with the short-cut
+//        Term ta = rule.getTask();
+//        if (!ta.op().var) {
+//            if (pattern.equals(ta))
+//                pattern = Derivation.TaskTerm;
+//        }
+//        Term tb = rule.getBelief();
+//        if (!tb.op().var) {
+//            //pattern = pattern.replace(tb, Derivation._beliefTerm);
+//            if (pattern.equals(tb))
+//                pattern = Derivation.BeliefTerm;
+//        }
+
+        //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
+        boolean introVars1;
+        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i) -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
+        if (outerFunctor != null) {
+            introVars1 = true;
+            pattern = outerFunctor.getTwo().sub(0);
+        } else {
+            introVars1 = false;
+        }
+
+        pattern = index.get(pattern, true).term();
+
+        Taskify taskify = new Taskify(nar.newCause((s) -> new RuleCause(rule, s)));
+
+        PrediTerm<Derivation> conc = AndCondition.the(
+                new Termify($.func("derive", pattern), pattern, rule),
+                introVars1 ?
+                        AndCondition.the(introVars, taskify)
+                        :
+                        taskify
+        );
 
         final Term taskPattern = rule.getTask();
         final Term beliefPattern = rule.getBelief();
@@ -113,53 +154,6 @@ public final class Conclude {
     }
 
 
-    static public PrediTerm<Derivation> the(PremiseRule rule, PatternIndex index, NAR nar) {
-
-        Term pattern = rule.conclusion().sub(0);
-
-        //TODO may interfere with constraints, functors, etc or other features, ie.
-        // if the pattern is a product for example?
-        //            pattern = pattern.replace(ta, Derivation._taskTerm);
-        // determine if any cases where a shortcut like this can work (ie. no constraints, not a product etc)
-
-        //        //substitute compound occurrences of the exact task and belief terms with the short-cut
-//        Term ta = rule.getTask();
-//        if (!ta.op().var) {
-//            if (pattern.equals(ta))
-//                pattern = Derivation.TaskTerm;
-//        }
-//        Term tb = rule.getBelief();
-//        if (!tb.op().var) {
-//            //pattern = pattern.replace(tb, Derivation._beliefTerm);
-//            if (pattern.equals(tb))
-//                pattern = Derivation.BeliefTerm;
-//        }
-
-        //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
-        boolean introVars;
-        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i) -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
-        if (outerFunctor != null) {
-            introVars = true;
-            pattern = outerFunctor.getTwo().sub(0);
-        } else {
-            introVars = false;
-        }
-
-        pattern = index.get(pattern, true).term();
-
-        Taskify taskify = new Taskify(nar.newCause((s) -> new RuleCause(rule, s)));
-
-        return AndCondition.the(
-                new Termify($.func("derive", pattern), pattern, rule),
-                introVars ?
-                        AndCondition.the(Conclude.introVars, taskify)
-                        :
-                        taskify
-        );
-
-    }
-
-
     private static boolean taskFirst(Term task, Term belief) {
         return true;
     }
@@ -198,10 +192,10 @@ public final class Conclude {
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
     static class RuleCause extends Cause {
-        public final PremiseRule rule;
+        public final DeriveRuleSource rule;
         public final String ruleString;
 
-        RuleCause(PremiseRule rule, short id) {
+        RuleCause(DeriveRuleSource rule, short id) {
             super(id);
             this.rule = rule;
             this.ruleString = rule.toString();

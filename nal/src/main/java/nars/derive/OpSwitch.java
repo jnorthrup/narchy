@@ -14,14 +14,14 @@ import java.util.function.Function;
 /**
  * TODO generify key/value
  */
-public final class OpSwitch<D extends ProtoDerivation> extends AbstractPred<D> {
+public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
 
     public final EnumMap<Op, PrediTerm<D>> cases;
     public final PrediTerm[] swtch;
     public final boolean taskOrBelief;
 
     @Override
-    public boolean test(ProtoDerivation m) {
+    public boolean test(PreDerivation m) {
 
         PrediTerm p = branch(m);
         if (p != null)
@@ -62,7 +62,7 @@ public final class OpSwitch<D extends ProtoDerivation> extends AbstractPred<D> {
 
 
     @Nullable
-    public PrediTerm<D> branch(ProtoDerivation m) {
+    public PrediTerm<D> branch(PreDerivation m) {
         return swtch[taskOrBelief ? m._taskOp : m._beliefOp];
     }
 

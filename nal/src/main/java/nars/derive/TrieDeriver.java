@@ -4,12 +4,11 @@ import jcog.Util;
 import jcog.list.FasterList;
 import jcog.tree.perfect.TrieNode;
 import nars.$;
-import nars.NAR;
 import nars.Op;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.op.TaskBeliefOp;
 import nars.derive.op.UnifyTerm;
-import nars.derive.rule.PremiseRuleSet;
+import nars.derive.rule.DeriveRuleSet;
 import nars.derive.value.Try;
 import nars.derive.value.ValueFork;
 import nars.term.Term;
@@ -42,11 +41,11 @@ public final class TrieDeriver {
     final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path;
     final FasterList<ValueFork> postChoices = new FasterList(128);
 
-    private TrieDeriver(PremiseRuleSet r) {
+    private TrieDeriver(DeriveRuleSet r) {
 
         path = new TermTrie<>();
 
-        Map<Set<PrediTerm<ProtoDerivation>>, RoaringBitmap> post = new HashMap<>(r.size());
+        Map<Set<PrediTerm<PreDerivation>>, RoaringBitmap> post = new HashMap<>(r.size());
         List<PrediTerm<Derivation>> conclusions = $.newArrayList(r.size() * 4);
 
         ObjectIntHashMap<Term> preconditionCount = new ObjectIntHashMap(256);
@@ -57,7 +56,7 @@ public final class TrieDeriver {
 
             for (PostCondition p : rule.POST) {
 
-                Pair<Set<PrediTerm<ProtoDerivation>>, PrediTerm<Derivation>> c = rule.build(p);
+                Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> c = rule.build(p);
 
                 c.getOne().forEach((k) -> preconditionCount.addToValue(k, 1));
 
@@ -94,16 +93,7 @@ public final class TrieDeriver {
         postChoices.compact();
     }
 
-
-    public static DeriverRoot the(NAR n, String... rules) {
-        return the(new PremiseRuleSet(n, rules));
-    }
-
-    public static DeriverRoot the(PremiseRuleSet r) {
-        return the(r, null);
-    }
-
-    public static DeriverRoot the(@NotNull PremiseRuleSet r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+    public static DeriveRules the(@NotNull DeriveRuleSet r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
         assert(!r.isEmpty());
 
         TrieDeriver t = new TrieDeriver(r);
@@ -129,7 +119,7 @@ public final class TrieDeriver {
 
         assert(!t.path.isEmpty());
 
-        return new DeriverRoot(//AndCondition.the(
+        return new DeriveRules(//AndCondition.the(
                 TrieDeriver.compile(t.path, each),
                 new Try(t.postChoices.toArrayRecycled(ValueFork[]::new)));
     }
@@ -138,11 +128,10 @@ public final class TrieDeriver {
 
         TermTrie.indent(indent);
 
-        if (p instanceof DeriverRoot) {
+        if (p instanceof DeriveRules) {
 
-            DeriverRoot r = (DeriverRoot) p;
-            print(r.what, out, indent);
-            print(r.can, out, indent);
+            DeriveRules r = (DeriveRules) p;
+            r.print(out, indent);
 
         } else if (p instanceof UnifyTerm.UnifySubtermThenConclude) {
             UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude) p;
@@ -359,7 +348,7 @@ public final class TrieDeriver {
 //        return compile(path, each);
 //    }
 
-    static <D extends ProtoDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, @Nullable PrediTerm<D>> each) {
+    static <D extends PreDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, @Nullable PrediTerm<D>> each) {
         Collection<PrediTerm<D>> bb = compile(trie.root);
 
         PrediTerm tf = Fork.fork(bb.toArray(new PrediTerm[bb.size()]), Fork::new);
@@ -370,7 +359,7 @@ public final class TrieDeriver {
     }
 
 
-    @Nullable static <D extends ProtoDerivation> Collection<PrediTerm<D>> compile(TrieNode<List<PrediTerm<D>>, PrediTerm<D>> node) {
+    @Nullable static <D extends PreDerivation> Collection<PrediTerm<D>> compile(TrieNode<List<PrediTerm<D>>, PrediTerm<D>> node) {
 
 
         Set<PrediTerm<D>> bb = new TreeSet();
@@ -505,7 +494,7 @@ public final class TrieDeriver {
     }
 
 
-    protected static <D extends ProtoDerivation> Collection<PrediTerm<D>> compileSwitch(Collection<PrediTerm<D>> branches) {
+    protected static <D extends PreDerivation> Collection<PrediTerm<D>> compileSwitch(Collection<PrediTerm<D>> branches) {
 
 
         branches = factorSubOpToSwitch(branches, true, 2);
@@ -515,7 +504,7 @@ public final class TrieDeriver {
     }
 
     @NotNull
-    private static <D extends ProtoDerivation> Collection<PrediTerm<D>> factorSubOpToSwitch(Collection<PrediTerm<D>> bb, boolean taskOrBelief, int minToCreateSwitch) {
+    private static <D extends PreDerivation> Collection<PrediTerm<D>> factorSubOpToSwitch(Collection<PrediTerm<D>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
             Map<TaskBeliefOp, PrediTerm<D>> cases = $.newHashMap(8);
             List<PrediTerm<D>> removed = $.newArrayList(); //in order to undo

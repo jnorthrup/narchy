@@ -224,6 +224,9 @@ public abstract class Param {
     @Range(min=0, max=64)
     public static int TTL_DERIVE_TASK_REPEAT = 42;
 
+    @Range(min=0, max=64)
+    public static int TTL_DERIVE_TASK_PRIORITIZE = 42;
+
     /**
      * cost of a task derived, but too similar to one of its parents
      */

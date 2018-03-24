@@ -239,24 +239,23 @@ public class NAgentTest {
 
         Term action = $.$$("(t,y)");
 
-        Deriver d = new Deriver(Derivers.rules(1, 8, n), n) {
+        Deriver d = new Deriver(n.exe::fire, (Collection<Task> x)->{
 
-            @Override
-            protected void input(int premises, Collection<Task> x) {
-                //HACK TODO this is more efficiently done by filtering the rules rather than the results!
-                Collection<Task> filtered = Collections2.filter(x, Task::isGoal);
-                if (!filtered.isEmpty()) {
-                    //System.out.println(filtered);
-                    Collection<Task> filterAction = Collections2.filter(filtered, (t) -> t.term().equals(action));
+            //HACK TODO this is more efficiently done by filtering the rules rather than the results!
+            Collection<Task> filtered = Collections2.filter(x, Task::isGoal);
+            if (!filtered.isEmpty()) {
+                //System.out.println(filtered);
+                Collection<Task> filterAction = Collections2.filter(filtered, (t) -> t.term().equals(action));
 
-                    filterAction.forEach(t->{
-                        System.out.println(t.proof());
-                        System.out.println();
-                    });
-                }
-                super.input(premises, filtered);
+                filterAction.forEach(t->{
+                    System.out.println(t.proof());
+                    System.out.println();
+                });
             }
-        };
+            n.input(filtered);
+
+        }, Derivers.rules(1, 8, n).compile(), n);
+
         new STMLinkage(n, 1, false);
         d.conceptsPerIteration.set(8);
 

@@ -2,7 +2,7 @@ package nars.derive;
 
 import nars.NAR;
 import nars.Op;
-import nars.derive.rule.PremiseRule;
+import nars.derive.rule.DeriveRuleProto;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
@@ -28,9 +28,9 @@ public final class Termify extends AbstractPred<Derivation> {
 
 
     //    public final Set<Variable> uniqueVars;
-    public final PremiseRule rule;
+    public final DeriveRuleProto rule;
 
-    public Termify(Term id, Term pattern, PremiseRule rule) {
+    public Termify(Term id, Term pattern, DeriveRuleProto rule) {
         super(id);
         this.rule = rule;
         this.pattern = pattern;

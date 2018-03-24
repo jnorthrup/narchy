@@ -1,7 +1,7 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.derive.ProtoDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
 
@@ -16,14 +16,14 @@ public enum AbstractPatternOp  {
     }
 
 
-   public static final class TaskBeliefOpEqual extends AbstractPred<ProtoDerivation> {
+   public static final class TaskBeliefOpEqual extends AbstractPred<PreDerivation> {
 
         public TaskBeliefOpEqual() {
             super($.the(TaskBeliefOpEqual.class.getSimpleName()));
         }
 
        @Override
-        public boolean test(ProtoDerivation ff) {
+        public boolean test(PreDerivation ff) {
             return ff._taskOp == ff._beliefOp;
         }
 

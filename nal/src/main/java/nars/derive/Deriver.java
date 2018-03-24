@@ -1,10 +1,9 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.data.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
-import jcog.memoize.HijackMemoize;
-import jcog.memoize.Memoize;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
@@ -12,23 +11,18 @@ import nars.Param;
 import nars.Task;
 import nars.control.Activate;
 import nars.control.Cause;
-import nars.derive.rule.PremiseRuleSet;
+import nars.derive.rule.DeriveRuleSet;
 import nars.exe.Causable;
 import nars.term.Term;
-import nars.truth.Truth;
 
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static jcog.Util.unitize;
 
 /**
  * an individual deriver process: executes a particular Deriver model
@@ -38,26 +32,22 @@ import static jcog.Util.unitize;
  */
 public class Deriver extends Causable {
 
-
-    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
     private static final AtomicInteger serial = new AtomicInteger();
+    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
+
     public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
-    public final DeriverRoot deriver;
-    /**
-     * TODO move this to a 'CachingDeriver' subclass
-     */
-    final Memoize<ProtoDerivation.PremiseKey, short[]> whats =
-            new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
-                    64 * 1024, 4, false);
+
+    public final DeriveRules rules;
+
     /**
      * source of concepts supplied to this for this deriver
      */
-    private final Consumer<Predicate<Activate>> concepts;
-    /**
-     * list of conclusions that in which this deriver can result
-     */
-    private final Cause[] subCauses;
-    private final NAR nar;
+    private final Consumer<Predicate<Activate>> source;
+
+    private final Consumer<Collection<Task>> target;
+
+    protected PrioritizeDerivation prioritize = new PrioritizeDerivation.DefaultPrioritizeDerivation();
+
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
@@ -68,187 +58,56 @@ public class Deriver extends Causable {
      */
     @Range(min = 1, max = 8)
     public int termLinksPerTaskLink = 2;
+
     @Range(min = 1, max = 1024)
     public int burstMax = 64;
 
-    public Deriver(NAR n, String... ruleFiles) {
-        this(PremiseRuleSet.rules(n, List.of(ruleFiles)), n);
-    }
-
-    public Deriver(PremiseRuleSet rules, NAR nar) {
-        this(TrieDeriver.the(rules), nar);
+    public Deriver(DeriveRuleSet rules, NAR nar) {
+        this(rules.compile(), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules missing");
     }
 
-    public Deriver(DeriverRoot deriver, NAR nar) {
-        this(nar.exe::fire, deriver, nar);
+    public Deriver(DeriveRules rules, NAR nar) {
+        this(nar.exe::fire, nar::input, rules, nar);
     }
 
-    public Deriver(Consumer<Predicate<Activate>> source, DeriverRoot deriver, NAR nar) {
+    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, DeriveRules rules, NAR nar) {
         super(
                 $.func("deriver", $.the(serial.getAndIncrement())) //HACK
         );
-        this.deriver = deriver;
-        this.concepts = source;
-        this.nar = nar;
-        this.subCauses = deriver.can.causes;
+        this.rules = rules;
+        this.source = source;
+        this.target = target;
 
         nar.on(this);
     }
 
-    public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
-        return (nar) -> new Deriver(rules.apply(nar), nar);
-    }
 
-    static Stream<Deriver> derivers(NAR n) {
+    public static Stream<Deriver> derivers(NAR n) {
         return n.services().filter(Deriver.class::isInstance).map(Deriver.class::cast);
     }
-
-    public static void print(NAR n, PrintStream p) {
-        derivers(n).forEach(d -> {
-            p.println(d);
-            TrieDeriver.print(d.deriver.what, p);
-            TrieDeriver.print(d.deriver.can, p);
-            p.println();
-        });
-    }
-
-    public float derivationPriority(Task t, Derivation d) {
-
-        float discount = 1f;
-
-        //t.volume();
-
-        {
-            //relative growth compared to parent complexity
-            float pCompl = d.parentComplexityMax;
-            float dCompl = t.voluplexity();
-            float relGrowth =
-                    unitize(pCompl / (pCompl + dCompl));
-            discount *= (relGrowth);
-        }
-
-        {
-            //absolute size relative to limit
-            //float p = 1f / (1f + ((float)t.complexity())/termVolumeMax.floatValue());
-        }
-
-        //float simplicity = 1 - d.nar.deep.floatValue();
-        float truthFactor = 0.5f;
-
-        Truth derivedTruth = t.truth();
-//        {
-//
-//            float dCompl = t.voluplexity();
-//
-////            if (simplicity > Float.MIN_NORMAL) {
-//
-////                //float increase = (dCompl-d.parentComplexityMax);
-////                //if (increase > Pri.EPSILON) {
-////                int penalty = 1;
-////                float change = penalty + Math.abs(dCompl - d.parentComplexityMax); //absolute change: penalize drastic complexification or simplification, relative to parent task(s) complexity
-////
-////                //relative increase in complexity
-////                //calculate the increases proportion to the "headroom" remaining for term expansion
-////                //ie. as the complexity progressively grows toward the limit, the discount accelerates
-////                float complexityHeadroom = Math.max(1, d.termVolMax - d.parentComplexityMax);
-////                float headroomConsumed = Util.unitize(change /* increase */ / complexityHeadroom);
-////                float headroomRemain = 1f - headroomConsumed * simplicity;
-////
-////                //note: applies more severe discount for questions/quest since the truth deduction can not apply
-////                discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
-////            }
-//
-//            //absolute
-//            int max = d.termVolMax;
-//            float headroomRemain = Util.unitize(1f - (dCompl / max) * simplicity);
-//            discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
-//        {
-//
-//            float dCompl = t.voluplexity();
-//
-////            if (simplicity > Float.MIN_NORMAL) {
-//
-////                //float increase = (dCompl-d.parentComplexityMax);
-////                //if (increase > Pri.EPSILON) {
-////                int penalty = 1;
-////                float change = penalty + Math.abs(dCompl - d.parentComplexityMax); //absolute change: penalize drastic complexification or simplification, relative to parent task(s) complexity
-////
-////                //relative increase in complexity
-////                //calculate the increases proportion to the "headroom" remaining for term expansion
-////                //ie. as the complexity progressively grows toward the limit, the discount accelerates
-////                float complexityHeadroom = Math.max(1, d.termVolMax - d.parentComplexityMax);
-////                float headroomConsumed = Util.unitize(change /* increase */ / complexityHeadroom);
-////                float headroomRemain = 1f - headroomConsumed * simplicity;
-////
-////                //note: applies more severe discount for questions/quest since the truth deduction can not apply
-////                discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
-////            }
-//
-//            //absolute
-//            int max = d.termVolMax;
-//            float headroomRemain = Util.unitize(1f - (dCompl / max) * simplicity);
-//            discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
-//        }
-
-
-        if (/* belief or goal */ derivedTruth != null) {
-
-            //loss of relative confidence: prefer confidence, relative to the premise which formed it
-            float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
-            if (parentEvi > 0) {
-                discount *= Util.lerp(1f - truthFactor, unitize(
-                        derivedTruth.evi() / parentEvi
-                        //derivedTruth.conf() / w2cSafe(parentEvi)
-                ), 1f);
-            }
-
-            //opinionation: preference for polarized beliefs/goals
-//            float polarizationPreference = 0.5f;
-//            discount *= Util.lerp(polarizationPreference, 1, (2 * Math.abs(derivedTruth.freq() - 0.5f)));
-        }
-
-        return discount * d.pri;
-
-        //return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
-    }
-
-//    private Iterable<? extends Premise> premises(int burstSize) {
-//        int burst[] = new int[]{burstSize};
-//
-//        int premiseLimit = burstSize * premisesPerConcept;
-//        premises.clear(premiseLimit, Premise[]::new);
-//
-//        //fire a burst of concepts to generate hypothetical premises.  collect a fraction of these (ex: 50%), ranked by priority
-//        concepts.accept(a -> {
-//            fired[0]++;
-//            premises.setTTL(HypotheticalPremisePerConcept);
-//            a.premises(n, d.activator, premises::tryAdd, termLinksPerTaskLink);
-//            return (--burst[0]) > 0;
-//        });
-//
-//        int ps = premises.size();
-//
-//        int totalTTL = deriveTTL * ps;
-//        Premise[] pp = premises.list;
-//        float totalPremiesPri = Math.max(Pri.EPSILON, Util.sum(ps, (p)->pp[p].pri()));
-//    }
 
     @Override
     protected int next(NAR n, final int iterations) {
 
-        Derivation d = derivation.get().cycle(n, this, deriver);
 
         int matchTTL = Param.TTL_MIN() * 2;
         int deriveTTL = n.matchTTLmean.intValue();
 
-        Set<Premise> premiseBurst = d.premiseBurst;
 
         int totalPremises = 0;
 
         int iterMult = premisesPerConcept * conceptsPerIteration.intValue();
         int totalPremisesRemain = iterations * iterMult;
+
+        Derivation d = derivation.get().cycle(n, this, rules);
+
+        /** temporary buffer for storing unique premises */
+        Set<Premise> premiseBurst =
+                //new LinkedHashSet();
+                new ArrayHashSet<>(Math.round(burstMax*1.5f));
+
 
         int fired = 0;
         while (totalPremisesRemain > 0) {
@@ -260,7 +119,7 @@ public class Deriver extends Causable {
 
             //SELECT
 
-            fired += selectPremises(burstSize, (t, termlink) -> {
+            fired += selectPremises(n, burstSize, (t, termlink) -> {
 
                 Premise premise = new Premise(t, termlink);
                 if (!premiseBurst.add(premise)) {
@@ -276,19 +135,15 @@ public class Deriver extends Causable {
             });
 
             //--- FIRE
-
-
             totalPremises += premiseBurst.size();
 
-            long[] focus = nar.timeFocus();
+            long[] focus = n.timeFocus();
 
             premiseBurst.forEach(premise -> {
 
                 if (premise.match(d, focus, matchTTL) != null) {
 
-                    boolean derivable = proto(d);
-
-                    if (derivable) {
+                    if (rules.derivable(d)) {
                         //specific ttl as fraction of the total TTL allocated to the burst, proportional to its priority contribution
 //                        int ttl = Math.round(Util.lerp(
 //                                premise.priElseZero(), Param.TTL_MIN(), deriveTTL));
@@ -308,14 +163,10 @@ public class Deriver extends Causable {
 
 
             });
+
             premiseBurst.clear();
 
-            int s = d.derivations.size();
-            if (s > 0) {
-                nar.emotion.deriveTask.increment(s);
-                input(totalPremises, d.derivations.values());
-                d.derivations.clear();
-            }
+            d.flush(target);
         }
 
         if (fired == 0) return 0;
@@ -323,24 +174,8 @@ public class Deriver extends Causable {
             return (int) Math.ceil(fired / ((float) iterMult)); //adjust for the workload to correspond with the demand units
     }
 
-    protected void input(int premises, Collection<Task> x) {
-//        //experimental normalization
-//        final float[] priSum = {0};
-//        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
-//        if (priSum[0] > 1f) {
-//            float factor = 1f/priSum[0];
-//            derivations.values().forEach(dd -> dd.priMult(factor));
-//        }
 
-//        int limit = Math.max(8, premises * 2);
-//        if (x.size() > limit) {
-//            x = x.stream().sorted(Comparators.byFloatFunction(Task::priElseZero).reversed()).limit(limit).collect(toList());
-//        }
-
-        nar.input(x);
-    }
-
-    private int selectPremises(final int premisesMax, BiPredicate<Task, PriReference<Term>> each) {
+    private int selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each) {
 
         int premisesRemain[] = new int[]{premisesMax};
         int perConceptRemain[] = new int[1];
@@ -354,7 +189,7 @@ public class Deriver extends Causable {
         //for safety in case nothing is generated, this will limit the max # of concepts tried
         int[] conceptsRemain = new int[]{2 * (int) Math.ceil(premisesMax / ((float) (termLinksPerTaskLink * termLinksPerTaskLink)))};
 
-        this.concepts.accept(a -> {
+        this.source.accept(a -> {
 
             //System.out.println(nar.time() + " " + a);
 
@@ -441,12 +276,7 @@ public class Deriver extends Causable {
 //        }
 //    };
 
-    /**
-     * 1. CAN (proto) stage
-     */
-    private boolean proto(Derivation x) {
-        return (x.will = whats.apply(new ProtoDerivation.PremiseKey(x))).length > 0;
-    }
+
 
     @Override
     public boolean singleton() {
@@ -455,7 +285,7 @@ public class Deriver extends Causable {
 
     @Override
     public float value() {
-        return Util.sum(Cause::value, subCauses);
+        return Util.sum(Cause::value, rules.causes());
     }
 
 
@@ -555,4 +385,21 @@ public class Deriver extends Causable {
 //
 //    static Stream<PremiseRule> load(String ruleFile) {
 //        return parsedRules(new PatternTermIndex(), ruleFile).map(Pair::getOne /* HACK */);
+//    }
+
+//    protected void input(Collection<Task> x) {
+////        //experimental normalization
+////        final float[] priSum = {0};
+////        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
+////        if (priSum[0] > 1f) {
+////            float factor = 1f/priSum[0];
+////            derivations.values().forEach(dd -> dd.priMult(factor));
+////        }
+//
+////        int limit = Math.max(8, premises * 2);
+////        if (x.size() > limit) {
+////            x = x.stream().sorted(Comparators.byFloatFunction(Task::priElseZero).reversed()).limit(limit).collect(toList());
+////        }
+//
+//        target.accept(x);
 //    }

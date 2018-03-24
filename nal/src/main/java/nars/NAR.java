@@ -21,6 +21,7 @@ import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
 import nars.control.*;
+import nars.derive.Derivation;
 import nars.exe.Exec;
 import nars.index.term.ConceptIndex;
 import nars.op.Operator;
@@ -98,6 +99,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public final NARLoop loop = new NARLoop(this);
 
     public final Emotion emotion;
+
 
     /**
      * cause->value table

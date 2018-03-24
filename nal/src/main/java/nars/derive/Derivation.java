@@ -1,6 +1,5 @@
 package nars.derive;
 
-import jcog.data.ArrayHashSet;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
 import nars.$;
@@ -8,7 +7,6 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
-import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
@@ -32,11 +30,11 @@ import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -47,17 +45,22 @@ import static nars.truth.TruthFunctions.c2wSafe;
 /**
  * evaluates a premise (task, belief, termlink, taskLink, ...) to derive 0 or more new tasks
  */
-public class Derivation extends ProtoDerivation {
+public class Derivation extends PreDerivation {
 
+    public static final Atomic Belief = Atomic.the("belief");
     /** initial capacity, it will grow as needed */
     int ANON_CAPACITY = 16;
 
-    /** fixed size */
-    int ANON_CACHE_SIZE = ANON_CAPACITY * 1024;
+//    /** fixed size */
+//    int ANON_CACHE_SIZE = ANON_CAPACITY * 1024;
 
 //    public static final Atomic TaskTerm = Atomic.the("_taskTerm");
 //    public static final Atomic BeliefTerm = Atomic.the("_beliefTerm");
 
+    /**
+     * temporary buffer for derivations before input so they can be merged in case of duplicates
+     */
+    final Map<Task, Task> derivedTasks = new HashMap<>();
 
     public NAR nar;
 
@@ -68,10 +71,7 @@ public class Derivation extends ProtoDerivation {
             new Anon(ANON_CAPACITY);
             //new CachedAnon(ANON_CAPACITY, ANON_CACHE_SIZE);
 
-    /**
-     * temporary buffer for derivations before input so they can be merged in case of duplicates
-     */
-    public final Map<Task, Task> derivations = new LinkedHashMap<>();
+
 
     private ImmutableMap<Term, Termed> derivationFunctors;
 
@@ -134,7 +134,6 @@ public class Derivation extends ProtoDerivation {
 
     public short[] parentCause;
 
-    public DeriverRoot derive;
     public boolean single;
     public float parentComplexityMax;
 
@@ -161,10 +160,6 @@ public class Derivation extends ProtoDerivation {
     /** precise time that the task and belief truth are sampled */
     public long taskAt, beliefAt;
 
-    /** temporary buffer for storing unique premises */
-    public Set<Premise> premiseBurst =
-            //new LinkedHashSet();
-            new ArrayHashSet<>(512);
 
 ////    public final TopNUniquePremises premises = new TopNUniquePremises();
 //
@@ -382,7 +377,7 @@ public class Derivation extends ProtoDerivation {
 //        }
     }
 
-    public Derivation cycle(NAR nar, Deriver deri, DeriverRoot deriverRoot) {
+    public Derivation cycle(NAR nar, Deriver deri, DeriveRules deriverRoot) {
         NAR pnar = this.nar;
         if (pnar != nar) {
             init(nar);
@@ -401,7 +396,6 @@ public class Derivation extends ProtoDerivation {
             //transformsCache.cleanUp();
         }
 
-        this.derive = deriverRoot;
         this.deriver = deri;
 
         return this;
@@ -625,7 +619,10 @@ public class Derivation extends ProtoDerivation {
 
 
         setTTL(ttl);
-        derive.can.accept(this);
+
+        deriver.prioritize.premise(this);
+
+        deriver.rules.run(this);
     }
 
     @Override
@@ -687,7 +684,7 @@ public class Derivation extends ProtoDerivation {
      */
     @Override
     public void clear() {
-        derivations.clear();
+        derivedTasks.clear();
         termutes.clear();
         time = ETERNAL;
         super.clear();
@@ -696,7 +693,7 @@ public class Derivation extends ProtoDerivation {
 
 
     public Task add(Task t) {
-        return derivations.merge(t, t, DUPLICATE_DERIVATION_MERGE);
+        return derivedTasks.merge(t, t, DUPLICATE_DERIVATION_MERGE);
     }
 
 
@@ -732,12 +729,13 @@ public class Derivation extends ProtoDerivation {
             return y;
         }
     };
+    public static final Atomic Task = Atomic.the("task");
     final Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
         if (subterm instanceof Bool)
             return subterm;
 
         Truth compared;
-        if (whichTask.equals(PremiseRule.Task)) {
+        if (whichTask.equals(Task)) {
             compared = taskTruth;
         } else {
             compared = beliefTruth;
@@ -759,6 +757,17 @@ public class Derivation extends ProtoDerivation {
             return anon.put(y);
         return Null;
     });
+
+    public void flush(Consumer<Collection<Task>> target) {
+        int s = derivedTasks.size();
+        if (s > 0) {
+            nar.emotion.deriveTask.increment(s);
+            target.accept(derivedTasks.values());
+            derivedTasks.clear();
+        }
+    }
+
+
 
     //    /**
 //     * experimental memoization of transform results

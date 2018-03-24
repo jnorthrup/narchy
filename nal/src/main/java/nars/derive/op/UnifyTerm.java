@@ -3,7 +3,6 @@ package nars.derive.op;
 import nars.$;
 import nars.Param;
 import nars.derive.Derivation;
-import nars.derive.rule.PremiseRule;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.pred.AbstractPred;
@@ -23,7 +22,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
 
     public static Atomic label(int subterm) {
-        return (subterm == 0 ? PremiseRule.Task : PremiseRule.Belief);
+        return (subterm == 0 ? Derivation.Task : Derivation.Belief);
     }
 
     /**

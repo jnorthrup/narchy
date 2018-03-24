@@ -4,28 +4,25 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.Deriver;
-import nars.derive.DeriverRoot;
+import nars.derive.DeriveRules;
 import nars.derive.TrieDeriver;
-import nars.derive.rule.PremiseRule;
-import nars.derive.rule.PremiseRuleSet;
+import nars.derive.rule.DeriveRuleSource;
+import nars.derive.rule.DeriveRuleSet;
 import nars.index.term.PatternIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.test.TestNAR;
-import net.byteseek.utils.collections.IdentityHashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
+import java.io.PrintStream;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static nars.Op.QUEST;
+import static nars.derive.Deriver.derivers;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -33,11 +30,19 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TrieDeriverTest {
 
+    public static void print(NAR n, PrintStream p) {
+        derivers(n).forEach(d -> {
+            p.println(d);
+            d.rules.print(p);
+            p.println();
+        });
+    }
+
 
     @Test
     public void printTrie() {
 
-        Deriver.print(NARS.tmp(), System.out);
+        print(NARS.tmp(), System.out);
     }
 
 //    @Test public void testRuleSerialization() {
@@ -71,7 +76,7 @@ public class TrieDeriverTest {
         };
 
 
-        DeriverRoot d = the(new PremiseRuleSet(idx, NARS.shell(),
+        DeriveRules d = the(new DeriveRuleSet(idx, NARS.shell(),
                 "Y, Y |- (?1 &&+0 Y), ()",
                 "X, X |- (?1 &&+- X), ()"
         ));
@@ -93,42 +98,42 @@ public class TrieDeriverTest {
         //assertTrue(d.trie.getSummary().contains("..+"));
     }
 
-    static DeriverRoot the(PremiseRuleSet r) {
+    static DeriveRules the(DeriveRuleSet r) {
         return TrieDeriver.the(r, (x) -> x);
     }
 
 
-    public static PremiseRuleSet testCompile(String... rules) {
+    public static DeriveRuleSet testCompile(String... rules) {
         return testCompile(false, rules);
     }
 
-    public static PremiseRuleSet testCompile(boolean debug, String... rules) {
+    public static DeriveRuleSet testCompile(boolean debug, String... rules) {
 
         assertNotEquals(0, rules.length);
 
         PatternIndex pi = new PatternIndex();
 
-        Stream<PremiseRule> parsed = PremiseRuleSet.parse(Stream.of(rules));
+        Stream<DeriveRuleSource> parsed = DeriveRuleSet.parse(Stream.of(rules));
 
 
-        PremiseRuleSet src =
-                new PremiseRuleSet(parsed, pi, NARS.shell());
+        DeriveRuleSet src =
+                new DeriveRuleSet(parsed, pi, NARS.shell());
         assertNotEquals(0, src.size());
-        DeriverRoot d = the(src);
+        DeriveRules d = the(src);
 
         if (debug) {
             //d.printRecursive();
             //PrediTerm<Derivation> dd = d.what.transform(DebugDerivationPredicate::new);
         }
 
-        Set<Term> byEquality = new HashSet();
-        Set<Term> byIdentity = new IdentityHashSet();
-        Consumer<Term> adder = a -> {
-            byEquality.add(a);
-            byIdentity.add(a);
-        };
-        d.what.recurseTerms(adder);
-        d.can.recurseTerms(adder);
+//        Set<Term> byEquality = new HashSet();
+//        Set<Term> byIdentity = new IdentityHashSet();
+//        Consumer<Term> adder = a -> {
+//            byEquality.add(a);
+//            byIdentity.add(a);
+//        };
+//        d.what.recurseTerms(adder);
+//        d.can.recurseTerms(adder);
 
 
 //        if (debug) {

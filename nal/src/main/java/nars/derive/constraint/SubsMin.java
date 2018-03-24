@@ -1,7 +1,7 @@
 package nars.derive.constraint;
 
 import nars.$;
-import nars.derive.ProtoDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
@@ -28,11 +28,11 @@ public class SubsMin extends MatchConstraint {
         return (!(y instanceof Compound)) || y.subs() < min;
     }
 
-    public static PrediTerm<ProtoDerivation> proto(boolean taskOrBelief, int min) {
+    public static PrediTerm<PreDerivation> proto(boolean taskOrBelief, int min) {
         return new SubsMinProto(taskOrBelief, min);
     }
 
-    private static final class SubsMinProto extends AbstractPred<ProtoDerivation> {
+    private static final class SubsMinProto extends AbstractPred<PreDerivation> {
         private final boolean taskOrBelief;
         private final int min;
 
@@ -48,7 +48,7 @@ public class SubsMin extends MatchConstraint {
         }
 
         @Override
-        public boolean test(ProtoDerivation d) {
+        public boolean test(PreDerivation d) {
             Term t = taskOrBelief ? d.taskTerm : d.beliefTerm;
             return t.subs() >= min;
         }

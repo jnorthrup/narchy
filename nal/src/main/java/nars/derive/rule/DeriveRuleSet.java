@@ -6,6 +6,8 @@ import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import nars.NAR;
 import nars.Narsese;
+import nars.derive.DeriveRules;
+import nars.derive.TrieDeriver;
 import nars.index.term.PatternIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -25,24 +27,21 @@ import java.util.stream.Stream;
 
 
 /**
- * Holds an set of derivation rules and a pattern index of their components
+ * intermediate representation of a set of compileable Premise Rules
  */
-public class PremiseRuleSet extends HashSet<PremiseRule> {
+public class DeriveRuleSet extends HashSet<DeriveRuleProto> {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
 
-    private static final Logger logger = LoggerFactory.getLogger(PremiseRuleSet.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeriveRuleSet.class);
 
-    public static PremiseRuleSet rules(NAR nar, Collection<String> filename) {
-        return rules(new PatternIndex(), nar, filename);
-    }
-
-    public static PremiseRuleSet rules(PatternIndex p, NAR nar, Collection<String> filename) {
+    public static DeriveRuleSet rules(NAR nar, Collection<String> filename) {
+        PatternIndex p = new PatternIndex();
         p.nar = nar;
-        return new PremiseRuleSet(parsedRules(filename), p, nar);
+        return new DeriveRuleSet(filename.stream().flatMap(n -> ruleCache.apply(n).stream()), p, nar);
     }
 
-    final static Memoize<String, List<PremiseRule>> ruleCache =
+    final static Memoize<String, List<DeriveRuleSource>> ruleCache =
             new SoftMemoize<>((String n) -> {
         InputStream nn = null;
         try {
@@ -66,22 +65,16 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 
     }, 32, true);
 
-//    public static Stream<Pair<PremiseRule, String>> parsedRules(Collection<String> name) {
-//        return name.stream().flatMap(n -> ruleCache.apply(n).stream());
-//    }
-    static Stream<PremiseRule> parsedRules(Collection<String> filenames) {
-        return filenames.stream().flatMap(n -> ruleCache.apply(n).stream());
-    }
 
-    public PremiseRuleSet(NAR nar, String... rules) {
+    public DeriveRuleSet(NAR nar, String... rules) {
         this(new PatternIndex(), nar, rules);
     }
 
-    public PremiseRuleSet(PatternIndex index, NAR nar, String... rules) {
+    public DeriveRuleSet(PatternIndex index, NAR nar, String... rules) {
         this(parse(Stream.of(rules)), index, nar);
     }
 
-    public PremiseRuleSet(Stream<PremiseRule> parsed, PatternIndex patterns, NAR nar) {
+    public DeriveRuleSet(Stream<DeriveRuleSource> parsed, PatternIndex patterns, NAR nar) {
         //HACK
         if (patterns.nar == null)
             patterns.nar = nar;
@@ -89,16 +82,16 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
             if (patterns.nar!=nar)
                 throw new RuntimeException("wrong NAR ref");
 
-        parsed.forEach(rule -> super.add(new CompileablePremiseRule(rule, patterns)));
+        parsed.forEach(rule -> super.add(new DeriveRuleProto(rule, patterns)));
     }
 
     @Override
-    public boolean add(PremiseRule rule) {
+    public boolean add(DeriveRuleProto rule) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean addAll(Collection<? extends PremiseRule> c) {
+    public boolean addAll(Collection<? extends DeriveRuleProto> c) {
         throw new UnsupportedOperationException();
     }
 
@@ -184,7 +177,7 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
     }
 
 
-    final static Map<String, PremiseRule> lines = new ConcurrentHashMap<>(1024);
+    final static Map<String, DeriveRuleSource> lines = new ConcurrentHashMap<>(1024);
 //    static {
 //        Map<String, Compound> m;
 //        try {
@@ -202,11 +195,11 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 //            .builder();
 
 
-    public static Stream<PremiseRule> parse(Stream<String> rawRules) {
+    public static Stream<DeriveRuleSource> parse(Stream<String> rawRules) {
 
         return rawRules.map(src -> lines.computeIfAbsent(src, s -> {
             try {
-                return PremiseRuleSet.parse(s);
+                return DeriveRuleSet.parse(s);
             } catch (Narsese.NarseseException e) {
                 logger.error("rule parse: {}:\t{}", e, src);
                 return null;
@@ -228,8 +221,8 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 //    }
 
     @NotNull
-    public static PremiseRule parse(String src) throws Narsese.NarseseException {
-        return new PremiseRule(parseRuleComponents(src), src);
+    public static DeriveRuleSource parse(String src) throws Narsese.NarseseException {
+        return new DeriveRuleSource(parseRuleComponents(src), src);
     }
 
     @NotNull
@@ -251,6 +244,10 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
         return Subterms.subtermsInterned(a, b);
+    }
+
+    public DeriveRules compile() {
+        return TrieDeriver.the(this, null);
     }
 
 //    public void permute(@NotNull PremiseRule preNormRule, String src, @NotNull PatternIndex index, @NotNull Collection<PremiseRule> ur) {

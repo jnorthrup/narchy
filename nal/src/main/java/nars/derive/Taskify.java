@@ -68,17 +68,10 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Term x0 = d.derivedTerm.get();
         Term x = d.anon.get(x0).normalize();
-//        if (x == null || !Termify.valid((x = x.normalize()))) {
-//            d.nar.emotion.deriveFailTaskify.increment();
-//            return true; //when the values were finally dereferenced, the result produced an invalid compound
-//            //throw new RuntimeException("un-anonymizing " + x0 + " produced " + x);
-//        }
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;
         assert (punc != 0) : "no punctuation assigned";
-
-
 
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
@@ -86,8 +79,6 @@ public class Taskify extends AbstractPred<Derivation> {
             long start = Tense.dither(occ[0], dither);
             long end = Tense.dither(occ[1], dither);
             assert (end >= start): "task has reversed occurrence: " + start + ".." + end;
-
-
 
             return Param.DEBUG ?
                             new DebugDerivedTask(C, punc, tr, start, end, d) :
@@ -107,12 +98,13 @@ public class Taskify extends AbstractPred<Derivation> {
         if (d.single)
             t.setCyclic(true);
 
-        float priority = d.deriver.derivationPriority(t, d);
-        assert (priority == priority);
-        t.priSet(priority);
+        float priority = d.deriver.prioritize.pri(t, d);
+        if (priority != priority) {
+            d.nar.emotion.deriveFailPrioritize.increment();
+            return spam(d, Param.TTL_DERIVE_TASK_PRIORITIZE);
+        }
 
-        if (Param.DEBUG)
-            t.log(channel.ruleString);
+        t.priSet(priority);
 
         t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
 
@@ -120,6 +112,10 @@ public class Taskify extends AbstractPred<Derivation> {
             d.nar.emotion.deriveFailDerivationDuplicate.increment();
             spam(d, Param.TTL_DERIVE_TASK_REPEAT);
         } else {
+
+            if (Param.DEBUG)
+                t.log(channel.ruleString);
+
             d.use(Param.TTL_DERIVE_TASK_SUCCESS);
         }
 
