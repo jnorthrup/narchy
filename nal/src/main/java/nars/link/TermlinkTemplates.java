@@ -169,7 +169,8 @@ public class TermlinkTemplates extends FasterList<Term> {
                 return false;
 
             case IMPL: //<- check if IMPL needs it
-                return false;
+                //return false;
+                return true;
 
             case PROD:
                 return false;
@@ -179,9 +180,10 @@ public class TermlinkTemplates extends FasterList<Term> {
             case SECTi:
             case SETe:
             case SETi:
+                return true;
             case DIFFi:
             case DIFFe:
-                return true;
+                return false;
 
             case CONJ:
                 return false;

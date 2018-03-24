@@ -32,7 +32,7 @@ class SubNARTest {
 
             //n.log();
 
-            n.start();
+            n.startFPS(1);
 
             return n;
         });

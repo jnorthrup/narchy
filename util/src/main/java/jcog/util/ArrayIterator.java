@@ -59,6 +59,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         }
     }
 
+
     static final class PartialArrayIterator<E> extends ArrayIterator<E> {
 
         private final int size;

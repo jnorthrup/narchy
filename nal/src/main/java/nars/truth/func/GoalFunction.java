@@ -72,13 +72,19 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    /** deduction used for bipolar implication results */
-    DeciInduction() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return BeliefFunction.InductionPB.apply(T, B, m, minConf);
-        }
-    },
+//    /** deduction used for bipolar implication results depending on belief either positive or negative */
+//    DeciInduction() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            if (B.isNegative()) {
+//                Truth x = Induction.apply(T, B.neg(), m, minConf);
+//                if (x!=null) return x.neg();
+//                else return null;
+//            } else {
+//                return Induction.apply(T, B, m, minConf);
+//            }
+//        }
+//    },
 
     DecomposePositiveNegativeNegative() {
         @Override

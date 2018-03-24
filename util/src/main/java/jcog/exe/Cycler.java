@@ -53,8 +53,9 @@ public interface Cycler extends Runnable {
     /**
      * run asynchronously with no delay
      */
-    default Loop start() {
-        return startPeriodMS(0);
+    @Deprecated default Loop start() {
+        //return startPeriodMS(0);
+        return startPeriodMS(1);
     }
 
     /**

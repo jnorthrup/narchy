@@ -65,7 +65,7 @@ public class Tasklinks {
         nar.activate(src, balance * priEffect);
 
         //activate the task concept templates
-        src.templates().activate(src, (1f-balance) * priEffect * nar.activationRate.floatValue(), nar);
+        src.templates().activate(src, (1f-balance) * priEffect, nar);
 
         {
             //adjust the cause values according to the input's actual demand

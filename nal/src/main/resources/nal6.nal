@@ -14,10 +14,9 @@
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
     B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
-
     B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:InductionPN)
 
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:DeciInductionN)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAndy(C,A,B), (Belief:DeductionN, Goal:InductionN)
     B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionNN, Goal:InductionNN)
 
     B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
@@ -263,11 +262,6 @@
 
 
 
-//conditional abduction by dependent variable
-
-    ((X --> R) ==> Z), ((&&,(#Y --> B),(#Y --> R),A..*) ==> Z)  |- (X --> B), (Belief:AbductionPB)
-        (--(X --> R) ==> Z), ((&&,(#Y --> B),--(#Y --> R),A..*) ==> Z) |- (X --> B), (Belief:AbductionPB)
-
 
 // conditional deduction "An inverse inference has been implemented as a form of deduction" https://code.google.com/p/open-nars/issues/detail?id=40&can=1
 
@@ -275,32 +269,6 @@
 //        (U --> L), ((&&,--(#X --> L),(#X --> R),A..*) ==> Z), neq(U,R) |- substitute((((&&,A..*) &&+- (U --> R)) ==>+- Z),#X,U), (Belief:DeductionN)
 
 
-
-//// second level variable handling rules ////////////////////////////////////////////////////////////////////////////////////
-//second level variable elimination (termlink level2 growth needed in order for these rules to work)
-
-    (B --> K), (&&,(#X --> L),(($Y --> K) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:Deduction)
-        (B --> K), (&&,(#X --> L),((--,($Y --> K)) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:DeductionN)
-      //(K --> B), (&&,(#X --> L),((K --> $Y) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:Deduction)
-        //(K --> B), (&&,(#X --> L),((--,(K --> $Y)) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:DeductionN)
-
-    (B --> K), (($X --> L) ==> (&&,(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
-        (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
-        //TODO reversals if they are included
-
-    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:Deduction)
-        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- subIfUnifiesAny((&&,A..+), X,Y,strict), (Belief:DeductionN)
-
-    //(Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
-        //(Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
-      //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
-        //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
-
-      //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
-          //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
-
-      //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)
-        //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--(P-->X),A..+)), X,Y,strict), (Belief:DeductionN)
 
 
 

@@ -130,24 +130,54 @@ public class ImplicationNetworkTest {
         assertNull(bBelief); //NOTHING
 
     }
+    @Test public void testEternal_A_NegBelief_NegToBC_AB_only() {
+        NAR n = NARS.tmp(6);
+        n.termVolumeMax.set(16);
 
+        Param.DEBUG = true;
+
+        n.believe(IMPL.the(a.neg(), b));
+        n.believe(a.neg());
+        n.run(100);
+
+        BeliefTable aa = n.concept(a).beliefs();
+        BeliefTable bb = n.concept(b).beliefs();
+
+        aa.print();
+        //bb.print();
+        bb.forEachTask(x -> System.out.println(x.proof()));
+
+        Truth bBelief = bb.truth(ETERNAL, n);
+
+
+        assertEquals("%1.0;.81%" ,bBelief.toString());
+
+    }
     @Test public void testEternal_A_NegBelief_NegToBC() {
 
-        NAR n = NARS.tmp();
+        NAR n = NARS.tmp(6);
+        n.termVolumeMax.set(16);
 
         Param.DEBUG = true;
 
         n.believe(IMPL.the(a.neg(), b));
         n.believe(IMPL.the(b, c));
         n.believe(a.neg());
-        n.run(300);
+        n.run(800);
 
-        BeliefTable aBeliefs = n.concept(a).beliefs();
-        aBeliefs.print();
+        BeliefTable aa = n.concept(a).beliefs();
+        BeliefTable bb = n.concept(b).beliefs();
+        BeliefTable cc = n.concept(c).beliefs();
+        aa.print();
+        bb.print();
+        //cc.print();
+        cc.forEachTask(x -> System.out.println(x.proof()));
         //assertEquals(1, aBeliefs.size());
 
-        Truth bBelief = n.concept(b).beliefs().truth(ETERNAL, n);
-        Truth cBelief = n.concept(c).beliefs().truth(ETERNAL, n);
+
+        Truth bBelief = bb.truth(ETERNAL, n);
+
+        Truth cBelief = cc.truth(ETERNAL, n);
 
         assertEquals("%1.0;.81%" ,bBelief.toString());
         assertEquals("%1.0;.73%" ,cBelief.toString());

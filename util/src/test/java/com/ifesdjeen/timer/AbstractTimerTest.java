@@ -249,7 +249,9 @@ public abstract class AbstractTimerTest {
 
         int scheduledTasks =
                 //100000;
-                8 * 1024;
+                //8 * 1024;
+                900;
+
         final BlockingQueue<Long> queue = new ArrayBlockingQueue<>(scheduledTasks);
 
         for (int i = 0; i < scheduledTasks; i++) {

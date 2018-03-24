@@ -115,7 +115,7 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
 //     */
 //    boolean pretend = false;
 
-    public final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
+    public static final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
             "hashCode",
             "notify",
             "notifyAll",
@@ -129,10 +129,10 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
             "equals"
     ));
 
-    static final Map<Class, Class> proxyCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64);
+    final Map<Class, Class> proxyCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64);
 
-    static final Map<Class, Boolean> clCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
-    static final Map<String, MethodExec> opCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
+    final Map<Class, Boolean> clCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
+    final Map<String, MethodExec> opCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
     //static final Map<Term, Method> methodCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64); //cache: (class,method) -> Method
 
     /** TODO maybe use a stack to track invocations inside of evocations inside of invokations etc */
@@ -750,13 +750,16 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                     .intercept(InvocationHandlerAdapter.of((objIgnored, method, margs) ->
                             invoke(instance, method, margs)))
                     .make()
-                    .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+                    .load(
+                            //Thread.currentThread().getContextClassLoader(),
+                            instance.getClass().getClassLoader(),
+                            ClassLoadingStrategy.Default.WRAPPER)
                     .getLoaded();
-            T inst = (T) cl.getConstructor(typesOfArray(args)).newInstance(args);
+            T instWrapped = (T) cl.getConstructor(typesOfArray(args)).newInstance(args);
 
-            register(id, instance);
+            register(id, instWrapped);
 
-            return inst;
+            return instWrapped;
 
 //
 //            T wrapped = (T)Reflect.on(instance.getClass()).as(instance.getClass(),  ///  Reflect.on(instance)//(T) Proxy.newProxyInstance(instance.getClass().getClassLoader(), )f.create(typesOfArray(args), args,
@@ -826,7 +829,10 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
                     .intercept(MethodDelegation.to(this))
                     .make()
-                    .load(Thread.currentThread().getContextClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
+                    .load(
+                            //Thread.currentThread().getContextClassLoader(),
+                            baseClass.getClassLoader(),
+                            ClassLoadingStrategy.Default.WRAPPER)
                     .getLoaded();
 
             reflect(baseClass); //the original class

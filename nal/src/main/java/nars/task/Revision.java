@@ -885,7 +885,7 @@ public class Revision {
             return first;
 
 
-        float densityFactor = density.factor();
+        final float densityFactor = density.factor();
         if (densityFactor * overlapFactor < Float.MIN_NORMAL)
             return first;
 
@@ -897,15 +897,18 @@ public class Revision {
         long range = 1 + (end - start);
 
         Term content;
+        float differenceFactor = 1f;
         if (!termSame) {
             Task second = tt[1].task();
-            float e1 = first.eviInteg();
-            float e2 = second.eviInteg();
 
             float diff = dtDiff(first.term(),second.term());
+            if (!Float.isFinite(diff))
+                return null; //impossible
             if (diff > 0)
-                densityFactor *= Param.evi(1f, diff, Math.max(1,range)); //proport
+                differenceFactor = 1f - (float) Param.evi(1f, diff, Math.max(1,range)); //proport
 
+            float e1 = first.eviInteg();
+            float e2 = second.eviInteg();
             float firstProp = e1/(e1+e2);
             content = intermpolate(first.term(), second.term(), firstProp, nar);
 
@@ -923,7 +926,8 @@ public class Revision {
 
         Truth truth = new TruthPolation(start, end, dur, tt).truth(true);
         if (truth == null) return first;
-        float factor = densityFactor * overlapFactor;
+
+        float factor = densityFactor * overlapFactor * differenceFactor;
         float eAdjusted = truth.evi() * factor;
         if ((eAdjusted * range) < minEviInteg)
             return first;

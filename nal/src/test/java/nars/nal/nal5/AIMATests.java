@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AIMATests {
 
 
-    final NAR n = NARS.tmp(6);
 
 
     @ParameterizedTest
     @ValueSource(doubles = { 0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5 })
     public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
+        final NAR n = NARS.tmp(6);
 
         n.freqResolution.set((float)truthRes);
 
@@ -36,17 +36,18 @@ public class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(true, "Q", 4000);
+        assertBelief(n, true, "Q", 4000);
 
     }
 
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
+        final NAR n = NARS.tmp(6);
 
         n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
 //        n.confMin.set(0.02f);
-        n.questionPriDefault.set(1f);
+        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
         n.termVolumeMax.set(36);
         //n.conceptActivation.set(0.5f);
@@ -86,16 +87,16 @@ public class AIMATests {
 //        n.input("Criminal(?x)?");
 //                n.input("Criminal(?x)?");
 
-        n.run(500);
+        n.run(1000);
         n.clear();
         n.question($.$(
-                "Criminal(?x)"
-                //"Criminal:?x"
+                //"Criminal(?x)"
+                "Criminal:?x"
 
         ), ETERNAL, (q,a)->{
             System.out.println(a);
         });
-        n.run(5000);
+        n.run(3000);
         n.concept($.$("Criminal")).print();
         //n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {
@@ -109,7 +110,7 @@ public class AIMATests {
     }
 
 
-    void assertBelief(boolean expcted, String x, int time) {
+    static void assertBelief(NAR n, boolean expcted, String x, int time) {
 
         final int metricPeriod = 150;
 
