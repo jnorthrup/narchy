@@ -36,19 +36,20 @@ import java.util.stream.StreamSupport;
  * predicate trie, for maximum folding
  * TODO generify this beyond Derivation state
  */
-public final class TrieDeriver {
+public enum TrieDeriver { ;
 
-    final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path;
-    final FasterList<ValueFork> postChoices = new FasterList(128);
+    public static DeriveRules the(@NotNull DeriveRuleSet r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+        assert(!r.isEmpty());
 
-    private TrieDeriver(DeriveRuleSet r) {
 
-        path = new TermTrie<>();
+        final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path = new TermTrie<>();
+
+        final FasterList<ValueFork> postChoices = new FasterList(128);
 
         Map<Set<PrediTerm<PreDerivation>>, RoaringBitmap> post = new HashMap<>(r.size());
-        List<PrediTerm<Derivation>> conclusions = $.newArrayList(r.size() * 4);
+        List<PrediTerm<Derivation>> conclusions = new FasterList<>(r.size() * 2);
 
-        ObjectIntHashMap<Term> preconditionCount = new ObjectIntHashMap(256);
+        ObjectIntHashMap<Term> preconditionCount = new ObjectIntHashMap<>(256);
 
         r.forEach(rule -> {
 
@@ -64,64 +65,62 @@ public final class TrieDeriver {
                 conclusions.add(c.getTwo());
 
                 post.computeIfAbsent(c.getOne(), (x) -> new RoaringBitmap()).add(id);
-
-
             }
         });
 
-//            System.out.println("PRECOND");
-//            preconditionCount.keyValuesView().toSortedListBy((x)->x.getTwo()).forEach((x)->System.out.println(Texts.iPad(x.getTwo(),3) + "\t" + x.getOne() ));
-
-
-        Comparator sort = PrediTerm.sort(preconditionCount::get);
-
+        Comparator<PrediTerm<?>> sortPrecondition = PrediTerm.sort(preconditionCount::get);
 
         post.forEach((k, v) -> {
 
-            FasterList<PrediTerm<Derivation>> path = new FasterList(k, PrediTerm[]::new, +1);
-            path.sort(sort);
+            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
+            pre.sortThis(sortPrecondition);
 
             PrediTerm<Derivation>[] ll = StreamSupport.stream(v.spliterator(), false)
-                    .map((i) -> conclusions.get(i).transform((Function) null)).toArray(PrediTerm[]::new);
-            assert (ll.length != 0);
+                    .map(i -> compileBranch(conclusions.get(i))).toArray(PrediTerm[]::new);
+            assert (ll.length > 0);
 
-            ValueFork cx = ValueFork.the(ll, postChoices, v);
-            path.add(cx.valueBranch);
-            this.path.put(path, cx);
+            ValueFork v1 = new ValueFork(ll/*, v*/);
+
+            int branchID = postChoices.size();
+            pre.add(new ValueFork.ValueBranch(branchID, v)); //append the conclusion step
+
+            PrediTerm<Derivation> prev = path.put(pre, v1);
+            assert(prev == null);
+
+            postChoices.add(v1);
+
         });
 
         postChoices.compact();
+
+//        FasterList<ValueFork> pc = t.postChoices;
+//        for (int i = 0, postChoices1Size = pc.size(); i < postChoices1Size; i++) {
+//            ValueFork x = pc.get(i);
+//            PrediTerm<Derivation>[] branches = x.branches;
+//            for (int j = 0, branchesLength = branches.length; j < branchesLength; j++) {
+//                branches[j] = compileBranch(branches[j]);
+//            }
+//
+//        }
+
+        assert(!path.isEmpty());
+
+        PrediTerm<Derivation> compiledPaths = TrieDeriver.compile(path, each);
+
+        return new DeriveRules(
+                compiledPaths,
+                new Try(postChoices.toArrayRecycled(ValueFork[]::new)));
     }
 
-    public static DeriveRules the(@NotNull DeriveRuleSet r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
-        assert(!r.isEmpty());
-
-        TrieDeriver t = new TrieDeriver(r);
-
-        FasterList<ValueFork> pc = t.postChoices;
-        for (int i = 0, postChoices1Size = pc.size(); i < postChoices1Size; i++) {
-            ValueFork x = pc.get(i);
-            PrediTerm<Derivation>[] branches = x.branches;
-            for (int j = 0, branchesLength = branches.length; j < branchesLength; j++) {
-                PrediTerm xx = branches[j];
-                if (xx instanceof AndCondition) {
-                    PrediTerm yy = ((AndCondition) xx).transform((y) -> {
-                        if (y instanceof AndCondition) {
-                            return MatchConstraint.combineConstraints((AndCondition) y);
-                        }
-                        return y;
-                    }, (sub) -> sub);
-                    branches[j] = yy;
-                }
-            }
-
-        }
-
-        assert(!t.path.isEmpty());
-
-        return new DeriveRules(//AndCondition.the(
-                TrieDeriver.compile(t.path, each),
-                new Try(t.postChoices.toArrayRecycled(ValueFork[]::new)));
+    static PrediTerm compileBranch(PrediTerm<Derivation> branch) {
+        return branch instanceof AndCondition ?
+                ((AndCondition) branch).transform(y -> y instanceof AndCondition ?
+                    MatchConstraint.combineConstraints((AndCondition) y)
+                    :
+                    y
+                , null)
+                :
+                branch;
     }
 
     public static void print(Object p, @NotNull PrintStream out, int indent) {

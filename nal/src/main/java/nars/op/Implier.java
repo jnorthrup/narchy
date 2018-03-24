@@ -1,13 +1,9 @@
 package nars.op;
 
 import com.google.common.collect.Iterables;
-import jcog.bag.impl.ArrayBag;
-import jcog.bag.impl.PLinkArrayBag;
 import jcog.data.graph.AdjGraph;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
-import jcog.pri.PLink;
-import jcog.pri.op.PriMerge;
 import nars.*;
 import nars.concept.Concept;
 import nars.control.CauseChannel;
@@ -71,7 +67,7 @@ public class Implier extends DurService {
     private long then, now;
     private int dur;
 
-    final ArrayBag<Task,PLink<Task>> implTasks = new PLinkArrayBag(256, PriMerge.max, new HashMap());
+    //final ArrayBag<Task,PLink<Task>> implTasks = new PLinkArrayBag(256, PriMerge.max, new HashMap());
 
     public Implier(NAR n, float[] relativeTargetDur, Term... seeds) {
         this(n, List.of(seeds), relativeTargetDur);
@@ -79,9 +75,9 @@ public class Implier extends DurService {
     }
 
 
-    public Implier(NAgent a, float... relativeTargetDurs) {
-        this(1, a, relativeTargetDurs);
-    }
+//    public Implier(NAgent a, float... relativeTargetDurs) {
+//        this(1, a, relativeTargetDurs);
+//    }
 
     public Implier(float everyDurs, NAgent a, float... relativeTargetDurs) {
         this(everyDurs, a.nar,

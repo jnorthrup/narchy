@@ -15,15 +15,12 @@ import nars.term.Termed;
 import nars.truth.Truth;
 import nars.truth.TruthFunctions;
 import nars.truth.TruthWave;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
-import spacegraph.SurfaceBase;
 import spacegraph.container.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meta.MetaFrame;
 import spacegraph.widget.text.Label;
-import spacegraph.widget.windo.Widget;
 
 import java.util.function.BiFunction;
 
@@ -31,7 +28,7 @@ import static java.lang.Math.PI;
 import static nars.time.Tense.ETERNAL;
 
 
-public class BeliefTableChart extends Widget implements MetaFrame.Menu {
+public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
     static final float baseTaskSize = 0.04f;
     static final float CROSSHAIR_THICK = 3;
@@ -43,14 +40,11 @@ public class BeliefTableChart extends Widget implements MetaFrame.Menu {
 
     private DurService on;
 
-
     TaskConcept cc; //cached concept
     float cp; //cached priority
     //private int dur; //cached dur
     private long now; //cached time
     private String termString; //cached string
-
-    private final NAR nar;
 
     static final float angleSpeed = 0.5f;
 
@@ -65,19 +59,19 @@ public class BeliefTableChart extends Widget implements MetaFrame.Menu {
     int projections = 32;
 
     private final boolean showTaskLinks = false;
+
     @Deprecated
     private final boolean showEternal = true;
 
     long[] range;
 
-    public BeliefTableChart(NAR n, Termed term) {
-        this(n, term, null);
-    }
+//    public BeliefTableChart(NAR n, Termed term) {
+//        this(n, term, null);
+//    }
 
     public BeliefTableChart(NAR n, Termed term, long[] range) {
-        super();
+        super(n);
         this.term = term.term();
-        this.nar = n;
 
         this.range = range;
 
@@ -96,34 +90,10 @@ public class BeliefTableChart extends Widget implements MetaFrame.Menu {
 
     }
 
-    @Override
-    public void start(@Nullable SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
-            on = DurService.on(nar, this::update);
-        }
-    }
-
-    @Override
-    public void stop() {
-        synchronized (this) {
-            if (on != null) {
-                on.off();
-                on = null;
-            }
-            super.stop();
-        }
-    }
-
-//    @Override
-//    public Surface hide() {
-//        on.off();
-//        return this;
-//    }
-
-    public void update(NAR nar) {
 
 
+
+    @Override public void update() {
 
             long now = this.now = nar.time();
             int dur = /*this.dur = */nar.dur();

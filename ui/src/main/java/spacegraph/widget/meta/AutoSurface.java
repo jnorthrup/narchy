@@ -19,6 +19,7 @@ import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.slider.IntSlider;
 import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.text.LabeledPane;
+import spacegraph.widget.windo.Widget;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -30,16 +31,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AutoSurface<X> extends Gridding {
 
+    final static int MAX_DEPTH = 1;
     final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
-
-    Ons ons = null;
-
     /**
      * root
      */
     private final X obj;
-
-    final static int MAX_DEPTH = 1;
+    Ons ons = null;
 
     public AutoSurface(X x) {
         super();
@@ -48,7 +46,6 @@ public class AutoSurface<X> extends Gridding {
 
     @Override
     public void start(@Nullable SurfaceBase parent) {
-
 
 
         synchronized (this) {
@@ -84,6 +81,18 @@ public class AutoSurface<X> extends Gridding {
             return;
         }
 
+        if (x instanceof Services) { //first
+            target.add(new AutoServices((Services) x));
+            return;
+        }
+
+        if (x instanceof Collection) {
+            Surface cx = collectElements((Iterable<?>) x, depth + 1);
+            if (cx != null) {
+                target.add(new LabeledPane(yLabel, cx));
+            }
+        }
+
 
         if (x instanceof FloatRange) {
             target.add(new MySlider((FloatRange) x, yLabel));
@@ -96,33 +105,19 @@ public class AutoSurface<X> extends Gridding {
         } else if (x instanceof Runnable) {
             target.add(new PushButton(yLabel, (Runnable) x));
         } else if (x instanceof EnumParam) {
-            target.add(newSwitch((EnumParam)x));
+            target.add(newSwitch((EnumParam) x));
         }
-
 
         if (depth < MAX_DEPTH) {
-
-            if (x instanceof Services) { //first
-                collectServices((Services) x, target);
-            }
-
             collectFields(x, target, depth + 1);
-
-            if (x instanceof Collection) {
-                Surface cx = collectElements((Iterable<?>) x, depth + 1);
-                if (cx != null) {
-                    target.add(new LabeledPane(yLabel, cx));
-                }
-            }
         }
-
     }
 
     private ButtonSet newSwitch(EnumParam x) {
 
         ToggleButton[] b = ((EnumSet<?>) EnumSet.allOf(x.klass)).stream().map(e -> {
             CheckBox tb = new CheckBox(e.name());
-            tb.on((c,enabled)->{
+            tb.on((c, enabled) -> {
                 if (enabled)
                     x.set(e);
             });
@@ -141,58 +136,6 @@ public class AutoSurface<X> extends Gridding {
         return !m.isEmpty() ? grid(m) : null;
     }
 
-    private void collectServices(Services<Object, Object> x, Collection<Surface> l) {
-
-//        Map<Services.Service, FloatSlider> controls = new HashMap();
-        x.entrySet().forEach((ks) -> {
-//            Object key = ks.getKey();
-            Service<?> s = ks.getValue();
-
-            if (seen.add(s)) {
-                String label = s.toString(); //StringUtils.abbreviate(s.toString(), 16);
-//                FloatSlider fs = new FloatSlider(s.pri(), 0f, 1f).on((f, v) -> {
-//                    if (v < 0.01f) {
-//                        x.off(key);
-//                    } else {
-//                        x.on(key, v);
-//                        //TODO set aux power parameter
-//                    }
-//                });
-//                controls.put(s, fs);
-
-                l.add(
-                        new Cover(
-                                () -> IconBuilder.simpleBuilder.apply(s),
-                                () -> new LabeledPane(
-                                                label,
-                                                //yLabel!=null ? yLabel : sx.toString(),
-                                                new Gridding(
-                                                        //enable
-//                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
-//                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
-//                                    if (on) {
-//                                        x.on(key);
-//                                    } else {
-//                                        x.off(key);
-//                                    }
-//                                }),
-                                                        new WindowToggleButton("..", () -> s)
-                                                )))
-                );
-            }
-
-//            ons.add(x.change.on((co) -> {
-//                Services.Service<Object> z = co.getOne();
-//                FloatSlider c = controls.get(z);
-//                if (c != null) {
-//                    c.valueRelative(
-//                            co.getTwo() ? Util.round(z.pri(), 0.01f) : 0
-//                    );
-//                }
-//            }));
-        });
-    }
-
     @Override
     public void stop() {
         synchronized (this) {
@@ -204,7 +147,7 @@ public class AutoSurface<X> extends Gridding {
         }
     }
 
-    public void collectFields(Object x, List<Surface> l, int depth) {
+    void collectFields(Object x, List<Surface> target, int depth) {
         Class cc = x.getClass();
         for (Field f : cc.getFields()) {
             //SuperReflect.fields(x, (String k, Class c, SuperReflect v) -> {
@@ -224,12 +167,14 @@ public class AutoSurface<X> extends Gridding {
 
                 Object y = f.get(x);
                 if (y != null && y != x) //avoid self loop
-                    collect(y, l, depth, f.getName());
+                    collect(y, target, depth, f.getName());
 
             } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
+
+
     }
 
     private static class MySlider extends FloatSlider {
@@ -246,6 +191,7 @@ public class AutoSurface<X> extends Gridding {
             return k + "=" + super.text();
         }
     }
+
     private static class MyIntSlider extends IntSlider {
         private final String k;
 
@@ -257,6 +203,62 @@ public class AutoSurface<X> extends Gridding {
         @Override
         public String text() {
             return k + "=" + super.text();
+        }
+    }
+
+    private class AutoServices extends Widget {
+        public AutoServices(Services<?, ?> x) {
+
+            List<Surface> l = new FasterList(x.size());
+
+            x.entrySet().forEach((ks) -> {
+                Service<?> s = ks.getValue();
+
+                if (seen.add(s)) {
+                    String label = s.toString(); //StringUtils.abbreviate(s.toString(), 16);
+//                FloatSlider fs = new FloatSlider(s.pri(), 0f, 1f).on((f, v) -> {
+//                    if (v < 0.01f) {
+//                        x.off(key);
+//                    } else {
+//                        x.on(key, v);
+//                        //TODO set aux power parameter
+//                    }
+//                });
+//                controls.put(s, fs);
+
+                    l.add(
+                            new Cover(
+                                    () -> IconBuilder.simpleBuilder.apply(s),
+                                    () -> new LabeledPane(
+                                            label,
+                                            //yLabel!=null ? yLabel : sx.toString(),
+                                            new Gridding(
+                                                    //enable
+//                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
+//                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
+//                                    if (on) {
+//                                        x.on(key);
+//                                    } else {
+//                                        x.off(key);
+//                                    }
+//                                }),
+                                                    new WindowToggleButton("..", () -> s)
+                                            )))
+                    );
+                }
+
+//            ons.add(x.change.on((co) -> {
+//                Services.Service<Object> z = co.getOne();
+//                FloatSlider c = controls.get(z);
+//                if (c != null) {
+//                    c.valueRelative(
+//                            co.getTwo() ? Util.round(z.pri(), 0.01f) : 0
+//                    );
+//                }
+//            }));
+            });
+
+            content(new Gridding(0.25f, l));
         }
     }
 }

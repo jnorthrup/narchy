@@ -2,9 +2,9 @@ package nars.gui;
 
 import nars.NAR;
 import nars.control.DurService;
-import spacegraph.Scale;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
+import spacegraph.widget.windo.Widget;
 
 import java.util.function.Consumer;
 
@@ -13,12 +13,17 @@ import java.util.function.Consumer;
  * automatically attaches update handler on start (ex: added to graph) and
  * removes on stop (ex: removal from graph)
  */
-abstract public class DurSurface extends Scale {
-    private final NAR nar;
+abstract public class DurSurface extends Widget {
+    protected final NAR nar;
     DurService on;
 
+    protected DurSurface(NAR nar) {
+        super();
+        this.nar = nar;
+    }
+
     private DurSurface(Surface x, NAR nar) {
-        super(x, 1f);
+        super(x);
         this.nar = nar;
     }
 

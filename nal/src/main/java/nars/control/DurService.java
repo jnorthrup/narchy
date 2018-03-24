@@ -40,6 +40,11 @@ abstract public class DurService extends NARService implements Runnable {
         this.nar = n;
     }
 
+
+    protected DurService(@NotNull NAR nar) {
+        this(nar, new MutableFloat(1f));
+    }
+
     /**
      * simple convenient adapter for Runnable's
      */
@@ -49,6 +54,11 @@ abstract public class DurService extends NARService implements Runnable {
             protected void run(NAR n, long dt) {
                 r.run();
             }
+
+            @Override
+            public String toString() {
+                return r.toString();
+            }
         };
     }
 
@@ -57,6 +67,11 @@ abstract public class DurService extends NARService implements Runnable {
             @Override
             protected void run(NAR n, long dt) {
                 r.accept(n);
+            }
+
+            @Override
+            public String toString() {
+                return r.toString();
             }
         };
     }
@@ -68,13 +83,12 @@ abstract public class DurService extends NARService implements Runnable {
                     off();
                 }
             }
+            @Override
+            public String toString() {
+                return r.toString();
+            }
         };
     }
-
-    protected DurService(@NotNull NAR nar) {
-        this(nar, new MutableFloat(1f));
-    }
-
     public DurService durs(float durations) {
         this.durations.set(durations);
         return this;

@@ -14,7 +14,6 @@ import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -24,12 +23,8 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
     final Taskify[] conc;
 
-    /**
-     * the term which a derivation will encounter signaling
-     * that it may continue here after evaluating it among other choices
-     */
-    @Deprecated public final ValueBranch valueBranch;
-    private final RoaringBitmap downstream;
+
+//    private final RoaringBitmap downstream;
 
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
@@ -37,20 +32,10 @@ public class ValueFork extends ForkDerivation<Derivation> {
     public final Cause[] causes;
 
 
-    public static ValueFork the(PrediTerm[] branches, List<ValueFork> choices, RoaringBitmap downstream) {
-        int branchID = choices.size();
-        ValueBranch valueBranch = new ValueBranch(branchID, downstream);
-        ValueFork v = new ValueFork(branches, valueBranch, downstream);
-        choices.add(v);
-        return v;
-    }
-
-    protected ValueFork(PrediTerm[] branches, ValueBranch branch, RoaringBitmap downstream) {
+    public ValueFork(PrediTerm[] branches/*, RoaringBitmap downstream*/) {
         super(branches);
 
         assert(branches.length > 0);
-        this.valueBranch = branch;
-        this.downstream = downstream;
 
         conc = Util.map(b->(Taskify) (AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
                     AndCondition.last(b)
@@ -58,8 +43,8 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
 
         causes = Util.map(c -> c.channel, Cause[]::new, conc);
-
     }
+
     @Override
     public boolean test(Derivation d) {
 
@@ -73,7 +58,8 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
             float[] w =
                     //Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
-                    Util.softmax(N, i -> causes[i].value(), Param.TRIE_DERIVER_TEMPERATURE);
+                    Util.softmax(N, i -> causes[i].value(),
+                            Param.TRIE_DERIVER_TEMPERATURE);
 
             Roulette.RouletteUnique.run(w, (b) -> {
 
@@ -90,8 +76,9 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
 
     @Override
-    public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
-        return new ValueFork(PrediTerm.transform(f, branches), valueBranch, downstream);
+    @Deprecated public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
+        //return new ValueFork(PrediTerm.transform(f, branches), valueBranch, downstream);
+        throw new UnsupportedOperationException();
     }
 
 //    /**
@@ -145,20 +132,20 @@ public class ValueFork extends ForkDerivation<Derivation> {
      * remembers the possiblity of a choice which "can" be pursued
      * (ie. according to value rank)
      */
-    static class ValueBranch extends AbstractPred<Derivation> {
+    public static class ValueBranch extends AbstractPred<Derivation> {
 
         public final int id;
 
-        /**
-         * global cause channel ID's that this leads to
-         */
-        private final RoaringBitmap downstream;
+//        /**
+//         * global cause channel ID's that this leads to
+//         */
+//        private final RoaringBitmap downstream;
 
-        protected ValueBranch(int id, RoaringBitmap downstream) {
+        public ValueBranch(int id, RoaringBitmap downstream) {
             super($.func("can", /*$.the(id),*/ $.sFast(downstream)));
 
             this.id = id;
-            this.downstream = downstream;
+//            this.downstream = downstream;
         }
 
         @Override

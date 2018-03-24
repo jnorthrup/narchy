@@ -8,10 +8,8 @@ import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.pred.PrediTerm;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -32,11 +30,11 @@ public class Try implements Consumer<Derivation> {
              Stream.of(branches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new));
     }
 
-    public Try transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
-        return new Try(
-                PrediTerm.transform(f, branches), causes
-        );
-    }
+//    public Try transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
+//        return new Try(
+//                PrediTerm.transform(f, branches), causes
+//        );
+//    }
 
 
     @Override
@@ -71,38 +69,38 @@ public class Try implements Consumer<Derivation> {
         }
     }
 
-    /** TTL and the value of each decides budget to allocate to each branch. then these are tried in shuffled order */
-    void forkTTLBudget(Derivation d, int[] choices) {
-
-        float ttlTotal = d.ttl;
-        int N = choices.length;
-        float[] w =
-                //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);
-                Util.softmax(N, i -> causes[i].value(), 1f);
-
-        float valueSum = Util.sum(w);
-
-        int[] order = new int[N];
-        for (int i = 0; i < N; i++) order[i] = i;
-        ArrayUtils.shuffle(order, d.random);
-
-        int k = 0;
-        int start = d.now();
-        while (d.ttl > 0) {
-            int ttlSave = d.ttl;
-
-            int c = order[(k++)%N];
-            int ttlFrac = Math.max(Param.TTL_MIN(), Math.round(ttlTotal * w[c]/valueSum));
-            d.ttl = ttlFrac;
-
-            branches[choices[c]].test(d);
-            d.revert(start);
-
-            int ttlUsed = Math.max(1, ttlSave - d.ttl);
-            d.ttl = ttlSave - ttlUsed;
-        }
-
-    }
+//    /** TTL and the value of each decides budget to allocate to each branch. then these are tried in shuffled order */
+//    void forkTTLBudget(Derivation d, int[] choices) {
+//
+//        float ttlTotal = d.ttl;
+//        int N = choices.length;
+//        float[] w =
+//                //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);
+//                Util.softmax(N, i -> causes[i].value(), 1f);
+//
+//        float valueSum = Util.sum(w);
+//
+//        int[] order = new int[N];
+//        for (int i = 0; i < N; i++) order[i] = i;
+//        ArrayUtils.shuffle(order, d.random);
+//
+//        int k = 0;
+//        int start = d.now();
+//        while (d.ttl > 0) {
+//            int ttlSave = d.ttl;
+//
+//            int c = order[(k++)%N];
+//            int ttlFrac = Math.max(Param.TTL_MIN(), Math.round(ttlTotal * w[c]/valueSum));
+//            d.ttl = ttlFrac;
+//
+//            branches[choices[c]].test(d);
+//            d.revert(start);
+//
+//            int ttlUsed = Math.max(1, ttlSave - d.ttl);
+//            d.ttl = ttlSave - ttlUsed;
+//        }
+//
+//    }
 
     void forkRoulette(Derivation d, short[] choices, float reserve) {
         int N = choices.length;
@@ -124,12 +122,10 @@ public class Try implements Consumer<Derivation> {
             d.ttl = ttlFrac;
 
             branches[choices[i]].test(d);
-            d.revert(before);
 
             int ttlUsed = Math.max(1, ttlFrac - d.ttl);
 
-            return (d.ttl = ttlSave - ttlUsed) > 0;
-
+            return ((d.ttl = ttlSave - ttlUsed) > 0 && d.revertLive(before));
         }, d.random);
     }
 

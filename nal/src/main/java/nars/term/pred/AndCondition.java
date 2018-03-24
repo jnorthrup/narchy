@@ -100,7 +100,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
         return transform(o -> o, f);
     }
 
-    public PrediTerm<D> transform(Function<AndCondition<D>,PrediTerm<D>> outer, Function<PrediTerm<D>, PrediTerm<D>> f) {
+    public PrediTerm<D> transform(Function<AndCondition<D>,PrediTerm<D>> outer, @Nullable Function<PrediTerm<D>, PrediTerm<D>> f) {
         PrediTerm[] yy = transformedConditions(f);
         PrediTerm<D> z = yy != cond ? AndCondition.the(yy) : this;
         if (z instanceof AndCondition)
@@ -109,7 +109,10 @@ public final class AndCondition<D> extends AbstractPred<D> {
             return z;
     }
 
-    public PrediTerm[] transformedConditions(Function<PrediTerm<D>, PrediTerm<D>> f) {
+    public PrediTerm[] transformedConditions(@Nullable Function<PrediTerm<D>, PrediTerm<D>> f) {
+        if (f == null)
+            return cond;
+
         final boolean[] changed = {false};
         PrediTerm[] yy = Util.map(x -> {
             PrediTerm<D> y = x.transform(f);

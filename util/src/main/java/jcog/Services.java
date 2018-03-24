@@ -90,6 +90,8 @@ public class Services<X, C>  {
     private final Executor exe;
     public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
 
+
+
 //    abstract public static class SubService<C,X> extends Services<C,X> implements Service<C> {
 //
 //        private final Services<?,C> parent;
@@ -213,4 +215,7 @@ public class Services<X, C>  {
         return this;
     }
 
+    public int size() {
+        return services.size();
+    }
 }
