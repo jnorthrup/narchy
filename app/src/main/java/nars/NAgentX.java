@@ -1,7 +1,6 @@
 package nars;
 
 import jcog.exe.Loop;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
@@ -144,9 +143,9 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        //new Focus.DefaultRevaluator(),
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        1024, 128)
+                        new Focus.DefaultRevaluator(),
+                        //new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        128, 256)
                 )
 
                 .time(clock)
@@ -240,7 +239,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(1f * priFactor);
         n.questPriDefault.set(1f * priFactor);
 
-        n.activationRate.set(0.2f);
+        n.activationRate.set(0.5f);
 
         NAgent a = init.apply(n);
 

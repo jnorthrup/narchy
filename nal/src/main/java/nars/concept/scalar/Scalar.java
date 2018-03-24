@@ -108,7 +108,6 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
             SignalTask x = ((ScalarBeliefTable) beliefs()).add(nextTruth,
                     start, end, n);
 
-            PredictionFeedback.feedbackNewSignal(x, beliefs, n);
 
             return x;
         } else {

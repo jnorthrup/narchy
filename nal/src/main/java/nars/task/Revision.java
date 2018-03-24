@@ -15,10 +15,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
 import nars.time.Tense;
-import nars.truth.PreciseTruth;
-import nars.truth.Stamp;
-import nars.truth.Truth;
-import nars.truth.Truthed;
+import nars.truth.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -885,9 +882,7 @@ public class Revision {
             return first;
 
 
-        final float densityFactor = density.factor();
-        if (densityFactor * overlapFactor < Float.MIN_NORMAL)
-            return first;
+        float densityFactor = density.factor();
 
         if (tasks!=tt.length)
             tt = ArrayUtils.removeNulls(tt, Task[]::new);
@@ -927,8 +922,14 @@ public class Revision {
         Truth truth = new TruthPolation(start, end, dur, tt).truth(true);
         if (truth == null) return first;
 
-        float factor = densityFactor * overlapFactor * differenceFactor;
+        float factor = overlapFactor * differenceFactor * densityFactor;
         float eAdjusted = truth.evi() * factor;
+
+//        if (densityFactor < 1f) {
+//            //apply densityFactor as a LERP of evidence from eternalized to full
+//            eAdjusted = Util.lerp(densityFactor, truth.eviEternalized(), truth.evi());
+//        }
+
         if ((eAdjusted * range) < minEviInteg)
             return first;
 

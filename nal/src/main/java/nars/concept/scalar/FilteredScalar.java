@@ -14,7 +14,7 @@ import java.util.Iterator;
 /** calculates a set of derived scalars from an input scalar */
 public class FilteredScalar extends DemultiplexedScalar {
 
-    final Filter[] filter;
+    public final Filter[] filter;
 
     public FilteredScalar(FloatSupplier input, NAR nar, Pair<Term,FloatToFloatFunction>... filters) {
         super(input, Op.SETe.the(Util.map(Pair::getOne, Term[]::new, filters)), nar);

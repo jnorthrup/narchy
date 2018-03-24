@@ -4,6 +4,7 @@ import jcog.math.Longerval;
 import nars.Task;
 import nars.task.util.TaskRegion;
 
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
 /** iterative calculator of evidential density
@@ -120,8 +121,8 @@ public final class EviDensity {
 
     /** ratio of density to sum of averages */
     public float factor() {
-        if (unionStart == TIMELESS)
-            return 1;
+        if (unionStart == TIMELESS || unionStart == ETERNAL)
+            return 1; //no temporal range was specified, assume eternal
 
         long unionRange = 1 + (unionEnd - unionStart);
         return sumEviIntegrals / (unionRange * sumEviAvg);

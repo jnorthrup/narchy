@@ -115,8 +115,8 @@ public abstract class Param {
             //PriMerge.max;
 
     public static final PriMerge termlinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
@@ -407,12 +407,12 @@ public abstract class Param {
     };
 
 
-    /**
-     * tolerance of complexity
-     * low values (~0) will penalize complexity in derivations maximally (preferring simplicity)
-     * high values (~1) will penalize complexity in deriations minimally (allowing complexity)
-     */
-    public final FloatRange deep = new FloatRange(0f, 0, 1f);
+//    /**
+//     * tolerance of complexity
+//     * low values (~0) will penalize complexity in derivations maximally (preferring simplicity)
+//     * high values (~1) will penalize complexity in deriations minimally (allowing complexity)
+//     */
+//    public final FloatRange deep = new FloatRange(0f, 0, 1f);
 
     /**
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence

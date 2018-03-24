@@ -8,7 +8,6 @@ import jcog.list.FasterList;
 import jcog.math.*;
 import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
-import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.FilteredScalar;
 import nars.concept.scalar.Scalar;
@@ -22,6 +21,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.var.Variable;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import org.apache.commons.lang3.ArrayUtils;
@@ -43,7 +43,6 @@ import static jcog.Texts.n2;
 import static jcog.Util.compose;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -86,7 +85,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
 
-    public DemultiplexedScalar happy;
+    public FilteredScalar happy;
 
     public boolean trace;
 
@@ -140,8 +139,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     @Deprecated public NALTask alwaysWant(Termed x, float conf) {
         NALTask t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
-                //Stamp.UNSTAMPED
-                nar().time.nextStampArray()
+                Stamp.UNSTAMPED
+                //nar().time.nextStampArray()
         );
 
         always.add(t);
@@ -322,7 +321,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             actions.keySet().forEach(a ->
                     //alwaysQuest(a)
-                    alwaysQuestion(Op.IMPL.the(happy.term, XTERNAL, a.term))
+                    alwaysQuestion(Op.IMPL.the(happy.term, 1 /*XTERNAL*/, a.term))
             );
 
             this.in = nar.newCauseChannel(this);

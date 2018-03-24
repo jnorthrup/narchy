@@ -545,8 +545,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             float timeDist = (Math.abs(when - regionTime)) / ((float) perceptDur);
 
-            if (r.start() >= when - perceptDur)
-                timeDist /= PRESENT_AND_FUTURE_BOOST; //shrink the apparent time if it's present and future
 
             float evi =
                     c2wSafe((float) r.coord(true, 2)); //max
@@ -557,6 +555,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             //float antiConf = 1f - conf;
             float antivalue = 1f / (1f + evi);
+
+            if (r.start() >= when - perceptDur)
+                antivalue /= PRESENT_AND_FUTURE_BOOST;
+
             //float span = (float)(1 + r.range(0)/dur); //span becomes less important the further away, more fair to short near-term tasks
 
             return (float) ((antivalue) * (1 + timeDist));
@@ -583,15 +585,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return root.rangeIfFinite(0, 1);
     }
 
-    private static FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
-        //int tableDur = 1 + (int) (tableDur());
+    private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
+        int tableDur = 1 + (int) (tableDur());
         return (Task x) -> {
             if (x.isDeleted())
                 return Float.NEGATIVE_INFINITY;
 
             //boost for present and future
             return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) *
-                    value(x, when, when, perceptDur);
+                    value(x, when, when, tableDur);
         };
     }
 

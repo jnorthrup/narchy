@@ -23,7 +23,7 @@ public class PredictionFeedback {
      * punish any held non-signal beliefs during the current signal task which has just been input.
      * time which contradict this sensor reading, and reward those which it supports
      */
-    static public void feedbackNewSignal(SignalTask x, BeliefTable table, NAR nar) {
+    static public void feedbackSignal(SignalTask x, BeliefTable table, NAR nar) {
         if (x == null)
             return;
 
@@ -61,7 +61,10 @@ public class PredictionFeedback {
     /**
      * TODO handle stretched tasks
      */
-    public static void feedbackNewBelief(Task y, BeliefTable table, NAR nar) {
+    public static void feedbackNonSignal(Task y, BeliefTable table, NAR nar) {
+
+        if (table.isEmpty())
+            return; //nothing to contradict
 
         long start = y.start();
         long end = y.end();
@@ -70,7 +73,7 @@ public class PredictionFeedback {
         List<SignalTask> signals = new FasterList<>(8);
         Consumer<Task> each = existing -> {
             //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
-            if (existing instanceof SignalTask) {
+            if (existing instanceof SignalTask && existing.intersects(y)) {
                 signals.add((SignalTask) existing);
             }
         };

@@ -254,7 +254,7 @@ public class TemporalInductionTest {
         NAR n = NARS.tmp();
 
         n.beliefPriDefault.set(0.1f);
-        n.deep.set(1f);
+        //n.deep.set(1f);
         n.log();
 
         TemporalMetrics m = new TemporalMetrics(1024);

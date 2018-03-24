@@ -657,12 +657,12 @@ public enum Util {
 
     public static float finite(float x) throws NumberException {
         if (!Float.isFinite(x))
-            throw new NumberException("non-finite");
+            throw new NumberException("non-finite: " + x);
         return x;
     }
     public static double finite(double x) throws NumberException {
         if (!Double.isFinite(x))
-            throw new NumberException("non-finite");
+            throw new NumberException("non-finite: " + x);
         return x;
     }
 

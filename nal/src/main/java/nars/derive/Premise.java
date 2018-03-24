@@ -245,9 +245,9 @@ public class Premise {
      */
     private void linkVariable(Concept lessConstant, Concept moreConstant) {
 
-        //split the source termlink's budget
+        //fraction of the source termlink's budget
         float pri = termLink.priElseZero() * 0.5f;
-        termLink.priMult(0.5f);
+        //termLink.priMult(0.5f);
 
 //        /** creates a tasklink/termlink proportional to the tasklink's priority
 //         *  and inversely proportional to the increase in term complexity of the

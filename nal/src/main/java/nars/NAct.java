@@ -355,11 +355,12 @@ public interface NAct {
                 nar().freqResolution.get();
                 //0f;
 
-        actionUnipolar(t, true, (x)->0, (f) -> {
+        GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
             boolean positive = f >= 0.5f + thresh;
             on.value(positive);
             return positive ? 1f : 0f;
         });
+        b.resolution.set(1f);
 
 //        float thresh =
 //                //0.5f + Param.TRUTH_EPSILON;
@@ -494,15 +495,15 @@ public interface NAct {
     default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, boolean latchPreviousIfUndecided, @NotNull FloatToFloatFunction update) {
 
         Term pt =
-                $.p(s, PLUS);
+                //$.p(s, PLUS);
                 //$.inh(s, PLUS);
-                //$.prop(s,$.the("\"+\""));
+                $.prop(s,PLUS);
                 //$.p(s, ZeroProduct);
                 //$.p(s,$.the("\"+\""));
         Term nt =
-                $.p(s, NEG);
+                //$.p(s, NEG);
                 //$.inh(s, NEG);
-                //$.prop(s, $.the("\"-\""));
+                $.prop(s, NEG);
                 //$.p(ZeroProduct, s);
                 //$.p(s,$.the("\"-\""));
 

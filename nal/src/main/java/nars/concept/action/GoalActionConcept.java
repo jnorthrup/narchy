@@ -57,7 +57,7 @@ public class GoalActionConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long pStart, long pEnd, int dur, NAR nar) {
+    public Stream<ITask> update(long pPrev, long pNow, int dur, NAR nar) {
 
 
 //        long pStart =
@@ -74,8 +74,8 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth goal;
 
-        long gStart = pEnd;
-        long gEnd = pEnd + dur;
+        long gStart = pNow - dur/2;
+        long gEnd = pNow + dur/2;
         goal = this.goals().truth(gStart, gEnd, nar);
 
 //        if (goals.size() > 0)
@@ -86,9 +86,9 @@ public class GoalActionConcept extends ActionConcept {
 //            // curiosity override
 //
             float curiConf =
-                    nar.confDefault(GOAL); //<- to max out expectation-driven action
-
-                    //nar.confMin.floatValue() * 2;
+                    //nar.confDefault(GOAL); //<- to max out expectation-driven action
+                    //nar.confDefault(GOAL)/4; //<- to max out expectation-driven action
+                    nar.confMin.floatValue() * 8;
 //                    Math.max(goal != null ? goal.conf() : 0, //match goal conf
 //                            //nar.confMin.floatValue() * 2
 //                            nar.confDefault(GOAL)
@@ -149,7 +149,7 @@ public class GoalActionConcept extends ActionConcept {
         }
 
 
-        Truth belief = this.beliefs().truth(pStart, pEnd, nar);
+        Truth belief = this.beliefs().truth(gStart, gEnd, nar);
 
         Truth feedback = this.motor.apply(belief, goal);
 
@@ -161,7 +161,7 @@ public class GoalActionConcept extends ActionConcept {
             curiosityGoal = this.curiosity(nar,
                     goal,
                     //Truth.theDithered(feedbackBelief.freqMean(dur, pStart, pEnd), goal.evi(), nar),
-                    term, pStart, pEnd, nar.time.nextStamp());
+                    term, gStart, gEnd, nar.time.nextStamp());
         }
 
         return Stream.of(feedbackBelief, (ITask)curiosityGoal).filter(Objects::nonNull);

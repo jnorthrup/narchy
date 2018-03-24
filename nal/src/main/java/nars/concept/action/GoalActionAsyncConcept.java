@@ -37,7 +37,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
 
     @Override
-    public Stream<ITask> update(long pStart, long pEnd, int dur, NAR nar) {
+    public Stream<ITask> update(long pPrev, long pNow, int dur, NAR nar) {
 
 //        long pStart =
 //                //now;
@@ -47,8 +47,8 @@ public class GoalActionAsyncConcept extends ActionConcept {
 //                start + dur/2;
 //                //now + dur;
 
-        long gStart = pEnd;
-        long gEnd = pEnd + dur;
+        long gStart = pNow - dur/2;
+        long gEnd = pNow + dur/2;
         Truth goal = this.goals().truth(gStart, gEnd, nar);
 
 //            //HACK EXPERIMENT combine belief and goal
@@ -104,7 +104,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
             fb
         );
 
-        PredictionFeedback.feedbackNewSignal(fb /* in case stretched */, beliefs, nar);
+        PredictionFeedback.feedbackSignal(fb /* in case stretched */, beliefs, nar);
     }
 
     //not working yet:

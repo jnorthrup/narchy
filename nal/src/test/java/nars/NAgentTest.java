@@ -163,16 +163,20 @@ public class NAgentTest {
     static class ToggleSame extends MiniTest {
 
         private final boolean posOrNeg;
-        private float y;
+        private float reward;
 
         public ToggleSame(NAR n, Term env, Term action, boolean posOrNeg) {
             super(env, n);
-            y = 0;
+            reward = 0;
             this.posOrNeg = posOrNeg;
 
             BooleanProcedure pushed = (v) -> {
                 //System.err.println(n.time() + ": " + v);
-                this.y = v ? 1 : -1;
+                if (posOrNeg) {
+                    this.reward = v ? 1 : 0;
+                } else {
+                    this.reward = v ? -1 : 1;
+                }
             };
 //            if (toggleOrPush)
 //                actionToggle(action, pushed);
@@ -182,8 +186,8 @@ public class NAgentTest {
 
         @Override
         float reward() {
-            float r = posOrNeg ? y : -y;
-            y = 0; //reset
+            float r = reward;
+            reward = 0; //reset
             return r;
         }
 
@@ -229,7 +233,12 @@ public class NAgentTest {
 
     @Test public void testSameCheat() {
 
+        Param.DEBUG = true;
+
         NAR n = new NARS().get();
+
+        Term action = $.$$("(t,y)");
+
         Deriver d = new Deriver(Derivers.rules(1, 8, n), n) {
 
             @Override
@@ -237,18 +246,24 @@ public class NAgentTest {
                 //HACK TODO this is more efficiently done by filtering the rules rather than the results!
                 Collection<Task> filtered = Collections2.filter(x, Task::isGoal);
                 if (!filtered.isEmpty()) {
-                    System.out.println(filtered);
+                    //System.out.println(filtered);
+                    Collection<Task> filterAction = Collections2.filter(filtered, (t) -> t.term().equals(action));
+
+                    filterAction.forEach(t->{
+                        System.out.println(t.proof());
+                        System.out.println();
+                    });
                 }
                 super.input(premises, filtered);
             }
         };
-        new STMLinkage(n, 2, false);
-        d.conceptsPerIteration.set(9);
+        new STMLinkage(n, 1, false);
+        d.conceptsPerIteration.set(8);
 
 //        n.log();
 
 
-        Term action = $.$$("(t,y)");
+
         MiniTest a = new ToggleSame(n, $.the("t"),
                 //$.$safe("t:y"),
                 action,
@@ -258,7 +273,9 @@ public class NAgentTest {
 //        n.run(100);
 
         //n.goal("(t,y)", Tense.Present, 1f);
-        Term ax = IMPL.the(action, 0, $.$$("(t --> [happy])") /*a.happy.term*/);
+        n.synch();
+
+        Term ax = IMPL.the(action, 0, a.happy.filter[0].term);
         n.believe(ax, Tense.Present);
 
         a.runSynch(500);

@@ -150,7 +150,7 @@ public class NARio extends NAgentX {
     }
 
     public void initTriState() {
-        actionTriState($.the("x"), i -> {
+        actionTriState($.inh($.the("x"), id), i -> {
             boolean n, p;
             switch (i) {
                 case -1:
@@ -172,7 +172,7 @@ public class NARio extends NAgentX {
             mario.scene.key(Mario.KEY_RIGHT, p);
             return true;
         });
-        actionTriState($.the("y"), i -> {
+        actionTriState($.inh($.the("y"), id), i -> {
             boolean n, p;
             switch (i) {
                 case -1:

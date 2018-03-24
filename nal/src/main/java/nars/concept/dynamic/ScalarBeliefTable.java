@@ -12,6 +12,7 @@ import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.TruthPolation;
 import nars.task.signal.SignalTask;
+import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -381,12 +382,14 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public SignalTask add(Truth value, long start, long end, NAR nar) {
 
         value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
-        SignalTask t = series.add(term, punc(), start, end, value, nar);
+        SignalTask x = series.add(term, punc(), start, end, value, nar);
 
-        if (t!=null)
-            t.pri(pri.asFloat());
+        if (x!=null)
+            x.pri(pri.asFloat());
 
-        return t;
+        PredictionFeedback.feedbackSignal(x, this, nar);
+
+        return x;
     }
 
 

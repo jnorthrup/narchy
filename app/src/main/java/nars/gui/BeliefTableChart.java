@@ -347,20 +347,20 @@ public class BeliefTableChart extends Widget implements MetaFrame.Menu {
                 if (freqOrExp) {
                     colorize = beliefOrGoal ?
                         (ggl, frq, cnf) -> {
-                            float a = 0.25f + 0.7f * cnf;
+                            float a = 0.65f + 0.2f * cnf;
                             ggl.glColor4f(0.25f + 0.75f * cnf, 0.1f * (1f - cnf), 0, a);
                         } :
                         (ggl, frq, cnf) -> {
-                            float a = 0.25f + 0.7f * cnf;
+                            float a = 0.65f + 0.2f * cnf;
                             ggl.glColor4f(0.1f * (1f - cnf), 0.25f + 0.75f * cnf, 0, a);
                         };
                 } else {
                     colorize = beliefOrGoal ?
                         (ggl, frq, cnf) -> {
-                            ggl.glColor4f(cnf, cnf/2f, 0.25f, 0.7f);
+                            ggl.glColor4f(cnf, cnf/2f, 0.25f, 0.85f);
                         } :
                         (ggl, frq, cnf) -> {
-                            ggl.glColor4f(cnf/2f, cnf, 0.25f, 0.7f);
+                            ggl.glColor4f(cnf/2f, cnf, 0.25f, 0.85f);
                         };
                 }
 

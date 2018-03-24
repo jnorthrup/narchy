@@ -60,7 +60,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         if (Param.FILTER_DYNAMIC_MATCHES) {
             if (!(input instanceof SignalTask) && input.punc() == punc() && !input.isInput()) {
 
-                PredictionFeedback.feedbackNewBelief(input, this, nar);
+                PredictionFeedback.feedbackNonSignal(input, this, nar);
                 if (input.isDeleted())
                     return false;
 
