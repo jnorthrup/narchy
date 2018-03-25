@@ -1,6 +1,7 @@
 package spacegraph.widget.button;
 
 import org.jetbrains.annotations.Nullable;
+import spacegraph.Surface;
 import spacegraph.container.EmptySurface;
 import spacegraph.render.ImageTexture;
 import spacegraph.widget.text.Label;
@@ -23,8 +24,11 @@ public class PushButton extends AbstractButton {
     }
 
     public PushButton(String s) {
-        super();
-        label(s);
+        this(new Label(s));
+    }
+
+    public PushButton(Surface content) {
+        content(content);
     }
 
     public PushButton(Consumer<PushButton> onClick) {

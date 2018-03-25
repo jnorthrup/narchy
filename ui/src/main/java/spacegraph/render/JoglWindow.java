@@ -24,10 +24,10 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
 
     final static float RENDER_FPS_IDEAL = 30f;
-    final static float UPDATE_FPS_IDEAL = 60f;
+    final static float UPDATE_FPS_IDEAL = 30f;
 
     //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
-    protected static final GameAnimatorControl a;
+    protected GameAnimatorControl a;
 
     private final AtomicBoolean ready = new AtomicBoolean(true);
 
@@ -41,7 +41,7 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 //        sharedDrawable = GLDrawableFactory.getFactory(cfg.getGLProfile()).createDummyAutoDrawable(null, true, cfg, null);
 //        sharedDrawable.display(); // triggers GLContext object creation and native realization.
 //        Draw.init(sharedDrawable.getGL().getGL2());
-        a = new GameAnimatorControl(RENDER_FPS_IDEAL);
+
 
 
         //TODO other desktop handlers
@@ -99,7 +99,11 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         synchronized (this) {
             assert(window == null);
             this.window = ((GLWindow) drawable);
+
+            a = new GameAnimatorControl(RENDER_FPS_IDEAL);
+            a.add(window);
         }
+
 
         this.gl = drawable.getGL().getGL2();
 
@@ -274,29 +278,27 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
             return window;
         }
 
-        GLWindow g = window(this);
-        g.setTitle(title);
-        g.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DISPOSE_ON_CLOSE);
-        g.preserveGLStateAtDestroy(false);
-        g.setSize(w, h);
+        GLWindow W = this.window = window(this);
+        W.setTitle(title);
+        W.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DISPOSE_ON_CLOSE);
+        W.preserveGLStateAtDestroy(false);
+        W.setSize(w, h);
         if (x != Integer.MIN_VALUE) {
-            g.setPosition(x, y);
+            W.setPosition(x, y);
         }
-        g.setVisible(true);
+        W.setVisible(true);
 
         //        if (!windows.isEmpty()) {
 //        } else {
 //            //a.start();
 //
 //        }
-        GLWindow w1 = window;
-        windows.add(this);
 
-        a.add(w1);
+        windows.add(this);
 
         runFPS(UPDATE_FPS_IDEAL);
 
-        return this.window = g;
+        return W;
     }
 
     public GLWindow show(String title, int w, int h) {
@@ -342,10 +344,10 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
         //private boolean pauseIssued;
         //private boolean quitIssued;
-        public boolean isAnimating;
+        boolean isAnimating;
         private boolean paused = false;
 
-        GameAnimatorControl(float initialFPS) {
+         GameAnimatorControl(float initialFPS) {
             super();
 
             setIgnoreExceptions(false);

@@ -309,4 +309,8 @@ abstract public class Loop {
             return 0;
         }
     }
+
+    public long periodNS() {
+        return periodMS.longValue() * 1000000;
+    }
 }

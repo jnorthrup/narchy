@@ -9,6 +9,7 @@ import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
 import spacegraph.container.Gridding;
@@ -67,7 +68,7 @@ public class AutoSurface<X> extends Gridding {
 
     private void collect(Object x, List<Surface> target, int depth, String yLabel /* tags*/) {
 
-        if (!seen.add(x))
+        if (!add(x))
             return;
 
         if (yLabel == null)
@@ -214,7 +215,7 @@ public class AutoSurface<X> extends Gridding {
             x.entrySet().forEach((ks) -> {
                 Service<?> s = ks.getValue();
 
-                if (seen.add(s)) {
+                if (addService(s)) {
                     String label = s.toString(); //StringUtils.abbreviate(s.toString(), 16);
 //                FloatSlider fs = new FloatSlider(s.pri(), 0f, 1f).on((f, v) -> {
 //                    if (v < 0.01f) {
@@ -227,23 +228,28 @@ public class AutoSurface<X> extends Gridding {
 //                controls.put(s, fs);
 
                     l.add(
-                            new Cover(
-                                    () -> IconBuilder.simpleBuilder.apply(s),
-                                    () -> new LabeledPane(
-                                            label,
+                            new PushButton(IconBuilder.simpleBuilder.apply(s)).click(()->{
+                                SpaceGraph.window(
+                                        new LabeledPane(label, new AutoSurface(s)),
+                                        500, 500);
+                            })
+                            //new Cover(
+
+//                                    () -> new PushButton(
+//                                            label)
                                             //yLabel!=null ? yLabel : sx.toString(),
-                                            new Gridding(
-                                                    //enable
-//                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
-//                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
-//                                    if (on) {
-//                                        x.on(key);
-//                                    } else {
-//                                        x.off(key);
-//                                    }
-//                                }),
-                                                    new WindowToggleButton("..", () -> s)
-                                            )))
+//                                            new Gridding(
+//                                                    //enable
+////                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
+////                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
+////                                    if (on) {
+////                                        x.on(key);
+////                                    } else {
+////                                        x.off(key);
+////                                    }
+////                                }),
+//                                                    new WindowToggleButton("..", () -> s)
+//                                            )))
                     );
                 }
 
@@ -261,4 +267,13 @@ public class AutoSurface<X> extends Gridding {
             content(new Gridding(0.25f, l));
         }
     }
+
+    protected boolean add(Object x) {
+        return seen.add(x);
+    }
+
+    protected boolean addService(Service<?> x) {
+        return add(x);
+    }
+
 }

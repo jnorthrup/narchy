@@ -214,7 +214,21 @@ public class PoolMultiExec extends AbstractExec {
         @Override
         public void run() {
 
+            final long[] now = {nar.time()};
             focus.decide(rng, (Causable cx) -> {
+
+                long next = nar.time();
+                if (next != now[0]) {
+                    now[0] = next;
+
+                    long throttleNS = nar.loop.throttleNS();
+                    if (throttleNS > 0) {
+                        Util.sleepNS(throttleNS);
+                        return true; //re-loop
+                    }
+
+                }
+
                 int x;
                 if (cx == null || (x = cx.id) <= 0) {
                     idle();

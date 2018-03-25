@@ -2,6 +2,7 @@ package nars.exe;
 
 import jcog.Service;
 import jcog.Util;
+import jcog.decide.AtomicRoulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.list.FasterList;
@@ -161,8 +162,9 @@ public class Focus extends AtomicRoulette<Causable> {
         }
 
         double timesliceS = nar.loop.jiffy.floatValue();
+        double throttle = nar.loop.throttle.floatValue();
 
-        timesliceNS = timesliceS * 1.0E9;
+        timesliceNS = timesliceS * 1.0E9 * throttle;
 
         revaluator.update(nar);
 

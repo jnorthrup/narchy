@@ -1668,7 +1668,7 @@ public enum Util {
         return true;
     }
 
-    public static boolean sleepNano(long periodNS) {
+    public static boolean sleepNS(long periodNS) {
         if (periodNS <= 100000 /** 100uS = 0.1ms */ ) {
             Thread.yield();
         } else {

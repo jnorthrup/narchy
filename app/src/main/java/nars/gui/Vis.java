@@ -1,8 +1,9 @@
 package nars.gui;
 
-import com.google.common.collect.Lists;
+import jcog.Service;
 import jcog.pri.PriReference;
 import nars.NAR;
+import nars.control.DurService;
 import nars.term.Termed;
 import spacegraph.Surface;
 import spacegraph.container.Gridding;
@@ -37,7 +38,7 @@ public class Vis {
     }
 
     public static Surface beliefCharts(int window, NAR nar, Object... x) {
-        return beliefCharts(window, Lists.newArrayList(x), nar);
+        return beliefCharts(window, List.of(x), nar);
     }
 
     public static Surface beliefCharts(int window, Iterable ii, NAR nar) {
@@ -79,23 +80,21 @@ public class Vis {
 //        }
 //    }
 
-    public static Surface bagHistogram(Iterable<PriReference<?>> bag, int bins, NAR n) {
+    public static Surface bagHistogram(Iterable<? extends PriReference> bag, int bins, NAR n) {
         //new SpaceGraph().add(new Facial(
 
 
         float[] d = new float[bins];
         return DurSurface.get(new HistogramChart(
-                        () -> d,
-                        new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
+                () -> d,
+                new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f)),
 
 //                Vis.pane("Concept Volume",
 //                        new HistogramChart(
 //                                () -> Bag.priHistogram(bag, d),
 //                                new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
 //                )
-        , n, ()->{
-            PriReference.histogram(bag, d);
-        });
+                n, () -> PriReference.histogram(bag, d));
 
 //                PanelSurface.of("Concept Durability Distribution (0..1)", new HistogramChart(nar, c -> {
 //                    if (c != null)
@@ -303,21 +302,27 @@ public class Vis {
 
     public static Surface top(NAR n) {
         return
-        new Splitting(
-            ExeCharts.runPanel(n),
-            new TabPane(Map.of(
-                "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
-                "nar", () -> new AutoSurface<>(n),
-                "exe", () -> ExeCharts.exePanel(n),
-                "can", () -> ExeCharts.causePanel(n),
-                "svc", () -> new AutoSurface<>(n.services),
-                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n)
-        )),0.9f);
+                new Splitting(
+                        ExeCharts.runPanel(n),
+                        new TabPane(Map.of(
+                                "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
+                                "nar", () -> new AutoSurface<>(n),
+                                "exe", () -> ExeCharts.exePanel(n),
+                                "can", () -> ExeCharts.causePanel(n),
+                                "svc", () -> new AutoSurface(n.services) {
+                                    @Override
+                                    protected boolean addService(Service x) {
+                                        return !(x instanceof DurService) && super.addService(x);
+                                    }
+                                },
+                                "cpt", () -> bagHistogram((Iterable)()->n.conceptsActive().iterator(), 8, n)
+                        )), 0.9f);
     }
 
     public static void conceptWindow(String t, NAR n) {
         conceptWindow($$(t), n);
     }
+
     public static void conceptWindow(Termed t, NAR n) {
         window(new ConceptSurface(t, n), 500, 500);
     }

@@ -37,7 +37,7 @@ public class FZero extends NAgentX {
     float fwdSpeed = 2;
     float rotSpeed = 0.09f;
     static float fps = 25f;
-    final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
+//    final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
     final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
