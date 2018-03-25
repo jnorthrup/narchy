@@ -241,13 +241,13 @@ abstract public class MetalBitSet {
 
         @Override
         public void set(int i) {
-            int mask = i<<i;
+            int mask = 1<<i;
             _x.updateAndGet(this, v-> v|(mask) );
         }
 
         @Override
         public void clear(int i) {
-            int mask = ~(i<<i);
+            int mask = ~(1<<i);
             _x.updateAndGet(this, v-> v&(mask) );
         }
 

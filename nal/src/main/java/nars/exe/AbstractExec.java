@@ -10,6 +10,8 @@ import nars.concept.Concept;
 import nars.control.Activate;
 
 import java.util.HashMap;
+import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -25,9 +27,9 @@ abstract public class AbstractExec extends Exec {
     private On onCycle;
     //protected Baggie<Concept> active;
 
-    protected AbstractExec(int capacity) {
+    protected AbstractExec(@Deprecated int conceptsCapacity) {
 
-        CAPACITY = capacity;
+        CAPACITY = conceptsCapacity;
     }
 
     @Override
@@ -35,6 +37,21 @@ abstract public class AbstractExec extends Exec {
         synchronized (this) {
             if (active != null)
                 active.clear();
+        }
+    }
+    @Override
+    public void execute(Runnable async) {
+        if (concurrent()) {
+            ForkJoinPool.commonPool().execute(async);
+        } else {
+            async.run();
+        }
+    }
+    public void execute(Consumer<NAR> r) {
+        if (concurrent()) {
+            ForkJoinPool.commonPool().execute(() -> r.accept(nar));
+        } else {
+            r.accept(nar);
         }
     }
 

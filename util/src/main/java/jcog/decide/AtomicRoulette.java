@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.function.IntFunction;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 public class AtomicRoulette<X> {
@@ -134,16 +134,16 @@ public class AtomicRoulette<X> {
         return pri.get(i);
     }
 
-    public void decide(Random rng, Predicate<X> kontinue) {
+    public void decide(Random rng, IntPredicate kontinue) {
 
-        int i = 0;
+        int i = 1;
 
         boolean kontinued;
         do {
 
             int priTotal = this.priTotal.get();
             if (priTotal == 0)
-                kontinued = kontinue.test(null);
+                kontinued = kontinue.test(-1);
             else {
                 int count = pri.length();
 
@@ -169,14 +169,17 @@ public class AtomicRoulette<X> {
                 int pp;
                 int start = i;
                 while (((pp = pri.get(i)) == 0) || ((distance = distance - pp) > 0)) {
-                    if (++i == count) i = 0;
+                    if (++i == count) i = 1;
                     if (i == start) {
-                        i = -1; //idle signal that nothing was selected
-                        break;
+                        if (!kontinue.test(-1)) {
+                            break;//idle signal that nothing was selected
+                        } else {
+                            continue;
+                        }
                     }
                 }
 
-                kontinued = kontinue.test(i == -1 ? null : choice.getSafe(i));
+                kontinued = kontinue.test(i);
             }
 
         } while (kontinued);

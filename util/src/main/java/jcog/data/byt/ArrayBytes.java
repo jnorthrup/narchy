@@ -18,7 +18,7 @@ public class ArrayBytes implements AbstractBytes, Serializable, Comparable<Array
 
     @Override
     public int hashCode() {
-        return (int) Util.hashELF(bytes, 1);
+        return (int) Util.hash(bytes);
     }
 
     @Override

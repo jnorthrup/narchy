@@ -1,6 +1,7 @@
 package jcog.data.byt;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.Util;
 import org.apache.commons.lang3.ArrayUtils;
 import org.iq80.snappy.Snappy;
 
@@ -96,16 +97,16 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     @Override
     public int hashCode() {
-        return hash(0, len);
+        return Util.hash(bytes);
     }
 
     public int hash(int from, int to) {
-        return AbstractBytes.hash(bytes, from, to);
+        return Util.hash(bytes, from, to);
     }
 
-    public long hash64(int from, int to) {
-        return AbstractBytes.hash64(bytes, from, to);
-    }
+//    public long hash64(int from, int to) {
+//        return AbstractBytes.hash64(bytes, from, to);
+//    }
 
     @Override
     public boolean equals(Object obj) {

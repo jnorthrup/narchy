@@ -33,15 +33,7 @@ public interface AbstractBytes {
         }
     };
 
-    static int hash(byte[] bytes, int from, int to) {
-        long l = hash64(bytes, from, to);
-        return Util.hashCombine((int)(l >> 32), (int)l);
-        //return Long.hashCode(l);
-    }
 
-    static long hash64(byte[] bytes, int from, int to) {
-        return Util.hashELF(bytes, 1, from, to);
-    }
 
     int length();
 

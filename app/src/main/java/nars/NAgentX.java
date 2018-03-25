@@ -1,9 +1,10 @@
 package nars;
 
 import jcog.exe.Loop;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.exe.Focus;
-import nars.exe.PoolMultiExec;
+import nars.exe.WorkerMultiExec;
 import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
@@ -138,13 +139,17 @@ abstract public class NAgentX extends NAgent {
 //                        return true;
 //                    }
 //                })
-//                .exe(new WorkerMultiExec
-//                        //Intense
-//                        //CoolNQuiet
-//                        (512, THREADS, 64, false))
-                .exe(new PoolMultiExec(
-                        new Focus.DefaultRevaluator(),
-                        //new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+
+//                .exe(new PoolMultiExec(
+//                        128,
+//                        //new Focus.DefaultRevaluator()
+//                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
+//                    )
+//                )
+
+                .exe(new WorkerMultiExec(
+                        //new Focus.DefaultRevaluator(),
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
                         128, 256)
                 )
 
@@ -162,8 +167,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //800 * 1024,
-                                //2500 * 1024,
-                                1200 * 1024,
+                                2500 * 1024,
+                                //1200 * 1024,
                                 //50 * 1024
                                 //20 * 1024,
                                 //4096

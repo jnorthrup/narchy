@@ -31,7 +31,7 @@ public class WorkerMultiExecTest {
 
         int threads = 3;
         Focus.DefaultRevaluator reval = new Focus.DefaultRevaluator();
-        PoolMultiExec exe = new PoolMultiExec(reval, threads, 16,3 /* TODO this shouldnt need to be > 1 */);
+        WorkerMultiExec exe = new WorkerMultiExec(reval, threads, 16,3 /* TODO this shouldnt need to be > 1 */);
 
 
         NAR n = new NARS().exe(exe).get();

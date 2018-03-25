@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -69,14 +68,8 @@ abstract public class Exec implements Executor {
 
     }
 
-    @Override
-    public void execute(Runnable async) {
-        if (concurrent()) {
-            ForkJoinPool.commonPool().execute(async);
-        } else {
-            async.run();
-        }
-    }
+    @Override abstract public void execute(Runnable async);
+    abstract public void execute(Consumer<NAR> r);
 
 
     abstract public void fire(Predicate<Activate> each);
@@ -110,13 +103,7 @@ abstract public class Exec implements Executor {
     public abstract boolean concurrent();
 
 
-    public void execute(Consumer<NAR> r) {
-        if (concurrent()) {
-            ForkJoinPool.commonPool().execute(() -> r.accept(nar));
-        } else {
-            r.accept(nar);
-        }
-    }
+
 
     public void print(PrintStream out) {
         out.println(this);

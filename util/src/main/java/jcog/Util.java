@@ -113,6 +113,34 @@ public enum Util {
         ));
     }
 
+    public static int hash(byte[] bytes) {
+        //return Arrays.hashCode(bytes);
+        //92821
+        return hash(bytes, 0, bytes.length);
+    }
+
+    public static int hash(byte[] bytes, int from, int to) {
+        return hashFNV(bytes, from, to);
+    }
+
+    private static int hashFNV(byte[] bytes, int from, int to) {
+        //https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+        //https://softwareengineering.stackexchange.com/a/49599
+        //https://forum.powerbasic.com/forum/user-to-user-discussions/source-code/24260-fnv-fowler-noll-vo-32-bit-hash
+
+        int h = 0x811c9dc5;
+        for(int i = from; i < to; i++)
+            h = (h * 16777619) ^ bytes[i] ;
+        return h;
+    }
+
+    public static long hash64(byte[] bytes) {
+        return hash64(bytes, 0, bytes.length);
+    }
+
+    public static long hash64(byte[] bytes, int from, int to) {
+        return Util.hashELF(bytes, 1, from, to);
+    }
 //    public static int hash(int a, int b) {
 //        return PRIME2 * (PRIME2 + a) + b;
 //    }
@@ -340,7 +368,8 @@ public enum Util {
         long hash = 0;
         long x = 0;
 
-        for (int i = 0; i < str.length(); i++) {
+        int l = str.length();
+        for (int i = 0; i < l; i++) {
             hash = (hash << 4) + str.charAt(i);
 
             if ((x = hash & 0xF0000000L) != 0) {
@@ -1059,12 +1088,6 @@ public enum Util {
     }
 
 
-    public static double normalize(double x, double min, double max) {
-        if (equals(min, max, Float.MIN_NORMAL))
-            return min;
-        return (x - min) / (max - min);
-    }
-
     public static float[] normalize(float[] x, float min, float max) {
         int n = x.length;
         for (int i = 0; i < n; i++) {
@@ -1073,23 +1096,30 @@ public enum Util {
         return x;
     }
 
-    public static float normalize(float x, float min, float max) {
-        if (max - min <= Float.MIN_NORMAL)
-            return min;
+    public static double normalize(double x, double min, double max) {
+        assert(max > min);
+        if (max - min <= Double.MIN_NORMAL)
+            return 0.5f;
         return (x - min) / (max - min);
     }
 
-    public static int lastNonNull(Object... x) {
-        int j = -1;
-        if (x != null) {
-            int k = x.length;
-            for (int i = 0; i < k; i++) {
-                if (x[i] != null)
-                    j = i;
-            }
-        }
-        return j;
+    public static float normalize(float x, float min, float max) {
+        if (max - min <= Float.MIN_NORMAL)
+            return 0.5f;
+        return (x - min) / (max - min);
     }
+
+//    public static int lastNonNull(Object... x) {
+//        int j = -1;
+//        if (x != null) {
+//            int k = x.length;
+//            for (int i = 0; i < k; i++) {
+//                if (x[i] != null)
+//                    j = i;
+//            }
+//        }
+//        return j;
+//    }
 
     public static float variance(float[] population) {
         float average = 0.0f;
@@ -2319,6 +2349,10 @@ public enum Util {
             float fx = f.valueOf(x);
             return g.valueOf(fx);
         };
+    }
+
+    public static int defaultConcurrency() {
+        return Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
     }
 
 

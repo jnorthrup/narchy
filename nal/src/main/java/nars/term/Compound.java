@@ -510,7 +510,7 @@ public interface Compound extends Term, IPair, Subterms {
         /*@NotNull*/
         Subterms yy = subterms();
 
-        if (op == IMPL) {
+//        if (op == IMPL) {
 //            //only two options
 //            Term s0 = yy.sub(0);
 //            if (s0.equals(x)) {
@@ -532,14 +532,19 @@ public interface Compound extends Term, IPair, Subterms {
 //                    return s1d + s1offset;
 //            }
 
-        } else if (op == CONJ) {
+        /*} else */
+        if (op == CONJ) {
 
-            if (after >= dt && yy.sub(0).equals(yy.sub(1)) /* HACK apply to other cases too */) {
-                //repeat
-                //return yy.sub(1).subTimeSafe(x, after - dt) + dt;
-                if (x.equals(yy.sub(1)))
-                    return dt;
-            }
+            /* HACK apply to other cases too */
+            if (after >= dt) {
+                Term yy1 = yy.sub(1);
+                if (yy.sub(0).equals(yy1)) {
+                    //repeat
+                    //return yy.sub(1).subTimeSafe(x, after - dt) + dt;
+                    if (x.equals(yy1))
+                        return dt;
+                }
+             }
 
             boolean reverse;
             int idt;
@@ -667,20 +672,38 @@ public interface Compound extends Term, IPair, Subterms {
                 int s = tt.subs();
                 long t = offset;
 
-                boolean reverse = dt < 0;
 
                 boolean changeDT = t!=ETERNAL && t!=TIMELESS;
 
-                for (int i = !reverse ? 0 : s - 1; reverse ? i >= 0 : i < s; i += (!reverse ? +1 : -1)) {
-                    Term st = tt.sub(i);
-                    if (!st.eventsWhile(events, t,
-                            decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
-                            level + 1)) //recurse
-                        return false;
+                level++;
 
-                    if (changeDT)
-                        t += (!reverse ? +1 : -1) * dt + st.dtRange();
+                if (dt >=0) {
+                    //forward
+                    for (int i = 0; i < s; i++) {
+                        Term st = tt.sub(i);
+                        if (!st.eventsWhile(events, t,
+                                decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
+                                level)) //recurse
+                            return false;
+
+                        if (changeDT)
+                            t += dt + st.dtRange();
+                    }
+                } else {
+                    //reverse
+                    for (int i = s - 1; i >= 0; i--) {
+                        Term st = tt.sub(i);
+                        if (!st.eventsWhile(events, t,
+                                decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
+                                level)) //recurse
+                            return false;
+
+                        if (changeDT)
+                            t += -dt + st.dtRange();
+                    }
+
                 }
+
                 return true;
             }
 

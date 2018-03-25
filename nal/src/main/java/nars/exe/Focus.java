@@ -2,6 +2,7 @@ package nars.exe;
 
 import jcog.Service;
 import jcog.Util;
+import jcog.data.bit.MetalBitSet;
 import jcog.decide.AtomicRoulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
@@ -12,8 +13,10 @@ import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.LongIntProcedure;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Util.normalize;
 import static nars.time.Tense.ETERNAL;
@@ -32,7 +35,7 @@ public class Focus extends AtomicRoulette<Causable> {
      * how quickly the iteration demand can grow from previous (max) values
      */
     static final double IterGrowthIncrement = 1;
-    static final double IterGrowthRateMin = 1.1f;
+    static final double IterGrowthRateMin = 1.25f;
     static final double IterGrowthRateMax = 1.5f;
 
 
@@ -52,6 +55,7 @@ public class Focus extends AtomicRoulette<Causable> {
             return 0; //TODO adjust this proportionally to size of the queue?
         }
     };
+    private final NAR nar;
 
     public double timesliceNS = 1;
 
@@ -59,6 +63,7 @@ public class Focus extends AtomicRoulette<Causable> {
     public Focus(NAR n, Exec.Revaluator r) {
         super(32, Causable[]::new);
 
+        this.nar = n;
         this.add(work);
 
         this.revaluator = r;
@@ -131,118 +136,177 @@ public class Focus extends AtomicRoulette<Causable> {
     double[] timeMean = null;
     int[] sliceIters = new int[0];
 
+    final AtomicBoolean updating = new AtomicBoolean(false);
+
+    final MetalBitSet.AtomicIntBitSet singletonBusy = new MetalBitSet.AtomicIntBitSet();
+
     protected void update(NAR nar) {
 
-        int n = choice.size();
-        if (n == 0)
+        if (!updating.compareAndSet(false, true))
             return;
 
+        try {
+            int n = choice.size();
+            if (n == 0)
+                return;
 
-        if (sliceIters.length != n) {
 
-            //weight = new float[n];
+            if (sliceIters.length != n) {
 
-            time = new DescriptiveStatistics[n];
-            timeMean = new double[n];
-            done = new DescriptiveStatistics[n];
+                //weight = new float[n];
 
+                time = new DescriptiveStatistics[n];
+                timeMean = new double[n];
+                done = new DescriptiveStatistics[n];
+
+
+                for (int i = 0; i < n; i++) {
+                    time[i] = new DescriptiveStatistics(WINDOW);
+                    done[i] = new DescriptiveStatistics(WINDOW);
+                }
+
+                //            assert (n < 32) : "TODO make atomic n>32 bitset";
+                value = new float[n];
+
+
+                doneMean = new double[n];
+                doneMax = new long[n];
+                sliceIters = new int[n]; //last
+            }
+
+            revaluator.update(nar);
+
+            double jiffy = nar.loop.jiffy.floatValue();
+            double throttle = nar.loop.throttle.floatValue();
+
+            timesliceNS = nar.loop.periodNS() * jiffy * throttle;// / (n / concurrency);
 
             for (int i = 0; i < n; i++) {
-                time[i] = new DescriptiveStatistics(WINDOW);
-                done[i] = new DescriptiveStatistics(WINDOW);
+                Causable c = choice.get(i);
+                if (c == null)
+                    continue; //?
+
+                c.can.commit(commiter);
+
+                long timeNS = committed[0];
+                if (timeNS > 0) {
+
+                    DescriptiveStatistics t = this.time[i];
+                    t.addValue(timeNS);
+                    double timeMeanNS = this.timeMean[i] = t.getMean();
+
+                    DescriptiveStatistics d = this.done[i];
+                    d.addValue(committed[1]);
+                    this.doneMean[i] = d.getMean();
+                    this.doneMax[i] = Math.round(d.getMax());
+
+                    //value per time
+                    value[i] = (float) (c.value() / (Math.max(1E3 /* 1uS in nanos */, timeMeanNS)/1E9));
+
+                } else {
+                    //value[i] = unchanged
+                    value[i] *= 0.99f; //slowly forget
+                }
+
             }
 
-            assert (n < 32) : "TODO make atomic n>32 bitset";
-            value = new float[n];
+            //        double[] tRange = Util.minmax(timeMean);
+            //        double tMin = tRange[0];
+            //        double tMax = tRange[1];
+            //        for (int i = 0; i < n; i++) {
+            //            double tNorm = normalize(timeMean[i], tMin, tMax);
+            //            value[i] /= ((float)tNorm);
+            //        }
+
+            //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
+            float[] vRange = Util.minmax(value);
+            float vMin = vRange[0];
+            float vMax = vRange[1];
 
 
-            doneMean = new double[n];
-            doneMax = new long[n];
-            sliceIters = new int[n]; //last
+            //float lowMargin = (minmax[1] - minmax[0]) / n;
+            for (int i = 0; i < n; i++) {
+                double vNormPerTime = normalize(value[i], vMin, vMax);
+                //;
+                int pri = (int) Util.clampI((PRI_GRANULARITY * vNormPerTime), 1, AtomicRoulette.PRI_GRANULARITY);
+
+                //the priority determined by the value primarily affects the probability of the choice being selected as a timeslice
+                priGetAndSet(i, pri);
+
+                //the iters per timeslice is determined by past measurements
+                long doneMost = doneMax[i];
+                double timePerIter = timeMean[i];
+                if (doneMost < 1 || !Double.isFinite(timePerIter)) {
+                    timePerIter = timesliceNS; //assume only one iteration will consume entire timeslice
+                }
+
+                sliceIters[i] = (int) Math.max(1, Math.ceil(
+
+                        //modulate growth by the normalized value
+                        (vNormPerTime * timesliceNS / timePerIter) * Util.lerp(vNormPerTime, IterGrowthRateMin, IterGrowthRateMax)
+                                +
+                                IterGrowthIncrement
+                ));
+            }
+        } finally {
+            updating.set(false);
+        }
+    }
+
+
+
+    public boolean tryRun(int x) {
+        if (singletonBusy.get(x))
+            return false;
+
+        @Nullable Causable cx = this.choice.getSafe(x);
+        if (cx == null)
+            return false;
+
+//        if (sliceIters.length <= x)
+//            return false;
+
+        /** temporarily withold priority */
+
+        boolean singleton = cx.singleton();
+        int pri;
+        if (singleton) {
+            if (!singletonBusy.compareAndSet(x, false, true))
+                return false; //someone else got this singleton
+
+            pri = priGetAndSet(x, 0);
+        } else {
+            pri = pri(x);
         }
 
-        double timesliceS = nar.loop.jiffy.floatValue();
-        double throttle = nar.loop.throttle.floatValue();
-
-        timesliceNS = timesliceS * 1.0E9 * throttle;
-
-        revaluator.update(nar);
-
-        for (int i = 0; i < n; i++) {
-            Causable c = choice.getSafe(i);
-            if (c == null)
-                continue;
+        //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
+        //this will require doneMax to be an atomic accmulator for accurac
 
 
-            c.can.commit(commiter);
 
-            long timeNS = committed[0];
-            if (timeNS > 0) {
+        //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
 
-                DescriptiveStatistics t = this.time[i];
-                t.addValue(timeNS);
-                this.timeMean[i] = t.getMean();
+        int completed = -1;
+        try {
+            completed = cx.run(nar, this.sliceIters[x]);
+        } finally {
+            if (singleton) {
 
-                DescriptiveStatistics d = this.done[i];
-                d.addValue(committed[1]);
-                this.doneMean[i] = d.getMean();
-                this.doneMax[i] = Math.round(d.getMax());
+                if (completed >= 0) {
+                    priGetAndSetIfEquals(x, 0, pri); //release for another usage unless it's already re-activated in a new cycle
+                } else {
+                    //leave suspended until next commit in the next cycle
+                }
 
-                value[i] =
-                        c.value();
+                singletonBusy.clear(x);
 
             } else {
-                //value[i] = unchanged
-                value[i] *= 0.99f; //slowly forget
+                if (completed < 0) {
+                    priGetAndSet(x, 0); //suspend
+                }
             }
-
         }
-
-//        double[] tRange = Util.minmax(timeMean);
-//        double tMin = tRange[0];
-//        double tMax = tRange[1];
-//        for (int i = 0; i < n; i++) {
-//            double tNorm = normalize(timeMean[i], tMin, tMax);
-//            value[i] /= ((float)tNorm);
-//        }
-
-        //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
-        float[] vRange = Util.minmax(value);
-        float vMin = vRange[0];
-        float vMax = vRange[1];
-
-
-
-
-
-
-
-        //float lowMargin = (minmax[1] - minmax[0]) / n;
-        for (int i = 0; i < n; i++) {
-            double vNorm = normalize(value[i], vMin, vMax)
-                / Math.max(1E3 /* 1uS in nanos */, timeMean[i]);
-                //;
-            int pri = (int) Util.clampI((PRI_GRANULARITY * vNorm), 1, AtomicRoulette.PRI_GRANULARITY);
-
-            //the priority determined by the value primarily affects the probability of the choice being selected as a timeslice
-            priGetAndSet(i, pri);
-
-            //the iters per timeslice is determined by past measurements
-            long doneMost = doneMax[i];
-            double timePerIter = timeMean[i];
-            if (doneMost < 1 || !Double.isFinite(timePerIter)) {
-                timePerIter = timesliceNS; //assume only one iteration will consume entire timeslice
-            }
-
-            sliceIters[i] = (int) Math.max(1, Math.round(
-
-                    //modulate growth by the normalized value
-                    ( timesliceNS / timePerIter ) * Util.lerp(vNorm, IterGrowthRateMin, IterGrowthRateMax)
-                        +
-                    IterGrowthIncrement
-            ));
-        }
-
+        return true;
     }
 
 

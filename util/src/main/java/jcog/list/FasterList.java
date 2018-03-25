@@ -184,7 +184,10 @@ public class FasterList<X> extends FastList<X> {
 
     @Nullable
     public final X getSafe(int index) {
-        if (index >= 0 && index < this.size) {
+        if (index < 0)
+            return null;
+        X[] items = this.items;
+        if (index < Math.min(items.length, this.size)) {
             return items[index];
         } else {
             return null;

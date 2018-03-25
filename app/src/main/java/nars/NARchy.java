@@ -4,7 +4,7 @@ import jcog.User;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.audio.NARAudio;
 import nars.exe.Focus;
-import nars.exe.PoolMultiExec;
+import nars.exe.WorkerMultiExec;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
@@ -33,7 +33,7 @@ public class NARchy extends NARS {
 
         NAR nar = new DefaultNAR(8, true)
                 //.exe(new WorkerMultiExec(512, 2, 64))
-                .exe(new PoolMultiExec(new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
+                .exe(new WorkerMultiExec(new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
                         , 64, 512))
 //                .exe(new AbstractExec(64) {
 //                    @Override

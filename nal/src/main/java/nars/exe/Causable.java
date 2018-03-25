@@ -5,11 +5,8 @@ import nars.NAR;
 import nars.Param;
 import nars.control.NARService;
 import nars.term.Term;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * instruments the runtime resource consumption of its iteratable procedure.
@@ -29,9 +26,6 @@ abstract public class Causable extends NARService {
     /** id as set by the scheduler to identify it */
     public volatile int id = -1;
 
-    /** non-null if a singleton */
-    @Nullable
-    final AtomicBoolean busy;
 
     @Deprecated
     protected Causable(NAR nar) {
@@ -45,7 +39,6 @@ abstract public class Causable extends NARService {
 
     protected Causable(NAR nar, Term id) {
         super(id);
-        busy = singleton() ? new AtomicBoolean(false) : null;
         can = new Can(term().toString());
         if (nar != null)
             nar.on(this);
@@ -72,6 +65,7 @@ abstract public class Causable extends NARService {
 
         try {
             completed = next(n, iterations);
+
         } catch (Throwable t) {
             error = t;
         } finally {
