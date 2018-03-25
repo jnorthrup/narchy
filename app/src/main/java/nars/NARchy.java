@@ -4,7 +4,7 @@ import jcog.User;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.audio.NARAudio;
 import nars.exe.Focus;
-import nars.exe.WorkerMultiExec;
+import nars.exe.PoolMultiExec;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
@@ -22,7 +22,6 @@ public class NARchy extends NARS {
 
     public static NAR ui() {
 
-        User u = User.the();
         //u.forEach(System.out::println);
 //        u.put("boot", new Date().toString());
 //        Util.pause(100);
@@ -33,8 +32,10 @@ public class NARchy extends NARS {
 
         NAR nar = new DefaultNAR(8, true)
                 //.exe(new WorkerMultiExec(512, 2, 64))
-                .exe(new WorkerMultiExec(new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
-                        , 64, 512))
+                .exe(new PoolMultiExec /*WorkerMultiExec*/(
+                    new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),512
+                        //        , 64, 512))
+                ))
 //                .exe(new AbstractExec(64) {
 //                    @Override
 //                    public boolean concurrent() {
@@ -49,10 +50,10 @@ public class NARchy extends NARS {
         ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (Task::isInput), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
-
-
         //auxiliary modules, load in background thread
         nar.runLater(()->{
+
+            User u = User.the();
 
             new NARAudio(nar);
 

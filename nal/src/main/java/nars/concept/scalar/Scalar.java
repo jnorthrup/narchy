@@ -9,7 +9,6 @@ import nars.concept.dynamic.ScalarBeliefTable;
 import nars.concept.util.ConceptBuilder;
 import nars.control.DurService;
 import nars.task.signal.SignalTask;
-import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;

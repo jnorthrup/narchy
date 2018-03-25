@@ -224,9 +224,9 @@ abstract public class MetalBitSet {
         }
 
         public boolean compareAndSet(int i, boolean expect, boolean set) {
+            int mask = 1 << i;
             final boolean[] got = {false};
             _x.updateAndGet(this, v->{
-                int mask = 1 << i;
                 if (((v & mask) != 0)==expect) {
                     //set
                     got[0] = true;

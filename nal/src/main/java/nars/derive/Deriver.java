@@ -16,7 +16,6 @@ import nars.exe.Causable;
 import nars.term.Term;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;

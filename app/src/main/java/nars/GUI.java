@@ -16,8 +16,8 @@ public class GUI {
         NAR nar = NARchy.ui();
 
 
-        Loop loop = nar.startFPS(10f); //10hz alpha
-        ((NARLoop) loop).throttle.set(0.1f);
+        Loop loop = nar.startFPS(20f); //10hz alpha
+        //((NARLoop) loop).throttle.set(0.1f);
 
 
 

@@ -1,8 +1,5 @@
 package jcog.data.byt;
 
-import jcog.Util;
-
-
 public interface AbstractBytes {
 
     AbstractBytes EMPTY = new AbstractBytes() {

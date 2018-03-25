@@ -48,7 +48,8 @@ public class ConjClustering extends Causable {
     private float confMin;
     private int volMax;
     private int ditherTime;
-    private final float termVolumeMaxFactor = 0.5f;
+    private final float termVolumeMaxFactor = 0.9f;
+    private int taskLimitPerCentroid;
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
@@ -95,7 +96,6 @@ public class ConjClustering extends Causable {
         });
     }
 
-    private int taskLimitPerCentroid;
 
 
     @Override

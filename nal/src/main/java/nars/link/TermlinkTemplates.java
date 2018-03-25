@@ -161,37 +161,37 @@ public class TermlinkTemplates extends FasterList<Term> {
      * determines ability to structural transform, so those terms which have no structural transforms should not link to themselves
      */
     static boolean selfTermLink(Term b) {
-        switch (b.op()) {
-            case INH:
-            case SIM:
-                //return b.hasAny(Op.SETe,Op.SETi,Op.SECTe,Op.SECTi);
-                //return true;
-                return false;
-
-            case IMPL: //<- check if IMPL needs it
-                //return false;
-                return true;
-
-            case PROD:
-                return false;
-
-
-            case SECTe:
-            case SECTi:
-            case SETe:
-            case SETi:
-                return true;
-            case DIFFi:
-            case DIFFe:
-                return false;
-
-            case CONJ:
-                return false;
-
-            default:
-                throw new UnsupportedOperationException("what case am i missing");
-        }
-        //return false;
+//        switch (b.op()) {
+//            case INH:
+//            case SIM:
+//                //return b.hasAny(Op.SETe,Op.SETi,Op.SECTe,Op.SECTi);
+//                //return true;
+//                return false;
+//
+//            case IMPL: //<- check if IMPL needs it
+//                //return false;
+//                return false;
+//
+//            case PROD:
+//                return false;
+//
+//
+//            case SECTe:
+//            case SECTi:
+//            case SETe:
+//            case SETi:
+//                return false;
+//            case DIFFi:
+//            case DIFFe:
+//                return false;
+//
+//            case CONJ:
+//                return false;
+//
+//            default:
+//                throw new UnsupportedOperationException("what case am i missing");
+//        }
+        return false;
         //return b.isAny(Op.CONJ.bit | Op.SETe.bit | Op.SETi.bit  /* .. */);
         //return true;
     }

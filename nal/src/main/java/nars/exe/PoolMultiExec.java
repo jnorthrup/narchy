@@ -17,7 +17,7 @@ public class PoolMultiExec extends AbstractExec {
     private final int parallelization;
     private Focus focus;
 
-    public PoolMultiExec(int capacity, Revaluator revaluator) {
+    public PoolMultiExec(Revaluator revaluator, int capacity) {
         this(defaultConcurrency(), capacity, revaluator);
     }
 

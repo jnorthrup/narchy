@@ -33,6 +33,8 @@ import java.util.function.Consumer;
  */
 public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
+    private static final int OPEN_CONCEPT_BUTTON = 1; //middle button
+
     private final Bitmap2DSensor cam;
     private final NAR nar;
 
@@ -73,7 +75,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
             touchConcept = cam.get(touchPixel.x, cam.height - 1 - touchPixel.y);
         }
 
-        if (finger.clickedNow(2, this)) {
+        if (finger.clickedNow(OPEN_CONCEPT_BUTTON, this)) {
             Scalar c = this.touchConcept;
             if (c != null)
                 Vis.conceptWindow(c, nar);
