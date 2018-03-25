@@ -16,12 +16,12 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Created by me on 12/4/16.
@@ -32,55 +32,19 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
     @Nullable
     public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, NAR n) {
 
-        final int _DT = superterm.dt();
-
-        assert (_DT != XTERNAL);
+        assert(superterm.dt()!=XTERNAL);
         assert(superterm.op()!=NEG);
 
-        Term[] inputs = components(superterm);
-        for (Term t : inputs) {
-            if (!t.unneg().op().conceptualizable) //a component for which truth can not be determined anyway: variable, INT etc
-                return null;
-        }
-        assert (inputs.length > 0) : this + " yielded no dynamic components for superterm " + superterm;
+        DynTruth d = new DynTruth(4);
 
-        DynTruth d = new DynTruth(inputs.length);
-
-        int odt = 0;
-
-        for (int i = 0; i < inputs.length; i++) {
-            Term it = inputs[i];
-
-
-            long subStart, subEnd;
-
-
-            if (start == ETERNAL || superterm.op() != CONJ || _DT == DTERNAL) {
-                subStart = start;
-                subEnd = end;
-            } else {
-                int dt = superterm.subTimeSafe(it, odt);
-                if (dt == DTERNAL) {
-                    superterm.subTimeSafe(it, odt);
-                    if (Param.DEBUG)
-                        throw new RuntimeException(it + " not found in superterm: " + superterm + " -> " + Arrays.toString(inputs));
-                    else
-                        return null;
-                }
-                //assert (dt != DTERNAL): it + " not found in superterm: " + superterm;
-                subStart = start + dt;
-                subEnd = end + dt;
-                odt += dt;
-            }
-
-
-            boolean negated = it.op() == Op.NEG;
+        if (!components(superterm, start, end, (Term concept, long subStart, long subEnd)->{
+            boolean negated = concept.op() == Op.NEG;
             if (negated)
-                it = it.unneg();
+                concept = concept.unneg();
 
             Concept subConcept =
                     //n.concept(it);
-                    n.conceptualize(it); //force creation of concept, which if dynamic, could provide data for use here
+                    n.conceptualize(concept); //force creation of concept, which if dynamic, could provide data for use here
 
             @Nullable Task bt;
             if (!(subConcept instanceof TaskConcept)) {
@@ -88,12 +52,12 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 //                    if (!(subConcept == null || !(subConcept instanceof NodeConcept)))
 //                        throw new RuntimeException(it + " does not reference a TaskConcept: " + subConcept);
 //                }
-                return null;
+                return false;
             } else {
 
                 BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
 
-                bt = table.match(subStart, subEnd, it, n, d::filterOverlap);
+                bt = table.match(subStart, subEnd, concept, n, d::filterOverlap);
                 if (bt != null) {
                     bt = Task.project(bt, subStart, subEnd, n, negated);
                 } else {
@@ -102,12 +66,21 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
             }
 
-            if (!add(bt, d))
-                return null;
-        }
+            return add(bt, d);
+
+        }))
+            return null;
+
 
         return d;
     }
+
+    @FunctionalInterface
+    public interface ObjectLongLongPredicate<T> {
+        boolean accept(T object, long start, long end);
+    }
+
+    abstract public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
 
     protected boolean add(@Nullable Task bt, DynTruth d) {
         return d.add(bt);
@@ -115,7 +88,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
 
 
-    abstract public Term[] components(Term superterm);
 
 
     /**
@@ -124,66 +96,9 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
     abstract public Term construct(Term superterm, List<TaskRegion> c);
 
 
-    /**
-     * conf is multiplied, freq is OR'd
-     */
-    public static final class Union extends DynamicTruthModel.Intersection {
 
-        public Union(Term... comp) {
-            super(comp);
-            assert (comp.length > 1);
-        }
 
-        @Override
-        protected float f(float freq) {
-            return 1f - freq;
-        }
-
-    }
-
-    public static class Intersection extends DynamicTruthModel {
-
-        /**
-         * for use with conjunctions whose subterms may change as its DT changes
-         */
-        public final static Intersection conj = new Intersection(null);
-
-        private final Term[] comp;
-
-        public Intersection(@Nullable Term[] comp) {
-            this.comp = comp;
-        }
-
-        @Override
-        /*@NotNull */
-        public Term construct(Term superterm, List<TaskRegion> components) {
-
-            int n = components.size();
-            if (n == 1) {
-                return components.get(0).task().term();
-            }
-
-            boolean conj = superterm.op() == CONJ;
-            if (conj) {
-                Conj c = new Conj();
-                //long estVolume = ((FasterList<TaskRegion>)components).sumOfInt(xt -> ((Task)xt).term().volume());
-                //TODO heuristic for range sampling parameters
-                for (TaskRegion t : components) {
-                    if (!c.add(((Task)t).term(), t.start(), t.end(), 2, 1))
-                        return Null; //TODO maybe try with less aggressive sampling, if sampling was used
-                }
-                return c.term();
-            } else {
-                //SECT's
-
-                Term[] ct = Util.map(0, n, c -> components.get(c).task().term(), Term[]::new);
-                if (n == 2) {
-                    return inhConstruct2(superterm, SECTe.bit | SECTi.bit, ct);
-                } else {
-                    return inhConstructN(superterm, SECTe.bit | SECTi.bit, ct);
-                }
-            }
-        }
+    abstract public static class Intersection extends DynamicTruthModel {
 
 
         @Override
@@ -265,16 +180,90 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             return freq;
         }
 
+    }
+
+    public static class SectIntersection extends Intersection {
+        /** ahead of time computed components */
+        private final Term[] comp;
+
+        public SectIntersection(Term[] comp) {
+            this.comp = comp;
+        }
 
         @Override
-        public Term[] components(Term superterm) {
-            return comp != null ? comp : superterm.subterms().arrayShared();
+        public Term construct(Term superterm, List<TaskRegion> components) {
+            //SECT's
+            int n = components.size();
+            if (n == 1) {
+                return components.get(0).task().term();
+            }
+            Term[] ct = Util.map(0, n, c -> components.get(c).task().term(), Term[]::new);
+            if (n == 2) {
+                return inhConstruct2(superterm, SECTe.bit | SECTi.bit, ct);
+            } else {
+                return inhConstructN(superterm, SECTe.bit | SECTi.bit, ct);
+            }
+        }
+
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            for (Term x : comp) {
+                if (!each.accept(x, start, end)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    /**
+     * conf is multiplied, freq is OR'd
+     */
+    public static final class Union extends SectIntersection {
+
+        public Union(Term... comp) {
+            super(comp);
+            assert (comp.length > 1);
+        }
+
+        @Override
+        protected float f(float freq) {
+            return 1f - freq;
         }
 
     }
 
+    public static class ConjIntersection extends Intersection {
+
+        public static DynamicTruthModel the = new ConjIntersection();
+
+        private ConjIntersection() {
+
+        }
+
+        @Override
+        public Term construct(Term superterm, List<TaskRegion> components) {
+            Conj c = new Conj();
+            //long estVolume = ((FasterList<TaskRegion>)components).sumOfInt(xt -> ((Task)xt).term().volume());
+            //TODO heuristic for range sampling parameters
+            for (TaskRegion t : components) {
+                if (!c.add(((Task)t).term(), t.start(), t.end(), 2, 1))
+                    return Null; //TODO maybe try with less aggressive sampling, if sampling was used
+            }
+            return c.term();
+        }
+
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            long range = end-start;
+            return superterm.eventsWhile((when, event)->
+                    each.accept(event, when, when + range),
+            start, true, true, false, 0);
+        }
+    }
+
     public static class Difference extends DynamicTruthModel {
-        private final Term[] components;
+        private final Term[] comp;
 
         public Difference(Term[] xy) {
 
@@ -282,7 +271,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 //            assert (!(xy[0] instanceof Variable) && !(xy[1] instanceof Variable)) :
 //                    xy[0] + " or " + xy[1] + " is a variable";
 
-            this.components = xy;
+            this.comp = xy;
         }
 
         public Difference(Term x, Term y) {
@@ -314,8 +303,13 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         }
 
         @Override
-        public Term[] components(Term superterm) {
-            return components;
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            for (Term x : comp) {
+                if (!each.accept(x, start, end)) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         @Override

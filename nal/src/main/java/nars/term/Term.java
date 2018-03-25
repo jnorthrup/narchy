@@ -116,19 +116,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
     boolean containsRoot(Term t);
 
-    default void append(ByteArrayDataOutput out) {
-        Term.append(this, out);
-    }
-
-    static void append(Term term, ByteArrayDataOutput out) {
-
-        Op o = term.op();
-        out.writeByte(o.id);
-        IO.writeTermContainer(out, term.subterms());
-        if (o.temporal)
-            out.writeInt(term.dt());
-
-    }
+    void append(ByteArrayDataOutput out);
 
     @Override
     boolean equals(Object o);

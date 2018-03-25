@@ -91,7 +91,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                                 dmt = new DynamicTruthModel.Union(x);
                                 break;
                             case SECTe:
-                                dmt = new DynamicTruthModel.Intersection(x);
+                                dmt = new DynamicTruthModel.SectIntersection(x);
                                 break;
                             case DIFFi:
                                 dmt = new DynamicTruthModel.Difference(x[0], x[1]);
@@ -155,7 +155,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 //                                    case INT:
 //                                    case PROD:
                             case SECTi:
-                                dmt = new DynamicTruthModel.Intersection(x);
+                                dmt = new DynamicTruthModel.SectIntersection(x);
                                 break;
                             case SECTe:
                                 dmt = new DynamicTruthModel.Union(x);
@@ -176,7 +176,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
             case CONJ:
                 //allow variables onlyif they are not themselves direct subterms of this
                 if (validDynamicSubterms(ts)) {
-                    dmt = DynamicTruthModel.Intersection.conj;
+                    dmt = DynamicTruthModel.Intersection.ConjIntersection.the;
                 }
                 break;
 

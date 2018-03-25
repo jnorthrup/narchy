@@ -65,15 +65,15 @@ public class IO {
         void write(Term x, DynBytes to);
     }
 
-    public static class DefaultTermEncoder implements TermEncoder {
-
-        @Override
-        public void write(Term x, DynBytes to) {
-
-            x.append((ByteArrayDataOutput) to);
-
-        }
-    }
+//    public static class DefaultTermEncoder implements TermEncoder {
+//
+//        @Override
+//        public void write(Term x, DynBytes to) {
+//
+//            x.append((ByteArrayDataOutput) to);
+//
+//        }
+//    }
 
 //TODO
 //    public interface TermDecoder {
@@ -325,13 +325,7 @@ public class IO {
 //        d.appendTo(out);
 //    }
 
-    public static void writeTermContainer(ByteArrayDataOutput out, Subterms c) {
-        int siz = c.subs();
-        out.writeByte(siz);
-        c.forEach(t -> t.append(out));
-    }
-
-//    public static void writeTermContainer(DataOutput out, Term... subterms) throws IOException {
+    //    public static void writeTermContainer(DataOutput out, Term... subterms) throws IOException {
 //        out.writeByte(subterms.length);
 //        for (Term x : subterms) {
 //            writeTerm(out, x);

@@ -1,6 +1,7 @@
 package nars.term.atom;
 
 import com.google.common.collect.*;
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.SimpleIntSet;
@@ -90,10 +91,14 @@ public class Int implements Intlike, The {
     }
 
     @Override
-    public byte[] bytes() {
+    public final byte[] bytes() {
         return bytesCached;
     }
 
+    @Override
+    public final void append(ByteArrayDataOutput out) {
+        out.write(bytesCached);
+    }
 
     @Override
     public final Term eval(TermContext context) {

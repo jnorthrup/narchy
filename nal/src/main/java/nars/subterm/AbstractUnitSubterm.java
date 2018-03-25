@@ -1,5 +1,6 @@
 package nars.subterm;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import nars.term.Compound;
 import nars.term.Term;
@@ -13,6 +14,12 @@ import java.util.stream.Stream;
 abstract public class AbstractUnitSubterm implements Subterms {
 
     abstract public Term sub();
+
+    @Override
+    public final void append(ByteArrayDataOutput out) {
+        out.writeByte(1);
+        sub().append(out);
+    }
 
     @Override
     public String toString() {

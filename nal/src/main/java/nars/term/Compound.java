@@ -20,6 +20,7 @@
  */
 package nars.term;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.$;
@@ -171,6 +172,17 @@ public interface Compound extends Term, IPair, Subterms {
         forEach(x -> x.structureKey(appendTo));
         return appendTo;
     }
+
+    default void append(ByteArrayDataOutput out) {
+
+        Op o = op();
+        out.writeByte(o.id);
+        subterms().append(out);
+        if (o.temporal)
+            out.writeInt(dt());
+
+    }
+
 
     //    /** weather the given term has any potential free variables that could be assigned in unification */
 //    default boolean freeVars(@Nullable Op type) {

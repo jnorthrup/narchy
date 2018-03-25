@@ -1,6 +1,7 @@
 package nars.subterm;
 
 import com.google.common.base.Joiner;
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
@@ -1168,6 +1169,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return termsExcept(index);
     }
 
+    default void append(ByteArrayDataOutput out) {
+        out.writeByte(subs());
+        forEach(t -> t.append(out));
+    }
 
 
     //    /**
