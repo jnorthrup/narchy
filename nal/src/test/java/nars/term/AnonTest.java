@@ -3,6 +3,7 @@ package nars.term;
 import com.google.common.collect.Iterators;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
+import nars.IO;
 import nars.Narsese;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
@@ -138,6 +139,7 @@ public class AnonTest {
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
         assertEquals(CachedCompound.the(PROD, v), CachedCompound.the(PROD, a));
+        assertArrayEquals(IO.termToBytes($.pFast(v)), IO.termToBytes($.pFast(a)));
     }
 
 }

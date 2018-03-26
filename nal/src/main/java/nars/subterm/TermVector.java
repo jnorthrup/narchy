@@ -21,17 +21,17 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
 //    private static volatile int SERIAL = 0;
 //    public final int serial = SERIAL++;
 
-    /** copy constructor for fast instantiation */
-    protected TermVector(int hash, int structure,
-                         byte varPattern, byte varDep, byte varQuery, byte varIndep,
-                         short complexity, short volume, boolean normalized) {
-        super(structure, varPattern, varDep, varQuery, varIndep, complexity, volume, hash);
-        this.normalized = normalized;
-    }
+//    /** copy constructor for fast instantiation */
+//    protected TermVector(int hash, int structure,
+//                         byte varPattern, byte varDep, byte varQuery, byte varIndep,
+//                         short complexity, short volume, boolean normalized) {
+//        super(structure, varPattern, varDep, varQuery, varIndep, complexity, volume, hash);
+//        this.normalized = normalized;
+//    }
 
     protected TermVector(Term... terms) {
         super(terms);
-        this.normalized = (vars() + varPattern) == 0; //assume its normalized if no variables are present
+        this.normalized = Subterms.super.isNormalized();
     }
 
 
@@ -59,7 +59,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     /**
      * if the compound tracks normalization state, this will set the flag internally
      */
-    public void setNormalized() {
+    @Override public void setNormalized() {
         normalized = true;
     }
 

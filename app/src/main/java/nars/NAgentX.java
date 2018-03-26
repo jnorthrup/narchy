@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.Util;
 import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
@@ -150,7 +151,11 @@ abstract public class NAgentX extends NAgent {
                 .exe(new WorkerMultiExec(
                         //new Focus.DefaultRevaluator(),
                         new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        128, 256)
+                        256, 8192) {
+                        {
+                            Util.setExecutor(this);
+                        }
+                     }
                 )
 
                 .time(clock)

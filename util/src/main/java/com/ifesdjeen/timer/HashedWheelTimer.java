@@ -48,7 +48,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     private final int numWheels;
     private final long resolution;
     private final ExecutorService loop;
-    private final ExecutorService executor;
+    private final Executor executor;
     private final WaitStrategy waitStrategy;
 
     private final AtomicInteger cursor = new AtomicInteger(0);
@@ -77,7 +77,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * @param strategy          strategy for waiting for the next tick
      * @param exec              Executor instance to submit tasks to
      */
-    public HashedWheelTimer(String name, long resolutionInNanos, int numWheels, WaitStrategy strategy, ExecutorService exec) {
+    public HashedWheelTimer(String name, long resolutionInNanos, int numWheels, WaitStrategy strategy, Executor exec) {
         this(resolutionInNanos, numWheels, strategy, exec, new ThreadFactory() {
             final AtomicInteger i = new AtomicInteger();
 
@@ -101,7 +101,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * @param exec      Executor instance to submit tasks to
      * @param factory   custom ThreadFactory for the main loop thread
      */
-    public HashedWheelTimer(long res, int numWheels, WaitStrategy strategy, ExecutorService exec,
+    public HashedWheelTimer(long res, int numWheels, WaitStrategy strategy, Executor exec,
                             ThreadFactory factory) {
         this.waitStrategy = strategy;
 
@@ -256,61 +256,68 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     public void shutdown() {
         cursor.set(Integer.MIN_VALUE);
         this.loop.shutdown();
-        this.executor.shutdown();
+        if (executor instanceof ExecutorService)
+            ((ExecutorService)this.executor).shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
         cursor.set(Integer.MIN_VALUE);
         this.loop.shutdownNow();
-        return this.executor.shutdownNow();
+        if (executor instanceof ExecutorService)
+            return ((ExecutorService)this.executor).shutdownNow();
+        else
+            return List.of();
     }
 
     @Override
     public boolean isShutdown() {
-        return this.loop.isShutdown() && this.executor.isShutdown();
+        return this.loop.isShutdown() &&
+                (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).isShutdown());
     }
 
     @Override
     public boolean isTerminated() {
-        return this.loop.isTerminated() && this.executor.isTerminated();
+        return this.loop.isTerminated() &&
+                (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).isTerminated());
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return this.loop.awaitTermination(timeout, unit) && this.executor.awaitTermination(timeout, unit);
+        return this.loop.awaitTermination(timeout, unit) &&
+                (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).awaitTermination(timeout, unit));
     }
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        return this.executor.submit(task);
+        return ((ExecutorService)this.executor).submit(task);
     }
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
-        return this.executor.submit(task, result);
+        return ((ExecutorService)this.executor).submit(task, result);
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return this.executor.invokeAll(tasks);
+        return ((ExecutorService)this.executor).invokeAll(tasks);
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout,
                                          TimeUnit unit) throws InterruptedException {
-        return this.executor.invokeAll(tasks, timeout, unit);
+        return ((ExecutorService)this.executor).invokeAll(tasks, timeout, unit);
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        return this.executor.invokeAny(tasks);
+        return ((ExecutorService)this.executor).invokeAny(tasks);
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout,
                            TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return this.executor.invokeAny(tasks, timeout, unit);
+        return ((ExecutorService)this.executor).invokeAny(tasks, timeout, unit);
     }
 
     /**

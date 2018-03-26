@@ -35,10 +35,15 @@ public enum Contains implements BiPredicate<Term,Term> {
     Event() {
         @Override
         public boolean test(Term container, Term x) {
-            if (container.op()==CONJ && !container.impossibleSubTerm(x)) {
+            if (container.op()!=CONJ)
+                return false;
+                //throw new RuntimeException("this possibility should have been filtered");
+
+            if (!container.impossibleSubTerm(x)) {
                 final boolean[] found = {false};
+                Term xr = x.root();
                 container.eventsWhile((when,what)->{
-                    if (what.equalsRoot(x)) {
+                    if (xr.equals(what.root())) {
                         found[0] = true;
                         return false;
                     }

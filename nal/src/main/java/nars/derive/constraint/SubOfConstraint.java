@@ -53,28 +53,30 @@ public class SubOfConstraint extends MatchConstraint {
         if (yy == null)
             return false; //unknown yet
 
-        if (!canEqual && ((forward?xx:yy).impossibleSubTerm(forward?yy:xx)))
-            return true;
+        /** x polarized */
+        Term contentP = (forward ? yy : xx).negIf(polarityCompare < 0);
+        Term container = forward ? xx : yy;
 
-        if (polarityCompare==-1)
-            xx = xx.neg();
+        if (!canEqual && (container.impossibleSubTerm(contentP)))
+            return true;
 
         if (canEqual) {
             if (polarityCompare != 0) {
-                if (xx.equalsRoot(yy))
+                if (container.equalsRoot(contentP))
                     return false;
             } else {
-                if (xx.unneg().equalsRoot(yy.unneg()))
+                if (container.unneg().equalsRoot(contentP.unneg()))
                     return false;
             }
         }
 
         if (polarityCompare==0) {
             //if posOrNeg, discover if the negative case is valid.  positive (normal) case is tested after
-            if (containment.test( forward ? xx.neg() : yy,  forward ? yy : xx.neg()))
+            if (containment.test( container,  contentP.neg()))
                 return false;
         }
 
-        return !containment.test( forward ? xx : yy, forward ? yy : xx);
+        return !containment.test( container, contentP);
+            //only use xxp when testing for containment, keep the outer raw
     }
 }

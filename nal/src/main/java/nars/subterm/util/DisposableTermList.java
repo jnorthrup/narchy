@@ -20,4 +20,5 @@ public class DisposableTermList extends TermList {
 
         return l;
     }
+
 }

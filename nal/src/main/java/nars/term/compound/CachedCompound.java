@@ -40,15 +40,15 @@ abstract public class CachedCompound implements Compound, The {
     public static CachedCompound the(/*@NotNull*/ Op op, int dt, Subterms subterms) {
         //HACK predict if compound will differ from its root
         if (dt == DTERNAL && !op.temporal && !subterms.hasAny(Op.Temporal)) { //TODO there are more cases
-            return new CachedNontemporalCompound(op, subterms);
+            return new SimpleCachedCompound(op, subterms);
         } else {
-            return new CachedUnrootedCompound(op, dt, subterms);
+            return new TemporalCachedCompound(op, dt, subterms);
         }
     }
 
-    private static class CachedNontemporalCompound extends CachedCompound {
+    private static class SimpleCachedCompound extends CachedCompound {
 
-        CachedNontemporalCompound(Op op, Subterms subterms) {
+        SimpleCachedCompound(Op op, Subterms subterms) {
             super(op, DTERNAL, subterms);
         }
 
@@ -86,12 +86,12 @@ abstract public class CachedCompound implements Compound, The {
     }
 
     /** caches a reference to the root for use in terms that are inequal to their root */
-    private static class CachedUnrootedCompound extends CachedCompound  {
+    private static class TemporalCachedCompound extends CachedCompound  {
         private transient Term rooted = null;
         private transient Term concepted = null;
         final int dt;
 
-        private CachedUnrootedCompound(Op op, int dt, Subterms subterms) {
+        private TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
             this.dt = dt;
         }
@@ -126,7 +126,7 @@ abstract public class CachedCompound implements Compound, The {
 
     }
 
-    private static class CachedCompoundDT extends CachedUnrootedCompound {
+    private static class CachedCompoundDT extends TemporalCachedCompound {
 
         CachedCompoundDT(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);

@@ -8,12 +8,24 @@ public final class UnitSubterm extends AbstractUnitSubterm implements The {
 
     private final Term the;
 
+    boolean normalized;
+
     public UnitSubterm(Term the) {
         this.the = the;
+        this.normalized = super.isNormalized();
     }
 
     @Override public Term sub() {
         return the;
     }
 
+    @Override
+    public boolean isNormalized() {
+        return normalized;
+    }
+
+    @Override
+    public void setNormalized() {
+        normalized = true;
+    }
 }

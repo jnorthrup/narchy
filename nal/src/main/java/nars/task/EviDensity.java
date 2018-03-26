@@ -100,13 +100,17 @@ public final class EviDensity {
             //first add
             if (xStart > xEnd)
                 throw new RuntimeException("out of order interval");
-            unionStart = xStart;
-            unionEnd = xEnd;
+            if (xStart!=ETERNAL) {
+                unionStart = xStart;
+                unionEnd = xEnd;
+            }
             sumEviAvg = sumEviIntegrals = 0;
         } else {
-            Longerval uu = new Longerval(unionStart, unionEnd).union(xStart, xEnd);
-            this.unionStart = uu.a;
-            this.unionEnd = uu.b;
+            if (xStart!=ETERNAL) {
+                Longerval uu = new Longerval(unionStart, unionEnd).union(xStart, xEnd);
+                this.unionStart = uu.a;
+                this.unionEnd = uu.b;
+            }
         }
 
         sumEviAvg += evi;

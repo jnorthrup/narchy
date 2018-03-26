@@ -2,12 +2,12 @@ package jcog.exe;
 
 import com.ifesdjeen.timer.FixedRateTimedFuture;
 import com.ifesdjeen.timer.HashedWheelTimer;
+import jcog.Util;
 import jcog.math.MutableInteger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 
 import java.util.SortedMap;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -35,7 +35,7 @@ abstract public class Loop {
              64,
             // HashedWheelTimer.WaitStrategy.YieldingWait,
                 HashedWheelTimer.WaitStrategy.SleepWait,
-            ForkJoinPool.commonPool());
+            Util.executor());
 
 
 //    private float lag, lagSum;

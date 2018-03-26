@@ -35,6 +35,7 @@ import static nars.$.newArrayList;
 import static nars.$.newHashSet;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
+import static nars.Op.VAR_PATTERN;
 import static nars.subterm.util.Contains.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -209,24 +210,21 @@ public class DeriveRuleProto extends DeriveRuleSource {
                     break;
 
 
-                case "eventOf": //recursive
-                    //X in Y : X is recursive subterm of Y
+                case "eventOf":
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     eventPrefilter(pres, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event));
                     break;
 
-                case "eventOfNeg": //recursive
-                    //X inNeg Y : --X is recursive subterm of Y
+                case "eventOfNeg":
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     eventPrefilter(pres, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, -1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, -1));
                     break;
 
-                case "eventOfPosOrNeg": //recursive
-                    //X inPosOrNeg Y : X or --X is recursive subterm of Y
+                case "eventOfPosOrNeg":
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     eventPrefilter(pres, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
@@ -574,14 +572,14 @@ public class DeriveRuleProto extends DeriveRuleSource {
     }
 
     static void eventPrefilter(Set<PrediTerm<PreDerivation>> pres, Term conj, Term taskPattern, Term beliefPattern) {
-        includesOp(pres, taskPattern, beliefPattern, conj, CONJ.bit, true, true);
+        //includesOp(pres, taskPattern, beliefPattern, conj, CONJ.bit, true, true);
 
         boolean isTask = taskPattern.equals(conj);
         boolean isBelief = beliefPattern.equals(conj);
         if (isTask || isBelief)
             pres.add(new TaskBeliefOp(CONJ, isTask, isBelief));
-        boolean inTask = isTask || taskPattern.containsRecursively(conj);
-        boolean inBelief = isBelief || beliefPattern.containsRecursively(conj);
+        boolean inTask = !isTask && taskPattern.containsRecursively(conj);
+        boolean inBelief = !isBelief && beliefPattern.containsRecursively(conj);
         if (inTask || inBelief) {
             pres.add(new TaskBeliefHasOrHasnt(CONJ.bit, inTask, inBelief, true));
         }
@@ -658,7 +656,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
                 if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
                     String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return $.v(Op.VAR_PATTERN, atomic.toString());
+                        return $.v(VAR_PATTERN, atomic.toString());
                     }
                 }
             }

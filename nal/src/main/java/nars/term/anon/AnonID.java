@@ -10,23 +10,11 @@ import nars.term.var.NormalizedVariable;
  */
 public interface AnonID extends Term, The {
 
-    @Override
-    default Term anon() {
-        return this;
-    }
-
-    short anonID();
-
-    default byte anonNum() {
-        return (byte) (anonID() & 0xff);
-    }
-
     short ATOM_MASK = 0 << 8;
     short VARDEP_MASK = 1 << 8;
     short VARINDEP_MASK = 2 << 8;
     short VARQUERY_MASK = 3 << 8;
     short VARPATTERN_MASK = 4 << 8;
-
 
     static short termToId(Op o, byte id) {
 
@@ -51,52 +39,46 @@ public interface AnonID extends Term, The {
                 throw new UnsupportedOperationException();
         }
 
-        assert(id > 0);
+        assert (id > 0);
         return (short) (mask | id);
     }
 
-
     static Term idToTermWithNegationTest(short /* short */ i) {
-        boolean neg;
         if (i < 0) {
-            neg = true;
-            i = (short) -i;
+            return idToTerm((short) -i).neg();
         } else {
-            neg = false;
+            return idToTerm(i);
         }
-        Term x = idToTerm(i);
-        return neg ? x.neg() : x;
     }
 
     static Term idToTerm(short /* short */ i) {
         byte num = (byte) (i & 0xff);
         int m = ((i & 0xff00));
-        Term y;
-        if (m == ATOM_MASK) {
-            y = Anom.the[num];
-        } else {
-            Op o;
-            switch (m) {
-                case VARDEP_MASK:
-                    o = Op.VAR_DEP;
-                    break;
-                case VARINDEP_MASK:
-                    o = Op.VAR_INDEP;
-                    break;
-                case VARQUERY_MASK:
-                    o = Op.VAR_QUERY;
-                    break;
-                case VARPATTERN_MASK:
-                    o = Op.VAR_PATTERN;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            y = NormalizedVariable.the(o, num);
+        switch (m) {
+            case ATOM_MASK:
+                return Anom.the[num];
+            case VARDEP_MASK:
+                return NormalizedVariable.the(Op.VAR_DEP, num);
+            case VARINDEP_MASK:
+                return NormalizedVariable.the(Op.VAR_INDEP, num);
+            case VARQUERY_MASK:
+                return NormalizedVariable.the(Op.VAR_QUERY, num);
+            case VARPATTERN_MASK:
+                return NormalizedVariable.the(Op.VAR_PATTERN, num);
+            default:
+                throw new UnsupportedOperationException();
         }
-//        if (neg)
-//            y = y.neg();
-        return y;
+    }
+
+    @Override
+    default Term anon() {
+        return this;
+    }
+
+    short anonID();
+
+    default byte anonNum() {
+        return (byte) (anonID() & 0xff);
     }
 
 

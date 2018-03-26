@@ -1310,10 +1310,10 @@ public enum Op {
             switch (o) {
                 case NEG:
                     return Neg.the(u[0]);
-                case PROD:
-                    //use full CachedCompound for PROD
-                    //use default below
-                    break;
+//                case PROD:
+//                    //use full CachedCompound for PROD
+//                    //use default below
+//                    break;
                 default:
                     return new CachedUnitCompound(o, u[0]);
             }
@@ -2151,7 +2151,10 @@ public enum Op {
     }
 
     /**
-     * entry point into the term construction process
+     * entry point into the term construction process.
+     * this call tree eventually ends by either:
+     *      - instance(..)
+     *      - reduction to another term or True/False/Null
      */
     protected Term compound(int dt, Term[] u) {
 

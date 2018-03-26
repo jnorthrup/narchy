@@ -139,13 +139,13 @@ public class AtomicRoulette<X> {
         int i = 1;
 
         boolean kontinued;
-        do {
+        restart: do {
 
             int priTotal = this.priTotal.get();
             if (priTotal == 0)
                 kontinued = kontinue.test(-1);
             else {
-                int count = pri.length();
+                int count = choice.size();
 
                 int distance = (int) (rng.nextFloat() * priTotal);
 
@@ -171,11 +171,8 @@ public class AtomicRoulette<X> {
                 while (((pp = pri.get(i)) == 0) || ((distance = distance - pp) > 0)) {
                     if (++i == count) i = 1;
                     if (i == start) {
-                        if (!kontinue.test(-1)) {
-                            break;//idle signal that nothing was selected
-                        } else {
-                            continue;
-                        }
+                        kontinued = kontinue.test(-1); //idle signal that nothing was selected
+                        continue restart;
                     }
                 }
 

@@ -83,7 +83,7 @@ public class FunctorTest {
         t.believe("(equal(complexity($1),complexity($2)) ==> c({$1,$2}))");
         t.ask("c({x, y})");
         t.ask("c({x, (x)})");
-        t.mustBelieve(TIME, "equal(complexity(x),complexity((x)))", 0f, 0.90f);
+        t.mustBelieve(TIME, "equal(complexity((x)),complexity(x))", 0f, 0.90f);
         t.mustBelieve(TIME, "c({x,y})", 1f, 0.81f);
         t.mustBelieve(TIME, "c({x,(x)})", 0f, 0.81f);
         t.test(true);

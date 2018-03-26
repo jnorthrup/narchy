@@ -1,5 +1,7 @@
 package jcog.math;
 
+import jcog.TODO;
+
 /** pair of 64-bit signed long integers representing an interval.
  *  a special 'ETERNAL' value represents (-infinity,+infinity)
  *
@@ -176,11 +178,15 @@ public interface LongInterval {
      *  returned distance is zero, regardless of how far it may extend before or after it */
     default long minDistanceTo(long a, long b) {
 
-        assert (a != ETERNAL && b != ETERNAL && b >= a);
+        assert (b >= a);
 
         long s = start();
         if (s == ETERNAL)
             return 0;
+
+        if (a == ETERNAL) {
+            throw new TODO();
+        }
 
         long e = end();
         if (intersects(a, b)) {

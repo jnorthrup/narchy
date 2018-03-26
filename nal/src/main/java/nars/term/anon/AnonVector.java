@@ -1,5 +1,7 @@
 package nars.term.anon;
 
+import com.google.common.io.ByteArrayDataOutput;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.term.Term;
@@ -41,11 +43,27 @@ public class AnonVector extends TermVector {
 
     @Override
     public final Term sub(int i) {
-        short tt = subterms[i];
-        //assert(tt!=0);
-        return (tt > 0) ? AnonID.idToTerm(tt) : AnonID.idToTerm((short) -tt).neg();
+        return AnonID.idToTermWithNegationTest(subterms[i]);
     }
 
+    @Override
+    public void append(ByteArrayDataOutput out) {
+        short[] ss = subterms;
+        out.writeByte(ss.length);
+        for (short s : ss) {
+            if (s > 0) {
+                AnonID.idToTerm(s).append(out);
+            } else {
+                s = (short) -s;
+
+                //wrap (prepend) with a virtual NEG
+                out.writeByte(Op.NEG.id);
+                out.writeByte(1);
+                AnonID.idToTerm(s).append(out);
+            }
+        }
+
+    }
 
     @Override
     public int subs() {

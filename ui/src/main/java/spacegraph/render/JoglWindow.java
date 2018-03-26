@@ -281,11 +281,11 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         W.setTitle(title);
         W.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DISPOSE_ON_CLOSE);
         W.preserveGLStateAtDestroy(false);
+        W.setVisible(true);
         W.setSize(w, h);
         if (x != Integer.MIN_VALUE) {
             W.setPosition(x, y);
         }
-        W.setVisible(true);
 
         //        if (!windows.isEmpty()) {
 //        } else {

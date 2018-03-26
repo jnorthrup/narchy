@@ -29,8 +29,8 @@ import nars.Op;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
 import nars.subterm.Subterms;
-import nars.subterm.TermVector;
 import nars.term.anon.Anon;
+import nars.term.compound.UnitCompound;
 import nars.term.pred.AbstractPred;
 import nars.term.subst.Unify;
 import nars.term.transform.Retemporalize;
@@ -842,10 +842,11 @@ public interface Compound extends Term, IPair, Subterms {
                         new VariableNormalization(totalVars /* estimate */, varOffset)
         );
 
-        if (varOffset == 0 && y != null && y instanceof Compound) {
-            Subterms st = y.subterms();
-            if (st instanceof TermVector)
-                ((TermVector) st).setNormalized();
+        if (varOffset == 0 && y instanceof Compound) {
+            if (!(y instanceof UnitCompound)) {
+                Subterms st = y.subterms();
+                st.setNormalized();
+            }
         }
 
         return y;

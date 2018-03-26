@@ -65,8 +65,6 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         public UnifySubtermThenConclude(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PrediTerm<Derivation> eachMatch) {
             super($.func("unify", label(subterm), pattern, eachMatch), pattern);
             this.subterm = subterm;
-//            this.conc = ((Conclusion)(AndCondition.first(eachMatch)));
-
             this.eachMatch = eachMatch;
             //final int requiredVars = conc.uniqueVars!=null ? conc.uniqueVars.size() : 0;
 //            this.eachMatch = requiredVars > 0 ? AndCondition.the(new AbstractPred<Derivation>($.func("mustAssign", $.sete(conc.uniqueVars))) {
@@ -86,12 +84,16 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
         @Override
         public final boolean test(Derivation d) {
+            if (!d.use(Param.TTL_UNIFY))
+                return false;
 
             d.forEachMatch = eachMatch;
-            d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);
+
+            boolean result = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);
+
             d.forEachMatch = null;
 
-            return d.use(Param.TTL_UNIFY);
+            return result;
         }
     }
 }

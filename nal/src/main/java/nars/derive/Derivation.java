@@ -19,6 +19,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.anon.Anon;
+import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -47,15 +48,9 @@ import static nars.truth.TruthFunctions.c2wSafe;
  */
 public class Derivation extends PreDerivation {
 
-    public static final Atomic Belief = Atomic.the("belief");
+
     /** initial capacity, it will grow as needed */
     int ANON_CAPACITY = 16;
-
-//    /** fixed size */
-//    int ANON_CACHE_SIZE = ANON_CAPACITY * 1024;
-
-//    public static final Atomic TaskTerm = Atomic.the("_taskTerm");
-//    public static final Atomic BeliefTerm = Atomic.the("_beliefTerm");
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
@@ -68,8 +63,8 @@ public class Derivation extends PreDerivation {
 //    public final BatchActivation activator = new BatchActivation();
 
     public final Anon anon =
-            new Anon(ANON_CAPACITY);
-            //new CachedAnon(ANON_CAPACITY, ANON_CACHE_SIZE);
+            //new Anon(ANON_CAPACITY);
+            new CachedAnon(ANON_CAPACITY, ANON_CAPACITY*2);
 
 
 
@@ -629,24 +624,22 @@ public class Derivation extends PreDerivation {
     public final void tryMatch() {
 
 
-        int now = now();
-        try {
-            //xy.replace(nar::applyTermIfPossible); //resolve to an abbreviation or other indexed term
+//        int now = now();
+//        try {
             forEachMatch.test(this);
-        } catch (Exception e) {
-            logger.error("{} {}", this, e);
-        } finally {
+//        } catch (Exception e) {
+//            logger.error("{} {}", this, e);
+//        }
+        /* finally {
             revert(now); //undo any changes applied in conclusion
-        }
+        }*/
 
     }
 
     @Nullable
     public long[] evidenceSingle() {
         if (evidenceSingle == null) {
-            evidenceSingle =
-                task.stamp();
-                //Stamp.cyclic(task.stamp());
+            evidenceSingle = task.stamp();
         }
         return evidenceSingle;
     }
@@ -729,7 +722,10 @@ public class Derivation extends PreDerivation {
             return y;
         }
     };
+
     public static final Atomic Task = Atomic.the("task");
+    public static final Atomic Belief = Atomic.the("belief");
+
     final Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
         if (subterm instanceof Bool)
             return subterm;

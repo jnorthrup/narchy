@@ -15,7 +15,7 @@ public final class PremiseKey {
 
     public PremiseKey(PreDerivation d) {
 
-        DynBytes k = new DynBytes(128);
+        DynBytes k = new DynBytes(64);
 
         k.writeByte(d.taskPunc);
         //2 bits for each polarity, each one offset by +1 (because it ranges from -1..+1)

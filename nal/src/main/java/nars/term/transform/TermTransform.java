@@ -157,7 +157,7 @@ public interface TermTransform extends TermContext {
         return op.the(
         //return op.a(
                 dt,
-                t.arraySharedSafe() //optimized impl for TermList (FasterList)
+                t.arrayShared() //optimized impl for TermList (FasterList)
                 );
     }
 

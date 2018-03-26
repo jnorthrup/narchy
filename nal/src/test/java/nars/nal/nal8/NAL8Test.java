@@ -627,11 +627,19 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionPos1() {
+    public void testGoalConjunctionPos1Eternal() {
 
         test
                 .input("a!")
                 .input("(a && b).")
+                .mustGoal(cycles, "b", 1f, 0.81f);
+    }
+    @Test
+    public void testGoalConjunctionPos1Parallel() {
+
+        test
+                .input("a!")
+                .input("(a &| b).")
                 .mustGoal(cycles, "b", 1f, 0.81f);
     }
 
@@ -639,9 +647,9 @@ public class NAL8Test extends NALTest {
     public void testGoalConjunctionNegative1N() {
 
         test
-                .input("--(a)!")
-                .input("(--(a) && (b)).")
-                .mustGoal(cycles, "(b)", 1f, 0.81f);
+                .input("--a!")
+                .input("(--a && b).")
+                .mustGoal(cycles, "b", 1f, 0.81f);
     }
 
     @Test
@@ -674,8 +682,8 @@ public class NAL8Test extends NALTest {
     public void testConjDecomposeWithDepVar() {
 
         test
-                .input("(#1&&(--,(out)))! :|:")
-                .mustGoal(cycles, "(out)", 0f, 0.81f, 0);
+                .input("(#1 && --out)! :|:")
+                .mustGoal(cycles, "out", 0f, 0.81f, 0);
     }
 
     @Test
@@ -814,7 +822,7 @@ public class NAL8Test extends NALTest {
 
         test
                 .inputAt(3, "((a) &&+3 --(b)). :|:")
-                .inputAt(6, "(--,(b))! :|:")
+                .inputAt(6, "--(b)! :|:")
                 .mustGoal(cycles, "(a)", 1f, 0.81f, (t) -> t >= 6) //since b is not desired now, it should reverse predict the goal of (a)
                 .mustNotOutput(cycles, "(a)", GOAL, ETERNAL);
     }

@@ -2,8 +2,6 @@ package nars.term.anon;
 
 import jcog.list.FasterList;
 import nars.Task;
-import nars.subterm.Subterms;
-import nars.subterm.TermVector;
 import nars.task.TaskProxy;
 import nars.term.Compound;
 import nars.term.Term;
@@ -11,6 +9,7 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.transform.DirectTermTransform;
 import nars.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -49,8 +48,8 @@ public class Anon {
     };
 
     protected TermTransform newPut() {
-        return new TermTransform() {
-        //return new DirectTermTransform() {
+        //return new TermTransform() {
+        return new DirectTermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
                 return put(atomic);
@@ -102,16 +101,15 @@ public class Anon {
 
     public Task put(Task t, int dur) {
         Term x = t.term();
-        assert (x.isNormalized()) : t + " has non-normalized Term content";
+        //assert (x.isNormalized()) : t + " has non-normalized Term content";
         Term y = put(x);
         if (y == null || y instanceof Bool) {
             throw new RuntimeException("Anon fail for term: " + t);
         }
-        if (y instanceof Compound) {
-            Subterms yy = y.subterms();
-            if (yy instanceof TermVector)
-                ((TermVector) yy).setNormalized();
-        }
+//        if (y instanceof Compound) {
+//            Subterms yy = y.subterms();
+//            yy.setNormalized();
+//        }
 
         return (t.isBeliefOrGoal() && !t.isEternal()) ?
                 new TaskProxy.WithTermCachedTruth(y, t, dur) :

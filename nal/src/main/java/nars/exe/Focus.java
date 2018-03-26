@@ -243,11 +243,13 @@ public class Focus extends AtomicRoulette<Causable> {
                 sliceIters[i] = (int) Math.max(1, Math.ceil(
 
                         //modulate growth by the normalized value
-                        (vNormPerTime * timesliceNS / timePerIter) * Util.lerp(vNormPerTime, IterGrowthRateMin, IterGrowthRateMax)
+                        ( /*vNormPerTime * */ timesliceNS / timePerIter) * Util.lerp(vNormPerTime, IterGrowthRateMin, IterGrowthRateMax)
                                 +
                                 IterGrowthIncrement
                 ));
+                //System.out.println(this.choice.get(i) + " "+ vNormPerTime + " " + sliceIters[i]);
             }
+            //System.out.println();
         } finally {
             updating.set(false);
         }
@@ -288,6 +290,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
         int completed = -1;
         try {
+//            System.out.println(cx + " " + this.sliceIters[x]);
             completed = cx.run(nar, this.sliceIters[x]);
         } finally {
             if (singleton) {

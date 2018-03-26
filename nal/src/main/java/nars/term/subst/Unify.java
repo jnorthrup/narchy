@@ -1,7 +1,6 @@
 package nars.term.subst;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.Util;
 import jcog.data.byt.AbstractBytes;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RawBytes;
@@ -141,13 +140,13 @@ public abstract class Unify extends Versioning implements Subst {
 //    }
 
     public final boolean tryMutate(Termutator[] chain, int next) {
-        if (!use(Param.TTL_MUTATE))
-            return false;
-
         if (++next < chain.length) {
+
+            if (!use(Param.TTL_MUTATE))
+                return false;
+
             chain[next].mutate(this, chain, next);
         } else {
-            //tryMatch(true); //end of chain
             tryMatch(); //end of chain
         }
         return true;
@@ -248,8 +247,8 @@ public abstract class Unify extends Versioning implements Subst {
             termutes.clear();
 
             //shuffle the ordering of the termutes themselves
-            if (ts > 1)
-                Util.shuffle(t, random);
+//            if (ts > 1)
+//                Util.shuffle(t, random);
 
             tryMutate(t, -1); //start combinatorial recurse
 
@@ -360,7 +359,8 @@ public abstract class Unify extends Versioning implements Subst {
                         int y0dt = y0.dt();
                         if ((y0dt == XTERNAL) || (y0dt == DTERNAL && ydt != DTERNAL)) {
                             //replace because y is more temporally specific
-                            replaceXY(x, y);
+                            //replaceXY(x, y);
+                            y0Versioned.set(y);
                         }
                     }
                     return true; //keep X, but continue

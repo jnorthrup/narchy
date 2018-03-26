@@ -28,7 +28,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
         this.sub = sub;
         this.op = op;
         this.chash = super.hashCode();
-        this.cstruct = op.bit | sub.structure();
+        this.cstruct = super.structure();
 
         int v = sub.volume() + 1;
         assert(v < Short.MAX_VALUE);
@@ -72,4 +72,6 @@ public class CachedUnitCompound extends UnitCompound implements The {
     public boolean impossibleSubTermVolume(int otherTermVolume) {
         return otherTermVolume > volume-1;
     }
+
+
 }

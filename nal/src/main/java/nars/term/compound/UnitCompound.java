@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -38,8 +39,6 @@ public abstract class UnitCompound implements Compound {
     public boolean containsRoot(Term x) {
         return sub().equalsRoot(x);
     }
-
-
 
     @Override
     public final int hashCodeSubterms() {
@@ -138,5 +137,54 @@ public abstract class UnitCompound implements Compound {
     @Override
     public int dtRange() {
         return 0;
+    }
+
+    @Override public void append(ByteArrayDataOutput out) {
+
+        Op o = op();
+        out.writeByte(o.id);
+
+        //avoids creating temporary Subterms instance:
+        out.writeByte(1); //one subterm
+        sub().append(out);
+
+        if (o.temporal)
+            out.writeInt(dt()); //can happen if ellipsis term
+
+    }
+
+    @Override
+    public int volume() {
+        return sub().volume()+1;
+    }
+
+    @Override
+    public int complexity() {
+        return sub().complexity()+1;
+    }
+
+    @Override
+    public int structure() {
+        return sub().structure() | op().bit;
+    }
+
+    @Override
+    public int varPattern() {
+        return sub().varPattern();
+    }
+
+    @Override
+    public int varDep() {
+        return sub().varDep();
+    }
+
+    @Override
+    public int varIndep() {
+        return sub().varIndep();
+    }
+
+    @Override
+    public int varQuery() {
+        return sub().varQuery();
     }
 }

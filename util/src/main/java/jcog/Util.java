@@ -50,6 +50,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
@@ -1097,13 +1099,14 @@ public enum Util {
     }
 
     public static double normalize(double x, double min, double max) {
-        assert(max > min);
+        assert(max >= min);
         if (max - min <= Double.MIN_NORMAL)
             return 0.5f;
         return (x - min) / (max - min);
     }
 
     public static float normalize(float x, float min, float max) {
+        assert(max >= min);
         if (max - min <= Float.MIN_NORMAL)
             return 0.5f;
         return (x - min) / (max - min);
@@ -1615,30 +1618,30 @@ public enum Util {
     }
 
 
-    /**
-     * semi-busy wait loop
-     */
-    public static void stall(int delayMS) {
-        stall(System.currentTimeMillis(), delayMS);
-    }
-
-    public static void stall(long start, int delayMS) {
-        long end = start + delayMS;
-        int pauseCount = 0;
-        do {
-            pauseNext(pauseCount++);
-        } while (System.currentTimeMillis() < end);
-    }
+//    /**
+//     * semi-busy wait loop
+//     */
+//    public static void stall(int delayMS) {
+//        stall(System.currentTimeMillis(), delayMS);
+//    }
+//
+//    public static void stall(long start, int delayMS) {
+//        long end = start + delayMS;
+//        int pauseCount = 0;
+//        do {
+//            pauseNext(pauseCount++);
+//        } while (System.currentTimeMillis() < end);
+//    }
 
     /**
      * adaptive spinlock behavior
      */
     public static void pauseNext(int previousContiguousPauses) {
-        if (previousContiguousPauses < 16) {
+        if (previousContiguousPauses < 1024) {
             Thread.onSpinWait();
-        } else if (previousContiguousPauses < 32) {
+        } else if (previousContiguousPauses < 2048) {
             Thread.yield();
-        } else if (previousContiguousPauses < 64) {
+        } else if (previousContiguousPauses < 4096) {
             Util.sleep(0);
         } else {
             Util.sleep(1);
@@ -1674,28 +1677,30 @@ public enum Util {
 
 
     public static boolean sleep(long periodMS) {
-        if (periodMS <= 0) {
-            Thread.yield();
-        } else {
-//            long start = System.nanoTime();
+        return sleepNS(periodMS * 1000000);
 
-            if (periodMS > 20) {
-                try {
-                    Thread.sleep(periodMS);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return false;
-                }
-            } else {
-                LockSupport.parkNanos(periodMS * 1000000);
-            }
-
-//            long end = System.nanoTime();
-//            if (end - start < periodMS * 1000000) {
-//                System.out.println("too short sleep");
+//        if (periodMS <= 0) {
+//            Thread.yield();
+//        } else {
+////            long start = System.nanoTime();
+//
+//            if (periodMS > 20) {
+//                try {
+//                    Thread.sleep(periodMS);
+//                } catch (InterruptedException e) {
+//                    Thread.currentThread().interrupt();
+//                    return false;
+//                }
+//            } else {
+//                LockSupport.parkNanos(periodMS * 1000000);
 //            }
-        }
-        return true;
+//
+////            long end = System.nanoTime();
+////            if (end - start < periodMS * 1000000) {
+////                System.out.println("too short sleep");
+////            }
+//        }
+//        return true;
     }
 
     public static boolean sleepNS(long periodNS) {
@@ -1705,6 +1710,12 @@ public enum Util {
 //            long start = System.nanoTime();
 
             LockSupport.parkNanos(periodNS);
+
+//            try {
+//                TimeUnit.NANOSECONDS.sleep(periodNS);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
 //            long end = System.nanoTime();
 //            if (end - start < periodMS * 1000000) {
@@ -2353,6 +2364,14 @@ public enum Util {
 
     public static int defaultConcurrency() {
         return Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+    }
+
+    private static volatile Executor executor = ForkJoinPool.commonPool();
+    public static Executor executor() {
+        return executor;
+    }
+    public static void setExecutor(Executor e) {
+        executor = e;
     }
 
 

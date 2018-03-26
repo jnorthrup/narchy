@@ -237,13 +237,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        };
     }
 
+    /** by default this does not need to do anything
+     * but implementations can cache the normalization
+     * in a boolean because it only needs done once.
+      */
+    default void setNormalized() {
+
+    }
+
+    /** assume its normalized if no variables are present */
     default boolean isNormalized() {
-        //int totalVars = vars() + varPattern();
-        //if (totalVars == 0) {
-        //assume normalized if no variable appears
-//assume it's unnormalized if contains a variable
-//throw new TODO("unsure if normalized");
-//TODO a quick test if there is only one variable and it is the #1,$1, etc of its type
         return !hasVars() && !hasAny(Op.VAR_PATTERN);
     }
 

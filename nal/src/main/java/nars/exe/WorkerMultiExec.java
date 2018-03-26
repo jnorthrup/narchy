@@ -231,8 +231,8 @@ public class WorkerMultiExec extends AbstractExec {
 
                 if (x > 0 && focus.tryRun(x))
                     idles = 0;
-                else
-                    idle();
+
+                idle();
 
                 return true;
             });
