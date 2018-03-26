@@ -6,7 +6,6 @@ import nars.Op;
 import nars.Task;
 import nars.control.Cause;
 import nars.derive.constraint.MatchConstraint;
-import nars.derive.match.Ellipsis;
 import nars.derive.op.AbstractPatternOp;
 import nars.derive.op.SubTermStructure;
 import nars.derive.op.TaskBeliefOp;
@@ -158,33 +157,33 @@ public final class Conclude {
         return true;
     }
 
-    private static boolean taskFirst0(Term task, Term belief) {
-
-        if (belief.subs() == 0) {
-            return false;
-        }
-        if (task.subs() == 0) {
-            return true;
-        }
-
-        //prefer non-ellipsis matches first
-        Ellipsis taskEllipsis = Ellipsis.firstEllipsisRecursive(task);
-        if (taskEllipsis != null) {
-            return false; //match belief first
-        }
-        Ellipsis beliefEllipsis = Ellipsis.firstEllipsisRecursive(belief);
-        if (beliefEllipsis != null) {
-            return true; //match task first
-        }
-
-        //return task.volume() >= belief.volume();
-
-        int tv = task.volume();
-        int bv = belief.volume();
-        return (tv < bv);
-
-        //return task.varPattern() <= belief.varPattern();
-    }
+//    private static boolean taskFirst0(Term task, Term belief) {
+//
+//        if (belief.subs() == 0) {
+//            return false;
+//        }
+//        if (task.subs() == 0) {
+//            return true;
+//        }
+//
+//        //prefer non-ellipsis matches first
+//        Ellipsis taskEllipsis = Ellipsis.firstEllipsisRecursive(task);
+//        if (taskEllipsis != null) {
+//            return false; //match belief first
+//        }
+//        Ellipsis beliefEllipsis = Ellipsis.firstEllipsisRecursive(belief);
+//        if (beliefEllipsis != null) {
+//            return true; //match task first
+//        }
+//
+//        //return task.volume() >= belief.volume();
+//
+//        int tv = task.volume();
+//        int bv = belief.volume();
+//        return (tv < bv);
+//
+//        //return task.varPattern() <= belief.varPattern();
+//    }
 
     /**
      * just a cause, not an input channel.

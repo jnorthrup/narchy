@@ -18,7 +18,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
     protected volatile Status status;
     private volatile Object result = null;
 
-    @Deprecated public OneShotTimedFuture(int rounds, Callable<T> callable, long initialDelay) {
+    @Deprecated protected OneShotTimedFuture(int rounds, Callable<T> callable, long initialDelay) {
         this(-1, rounds, callable, initialDelay);
     }
     public OneShotTimedFuture(int firstFireOffset, int rounds, Callable<T> callable, long initialDelay) {
@@ -109,7 +109,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
             if (System.currentTimeMillis() >= deadline)
                 break;
         }
-        return r == this ? null : (T) r;
+        return r == this ? null : r;
     }
 
     @Override

@@ -130,7 +130,7 @@ public class ClauseStore {
     private boolean checkCompatibility(Term goal) {
         OneWayList<ClauseInfo> clauses = this.clauses;
         if (clauses == null) return false;
-        ClauseInfo clause = null;
+        ClauseInfo clause;
         do {
             clause = clauses.head;
             if (goal.unifiable(clause.head)) return true;

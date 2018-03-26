@@ -24,8 +24,8 @@ public abstract class AbstractTimerTest {
     @BeforeEach
     public void before() {
         // TODO: run tests on different sequences
-        timer = new HashedWheelTimer(TimeUnit.MILLISECONDS.toNanos(10),
-                8,
+        timer = new HashedWheelTimer(TimeUnit.MILLISECONDS.toNanos(1),
+                16,
                 waitStrategy());
     }
 
@@ -263,7 +263,9 @@ public abstract class AbstractTimerTest {
 
         for (int i = 0; i < scheduledTasks; i++) {
             long delay = queue.take();
-            assertTrue(delay >= timeout && delay < maxTimeout, () -> "Timeout + " + scheduledTasks + " delay must be " + timeout + " < " + delay + " < " + maxTimeout);
+            System.out.println(i + " " + delay);
+            assertTrue(delay >= timeout && delay < maxTimeout,
+                    () -> "Timeout + " + scheduledTasks + " delay must be " + timeout + " < " + delay + " < " + maxTimeout);
         }
     }
 

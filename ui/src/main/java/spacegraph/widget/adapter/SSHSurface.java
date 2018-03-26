@@ -1,4 +1,4 @@
-package spacegraph.widget.console;
+package spacegraph.widget.adapter;
 
 import com.googlecode.lanterna.TerminalPosition;
 import com.jcraft.jsch.JSchException;
@@ -6,6 +6,7 @@ import com.jogamp.newt.event.KeyEvent;
 import org.fusesource.jansi.AnsiOutputStream;
 import spacegraph.net.SSHClient;
 import spacegraph.render.JoglSpace;
+import spacegraph.widget.console.ConsoleTerminal;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,12 +16,12 @@ import java.io.PipedOutputStream;
 /**
  * Created by me on 11/13/16.
  */
-public class SSHConsole extends ConsoleTerminal {
+public class SSHSurface extends ConsoleTerminal {
 
 
     public static void main(String[] args) throws IOException, JSchException {
 
-        JoglSpace.window(new SSHConsole(
+        JoglSpace.window(new SSHSurface(
                 "gest", "localhost", "tseg",
                 80, 24).text, 1000, 600);
     }
@@ -31,10 +32,10 @@ public class SSHConsole extends ConsoleTerminal {
     private final SSHClient ssh;
 
 
-    public SSHConsole(String user, String host, String password, int cols, int rows) throws IOException, JSchException {
+    public SSHSurface(String user, String host, String password, int cols, int rows) throws IOException, JSchException {
         super(cols, rows);
 
-        ssh = new SSHClient("gest", "localhost", "tseg",
+        ssh = new SSHClient(user, host, password,
 
                 new PipedInputStream(ins),
 

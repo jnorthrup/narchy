@@ -68,18 +68,18 @@ public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
         return (o == null) ? 0 : o.prio;
     }
 
-    /**
-     * Returns the priority nearest (lower) to the priority of a defined operator
-     */
-    public int opNext(int prio) {
-        int n = 0;
-        for (Operator opFromList : values()) {
-            int oprio = opFromList.prio;
-            if (oprio > n && oprio < prio)
-                n = oprio;
-        }
-        return n;
-    }
+//    /**
+//     * Returns the priority nearest (lower) to the priority of a defined operator
+//     */
+//    public int opNext(int prio) {
+//        int n = 0;
+//        for (Operator opFromList : values()) {
+//            int oprio = opFromList.prio;
+//            if (oprio > n && oprio < prio)
+//                n = oprio;
+//        }
+//        return n;
+//    }
 
     /**
      * Gets the list of the operators currently defined

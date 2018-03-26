@@ -88,6 +88,8 @@ abstract public class UDiscover<P>  {
                 return false;
 
             final MulticastSocket ms = this.ms;
+            if (ms == null)
+                return false;
 
             try {
                 ms.send(p);

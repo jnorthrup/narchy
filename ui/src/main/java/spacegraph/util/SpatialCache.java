@@ -1,6 +1,7 @@
-package spacegraph;
+package spacegraph.util;
 
 import jcog.data.map.MRUCache;
+import spacegraph.Spatial;
 import spacegraph.render.JoglPhysics;
 
 import java.util.Map;

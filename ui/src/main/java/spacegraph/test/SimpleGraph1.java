@@ -8,7 +8,7 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import spacegraph.Spatial;
-import spacegraph.SpatialCache;
+import spacegraph.util.SpatialCache;
 import spacegraph.phys.Dynamic;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglPhysics;

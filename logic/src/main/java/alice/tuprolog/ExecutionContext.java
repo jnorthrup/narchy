@@ -18,7 +18,6 @@
 package alice.tuprolog;
 
 import alice.util.OneWayList;
-import jcog.list.FasterList;
 
 import java.util.List;
 
@@ -67,32 +66,32 @@ public class ExecutionContext {
         return currentGoal;
     }
 
-    public SubGoal getFatherGoalId() {
-        return fatherGoalId;
-    }
+//    public SubGoal getFatherGoalId() {
+//        return fatherGoalId;
+//    }
 
     public Struct getClause() {
         return clause;
     }
 
-    public Struct getHeadClause() {
-        return headClause;
-    }
+//    public Struct getHeadClause() {
+//        return headClause;
+//    }
 
     public SubGoalStore getSubGoalStore() {
         return goalsToEval;
     }
 
-    public List<List<Var>> getTrailingVars() {
-        OneWayList<List<Var>> t = trailingVars;
-        List<List<Var>> l = new FasterList<>();
-
-        while (t != null) {
-            l.add(t.head);
-            t = t.tail;
-        }
-        return l;
-    }
+//    public List<List<Var>> getTrailingVars() {
+//        OneWayList<List<Var>> t = trailingVars;
+//        List<List<Var>> l = new FasterList<>();
+//
+//        while (t != null) {
+//            l.add(t.head);
+//            t = t.tail;
+//        }
+//        return l;
+//    }
 
     /**
      * Save the state of the parent context to later bring the ExectutionContext

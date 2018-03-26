@@ -223,7 +223,7 @@ public abstract class Term implements Serializable, SubTree {
      *
      * @return true if the term is unifiable with this one
      */
-    public boolean unifiable(Term t) {
+    boolean unifiable(Term t) {
         long now = Term.now();
         resolveTerm(now);
         t.resolveTerm(now);

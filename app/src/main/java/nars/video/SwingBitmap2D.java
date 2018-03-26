@@ -1,5 +1,7 @@
 package nars.video;
 
+import spacegraph.util.AWTCamera;
+
 import java.awt.*;
 
 import static java.lang.Math.max;
@@ -27,7 +29,7 @@ public class SwingBitmap2D extends BufferedImageBitmap2D {
 //        if (ready.compareAndSet(true, false)) {
             //SwingUtilities.invokeLater(() -> {
 //                ready.set(true);
-                out = ScreenImage.get(component, out, selection);
+                out = AWTCamera.get(component, out, selection);
             //});
 //        }
     }

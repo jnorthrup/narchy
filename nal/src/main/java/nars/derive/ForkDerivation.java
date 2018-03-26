@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.TODO;
 import nars.term.pred.Fork;
 import nars.term.pred.PrediTerm;
 
@@ -12,8 +13,9 @@ public class ForkDerivation<D extends PreDerivation> extends Fork<D> {
     }
 
    @Override
-    public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
-        return fork(PrediTerm.transform(f, branches), ForkDerivation::new);
+    @Deprecated public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
+        //return fork(PrediTerm.transform(f, branches), ForkDerivation::new);
+       throw new TODO();
     }
 
     /**
