@@ -25,23 +25,13 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     final static float RENDER_FPS_IDEAL = 30f;
     final static float UPDATE_FPS_IDEAL = 30f;
-
-    //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
-    protected GameAnimatorControl a;
-
-    private final AtomicBoolean ready = new AtomicBoolean(true);
-
-
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
-
-    public final Topic<JoglWindow> onUpdate = new ListTopic<>();
 
     static {
 //        GLCapabilitiesImmutable cfg = newDefaultConfig();
 //        sharedDrawable = GLDrawableFactory.getFactory(cfg.getGLProfile()).createDummyAutoDrawable(null, true, cfg, null);
 //        sharedDrawable.display(); // triggers GLContext object creation and native realization.
 //        Draw.init(sharedDrawable.getGL().getGL2());
-
 
 
         //TODO other desktop handlers
@@ -60,19 +50,20 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     }
 
+    public final Topic<JoglWindow> onUpdate = new ListTopic<>();
+    final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean ready = new AtomicBoolean(true);
     public GLWindow window;
+    //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
+    protected GameAnimatorControl a;
     protected GL2 gl;
+    protected long dtMS = System.currentTimeMillis();
+    private long lastRenderMS = System.currentTimeMillis();
+    private long lastUpdateMS = System.currentTimeMillis();
+
 
     protected JoglWindow() {
         super(-1);
-    }
-
-    public void off() {
-        synchronized (this) {
-            if (window != null) {
-                window.destroy();
-            }
-        }
     }
 
     static GLWindow window(JoglWindow j) {
@@ -80,7 +71,6 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
     }
 
     static GLWindow window(GLCapabilitiesImmutable config, JoglWindow j) {
-
 
 
         GLWindow w = GLWindow.create(config);
@@ -91,49 +81,6 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
 
         return w;
-    }
-
-
-    @Override
-    public final void init(GLAutoDrawable drawable) {
-        synchronized (this) {
-            assert(window == null);
-            this.window = ((GLWindow) drawable);
-
-            a = new GameAnimatorControl(RENDER_FPS_IDEAL);
-            a.add(window);
-        }
-
-
-        this.gl = drawable.getGL().getGL2();
-
-
-        if (gl.getGLProfile().isHardwareRasterizer()) {
-            gl.setSwapInterval(0); //0=disable vsync
-        } else {
-            gl.setSwapInterval(4); //reduce CPU strain
-        }
-
-        //printHardware();
-
-        Draw.init(gl);
-
-        init(gl);
-    }
-
-
-    abstract protected void init(GL2 gl);
-
-
-    public void printHardware() {
-        //System.err.print("GL Profile: ");
-        //System.err.println(GLProfile.getProfile());
-        System.err.print("GL:");
-        System.err.println(gl);
-        System.err.print("GL_VERSION=");
-        System.err.println(gl.glGetString(GL.GL_VERSION));
-        System.err.print("GL_EXTENSIONS: ");
-        System.err.println(gl.glGetString(GL.GL_EXTENSIONS));
     }
 
     static GLCapabilitiesImmutable config() {
@@ -147,7 +94,6 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
 
         );
-
 
 
 //        config.setBackgroundOpaque(false);
@@ -173,6 +119,53 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 //        return model != null ? model.getCurrTest().getWorld() : world;
 //    }
 
+    public void off() {
+        synchronized (this) {
+            if (window != null) {
+                window.destroy();
+            }
+        }
+    }
+
+    @Override
+    public final void init(GLAutoDrawable drawable) {
+        synchronized (this) {
+            assert (window == null);
+            this.window = ((GLWindow) drawable);
+
+            a = new GameAnimatorControl(RENDER_FPS_IDEAL);
+            a.add(window);
+        }
+
+
+        this.gl = drawable.getGL().getGL2();
+
+
+        if (gl.getGLProfile().isHardwareRasterizer()) {
+            gl.setSwapInterval(0); //0=disable vsync
+        } else {
+            gl.setSwapInterval(4); //reduce CPU strain
+        }
+
+        //printHardware();
+
+        Draw.init(gl);
+
+        init(gl);
+    }
+
+    abstract protected void init(GL2 gl);
+
+    public void printHardware() {
+        //System.err.print("GL Profile: ");
+        //System.err.println(GLProfile.getProfile());
+        System.err.print("GL:");
+        System.err.println(gl);
+        System.err.print("GL_VERSION=");
+        System.err.println(gl.glGetString(GL.GL_VERSION));
+        System.err.print("GL_EXTENSIONS: ");
+        System.err.println(gl.glGetString(GL.GL_EXTENSIONS));
+    }
 
     public final int getWidth() {
         return window.getSurfaceWidth();
@@ -182,7 +175,6 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
     public final int getHeight() {
         return window.getSurfaceHeight();
     }
-
 
     @Override
     public void dispose(GLAutoDrawable arg0) {
@@ -227,16 +219,15 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     abstract protected void update(long dtMS);
 
-    /** dtMS - time transpired since last call (millisecons)
-     * @param dtMS*/
+    /**
+     * dtMS - time transpired since last call (millisecons)
+     *
+     * @param dtMS
+     */
     abstract protected void render(int dtMS);
 
-    private long lastRenderMS = System.currentTimeMillis();
-    private long lastUpdateMS = System.currentTimeMillis();
-    protected long dtMS = System.currentTimeMillis();
-
     public boolean next() {
-        if (ready.compareAndSet(true,false) && window.isVisible()) {
+        if (ready.compareAndSet(true, false) && window.isVisible()) {
             long then = this.lastUpdateMS;
             long now = System.currentTimeMillis();
             this.lastUpdateMS = now;
@@ -246,20 +237,28 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         return true;
     }
 
-    /** dt in milliseconds since last update */
+    /**
+     * dt in milliseconds since last update
+     */
     public long dtMS() {
         return dtMS;
     }
 
     @Override
     public final void display(GLAutoDrawable drawable) {
+        if (!busy.compareAndSet(false, true))
+            return; //already reading
 
-        long nowMS = System.currentTimeMillis(), dtMS = nowMS - lastRenderMS;
-        if (dtMS > Integer.MAX_VALUE) dtMS = Integer.MAX_VALUE;
-        this.lastRenderMS = nowMS;
+        try {
+            long nowMS = System.currentTimeMillis(), dtMS = nowMS - lastRenderMS;
+            if (dtMS > Integer.MAX_VALUE) dtMS = Integer.MAX_VALUE;
+            this.lastRenderMS = nowMS;
 
-        render((int)dtMS);
-        ready.set(true);
+            render((int) dtMS);
+            ready.set(true);
+        } finally {
+            busy.set(false);
+        }
 
         //long now = System.currentTimeMillis();
         //frameTimeMS.hit(now - start);
@@ -308,6 +307,7 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
     public void addMouseListenerPost(MouseListener m) {
         window.addMouseListener(m);
     }
+
     public void addMouseListenerPre(MouseListener m) {
         window.addMouseListener(0, m);
     }
@@ -328,18 +328,134 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         return onUpdate.on(c);
     }
 
-    /** adapter */
+    /**
+     * adapter
+     */
     public On onUpdate(Animated c) {
-        return onUpdate.on((JoglWindow s)->{
-            c.animate(s.dtMS()/1000f);
+        return onUpdate.on((JoglWindow s) -> {
+            c.animate(s.dtMS() / 1000f);
         });
     }
 
+    // See http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
+    protected void ortho() {
+        int w = getWidth();
+        int h = getHeight();
+        gl.glViewport(0, 0, w, h);
+        gl.glMatrixMode(GL_PROJECTION);
+        gl.glLoadIdentity();
 
+        //gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -1.5, 1.5);
+        gl.glOrtho(0, w, 0, h, -1.5, 1.5);
+
+//        // switch to projection mode
+//        gl.glMatrixMode(gl.GL_PROJECTION);
+//        // save previous matrix which contains the
+//        //settings for the perspective projection
+//        // gl.glPushMatrix();
+//        // reset matrix
+//        gl.glLoadIdentity();
+//        // set a 2D orthographic projection
+//        glu.gluOrtho2D(0f, screenWidth, 0f, screenHeight);
+//        // invert the y axis, down is positive
+//        //gl.glScalef(1f, -1f, 1f);
+//        // mover the origin from the bottom left corner
+//        // to the upper left corner
+//        //gl.glTranslatef(0f, -screenHeight, 0f);
+        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+        //gl.glLoadIdentity();
+
+
+    }
+
+//    private static class MyFPSAnimator extends FPSAnimator {
+//
+//        int idealFPS, minFPS;
+//        float lagTolerancePercentFPS = 0.05f;
+//
+//        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
+//            super(idealFPS);
+//
+//            setIgnoreExceptions(true);
+//            setPrintExceptions(false);
+//
+//            this.idealFPS = idealFPS;
+//            this.minFPS = minFPS;
+//
+//            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
+//
+//                @Override
+//                public void write(int b) {
+//                }
+//
+//                long lastUpdate;
+//
+//                @Override
+//                public void flush() {
+//                    long l = getLastFPSUpdateTime();
+//                    if (lastUpdate == l)
+//                        return;
+//                    updateFPS();
+//                    lastUpdate = l;
+//                }
+//
+//            }, true));
+//
+//        }
+//
+//
+//        protected void updateFPS() {
+//            //logger.info("{}", MyFPSAnimator.this);
+//
+//            int currentFPS = getFPS();
+//            float lastFPS = getLastFPS();
+//            float lag = currentFPS - lastFPS;
+//
+//            float error = lag / currentFPS;
+//
+//            float nextFPS = Float.NaN;
+//
+//            if (error > lagTolerancePercentFPS) {
+//                if (currentFPS > minFPS) {
+//                    //decrease fps
+//                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
+//                }
+//            } else {
+//                if (currentFPS < idealFPS) {
+//                    //increase fps
+//                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
+//                }
+//            }
+//
+//            int inextFPS = Math.max(1, Math.round(nextFPS));
+//            if (nextFPS == nextFPS && inextFPS != currentFPS) {
+//                //stop();
+//                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
+//
+//                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
+//                animThread = null;
+//
+//                setFPS(inextFPS);
+//                animThread = x;
+//
+//                //start();
+//            }
+//
+////            if (logger.isDebugEnabled()) {
+////                if (!meters.isEmpty()) {
+////                    meters.forEach((m, x) -> {
+////                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
+////                    });
+////                }
+////            }
+//        }
+//
+//
+//    }
 
     /* from: Jake2's */
     public static class GameAnimatorControl extends AnimatorBase {
-//        final FPSCounterImpl fpsCounter;
+        //        final FPSCounterImpl fpsCounter;
         private final Loop loop;
 
         //private boolean pauseIssued;
@@ -347,7 +463,7 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         boolean isAnimating;
         private boolean paused = false;
 
-         GameAnimatorControl(float initialFPS) {
+        GameAnimatorControl(float initialFPS) {
             super();
 
             setIgnoreExceptions(false);
@@ -465,8 +581,6 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 //                        return true;
 
 
-
-
             loop.runFPS(initialFPS);
             setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
 
@@ -520,122 +634,6 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         public final boolean isPaused() {
             return paused;
         }
-
-
-    }
-
-//    private static class MyFPSAnimator extends FPSAnimator {
-//
-//        int idealFPS, minFPS;
-//        float lagTolerancePercentFPS = 0.05f;
-//
-//        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
-//            super(idealFPS);
-//
-//            setIgnoreExceptions(true);
-//            setPrintExceptions(false);
-//
-//            this.idealFPS = idealFPS;
-//            this.minFPS = minFPS;
-//
-//            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
-//
-//                @Override
-//                public void write(int b) {
-//                }
-//
-//                long lastUpdate;
-//
-//                @Override
-//                public void flush() {
-//                    long l = getLastFPSUpdateTime();
-//                    if (lastUpdate == l)
-//                        return;
-//                    updateFPS();
-//                    lastUpdate = l;
-//                }
-//
-//            }, true));
-//
-//        }
-//
-//
-//        protected void updateFPS() {
-//            //logger.info("{}", MyFPSAnimator.this);
-//
-//            int currentFPS = getFPS();
-//            float lastFPS = getLastFPS();
-//            float lag = currentFPS - lastFPS;
-//
-//            float error = lag / currentFPS;
-//
-//            float nextFPS = Float.NaN;
-//
-//            if (error > lagTolerancePercentFPS) {
-//                if (currentFPS > minFPS) {
-//                    //decrease fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
-//                }
-//            } else {
-//                if (currentFPS < idealFPS) {
-//                    //increase fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
-//                }
-//            }
-//
-//            int inextFPS = Math.max(1, Math.round(nextFPS));
-//            if (nextFPS == nextFPS && inextFPS != currentFPS) {
-//                //stop();
-//                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
-//
-//                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
-//                animThread = null;
-//
-//                setFPS(inextFPS);
-//                animThread = x;
-//
-//                //start();
-//            }
-//
-////            if (logger.isDebugEnabled()) {
-////                if (!meters.isEmpty()) {
-////                    meters.forEach((m, x) -> {
-////                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
-////                    });
-////                }
-////            }
-//        }
-//
-//
-//    }
-
-    // See http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
-    protected void ortho() {
-        int w = getWidth();
-        int h = getHeight();
-        gl.glViewport(0, 0, w, h);
-        gl.glMatrixMode(GL_PROJECTION);
-        gl.glLoadIdentity();
-
-        //gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -1.5, 1.5);
-        gl.glOrtho(0, w, 0, h, -1.5, 1.5);
-
-//        // switch to projection mode
-//        gl.glMatrixMode(gl.GL_PROJECTION);
-//        // save previous matrix which contains the
-//        //settings for the perspective projection
-//        // gl.glPushMatrix();
-//        // reset matrix
-//        gl.glLoadIdentity();
-//        // set a 2D orthographic projection
-//        glu.gluOrtho2D(0f, screenWidth, 0f, screenHeight);
-//        // invert the y axis, down is positive
-//        //gl.glScalef(1f, -1f, 1f);
-//        // mover the origin from the bottom left corner
-//        // to the upper left corner
-//        //gl.glTranslatef(0f, -screenHeight, 0f);
-        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-        //gl.glLoadIdentity();
 
 
     }
