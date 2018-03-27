@@ -3,6 +3,7 @@ package nars.derive.constraint;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
+import nars.term.Term;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
@@ -20,16 +21,16 @@ public class MatchConstraintTest {
     public void testNeqComRecursiveConstraint() throws Narsese.NarseseException {
         NoCommonSubtermConstraint c = new NoCommonSubtermConstraint($.varQuery(1), $.varQuery(2), true);
         assertFalse(
-                c.invalidCommonality($.$("X"), $.$("Y"))
+                c.invalid($.$("X"), (Term)$.$("Y"))
         );
         assertFalse(
-                c.invalidCommonality($.$("X"), $.$("f(X,Y)")) //allow since a product separates
+                c.invalid($.$("X"), (Term)$.$("f(X,Y)")) //allow since a product separates
         );
         assertFalse(
-                c.invalidCommonality($.$("X"), $.$("(X && Y)")) //allow since a product separates
+                c.invalid($.$("X"), (Term)$.$("(X && Y)")) //allow since a product separates
         );
         assertTrue(
-                c.invalidCommonality($.$("X"), $.$("(X|Y)"))
+                c.invalid($.$("X"), (Term)$.$("(X|Y)"))
         );
     }
 

@@ -7,6 +7,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.$;
 import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.AndCondition;
@@ -15,6 +16,7 @@ import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -28,11 +30,11 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
-    public final Term target;
+    public final Term x;
 
-    protected MatchConstraint(Term target, String func, Term... args) {
-        super($.func("unifyIf", target, $.func(func, args)));
-        this.target = target;
+    protected MatchConstraint(Term x, String func, Term... args) {
+        super($.func("unifyIf", x, $.func(func, args)));
+        this.x = x;
     }
 
     public static PrediTerm<Derivation> combineConstraints(AndCondition a) {
@@ -92,6 +94,70 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
     }
 
+    abstract public static class RelationConstraint extends MatchConstraint {
+
+
+        protected final Term y;
+
+        protected RelationConstraint(Term x, Term y, String func, Term... args) {
+            super(x, func, args.length > 0 ? $.p(y, $.p(args)) : y);
+            this.y = y;
+        }
+
+        @Override
+        public @Nullable PrediTerm<PreDerivation> asPredicate(Term taskPattern, Term beliefPattern) {
+            //forward direction only assuming that the opposite pair is constructed also only one predicate will need generated
+            if (x.equals(taskPattern) && y.equals(beliefPattern)) {
+                return new ConstraintAsPredicate(this, true);
+            }
+            /*else if (y.equals(beliefPattern) && x.equals(beliefPattern)){
+                return new ConstraintAsPredicate(this, false);
+            }*/
+            return null;
+        }
+
+        @Override
+        public final boolean invalid(Term xx, Unify f) {
+            Term yy = f.xy(y);
+            return yy != null && invalid(xx, yy);
+        }
+
+        abstract public boolean invalid(Term xx, Term yy);
+    }
+
+    public static class ConstraintAsPredicate extends AbstractPred<PreDerivation> {
+
+        final static Term TASK_BELIEF = $.the("task_belief");
+        final static Term BELIEF_TASK = $.the("belief_task");
+
+        private final RelationConstraint constraint;
+        private final boolean taskFirst;
+
+        public ConstraintAsPredicate(RelationConstraint m, boolean taskFirst) {
+            super($.p(taskFirst ? TASK_BELIEF : BELIEF_TASK, m.term()));
+            this.constraint = m;
+            this.taskFirst = taskFirst;
+        }
+
+        @Override
+        public boolean test(PreDerivation preDerivation) {
+            Term x, y;
+            if (taskFirst) {
+                x = preDerivation.taskTerm;
+                y = preDerivation.beliefTerm;
+            } else {
+                y = preDerivation.taskTerm;
+                x = preDerivation.beliefTerm;
+            }
+            return !constraint.invalid(x, y);
+        }
+
+        @Override
+        public float cost() {
+            return constraint.cost();
+        }
+    }
+
 //    /**
 //     * combine certain types of items in an AND expression
 //     */
@@ -146,6 +212,11 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         return p.constrain(this);
     }
 
+    @Nullable
+    public PrediTerm<PreDerivation> asPredicate(Term taskPattern, Term beliefPattern) {
+        return null;
+    }
+
 
     static final class CompoundConstraint extends AbstractPred<Derivation> {
 
@@ -158,7 +229,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
             assert(c.length > 1);
             ListMultimap<Term, MatchConstraint> m = MultimapBuilder.hashKeys().arrayListValues().build();
             for (MatchConstraint x : c) {
-                m.put(x.target, x);
+                m.put(x.x, x);
             }
             return ()->m.asMap().entrySet().stream().map(e -> {
                 Collection<MatchConstraint> cc = e.getValue();
@@ -176,11 +247,11 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
 
         private CompoundConstraint(MatchConstraint[] c) {
-            super($.func("unifyIf", c[0].target, SETe.the((Term[]) c)));
+            super($.func("unifyIf", c[0].x, SETe.the((Term[]) c)));
             this.cache = c;
-            this.target = c[0].target;
+            this.target = c[0].x;
             for (int i = 1; i < c.length; i++) {
-                if (!c[i].target.equals(target))
+                if (!c[i].x.equals(target))
                     throw new RuntimeException();
             }
         }

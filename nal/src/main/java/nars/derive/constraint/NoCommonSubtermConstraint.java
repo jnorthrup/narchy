@@ -3,14 +3,13 @@ package nars.derive.constraint;
 import nars.Op;
 import nars.term.Term;
 import nars.term.var.Variable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
 /**
  * containment test of x to y's subterms and y to x's subterms
  */
-public final class NoCommonSubtermConstraint extends CommonalityConstraint {
+public final class NoCommonSubtermConstraint extends MatchConstraint.RelationConstraint {
 
     public final boolean recurse;
 
@@ -18,9 +17,8 @@ public final class NoCommonSubtermConstraint extends CommonalityConstraint {
      * @param recurse true: recursive
      *                false: only cross-compares the first layer of subterms.
      */
-    public NoCommonSubtermConstraint(@NotNull Term target, @NotNull Term x, boolean recurse) {
-        super(recurse ? "neqRCom" : "neqCom",
-                target, x);
+    public NoCommonSubtermConstraint(Term target, Term x, boolean recurse) {
+        super(target, x, recurse ? "neqRCom" : "neqCom");
         this.recurse = recurse;
     }
 
@@ -31,7 +29,7 @@ public final class NoCommonSubtermConstraint extends CommonalityConstraint {
     }
 
     @Override
-    protected boolean invalidCommonality(Term x, Term y) {
+    public boolean invalid(Term x, Term y) {
         return isSubtermOfTheOther(x, y, recurse, true);
     }
 

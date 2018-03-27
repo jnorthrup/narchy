@@ -24,8 +24,8 @@ public final class TaskBeliefHasOrHasnt extends AbstractPred<PreDerivation> {
 
     @Override
     public boolean test(PreDerivation derivation) {
-        return includeOrExclude ==
-               ((!task || derivation.taskTerm.hasAny(structure))
+        return includeOrExclude == (
+               (!task || derivation.taskTerm.hasAny(structure))
                     &&
                (!belief || derivation.beliefTerm.hasAny(structure)));
     }

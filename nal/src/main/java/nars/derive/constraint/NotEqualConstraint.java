@@ -1,41 +1,34 @@
 package nars.derive.constraint;
 
 import nars.term.Term;
-import nars.term.subst.Unify;
 
 
-public final class NotEqualConstraint extends MatchConstraint {
-
-    private final Term other;
+public final class NotEqualConstraint extends MatchConstraint.RelationConstraint {
 
     public NotEqualConstraint(Term target, Term other) {
-        super(target, "neq", other);
-        this.other = other;
+        super(target, other, "neq");
     }
 
     @Override
     public float cost() {
-        return 0.2f;
+        return 0.1f;
     }
 
     @Override
-    public boolean invalid(Term y, Unify f) {
-        Term canNotEqual = f.xy(other);
-        return canNotEqual!=null &&
+    public boolean invalid(Term x, Term y) {
+        return
                 //Terms.equalAtemporally(y, canNotEqual);
                 //y.equals(canNotEqual);
-                y.equalsRoot(canNotEqual);
+                y.equalsRoot(x);
     }
 
 
     /** compares term equality, unnegated */
-    public static final class NotEqualUnnegConstraint extends MatchConstraint {
+    public static final class NotEqualUnnegConstraint extends RelationConstraint {
 
-        private final Term other;
 
-        public NotEqualUnnegConstraint(Term target, Term other) {
-            super(target, "neqUnneg", other);
-            this.other = other;
+        public NotEqualUnnegConstraint(Term target, Term y) {
+            super(target, y, "neqUnneg");
         }
 
         @Override
@@ -44,12 +37,12 @@ public final class NotEqualConstraint extends MatchConstraint {
         }
 
         @Override
-        public boolean invalid(Term y, Unify f) {
-            Term canNotEqual = f.xy(other);
-            return canNotEqual!=null &&
+        public boolean invalid(Term x, Term y) {
+
+            return
                     //Terms.equalAtemporally(y, canNotEqual);
                     //y.equals(canNotEqual);
-                    y.unneg().equalsRoot(canNotEqual.unneg());
+                    y.unneg().equalsRoot(x.unneg());
         }
 
 

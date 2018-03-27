@@ -10,6 +10,7 @@ import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -328,11 +329,11 @@ abstract public class NAgentX extends NAgent {
 
 
         //ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 16);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 8, 64);
 
         //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 16);
 
-        //ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(4, n);
 
 //        RelationClustering relCluster = new RelationClustering(n,
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,

@@ -68,12 +68,12 @@ public class FZero extends NAgentX {
 
         this.fz = new FZeroGame();
 
-        Bitmap2DConcepts<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
+        Bitmap2DConcepts<Scale> c = senseCamera(id /*$.the("cam")*/, new Scale(() -> fz.image,
                 //32, 24
                 24, 16
                 //10,4
                 //16,8
-        )/*.blur()*/).resolution(0.05f);
+        )/*.blur()*/).resolution(0.02f);
         //c.pixelPri.set(0.05f);
 
 //        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
@@ -139,7 +139,7 @@ public class FZero extends NAgentX {
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
         Scalar dAngVel = senseNumberDifference($.the("angVel"), () -> (float) fz.playerAngle).resolution(0.02f);
         Scalar dAccel = senseNumberDifference($.the("accel"), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        DemultiplexedScalar ang = senseNumber(level -> $.p($.the("ang"), $.the(level)), () ->
+        DemultiplexedScalar ang = senseNumber(level -> $.func(id.toString(), $.the("ang"), $.the(level)), () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 5,
                 DigitizedScalar.FuzzyNeedle
@@ -149,9 +149,9 @@ public class FZero extends NAgentX {
 
         //new RLBooster(this, HaiQae::new, 1);
 
-        always.add(new NALTask($$("({(ang,#a),angVel,accel,cam(#x,#y)}-->fz)"),
+        always.add(new NALTask($$("({fz(ang,#a),angVel,accel,fz(#x,#y)}-->fz)"),
                 BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
-        always.add(new NALTask($$("(({#x}-->fz)==>happy(fz,#y))"),
+        always.add(new NALTask($$("(({#x}-->fz) ==>+- happy(fz,#y))"),
                 BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
 
         /*window(

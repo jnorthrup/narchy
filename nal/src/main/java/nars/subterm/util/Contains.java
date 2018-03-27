@@ -39,7 +39,7 @@ public enum Contains implements BiPredicate<Term,Term> {
                 return false;
                 //throw new RuntimeException("this possibility should have been filtered");
 
-            if (!container.impossibleSubTerm(x)) {
+//            if (!container.impossibleSubTerm(x)) {
                 final boolean[] found = {false};
                 Term xr = x.root();
                 container.eventsWhile((when,what)->{
@@ -50,9 +50,9 @@ public enum Contains implements BiPredicate<Term,Term> {
                     return true;
                 }, 0, true, true, false, 0);
                 return found[0];
-            }
+//            }
 
-            return false;
+//            return false;
         }
         public float cost() {
             return 2f;

@@ -3,7 +3,6 @@ package nars.derive.constraint;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * invalid if any of the following:
@@ -11,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
  *      a term contains the other
  *      the terms have no non-variable subterms in common
  */
-public final class CommonSubtermConstraint extends CommonalityConstraint {
+public final class CommonSubtermConstraint extends MatchConstraint.RelationConstraint {
 
-    public CommonSubtermConstraint(Term target, @NotNull Term x) {
-        super("neqAndCom", target, x);
+    public CommonSubtermConstraint(Term target, Term x) {
+        super(target, x, "common_subterms");
     }
 
     @Override
@@ -23,7 +22,7 @@ public final class CommonSubtermConstraint extends CommonalityConstraint {
     }
 
     @Override
-    protected boolean invalidCommonality(Term x, Term y) {
+    public boolean invalid(Term x, Term y) {
 
         int vx = x.volume();
         int vy = y.volume();

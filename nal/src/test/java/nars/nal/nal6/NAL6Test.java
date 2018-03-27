@@ -14,7 +14,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL6Test extends NALTest {
 
 
-    public final int cycles = 2000;
+    public final int cycles = 1500;
 
     @Override protected NAR nar() {
         return NARS.tmp(6);
@@ -265,7 +265,7 @@ public class NAL6Test extends NALTest {
                 .believe("flyer:Tweety")
                 .mustBelieve(cycles, "((chirping:Tweety && food:worms) ==> bird:Tweety)",
                         1.0f,
-                        0.81f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
+                        0.73f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
         //0.81f); //en("If Tweety can chirp and eats worms, then it is a bird.");
 
     }
@@ -619,12 +619,12 @@ public class NAL6Test extends NALTest {
 
 
     @Test //see discussion on https://groups.google.com/forum/#!topic/open-nars/1TmvmQx2hMk
-    public void strong_unification() {
+    public void strong_unification_pos() {
 
         TestNAR tester = test;
         tester.believe("(sentence($a,is,$b) ==> ($a --> $b))", 1.00f, 0.90f);
         tester.believe("sentence(bmw,is,car)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles * 2, "car:bmw", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
+        tester.mustBelieve(cycles, "car:bmw", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
 
     }
 
@@ -632,9 +632,9 @@ public class NAL6Test extends NALTest {
     public void strong_unification_neg() {
 
         TestNAR tester = test;
-        tester.believe("( --sentence($a,is,$b) ==> <$a --> $b> )", 1.00f, 0.90f);
+        tester.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 1.00f, 0.90f);
         tester.believe("sentence(bmw,is,car)", 0.00f, 0.90f);
-        tester.mustBelieve(cycles, "<bmw --> car>", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
+        tester.mustBelieve(cycles, "car:bmw", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
 
     }
 

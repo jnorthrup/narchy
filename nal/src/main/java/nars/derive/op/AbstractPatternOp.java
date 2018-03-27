@@ -2,7 +2,6 @@ package nars.derive.op;
 
 import nars.$;
 import nars.derive.PreDerivation;
-import nars.term.Term;
 import nars.term.pred.AbstractPred;
 
 /**
@@ -11,9 +10,9 @@ import nars.term.pred.AbstractPred;
 public enum AbstractPatternOp  {
     ;
 
-    static Term name(Class c, int subterm, String param) {
-        return $.func(c.getSimpleName(), $.the(subterm) , $.quote(param));
-    }
+//    static Term name(Class c, int subterm, String param) {
+//        return $.func(c.getSimpleName(), $.the(subterm) , $.quote(param));
+//    }
 
 
    public static final class TaskBeliefOpEqual extends AbstractPred<PreDerivation> {

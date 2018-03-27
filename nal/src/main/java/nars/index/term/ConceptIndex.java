@@ -1,11 +1,9 @@
 package nars.index.term;
 
 import nars.NAR;
-import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.control.MetaGoal;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -16,8 +14,6 @@ import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static nars.Op.*;
 
 /**
  *
@@ -152,21 +148,22 @@ public abstract class ConceptIndex {
 
     protected void forget(TaskConcept tc) {
         tc.tasks().forEach(t -> {
-            short[] c = t.cause();
-            if (c.length > 0) {
-                switch (t.punc()) {
-                    case BELIEF:
-                        MetaGoal.Believe.learn(c, -Param.beliefValue(t), nar.causes);
-                        break;
-                    case GOAL:
-                        MetaGoal.Desire.learn(c, -Param.beliefValue(t), nar.causes);
-                        break;
-                    case QUESTION:
-                    case QUEST:
-                        //TODO
-                        break;
-                }
-            }
+            //this doesnt accurately associate the cause of this forgetting with the causes of the tasks being deleted.
+//            short[] c = t.cause();
+//            if (c.length > 0) {
+//                switch (t.punc()) {
+//                    case BELIEF:
+//                        MetaGoal.Believe.learn(c, -Param.beliefValue(t), nar.causes);
+//                        break;
+//                    case GOAL:
+//                        MetaGoal.Desire.learn(c, -Param.beliefValue(t), nar.causes);
+//                        break;
+//                    case QUESTION:
+//                    case QUEST:
+//                        //TODO
+//                        break;
+//                }
+//            }
 
             //TODO harvest anything else important from the tasks before deletion?
             t.delete();

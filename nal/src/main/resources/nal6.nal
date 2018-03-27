@@ -1,8 +1,8 @@
     //strong unification
     //      should these be restricted to "$" var subst
-    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPB)
+    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:Deduction)
     //(Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionN)
-    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPB)
+    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
     //(--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionNN)
 
     (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)

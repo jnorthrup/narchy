@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.control.Cause;
-import nars.derive.constraint.MatchConstraint;
 import nars.derive.op.AbstractPatternOp;
 import nars.derive.op.SubTermStructure;
 import nars.derive.op.TaskBeliefOp;
@@ -20,12 +19,10 @@ import nars.term.pred.AbstractPred;
 import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 
 import static nars.derive.Conclude.IntroVars.VAR_INTRO;
 
@@ -37,7 +34,7 @@ public final class Conclude {
     public static final IntroVars introVars = new IntroVars();
 
 
-    public static void match(final DeriveRuleProto rule, List<PrediTerm<PreDerivation>> pre, List<PrediTerm<Derivation>> post, @NotNull SortedSet<MatchConstraint> constraints, PatternIndex index, NAR nar) {
+    public static void match(final DeriveRuleProto rule, List<PrediTerm<PreDerivation>> pre, List<PrediTerm<Derivation>> post, PatternIndex index, NAR nar) {
 
         Term pattern = rule.conclusion().sub(0);
 

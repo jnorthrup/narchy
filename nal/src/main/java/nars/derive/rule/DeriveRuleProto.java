@@ -25,17 +25,12 @@ import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import static java.util.Collections.addAll;
 import static nars.$.newArrayList;
 import static nars.$.newHashSet;
-import static nars.Op.CONJ;
-import static nars.Op.PROD;
-import static nars.Op.VAR_PATTERN;
+import static nars.Op.*;
 import static nars.subterm.util.Contains.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -84,9 +79,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
         Term[] postcons = ((Subterms) term().sub(1)).arrayShared();
 
 
-        Set<PrediTerm<PreDerivation>> pres =
-                //Global.newArrayList(precon.length);
-                new TreeSet(); //for consistent ordering to maximize folding
+        Set<PrediTerm<PreDerivation>> pres = new HashSet();
 
 
         Term taskPattern = getTask();
@@ -135,18 +128,15 @@ public class DeriveRuleProto extends DeriveRuleSource {
 
 
                 case "neq":
-                    //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neq);
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     neq(constraints, X, Y); //should the constraints be ommited in this case?
                     break;
+
                 case "neqUnneg":
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(X, Y));
                     constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(Y, X));
                     break;
 
                 case "neqAndCom":
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     neq(constraints, X, Y);
                     constraints.add(new CommonSubtermConstraint(X, Y));
                     constraints.add(new CommonSubtermConstraint(Y, X));
@@ -154,7 +144,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
 
 
                 case "neqRCom":
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     constraints.add(new NoCommonSubtermConstraint(X, Y, true));
                     constraints.add(new NoCommonSubtermConstraint(Y, X, true));
                     break;
@@ -169,63 +159,63 @@ public class DeriveRuleProto extends DeriveRuleSource {
 
                 case "subOf": //non-recursive
                     //X subOf Y : X is subterm of Y
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Subterm));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Subterm));
                     break;
 
                 case "subOfNeg": //non-recursive
                     //X subOfNeg Y : --X is subterm of Y
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, -1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, -1));
                     break;
 
                 case "subPosOrNeg": //non-recursive
                     //X subPosOrNeg Y : X or --X is subterm of Y
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, 0));
                     break;
 
                 case "in": //recursive
                     //X in Y : X is recursive subterm of Y
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Recursive));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Recursive));
                     break;
 
                 case "inNeg": //recursive
                     //X inNeg Y : --X is recursive subterm of Y
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Recursive, -1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, -1));
                     break;
 
                 case "inPosOrNeg": //recursive
                     //X inPosOrNeg Y : X or --X is recursive subterm of Y
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Recursive, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, 0));
                     break;
 
 
                 case "eventOf":
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     eventPrefilter(pres, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event));
                     break;
 
                 case "eventOfNeg":
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     eventPrefilter(pres, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, -1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, -1));
                     break;
 
                 case "eventOfPosOrNeg":
-                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    neq(constraints, X, Y);
                     eventPrefilter(pres, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
@@ -257,7 +247,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
                     if (taskPattern.equals(X)) {
                         pres.add(SubsMin.proto(true, min));
                     }
-                    if (!taskPattern.equals(beliefPattern) && beliefPattern.equals(X)) {
+                    if (beliefPattern.equals(X)) {
                         pres.add(SubsMin.proto(false, min));
                     }
                     break;
@@ -465,10 +455,14 @@ public class DeriveRuleProto extends DeriveRuleSource {
             }
         }
 
-        Conclude.match(
-                this,
-                pre, post,
-                constraints, index, nar);
+        Conclude.match(this, pre, post, index, nar);
+
+        constraints.forEach(c -> {
+            PrediTerm<PreDerivation> p = c.asPredicate(taskPattern, beliefPattern);
+            if (p!=null) {
+                pre.add(p);
+            }
+        });
 
         List<PostCondition> postConditions = newArrayList(postcons.length);
 
@@ -521,31 +515,6 @@ public class DeriveRuleProto extends DeriveRuleSource {
         //store to arrays
         this.PRE = pres.toArray(new PrediTerm[pres.size()]);
 
-
-        //        if (getConclusionTermPattern().containsTemporal()) {
-//            if ((!getTaskTermPattern().containsTemporal())
-//                    &&
-//                    (!getBeliefTermPattern().containsTemporal())) {
-//                //if conclusion is temporal term but the premise has none:
-//
-//                String s = toString();
-//                if ((!s.contains("after")) && (!s.contains("concurrent") && (!s.contains("measure")))) {
-//                    //System.err.println
-//                  throw new RuntimeException
-//                            ("Possibly invalid temporal rule from atemporal premise: " + this);
-//
-//                }
-//            }
-//        }
-//
-//        if (!getTask().hasVarPattern())
-//            throw new RuntimeException("rule's task term pattern has no pattern variable");
-//        if (!getBelief().hasVarPattern())
-//            throw new RuntimeException("rule's task belief pattern has no pattern variable");
-//        if (!getConclusionTermPattern().hasVarPattern())
-//            throw new RuntimeException("rule's conclusion belief pattern has no pattern variable");
-
-
     }
 
 
@@ -585,44 +554,20 @@ public class DeriveRuleProto extends DeriveRuleSource {
         }
     }
 
-    static private void neqPrefilter(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Term y) {
-        //TODO maybe structure non-overlap test
-        assert(!taskPattern.equals(beliefPattern));
-        if ((taskPattern.equalsRoot(x) && beliefPattern.equalsRoot(y)) || (taskPattern.equalsRoot(y) && beliefPattern.equalsRoot(x))) {
-            pres.add(TaskBeliefInequal.the);
-        }
-    }
-
     private static void termIs(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, Op v) {
         constraints.add(OpIs.the(x, v));
-        includesOp(pres, taskPattern, beliefPattern, x, v);
-    }
-//    private static void termIsAny(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
-//        constraints.add(new OpIsAny(x, struct));
-//        includesOp(pres, taskPattern, beliefPattern, x, struct, true);
-//    }
-
-    private static void includesOp(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
         boolean isTask = taskPattern.equals(x);
         boolean isBelief = beliefPattern.equals(x);
         if (isTask || isBelief)
-            pres.add(new TaskBeliefOp(o, isTask, isBelief));
+            pres.add(new TaskBeliefOp(v, isTask, isBelief));
 
-        if (!o.atomic) // any atomic terms these will be Anon 'd and thus undetectable
-            includesOp(pres, taskPattern, beliefPattern, x, o.bit, true, true);
-        else
-            throw new TODO("is this valid");
     }
 
-    private static void includesOp(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude, boolean recurse) {
+    private static void includesOp(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
 
-        boolean isTask = taskPattern.equals(x);
-        boolean isBelief = beliefPattern.equals(x);
-
-
-        boolean inTask = isTask || (recurse && taskPattern.containsRecursively(x));
-        boolean inBelief = isBelief || (recurse && beliefPattern.containsRecursively(x));
+        boolean inTask = taskPattern.equals(x) || taskPattern.containsRecursively(x);
+        boolean inBelief = beliefPattern.equals(x) || beliefPattern.containsRecursively(x);
         if (inTask || inBelief)
             pres.add(new TaskBeliefHasOrHasnt(struct, inTask, inBelief, includeExclude));
     }
@@ -631,7 +576,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
     private static void termIsNot(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
         constraints.add(new OpIsNot(x, struct));
-        includesOp(pres, taskPattern, beliefPattern, x, struct, false, false);
+        includesOp(pres, taskPattern, beliefPattern, x, struct, false);
     }
 
 //    private static void termHasAny(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, Op o) {

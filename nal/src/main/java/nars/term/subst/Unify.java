@@ -1,6 +1,7 @@
 package nars.term.subst;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.Util;
 import jcog.data.byt.AbstractBytes;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RawBytes;
@@ -247,8 +248,8 @@ public abstract class Unify extends Versioning implements Subst {
             termutes.clear();
 
             //shuffle the ordering of the termutes themselves
-//            if (ts > 1)
-//                Util.shuffle(t, random);
+            if (ts > 1)
+                Util.shuffle(t, random);
 
             tryMutate(t, -1); //start combinatorial recurse
 
@@ -522,7 +523,7 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     public boolean constrain(MatchConstraint m) {
-        return constrain(m.target, m);
+        return constrain(m.x, m);
     }
 
     public boolean constrain(Term target, MatchConstraint... mm) {
