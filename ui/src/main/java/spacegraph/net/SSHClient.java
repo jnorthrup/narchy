@@ -14,7 +14,7 @@ public class SSHClient {
     public final Session session;
     public final ChannelShell channel;
 
-    public SSHClient(String user, String host, String pw, InputStream in, OutputStream out) throws JSchException {
+    public SSHClient(String host, String user, String pw, InputStream in, OutputStream out) throws JSchException {
 
 
         JSch jsch = new JSch();

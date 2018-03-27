@@ -28,31 +28,31 @@ public final class NotEqualConstraint extends MatchConstraint {
     }
 
 
-//    /** compares term equality, unnegated */
-//    public static final class NotEqualUnnegConstraint extends MatchConstraint {
-//
-//        private final Term other;
-//
-//        public NotEqualUnnegConstraint(Term target, Term other) {
-//            super(target, "neqUnneg", other);
-//            this.other = other;
-//        }
-//
-//        @Override
-//        public float cost() {
-//            return 0.2f;
-//        }
-//
-//        @Override
-//        public boolean invalid(Term y, Unify f) {
-//            Term canNotEqual = f.xy(other);
-//            return canNotEqual!=null &&
-//                    //Terms.equalAtemporally(y, canNotEqual);
-//                    //y.equals(canNotEqual);
-//                    y.unneg().equalsRoot(canNotEqual.unneg());
-//        }
-//
-//
-//    }
+    /** compares term equality, unnegated */
+    public static final class NotEqualUnnegConstraint extends MatchConstraint {
+
+        private final Term other;
+
+        public NotEqualUnnegConstraint(Term target, Term other) {
+            super(target, "neqUnneg", other);
+            this.other = other;
+        }
+
+        @Override
+        public float cost() {
+            return 0.2f;
+        }
+
+        @Override
+        public boolean invalid(Term y, Unify f) {
+            Term canNotEqual = f.xy(other);
+            return canNotEqual!=null &&
+                    //Terms.equalAtemporally(y, canNotEqual);
+                    //y.equals(canNotEqual);
+                    y.unneg().equalsRoot(canNotEqual.unneg());
+        }
+
+
+    }
 
 }

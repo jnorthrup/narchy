@@ -1,6 +1,7 @@
 package spacegraph.widget.adapter;
 
 import com.googlecode.lanterna.TerminalPosition;
+import com.googlecode.lanterna.TextColor;
 import com.jcraft.jsch.JSchException;
 import com.jogamp.newt.event.KeyEvent;
 import org.fusesource.jansi.AnsiOutputStream;
@@ -8,10 +9,7 @@ import spacegraph.net.SSHClient;
 import spacegraph.render.JoglSpace;
 import spacegraph.widget.console.ConsoleTerminal;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.io.*;
 
 /**
  * Created by me on 11/13/16.
@@ -22,8 +20,8 @@ public class SSHSurface extends ConsoleTerminal {
     public static void main(String[] args) throws IOException, JSchException {
 
         JoglSpace.window(new SSHSurface(
-                "gest", "localhost", "tseg",
-                80, 24).text, 1000, 600);
+                args[0], args[1], args[2],
+                80, 24), 1000, 600);
     }
 
 
@@ -31,11 +29,17 @@ public class SSHSurface extends ConsoleTerminal {
 
     private final SSHClient ssh;
 
+    static final TextColor defaultTextColor = TextColor.ANSI.WHITE;
+    static final TextColor defaultBackgroundColor = TextColor.ANSI.BLACK;
 
-    public SSHSurface(String user, String host, String password, int cols, int rows) throws IOException, JSchException {
+
+    public SSHSurface(String host, String user, String password, int cols, int rows) throws IOException, JSchException {
         super(cols, rows);
 
-        ssh = new SSHClient(user, host, password,
+        term.setForegroundColor(defaultTextColor);
+        term.setBackgroundColor(defaultBackgroundColor);
+
+        ssh = new SSHClient(host, user, password,
 
                 new PipedInputStream(ins),
 
@@ -72,18 +76,18 @@ public class SSHSurface extends ConsoleTerminal {
                         addCursorPosition(count, 0);
                     }
 
+                    @Override
+                    protected void processCursorUp(int count) {
+                        addCursorPosition(0, -count);
+                    }
+
+
                     private void addCursorPosition(int dCol, int dRow) {
                         TerminalPosition p = term.getCursorPosition();
                         int c = p.getColumn();
                         int r = p.getRow();
                         term.setCursorPosition(c + dCol, r + dRow);
                     }
-
-                    @Override
-                    protected void processCursorUp(int count) {
-                        addCursorPosition(0, -count);
-                    }
-
 
                     @Override
                     protected void processCursorToColumn(int c) {
@@ -95,6 +99,10 @@ public class SSHSurface extends ConsoleTerminal {
                         System.out.println("unhandled processCursorUpLine " + count);
                     }
 
+                    @Override
+                    protected void processScrollDown(int optionInt) {
+                        System.out.println("unhandled processScrollDown " + optionInt);
+                    }
 
                     @Override
                     protected void processSaveCursorPosition() {
@@ -132,6 +140,34 @@ public class SSHSurface extends ConsoleTerminal {
                     }
 
                     @Override
+                    protected void processDefaultTextColor() {
+                        term.setForegroundColor(defaultTextColor);
+                        term.setBackgroundColor(defaultBackgroundColor);
+                    }
+
+                    @Override
+                    protected void processSetForegroundColor(int color) {
+                        term.setForegroundColor(TextColor.ANSI.values()[color]);
+                    }
+
+                    @Override
+                    protected void processSetBackgroundColor(int color) {
+                        term.setBackgroundColor(TextColor.ANSI.values()[color]);
+                    }
+
+                    @Override
+                    protected void processSetBackgroundColor(int color, boolean bright) {
+                        processSetBackgroundColor(color);
+                        //TODO bold
+                    }
+
+                    @Override
+                    protected void processSetForegroundColor(int color, boolean bright)  {
+                        processSetForegroundColor(color);
+                        //TODO bold
+                    }
+
+                    @Override
                     protected void processEraseScreen(int eraseOption) {
 //                        protected static final int ERASE_SCREEN_TO_END = 0;
 //                        protected static final int ERASE_SCREEN_TO_BEGINING = 1;
@@ -149,6 +185,7 @@ public class SSHSurface extends ConsoleTerminal {
                                 break;
                         }
                     }
+
                 }
         );
     }

@@ -200,6 +200,7 @@ public class AWTSurface extends Widget {
         ui.add(new JButton("XYZ"));
         ui.add(new JSlider());
 
+//        Component ui = new JColorChooser().getComponents()[0];
 
 //        JComboBox ui = new JComboBox();
 //        ui.addItem("a");
@@ -212,7 +213,6 @@ public class AWTSurface extends Widget {
 //        Component ui = new JSlider(SwingConstants.VERTICAL);
 
         SpaceGraph.window(new AWTSurface(
-                //new JColorChooser(),
                 ui,
                         200, 200),
                 400, 400);
