@@ -2,8 +2,6 @@ package nars.subterm;
 
 import nars.term.Term;
 
-import java.util.List;
-
 public class ProxySubterms implements Subterms {
 
     protected final Subterms ref;
@@ -14,7 +12,7 @@ public class ProxySubterms implements Subterms {
 
     @Override
     public int hashCode() {
-        return Subterms.hash((List)this);
+        return Subterms.hash(this);
     }
 
     @Override

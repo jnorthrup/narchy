@@ -2461,7 +2461,7 @@ public enum Op {
     public static class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound, Term> {
 
         public TermCache(int capacity, int reprobes, boolean soft) {
-            super(x -> x.term(), capacity, reprobes, soft);
+            super(InternedCompound::term, capacity, reprobes, soft);
         }
 
         @Override

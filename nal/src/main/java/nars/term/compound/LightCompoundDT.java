@@ -34,7 +34,7 @@ public class LightCompoundDT implements Compound {
 
         Op op = base.op();
 
-        assert(base.dt()==DTERNAL & ((op.temporal && dt!=DTERNAL) || this instanceof PatternCompound));
+        assert(base.dt()==DTERNAL && ((op.temporal && dt!=DTERNAL) || this instanceof PatternCompound));
 
         Subterms s = base.subterms();
 

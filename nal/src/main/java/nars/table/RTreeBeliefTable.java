@@ -640,7 +640,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
     }
 
-    private Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
+    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
         //Set<TaskRegion> seen = new HashSet(size());
         return (t) -> {
             //if (seen.add(t)) {

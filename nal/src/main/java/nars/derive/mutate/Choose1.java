@@ -8,6 +8,7 @@ import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.subst.Unify;
 
+import java.util.Arrays;
 import java.util.SortedSet;
 
 /**
@@ -28,7 +29,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     Choose1(Ellipsis xEllipsis, Term x, Term[] yFree) {
         super(CHOOSE_1, x, xEllipsis, $.pFast(yFree));
 
-        int ysize = yFree.length;  assert(ysize >= 2): yFree + " must offer choice";
+        int ysize = yFree.length;  assert(ysize >= 2): Arrays.toString(yFree) + " must offer choice";
 
         yy = yFree;
         //this.yFree = yFree;

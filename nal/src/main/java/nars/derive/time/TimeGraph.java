@@ -480,7 +480,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
 
             FasterList<Event> rels = new FasterList<>(4);
-            int[] phase = new int[]{0};
+//            int[] phase = new int[]{0};
             //                int p = phase[0];
 //                if (z instanceof Absolute) {
 //                    if (abs[p] == null) abs[p] = new UnifiedSet(2);
@@ -496,7 +496,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             if (aEqB) {
 //                abs[1] = abs[0];
             } else {
-                phase[0] = 1;
+//                phase[0] = 1;
                 byTerm.get(b).forEach(collect);
 //                if (abs[1] == null)
 //                    byTerm.get(b.neg()).forEach(collect);  //if nothing, look for negations

@@ -20,7 +20,7 @@ public class Traffic extends AtomicFloat {
         zero(this::commit);
     }
 
-    protected final void commit(float cur) {
+    private void commit(float cur) {
         this.total += (this.last = cur);
     }
 

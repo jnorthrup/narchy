@@ -93,7 +93,7 @@ public class ArithmeticIntroduction extends LeakBack {
                             Int.the(ia), $.func("add", v, $.the(ia - ib))
                     });
 
-                } else if ((ia!=0 && ia!=1) && (ib!=0 && ib!=1) && Util.equals(ib/ia, (int)(((float)ib)/ia), Float.MIN_NORMAL)) {
+                } else if ((ia!=0 && ia!=1) && (ib!=0 && ib!=1) && Util.equals(ib/ia, (((float)ib)/ia), Float.MIN_NORMAL)) {
 
                     mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
                             Int.the(ib), $.func("mul", v, $.the(ib/ia))

@@ -375,9 +375,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         happy.update(last, now, nar);
 
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
-        sensors.entrySet().forEach( (sc) -> {
-            sc.getValue().input(sc.getKey().update(last, now, truther, nar));
-        });
+        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, nar)));
 
         always( motivation.floatValue() );
 
