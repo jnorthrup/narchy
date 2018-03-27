@@ -18,8 +18,8 @@ public abstract class PreDerivation extends Unify {
     public Term beliefTerm;
     public byte taskPunc;
 
-    /* -1 = freq<0.5, 0 = null, +1 = freq>=0.5 */
-    public int taskPolarity, beliefPolarity;
+//    /* -1 = freq<0.5, 0 = null, +1 = freq>=0.5 */
+//    public int taskPolarity, beliefPolarity;
 
     public byte _taskOp;
     public byte _beliefOp;

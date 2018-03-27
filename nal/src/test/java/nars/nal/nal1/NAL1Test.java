@@ -120,12 +120,12 @@ public class NAL1Test extends NALTest {
             .mustOutput(CYCLES, "<swimmer --> bird>. %1.00;0.47%");
     }
 
-    @Test
-    public void conversionNeg() throws nars.Narsese.NarseseException {
-        test.believe("--plant:animal") //animal isnt a type of plant
-            .ask("animal:plant") //.en("Is plant a type of animal?");
-            .mustOutput(CYCLES, "animal:plant. %0.00;0.47%"); //plant probably is not a type of animal
-    }
+//    @Test
+//    public void conversionNeg() throws nars.Narsese.NarseseException {
+//        test.believe("--plant:animal") //animal isnt a type of plant
+//            .ask("animal:plant") //.en("Is plant a type of animal?");
+//            .mustOutput(CYCLES, "animal:plant. %0.00;0.47%"); //plant probably is not a type of animal
+//    }
 
 
 

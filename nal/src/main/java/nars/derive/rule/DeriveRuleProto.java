@@ -1,14 +1,15 @@
 package nars.derive.rule;
 
 import com.google.common.collect.Sets;
-import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.derive.*;
 import nars.derive.constraint.*;
-import nars.derive.op.*;
+import nars.derive.op.TaskBeliefHasOrHasnt;
+import nars.derive.op.TaskBeliefOp;
+import nars.derive.op.TaskPunctuation;
 import nars.index.term.PatternIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -363,35 +364,35 @@ public class DeriveRuleProto extends DeriveRuleSource {
 ////                    }
 //                    break;
 
-                case "belief":
-                    switch (XString) {
-//                          case "containsTask":
-//                            pres.add(TaskPolarity.beliefContainsTask);
-//                            break;
-                        case "negative":
-                            pres.add(TaskPolarity.beliefNeg);
-                            break;
-                        case "positive":
-                            pres.add(TaskPolarity.beliefPos);
-                            break;
-
-                        //HACK do somethign other than duplciate this with the "task" select below, and also generalize to all ops
-                        case "\"*\"":
-                            pres.add(new TaskBeliefOp(PROD, false, true));
-                            break;
-                        case "\"&&\"":
-                            pres.add(new TaskBeliefOp(CONJ, false, true));
-                            break;
-//                        case "\"&&+\"": //sequence
-//                            pres.add(new TaskBeliefOp.TaskBeliefConjSeq(false, true));
-//                            break;
-//                        case "\"&&|\"": //parallel or eternal
-//                            pres.add(new TaskBeliefOp.TaskBeliefConjComm(false, true));
-//                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                    break;
+//                case "belief":
+//                    switch (XString) {
+////                          case "containsTask":
+////                            pres.add(TaskPolarity.beliefContainsTask);
+////                            break;
+////                        case "negative":
+////                            pres.add(TaskPolarity.beliefNeg);
+////                            break;
+////                        case "positive":
+////                            pres.add(TaskPolarity.beliefPos);
+////                            break;
+//
+//                        //HACK do somethign other than duplciate this with the "task" select below, and also generalize to all ops
+////                        case "\"*\"":
+////                            pres.add(new TaskBeliefOp(PROD, false, true));
+////                            break;
+////                        case "\"&&\"":
+////                            pres.add(new TaskBeliefOp(CONJ, false, true));
+////                            break;
+////                        case "\"&&+\"": //sequence
+////                            pres.add(new TaskBeliefOp.TaskBeliefConjSeq(false, true));
+////                            break;
+////                        case "\"&&|\"": //parallel or eternal
+////                            pres.add(new TaskBeliefOp.TaskBeliefConjComm(false, true));
+////                            break;
+//                        default:
+//                            throw new UnsupportedOperationException();
+//                    }
+//                    break;
 
                 case "task":
                     switch (XString) {
@@ -399,16 +400,16 @@ public class DeriveRuleProto extends DeriveRuleSource {
 //                            pres.add(TaskPolarity.taskContainsBelief);
 //                            break;
 //
-                        case "containsBeliefRecursively":
-                            pres.add(TaskPolarity.taskContainsBeliefRecursively);
-                            break;
-
-                        case "negative":
-                            pres.add(TaskPolarity.taskNeg);
-                            break;
-                        case "positive":
-                            pres.add(TaskPolarity.taskPos);
-                            break;
+//                        case "containsBeliefRecursively":
+//                            pres.add(TaskPolarity.taskContainsBeliefRecursively);
+//                            break;
+//
+//                        case "negative":
+//                            pres.add(TaskPolarity.taskNeg);
+//                            break;
+//                        case "positive":
+//                            pres.add(TaskPolarity.taskPos);
+//                            break;
                         case "\"?\"":
                             pres.add(TaskPunctuation.Question);
                             taskPunc = '?';
@@ -627,18 +628,18 @@ public class DeriveRuleProto extends DeriveRuleSource {
             throw new RuntimeException("unknown GoalFunction: " + post.goalTruth);
         }
 
-        //if (puncOverride==0) {
-        if (belief!=null && goal!=null) {
-            if (!belief.single() && !goal.single()) {
-                pre.add(TaskPolarity.belief);
-            } else if (belief.single() ^ goal.single()){
-                throw new TODO();
-            }
-        } else if (belief!=null && !belief.single()) {
-            pre.add(TaskPolarity.belief);
-        } else if (goal!=null && !goal.single()) {
-            pre.add(TaskPolarity.belief);
-        }
+//        //if (puncOverride==0) {
+//        if (belief!=null && goal!=null) {
+//            if (!belief.single() && !goal.single()) {
+//                pre.add(TaskPolarity.belief);
+//            } else if (belief.single() ^ goal.single()){
+//                throw new TODO();
+//            }
+//        } else if (belief!=null && !belief.single()) {
+//            pre.add(TaskPolarity.belief);
+//        } else if (goal!=null && !goal.single()) {
+//            pre.add(TaskPolarity.belief);
+//        }
 
         //TODO add more specific conditions that also work
         //}

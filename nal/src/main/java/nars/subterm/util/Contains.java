@@ -48,7 +48,7 @@ public enum Contains implements BiPredicate<Term,Term> {
                         return false;
                     }
                     return true;
-                }, 0, true, true, false, 0);
+                }, 0, true, true, true, 0);
                 return found[0];
 //            }
 

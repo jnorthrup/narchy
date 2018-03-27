@@ -2,6 +2,7 @@ package nars;
 
 import jcog.Util;
 import nars.test.DeductiveChainTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SubNARTest {
 
+    @Disabled
     @Test
     public void testSuperAndSubIsolation() {
         NAR a = NARS.tmp();

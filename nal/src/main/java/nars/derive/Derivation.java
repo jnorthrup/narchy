@@ -470,33 +470,33 @@ public class Derivation extends PreDerivation {
         switch (this.taskPunc = _task.punc()) {
             case QUESTION:
             case QUEST:
-                this.taskPolarity = 0;
+//                this.taskPolarity = 0;
                 assert(this.taskTruth == null);
                 break;
             default:
                 if ((this.taskTruth = _task.truth(tAt, dur)) == null)
                     return false;
                 assert(this.taskTruth!=null);
-                this.taskPolarity = polarity(taskTruth);
+//                this.taskPolarity = polarity(taskTruth);
                 break;
         }
 
         if (belief != null) {
             long bAt = belief.nearestPointExternal(_task.start(), _task.end());
             if ((this.beliefTruth = belief.truth(bAt, dur))!=null) {
-                this.beliefPolarity = polarity(this.beliefTruth);
+//                this.beliefPolarity = polarity(this.beliefTruth);
                 this.beliefAt =
                         //bAt;
                         belief.start();
             } else {
                 this.belief = null;
-                this.beliefPolarity = 0;
+//                this.beliefPolarity = 0;
                 this.beliefAt = TIMELESS;
             }
 
         } else {
             this.beliefTruth = null;
-            this.beliefPolarity = 0;
+//            this.beliefPolarity = 0;
             this.beliefAt = TIMELESS;
         }
 

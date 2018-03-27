@@ -284,15 +284,15 @@
     //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
     X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN)
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
+    X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
+    X, C, eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
 
-    C, X, task("&&"), eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Induction)
-    C, X, task("&&"), eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Induction)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
@@ -300,8 +300,8 @@
     //C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //C, X, task("&&"), eventOfPosOrNeg(X,C)  |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, task("&&"), eventOf(C,X)   |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, task("&&"), eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOf(C,X)   |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //C, X, task(negative), task("&&"), in(X,C)  |- (--,dropAnyEvent(C)), (Goal:StructuralDeduction)
 
