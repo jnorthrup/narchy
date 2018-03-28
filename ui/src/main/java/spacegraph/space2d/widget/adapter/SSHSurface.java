@@ -2,6 +2,8 @@ package spacegraph.space2d.widget.adapter;
 
 import com.jcraft.jcterm.JCTermSwingFrame;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.windo.PhyWall;
 
 /**
  * Created by me on 11/13/16.
@@ -14,7 +16,9 @@ public class SSHSurface extends AWTSurface {
 
     public static void main(String[] args) {
 
-        SpaceGraph.window(new SSHSurface(), 800, 600);
+
+        PhyWall w = SpaceGraph.wall(800, 600);
+        w.put(new Gridding(new SSHSurface()), 8, 6);
 
     }
 

@@ -7,6 +7,7 @@ import jcog.exe.Every;
 import jcog.math.IntRange;
 import jcog.net.UDPeer;
 import org.eclipse.collections.api.tuple.Pair;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Splitting;
@@ -92,10 +93,10 @@ public class MeshChipTest {
 
     public static void main(String[] args) throws IOException {
 
-        PhyWall p = PhyWall.window(800, 800);
-        p.addWindow(new MessageChip(), 1, 1);
-        p.addWindow(new MeshChip(new UDPeer()), 1, 1);
-        p.addWindow(new MeshChip(new UDPeer()), 1, 1);
+        PhyWall p = SpaceGraph.wall(800, 800);
+        p.put(new MessageChip(), 1, 1);
+        p.put(new MeshChip(new UDPeer()), 1, 1);
+        p.put(new MeshChip(new UDPeer()), 1, 1);
     }
 
     public static class MessageChip extends Splitting {

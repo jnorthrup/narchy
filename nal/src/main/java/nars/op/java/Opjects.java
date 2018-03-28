@@ -83,6 +83,10 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class Opjects extends DefaultTermizer implements InvocationHandler {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
+    final static ClassLoadingStrategy.Default classLoadingStrategy =
+            //ClassLoadingStrategy.Default.INJECTION
+            ClassLoadingStrategy.Default.WRAPPER
+            ;
 
     final ByteBuddy bb = new ByteBuddy();
 
@@ -755,7 +759,8 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                     .load(
                             Thread.currentThread().getContextClassLoader(),
                             //instance.getClass().getClassLoader(),
-                            ClassLoadingStrategy.Default.INJECTION)
+                            classLoadingStrategy
+                    )
                     .getLoaded();
             T instWrapped = (T) cl.getConstructor(typesOfArray(args)).newInstance(args);
 
@@ -837,7 +842,8 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                     .load(
                             Thread.currentThread().getContextClassLoader(),
                             //baseClass.getClassLoader(),
-                            ClassLoadingStrategy.Default.INJECTION)
+                            classLoadingStrategy
+                    )
                     .getLoaded();
 
             reflect(cc); //the original class

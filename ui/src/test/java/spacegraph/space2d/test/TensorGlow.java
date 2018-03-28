@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.tensor.Tensor;
 import jcog.math.tensor.TensorLERP;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
@@ -42,7 +43,7 @@ public class TensorGlow {
 
     public static void main(String[] args) {
 
-        PhyWall p = PhyWall.window(1200, 1000);
+        PhyWall p = SpaceGraph.wall(1200, 1000);
 
         p.W.setGravity(new v2(0, -2.8f));
         staticBox(p.W, -5, -8, +5, 2f, false, true, true, true);
@@ -70,7 +71,7 @@ public class TensorGlow {
             p.W.setContactListener(new Explosives.ExplosionContacts());
 
             TheoJansen t = new TheoJansen(p.W, 0.35f);
-            PhyWall.PhyWindow pw = p.addWindow(new Gridding(0.5f, new Port((float[] v) -> {
+            PhyWall.PhyWindow pw = p.put(new Gridding(0.5f, new Port((float[] v) -> {
                 //System.out.println(v);
                 t.motorJoint.setMotorSpeed(v[0]*2 - v[1]*2);
                 t.motorJoint.setMaxMotorTorque(v[2]);
@@ -110,7 +111,7 @@ public class TensorGlow {
         final FloatRange lerpRate = new FloatRange(0.01f, 0, 1f);
         final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
-        PhyWall.PhyWindow w = p.addWindow(new Gridding(0.25f,
+        PhyWall.PhyWindow w = p.put(new Gridding(0.25f,
                         new AutoUpdateMatrixView(
                                 lerpVector.data
                         ),
@@ -127,9 +128,9 @@ public class TensorGlow {
                         })),
                 0.5f, 0.5f);
 
-        p.addWindow(new TogglePort(), 0.25f, 0.25f);
+        p.put(new TogglePort(), 0.25f, 0.25f);
 
-        PhyWall.PhyWindow qw = p.addWindow(
+        PhyWall.PhyWindow qw = p.put(
                 new Gridding(
                         new Label("HaiQ"),
                         new AutoSurface<>(q),

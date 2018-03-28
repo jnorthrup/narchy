@@ -68,16 +68,6 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     // this is the most important class
     public final Dynamics3D<X> dyn;
 
-    public static SpaceGraphPhys3D window(Spatial s, int w, int h) {
-        return window(w, h, s);
-    }
-
-    public static SpaceGraphPhys3D window(int w, int h, Spatial... s) {
-        SpaceGraphPhys3D win = new SpaceGraphPhys3D(s);
-        win.show(w, h);
-        return win;
-    }
-
     public SpaceGraphPhys3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
         return this;

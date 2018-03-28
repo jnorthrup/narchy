@@ -33,7 +33,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
 
 
     @Override
-    public Status state() {
+    public final Status state() {
         Status s = status;
         if (s == PENDING && rounds.getAndDecrement()<=0) {
             return READY;

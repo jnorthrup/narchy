@@ -3,6 +3,7 @@ package spacegraph.space2d.phys.explosive;
 import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.phys.callbacks.ContactImpulse;
 import spacegraph.space2d.phys.callbacks.ContactListener;
 import spacegraph.space2d.phys.collision.Manifold;
@@ -207,7 +208,7 @@ public class Explosives {
 
 
     public static void main(String[] args) {
-        PhyWall p = PhyWall.window(1200, 1000);
+        PhyWall p = SpaceGraph.wall(1200, 1000);
 
         Dynamics2D w = p.W;
         w.setContactListener(new ExplosionContacts());

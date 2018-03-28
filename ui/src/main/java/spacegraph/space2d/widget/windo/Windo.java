@@ -67,7 +67,7 @@ public class Windo extends Widget {
 
 
         Surface c = super.onTouch(finger, buttons);
-        if (c!=this && c!=null && c!=this.get())
+        if (fingeringWindow(c))
             return c; //something else or a child inside of the content
 
 
@@ -158,6 +158,10 @@ public class Windo extends Widget {
 
 
         return c;
+    }
+
+    public boolean fingeringWindow(Surface childFingered) {
+        return childFingered !=this && childFingered !=null && childFingered !=this.get();
     }
 
     protected Fingering fingering(DragEdit mode) {
@@ -361,79 +365,79 @@ public class Windo extends Widget {
 //        }
 //    }
 
-
-    public static void main(String[] args) {
-//        Wall d =
-//                //new Wall();
-//                new PhyWall();
-        {
-//            boolean init = true;
-//            int shaderprogram;
-//            String vsrc;
 //
-//            {
-//                try {
-//                    vsrc = new StringBuilder(new String(GLSL.class.getClassLoader().getResourceAsStream(
-//                            "glsl/grid.glsl"
-//                            //"glsl/16seg.glsl"
-//                            //"glsl/metablob.glsl"
-//                    ).readAllBytes())).toString();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            protected void paint(GL2 gl) {
-//                if (init) {
-////                    int v = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
-//                    int f = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
-//
-//                    {
-//
-//                        gl.glShaderSource(f, 1, new String[]{vsrc}, new int[]{vsrc.length()}, 0);
-//                        gl.glCompileShader(f);
-//                    }
-////                        {
-////                            String vsrc = new StringBuilder(new String(GLSL.class.getClassLoader().getResourceAsStream(
-////                                    "glsl/16seg.glsl"
-////                            ).readAllBytes())).toString();
-////                            gl.glShaderSource(f, 1, new String[]{vsrc}, new int[]{vsrc.length()}, 0);
-////                            gl.glCompileShader(f);
-////                        }
-//
-//                    shaderprogram = gl.glCreateProgram();
-//                    //gl.glAttachShader(shaderprogram, v);
-//                    gl.glAttachShader(shaderprogram, f);
-//                    gl.glLinkProgram(shaderprogram);
-//                    gl.glValidateProgram(shaderprogram);
-//
-//                    init = false;
-//                }
-//
-//                gl.glUseProgram(shaderprogram);
-//                super.paint(gl);
-//                gl.glUseProgram(0);
-//            }
-
-        }
-//        JoglSpace.window(d, 800, 800);
-//
-//        //d.children.add(new GridTex(16).pos(0,0,1000,1000));
-//
+//    public static void main(String[] args) {
+////        Wall d =
+////                //new Wall();
+////                new PhyWall();
 //        {
-//            Windo w = d.addWindo(WidgetTest.widgetDemo());
-//            w.pos(80, 80, 550, 450);
+////            boolean init = true;
+////            int shaderprogram;
+////            String vsrc;
+////
+////            {
+////                try {
+////                    vsrc = new StringBuilder(new String(GLSL.class.getClassLoader().getResourceAsStream(
+////                            "glsl/grid.glsl"
+////                            //"glsl/16seg.glsl"
+////                            //"glsl/metablob.glsl"
+////                    ).readAllBytes())).toString();
+////                } catch (IOException e) {
+////                    e.printStackTrace();
+////                }
+////            }
+////
+////            @Override
+////            protected void paint(GL2 gl) {
+////                if (init) {
+//////                    int v = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
+////                    int f = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
+////
+////                    {
+////
+////                        gl.glShaderSource(f, 1, new String[]{vsrc}, new int[]{vsrc.length()}, 0);
+////                        gl.glCompileShader(f);
+////                    }
+//////                        {
+//////                            String vsrc = new StringBuilder(new String(GLSL.class.getClassLoader().getResourceAsStream(
+//////                                    "glsl/16seg.glsl"
+//////                            ).readAllBytes())).toString();
+//////                            gl.glShaderSource(f, 1, new String[]{vsrc}, new int[]{vsrc.length()}, 0);
+//////                            gl.glCompileShader(f);
+//////                        }
+////
+////                    shaderprogram = gl.glCreateProgram();
+////                    //gl.glAttachShader(shaderprogram, v);
+////                    gl.glAttachShader(shaderprogram, f);
+////                    gl.glLinkProgram(shaderprogram);
+////                    gl.glValidateProgram(shaderprogram);
+////
+////                    init = false;
+////                }
+////
+////                gl.glUseProgram(shaderprogram);
+////                super.paint(gl);
+////                gl.glUseProgram(0);
+////            }
 //
-////            Port p = w.addPort("X");
 //        }
-//
-//        d.addWindo(grid(new PushButton("x"), new PushButton("y"))).pos(10, 10, 50, 50);
-//
-//        d.addWindo(new PushButton("w")).pos(-50, -50, 10, 10);
-//
-//        //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
-//
-    }
+////        JoglSpace.window(d, 800, 800);
+////
+////        //d.children.add(new GridTex(16).pos(0,0,1000,1000));
+////
+////        {
+////            Windo w = d.addWindo(WidgetTest.widgetDemo());
+////            w.pos(80, 80, 550, 450);
+////
+//////            Port p = w.addPort("X");
+////        }
+////
+////        d.addWindo(grid(new PushButton("x"), new PushButton("y"))).pos(10, 10, 50, 50);
+////
+////        d.addWindo(new PushButton("w")).pos(-50, -50, 10, 10);
+////
+////        //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
+////
+//    }
 
 }

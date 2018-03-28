@@ -12,20 +12,13 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.ArrayIterator;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.event.Level;
 import spacegraph.input.finger.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
-import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.hud.HUDOrtho;
 import spacegraph.space2d.hud.Ortho;
-import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.collision.RayCastOutput;
@@ -83,7 +76,7 @@ public class PhyWall extends Wall implements Animated {
      */
     final MapNodeGraph<Surface, Wire> links = new MapNodeGraph();
 
-    private PhyWall() {
+    public PhyWall() {
         super();
 
         W.setParticleRadius(0.2f);
@@ -93,71 +86,6 @@ public class PhyWall extends Wall implements Animated {
         W.setAllowSleep(true);
         W.setContinuousPhysics(true);
         //W.setSubStepping(true);
-    }
-
-    /**
-     * HACK
-     * note: adds development frame but this shouldnt be part of the default general-purpose window constructor
-     */
-    public static PhyWall window(int width, int height) {
-        PhyWall s = new PhyWall();
-        s.pos(-1, -1, 1, 1);
-
-        //SpaceLogConsole log = new SpaceLogConsole();
-        //log.visible(false);
-
-        Label statusBar = new Label();
-
-
-        HUDOrtho hud = new HUDOrtho();
-
-        new SpaceGraphFlat(
-                new ZoomOrtho(s) {
-
-                    @Override
-                    protected boolean maximize() {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean autoresize() {
-                        zoom(s);
-                        return false;
-                    }
-
-                    @Override
-                    public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
-                        //if (log.visible())
-                        //log.log(key, duration, level, message);
-                        if (statusBar.visible())
-                            statusBar.text(message.get());
-                        //else: buffer?
-                    }
-                },
-                hud
-        ).show(width, height);
-
-
-        hud.set(
-                new Splitting(new EmptySurface(),
-                        //new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-                        new Gridding(new EmptySurface(), statusBar),
-                        0.1f)
-        );
-        //log.pos(0, 0.9f, 0.5f * width, 1f);
-        System.out.println(hud.bounds);
-
-//        log.visible(false);
-//        hud.set(
-//            new Splitting(
-//                new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-//                new Gridding(new PushButton("+"),
-//                        //new OmniBox(),
-//                new CheckBox("Log", (Runnable)log::visible)),
-//                0.1f
-//        ));
-
-        return s;
     }
 
     @Override
@@ -326,17 +254,17 @@ public class PhyWall extends Wall implements Animated {
     /**
      * spawns in view center at the given size
      */
-    public PhyWindow addWindow(Surface content, float w, float h) {
+    public PhyWindow put(Surface content, float w, float h) {
         Ortho view = (Ortho) root();
-        return addWindow(content, RectFloat2D.XYWH(view.x(), view.y(), w, h));
+        return put(content, RectFloat2D.XYWH(view.x(), view.y(), w, h));
     }
 
 
-    public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
-        return addWindow(content, initialBounds, true);
+    public PhyWindow put(Surface content, RectFloat2D initialBounds) {
+        return put(content, initialBounds, true);
     }
 
-    public PhyWindow addWindow(Surface content, RectFloat2D initialBounds, boolean collides) {
+    public PhyWindow put(Surface content, RectFloat2D initialBounds, boolean collides) {
         PhyWindow s = new PhyWindow(initialBounds, collides);
 
         add(s);
@@ -400,7 +328,7 @@ public class PhyWall extends Wall implements Animated {
             }
         });
 
-        PhyWindow menuBody = addWindow(menu,
+        PhyWindow menuBody = put(menu,
                 RectFloat2D.mid(source.bounds, target.bounds, 0.1f));
 
         float mw = menuBody.radius();
@@ -672,7 +600,7 @@ public class PhyWall extends Wall implements Animated {
             float dx = cx() + (float) (minRadius * Math.cos(a));
             float dy = cy() + (float) (minRadius * Math.sin(a));
 
-            return addWindow(target, sproutSize.move(dx, dy, EPSILON));
+            return put(target, sproutSize.move(dx, dy, EPSILON));
         }
 
 
@@ -915,11 +843,11 @@ public class PhyWall extends Wall implements Animated {
         if (doubleClicking.update(finger))
             return this;
 
-        return this;
+        return s!=null ? s : this;
     }
 
     void doubleClick(v2 pos) {
-        addWindow(
+        put(
                 new WizardFrame(new ProtoWidget()) {
                     @Override
                     protected void become(Surface next) {

@@ -16,6 +16,7 @@ import nars.NARS;
 import nars.NAgent;
 import nars.experiment.PoleCart;
 import nars.op.RLBooster;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;
@@ -39,12 +40,12 @@ public class TensorRL1 {
     public static void main(String[] args) {
 
 
-        PhyWall p = PhyWall.window(1200, 1000);
+        PhyWall p = SpaceGraph.wall(1200, 1000);
         ((ZoomOrtho) p.root()).scaleMin = 100f;
         ((ZoomOrtho) p.root()).scaleMax = 1500;
 
         {
-            p.addWindow(new EnvChip(
+            p.put(new EnvChip(
                    PoleCart::new
                     //Recog2D::new
                     //TrackXY::new
@@ -54,12 +55,12 @@ public class TensorRL1 {
         }
 
 
-        p.addWindow(new AutoencoderChip(), 0.25f, 1);
-        p.addWindow(new AutoencoderChip(), 0.25f, 1);
+        p.put(new AutoencoderChip(), 0.25f, 1);
+        p.put(new AutoencoderChip(), 0.25f, 1);
 
         //p.addWindow(new TogglePort(), 0.25f, 0.25f);
 
-        p.addWindow(new AgentChip(
+        p.put(new AgentChip(
                 HaiQ::new
                 //DQN::new
         ), 1, 1);
@@ -172,7 +173,7 @@ public class TensorRL1 {
             final FloatRange lerpRate = new FloatRange(0.01f, 0, 1f);
             final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
-            p.addWindow(new Gridding(0.25f,
+            p.put(new Gridding(0.25f,
 //                        new TensorGlow.AutoUpdateMatrixView(
 //                                randomVector.data
 //                        ),

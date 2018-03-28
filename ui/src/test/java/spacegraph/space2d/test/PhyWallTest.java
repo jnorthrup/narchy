@@ -3,6 +3,7 @@ package spacegraph.space2d.test;
 import jcog.data.graph.ObjectGraph;
 import jcog.exe.Loop;
 import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.hud.Ortho;
@@ -30,10 +31,10 @@ public class PhyWallTest {
     public static class Box2DTest1_Boxes {
 
         public static void main(String[] args) {
-            PhyWall s = PhyWall.window(1000, 800);
+            PhyWall s = SpaceGraph.wall(1000, 800);
 
 
-            PhyWall.PhyWindow w = s.addWindow(WidgetTest.widgetDemo(), 1f, 1f);
+            PhyWall.PhyWindow w = s.put(WidgetTest.widgetDemo(), 1f, 1f);
 
             w.sprout(
                     new Gridding(0.1f, 1f, new TextEdit(16, 3, "wtf").surface()),
@@ -70,7 +71,7 @@ public class PhyWallTest {
                 float ry = s.rngPolar(2);
                 float rw = 0.05f + s.rngNormal(0.2f);
                 float rh = 0.05f + s.rngNormal(0.2f);
-                s.addWindow(new Label(String.valueOf((char) i)),
+                s.put(new Label(String.valueOf((char) i)),
                         RectFloat2D.XYWH(rx, ry, rw, rh));
             }
 
@@ -84,7 +85,7 @@ public class PhyWallTest {
     public static class Box2DTest2_Raw_Geom_Rendered__No_Surfaces {
         public static void main(String[] args) {
 
-            PhyWall s = PhyWall.window(800, 800);
+            PhyWall s = SpaceGraph.wall(800, 800);
 
             //s.W.invoke(()->{
             for (int i = 0; i < 200; i++)
@@ -100,9 +101,9 @@ public class PhyWallTest {
 
         public static void main(String[] args) {
 
-            PhyWall s = PhyWall.window(800, 800);
+            PhyWall s = SpaceGraph.wall(800, 800);
 
-            PhyWall.PhyWindow a = s.addWindow(new Label("X"), RectFloat2D.XYWH(-0.5f, +0.5f, 0.4f, 0.25f));
+            PhyWall.PhyWindow a = s.put(new Label("X"), RectFloat2D.XYWH(-0.5f, +0.5f, 0.4f, 0.25f));
             a.grow(new Label("R"), 1f, 1, new v2(1, 0));
             a.grow(new Label("L"), 1f, 1, new v2(-1, 0));
             a.grow(new Label("D"), 1f, 1, new v2(0, +1));
@@ -117,18 +118,18 @@ public class PhyWallTest {
 
         public static void main(String[] args) {
 
-            PhyWall s = PhyWall.window(800, 800);
+            PhyWall s = SpaceGraph.wall(800, 800);
 
             Port A = new Port();
-            PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+            PhyWall.PhyWindow a = s.put(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
 
             Port B = //LabeledPort.generic();
                     new Port();
-            PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+            PhyWall.PhyWindow b = s.put(B, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
             TogglePort AB = new TogglePort();
-            s.addWindow(AB, RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
+            s.put(AB, RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
 
 //            A.link(AB.port);
 //            AB.port.link(B);
@@ -143,7 +144,7 @@ public class PhyWallTest {
     public static class Box2DTest_FloatMux {
 
         public static void main(String[] args) {
-            PhyWall s = PhyWall.window(800, 800);
+            PhyWall s = SpaceGraph.wall(800, 800);
             ((Ortho) s.root()).scaleMin = 100f;
             ((Ortho) s.root()).scaleMax = 500;
 
@@ -151,23 +152,23 @@ public class PhyWallTest {
                     new Port(),
                     new Port()
             )), new LabeledPane("->", new Port()));
-            s.addWindow(mux, 0.5f, 0.5f);
+            s.put(mux, 0.5f, 0.5f);
 
             Port A = new FloatPort(0.5f, 0, 1);
-            PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+            PhyWall.PhyWindow a = s.put(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
             Port B = new FloatPort(0.5f, 0, 1);
-            PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+            PhyWall.PhyWindow b = s.put(B, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
             Port Y = LabeledPort.generic();
-            PhyWall.PhyWindow y = s.addWindow(Y, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+            PhyWall.PhyWindow y = s.put(Y, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
         }
     }
 
     public static class Box2DTest_ObjGraph {
         public static void main(String[] args) {
-            PhyWall s = PhyWall.window(800, 800);
+            PhyWall s = SpaceGraph.wall(800, 800);
 
             ObjectGraph og = new ObjectGraph(2, s) {
 
@@ -188,7 +189,7 @@ public class PhyWallTest {
             };
 
             og.forEachNode(n -> {
-                PhyWall.PhyWindow oo = s.addWindow(new PushButton(n.id.getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
+                PhyWall.PhyWindow oo = s.put(new PushButton(n.id.getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
             });
 //            og.forEachNode(n->{
 //                s.links.node(n)
@@ -203,9 +204,9 @@ public class PhyWallTest {
     public static class Box2DTest_ProtoWidget {
 
         public static void main(String[] args) {
-            PhyWall s = PhyWall.window(800, 800);
+            PhyWall s = SpaceGraph.wall(800, 800);
 
-            s.addWindow(
+            s.put(
                     new WizardFrame( new ProtoWidget() ),
             1, 1);
 

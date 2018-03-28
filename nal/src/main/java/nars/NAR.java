@@ -1228,6 +1228,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             logger.debug("{} output {}/{} tasks ({} bytes)", o, wrote, total, oo.size());
         //});
 
+        try {
+            oo.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         return this;
     }
 

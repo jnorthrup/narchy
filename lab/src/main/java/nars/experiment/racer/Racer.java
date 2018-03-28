@@ -2,6 +2,7 @@ package nars.experiment.racer;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.Body2D;
@@ -95,7 +96,7 @@ public class Racer {
 //        this.mScene = new Scene();
 //        this.mScene.setBackground(new Background(0, 0, 0));
 
-        PhyWall p = PhyWall.window(800, 800);
+        PhyWall p = SpaceGraph.wall(800, 800);
 
         this.mPhysicsWorld =
                 p.W;

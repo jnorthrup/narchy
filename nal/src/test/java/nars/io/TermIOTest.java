@@ -14,8 +14,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 import static java.lang.System.out;
 import static nars.$.$;
@@ -180,34 +182,46 @@ public class TermIOTest {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(16384);
 
+        final AtomicInteger count = new AtomicInteger();
+
+//        Param.DEBUG = true;
+
         NAR a = NARS.tmp()
+//                .log()
                 .input("a:b.", "b:c.", "c:d!");
         a
                 .run(16);
         a
-                .output(baos, true)
-                .stop()
+                .synch()
+                .outputBinary(baos, (Predicate)(t)->{
+                    count.incrementAndGet();
+                    return true;
+                })
+                //.stop()
         ;
 
         byte[] x = baos.toByteArray();
-        out.println("NAR tasks serialized: " + x.length + " bytes");
+        out.println(count.get() + " tasks serialized in " + x.length + " bytes");
 
-        NAR b = NARS.tmp()
+        NAR b = NARS.shell()
                 .inputBinary(new ByteArrayInputStream(x));
-        b.run(1)
                 //.next()
                 //.forEachConceptTask(true,true,true,true, out::println)
                 //.forEachConcept(System.out::println)
-                ;
+        //b.synch();
 
         //dump all tasks to a set of sorted strings and compare their equality:
-        Set<String> ab = new HashSet();
+        Set<String> ab = new TreeSet();
         a.tasks().forEach(t -> ab.add(t.toStringWithoutBudget()));
 
-        Set<String> bb = new HashSet();
+        assertEquals(count.get(), ab.size());
+
+        Set<String> bb = new TreeSet();
         b.tasks().forEach(t -> bb.add(t.toStringWithoutBudget()));
 
-        assertEquals(ab, bb, "difference: " + Sets.symmetricDifference(ab, bb));
+        assertEquals(ab, bb,
+                ()->"difference: " + Sets.symmetricDifference(ab, bb));
+        //assertEquals(count.get(), bb.size());
 
 //        //measure with budgets but allow only a certain one budget difference, due to rounding issues
 //        Set<String> abB = new HashSet();

@@ -54,8 +54,8 @@
     ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-        (B ~ G), B |- B, (Belief:StructuralReduction, Goal:StructuralReduction)
-            (B ~ G), G |- --G, (Belief:StructuralReduction, Goal:StructuralReduction)
+        (B ~ G), B |- B, (Belief:StructuralDeduction, Goal:StructuralDeduction)
+            (B ~ G), G |- --G, (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
         //if want X > Y ie. (X ~ Y), then to the extent that X == Y, decrease Y while increasing X
