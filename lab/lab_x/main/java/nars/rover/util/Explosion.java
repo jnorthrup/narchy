@@ -1,11 +1,11 @@
 package nars.rover.util;
 
-import org.jbox2d.callbacks.QueryCallback;
-import org.jbox2d.collision.AABB;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.Fixture;
-import org.jbox2d.dynamics.World;
+import spacegraph.space2d.phys.callbacks.QueryCallback;
+import spacegraph.space2d.phys.collision.AABB;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.Fixture;
+import spacegraph.space2d.phys.dynamics.World;
 
 /**
  * http://www.iforce2d.net/b2dtut/explosions

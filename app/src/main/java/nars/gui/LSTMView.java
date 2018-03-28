@@ -4,13 +4,14 @@ import jcog.Util;
 import jcog.learn.lstm.DistractedSequenceRecall;
 import jcog.learn.lstm.SimpleLSTM;
 import jcog.math.random.XorShift128PlusRandom;
-import spacegraph.container.Gridding;
-import spacegraph.render.Draw;
-import spacegraph.widget.meter.MatrixView;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.video.Draw;
+import spacegraph.space2d.widget.meter.MatrixView;
 
 import java.util.Random;
 
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 11/22/16.
@@ -60,7 +61,7 @@ public class LSTMView extends Gridding {
         //initialize
         task.scoreSupervised(lstm, lr);
 
-        window(new LSTMView(lstm), 800, 800);
+        SpaceGraph.window(new LSTMView(lstm), 800, 800);
 
         int epochs = 5000;
         for (int epoch = 0; epoch < epochs; epoch++) {

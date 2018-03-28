@@ -12,13 +12,13 @@
 //import nars.nal.term.Term;
 //import nars.rover.jbox2d.TestbedPanel;
 //import nars.rover.jbox2d.TestbedSettings;
-//import org.jbox2d.collision.shapes.PolygonShape;
-//import org.jbox2d.common.Color3f;
-//import org.jbox2d.common.MathUtils;
-//import org.jbox2d.common.Vec2;
-//import org.jbox2d.dynamics.Body;
-//import org.jbox2d.dynamics.BodyDef;
-//import org.jbox2d.dynamics.BodyType;
+//import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+//import spacegraph.space2d.phys.common.Color3f;
+//import spacegraph.space2d.phys.common.MathUtils;
+//import spacegraph.space2d.phys.common.Vec2;
+//import spacegraph.space2d.phys.dynamics.Body;
+//import spacegraph.space2d.phys.dynamics.BodyDef;
+//import spacegraph.space2d.phys.dynamics.BodyType;
 //
 //import javax.swing.*;
 //import java.awt.*;

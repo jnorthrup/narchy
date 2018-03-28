@@ -11,9 +11,10 @@ import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import spacegraph.container.Gridding;
-import spacegraph.widget.meta.AutoSurface;
-import spacegraph.widget.meter.Plot2D;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meter.Plot2D;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,8 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.PI;
 import static nars.Op.BELIEF;
-import static spacegraph.container.Gridding.*;
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.space2d.container.Gridding.*;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 3/15/17.
@@ -132,7 +133,7 @@ public class Line1D {
 
                     new Thread(() -> {
                         int history = 64;
-                        window(
+                        SpaceGraph.window(
                                 row(
                                         conceptPlot(a.nar, Lists.newArrayList(
                                                 () -> (float) a.i.floatValue(),

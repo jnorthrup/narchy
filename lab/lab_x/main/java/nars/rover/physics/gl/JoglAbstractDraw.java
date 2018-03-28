@@ -28,17 +28,17 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 import nars.Video;
 import nars.rover.physics.PhysicsCamera;
 import nars.rover.physics.j2d.SwingDraw;
-import org.jbox2d.callbacks.DebugDraw;
-import org.jbox2d.collision.shapes.ChainShape;
-import org.jbox2d.collision.shapes.CircleShape;
-import org.jbox2d.collision.shapes.EdgeShape;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
-import org.jbox2d.dynamics.World;
-import org.jbox2d.dynamics.joints.Joint;
-import org.jbox2d.pooling.arrays.Vec2Array;
+import spacegraph.space2d.phys.callbacks.DebugDraw;
+import spacegraph.space2d.phys.collision.shapes.ChainShape;
+import spacegraph.space2d.phys.collision.shapes.CircleShape;
+import spacegraph.space2d.phys.collision.shapes.EdgeShape;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyType;
+import spacegraph.space2d.phys.dynamics.Fixture;
+import spacegraph.space2d.phys.dynamics.World;
+import spacegraph.space2d.phys.dynamics.joints.Joint;
+import spacegraph.space2d.phys.pooling.arrays.Vec2Array;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 

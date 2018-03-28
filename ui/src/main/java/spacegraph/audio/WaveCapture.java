@@ -6,12 +6,12 @@ import jcog.event.Topic;
 import jcog.exe.Loop;
 import jcog.math.OneDHaar;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import spacegraph.Surface;
-import spacegraph.container.Gridding;
-import spacegraph.render.Draw;
-import spacegraph.widget.meter.BitmapMatrixView;
-import spacegraph.widget.meter.Plot2D;
-import spacegraph.widget.slider.FloatSlider;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

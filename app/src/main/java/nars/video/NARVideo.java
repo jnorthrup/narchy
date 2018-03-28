@@ -5,12 +5,13 @@ import nars.$;
 import nars.NAR;
 import nars.control.NARService;
 import nars.control.NARServiceSet;
-import spacegraph.Surface;
-import spacegraph.container.Gridding;
-import spacegraph.render.JoglSpace;
-import spacegraph.widget.meter.WebCam;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.video.JoglSpace;
+import spacegraph.video.WebCam;
 
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.SpaceGraph.window;
 
 public class NARVideo extends NARServiceSet<NARVideo.Video> {
 
@@ -44,7 +45,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
                 cam.open(true);
                 c = new WebCam(cam);
                 surface = c.view();
-                surfaceWindow = window(surface, 800, 600);
+                surfaceWindow = SpaceGraph.window(surface, 800, 600);
             }
         }
 

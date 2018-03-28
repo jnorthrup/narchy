@@ -1,6 +1,6 @@
 package ptrman.difficultyEnvironment.physics;
 
-import org.jbox2d.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.Body;
 
 /**
  *

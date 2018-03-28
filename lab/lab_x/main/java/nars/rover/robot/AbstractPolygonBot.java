@@ -12,9 +12,9 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.DefaultTruth;
 import nars.util.event.FrameReaction;
-import org.jbox2d.callbacks.DebugDraw;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import spacegraph.space2d.phys.callbacks.DebugDraw;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

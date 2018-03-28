@@ -1,6 +1,6 @@
 package nars.rover.util;
 
-import org.jbox2d.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.BodyDef;
 
 /**
  * Created by me on 7/19/15.

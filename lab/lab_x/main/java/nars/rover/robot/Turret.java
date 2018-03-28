@@ -5,11 +5,11 @@ import nars.rover.physics.gl.JoglAbstractDraw;
 import nars.rover.util.Bodies;
 import nars.rover.util.Explosion;
 import nars.util.data.random.XORShiftRandom;
-import org.jbox2d.common.Color3f;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.contacts.Contact;
+import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyType;
+import spacegraph.space2d.phys.dynamics.contacts.Contact;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

@@ -26,9 +26,9 @@
  */
 package nars.rover.physics;
 
-import org.jbox2d.collision.Collision.PointState;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Fixture;
+import spacegraph.space2d.phys.collision.Collision.PointState;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Fixture;
 
 /**
  * Contact point for {@link TestbedTest}.

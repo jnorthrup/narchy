@@ -18,8 +18,8 @@ import nars.term.atom.Atomic;
 import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
-import spacegraph.Surface;
-import spacegraph.widget.console.ConsoleSurface;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.widget.console.ConsoleSurface;
 
 import java.util.Iterator;
 import java.util.List;

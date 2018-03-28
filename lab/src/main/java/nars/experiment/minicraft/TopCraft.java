@@ -9,8 +9,9 @@ import nars.experiment.minicraft.top.TopDownMinicraft;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
+import spacegraph.SpaceGraph;
 
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.SpaceGraph.window;
 
 //import org.jcodec.codecs.h264.H264Encoder;
 //import org.jcodec.codecs.h264.H264Utils;
@@ -103,7 +104,7 @@ public class TopCraft extends NAgentX {
                 super.accept(n);
             }
         };
-        window(camAE.newChart(), 500, 500);
+        SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
         senseSwitch($.func("dir",id), ()->craft.player.dir, 0, 4);

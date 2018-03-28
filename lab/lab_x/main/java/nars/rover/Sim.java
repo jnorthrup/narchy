@@ -5,12 +5,12 @@ import nars.rover.physics.TestbedSettings;
 import nars.rover.physics.gl.JoglAbstractDraw;
 import nars.rover.robot.Robotic;
 import nars.time.SimulatedClock;
-import org.jbox2d.common.Color3f;
-import org.jbox2d.common.MathUtils;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.FixtureDef;
+import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.space2d.phys.common.MathUtils;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.FixtureDef;
 
 import java.util.List;
 

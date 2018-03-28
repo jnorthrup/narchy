@@ -1,15 +1,15 @@
 package nars.experiment.rover;
 
 import nars.NARS;
-import spacegraph.SimpleSpatial;
-import spacegraph.phys.Dynamic;
-import spacegraph.phys.Dynamics3D;
-import spacegraph.phys.constraint.HingeConstraint;
-import spacegraph.phys.shape.BoxShape;
-import spacegraph.phys.shape.CollisionShape;
-import spacegraph.phys.shape.CylinderShape;
+import spacegraph.space3d.SimpleSpatial;
+import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.Dynamics3D;
+import spacegraph.space3d.phys.constraint.HingeConstraint;
+import spacegraph.space3d.phys.shape.BoxShape;
+import spacegraph.space3d.phys.shape.CollisionShape;
+import spacegraph.space3d.phys.shape.CylinderShape;
 
-import static spacegraph.math.v3.v;
+import static spacegraph.util.math.v3.v;
 
 /**
  * Created by me on 9/12/16.
@@ -48,10 +48,10 @@ public class RoverMaze1 {
                     }
 
                     @Override
-                    protected Dynamic create(Dynamics3D world) {
+                    protected Body3D create(Dynamics3D world) {
                         torso.body.clearForces();
 
-                        Dynamic n = super.create(world);
+                        Body3D n = super.create(world);
                         HingeConstraint p = new HingeConstraint(torso.body, body, v(0, 0.2f, 0), v(0, -1f, 0), v(1, 0, 0), v(1, 0, 0));
                         p.setLimit(-1.0f, 1.0f);
                         add(p);
@@ -70,9 +70,9 @@ public class RoverMaze1 {
 
                 RetinaGrid rg = new RetinaGrid("cam1", v(), v(0, 0, 1), v(0.1f, 0, 0), v(0, 0.1f, 0), 6, 6, 4f) {
                     @Override
-                    protected Dynamic create(Dynamics3D world) {
+                    protected Body3D create(Dynamics3D world) {
 
-                        Dynamic l = super.create(world);
+                        Body3D l = super.create(world);
 
                         //move(0,-1,0);
                         //body.clearForces();

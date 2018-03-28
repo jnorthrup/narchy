@@ -1,8 +1,8 @@
 package nars.rover.obj.util.external;
 
 
-import org.jbox2d.collision.shapes.CircleShape;
-import org.jbox2d.dynamics.BodyDef;
+import spacegraph.space2d.phys.collision.shapes.CircleShape;
+import spacegraph.space2d.phys.dynamics.BodyDef;
 
 /**
  * A circle-shaped {@link DynamicEntity}

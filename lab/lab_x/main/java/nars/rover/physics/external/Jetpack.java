@@ -3,7 +3,7 @@ package nars.rover.obj.util.external;
 
 import nars.rover.obj.util.external.particles.EmitterSettings;
 import nars.rover.obj.util.external.particles.ParticleEmitter;
-import org.jbox2d.common.Vec2;
+import spacegraph.space2d.phys.common.Vec2;
 
 import java.util.Random;
 

@@ -75,15 +75,7 @@ public class Tweaks<X> {
      * (generates accessors via reflection)
      */
     public Tweaks<X> learn() {
-        return learnExcept(Set.of());
-    }
-
-    public Tweaks<X> learnExcept(Class... excludedClasses) {
-        return learnExcept(Set.of(excludedClasses));
-    }
-
-    public Tweaks<X> learnExcept(Set<Class> excludedClasses) {
-        return discover(excludedClasses, (root, path, targetType) -> {
+        return discover((root, path, targetType) -> {
             FastList<Pair<Class, ObjectGraph.Accessor>> p = path.clone();
             String key = key(p);
 
@@ -103,7 +95,7 @@ public class Tweaks<X> {
     /**
      * auto discovers tweaks by reflecting a sample of the subject
      */
-    public Tweaks<X> discover(Set<Class> excludedClasses, Discovery<X> each) {
+    public Tweaks<X> discover(Discovery<X> each) {
 
         //sample instance
         X x = (this.subjects.get());
@@ -116,7 +108,7 @@ public class Tweaks<X> {
                     return false; //prevent cycle
 
                 Class<?> targetType = target.getClass();
-                if (excludedClasses.contains(targetType))
+                if (!Tweaks.this.includeClass(targetType))
                     return false;
 
                 if (tweakable(targetType)) {
@@ -130,17 +122,17 @@ public class Tweaks<X> {
             @Override
             public boolean recurse(Object x) {
                 Class<?> xc = x.getClass();
-                return !excludedClasses.contains(xc) && !tweakable(xc);
+                return Tweaks.this.includeClass(xc) && !tweakable(xc);
             }
 
             @Override
             public boolean includeValue(Object v) {
-                return !excludedClasses.contains(v.getClass());
+                return Tweaks.this.includeClass(v.getClass());
             }
 
             @Override
             public boolean includeClass(Class<?> c) {
-                return !excludedClasses.contains(c);
+                return Tweaks.this.includeClass(c);
             }
 
             @Override
@@ -162,6 +154,7 @@ public class Tweaks<X> {
 
         return this;
     }
+
 
 
     @FunctionalInterface
@@ -269,6 +262,9 @@ public class Tweaks<X> {
     }
 
     protected boolean includeField(Field f) {
+        return true;
+    }
+    protected boolean includeClass(Class<?> targetType) {
         return true;
     }
 

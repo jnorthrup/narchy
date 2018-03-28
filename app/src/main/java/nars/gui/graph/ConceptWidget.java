@@ -6,13 +6,12 @@ import jcog.util.Flip;
 import nars.concept.Concept;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
-import spacegraph.SpaceGraph;
-import spacegraph.phys.Dynamic;
-import spacegraph.phys.shape.CollisionShape;
-import spacegraph.phys.shape.SphereShape;
-import spacegraph.render.Draw;
-import spacegraph.space.EDraw;
-import spacegraph.space.SpaceWidget;
+import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.shape.CollisionShape;
+import spacegraph.space3d.phys.shape.SphereShape;
+import spacegraph.space3d.widget.EDraw;
+import spacegraph.space3d.widget.SpaceWidget;
+import spacegraph.video.Draw;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,7 +21,7 @@ import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TASKLINK;
 import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TERMLINK;
 import static org.eclipse.collections.impl.tuple.Tuples.twin;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
-import static spacegraph.math.v3.v;
+import static spacegraph.util.math.v3.v;
 
 
 public class ConceptWidget extends SpaceWidget<Concept> {
@@ -49,6 +48,9 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 //            this.edges.add(new EDraw());
 
     }
+    public static float r(float range) {
+        return (-0.5f + (float) Math.random()) * 2f * range;
+    }
 
     @Override
     protected CollisionShape newShape() {
@@ -61,23 +63,23 @@ public class ConceptWidget extends SpaceWidget<Concept> {
     }
 
     @Override
-    public Dynamic newBody(boolean collidesWithOthersLikeThis) {
-        Dynamic x = super.newBody(collidesWithOthersLikeThis);
+    public Body3D newBody(boolean collidesWithOthersLikeThis) {
+        Body3D x = super.newBody(collidesWithOthersLikeThis);
 
         final float initDistanceEpsilon = 50f;
 
         //place in a random direction
         x.transform.set(
-                SpaceGraph.r(initDistanceEpsilon),
-                SpaceGraph.r(initDistanceEpsilon),
-                SpaceGraph.r(initDistanceEpsilon));
+                r(initDistanceEpsilon),
+                r(initDistanceEpsilon),
+                r(initDistanceEpsilon));
 
         //impulse in a random direction
         final float initImpulseEpsilon = 0.25f;
         x.impulse(v(
-                SpaceGraph.r(initImpulseEpsilon),
-                SpaceGraph.r(initImpulseEpsilon),
-                SpaceGraph.r(initImpulseEpsilon)));
+                r(initImpulseEpsilon),
+                r(initImpulseEpsilon),
+                r(initImpulseEpsilon)));
 
         return x;
     }

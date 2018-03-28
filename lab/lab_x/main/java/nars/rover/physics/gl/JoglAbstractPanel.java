@@ -7,8 +7,8 @@ import nars.rover.physics.PhysicsController;
 import nars.rover.physics.TestbedPanel;
 import nars.rover.physics.TestbedState;
 import nars.rover.physics.j2d.AWTPanelHelper;
-import org.jbox2d.callbacks.DebugDraw;
-import org.jbox2d.dynamics.World;
+import spacegraph.space2d.phys.callbacks.DebugDraw;
+import spacegraph.space2d.phys.dynamics.World;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;

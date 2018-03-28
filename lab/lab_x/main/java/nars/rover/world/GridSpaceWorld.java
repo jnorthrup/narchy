@@ -11,8 +11,8 @@ import nars.rover.physics.j2d.SwingDraw;
 import nars.rover.physics.j2d.SwingDraw.LayerDraw;
 import nars.testchamber.map.Maze;
 import nars.util.data.random.XorShift1024StarRandom;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.World;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.World;
 
 import java.util.Random;
 

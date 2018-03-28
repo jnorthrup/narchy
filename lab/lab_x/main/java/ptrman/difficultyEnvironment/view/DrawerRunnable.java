@@ -3,14 +3,14 @@ package ptrman.difficultyEnvironment.view;
 import nars.rover.physics.ContactPoint;
 import nars.rover.physics.TestbedPanel;
 import nars.rover.physics.TestbedSettings;
-import org.jbox2d.callbacks.DebugDraw;
-import org.jbox2d.collision.AABB;
-import org.jbox2d.collision.Collision;
-import org.jbox2d.collision.shapes.CircleShape;
-import org.jbox2d.common.Color3f;
-import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.joints.MouseJoint;
+import spacegraph.space2d.phys.callbacks.DebugDraw;
+import spacegraph.space2d.phys.collision.AABB;
+import spacegraph.space2d.phys.collision.Collision;
+import spacegraph.space2d.phys.collision.shapes.CircleShape;
+import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.space2d.phys.common.Transform;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.joints.MouseJoint;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

@@ -9,9 +9,9 @@ import nars.table.BeliefTable;
 import nars.term.Compound;
 import nars.truth.Truth;
 import spacegraph.SpaceGraph;
-import spacegraph.Surface;
-import spacegraph.container.Gridding;
-import spacegraph.render.Draw;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.video.Draw;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,8 +19,8 @@ import java.util.function.IntFunction;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$;
-import static spacegraph.render.Draw.pop;
-import static spacegraph.render.Draw.push;
+import static spacegraph.video.Draw.pop;
+import static spacegraph.video.Draw.push;
 
 /**
  * Tool for analyzing and tuning temporal dynamics among a set of specified concepts

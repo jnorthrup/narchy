@@ -7,10 +7,10 @@ import jcog.data.graph.NodeGraph;
 import nars.Task;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import spacegraph.SpaceGraph;
-import spacegraph.Surface;
-import spacegraph.container.MutableContainer;
-import spacegraph.math.v2;
-import spacegraph.widget.button.PushButton;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.MutableContainer;
+import spacegraph.util.math.v2;
+import spacegraph.space2d.widget.button.PushButton;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,7 +148,7 @@ public class TasksView extends MutableContainer {
     /**
      * speed < 0 = repel, speed > 0 = attract
      */
-    private void direct(float limit, float speed, NodeGraph.Node<spacegraph.Surface,String> a, NodeGraph.Node<spacegraph.Surface,String> b) {
+    private void direct(float limit, float speed, NodeGraph.Node<Surface,String> a, NodeGraph.Node<Surface,String> b) {
         v2 ac = new v2(a.id.x(), a.id.y());
 
         v2 bc = new v2(b.id.x(), b.id.y());

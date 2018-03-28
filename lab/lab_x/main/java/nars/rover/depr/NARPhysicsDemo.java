@@ -8,7 +8,7 @@
 //import nars.nal.nal8.operator.NullOperator;
 //
 //import nars.nal.term.Term;
-//import org.jbox2d.common.MathUtils;
+//import spacegraph.space2d.phys.common.MathUtils;
 //
 //import java.util.List;
 //

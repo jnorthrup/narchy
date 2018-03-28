@@ -5,12 +5,12 @@ import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.control.DurService;
-import spacegraph.SurfaceBase;
-import spacegraph.container.Gridding;
-import spacegraph.widget.button.PushButton;
-import spacegraph.widget.meter.BagChart;
-import spacegraph.widget.tab.TabPane;
-import spacegraph.widget.text.Label;
+import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.meter.BagChart;
+import spacegraph.space2d.widget.tab.TabPane;
+import spacegraph.space2d.widget.text.Label;
 
 import java.util.Map;
 

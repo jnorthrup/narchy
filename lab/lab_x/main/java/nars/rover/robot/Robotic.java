@@ -4,9 +4,9 @@ import nars.NAR;
 import nars.rover.Material;
 import nars.rover.Sim;
 import nars.rover.physics.gl.JoglAbstractDraw;
-import org.jbox2d.common.Color3f;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.World;
+import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.World;
 
 /**
  * Created by me on 7/18/15.

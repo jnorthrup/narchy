@@ -6,12 +6,12 @@ package nars.rover.world;
 
 import nars.rover.Material;
 import nars.rover.RoverWorld;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.MathUtils;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.common.MathUtils;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.BodyType;
 
 /**
  * @author me

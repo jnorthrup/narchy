@@ -2,9 +2,9 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import spacegraph.Surface;
-import spacegraph.math.Color3f;
-import spacegraph.render.Draw;
+import spacegraph.space2d.Surface;
+import spacegraph.util.math.Color3f;
+import spacegraph.video.Draw;
 
 import java.util.function.Supplier;
 

@@ -2,9 +2,9 @@ package nars.gui;
 
 import nars.NAR;
 import org.jetbrains.annotations.NotNull;
-import spacegraph.widget.button.ToggleButton;
-import spacegraph.widget.meta.WindowToggleButton;
-import spacegraph.widget.text.Label;
+import spacegraph.space2d.widget.button.ToggleButton;
+import spacegraph.space2d.widget.meta.WindowToggleButton;
+import spacegraph.space2d.widget.text.Label;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

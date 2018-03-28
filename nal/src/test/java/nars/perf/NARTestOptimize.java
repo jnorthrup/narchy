@@ -18,8 +18,10 @@ import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,13 +33,12 @@ import static java.util.stream.Collectors.toList;
 public class NARTestOptimize {
 
     static final int threads =
-            5;
+            2;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
     /** necessary to do what jdk "parallel" streams refuses to do... WTF */
-    static final ExecutorService exe = Executors.newFixedThreadPool(
-            threads);
+    static final ExecutorService exe = Executors.newFixedThreadPool(threads);
 
     /** HACK runs all Junit test methods, summing the scores.
      * TODO use proper JUnit5 test runner api but it is a mess to figure out right now */
@@ -107,8 +108,20 @@ public class NARTestOptimize {
             Result<NAR> r = new Tweaks<>(() -> {
                 NAR n = NARS.tmp();
                 return n;
-            })
-                .learnExcept(NARLoop.class)
+            }) {
+                @Override
+                protected boolean includeField(Field f) {
+                    return !f.getName().equals("DEBUG");
+                }
+
+                final Set<Class> exclude = Set.of(NARLoop.class);
+
+                @Override
+                protected boolean includeClass(Class<?> targetType) {
+                    return !exclude.contains(targetType);
+                }
+            }
+                .learn()
                 .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Perceive, p)
                 )

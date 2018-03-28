@@ -5,12 +5,12 @@ import nars.NAR;
 import nars.nal.nal8.operator.NullOperator;
 import nars.rover.obj.VisionRay;
 import nars.term.Term;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.BodyType;
+import spacegraph.space2d.phys.dynamics.Fixture;
 
 import java.util.ArrayList;
 import java.util.List;

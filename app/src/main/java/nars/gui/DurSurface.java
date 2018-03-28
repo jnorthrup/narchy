@@ -2,9 +2,9 @@ package nars.gui;
 
 import nars.NAR;
 import nars.control.DurService;
-import spacegraph.Surface;
-import spacegraph.SurfaceBase;
-import spacegraph.widget.windo.Widget;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.function.Consumer;
 

@@ -9,13 +9,13 @@ import nars.io.in.ChangedTextInput;
 import nars.rover.Sim;
 import nars.rover.obj.VisionRay;
 import nars.rover.physics.gl.JoglAbstractDraw;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.common.Color3f;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.BodyType;
+import spacegraph.space2d.phys.dynamics.Fixture;
 
 /**
  *

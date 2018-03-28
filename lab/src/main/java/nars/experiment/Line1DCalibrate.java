@@ -9,8 +9,8 @@ import nars.Param;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import nars.truth.PreciseTruth;
-import spacegraph.container.Gridding;
-import spacegraph.widget.meter.Plot2D;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.widget.meter.Plot2D;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 import static java.lang.Math.PI;
 import static jcog.Texts.n2;
 import static jcog.Texts.n4;
-import static spacegraph.container.Gridding.VERTICAL;
+import static spacegraph.space2d.container.Gridding.VERTICAL;
 
 public class Line1DCalibrate {
 

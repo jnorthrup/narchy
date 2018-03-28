@@ -15,25 +15,25 @@ import nars.control.Traffic;
 import nars.exe.Causable;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import spacegraph.Surface;
-import spacegraph.container.Gridding;
-import spacegraph.container.Splitting;
-import spacegraph.render.Draw;
-import spacegraph.widget.button.CheckBox;
-import spacegraph.widget.meta.AutoSurface;
-import spacegraph.widget.meta.LoopPanel;
-import spacegraph.widget.meter.BitmapMatrixView;
-import spacegraph.widget.meter.TreeChart;
-import spacegraph.widget.slider.BaseSlider;
-import spacegraph.widget.slider.FloatSlider;
-import spacegraph.widget.text.Label;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.video.Draw;
+import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.LoopPanel;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.meter.TreeChart;
+import spacegraph.space2d.widget.slider.BaseSlider;
+import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.text.Label;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static spacegraph.container.Gridding.*;
+import static spacegraph.space2d.container.Gridding.*;
 
 public class ExeCharts {
 

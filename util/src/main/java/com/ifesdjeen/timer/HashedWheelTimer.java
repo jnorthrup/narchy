@@ -47,7 +47,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     private final Queue<TimedFuture<?>>[] wheel;
     private final int numWheels;
     private final long resolution;
-    private final ExecutorService loop;
+    private final Thread loop;
     private final Executor executor;
     private final WaitStrategy waitStrategy;
 
@@ -63,32 +63,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * @param waitStrategy strategy for waiting for the next tick
      */
     public HashedWheelTimer(long res, int numWheels, WaitStrategy waitStrategy) {
-        this(DEFAULT_TIMER_NAME, res, numWheels, waitStrategy, Executors.newFixedThreadPool(1));
+        this(null, res, numWheels, waitStrategy, Executors.newFixedThreadPool(1));
     }
 
-    /**
-     * Create a new {@code HashedWheelTimer} using the given timer resolution and wheelSize. All times will
-     * rounded up to the closest multiple of this resolution.
-     *
-     * @param name              name for daemon thread factory to be displayed
-     * @param resolutionInNanos resolution of this timer in NANOSECONDS
-     * @param numWheels         size of the Ring Buffer supporting the Timer, the larger the wheel, the less the lookup time is
-     *                          for sparse timeouts. Sane default is 512.
-     * @param strategy          strategy for waiting for the next tick
-     * @param exec              Executor instance to submit tasks to
-     */
-    public HashedWheelTimer(String name, long resolutionInNanos, int numWheels, WaitStrategy strategy, Executor exec) {
-        this(resolutionInNanos, numWheels, strategy, exec, new ThreadFactory() {
-            final AtomicInteger i = new AtomicInteger();
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r, name + "-" + i.getAndIncrement());
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
-    }
 
     /**
      * Create a new {@code HashedWheelTimer} using the given timer resolution and wheelSize. All times will
@@ -99,10 +76,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      *                  for sparse timeouts. Sane default is 512.
      * @param strategy  strategy for waiting for the next tick
      * @param exec      Executor instance to submit tasks to
-     * @param factory   custom ThreadFactory for the main loop thread
      */
-    public HashedWheelTimer(long res, int numWheels, WaitStrategy strategy, Executor exec,
-                            ThreadFactory factory) {
+    public HashedWheelTimer(String name, long res, int numWheels, WaitStrategy strategy, Executor exec) {
         this.waitStrategy = strategy;
 
         this.wheel = new Queue[numWheels];
@@ -115,10 +90,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         this.resolution = res;
 
-
-        this.loop = Executors.newSingleThreadExecutor(factory);
-        this.loop.submit(this);
         this.executor = exec;
+
+        this.loop = name!=null ? new Thread(this, name) : new Thread(this);
+        this.loop.start();
+
     }
 
     private static void isTrue(boolean expression, String message) {
@@ -144,7 +120,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         TimedFuture[] buffer = new TimedFuture[1024];
 
         int c;
-        while ((c = cursor.getAndUpdate((cc) -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE))>=0) {
+        while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE))>=0) {
 
             if (incomingCount.get() > 0) {
                 int count = incoming.remove(buffer);
@@ -152,7 +128,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 for (int i = 0; i < count; i++) {
                     TimedFuture b = buffer[i];
                     buffer[i] = null;
-                    _schedule(b);
+                    _schedule(b, c);
                 }
             }
 
@@ -255,7 +231,6 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @Override
     public void shutdown() {
         cursor.set(Integer.MIN_VALUE);
-        this.loop.shutdown();
         if (executor instanceof ExecutorService)
             ((ExecutorService)this.executor).shutdown();
     }
@@ -263,7 +238,6 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @Override
     public List<Runnable> shutdownNow() {
         cursor.set(Integer.MIN_VALUE);
-        this.loop.shutdownNow();
         if (executor instanceof ExecutorService)
             return ((ExecutorService)this.executor).shutdownNow();
         else
@@ -272,19 +246,19 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public boolean isShutdown() {
-        return this.loop.isShutdown() &&
+        return cursor.get() >= 0 &&
                 (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).isShutdown());
     }
 
     @Override
     public boolean isTerminated() {
-        return this.loop.isTerminated() &&
+        return cursor.get() >= 0 &&
                 (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).isTerminated());
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return this.loop.awaitTermination(timeout, unit) &&
+        return //this.loop.awaitTermination(timeout, unit) &&
                 (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).awaitTermination(timeout, unit));
     }
 
@@ -518,8 +492,12 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     protected void _schedule(TimedFuture<?> r) {
         int c = cursor.get();
         if (c >= 0) {
-            add(idx(c + r.getOffset() + 1), r);
+            _schedule(r, c);
         }
+    }
+
+    private void _schedule(TimedFuture<?> r, int c) {
+        add(idx(c + r.getOffset() + 1), r);
     }
 
     private <V> void add(int wheel, TimedFuture<V> r) {

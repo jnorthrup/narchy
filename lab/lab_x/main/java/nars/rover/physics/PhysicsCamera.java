@@ -24,10 +24,10 @@
 package nars.rover.physics;
 
 import com.google.common.base.Preconditions;
-import org.jbox2d.common.IViewportTransform;
-import org.jbox2d.common.Mat22;
-import org.jbox2d.common.OBBViewportTransform;
-import org.jbox2d.common.Vec2;
+import spacegraph.space2d.phys.common.IViewportTransform;
+import spacegraph.space2d.phys.common.Mat22;
+import spacegraph.space2d.phys.common.OBBViewportTransform;
+import spacegraph.space2d.phys.common.Vec2;
 
 public class PhysicsCamera {
     private final OBBViewportTransform targetTransform;

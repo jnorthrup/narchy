@@ -2,7 +2,7 @@ package nars.gui;
 
 import nars.concept.Concept;
 import nars.term.Termed;
-import spacegraph.widget.text.Label;
+import spacegraph.space2d.widget.text.Label;
 
 /**
  * Created by me on 11/29/16.

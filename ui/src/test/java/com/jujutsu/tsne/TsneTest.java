@@ -5,9 +5,9 @@ import com.jujutsu.tsne.matrix.MatrixOps;
 import jcog.Util;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import spacegraph.Surface;
-import spacegraph.render.Draw;
-import spacegraph.render.JoglSpace;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.video.Draw;
 
 public class TsneTest {
 
@@ -85,7 +85,7 @@ public class TsneTest {
                 }
             };
             {
-                JoglSpace.window(plot, 800, 800);
+                SpaceGraph.window(plot, 800, 800);
             }
 
             @Override

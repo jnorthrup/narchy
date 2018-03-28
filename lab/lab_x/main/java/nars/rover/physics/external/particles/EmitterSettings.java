@@ -3,7 +3,7 @@ package nars.rover.obj.util.external.particles;
 
 import nars.rover.obj.util.external.DynamicEntity;
 import nars.rover.obj.util.external.Entity;
-import org.jbox2d.common.Vec2;
+import spacegraph.space2d.phys.common.Vec2;
 
 /**
  * Settings for a particle emitter

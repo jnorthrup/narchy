@@ -3,8 +3,8 @@ package ptrman.difficultyEnvironment.view;
 import com.jogamp.opengl.GLCapabilitiesImmutable;
 import nars.rover.physics.PhysicsController;
 import nars.rover.physics.gl.JoglAbstractPanel;
-import org.jbox2d.callbacks.DebugDraw;
-import org.jbox2d.dynamics.World;
+import spacegraph.space2d.phys.callbacks.DebugDraw;
+import spacegraph.space2d.phys.dynamics.World;
 
 /*******************************************************************************
  * Copyright (c) 2013, Daniel Murphy

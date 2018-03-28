@@ -18,9 +18,9 @@ import nars.task.DerivedTask;
 import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
-import spacegraph.container.Gridding;
-import spacegraph.render.Draw;
-import spacegraph.widget.meta.AutoSurface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.video.Draw;
+import spacegraph.space2d.widget.meta.AutoSurface;
 
 import java.io.FileNotFoundException;
 import java.util.function.Consumer;
@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import static jcog.Texts.n4;
 import static nars.Op.BELIEF;
 import static nars.Op.PROD;
-import static spacegraph.render.JoglSpace.window;
+import static spacegraph.SpaceGraph.window;
 
 /* 1D and 2D grid tracking */
 public class TrackXY extends NAgent {

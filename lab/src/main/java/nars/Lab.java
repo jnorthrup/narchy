@@ -2,7 +2,7 @@ package nars;
 
 import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
-import spacegraph.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.AutoSurface;
 
 import java.util.Set;
 

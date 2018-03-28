@@ -28,16 +28,17 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SubOrtho;
-import spacegraph.Surface;
-import spacegraph.container.AspectAlign;
-import spacegraph.container.EdgeDirected;
-import spacegraph.render.JoglPhysics;
-import spacegraph.widget.button.PushButton;
-import spacegraph.widget.console.ConsoleTerminal;
-import spacegraph.widget.console.TextEdit;
-import spacegraph.widget.meta.AutoSurface;
-import spacegraph.widget.meta.WindowToggleButton;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.EdgeDirected;
+import spacegraph.space2d.hud.SubOrtho;
+import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.console.ConsoleTerminal;
+import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.WindowToggleButton;
+import spacegraph.space3d.SpaceGraphPhys3D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -50,8 +51,7 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static spacegraph.container.Gridding.grid;
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.space2d.container.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -410,7 +410,7 @@ abstract public class NAgentX extends NAgent {
 
             chart(a);
 
-            window(Vis.top(a.nar), 800, 800);
+            SpaceGraph.window(Vis.top(a.nar), 800, 800);
 
 //            window(new ConceptView(a.happy,n), 800, 600);
 
@@ -433,7 +433,7 @@ abstract public class NAgentX extends NAgent {
     public static void chart(NAgent a) {
         NAR nar = a.nar;
         a.nar.runLater(() -> {
-            window(
+            SpaceGraph.window(
                     grid(
                             new AutoSurface(a),
 
@@ -486,7 +486,7 @@ abstract public class NAgentX extends NAgent {
 
                                     new WindowToggleButton("concept graph", () -> {
                                         DynamicConceptSpace sg;
-                                        JoglPhysics s = new JoglPhysics<>(
+                                        SpaceGraphPhys3D s = new SpaceGraphPhys3D<>(
                                                 sg = new DynamicConceptSpace(nar, () -> nar.exe.active().iterator(),
                                                         128, 16)
                                         );

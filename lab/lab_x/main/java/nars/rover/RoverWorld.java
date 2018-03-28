@@ -4,11 +4,11 @@
  */
 package nars.rover;
 
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.Fixture;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.BodyType;
+import spacegraph.space2d.phys.dynamics.Fixture;
 
 /**
  *

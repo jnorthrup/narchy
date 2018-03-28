@@ -9,11 +9,11 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.$;
 import spacegraph.SpaceGraph;
-import spacegraph.Surface;
-import spacegraph.math.Color3f;
-import spacegraph.render.Draw;
-import spacegraph.widget.meter.MatrixView;
-import spacegraph.widget.slider.FloatSlider;
+import spacegraph.space2d.Surface;
+import spacegraph.util.math.Color3f;
+import spacegraph.video.Draw;
+import spacegraph.space2d.widget.meter.MatrixView;
+import spacegraph.space2d.widget.slider.FloatSlider;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
 
 import static jcog.pri.op.PriMerge.plus;
-import static spacegraph.container.Gridding.col;
-import static spacegraph.container.Gridding.row;
+import static spacegraph.space2d.container.Gridding.col;
+import static spacegraph.space2d.container.Gridding.row;
 
 /**
  * Created by me on 11/29/16.

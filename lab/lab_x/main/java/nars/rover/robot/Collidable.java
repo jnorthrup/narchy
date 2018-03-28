@@ -1,6 +1,6 @@
 package nars.rover.robot;
 
-import org.jbox2d.dynamics.contacts.Contact;
+import spacegraph.space2d.phys.dynamics.contacts.Contact;
 
 /**
  * Created by me on 7/19/15.

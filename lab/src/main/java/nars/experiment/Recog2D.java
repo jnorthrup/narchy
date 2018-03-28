@@ -19,11 +19,11 @@ import nars.video.PixelBag;
 import nars.video.Scale;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
-import spacegraph.Surface;
-import spacegraph.container.AspectAlign;
-import spacegraph.container.Gridding;
-import spacegraph.render.Draw;
-import spacegraph.widget.meter.Plot2D;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.AspectAlign;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.video.Draw;
+import spacegraph.space2d.widget.meter.Plot2D;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -146,7 +146,7 @@ public class Recog2D extends NAgentX {
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 
-                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i-> new spacegraph.widget.text.Label(String.valueOf(i)) {
+                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i-> new spacegraph.space2d.widget.text.Label(String.valueOf(i)) {
                     @Override
                     protected void paintBelow(GL2 gl) {
                         Concept c = tv.concepts[i];

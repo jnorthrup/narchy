@@ -24,8 +24,8 @@
 package nars.rover.physics;
 
 import nars.rover.PhysicsModel;
-import org.jbox2d.callbacks.DebugDraw;
-import org.jbox2d.common.IViewportTransform;
+import spacegraph.space2d.phys.callbacks.DebugDraw;
+import spacegraph.space2d.phys.common.IViewportTransform;
 
 import java.util.List;
 import java.util.Vector;

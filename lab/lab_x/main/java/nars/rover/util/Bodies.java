@@ -1,13 +1,13 @@
 package nars.rover.util;
 
-import org.jbox2d.callbacks.ContactImpulse;
-import org.jbox2d.collision.Manifold;
-import org.jbox2d.collision.shapes.CircleShape;
-import org.jbox2d.collision.shapes.EdgeShape;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.collision.shapes.Shape;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.contacts.Contact;
+import spacegraph.space2d.phys.callbacks.ContactImpulse;
+import spacegraph.space2d.phys.collision.Manifold;
+import spacegraph.space2d.phys.collision.shapes.CircleShape;
+import spacegraph.space2d.phys.collision.shapes.EdgeShape;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.collision.shapes.Shape;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.contacts.Contact;
 
 public abstract class Bodies implements BodyDefCallback, FixtureDefCallback {
 

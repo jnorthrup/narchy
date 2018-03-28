@@ -2,9 +2,9 @@
 //
 //import nars.checkers.Game;
 //import nars.rover.physics.external.callback.FirstHitRayCastCallback;
-//import org.jbox2d.common.Vec2;
-//import org.jbox2d.dynamics.BodyDef;
-//import org.jbox2d.dynamics.FixtureDef;
+//import spacegraph.space2d.phys.common.Vec2;
+//import spacegraph.space2d.phys.dynamics.BodyDef;
+//import spacegraph.space2d.phys.dynamics.FixtureDef;
 //
 //import java.util.ArrayList;
 //import java.util.Random;

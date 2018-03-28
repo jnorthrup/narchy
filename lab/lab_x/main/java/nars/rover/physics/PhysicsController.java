@@ -26,8 +26,8 @@
 package nars.rover.physics;
 
 import nars.rover.PhysicsModel;
-import org.jbox2d.common.IViewportTransform;
-import org.jbox2d.common.Vec2;
+import spacegraph.space2d.phys.common.IViewportTransform;
+import spacegraph.space2d.phys.common.Vec2;
 
 import java.awt.event.KeyEvent;
 import java.util.Deque;

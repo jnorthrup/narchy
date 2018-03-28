@@ -1,13 +1,13 @@
 package nars.experiment.racer;
 
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.Body2D;
-import org.jbox2d.dynamics.Dynamics2D;
-import org.jbox2d.dynamics.FixtureDef;
-import org.jbox2d.dynamics.joints.Joint;
-import org.jbox2d.dynamics.joints.RevoluteJoint;
-import org.jbox2d.dynamics.joints.RevoluteJointDef;
-import spacegraph.math.v2;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.dynamics.Body2D;
+import spacegraph.space2d.phys.dynamics.Dynamics2D;
+import spacegraph.space2d.phys.dynamics.FixtureDef;
+import spacegraph.space2d.phys.dynamics.joints.Joint;
+import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
+import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
+import spacegraph.util.math.v2;
 
 public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
 

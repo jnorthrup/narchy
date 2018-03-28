@@ -1,65 +1,38 @@
 package spacegraph;
 
-import spacegraph.render.JoglSpace;
+import spacegraph.space2d.SpaceGraphFlat;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.hud.ZoomOrtho;
+import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.Spatial;
+import spacegraph.video.JoglSpace;
 
-/**
- * Created by me on 6/20/16.
- */
-public class SpaceGraph<X> extends JoglSpace<X> {
-
-
-
-
-
+public enum SpaceGraph { ;
 
 
-    /**
-     * number of items that will remain cached, some (ideally most)
-     * will not be visible but once were and may become visible again
-     */
-    public SpaceGraph() {
-        super();
+    public static JoglSpace window(Surface s, int w, int h) {
+        JoglSpace win = new SpaceGraphFlat(
+                new ZoomOrtho(s)
+        );
+        if (w > 0 && h > 0) {
+
+            win.show(w, h);
+        }
+        return win;
     }
 
-
-    @Override
-    protected void update(long dtMS) {
-
+    public static JoglSpace window(Object o, int w, int h) {
+        if (o instanceof JoglSpace) {
+            JoglSpace s = (JoglSpace) o;
+            s.show(w, h);
+            return s;
+        } else if (o instanceof Spatial) {
+            return SpaceGraphPhys3D.window(((Spatial) o), w, h);
+        } else if (o instanceof Surface) {
+            return window(((Surface) o), w, h);
+        } else {
+            return window(new AutoSurface(o), w, h);
+        }
     }
-
-    public static float r(float range) {
-        return (-0.5f + (float) Math.random()) * 2f * range;
-    }
-
-
-
-
-//    void print(AbstractSpace s) {
-//        System.out.println();
-//        //+ active.size() + " active, "
-//        System.out.println(s + ": " + this.atoms.estimatedSize() + " cached; " + "\t" + dyn.summary());
-//        /*s.forEach(System.out::println);
-//        dyn.objects().forEach(x -> {
-//            System.out.println("\t" + x.getUserPointer());
-//        });*/
-//        System.out.println();
-//    }
-
-
-
-
-
-    //    public static class PickDragMouse extends SpaceMouse {
-//
-//        public PickDragMouse(JoglPhysics g) {
-//            super(g);
-//        }
-//    }
-//    public static class PickZoom extends SpaceMouse {
-//
-//        public PickZoom(JoglPhysics g) {
-//            super(g);
-//        }
-//    }
-
 }

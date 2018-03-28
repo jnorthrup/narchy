@@ -1,9 +1,9 @@
 package nars.rover.obj.util.external;
 
 
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.FixtureDef;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.FixtureDef;
 
 /**
  * A DynamicEntity... that's a box!

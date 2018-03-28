@@ -1,10 +1,10 @@
 package nars.rover.robot;
 
 import nars.rover.Sim;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.joints.RevoluteJointDef;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.BodyType;
+import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
 
 public class Spider extends Robotic {
 

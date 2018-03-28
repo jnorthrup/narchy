@@ -14,17 +14,18 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import jcog.Texts;
 import nars.gui.Vis;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Scale;
-import spacegraph.Surface;
-import spacegraph.container.EmptySurface;
-import spacegraph.container.Gridding;
-import spacegraph.input.Finger;
-import spacegraph.widget.console.ConsoleTerminal;
-import spacegraph.widget.meta.AutoSurface;
-import spacegraph.widget.meta.OmniBox;
-import spacegraph.widget.slider.XYSlider;
-import spacegraph.widget.text.LabeledPane;
-import spacegraph.widget.windo.Widget;
+import spacegraph.space2d.container.Scale;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.input.finger.Finger;
+import spacegraph.space2d.widget.console.ConsoleTerminal;
+import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.OmniBox;
+import spacegraph.space2d.widget.slider.XYSlider;
+import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.windo.Widget;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.SpaceGraph.window;
 
 public class Shell {
 
@@ -64,7 +65,7 @@ public class Shell {
                     NAR ui = NARchy.ui();
                     ui.startFPS(INITIAL_FPS);
                     ui.runLater(() -> {
-                        window(
+                        SpaceGraph.window(
                                 Vis.top(ui)
                                 //((Grid)Vis.reflect(ui.services)).aspect(0.25f)
                                 , 1024, 800);
@@ -235,8 +236,8 @@ public class Shell {
         //window(Vis.top(nar), 1024, 1024);
         //window(new AutoSurface<>(nar), 700, 600);
 
-        window(new OmniBox(), 600, 200);
-        window(new AutoSurface<>(nar.services).aspect(0.1f), 800, 800);
+        SpaceGraph.window(new OmniBox(), 600, 200);
+        SpaceGraph.window(new AutoSurface<>(nar.services).aspect(0.1f), 800, 800);
     }
 
 

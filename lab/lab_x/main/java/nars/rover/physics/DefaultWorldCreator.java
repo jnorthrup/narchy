@@ -1,7 +1,7 @@
 package nars.rover.physics;
 
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.World;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.World;
 
 public class DefaultWorldCreator implements WorldCreator {
 

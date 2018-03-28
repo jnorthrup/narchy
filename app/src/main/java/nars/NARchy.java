@@ -12,7 +12,7 @@ import nars.time.RealTime;
 import nars.video.NARVideo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.audio.NativeSpeechDispatcher;
+import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 import static nars.Op.BELIEF;
 

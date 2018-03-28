@@ -10,7 +10,8 @@ import nars.concept.Concept;
 import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
 import nars.op.language.NARSpeak;
-import spacegraph.audio.NativeSpeechDispatcher;
+import spacegraph.SpaceGraph;
+import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +20,6 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
-import static spacegraph.render.JoglPhysics.window;
 
 /**
  * adapted from:
@@ -218,7 +218,7 @@ public class PoleCart extends NAgentX {
 //        SpaceGraph.window(bmp,400,400);
 
 
-        window(Vis.beliefCharts(512,
+        SpaceGraph.window(Vis.beliefCharts(512,
                 sensors,
                 nar), 900, 900);
 

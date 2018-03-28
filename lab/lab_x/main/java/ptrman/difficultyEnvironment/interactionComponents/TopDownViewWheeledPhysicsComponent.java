@@ -1,6 +1,6 @@
 package ptrman.difficultyEnvironment.interactionComponents;
 
-import org.jbox2d.common.Vec2;
+import spacegraph.space2d.phys.common.Vec2;
 import ptrman.difficultyEnvironment.EntityDescriptor;
 import ptrman.difficultyEnvironment.JavascriptDescriptor;
 import ptrman.difficultyEnvironment.physics.Physics2dBody;

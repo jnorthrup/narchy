@@ -2,9 +2,9 @@ package nars.rover.obj.util.external.callback;
 
 
 import nars.rover.obj.util.external.DynamicEntity;
-import org.jbox2d.callbacks.RayCastCallback;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Fixture;
+import spacegraph.space2d.phys.callbacks.RayCastCallback;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Fixture;
 
 /**
  * A callback to get the closest hit from a ray trace

@@ -11,7 +11,9 @@ import static com.ifesdjeen.timer.TimedFuture.Status.READY;
 
 public class OneShotTimedFuture<T> implements TimedFuture<T> {
 
-    final AtomicInteger rounds = new AtomicInteger(); // rounds is only visible to one thread
+    static final int GET_TIMEOUT_POLL_PERIOD_MS = 10;
+
+    final AtomicInteger rounds; // rounds is only visible to one thread
     private final Callable<T> callable;
     private final long initialDelay;
     private final int firstFireOffset;
@@ -23,7 +25,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
     }
     public OneShotTimedFuture(int firstFireOffset, int rounds, Callable<T> callable, long initialDelay) {
         this.firstFireOffset = firstFireOffset;
-        this.rounds.set(rounds);
+        this.rounds = new AtomicInteger(rounds);
         this.status = PENDING;
         this.callable = callable;
         this.initialDelay = initialDelay;
@@ -102,10 +104,10 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
     @Override
     public T get(long timeout, TimeUnit unit) {
         T r;
-        int POLL_PERIOD_MS = 50;
+
         long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
         while ((r = get()) == null) {
-            Util.sleep(POLL_PERIOD_MS);
+            Util.sleep(GET_TIMEOUT_POLL_PERIOD_MS);
             if (System.currentTimeMillis() >= deadline)
                 break;
         }

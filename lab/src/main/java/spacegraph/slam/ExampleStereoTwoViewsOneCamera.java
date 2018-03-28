@@ -77,9 +77,9 @@ import org.ddogleg.struct.FastQueue;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.FMatrixRMaj;
 import org.ejml.ops.ConvertMatrixData;
-import spacegraph.SimpleSpatial;
-import spacegraph.render.Draw;
-import spacegraph.render.JoglPhysics;
+import spacegraph.space3d.SimpleSpatial;
+import spacegraph.video.Draw;
+import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.slam.raytrace.RayTracer;
 
 import javax.swing.*;
@@ -139,7 +139,7 @@ public class ExampleStereoTwoViewsOneCamera {
 
 	public static void main(String args[]) throws InterruptedException {
 		ExampleStereoTwoViewsOneCamera e = new ExampleStereoTwoViewsOneCamera();
-		new JoglPhysics(new SimpleSpatial(e) {
+		new SpaceGraphPhys3D(new SimpleSpatial(e) {
 
 			@Override
 			public void renderAbsolute(GL2 gl, int dtMS) {

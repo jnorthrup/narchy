@@ -5,17 +5,18 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.control.DurService;
 import nars.term.Termed;
-import spacegraph.Surface;
-import spacegraph.container.Gridding;
-import spacegraph.container.Splitting;
-import spacegraph.container.Stacking;
-import spacegraph.math.Color3f;
-import spacegraph.widget.console.ConsoleTerminal;
-import spacegraph.widget.console.TextEdit;
-import spacegraph.widget.meta.AutoSurface;
-import spacegraph.widget.tab.TabPane;
-import spacegraph.widget.text.Label;
-import spacegraph.widget.text.LabeledPane;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.Stacking;
+import spacegraph.util.math.Color3f;
+import spacegraph.space2d.widget.console.ConsoleTerminal;
+import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.tab.TabPane;
+import spacegraph.space2d.widget.text.Label;
+import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * SpaceGraph-based visualization utilities for NAR analysis
@@ -324,7 +325,7 @@ public class Vis {
     }
 
     public static void conceptWindow(Termed t, NAR n) {
-        window(new ConceptSurface(t, n), 500, 500);
+        SpaceGraph.window(new ConceptSurface(t, n), 500, 500);
     }
 
 

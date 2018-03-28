@@ -1,9 +1,9 @@
 package nars.rover.util;
 
-import org.jbox2d.callbacks.RayCastCallback;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.Fixture;
+import spacegraph.space2d.phys.callbacks.RayCastCallback;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.Fixture;
 
 /**
  * Created by me on 7/19/15.

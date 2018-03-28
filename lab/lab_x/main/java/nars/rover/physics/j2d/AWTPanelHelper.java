@@ -5,7 +5,7 @@ import nars.rover.PhysicsModel;
 import nars.rover.physics.PhysicsCamera.ZoomType;
 import nars.rover.physics.PhysicsController;
 import nars.rover.physics.TestbedState;
-import org.jbox2d.common.Vec2;
+import spacegraph.space2d.phys.common.Vec2;
 
 import java.util.List;
 

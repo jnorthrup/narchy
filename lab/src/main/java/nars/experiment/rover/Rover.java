@@ -1,7 +1,7 @@
 package nars.experiment.rover;
 
 import nars.NAR;
-import spacegraph.space.CompoundSpatial;
+import spacegraph.space3d.widget.CompoundSpatial;
 
 /**
  * Created by me on 9/13/16.

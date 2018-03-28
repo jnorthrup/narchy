@@ -1,7 +1,7 @@
 package nars.rover.obj.util.external;
 
 
-import org.jbox2d.common.Vec2;
+import spacegraph.space2d.phys.common.Vec2;
 
 /**
  * Base Entity class. Every frame, each Entity that is in an Entities list has its <code>update()</code>

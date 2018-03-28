@@ -24,8 +24,9 @@ public abstract class AbstractTimerTest {
     @BeforeEach
     public void before() {
         // TODO: run tests on different sequences
-        timer = new HashedWheelTimer(TimeUnit.MILLISECONDS.toNanos(1),
-                16,
+        timer = new HashedWheelTimer(
+                TimeUnit.MILLISECONDS.toNanos(1),
+                128,
                 waitStrategy());
     }
 
@@ -243,29 +244,30 @@ public abstract class AbstractTimerTest {
 
     @Test
     public void testExecutionOnTime() throws InterruptedException {
-        int tickDuration = 200;
-        int timeout = 130;
-        int maxTimeout = 2 * (tickDuration + timeout);
+        int dutyTime = 200;
+        int initialDelayTime = 130;
+        int tolerance = 100;
+        int maxTimeout = (dutyTime + initialDelayTime) + tolerance;
 
         int scheduledTasks =
                 //100000;
                 //8 * 1024;
-                900;
+                100;
 
-        final BlockingQueue<Long> queue = new ArrayBlockingQueue<>(scheduledTasks);
+        final BlockingQueue<Long> queue = new LinkedBlockingQueue<>();
 
         for (int i = 0; i < scheduledTasks; i++) {
             final long start = System.nanoTime();
             timer.schedule(() -> {
                 queue.add(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
-            }, timeout, TimeUnit.MILLISECONDS);
+            }, initialDelayTime, TimeUnit.MILLISECONDS);
         }
 
         for (int i = 0; i < scheduledTasks; i++) {
             long delay = queue.take();
             System.out.println(i + " " + delay);
-            assertTrue(delay >= timeout && delay < maxTimeout,
-                    () -> "Timeout + " + scheduledTasks + " delay must be " + timeout + " < " + delay + " < " + maxTimeout);
+            assertTrue(delay >= initialDelayTime && delay < maxTimeout,
+                    () -> "Timeout + " + scheduledTasks + " delay must be " + initialDelayTime + " < " + delay + " < " + maxTimeout);
         }
     }
 

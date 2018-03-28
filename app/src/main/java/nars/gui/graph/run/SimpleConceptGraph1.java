@@ -6,15 +6,15 @@ import nars.Narsese;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
-import spacegraph.SubOrtho;
-import spacegraph.Surface;
-import spacegraph.render.JoglPhysics;
-import spacegraph.widget.console.TextEdit;
-import spacegraph.widget.meta.AutoSurface;
+import spacegraph.space2d.hud.SubOrtho;
+import spacegraph.space2d.Surface;
+import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.meta.AutoSurface;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static spacegraph.container.Gridding.grid;
+import static spacegraph.space2d.container.Gridding.grid;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
@@ -29,7 +29,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     private SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
-        JoglPhysics sg = show(1400, 1000, false);
+        SpaceGraphPhys3D sg = show(1400, 1000, false);
 
 
         sg.add(new SubOrtho(grid(
@@ -57,7 +57,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     }
 
     @Override
-    public void update(JoglPhysics<Concept> s, long dtMS) {
+    public void update(SpaceGraphPhys3D<Concept> s, long dtMS) {
         if (reloadReady.getAndSet(false)) {
 //            active.clear();
             reload();

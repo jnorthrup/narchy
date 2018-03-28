@@ -10,10 +10,10 @@ import nars.rover.robot.AbstractPolygonBot;
 import nars.rover.util.RayCastClosestCallback;
 import nars.term.Atom;
 import nars.term.Compound;
-import org.jbox2d.common.Color3f;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.World;
+import spacegraph.space2d.phys.common.Color3f;
+import spacegraph.space2d.phys.common.Vec2;
+import spacegraph.space2d.phys.dynamics.Body;
+import spacegraph.space2d.phys.dynamics.World;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;

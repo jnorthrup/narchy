@@ -2,12 +2,12 @@ package nars.experiment.racer;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
-import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.Body2D;
-import org.jbox2d.dynamics.Dynamics2D;
-import org.jbox2d.dynamics.FixtureDef;
-import spacegraph.Ortho;
-import spacegraph.widget.windo.PhyWall;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.dynamics.Body2D;
+import spacegraph.space2d.phys.dynamics.Dynamics2D;
+import spacegraph.space2d.phys.dynamics.FixtureDef;
+import spacegraph.space2d.hud.Ortho;
+import spacegraph.space2d.widget.windo.PhyWall;
 
 import static nars.experiment.racer.Vehicle2D.Wheel.PIXEL_TO_METER_RATIO_DEFAULT;
 
@@ -360,8 +360,8 @@ public class Racer {
 //import org.andengine.opengl.texture.region.ITextureRegion;
 //import org.andengine.opengl.vbo.VertexBufferObjectManager;
 //import org.apache.commons.math3.util.ArithmeticUtils;
-//import org.jbox2d.dynamics.Body2D;
-//import org.jbox2d.dynamics.Dynamics2D;
+//import spacegraph.space2d.phys.dynamics.Body2D;
+//import spacegraph.space2d.phys.dynamics.Dynamics2D;
 //import spacegraph.math.v2;
 //
 ///**

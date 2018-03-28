@@ -21,12 +21,13 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.phys.shape.SphereShape;
-import spacegraph.render.Draw;
-import spacegraph.render.JoglPhysics;
-import spacegraph.space.DynamicListSpace;
-import spacegraph.space.SpaceWidget;
-import spacegraph.widget.button.PushButton;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.phys.shape.SphereShape;
+import spacegraph.space3d.widget.DynamicListSpace;
+import spacegraph.space3d.widget.SpaceWidget;
+import spacegraph.video.Draw;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ import java.util.function.BiConsumer;
 
 import static jcog.Util.sqr;
 import static nars.gui.graph.DynamicConceptSpace.ColorNode.Hash;
-import static spacegraph.render.JoglPhysics.window;
 
 public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
@@ -86,7 +86,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     final AtomicBoolean updated = new AtomicBoolean(false);
 
     @Override
-    public void start(JoglPhysics<Concept> space) {
+    public void start(SpaceGraphPhys3D<Concept> space) {
         synchronized (this) {
             super.start(space);
             onDur = DurService.on(nar, () -> {
@@ -135,7 +135,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                     ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc) {
                         @Override
                         protected void onClicked(PushButton b) {
-                            window(new ConceptSurface(id.term(), nar), 800, 700);
+                            SpaceGraph.window(new ConceptSurface(id.term(), nar), 800, 700);
                         }
                     });
                     if (cw != null) {

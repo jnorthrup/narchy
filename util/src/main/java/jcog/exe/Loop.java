@@ -31,8 +31,8 @@ abstract public class Loop {
     /** global timer */
     final static HashedWheelTimer timer =
         new HashedWheelTimer(Loop.class.getName(),
-             TimeUnit.MILLISECONDS.toNanos(1),
-             64,
+             TimeUnit.MILLISECONDS.toNanos(2),
+             96,
             // HashedWheelTimer.WaitStrategy.YieldingWait,
                 HashedWheelTimer.WaitStrategy.SleepWait,
             Util.executor());

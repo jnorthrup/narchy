@@ -16,6 +16,7 @@ import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
+import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +26,7 @@ import java.awt.image.BufferedImage;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 3/21/17.
@@ -157,7 +158,7 @@ public class FZero extends NAgentX {
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        window(Vis.beliefCharts(64, Iterables.concat(java.util.List.of(dAngVel, dAccel), ang), nar), 300, 300);
+        SpaceGraph.window(Vis.beliefCharts(64, Iterables.concat(java.util.List.of(dAngVel, dAccel), ang), nar), 300, 300);
 
 //        new BeliefPredict(
 //                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),

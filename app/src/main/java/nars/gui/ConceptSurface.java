@@ -9,13 +9,13 @@ import nars.exe.AbstractExec;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
-import spacegraph.container.Gridding;
-import spacegraph.container.Splitting;
-import spacegraph.widget.button.CheckBox;
-import spacegraph.widget.button.PushButton;
-import spacegraph.widget.meter.Plot2D;
-import spacegraph.widget.tab.TabPane;
-import spacegraph.widget.text.Label;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.tab.TabPane;
+import spacegraph.space2d.widget.text.Label;
 
 import java.util.Map;
 

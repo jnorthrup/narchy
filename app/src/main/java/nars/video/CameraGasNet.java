@@ -13,8 +13,8 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
-import spacegraph.Surface;
-import spacegraph.render.Draw;
+import spacegraph.space2d.Surface;
+import spacegraph.video.Draw;
 
 import java.util.function.Consumer;
 import java.util.stream.IntStream;

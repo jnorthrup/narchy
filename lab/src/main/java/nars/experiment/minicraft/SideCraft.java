@@ -10,11 +10,12 @@ import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
+import spacegraph.SpaceGraph;
 
 import java.awt.image.BufferedImage;
 
 import static nars.$.$;
-import static spacegraph.render.JoglPhysics.window;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 9/19/16.
@@ -48,7 +49,7 @@ public class SideCraft extends NAgentX {
 
 
         camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
-        window(camAE.newChart(), 500, 500);
+        SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
         pixels = senseCamera("cra", cam);

@@ -213,15 +213,12 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     }
 
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        //super.paintComponent(g);
         if (img != null) {
             g.drawImage(img, 0, 0, term_area);
         }
     }
 
-    public void paint(Graphics g) {
-        super.paint(g);
-    }
 
     public void processKeyEvent(KeyEvent e) {
         //System.out.println(e);
@@ -365,10 +362,10 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
     public void draw_cursor() {
         cursor_graphics.fillRect(x, y - char_height, char_width, char_height);
-        repaint(x, y - char_height, char_width, char_height);
+        redraw(x, y - char_height, char_width, char_height);
     }
 
-    public void redraw(int x, int y, int width, int height) {
+    public final void redraw(int x, int y, int width, int height) {
         repaint(x, y, width, height);
     }
 
@@ -384,7 +381,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     public void scroll_area(int x, int y, int w, int h, int dx, int dy) {
         //System.out.println("scroll_area: "+x+" "+y+" "+w+" "+h+" "+dx+" "+dy);
         graphics.copyArea(x, y, w, h, dx, dy);
-        repaint(x + dx, y + dy, w, h);
+        redraw(x + dx, y + dy, w, h);
     }
 
     public void drawBytes(byte[] buf, int s, int len, int x, int y) {

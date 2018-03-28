@@ -2,8 +2,8 @@ package nars.rover.obj.util.external.particles;
 
 
 import nars.rover.obj.util.external.BoxEntity;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.FixtureDef;
+import spacegraph.space2d.phys.dynamics.BodyDef;
+import spacegraph.space2d.phys.dynamics.FixtureDef;
 
 /**
  * A particle.
