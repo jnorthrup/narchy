@@ -23,8 +23,8 @@
 
 package spacegraph.space3d.phys.constraint;
 
-import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.solve.ConstraintPersistentData;

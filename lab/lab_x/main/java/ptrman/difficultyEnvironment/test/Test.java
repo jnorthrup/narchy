@@ -6,7 +6,6 @@ import com.jogamp.opengl.GLProfile;
 import nars.rover.physics.PhysicsCamera;
 import nars.rover.physics.gl.JoglAbstractDraw;
 import org.apache.commons.math3.linear.ArrayRealVector;
-import spacegraph.space2d.phys.common.Vec2;
 import ptrman.difficultyEnvironment.EntityDescriptor;
 import ptrman.difficultyEnvironment.Environment;
 import ptrman.difficultyEnvironment.JavascriptDescriptor;
@@ -20,6 +19,7 @@ import ptrman.difficultyEnvironment.scriptAccessors.HelperScriptingAccessor;
 import ptrman.difficultyEnvironment.view.DrawerRunnable;
 import ptrman.difficultyEnvironment.view.JoglDraw;
 import ptrman.difficultyEnvironment.view.JoglPanel;
+import spacegraph.space2d.phys.common.Vec2;
 
 import java.util.ArrayList;
 import java.util.List;

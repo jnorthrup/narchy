@@ -11,8 +11,6 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.WebCam;
 
-import static spacegraph.SpaceGraph.window;
-
 public class NARVideo extends NARServiceSet<NARVideo.Video> {
 
     public NARVideo(NAR nar) {

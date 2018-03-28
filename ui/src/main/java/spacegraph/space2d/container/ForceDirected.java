@@ -3,8 +3,8 @@ package spacegraph.space2d.container;
 import jcog.math.FloatRange;
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.Spatial;
-import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.Broadphase;
 import spacegraph.util.math.v3;
 

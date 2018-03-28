@@ -19,8 +19,8 @@ import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.video.Draw;
 import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.video.Draw;
 
 import java.io.FileNotFoundException;
 import java.util.function.Consumer;

@@ -1,7 +1,7 @@
 package ptrman.difficultyEnvironment;
 
-import spacegraph.space2d.phys.dynamics.World;
 import ptrman.difficultyEnvironment.interactionComponents.IComponent;
+import spacegraph.space2d.phys.dynamics.World;
 
 import java.util.ArrayList;
 import java.util.List;

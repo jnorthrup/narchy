@@ -24,8 +24,8 @@
 package spacegraph.space3d.phys.shape;
 
 import jcog.Util;
-import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.space3d.phys.math.AabbUtil2;
 import spacegraph.space3d.phys.math.ScalarUtil;

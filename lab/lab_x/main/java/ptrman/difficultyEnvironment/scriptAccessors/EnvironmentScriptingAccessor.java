@@ -1,12 +1,12 @@
 package ptrman.difficultyEnvironment.scriptAccessors;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
-import spacegraph.space2d.phys.callbacks.RayCastCallback;
-import spacegraph.space2d.phys.collision.shapes.PolygonShape;
-import spacegraph.space2d.phys.common.Vec2;
 import ptrman.difficultyEnvironment.EntityDescriptor;
 import ptrman.difficultyEnvironment.Environment;
 import ptrman.difficultyEnvironment.physics.Physics2dBody;
+import spacegraph.space2d.phys.callbacks.RayCastCallback;
+import spacegraph.space2d.phys.collision.shapes.PolygonShape;
+import spacegraph.space2d.phys.common.Vec2;
 
 import java.util.List;
 

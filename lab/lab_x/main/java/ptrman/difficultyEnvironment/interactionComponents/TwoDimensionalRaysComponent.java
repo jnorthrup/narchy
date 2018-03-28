@@ -1,10 +1,10 @@
 package ptrman.difficultyEnvironment.interactionComponents;
 
+import ptrman.difficultyEnvironment.EntityDescriptor;
+import ptrman.difficultyEnvironment.JavascriptDescriptor;
 import spacegraph.space2d.phys.callbacks.RayCastCallback;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Fixture;
-import ptrman.difficultyEnvironment.EntityDescriptor;
-import ptrman.difficultyEnvironment.JavascriptDescriptor;
 
 /**
  * A collection of rays which shoots from a position and angle relative to the position of the physics 2d body

@@ -6,12 +6,10 @@ import jcog.learn.lstm.SimpleLSTM;
 import jcog.math.random.XorShift128PlusRandom;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.video.Draw;
 import spacegraph.space2d.widget.meter.MatrixView;
+import spacegraph.video.Draw;
 
 import java.util.Random;
-
-import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 11/22/16.

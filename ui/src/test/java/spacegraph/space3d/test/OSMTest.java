@@ -5,8 +5,8 @@ import com.jogamp.newt.event.WindowEvent;
 import jcog.User;
 import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space3d.SpaceGraphPhys3D;
-import spacegraph.util.geo.IRL;
 import spacegraph.space3d.widget.OsmSpace;
+import spacegraph.util.geo.IRL;
 
 public class OSMTest {
     public static void main(String[] args) {

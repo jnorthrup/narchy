@@ -11,8 +11,6 @@ import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
 import spacegraph.SpaceGraph;
 
-import static spacegraph.SpaceGraph.window;
-
 //import org.jcodec.codecs.h264.H264Encoder;
 //import org.jcodec.codecs.h264.H264Utils;
 //import org.jcodec.codecs.h264.encode.H264FixedRateControl;

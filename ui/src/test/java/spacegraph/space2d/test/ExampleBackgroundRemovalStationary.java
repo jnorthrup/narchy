@@ -11,8 +11,8 @@ import boofcv.struct.image.ImageType;
 import jcog.exe.Loop;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.video.WebCam;
 import spacegraph.video.Tex;
+import spacegraph.video.WebCam;
 
 import java.awt.image.BufferedImage;
 

@@ -47,8 +47,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static spacegraph.space3d.phys.Collidable.ISLAND_SLEEPING;
 import static spacegraph.space3d.phys.Body3D.ifDynamic;
+import static spacegraph.space3d.phys.Collidable.ISLAND_SLEEPING;
 import static spacegraph.util.math.v3.v;
 
 /**

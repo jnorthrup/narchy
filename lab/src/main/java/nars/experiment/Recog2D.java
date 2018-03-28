@@ -22,8 +22,8 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.video.Draw;
 import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.video.Draw;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

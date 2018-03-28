@@ -2,10 +2,10 @@ package nars.experiment.rover;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space3d.SimpleSpatial;
-import spacegraph.util.math.v3;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.shape.CollisionShape;
 import spacegraph.space3d.phys.shape.SphereShape;
+import spacegraph.util.math.v3;
 
 import static spacegraph.util.math.v3.v;
 

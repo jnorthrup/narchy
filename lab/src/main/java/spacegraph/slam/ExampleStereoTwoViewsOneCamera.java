@@ -77,10 +77,10 @@ import org.ddogleg.struct.FastQueue;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.FMatrixRMaj;
 import org.ejml.ops.ConvertMatrixData;
-import spacegraph.space3d.SimpleSpatial;
-import spacegraph.video.Draw;
-import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.slam.raytrace.RayTracer;
+import spacegraph.space3d.SimpleSpatial;
+import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.video.Draw;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

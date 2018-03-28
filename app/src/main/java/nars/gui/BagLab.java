@@ -10,10 +10,10 @@ import jcog.pri.PriReference;
 import nars.$;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.util.math.Color3f;
-import spacegraph.video.Draw;
 import spacegraph.space2d.widget.meter.MatrixView;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.util.math.Color3f;
+import spacegraph.video.Draw;
 
 import java.util.Arrays;
 import java.util.HashMap;

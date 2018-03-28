@@ -23,8 +23,8 @@
 
 package spacegraph.space3d.phys.shape;
 
-import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.math.ScalarUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Vector4f;

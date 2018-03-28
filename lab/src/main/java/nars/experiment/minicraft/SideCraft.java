@@ -15,7 +15,6 @@ import spacegraph.SpaceGraph;
 import java.awt.image.BufferedImage;
 
 import static nars.$.$;
-import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 9/19/16.

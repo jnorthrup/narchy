@@ -17,10 +17,10 @@ import nars.truth.TruthFunctions;
 import nars.truth.TruthWave;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.video.Draw;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.text.Label;
+import spacegraph.video.Draw;
 
 import java.util.function.BiFunction;
 

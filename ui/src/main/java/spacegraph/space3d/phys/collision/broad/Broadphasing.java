@@ -26,8 +26,8 @@ package spacegraph.space3d.phys.collision.broad;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.Collidable;
 
 /**
  * BroadphaseProxy is the main class that can be used with the Bullet broadphases.

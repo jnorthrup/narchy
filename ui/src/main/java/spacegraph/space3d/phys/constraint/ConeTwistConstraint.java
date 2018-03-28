@@ -25,8 +25,8 @@
 
 package spacegraph.space3d.phys.constraint;
 
-import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.QuaternionUtil;
 import spacegraph.space3d.phys.math.ScalarUtil;
 import spacegraph.space3d.phys.math.Transform;

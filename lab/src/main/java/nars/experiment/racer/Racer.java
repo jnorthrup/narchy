@@ -2,11 +2,11 @@ package nars.experiment.racer;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.FixtureDef;
-import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.widget.windo.PhyWall;
 
 import static nars.experiment.racer.Vehicle2D.Wheel.PIXEL_TO_METER_RATIO_DEFAULT;

@@ -24,10 +24,10 @@
 package spacegraph.space3d.phys.solve;
 
 import jcog.list.FasterList;
+import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.BulletStats;
 import spacegraph.space3d.phys.Collidable;
-import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.collision.broad.Intersecter;
 import spacegraph.space3d.phys.collision.narrow.ManifoldPoint;
 import spacegraph.space3d.phys.collision.narrow.PersistentManifold;

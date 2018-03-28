@@ -19,7 +19,6 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.IconToggleButton;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.video.WebCam;
 import spacegraph.space2d.widget.tab.ButtonSet;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.Label;
@@ -28,6 +27,7 @@ import spacegraph.space2d.widget.windo.LabeledPort;
 import spacegraph.space2d.widget.windo.Port;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
+import spacegraph.video.WebCam;
 
 import java.util.HashMap;
 import java.util.Map;

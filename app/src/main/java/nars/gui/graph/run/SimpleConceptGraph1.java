@@ -6,11 +6,11 @@ import nars.Narsese;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
-import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.Surface;
-import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space3d.SpaceGraphPhys3D;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

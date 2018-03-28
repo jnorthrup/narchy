@@ -3,11 +3,11 @@ package nars.experiment.rover;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import spacegraph.space3d.SimpleSpatial;
-import spacegraph.util.math.v3;
 import spacegraph.space3d.phys.Collisions;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
 import spacegraph.space3d.phys.math.Transform;
+import spacegraph.util.math.v3;
 import spacegraph.video.Draw;
 
 import static spacegraph.util.math.v3.v;

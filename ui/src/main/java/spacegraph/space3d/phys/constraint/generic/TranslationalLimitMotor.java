@@ -30,8 +30,8 @@ http://gimpact.sf.net
 
 package spacegraph.space3d.phys.constraint.generic;
 
-import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.BulletGlobals;
 import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.v3;
 

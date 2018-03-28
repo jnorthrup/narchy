@@ -14,12 +14,12 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import jcog.Texts;
 import nars.gui.Vis;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.container.Scale;
 import spacegraph.SpaceGraph;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Gridding;
-import spacegraph.input.finger.Finger;
+import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meta.OmniBox;
@@ -39,8 +39,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static spacegraph.SpaceGraph.window;
 
 public class Shell {
 
