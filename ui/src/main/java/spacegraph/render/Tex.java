@@ -72,7 +72,7 @@ public class Tex {
     }
 
     public void update(BufferedImage iimage) {
-        if (profile == null)
+        if (iimage == null || profile == null)
             return;
 
         if (nextData == null || this.src != iimage) {

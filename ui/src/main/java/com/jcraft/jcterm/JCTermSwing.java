@@ -44,13 +44,13 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
                 }
             };
     private static ConfigurationRepository cr = defaultCR;
+
     private final Object[] colors = {Color.black, Color.red, Color.green,
             Color.yellow, Color.blue, Color.magenta, Color.cyan, Color.white};
     OutputStream out;
     InputStream in;
     TerminalEmulator emulator = null;
     Connection connection = null;
-    final byte[] obuffer = new byte[3];
     private BufferedImage img;
     private BufferedImage background;
     private Graphics2D cursor_graphics;
@@ -305,9 +305,8 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
         char keychar = e.getKeyChar();
         if ((keychar & 0xff00) == 0) {
-            obuffer[0] = (byte) (e.getKeyChar());
             try {
-                out.write(obuffer, 0, 1);
+                out.write(e.getKeyChar());
                 out.flush();
             } catch (Exception ee) {
             }
