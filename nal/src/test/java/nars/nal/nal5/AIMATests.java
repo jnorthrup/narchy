@@ -4,6 +4,7 @@ import com.google.common.math.PairedStatsAccumulator;
 import jcog.io.SparkLine;
 import jcog.list.FasterList;
 import nars.*;
+import nars.derive.Deriver;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,14 +45,16 @@ public class AIMATests {
     public void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.05f);
-        n.confResolution.set(0.02f);
+        n.freqResolution.set(0.02f);
+        n.confResolution.set(0.01f);
+        n.activationRate.set(0.1f);
 //        n.confMin.set(0.02f);
-        n.questionPriDefault.set(0.7f);
+//        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
         n.termVolumeMax.set(36);
         //n.conceptActivation.set(0.5f);
 
+        Deriver.derivers(n).forEach(x->x.conceptsPerIteration.set(32));
         //new QuerySpider(n);
         //new PrologCore(n);
         //n.run(1);
@@ -87,18 +90,22 @@ public class AIMATests {
 //        n.input("Criminal(?x)?");
 //                n.input("Criminal(?x)?");
 
-        n.run(1000);
-        n.clear();
+//        n.run(200);
+//        n.clear();
+//        n.question($.$$(
+//                "Criminal(?x)"
+//        ));
         n.question($.$(
-                //"Criminal(?x)"
                 "Criminal:?x"
 
         ), ETERNAL, (q,a)->{
             System.out.println(a);
         });
-        n.run(3000);
-        n.concept($.$("Criminal")).print();
-        //n.concept($.$("Criminal:?1")).print();
+        Param.DEBUG = true;
+        n.log();
+        n.run(200);
+//        n.concept($.$("Criminal")).print();
+//        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {
 //            System.out.println("Questions Generated:");
 //            questions.forEach(System.out::println);

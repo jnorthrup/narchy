@@ -1,6 +1,5 @@
 package nars.op.java;
 
-import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -11,8 +10,6 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
@@ -22,75 +19,15 @@ import static nars.Op.BELIEF;
 
 public class ThermostatTest {
 
-    public static class Thermostat {
-        private int current, target;
-
-        /**
-         * limits
-         */
-        private final static int cold = 0, hot = 3;
-
-        public int is() {
-            return current;
-        }
-
-        public int should() {
-            return target;
-        }
-
-        private void add(int delta) {
-            current = Util.clamp(current + delta, cold, hot);
-        }
-
-        public void up() {
-            System.err.println("t++");
-            add(+1);
-        }
-
-        public void down() {
-            System.err.println("t--");
-            add(-1);
-        }
-
-        public String report() {
-            String msg;
-            if (is() < should())
-                msg = "too cold";
-            else if (is() > should())
-                msg = "too hot";
-            else
-                msg = "temperature ok";
-            System.err.println(msg);
-            return msg;
-        }
-
-        protected void should(int x) {
-            System.err.println("temperature should " + x);
-            this.target = x;
-        }
-
-        private void is(int x) {
-            System.err.println("temperature is " + x);
-            this.current = x;
-        }
-
-        static Consumer<Thermostat> change(boolean isHot, boolean shouldHot) {
-            return x -> {
-                x.is(isHot ? hot : cold);
-                x.should(shouldHot ? hot : cold);
-            };
-        }
-    }
-
 
     final Runnable pause = () -> {
         //Util.sleep(500);
     };
-    @Test
-    @Disabled
-    public void test1() {
+//    @Test
+//    @Disabled
+    public static void main (String[] args) {// void test1() {
         //Param.DEBUG = true;
-        final int DUR = 5;
+        final int DUR = 1;
 
         final int subTrainings = 2;
         final int thinkDurs = 4; //pause between episodes
@@ -98,11 +35,13 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.timeFocus.set(1);
-        n.termVolumeMax.set(30);
-        n.freqResolution.set(0.05f);
-        n.confResolution.set(0.01f);
-        n.activationRate.set(0.1f);
+        n.timeFocus.set(2);
+        n.termVolumeMax.set(34);
+//        n.freqResolution.set(0.05f);
+//        n.confResolution.set(0.01f);
+        n.activationRate.set(0.5f);
+
+        n.goalPriDefault.set(1f);
 //        n.forgetRate.set(2f);
         //n.deep.set(0.8);
 
@@ -168,7 +107,7 @@ public class ThermostatTest {
 
         };
 
-        Teacher<Thermostat> env = new Teacher<Thermostat>(op, Thermostat.class);
+        Teacher<Thermostat> env = new Teacher<>(op, Thermostat.class);
 
 
 
@@ -194,13 +133,20 @@ public class ThermostatTest {
                     System.out.println("EPISODE START");
                     n.clear();
 
-                    env.teach("down", condition, x -> {
-                        x.up(); //demonstrate no change
+                    env.teach("down", condition, (Thermostat x) -> {
+//                        x.up(); //demonstrate no change
+//                        x.report();
+
+                        n.run(1);
+                        while (x.is() > Thermostat.cold) {
+                            x.down();
+                            n.run(1);
+                        }
                         x.report();
-                        while (x.is() > Thermostat.cold) x.down();
-                        x.report();
-                        x.down(); //demonstrate no change
-                        x.report();
+                        n.run(1);
+
+//                        x.down(); //demonstrate no change
+//                        x.report();
                     }, isCold);
                     System.out.println("EPISODE END");
                     n.run(thinkDurs * n.dur());
@@ -214,12 +160,17 @@ public class ThermostatTest {
                     n.clear();
 
                     env.teach("up", condition, x -> {
-                        x.down(); //demonstrate no change
+//                        x.down(); //demonstrate no change
+//                        x.report();
+                        n.run(1);
+                        while (!isHot.test(x)) {
+                            x.up();
+                            n.run(1);
+                        }
                         x.report();
-                        while (!isHot.test(x)) x.up();
-                        x.report();
-                        x.up(); //demonstrate no change
-                        x.report();
+                        n.run(1);
+//                        x.up(); //demonstrate no change
+//                        x.report();
                     }, isHot);
 
                     System.out.println("EPISODE END");
@@ -282,7 +233,8 @@ public class ThermostatTest {
                 for (int i = 0; i < 16 && xPos.isOn(); i++) {
                     int period = 100;
                     //t.report();
-                    n.run(period, pause);
+                    //n.run(period, pause);
+                    n.run(period);
                 }
 
                 xPos.off();
@@ -310,9 +262,10 @@ public class ThermostatTest {
 //                    n.time.nextInputStamp()).pri(1f));
 
             }
-        } while (stupid);
+        } while (false /*stupid*/);
 
-        n.run(thinkDurs * n.dur());
+
+        //n.run(thinkDurs * n.dur());
 
         {
 //            n.input(new NALTask($.$safe("a_Thermostat(is,(),3)"),
@@ -334,7 +287,7 @@ public class ThermostatTest {
 
     }
 
-    private class TaskConceptLogger implements Predicate<Task> {
+    public static class TaskConceptLogger implements Predicate<Task> {
         private final Predicate<Task> pred;
         private final NAR nar;
 

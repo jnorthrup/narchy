@@ -57,7 +57,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
     @Nullable
-    public static DynamicTruthModel unroll(Term t) {
+    static DynamicTruthModel unroll(Term t) {
         DynamicTruthModel dmt = null;
 
         final Subterms ts = t.subterms();
@@ -266,7 +266,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         //TemporalBeliefTable newTemporalTable(final int tCap, NAR nar) {
         //return new HijackTemporalBeliefTable(tCap);
         //return new RTreeBeliefTable(tCap);
-        if (!c.hasAny(Op.VAR_QUERY) && (beliefOrGoal ? c.op().beliefable : goalable(c))) {
+        if ((Param.COLLAPSE_VARIABLE_CONTAINING_CONCEPTS || !c.hasAny(Op.VAR_QUERY)) && (beliefOrGoal ? c.op().beliefable : goalable(c))) {
             return new DefaultBeliefTable(newTemporalTable(c));
         } else {
             return BeliefTable.Empty;

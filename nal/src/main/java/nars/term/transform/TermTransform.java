@@ -174,7 +174,15 @@ public interface TermTransform extends TermContext {
         }
     };
 
-
+    TermTransform anyVarToQueryVar = new TermTransform() {
+        @Override
+        public Term transformAtomic(Term atomic) {
+            Op a = atomic.op();
+            return (a.var && a!= VAR_QUERY) ?
+                    $.varQuery((((NormalizedVariable) atomic).anonNum())) :
+                    atomic;
+        }
+    };
     /**
      * operates transparently through negation subterms
      */

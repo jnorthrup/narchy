@@ -25,6 +25,7 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -745,15 +746,16 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
 
         try {
             Class cl = bb
+                    .with(TypeValidation.DISABLED)
                     .subclass(instance.getClass())
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
                     .intercept(InvocationHandlerAdapter.of((objIgnored, method, margs) ->
                             invoke(instance, method, margs)))
                     .make()
                     .load(
-                            //Thread.currentThread().getContextClassLoader(),
-                            instance.getClass().getClassLoader(),
-                            ClassLoadingStrategy.Default.WRAPPER)
+                            Thread.currentThread().getContextClassLoader(),
+                            //instance.getClass().getClassLoader(),
+                            ClassLoadingStrategy.Default.INJECTION)
                     .getLoaded();
             T instWrapped = (T) cl.getConstructor(typesOfArray(args)).newInstance(args);
 
@@ -825,17 +827,20 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
         Class ccc = proxyCache.computeIfAbsent(cl, (baseClass) -> {
 
             Class cc = bb
+                    .with(TypeValidation.DISABLED)
                     .subclass(baseClass)
+                    //.method(ElementMatchers.any())
+                    //.method(ElementMatchers.isPublic())
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
                     .intercept(MethodDelegation.to(this))
                     .make()
                     .load(
-                            //Thread.currentThread().getContextClassLoader(),
-                            baseClass.getClassLoader(),
-                            ClassLoadingStrategy.Default.WRAPPER)
+                            Thread.currentThread().getContextClassLoader(),
+                            //baseClass.getClassLoader(),
+                            ClassLoadingStrategy.Default.INJECTION)
                     .getLoaded();
 
-            reflect(baseClass); //the original class
+            reflect(cc); //the original class
 
             return cc;
 //            return ;
