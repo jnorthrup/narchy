@@ -96,6 +96,11 @@ public class PhyWall extends Wall implements Animated {
         }
     }
 
+    @Override
+    public boolean tangible() {
+        return false;
+    }
+
 
     @Override
     public boolean animate(float dt) {
@@ -269,7 +274,7 @@ public class PhyWall extends Wall implements Animated {
 
         add(s);
 
-        s.content(content);
+        s.add(content);
 
         return s;
     }
@@ -608,8 +613,8 @@ public class PhyWall extends Wall implements Animated {
          * assumes the PhyWindow wraps *THE* source
          */
         public Wire link(Surface target) {
-            assert (content().length == 1);
-            return link(get(), target);
+            assert (children().length == 1);
+            return link(get(0), target);
         }
 
         public Wire unlink(Surface source, Surface target) {
@@ -829,7 +834,6 @@ public class PhyWall extends Wall implements Animated {
 
     final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
 
-
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
 
@@ -843,7 +847,8 @@ public class PhyWall extends Wall implements Animated {
         if (doubleClicking.update(finger))
             return this;
 
-        return s!=null ? s : this;
+        //return s!=null ? s : this;
+        return s;
     }
 
     void doubleClick(v2 pos) {

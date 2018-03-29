@@ -1,12 +1,9 @@
 package spacegraph.space2d.widget.windo;
 
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerMove;
-import spacegraph.input.finger.FingerResize;
-import spacegraph.input.finger.Fingering;
+import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
@@ -16,12 +13,13 @@ import static spacegraph.space2d.widget.windo.Windo.DragEdit.MOVE;
 /**
  * draggable panel
  */
-public class Windo extends Widget {
+public class Windo extends Stacking {
 
     public final static float resizeBorder = 0.1f;
-    public Fingering dragMode = null;
+    public FingerDragging dragMode = null;
     public DragEdit potentialDragMode = null;
     protected boolean hover;
+    protected float pmx, pmy;
 
     public Windo() {
         super();
@@ -50,23 +48,26 @@ public class Windo extends Widget {
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
 
-        Surface other = null;
-        if (dragMode==null) {
-            Surface c = super.onTouch(finger, buttons);
-            if (!fingerable() || fingeringWindow(c)) {
-                //            this.dragMode = null;
-                //            this.potentialDragMode = null;
-                other = c; //something else or a child inside of the content
-            }
+        if (dragMode!=null && dragMode.isStopped()) {
+            System.out.println(this + " dragMode " + dragMode + " stopped");
+            dragMode = null;
+        }
 
-        } else {
-            other = this;
+        Surface other = null;
+        if (/*dragMode==null && */finger!=null) {
+            Surface c = super.onTouch(finger, buttons);
+            other = c;
+//            if (!fingerable() || fingeringWindow(c)) {
+//                //            this.dragMode = null;
+//                //            this.potentialDragMode = null;
+//                other = c; //something else or a child inside of the content
+//            }
+
         }
 
 //        if (finger == null)
 //            return null;
 
-        v2 f;
         if (other!=null && other!=this) {
             this.dragMode = null;
             this.potentialDragMode = null;
@@ -74,8 +75,6 @@ public class Windo extends Widget {
             return other;
         } else if (finger == null || !fingeringBounds(finger)) {
 
-            if (finger == null)
-                return (dragMode!=null ? this : null);
 
             this.dragMode = null;
             this.potentialDragMode = null;
@@ -131,20 +130,27 @@ public class Windo extends Widget {
                 }
 
 
-                if (potentialDragMode == null)
-                    potentialDragMode = MOVE;
+                if (!fingerable(potentialDragMode))
+                    potentialDragMode = null;
+
+                if (potentialDragMode == null) {
+                    if (fingerable(MOVE))
+                        potentialDragMode = MOVE;
+                }
             }
 
 
-            if (!fingerable(potentialDragMode))
-                potentialDragMode = null;
+            this.pmx = hitPoint.x;
+            this.pmy = hitPoint.y;
 
+            //System.out.println(this + " POTENTIAL " + potentialDragMode);
             this.potentialDragMode = potentialDragMode;
 
             if (buttons != null && buttons.length > 0 && buttons[ZoomOrtho.PAN_BUTTON] == 1) {
                 //actual drag mode enabled
-                Fingering d = fingering(potentialDragMode);
+                FingerDragging d = (FingerDragging) fingering(potentialDragMode);
                 if (d != null && finger.tryFingering(d)) {
+                    System.out.println(this + " ON " + d);
                     this.dragMode = d;
                 } else {
                     this.dragMode = null;
@@ -152,7 +158,7 @@ public class Windo extends Widget {
             }
 
 
-            return this;
+            return null;
         }
 
 
@@ -167,9 +173,9 @@ public class Windo extends Widget {
         return finger.relativePos(this);
     }
 
-    public boolean fingeringWindow(Surface childFingered) {
-        return childFingered != this && childFingered != null && childFingered != this.get();
-    }
+//    public boolean fingeringWindow(Surface childFingered) {
+//        return childFingered != this && childFingered != null && childFingered != this.get(0);
+//    }
 
     protected Fingering fingering(DragEdit mode) {
 
@@ -199,25 +205,48 @@ public class Windo extends Widget {
         return true;
     }
 
+
     protected void prepaint(GL2 gl) {
 
+        DragEdit p;
+        if ((p = potentialDragMode) != null) {
+
+            float W = w();
+            float H = h();
+            float resizeBorder = Math.max(W, H) * this.resizeBorder;
+
+            switch (p) {
+                case RESIZE_NE:
+                    colorDragIndicator(gl);
+                    Draw.quad2d(gl, pmx, pmy, W, H-resizeBorder, W, H, W - resizeBorder, H);
+                    break;
+                case RESIZE_SE:
+                    colorDragIndicator(gl);
+                    Draw.quad2d(gl, pmx, pmy, W, resizeBorder, W, 0, W - resizeBorder, 0);
+                    break;
+                case RESIZE_SW:
+                    colorDragIndicator(gl);
+                    Draw.quad2d(gl, pmx, pmy, 0, resizeBorder, 0, 0, resizeBorder, 0);
+                    break;
+            }
+        }
+
+    }
+
+    private void colorDragIndicator(GL2 gl) {
+        if (dragMode!=null) {
+            gl.glColor4f(0.75f, 1f, 0f, 0.75f);
+        } else {
+            gl.glColor4f(1f, 0.75f, 0f, 0.5f);
+        }
     }
 
     protected void postpaint(GL2 gl) {
 
     }
 
-    /**
-     * gets main content
-     */
-    public Surface get() {
-        return content.children()[0];
-        //return ((UnitContainer) content.children()[0]).the;
-        //return content;
-    }
-
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paintIt(GL2 gl) {
         paintBack(gl);
 
 
@@ -246,26 +275,27 @@ public class Windo extends Widget {
     }
 
     protected void paintBack(GL2 gl) {
-        if (hover && opaque() && potentialDragMode != null) {
-            switch (potentialDragMode) {
-                case RESIZE_N:
-                case RESIZE_S:
-                case RESIZE_W:
-                case RESIZE_E:
-                    gl.glColor3f(0.15f, 0f, 0.2f);
-                    break;
-                case RESIZE_NE:
-                case RESIZE_SW:
-                case RESIZE_NW:
-                case RESIZE_SE:
-                    gl.glColor3f(0.15f, 0.2f, 0f);
-                    break;
-                default:
-                    //gl.glColor3f(0.3f, 0.3f, 0.3f);
-                    //break;
-                    return;
-
-            }
+        if (opaque()) {
+//        if (hover && opaque() && potentialDragMode != null) {
+//            switch (potentialDragMode) {
+//                case RESIZE_N:
+//                case RESIZE_S:
+//                case RESIZE_W:
+//                case RESIZE_E:
+//                    gl.glColor3f(0.15f, 0f, 0.2f);
+//                    break;
+//                case RESIZE_NE:
+//                case RESIZE_SW:
+//                case RESIZE_NW:
+//                case RESIZE_SE:
+//                    gl.glColor3f(0.15f, 0.2f, 0f);
+//                    break;
+//                default:
+//                    //gl.glColor3f(0.3f, 0.3f, 0.3f);
+//                    //break;
+//                    return;
+//
+//            }
             Draw.rect(gl, x(), y(), w(), h());
         }
     }

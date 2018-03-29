@@ -5,13 +5,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.Gridding;
-import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.hud.HUDOrtho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.AutoSurface;
-import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.windo.PhyWall;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
@@ -69,29 +64,29 @@ public enum SpaceGraph { ;
         //SpaceLogConsole log = new SpaceLogConsole();
         //log.visible(false);
 
-        Label statusBar = new Label();
+        //Label statusBar = new Label();
 
 
-        HUDOrtho hud = new HUDOrtho();
-
-        hud.set(
-                new Splitting(new EmptySurface(),
-                        //new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-                        new Gridding(new EmptySurface(), statusBar),
-                        0.1f)
-        );
-        //log.pos(0, 0.9f, 0.5f * width, 1f);
-        ///System.out.println(hud.bounds);
-
-//        log.visible(false);
+//        HUDOrtho hud = new HUDOrtho();
+//
 //        hud.set(
-//            new Splitting(
-//                new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-//                new Gridding(new PushButton("+"),
-//                        //new OmniBox(),
-//                new CheckBox("Log", (Runnable)log::visible)),
-//                0.1f
-//        ));
+//                new Splitting(new EmptySurface(),
+//                        //new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
+//                        new Gridding(new EmptySurface(), statusBar),
+//                        0.1f)
+//        );
+//        //log.pos(0, 0.9f, 0.5f * width, 1f);
+//        ///System.out.println(hud.bounds);
+//
+////        log.visible(false);
+////        hud.set(
+////            new Splitting(
+////                new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
+////                new Gridding(new PushButton("+"),
+////                        //new OmniBox(),
+////                new CheckBox("Log", (Runnable)log::visible)),
+////                0.1f
+////        ));
 
         GLWindow win = new SpaceGraphFlat(
                 new ZoomOrtho(s) {
@@ -111,12 +106,12 @@ public enum SpaceGraph { ;
                     public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
                         //if (log.visible())
                         //log.log(key, duration, level, message);
-                        if (statusBar.visible())
-                            statusBar.text(message.get());
+//                        if (statusBar.visible())
+//                            statusBar.text(message.get());
                         //else: buffer?
                     }
-                },
-                hud
+                }
+                //,hud
         ).show(width, height);
 
         //win.setUndecorated(true);

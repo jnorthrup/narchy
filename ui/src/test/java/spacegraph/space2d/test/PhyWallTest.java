@@ -140,6 +140,14 @@ public class PhyWallTest {
         }
 
     }
+    public static class Box2DTest_Empty {
+
+        public static void main(String[] args) {
+
+            PhyWall s = SpaceGraph.wall(800, 800);
+        }
+
+    }
 
     public static class Box2DTest_FloatMux {
 

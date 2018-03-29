@@ -3,6 +3,7 @@ package spacegraph.input.finger;
 abstract public class FingerDragging extends Fingering {
 
     protected final int button;
+    boolean stopped = false;
 
     public FingerDragging(int button) {
         super();
@@ -18,6 +19,16 @@ abstract public class FingerDragging extends Fingering {
             return false;
     }
 
+
+    @Override
+    public void stop(Finger finger) {
+        super.stop(finger);
+        stopped = true;
+    }
+
+    public boolean isStopped() {
+        return stopped;
+    }
 
     @Override
     public boolean update(Finger finger) {

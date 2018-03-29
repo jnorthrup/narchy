@@ -62,6 +62,7 @@ abstract public class Widget extends Switching {
             return true;
         }
 
+
         /**
          * indicates current level of activity of this component, which can be raised by various
          * user and system actions and expressed in different visual metaphors.
@@ -95,7 +96,7 @@ abstract public class Widget extends Switching {
         @Override
         protected void paintBelow(GL2 gl) {
 
-            //if (tangible()) {
+            if (Widget.this.tangible()) {
                 float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
                 float bri = 0.25f * dim;
                 float r, g, b;
@@ -120,7 +121,7 @@ abstract public class Widget extends Switching {
                 gl.glColor4f(r, g, b, 0.5f);
 
                 Draw.rect(gl, bounds);
-            //}
+            }
 
             //rainbow backgrounds
             //Draw.colorHash(gl, this.hashCode(), 0.8f, 0.2f, 0.25f);
@@ -209,10 +210,11 @@ abstract public class Widget extends Switching {
 
     @Override
     public boolean tangible() {
-        return false;
+        return true;
     }
 
     public void touch(@Nullable Finger finger) {
+
         touchedBy = finger;
         if (finger != null) {
 

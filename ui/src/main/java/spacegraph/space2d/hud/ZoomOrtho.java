@@ -8,6 +8,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
+import spacegraph.video.JoglSpace;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -16,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ZoomOrtho extends Ortho {
 
+    private final Surface content;
     float zoomRate = 0.2f;
     float pressZoomOutRate = zoomRate*2;
 
@@ -44,8 +46,8 @@ public class ZoomOrtho extends Ortho {
 
     public ZoomOrtho(Surface content) {
         super();
+        this.content = content;
         this.surface = hud;
-        hud.content(content);
 
 //        initContent = content;
 //        this.surface = hud;
@@ -72,15 +74,12 @@ public class ZoomOrtho extends Ortho {
 //        });
     }
 
-
-//    @Override
-//    public void start(SpaceGraph s) {
-//        super.start(s);
-//
-//        //window.window.setUndecorated(true);
-//    }
-
-
+    @Override
+    public void start(JoglSpace s) {
+        super.start(s);
+        hud.parent = this;
+        hud.add(content);
+    }
 
 //    int windowMinWidth = 64;
 //    int windowMinHeight = 64;
@@ -333,6 +332,11 @@ public class ZoomOrtho extends Ortho {
         }
 
         @Override
+        public boolean tangible() {
+            return false;
+        }
+
+        @Override
         protected void prepaint(GL2 gl) {
 
             gl.glPushMatrix();
@@ -349,25 +353,12 @@ public class ZoomOrtho extends Ortho {
 //                Draw.rectStroke(gl, cx + -300, cy + -300, 600, 600);
 //            }
 
-            float W = w();
-            float H = h();
-            float resizeBorder = Math.max(W, H) * this.resizeBorder;
-
-            DragEdit p;
-            if ((p = potentialDragMode) != null) {
-                switch (p) {
-                    case RESIZE_SE:
-                        gl.glColor4f(1f, 0.8f, 0f, 0.5f);
-                        Draw.quad2d(gl, pmx, pmy, W, resizeBorder, W, 0, W - resizeBorder, 0);
-                        break;
-                    case RESIZE_SW:
-                        gl.glColor4f(1f, 0.8f, 0f, 0.5f);
-                        Draw.quad2d(gl, pmx, pmy, 0, resizeBorder, 0, 0, resizeBorder, 0);
-                        break;
-                }
-            }
+            this.pmx = ZoomOrtho.this.pmx;
+            this.pmy = ZoomOrtho.this.pmy;
+            super.prepaint(gl);
 
         }
+
 
         @Override
         protected void postpaint(GL2 gl) {
@@ -395,6 +386,7 @@ public class ZoomOrtho extends Ortho {
 //        }
 
 
+
         @Override
         public Surface onTouch(Finger finger, short[] buttons) {
 
@@ -415,10 +407,10 @@ public class ZoomOrtho extends Ortho {
             return x;
         }
 
-        @Override
-        public boolean fingeringWindow(Surface childFingered) {
-            return childFingered!=this && childFingered!=null;
-        }
+//        @Override
+//        public boolean fingeringWindow(Surface childFingered) {
+//            return childFingered!=this && childFingered!=null;
+//        }
 
         @Override
         public boolean fingeringBounds(Finger finger) {
@@ -443,6 +435,7 @@ public class ZoomOrtho extends Ortho {
             return window.getHeight();
         }
     }
+
 
 }
 //    @Override
