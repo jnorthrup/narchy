@@ -197,7 +197,7 @@ public class Vec2 extends v2 {
     /**
      * Return a copy of this vector.
      */
-    public final Tuple2f clone() {
+    public final v2 clone() {
         return new v2(x, y);
     }
 

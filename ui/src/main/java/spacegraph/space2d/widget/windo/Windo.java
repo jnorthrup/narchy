@@ -62,7 +62,6 @@ public class Windo extends Stacking {
 //                //            this.potentialDragMode = null;
 //                other = c; //something else or a child inside of the content
 //            }
-
         }
 
 //        if (finger == null)
@@ -148,7 +147,7 @@ public class Windo extends Stacking {
 
             if (buttons != null && buttons.length > 0 && buttons[ZoomOrtho.PAN_BUTTON] == 1) {
                 //actual drag mode enabled
-                FingerDragging d = (FingerDragging) fingering(potentialDragMode);
+                FingerDragging d = potentialDragMode!=null ? (FingerDragging) fingering(potentialDragMode) : null;
                 if (d != null && finger.tryFingering(d)) {
                     System.out.println(this + " ON " + d);
                     this.dragMode = d;
@@ -166,7 +165,7 @@ public class Windo extends Stacking {
 
     public boolean fingeringBounds(Finger finger) {
         v2 f;
-        return (f = finger.posGlobal)!= null && bounds.contains(f.x, f.y);
+        return (f = finger.pos)!= null && bounds.contains(f.x, f.y);
     }
 
     public v2 windowHitPointRel(Finger finger) {
@@ -184,9 +183,13 @@ public class Windo extends Stacking {
                 return fingeringMove();
 
             default:
-                return new FingerResize(this, mode);
+                return fingeringResize(mode);
         }
 
+    }
+
+    protected FingerResize fingeringResize(DragEdit mode) {
+        return new FingerResizeSurface(this, mode);
     }
 
     protected Fingering fingeringMove() {

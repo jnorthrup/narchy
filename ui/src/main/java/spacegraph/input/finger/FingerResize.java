@@ -1,47 +1,51 @@
 package spacegraph.input.finger;
 
 import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 
-/**
- * resizes a rectangular surface in one of the four cardinal or four diagonal directions
- */
-public class FingerResize extends FingerDragging {
-
+public abstract class FingerResize extends FingerDragging {
     protected final static float aspectRatioRatioLimit = 0.1f;
-
-    private final Surface resized;
-    private final Windo.DragEdit mode;
-
+    protected final Windo.DragEdit mode;
     private RectFloat2D before;
 
-    public FingerResize(Surface target, Windo.DragEdit mode) {
-        super(0);
-        this.resized = target;
+    private v2 posStart;
+
+    public FingerResize(int button, Windo.DragEdit mode) {
+        super(button);
         this.mode = mode;
+
+
+    }
+
+    @Override
+    public boolean start(Finger f) {
+        if (super.start(f)) {
+            this.posStart = pos(f);
+            this.before = size();
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public boolean drag(Finger finger) {
 
-        v2 hitOnDown = finger.hitOnDown[button];
-        if (hitOnDown == null)
-            return false; //unknown hit
-
         if (before == null)
-            this.before = resized.bounds;
+            return true; //not init'd yet
 
-        float fx = finger.pos.x;
-        float fy = finger.pos.y;
+        v2 pos = this.pos(finger);
+        float fx = pos.x;
+        float fy = pos.y;
 
         switch (mode) {
             case RESIZE_S: {
                 float bh = before.h;
                 float bottom = before.bottom();
-                float ty = (fy - hitOnDown.y);
-                resized.pos(
+                float ty = (fy - posStart.y);
+                resize(
                         before.left(),
                         Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh + ty),
                         before.right(),
@@ -52,8 +56,8 @@ public class FingerResize extends FingerDragging {
             case RESIZE_N: {
                 float top = before.top();
                 float bh = before.h;
-                float ty = (fy - hitOnDown.y);
-                resized.pos(
+                float ty = (fy - posStart.y);
+                resize(
                         before.left(),
                         top,
                         before.right(),
@@ -68,9 +72,10 @@ public class FingerResize extends FingerDragging {
                 float pmy = before.top();
                 float bw = before.w;
                 float bh = before.h;
-                float tx = (fx - hitOnDown.x);
-                float ty = (fy - hitOnDown.y);
-                resized.pos(
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
+                System.out.println(posStart + " " + pos);
+                resize(
                         pmx,
                         pmy,
                         Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
@@ -81,8 +86,8 @@ public class FingerResize extends FingerDragging {
             case RESIZE_E: {
                 float pmx = before.left();
                 float bw = before.w;
-                float tx = (fx - hitOnDown.x);
-                resized.pos(
+                float tx = (fx - posStart.x);
+                resize(
                         pmx,
                         before.top(),
                         Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
@@ -97,9 +102,9 @@ public class FingerResize extends FingerDragging {
                 float pmy = before.bottom();
                 float bw = before.w;
                 float bh = before.h;
-                float tx = (fx - hitOnDown.x);
-                float ty = (fy - hitOnDown.y);
-                resized.pos(pmx - bw + tx, pmy - bh + ty, pmx, pmy); //TODO limit aspect ratio change
+                float tx = (fx - posStart.x);
+                float ty = (fy - posStart.y);
+                resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy); //TODO limit aspect ratio change
             }
             break;
 
@@ -112,4 +117,10 @@ public class FingerResize extends FingerDragging {
         return true;
     }
 
+    abstract protected v2 pos(Finger finger);
+
+    /** current size */
+    protected abstract RectFloat2D size();
+
+    protected abstract void resize(float x1, float y1, float x2, float y2);
 }

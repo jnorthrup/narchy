@@ -829,6 +829,11 @@ public class PhyWall extends Wall implements Animated {
 
             }
         }
+
+        @Override
+        public boolean tangible() {
+            return true;
+        }
     }
 
 

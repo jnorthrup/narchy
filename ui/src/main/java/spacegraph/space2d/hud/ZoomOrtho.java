@@ -4,6 +4,8 @@ import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerResize;
+import spacegraph.input.finger.FingerResizeWindow;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
@@ -117,19 +119,12 @@ public class ZoomOrtho extends Ortho {
         super.mouseMoved(e);
 
 
-        int windowWidth = window.getWidth();
+//        int windowWidth = window.getWidth();
         int windowHeight = window.getHeight();
         pmx = e.getX();
         pmy = windowHeight - e.getY();
         finger.posGlobal.set(pmx, pmy);
 
-        if ((pmx < Windo.resizeBorder) && (pmy < Windo.resizeBorder)) {
-            hud.potentialDragMode = Windo.DragEdit.RESIZE_SW; //&& window.isResizable()
-        } else if ((pmx > windowWidth - Windo.resizeBorder) && (pmy < Windo.resizeBorder)) {
-            hud.potentialDragMode = Windo.DragEdit.RESIZE_SE;  //&& window.isResizable()
-        } else {
-            hud.potentialDragMode = Windo.DragEdit.MOVE;
-        }
     }
 
     @Override
@@ -325,6 +320,10 @@ public class ZoomOrtho extends Ortho {
 //        final Widget bottomRightMenu = new Widget() {
 //
 //        };
+
+        @Override protected FingerResize fingeringResize(Windo.DragEdit mode) {
+            return new FingerResizeWindow(window, 0, mode);
+        }
 
         @Override
         public boolean opaque() {

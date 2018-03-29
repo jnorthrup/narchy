@@ -675,7 +675,7 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
 //        }
 //    }
 
-    public Tuple2f clone() {
+    public v2 clone() {
         return new v2(x, y);
     }
     public final void absLocal() {
