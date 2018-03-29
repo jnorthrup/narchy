@@ -6,6 +6,7 @@ import jcog.Util;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
+import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,7 +43,9 @@ public class ZoomOrtho extends Ortho {
 
 
     public ZoomOrtho(Surface content) {
-        super(content);
+        super();
+        this.surface = hud;
+        hud.content(content);
 
 //        initContent = content;
 //        this.surface = hud;
@@ -345,6 +348,25 @@ public class ZoomOrtho extends Ortho {
 //                Draw.rectStroke(gl, cx + -200, cy + -200, 400, 400);
 //                Draw.rectStroke(gl, cx + -300, cy + -300, 600, 600);
 //            }
+
+            float W = w();
+            float H = h();
+            float resizeBorder = Math.max(W, H) * this.resizeBorder;
+
+            DragEdit p;
+            if ((p = potentialDragMode) != null) {
+                switch (p) {
+                    case RESIZE_SE:
+                        gl.glColor4f(1f, 0.8f, 0f, 0.5f);
+                        Draw.quad2d(gl, pmx, pmy, W, resizeBorder, W, 0, W - resizeBorder, 0);
+                        break;
+                    case RESIZE_SW:
+                        gl.glColor4f(1f, 0.8f, 0f, 0.5f);
+                        Draw.quad2d(gl, pmx, pmy, 0, resizeBorder, 0, 0, resizeBorder, 0);
+                        break;
+                }
+            }
+
         }
 
         @Override
@@ -390,15 +412,25 @@ public class ZoomOrtho extends Ortho {
             }
 
             Surface x = super.onTouch(finger, buttons);
-            if (x == this) {
-                return null; //pass-thru
-            } else
-                return x;
+            return x;
         }
 
         @Override
-        public boolean fingerable() {
-            return false; //prevent drag the HUD itself
+        public boolean fingeringWindow(Surface childFingered) {
+            return childFingered!=this && childFingered!=null;
+        }
+
+        @Override
+        public boolean fingeringBounds(Finger finger) {
+            //TODO if mouse cursor is in window
+            return true;
+        }
+
+        public v2 windowHitPointRel(Finger finger) {
+            v2 v = new v2(finger.posGlobal);
+            v.x = v.x/w(); //normalize
+            v.y = v.y/h();
+            return v;
         }
 
         @Override

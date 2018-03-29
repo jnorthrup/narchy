@@ -5,6 +5,8 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.windo.PhyWall;
 
+import javax.swing.*;
+
 /**
  * Created by me on 11/13/16.
  */
@@ -16,9 +18,10 @@ public class SSHSurface extends AWTSurface {
 
     public static void main(String[] args) {
 
-
         PhyWall w = SpaceGraph.wall(800, 600);
         w.put(new Gridding(new SSHSurface()), 8, 6);
+        w.put(new Gridding(new AWTSurface(new JColorChooser(), 200, 200)),
+                3, 3);
 
     }
 

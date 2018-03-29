@@ -385,10 +385,10 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 		return pair.pProxy0.uid == proxyId1 && pair.pProxy1.uid == proxyId2;
 	}
 
-	public static int getHash1(int seed, int hash) {
-		/** from clojure.Util */
-		return seed ^ ( hash + 0x9e3779b9 + (seed << 6) + (seed >> 2) );
-	}
+//	public static int getHash1(int seed, int hash) {
+//		/** from clojure.Util */
+//		return seed ^ ( hash + 0x9e3779b9 + (seed << 6) + (seed >> 2) );
+//	}
 
 	public static int getHash(int proxyId1, int proxyId2) {
 

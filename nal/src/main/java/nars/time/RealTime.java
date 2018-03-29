@@ -14,7 +14,7 @@ public abstract class RealTime extends Time {
 
 
     private final int unitsPerSecod;
-    volatile long t;
+    /*volatile */ long t;
     private long start;
 
     final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000; //???

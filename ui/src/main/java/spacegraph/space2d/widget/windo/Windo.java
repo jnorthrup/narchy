@@ -18,22 +18,10 @@ import static spacegraph.space2d.widget.windo.Windo.DragEdit.MOVE;
  */
 public class Windo extends Widget {
 
-    public enum DragEdit {
-        MOVE,
-        RESIZE_N, RESIZE_E, RESIZE_S, RESIZE_W,
-        RESIZE_NW,
-        RESIZE_SW,
-        RESIZE_NE,
-        RESIZE_SE
-    }
-
+    public final static float resizeBorder = 0.1f;
     public Fingering dragMode = null;
     public DragEdit potentialDragMode = null;
-
-    public final static float resizeBorder = 0.1f;
-
     protected boolean hover;
-
 
     public Windo() {
         super();
@@ -62,106 +50,125 @@ public class Windo extends Widget {
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
 
-        if (!fingerable())
-            return super.onTouch(finger, buttons); //pass-through
+        Surface other = null;
+        if (dragMode==null) {
+            Surface c = super.onTouch(finger, buttons);
+            if (!fingerable() || fingeringWindow(c)) {
+                //            this.dragMode = null;
+                //            this.potentialDragMode = null;
+                other = c; //something else or a child inside of the content
+            }
 
+        } else {
+            other = this;
+        }
 
-        Surface c = super.onTouch(finger, buttons);
-        if (fingeringWindow(c))
-            return c; //something else or a child inside of the content
+//        if (finger == null)
+//            return null;
 
+        v2 f;
+        if (other!=null && other!=this) {
+            this.dragMode = null;
+            this.potentialDragMode = null;
+            this.hover = false;
+            return other;
+        } else if (finger == null || !fingeringBounds(finger)) {
 
-        if (finger != null) {
-            float fx = finger.pos.x;
-            float fy = finger.pos.y;
+            if (finger == null)
+                return (dragMode!=null ? this : null);
 
-            if (dragMode == null && !bounds.contains(fx, fy)) {
-                //???
-            } else {
+            this.dragMode = null;
+            this.potentialDragMode = null;
+            this.hover = false;
+            return null;
+        } else {
 
-                //if (moveable()) System.out.println(bounds + "\thit=" + finger.hit + "\thitGlobal=" + finger.hitGlobal);
-                v2 hitPoint = finger.relativePos(this);
+            DragEdit potentialDragMode = null;
 
-                hover = true;
+            //if (moveable()) System.out.println(bounds + "\thit=" + finger.hit + "\thitGlobal=" + finger.hitGlobal);
+            v2 hitPoint = windowHitPointRel(finger);
 
-                if (dragMode == null && !finger.prevButtonDown[ZoomOrtho.PAN_BUTTON] /* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
+            this.hover = true;
 
-                    potentialDragMode = null;
+            //if (dragMode == null && !finger.prevButtonDown[ZoomOrtho.PAN_BUTTON] /* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
+            {
 
-                    if (potentialDragMode == null && hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
-                        if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_S;
-                        }
-                        if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_N;
-                        }
+                if (potentialDragMode == null && hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
+                    if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                        potentialDragMode = DragEdit.RESIZE_S;
                     }
-
-                    if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
-                        if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_W;
-                        }
-                        if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_E;
-                        }
+                    if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                        potentialDragMode = DragEdit.RESIZE_N;
                     }
+                }
 
+                if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
                     if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-                        if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_SW;
-                        }
-                        if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_NW;
-                        }
+                        potentialDragMode = DragEdit.RESIZE_W;
                     }
-
                     if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-
-                        if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_SE;
-                        }
-                        if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                            potentialDragMode = DragEdit.RESIZE_NE;
-                        }
+                        potentialDragMode = DragEdit.RESIZE_E;
                     }
-
-
-                    if (potentialDragMode == null)
-                        potentialDragMode = MOVE;
                 }
 
+                if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
+                    if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                        potentialDragMode = DragEdit.RESIZE_SW;
+                    }
+                    if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                        potentialDragMode = DragEdit.RESIZE_NW;
+                    }
+                }
 
-                boolean bDrag = buttons != null && buttons.length > 0 && buttons[ZoomOrtho.PAN_BUTTON] == 1;
-                if (bDrag) {
-                    if (dragMode == null && potentialDragMode != null) {
+                if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
 
-                        if (fingerable(potentialDragMode)) {
-                            Fingering d = fingering(potentialDragMode);
-                            if (d != null && finger.tryFingering(d)) {
-                                dragMode = d;
-                                return this;
-                            }
-                        }
+                    if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                        potentialDragMode = DragEdit.RESIZE_SE;
+                    }
+                    if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                        potentialDragMode = DragEdit.RESIZE_NE;
                     }
                 }
 
 
+                if (potentialDragMode == null)
+                    potentialDragMode = MOVE;
             }
 
 
+            if (!fingerable(potentialDragMode))
+                potentialDragMode = null;
+
+            this.potentialDragMode = potentialDragMode;
+
+            if (buttons != null && buttons.length > 0 && buttons[ZoomOrtho.PAN_BUTTON] == 1) {
+                //actual drag mode enabled
+                Fingering d = fingering(potentialDragMode);
+                if (d != null && finger.tryFingering(d)) {
+                    this.dragMode = d;
+                } else {
+                    this.dragMode = null;
+                }
+            }
+
+
+            return this;
         }
 
 
-        hover = false;
-        potentialDragMode = null;
-        dragMode = null;
+    }
 
+    public boolean fingeringBounds(Finger finger) {
+        v2 f;
+        return (f = finger.posGlobal)!= null && bounds.contains(f.x, f.y);
+    }
 
-        return c;
+    public v2 windowHitPointRel(Finger finger) {
+        return finger.relativePos(this);
     }
 
     public boolean fingeringWindow(Surface childFingered) {
-        return childFingered !=this && childFingered !=null && childFingered !=this.get();
+        return childFingered != this && childFingered != null && childFingered != this.get();
     }
 
     protected Fingering fingering(DragEdit mode) {
@@ -192,7 +199,6 @@ public class Windo extends Widget {
         return true;
     }
 
-
     protected void prepaint(GL2 gl) {
 
     }
@@ -201,7 +207,9 @@ public class Windo extends Widget {
 
     }
 
-    /** gets main content */
+    /**
+     * gets main content
+     */
     public Surface get() {
         return content.children()[0];
         //return ((UnitContainer) content.children()[0]).the;
@@ -225,22 +233,6 @@ public class Windo extends Widget {
 //        Draw.line(gl, W, 0, W, H);
 //        Draw.line(gl, 0, H, W, H);
 
-//        float resizeBorder = Math.max(W, H) * this.resizeBorder;
-
-        DragEdit p;
-        if ((p = potentialDragMode) != null) {
-            switch (p) {
-                case RESIZE_SE:
-                    //gl.glColor4f(1f, 0.8f, 0f, 0.5f);
-                    //Draw.quad2d(gl, pmx, pmy, W, resizeBorder, W, 0, W - resizeBorder, 0);
-                    break;
-                case RESIZE_SW:
-                    //gl.glColor4f(1f, 0.8f, 0f, 0.5f);
-                    //Draw.quad2d(gl, pmx, pmy, 0, resizeBorder, 0, 0, resizeBorder, 0);
-                    break;
-            }
-        }
-
 
 //            gl.glLineWidth(2);
 //            gl.glColor3f(0.8f, 0.5f, 0);
@@ -254,7 +246,7 @@ public class Windo extends Widget {
     }
 
     protected void paintBack(GL2 gl) {
-        if (hover && opaque() && potentialDragMode!=null) {
+        if (hover && opaque() && potentialDragMode != null) {
             switch (potentialDragMode) {
                 case RESIZE_N:
                 case RESIZE_S:
@@ -276,6 +268,15 @@ public class Windo extends Widget {
             }
             Draw.rect(gl, x(), y(), w(), h());
         }
+    }
+
+    public enum DragEdit {
+        MOVE,
+        RESIZE_N, RESIZE_E, RESIZE_S, RESIZE_W,
+        RESIZE_NW,
+        RESIZE_SW,
+        RESIZE_NE,
+        RESIZE_SE
     }
 
 

@@ -1,8 +1,8 @@
 package jcog.data.graph;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.google.common.graph.SuccessorsFunction;
+
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -11,22 +11,46 @@ import java.util.stream.Stream;
  * graph rooted in a set of vertices (nodes),
  * providing access to edges only indirectly through them
  * (ie. the edges are not stored in their own index but only secondarily as part of the vertices)
- *
+ * <p>
  * TODO abstract into subclasses:
- *      HashNodeGraph backed by HashMap node and edge containers
- *      BagNodeGraph backed by Bag's/Bagregate's
- *
- *      then replace TermWidget/EDraw stuff with BagNodeGraph
+ * HashNodeGraph backed by HashMap node and edge containers
+ * BagNodeGraph backed by Bag's/Bagregate's
+ * <p>
+ * then replace TermWidget/EDraw stuff with BagNodeGraph
  */
 public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
-    protected final Map<N, Node<N,E>> nodes;
+    protected final Map<N, Node<N, E>> nodes;
 
     public MapNodeGraph() {
         this(new LinkedHashMap<>());
     }
 
-    public MapNodeGraph(Map<N, Node<N,E>> nodes) {
+    public MapNodeGraph(SuccessorsFunction<N> s, Iterable<N> start) {
+        this();
+        Set<N> traversed = new HashSet();
+        ArrayDeque<N> queue = new ArrayDeque();
+        start.forEach(queue::add);
+
+        N x;
+        while ((x = queue.poll()) != null) {
+            {
+
+                NodeGraph.MutableNode<N, E> xx = addNode(x);
+                Iterable<? extends N> xs = s.successors(x);
+                System.out.println(x + " " + xs);
+                xs.forEach(y -> {
+                    if (traversed.add(y))
+                        queue.add(y);
+
+                    addEdge(xx, (E) "->" /* HACK */, addNode(y));
+                });
+            }
+
+        }
+    }
+
+    public MapNodeGraph(Map<N, Node<N, E>> nodes) {
         this.nodes = nodes;
     }
 
@@ -37,7 +61,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     public boolean removeNode(N key) {
         Node<N, E> removed = nodes.remove(key);
-        if (removed!=null) {
+        if (removed != null) {
             onRemoved(removed);
             return true;
         }
@@ -64,14 +88,15 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     @Override
-    protected Node<N,E> newNode(N data) {
+    protected Node<N, E> newNode(N data) {
         return MutableNode.withEdgeSets(data);
     }
 
-    protected void onAdd(Node<N,E> r) {
+    protected void onAdd(Node<N, E> r) {
 
     }
-    protected void onRemoved(Node<N,E> r) {
+
+    protected void onRemoved(Node<N, E> r) {
 
     }
 
@@ -86,7 +111,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
             throw new NullPointerException();
         if (!(t instanceof NodeGraph.MutableNode))
             throw new UnsupportedOperationException();
-        return addEdge((MutableNode)f, data, (MutableNode)t);
+        return addEdge((MutableNode) f, data, (MutableNode) t);
     }
 
     public boolean addEdge(MutableNode<N, E> from, E data, MutableNode<N, E> to) {
@@ -99,31 +124,31 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return false;
     }
 
-    @Override public Node<N, E> node(Object key) {
+    @Override
+    public Node<N, E> node(Object key) {
         return nodes.get(key);
     }
 
-    public Collection<Node<N,E>> nodes() {
+    public Collection<Node<N, E>> nodes() {
         return nodes.values();
     }
 
     @Override
-    public void forEachNode(Consumer<Node<N,E>> n) {
+    public void forEachNode(Consumer<Node<N, E>> n) {
         nodes.values().forEach(n);
     }
 
     public boolean edgeRemove(ImmutableDirectedEdge<N, E> e) {
-        if (((MutableNode)e.from).removeOut(e)) {
-            boolean removed = ((MutableNode)e.to).removeIn(e);
-            assert(removed);
+        if (((MutableNode) e.from).removeOut(e)) {
+            boolean removed = ((MutableNode) e.to).removeIn(e);
+            assert (removed);
             return true;
         }
         return false;
     }
 
 
-
-    public Stream<ImmutableDirectedEdge<N,E>> edges() {
+    public Stream<ImmutableDirectedEdge<N, E>> edges() {
         return nodes().stream().flatMap(Node::streamOut);
     }
 
@@ -132,17 +157,21 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
         StringBuilder s = new StringBuilder();
         s.append("Nodes: ");
-        for (Node<N,E> n : nodes()) {
-            s.append(n.toString()).append('\n');
+        for (Node<N, E> n : nodes()) {
+            s.append(n).append('\n');
         }
 
         s.append("Edges: ");
 
         edges().forEach(e -> {
-            s.append(e.toString()).append('\n');
+            s.append(e).append('\n');
         });
 
         return s.toString();
+    }
+
+    public boolean containsNode(N x) {
+        return nodes.containsKey(x);
     }
 
 //    /**

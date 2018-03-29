@@ -17,14 +17,11 @@ import static spacegraph.util.math.v3.v;
  */
 public class ForceDirected implements spacegraph.space3d.phys.constraint.BroadConstraint {
 
-    public static final int clusters =
-            1;
-            //13;
-
+    private final int iterations;
     boolean center = true;
 
-    public final FloatRange repel = new FloatRange(8f, 0, 16f);
-    public final FloatRange attraction = new FloatRange(0.1f, 0, 3f);
+    public final FloatRange repel = new FloatRange(14f, 0, 32f);
+    public final FloatRange attraction = new FloatRange(0.05f, 0, 3f);
 
 
 
@@ -59,6 +56,7 @@ public class ForceDirected implements spacegraph.space3d.phys.constraint.BroadCo
         boundsMin = v(-r, -r, -r);
         boundsMax = v(+r, +r, +r);
         maxRepelDist = r*2;
+        iterations = 1;
     }
 
 
@@ -69,42 +67,48 @@ public class ForceDirected implements spacegraph.space3d.phys.constraint.BroadCo
         if (n == 0)
             return;
 
-        objects.forEach(c -> {
-            Spatial x = ((Spatial) c.data());
-            if (x!=null)
-                x.stabilize(boundsMin, boundsMax);
-        });
+        for (int iter = 0; iter < iterations; iter++) {
 
-        //System.out.print("Force direct " + objects.size() + ": ");
-        //final int[] count = {0};
-        //count[0] += l.size();
-//System.out.print(l.size() + "  ");
-        b.forEach((int) Math.ceil((float) n / clusters), objects, this::batch);
-        //System.out.println(" total=" + count[0]);
+            objects.forEach(c -> {
+                Spatial x = ((Spatial) c.data());
+                if (x != null)
+                    x.stabilize(boundsMin, boundsMax);
+            });
+
+            //System.out.print("Force direct " + objects.size() + ": ");
+            //final int[] count = {0};
+            //count[0] += l.size();
+            //System.out.print(l.size() + "  ");
+            int clusters = (int) Math.ceil(/*Math.log*/(((float)n) / 32));
+            if (clusters % 2 == 0)
+                clusters++; //odd to break symmetry
+
+            b.forEach((int) Math.ceil((float) n / clusters), objects, this::batch);
+            //System.out.println(" total=" + count[0]);
 
 
-        if (center) {
-            float cx = 0, cy = 0, cz = 0;
-            for (int i = 0, objectsSize = n; i < objectsSize; i++) {
-                v3 c = objects.get(i).transform;
-                cx += c.x;
-                cy += c.y;
-                cz += c.z;
+            if (center) {
+                float cx = 0, cy = 0, cz = 0;
+                for (int i = 0, objectsSize = n; i < objectsSize; i++) {
+                    v3 c = objects.get(i).transform;
+                    cx += c.x;
+                    cy += c.y;
+                    cz += c.z;
+                }
+                cx /= -n;
+                cy /= -n;
+                cz /= -n;
+
+                v3 correction = v3.v(cx, cy, cz);
+                if (correction.lengthSquared() > centerSpeed * centerSpeed)
+                    correction.normalize(centerSpeed);
+
+                for (int i = 0, objectsSize = n; i < objectsSize; i++) {
+                    objects.get(i).transform.add(correction);
+                }
+
             }
-            cx /= -n;
-            cy /= -n;
-            cz /= -n;
-
-            v3 correction = v3.v(cx, cy, cz);
-            if (correction.lengthSquared() > centerSpeed*centerSpeed)
-                correction.normalize(centerSpeed);
-
-            for (int i = 0, objectsSize = n; i < objectsSize; i++) {
-                objects.get(i).transform.add(correction);
-            }
-
         }
-
 
     }
 
@@ -136,8 +140,14 @@ public class ForceDirected implements spacegraph.space3d.phys.constraint.BroadCo
 
 
         delta.normalize();
-        //delta.scale((speed / (1 + /&xp.mass() /* + yp.mass()*/) ) * len );
-        delta.scale( /*(float)(len) * */  speed );
+
+        //constant speed
+        //delta.scale( speed );
+
+        //speed proportional to length
+        float len = (float) Math.sqrt(lenSq);
+        delta.scale( Math.min(len, len*  speed ) );
+
         ((Body3D) x).velAdd(delta);
         //delta2.scale(-(speed * (yp.mass() /* + yp.mass()*/) ) * len  );
         delta.scale(-1 );

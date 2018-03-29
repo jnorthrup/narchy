@@ -163,6 +163,6 @@ public class UnionFind {
 		public int sz;
 	}
 
-	private static final Comparator<Element> elementComparator = (o1, o2) -> o1.id < o2.id? -1 : +1;
+	private static final Comparator<Element> elementComparator = Comparator.comparingInt(o -> o.id);
 
 }

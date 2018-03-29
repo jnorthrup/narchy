@@ -1,6 +1,5 @@
 package spacegraph.space2d.container;
 
-import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 
@@ -11,7 +10,7 @@ public abstract class UnitContainer extends Container {
 
     public final Surface the;
 
-    protected UnitContainer(@NotNull Surface the) {
+    protected UnitContainer(Surface the) {
         this.the = the;
     }
 
@@ -44,10 +43,7 @@ public abstract class UnitContainer extends Container {
     }
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        if (the.parent!=null)
-            return o.test(the);
-        else
-            return true;
+        return the.parent == null || o.test(the);
     }
 
     @Override

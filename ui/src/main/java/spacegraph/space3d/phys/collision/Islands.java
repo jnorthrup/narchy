@@ -108,7 +108,6 @@ public class Islands {
     }
 
     private static int getIslandId(PersistentManifold lhs) {
-        int islandId;
         Collidable rcolObj0 = (Collidable) lhs.getBody0();
         int t0 = rcolObj0.tag();
         if (t0 >= 0) return t0;
@@ -349,6 +348,6 @@ public class Islands {
     }
 
     private static final Comparator<PersistentManifold> persistentManifoldComparator = (lhs, rhs) ->
-            getIslandId(lhs) < getIslandId(rhs) ? -1 : +1;
+            lhs == rhs ? 0 : Integer.compare(getIslandId(lhs), getIslandId(rhs));
 
 }

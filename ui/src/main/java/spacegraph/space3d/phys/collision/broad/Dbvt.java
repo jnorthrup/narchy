@@ -44,7 +44,7 @@ import java.util.List;
  */
 public final class Dbvt {
 	
-	public static final int SIMPLE_STACKSIZE = 64;
+	public static final int SIMPLE_STACKSIZE = 1024;
 	public static final int DOUBLE_STACKSIZE = SIMPLE_STACKSIZE * 2;
 	
 	public Node root;
@@ -102,7 +102,9 @@ public final class Dbvt {
 				int bit = 0;
 				while (node.isinternal()) {
 					root_ref[0] = root;
-					node = sort(node, root_ref).childs[(opath >>> bit) & 1];
+					Node nextNode = sort(node, root_ref).childs[(opath >>> bit) & 1];
+					assert(nextNode!=node);
+					node = nextNode;
 					root = root_ref[0];
 					
 					bit = (bit + 1) & (/*sizeof(unsigned)*/4 * 8 - 1);
@@ -110,7 +112,7 @@ public final class Dbvt {
 				update(node);
 				++opath;
 			}
-			while ((--passes) != 0);
+			while ((--passes) > 0);
 		}
 	}
 
@@ -846,7 +848,7 @@ public final class Dbvt {
 
 	private static Node sort(Node n, Node[] r) {
 		Node p = n.parent;
-		assert (n.isinternal());
+		//assert (n.isinternal());
 		// JAVA TODO: fix this
 		if (p != null && p.hashCode() > n.hashCode()) {
 			int i = indexof(n);
@@ -888,7 +890,7 @@ public final class Dbvt {
 	public static final class Node {
 		public final DbvtAabbMm volume = new DbvtAabbMm();
 		public Node parent;
-		public final Node[] childs = new Node[2];
+		final Node[] childs = new Node[2];
 		public DbvtProxy data;
 
 		public boolean isLeaf() {
@@ -902,15 +904,12 @@ public final class Dbvt {
 
 		/** recursively collets all leaves  */
 		public final void leaves(Collection<Collidable> l) {
-
 			if (data!=null) {
 				l.add(data.data);
 			} else {
-				for (Node x : childs) {
+				for (Node x : childs)
 					x.leaves(l);
-				}
 			}
-
 		}
 	}
 	

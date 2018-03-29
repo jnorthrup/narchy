@@ -15,6 +15,7 @@ import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
 import java.util.List;
+import java.util.Objects;
 
 import static spacegraph.space2d.phys.fracture.Material.CIRCLEVERTICES;
 
@@ -285,10 +286,6 @@ public class Fracture {
 
     @Override
     public int hashCode() {
-        if (f1.polygon != null) {
-            return f1.polygon.hashCode();
-        } else {
-            return f1.hashCode();
-        }
+        return Objects.requireNonNullElse(f1.polygon, f1).hashCode();
     }
 }

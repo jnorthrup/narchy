@@ -102,6 +102,6 @@ public class ContactID implements Comparable<ContactID> {
 
     @Override
     public int compareTo(ContactID o) {
-        return getKey() - o.getKey();
+        return Integer.compare(getKey(), o.getKey()); //getKey() - o.getKey();
     }
 }

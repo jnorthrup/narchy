@@ -58,7 +58,7 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
     protected GameAnimatorControl a;
     protected GL2 gl;
     protected long dtMS = System.currentTimeMillis();
-    private long lastRenderMS = System.currentTimeMillis();
+//    private long lastRenderMS = System.currentTimeMillis();
     private long lastUpdateMS = System.currentTimeMillis();
 
 
@@ -250,9 +250,9 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
             return; //already reading
 
         try {
-            long nowMS = System.currentTimeMillis(), dtMS = nowMS - lastRenderMS;
-            if (dtMS > Integer.MAX_VALUE) dtMS = Integer.MAX_VALUE;
-            this.lastRenderMS = nowMS;
+//            long nowMS = System.currentTimeMillis(), dtMS = nowMS - lastRenderMS;
+//            if (dtMS > Integer.MAX_VALUE) dtMS = Integer.MAX_VALUE;
+//            this.lastRenderMS = nowMS;
 
             render((int) dtMS);
             ready.set(true);

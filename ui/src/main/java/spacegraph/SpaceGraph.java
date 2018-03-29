@@ -1,5 +1,6 @@
 package spacegraph;
 
+import com.jogamp.newt.opengl.GLWindow;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.space2d.SpaceGraphFlat;
@@ -19,10 +20,6 @@ import spacegraph.video.JoglSpace;
 import java.util.function.Supplier;
 
 public enum SpaceGraph { ;
-
-
-
-
 
 
     /** creates window with 2d with single surface layer, maximized to the size of the window */
@@ -96,7 +93,7 @@ public enum SpaceGraph { ;
 //                0.1f
 //        ));
 
-        new SpaceGraphFlat(
+        GLWindow win = new SpaceGraphFlat(
                 new ZoomOrtho(s) {
 
                     @Override
@@ -122,6 +119,7 @@ public enum SpaceGraph { ;
                 hud
         ).show(width, height);
 
+        //win.setUndecorated(true);
         return s;
     }
 }

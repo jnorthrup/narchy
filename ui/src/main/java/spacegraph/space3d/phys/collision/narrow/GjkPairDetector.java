@@ -209,8 +209,8 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
                             cachedSeparatingAxis.y,
                             cachedSeparatingAxis.z,
                             squaredDistance,
-                            minkowskiA.getShapeType(),
-                            minkowskiB.getShapeType());
+                            minkowskiA.getShapeType().ordinal(),
+                            minkowskiB.getShapeType().ordinal());
                 }
                 //#endif
                 break;
