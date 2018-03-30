@@ -58,7 +58,7 @@ public class MultiTrack extends Widget {
             //super.paintBack(gl);
             //gl.glColor3f(0.8f, 0.5f, 0f);
             Draw.colorHash(gl, this);
-            Draw.rect(gl, x(), y(), w(), h());
+            Draw.rect(gl, bounds);
         }
     }
 

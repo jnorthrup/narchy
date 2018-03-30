@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
@@ -15,11 +16,10 @@ import static spacegraph.space2d.widget.windo.Windo.DragEdit.MOVE;
  */
 public class Windo extends Stacking {
 
-    public final static float resizeBorder = 0.1f;
+    final static float resizeBorder = 0.1f;
     public FingerDragging dragMode = null;
     public DragEdit potentialDragMode = null;
     protected boolean hover;
-    protected float pmx, pmy;
 
     public Windo() {
         super();
@@ -49,7 +49,7 @@ public class Windo extends Stacking {
     public Surface onTouch(Finger finger, short[] buttons) {
 
         if (dragMode!=null && dragMode.isStopped()) {
-            System.out.println(this + " dragMode " + dragMode + " stopped");
+            //System.out.println(this + " dragMode " + dragMode + " stopped");
             dragMode = null;
         }
 
@@ -138,10 +138,6 @@ public class Windo extends Stacking {
                 }
             }
 
-
-            this.pmx = hitPoint.x;
-            this.pmy = hitPoint.y;
-
             //System.out.println(this + " POTENTIAL " + potentialDragMode);
             this.potentialDragMode = potentialDragMode;
 
@@ -149,7 +145,7 @@ public class Windo extends Stacking {
                 //actual drag mode enabled
                 FingerDragging d = potentialDragMode!=null ? (FingerDragging) fingering(potentialDragMode) : null;
                 if (d != null && finger.tryFingering(d)) {
-                    System.out.println(this + " ON " + d);
+                    //System.out.println(this + " ON " + d);
                     this.dragMode = d;
                 } else {
                     this.dragMode = null;
@@ -196,10 +192,6 @@ public class Windo extends Stacking {
         return new FingerMove(this);
     }
 
-    public boolean fingerable() {
-        return true;
-    }
-
     public boolean fingerable(DragEdit d) {
         return true;
     }
@@ -209,16 +201,45 @@ public class Windo extends Stacking {
     }
 
 
-    protected void prepaint(GL2 gl) {
+    protected void postpaint(GL2 gl) {
 
         DragEdit p;
         if ((p = potentialDragMode) != null) {
 
-            float W = w();
-            float H = h();
-            float resizeBorder = Math.max(W, H) * this.resizeBorder;
+            float W, H;
 
+
+            gl.glPushMatrix();
+
+            v2 mousePos;
+            if (this instanceof ZoomOrtho.HUD) {
+                W = w();
+                H = h();
+                mousePos = ((Ortho)root()).finger.posGlobal;
+            } else {
+                W = H = 0.5f;
+                mousePos = ((Ortho)root()).finger.pos.clone();
+                //mousePos.scaled(W, H);
+                //mousePos.add(+W/2, +H/2); //???
+                //gl.glTranslatef(-W/2, -H/2, 0); //???
+            }
+
+            float pmx = mousePos.x;
+            float pmy = mousePos.y;
+            float resizeBorder = Math.max(W, H) * this.resizeBorder;
             switch (p) {
+                case RESIZE_N:
+                    colorDragIndicator(gl);
+                    Draw.quad2d(gl, pmx, pmy, W/2, H-resizeBorder,
+                            W/2+resizeBorder/2, H,
+                            W/2-resizeBorder/2, H);
+                    break;
+                case RESIZE_E:
+                    colorDragIndicator(gl);
+                    Draw.quad2d(gl, pmx, pmy, W-resizeBorder, H/2,
+                            W,H/2+resizeBorder/2,
+                            W,H/2-resizeBorder/2);
+                    break;
                 case RESIZE_NE:
                     colorDragIndicator(gl);
                     Draw.quad2d(gl, pmx, pmy, W, H-resizeBorder, W, H, W - resizeBorder, H);
@@ -232,6 +253,7 @@ public class Windo extends Stacking {
                     Draw.quad2d(gl, pmx, pmy, 0, resizeBorder, 0, 0, resizeBorder, 0);
                     break;
             }
+            gl.glPopMatrix();
         }
 
     }
@@ -244,16 +266,12 @@ public class Windo extends Stacking {
         }
     }
 
-    protected void postpaint(GL2 gl) {
-
-    }
-
     @Override
     protected void paintIt(GL2 gl) {
         paintBack(gl);
 
 
-        prepaint(gl);
+//        prepaint(gl);
 
 
 //        gl.glColor4f(0.8f, 0.6f, 0f, 0.25f);
@@ -279,27 +297,8 @@ public class Windo extends Stacking {
 
     protected void paintBack(GL2 gl) {
         if (opaque()) {
-//        if (hover && opaque() && potentialDragMode != null) {
-//            switch (potentialDragMode) {
-//                case RESIZE_N:
-//                case RESIZE_S:
-//                case RESIZE_W:
-//                case RESIZE_E:
-//                    gl.glColor3f(0.15f, 0f, 0.2f);
-//                    break;
-//                case RESIZE_NE:
-//                case RESIZE_SW:
-//                case RESIZE_NW:
-//                case RESIZE_SE:
-//                    gl.glColor3f(0.15f, 0.2f, 0f);
-//                    break;
-//                default:
-//                    //gl.glColor3f(0.3f, 0.3f, 0.3f);
-//                    //break;
-//                    return;
-//
-//            }
-            Draw.rect(gl, x(), y(), w(), h());
+            gl.glColor4f(0.5f,0.5f,0.5f, 0.5f);
+            Draw.rect(gl, bounds);
         }
     }
 

@@ -97,7 +97,12 @@ public class Gridding extends MutableContainer {
 
             //TODO use the 'a' value to adjust the x/y balance, currently it is not
 
-            float actualAspect = h()/ w();
+            float h = h();
+            float w = w();
+            if (w < Float.MIN_NORMAL || h < Float.MIN_NORMAL)
+                return;
+
+            float actualAspect = h / w;
 
             int x;
             int s = (int) Math.floor((float)Math.sqrt(n));

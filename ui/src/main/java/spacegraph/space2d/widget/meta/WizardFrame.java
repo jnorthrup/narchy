@@ -67,7 +67,7 @@ public class WizardFrame extends Splitting {
 
     public void close() {
         synchronized (this) {
-            ((PhyWall.PhyWindow) ((Surface) parent).parent).remove(); //HACK TODO use appropriate parent selection method
+            parent(PhyWall.PhyWindow.class).remove();
         }
 //        if (!parent(PhyWall.class).remove()) { //HACK
 //            throw new RuntimeException("not completely removed");

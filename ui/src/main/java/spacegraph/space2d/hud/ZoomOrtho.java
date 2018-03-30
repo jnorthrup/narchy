@@ -12,8 +12,6 @@ import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglSpace;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Ortho with mouse zoom controls
  */
@@ -38,7 +36,7 @@ public class ZoomOrtho extends Ortho {
     final HUD hud = new HUD();
     private int pmx, pmy;
 
-    final AtomicBoolean windowMoving = new AtomicBoolean(false);
+
 
     private int[] panStart = null;
 
@@ -83,34 +81,9 @@ public class ZoomOrtho extends Ortho {
         hud.add(content);
     }
 
-//    int windowMinWidth = 64;
-//    int windowMinHeight = 64;
-
-
-    private void moveWindow() {
-        try {
-            window.window.setPosition(moveTarget[0], moveTarget[1]);
-        } finally {
-            windowMoving.set(false);
-        }
-    }
-
     @Override
     protected boolean maximize() {
         return true;
-    }
-
-    private void resizeWindow(int x, int y, int w, int h) {
-        try {
-            //System.out.println(Arrays.toString(moveTarget) + " " + Arrays.toString(resizeTarget));
-            window.window.setSize(w, h);
-            window.window.setPosition(x, y);
-        } catch (Throwable t) {
-            t.printStackTrace();
-        } finally {
-            windowMoving.set(false);
-            surface.layout();
-        }
     }
 
     @Override
@@ -149,7 +122,7 @@ public class ZoomOrtho extends Ortho {
 
 
 
-    protected synchronized void updatePan() {
+    protected void updatePan() {
         if (!finger.isFingering()) {
 
             boolean[] bd = finger.buttonDown; //e.getButtonsDown();
@@ -183,6 +156,8 @@ public class ZoomOrtho extends Ortho {
 
                 } else if (panStart!=null) {
 
+                    //TODO use FingerDragging to implement this
+
                     int dx = mx - panStart[0];
                     int dy = my - panStart[1];
                     if (dx == 0 && dy == 0) {
@@ -198,18 +173,15 @@ public class ZoomOrtho extends Ortho {
 
                         } else if (bd[MOVE_WINDOW_BUTTON]) {
 
-                            //compute even if the window is in progress
+                            //TODO use FingerDragging to implement this
 
-                            //TODO
-//                        if (hud.dragMode == Windo.WindowDragging.MOVE) {
-//
-//
-//                            if (windowMoving.compareAndSet(false, true)) {
-//                                moveTarget[0] = windowStart[0] + dx;
-//                                moveTarget[1] = windowStart[1] + dy;
-//                                window.window.getScreen().getDisplay().getEDTUtil().invoke(true, this::moveWindow);
-//                            }
-//
+                            if (hud.potentialDragMode == Windo.DragEdit.MOVE) {
+                                //if (windowMoving.compareAndSet(false, true)) {
+                                window.window.setPosition(windowStart[0] + dx, windowStart[1] + dy);
+
+                                //}
+                            }
+
 //                        } else if (hud.dragMode == Windo.WindowDragging.RESIZE_SE) {
 //
 //                            int windowWidth = window.getWidth();
@@ -289,7 +261,7 @@ public class ZoomOrtho extends Ortho {
 
 
 
-    private class HUD extends Windo {
+    public class HUD extends Windo {
 
         float smx, smy;
 //        final CurveBag<PLink> notifications = new CurveBag(PriMerge.plus, new ConcurrentHashMap(), new XorShift128PlusRandom(1));
@@ -335,32 +307,35 @@ public class ZoomOrtho extends Ortho {
             return false;
         }
 
-        @Override
-        protected void prepaint(GL2 gl) {
-
-            gl.glPushMatrix();
-            gl.glLoadIdentity();
-
-            //            {
-//                //world coordinates alignment and scaling indicator
-//                gl.glLineWidth(2);
-//                gl.glColor3f(0.5f, 0.5f, 0.5f);
-//                float cx = wmx;
-//                float cy = wmy;
-//                Draw.rectStroke(gl, cx + -100, cy + -100, 200, 200);
-//                Draw.rectStroke(gl, cx + -200, cy + -200, 400, 400);
-//                Draw.rectStroke(gl, cx + -300, cy + -300, 600, 600);
-//            }
-
-            this.pmx = ZoomOrtho.this.pmx;
-            this.pmy = ZoomOrtho.this.pmy;
-            super.prepaint(gl);
-
-        }
+//        @Override
+//        protected void prepaint(GL2 gl) {
+//
+//            gl.glPushMatrix();
+//            gl.glLoadIdentity();
+//
+//            //            {
+////                //world coordinates alignment and scaling indicator
+////                gl.glLineWidth(2);
+////                gl.glColor3f(0.5f, 0.5f, 0.5f);
+////                float cx = wmx;
+////                float cy = wmy;
+////                Draw.rectStroke(gl, cx + -100, cy + -100, 200, 200);
+////                Draw.rectStroke(gl, cx + -200, cy + -200, 400, 400);
+////                Draw.rectStroke(gl, cx + -300, cy + -300, 600, 600);
+////            }
+//
+//            super.prepaint(gl);
+//
+//        }
 
 
         @Override
         protected void postpaint(GL2 gl) {
+            gl.glPushMatrix();
+            gl.glLoadIdentity();
+
+            super.postpaint(gl);
+
             gl.glLineWidth(8f);
 
             float ch = 175f; //TODO proportional to ortho height (pixels)

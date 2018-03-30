@@ -21,8 +21,6 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
-import spacegraph.space2d.widget.meta.AutoSurface;
-import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.Widget;
@@ -154,13 +152,7 @@ public class Shell {
 
     public static final float TERMINAL_DISPLAY_FPS = 8f;
 
-    public Shell(NAR nar) {
 
-
-        shellGL(nar);
-        //shellSwing(nar);
-
-    }
 
     public static class ConsoleWidget extends Widget {
 
@@ -227,15 +219,6 @@ public class Shell {
 
             content(console);
         }
-    }
-
-    public void shellGL(NAR nar) {
-
-        //window(Vis.top(nar), 1024, 1024);
-        //window(new AutoSurface<>(nar), 700, 600);
-
-        SpaceGraph.window(new OmniBox(), 600, 200);
-        SpaceGraph.window(new AutoSurface<>(nar.services).aspect(0.1f), 800, 800);
     }
 
 

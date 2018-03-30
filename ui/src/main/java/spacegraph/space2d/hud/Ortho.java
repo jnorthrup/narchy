@@ -43,7 +43,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     boolean visible;
 
-    final Finger finger;
+    public final Finger finger;
 
     //temporary: world mouse coord
     protected float wmy, wmx;
@@ -352,11 +352,37 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void keyPressed(KeyEvent e) {
+        //global key bindings TODO move to a separate key handler with higher priority than this
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_F2:
+                //toggle window decorations
+                window.window.setUndecorated(!window.window.isUndecorated());
+                return;
+            case KeyEvent.VK_F3:
+                //toggle fullscreen
+                boolean fullscreen = window.window.isFullscreen();
+                if(fullscreen) {
+                    window.window.setAlwaysOnBottom(false);
+                    window.window.setFullscreen(false);
+                } else {
+                    window.window.setFullscreen(true);
+                    window.window.setAlwaysOnBottom(true);
+                }
+                //TODO display message with keycode to undo it (ex: if pressed by accident)
+                return;
+            case KeyEvent.VK_F4:
+                //toggle always on top
+                window.window.setAlwaysOnTop(window.window.isAlwaysOnTop());
+                //TODO display message with keycode to undo it (ex: if pressed by accident)
+                return;
+        }
+
         setKey(e, true);
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+
         setKey(e, false);
     }
 

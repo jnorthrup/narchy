@@ -206,11 +206,6 @@ public class Vec2 extends v2 {
         return "(" + x + ',' + y + ')';
     }
 
-    /*
-     * Static
-     */
-
-
     /**
      * @see Object#hashCode()
      */

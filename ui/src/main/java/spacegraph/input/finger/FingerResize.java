@@ -74,7 +74,6 @@ public abstract class FingerResize extends FingerDragging {
                 float bh = before.h;
                 float tx = (fx - posStart.x);
                 float ty = (fy - posStart.y);
-                System.out.println(posStart + " " + pos);
                 resize(
                         pmx,
                         pmy,

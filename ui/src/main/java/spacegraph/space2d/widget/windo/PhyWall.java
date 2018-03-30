@@ -852,8 +852,8 @@ public class PhyWall extends Wall implements Animated {
         if (doubleClicking.update(finger))
             return this;
 
-        //return s!=null ? s : this;
-        return s;
+        return s!=null ? s : this;
+        //return s;
     }
 
     void doubleClick(v2 pos) {
