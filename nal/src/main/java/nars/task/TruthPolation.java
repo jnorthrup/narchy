@@ -167,6 +167,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
                         //wFreqSum += ce * x.freq;
                         wFreqSum += ee * x.freq;
                     }
+                    assert(Float.isFinite(eviSum));
                     float c = w2cSafe(eviSum);
                     if (c < Param.TRUTH_EPSILON)
                         return null;

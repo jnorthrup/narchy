@@ -3573,11 +3573,11 @@ public class KB {
             valueArgument = valueArg;
         }
 
-        @SuppressWarnings("CloneReturnsClassType")
-        @Override
-        public Object clone() {
-            return super.clone(); //To change body of generated methods, choose Tools | Templates.
-        }
+//        @SuppressWarnings("CloneReturnsClassType")
+//        @Override
+//        public Object clone() {
+//            return super.clone(); //To change body of generated methods, choose Tools | Templates.
+//        }
     }
 
     /**

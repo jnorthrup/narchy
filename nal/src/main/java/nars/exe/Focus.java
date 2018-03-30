@@ -103,7 +103,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
     @Override
     protected void onAdd(Causable causable, int slot) {
-        causable.id = slot;
+        causable.scheduledID = slot;
     }
 
     final static int WINDOW = 8;

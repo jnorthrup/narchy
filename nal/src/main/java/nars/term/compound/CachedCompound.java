@@ -2,7 +2,6 @@ package nars.term.compound;
 
 import jcog.Util;
 import nars.Op;
-import nars.Param;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -65,7 +64,7 @@ abstract public class CachedCompound implements Compound, The {
 
         @Override
         public Term concept() {
-            return !Param.COLLAPSE_VARIABLE_CONTAINING_CONCEPTS ? this : super.concept();
+            return this;
         }
 
         @Override

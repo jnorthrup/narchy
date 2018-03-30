@@ -68,12 +68,6 @@ public abstract class Param {
      */
     public static final boolean STRONG_COMPOSITION = false;
 
-    /** if true, then any variable-containing term's concept term
-     * will have all non-query variables transformed into query variables,
-     * thus making terms such as (x-->#1) and (x-->$1) share the same (x-->?1)
-     * concept.
-      */
-    public static final boolean COLLAPSE_VARIABLE_CONTAINING_CONCEPTS = false;
 
 
     @Range(min=1, max=32)

@@ -26,7 +26,6 @@ import jcog.data.sexpression.Pair;
 import nars.$;
 import nars.IO;
 import nars.Op;
-import nars.Param;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
 import nars.subterm.Subterms;
@@ -934,10 +933,6 @@ public interface Compound extends Term, IPair, Subterms {
         if (!term.op().conceptualizable)
             return Null;
 
-        if (Param.COLLAPSE_VARIABLE_CONTAINING_CONCEPTS && term.hasAny(Op.VAR_DEP, Op.VAR_INDEP)) {
-            //TODO apply at the same time as variable normalization here
-            term = term.transform(TermTransform.anyVarToQueryVar);
-        }
 
         Term term2 = term.normalize();
         if (term2!=term) {

@@ -125,12 +125,10 @@ public class IRCNLP extends IRC {
      * identical with IRCAgent, TODO share them
      */
     private class MyLeakOut extends TaskLeak {
-        private final NAR nar;
         public final String[] channels;
 
         public MyLeakOut(NAR nar, String... channels) {
             super(8, 0.05f, nar);
-            this.nar = nar;
             this.channels = channels;
         }
 

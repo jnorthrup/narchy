@@ -41,8 +41,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     public float scaleMin = 0.25f;
     public float scaleMax = 10000f;
 
-    boolean visible;
-
     public final Finger finger;
 
     //temporary: world mouse coord

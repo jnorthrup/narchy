@@ -285,7 +285,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /*@NotNull*/
     static boolean hasCommonSubtermsRecursive(/*@NotNull*/ Term a, /*@NotNull*/ Term b, boolean excludeVariables) {
 
-        int commonStructure = a.structure() & b.structure();
+        Subterms aa = a.subterms();
+        Subterms bb = b.subterms();
+
+        int commonStructure = aa.structure() & bb.structure();
         if (excludeVariables)
             commonStructure = commonStructure & ~(Op.VariableBits); //mask by variable bits since we do not want them
 
@@ -293,8 +296,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return false;
 
         Set<Term> scratch = new HashSet(/*a.size() + b.size()*/);
-        a.subterms().recurseTermsToSet(commonStructure, scratch, true);
-        return b.subterms().recurseTermsToSet(commonStructure, scratch, false);
+        aa.recurseTermsToSet(commonStructure, scratch, true);
+        return bb.recurseTermsToSet(commonStructure, scratch, false);
     }
 
 
@@ -344,11 +347,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /*@NotNull*/
     default boolean recurseTermsToSet(int inStructure, /*@NotNull*/ Collection<Term> t, boolean addOrRemoved) {
         final boolean[] r = {false};
-        Predicate<Term> selector = (s) -> {
+        Predicate<Term> selector = s -> {
 
-            if (!addOrRemoved && r[0]) { //on removal we can exit early
+            if (!addOrRemoved && r[0]) //on removal we can exit early
                 return false;
-            }
 
             if (inStructure == -1 || ((s.structure() & inStructure) > 0)) {
                 r[0] |= (addOrRemoved) ? t.add(s) : t.remove(s);
@@ -357,10 +359,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return true;
         };
 
-        if (inStructure != -1)
-            recurseTerms((p) -> p.hasAny(inStructure), selector, null);
-        else
-            recurseTerms(any -> true, selector, null);
+
+        recurseTerms(
+                (inStructure != -1) ?
+                        p -> p.hasAny(inStructure)
+                        :
+                        any -> true,
+                selector, null);
+
 
         return r[0];
     }
@@ -368,8 +374,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     @Override
     default boolean containsRecursively(/*@NotNull*/ Term y, boolean root, Predicate<Term> subTermOf) {
-        int s = subs();
-        if (s > 0 && !impossibleSubTerm(y)) {
+
+        if (!impossibleSubTerm(y)) {
+            int s = subs();
             for (int i = 0; i < s; i++) {
                 Term x = sub(i);
                 if (x == y || (root ? x.equalsRoot(y) : x.equals(y)) || x.containsRecursively(y, root, subTermOf))

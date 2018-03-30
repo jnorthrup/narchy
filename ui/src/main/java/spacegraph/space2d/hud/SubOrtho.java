@@ -13,11 +13,6 @@ public class SubOrtho extends Ortho {
         maximize();
     }
 
-    @Override
-    protected boolean maximize() {
-        return false;
-    }
-
 
     //    public void maximize() {
 //

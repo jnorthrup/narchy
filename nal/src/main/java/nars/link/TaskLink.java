@@ -75,11 +75,6 @@ public interface TaskLink extends Priority, Termed {
         }
 
         @Override
-        public int hashCode() {
-            return id.hashCode();
-        }
-
-        @Override
         public boolean equals(Object that) {
             return (this == that) || (that instanceof GeneralTaskLink) &&
                     id.equals(((GeneralTaskLink) that).id);

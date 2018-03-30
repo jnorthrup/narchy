@@ -99,21 +99,16 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     public static class MyClauseIndex extends MutableClauseIndex {
 
-        private final ConceptIndex index;
 
         public MyClauseIndex(ConceptIndex t) {
-            this.index = t;
+//            this.index = t;
         }
 
-        @Override
-        public FamilyClausesList clauses(String key) {
-            return super.clauses(key);
-        }
-
-        @Override
-        public void add(String key, ClauseInfo d, boolean first) {
-            super.add(key, d, first);
-        }
+//
+//        @Override
+//        public void add(String key, ClauseInfo d, boolean first) {
+//            super.add(key, d, first);
+//        }
     }
 
     public PrologCore(NAR n, String theory) {

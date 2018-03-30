@@ -1,6 +1,5 @@
 package nars.derive.constraint;
 
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 
@@ -24,21 +23,22 @@ public final class CommonSubtermConstraint extends MatchConstraint.RelationConst
     @Override
     public boolean invalid(Term x, Term y) {
 
-        int vx = x.volume();
-        int vy = y.volume();
-        if (vx == vy) {
-            if (x.containsRecursively(y, true, Op.recursiveCommonalityDelimeterWeak) || y.containsRecursively(x, true, Op.recursiveCommonalityDelimeterWeak))
-                return true;
-        } else {
-            if (vy > vx) {
-                //swap so that v is larger
-                Term c = x;
-                x = y;
-                y = c;
-            }
-            if (x.containsRecursively(y, true, Op.recursiveCommonalityDelimeterWeak))
-                return true;
-        }
+//        int vx = x.volume();
+//        int vy = y.volume();
+//        if (vx == vy) {
+//            if (x.containsRecursively(y, true, Op.recursiveCommonalityDelimeterWeak) ||
+//                    y.containsRecursively(x, true, Op.recursiveCommonalityDelimeterWeak))
+//                return true; //<- can this ever happen
+//        } else {
+//            if (vy > vx) {
+//                //swap so that v is larger
+//                Term c = x;
+//                x = y;
+//                y = c;
+//            }
+//            if (x.containsRecursively(y, true, Op.recursiveCommonalityDelimeterWeak))
+//                return true;
+//        }
 
         return !Subterms.hasCommonSubtermsRecursive(x, y, true);
     }

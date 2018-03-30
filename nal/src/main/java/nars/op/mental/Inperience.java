@@ -82,9 +82,6 @@ public class Inperience extends LeakBack {
 //        return NON_INNATE_BELIEF_ATOMICs[r.nextInt(NON_INNATE_BELIEF_ATOMICs.length)];
 //    }
 
-    @NotNull
-    private final NAR nar;
-
 //
 
     public Inperience(@NotNull NAR n, int capacity) {
@@ -92,8 +89,6 @@ public class Inperience extends LeakBack {
 //        super(
 //            new CurveBag(PriMerge.max, new ConcurrentHashMap<>(capacity), n.random(), capacity), rate, n
 //        );
-        this.nar = n;
-
 
 //        this.bloomFilter = Task.newBloomFilter(1024, n.random());
 

@@ -22,11 +22,9 @@ public class NoteFS extends NARService {
     static final Logger logger = LoggerFactory.getLogger(NoteFS.class);
     final FSWatch fs;
     final Map<Path,List<Task>> loaded = new ConcurrentHashMap<>();
-    private final NAR nar;
 
     public NoteFS(String path, NAR n) throws IOException {
         super(n);
-        this.nar = n;
         fs = new FSWatch(path, n.exe, this::reload);
     }
 

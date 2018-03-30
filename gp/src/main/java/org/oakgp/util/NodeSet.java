@@ -17,7 +17,6 @@ package org.oakgp.util;
 
 import org.oakgp.node.Node;
 
-import java.util.Collection;
 import java.util.HashSet;
 
 /**
@@ -40,8 +39,8 @@ public final class NodeSet extends HashSet<Node> {
         return super.add(NodeSimplifier.simplify(n));
     }
 
-    @Override
-    public boolean addAll(Collection<? extends Node> c) {
-        return super.addAll(c);
-    }
+//    @Override
+//    public boolean addAll(Collection<? extends Node> c) {
+//        return super.addAll(c);
+//    }
 }

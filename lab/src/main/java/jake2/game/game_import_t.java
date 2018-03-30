@@ -206,9 +206,9 @@ public class game_import_t {
     }
 
     private static class MyPointContentsAdapter extends pmove_t.PointContentsAdapter {
-        @Override
-        public int pointcontents(float[] o) {
-            return 0;
-        }
+//        @Override
+//        public int pointcontents(float[] o) {
+//            return 0;
+//        }
     }
 }

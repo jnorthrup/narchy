@@ -489,11 +489,11 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
                     if (!drawablesEmpty && !paused) { // RUN
                         try {
-                            display();
+                            //display();
+                            impl.display(drawables, ignoreExceptions, printExceptions);
                         } catch (final UncaughtAnimatorException dre) {
                             //quitIssued = true;
                             dre.printStackTrace();
-                            return false;
                         }
                     }
                     /*else if (pauseIssued && !quitIssued) { // PAUSE

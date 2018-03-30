@@ -13,7 +13,7 @@ import static nars.time.Tense.ETERNAL;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 2000;
+    final int cycles = 800;
 
     @Override
     protected NAR nar() {
@@ -436,9 +436,9 @@ public class NAL5Test extends NALTest {
 
         TestNAR tester = test;
         //tester.log();
-        tester.believe("(flyingrobin ==> birdrobin)"); //.en("If robin can fly then robin is a bird.");
-        tester.believe("((swimmerrobin && flyingrobin) ==> birdrobin)"); //.en("If robin both swims and flys then robin is a bird.");
-        tester.mustBelieve(cycles * 2, "swimmerrobin", 1.00f, 0.45f /*0.4f*/); //.en("I guess robin swims.");
+        tester.believe("(flying:robin ==> bird:robin)"); //.en("If robin can fly then robin is a bird.");
+        tester.believe("((swimmer:robin && flying:robin) ==> bird:robin)"); //.en("If robin both swims and flys then robin is a bird.");
+        tester.mustBelieve(cycles * 2, "swimmer:robin", 1.00f, 0.45f /*0.4f*/); //.en("I guess robin swims.");
 
     }
 

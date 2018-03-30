@@ -312,10 +312,6 @@ public class ConsoleTerminal extends Widget {
             }
         }
 
-        @Override
-        protected void render() {
-            super.render();
-        }
 
         @Override
         protected boolean updateBackBuffer() {

@@ -30,6 +30,7 @@ public final class NoCommonSubtermConstraint extends MatchConstraint.RelationCon
 
     @Override
     public boolean invalid(Term x, Term y) {
+
         return isSubtermOfTheOther(x, y, recurse, true);
     }
 
@@ -46,11 +47,15 @@ public final class NoCommonSubtermConstraint extends MatchConstraint.RelationCon
         int av = a.volume();
         int bv = b.volume();
         if (av == bv) {
-            return recurse ?
-                    a.containsRecursively(b, true, limit) ||
-                            b.containsRecursively(a, true, limit) :
-
-                    a.containsRoot(b) || b.containsRoot(a);
+//            boolean invalid = recurse ?
+//                    a.containsRecursively(b, true, limit) ||
+//                            b.containsRecursively(a, true, limit) :
+//
+//                    a.containsRoot(b) || b.containsRoot(a);
+//            if (invalid)
+//                throw new RuntimeException("wtf");
+//            return invalid;
+            return false; //impossible for either to contain the other
         } else {
             //if one volume is smaller than the other we only need to test containment unidirectionally
 

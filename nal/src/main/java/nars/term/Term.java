@@ -51,12 +51,9 @@ import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFuncti
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.primitive.ByteLists;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
-import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -658,15 +655,15 @@ public interface Term extends Termed, Comparable<Termed> {
         }, 0);
     }
 
-    default MutableSet<LongObjectPair<Term>> eventSet(long offset) {
-        UnifiedSet<LongObjectPair<Term>> events = new UnifiedSet<>(1);
-        eventsWhile((w, t) -> {
-            events.add(PrimitiveTuples.pair(w, t));
-            return true; //continue
-        }, offset);
-        events.trimToSize();
-        return events;
-    }
+//    default MutableSet<LongObjectPair<Term>> eventSet(long offset) {
+//        UnifiedSet<LongObjectPair<Term>> events = new UnifiedSet<>(1);
+//        eventsWhile((w, t) -> {
+//            events.add(PrimitiveTuples.pair(w, t));
+//            return true; //continue
+//        }, offset);
+//        events.trimToSize();
+//        return events;
+//    }
 
     default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
         return eventList(offset, dtDither, true, false);
@@ -687,29 +684,30 @@ public interface Term extends Termed, Comparable<Termed> {
         }
         return events;
     }
-    default LongObjectHashMap<Term> eventMap(long offset) {
-        LongObjectHashMap<Term> events = new LongObjectHashMap();
-        eventsWhile((w, t) -> {
-            Term existed = events.put(w, t);
-            if (existed != null) {
-                events.put(w, CONJ.the(0, existed, t));
-            }
-            return true;
-        }, offset);
-        return events;
-    }
+
+//    default LongObjectHashMap<Term> eventMap(long offset) {
+//        LongObjectHashMap<Term> events = new LongObjectHashMap();
+//        eventsWhile((w, t) -> {
+//            Term existed = events.put(w, t);
+//            if (existed != null) {
+//                events.put(w, CONJ.the(0, existed, t));
+//            }
+//            return true;
+//        }, offset);
+//        return events;
+//    }
 
     /**
      * event list, sorted by time
      * sorted by time; decomposes inner parallel conj
      */
-    default FasterList<LongObjectPair<Term>> eventList() {
+    /* final */ default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0, 1);
     }
 
 
 
-    default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {
+    /* final */ default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {
         return eventsWhile(whileEachEvent, dt, true, false, false, 0);
     }
 

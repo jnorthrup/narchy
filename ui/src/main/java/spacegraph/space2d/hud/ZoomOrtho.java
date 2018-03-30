@@ -302,10 +302,6 @@ public class ZoomOrtho extends Ortho {
             return false;
         }
 
-        @Override
-        public boolean tangible() {
-            return false;
-        }
 
 //        @Override
 //        protected void prepaint(GL2 gl) {

@@ -296,14 +296,21 @@ public class TermlinkTemplates extends FasterList<Term> {
             boolean conceptualizable = i < concepts;
             if (conceptualizable) {
                 @Nullable Concept tgt = nar.conceptualize(tgtTerm);
+
+                float budgetedForward = budgetedToEach * (1f - balance);
+                float budgetedReverse = budgetedToEach * balance;
+
                 if (tgt != null) {
 
                     //insert termlink
                     tgt.termlinks().put(
-                            new PLink<>(srcTerm, budgetedToEach * (1f - balance)), refund
+                            new PLink<>(srcTerm, budgetedForward), refund
                     );
 
-                    nar.activate(tgt, budgetedToEach);
+                    nar.activate(tgt,
+                            //budgetedToEach
+                            budgetedForward
+                    );
 
                     reverseLinked = true;
                     tgtTerm = tgt.term(); //use the concept's id
@@ -311,9 +318,10 @@ public class TermlinkTemplates extends FasterList<Term> {
 
 
                 if (!reverseLinked)
-                    refund.add(budgetedToEach * (1f - balance));
+                    refund.add(budgetedForward);
 
-                ((Bag) srcTermLinks).put(new PLink(tgtTerm, budgetedToEach * balance), refund);
+
+                ((Bag) srcTermLinks).put(new PLink(tgtTerm, budgetedReverse), refund);
 
             }
 

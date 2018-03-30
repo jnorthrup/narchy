@@ -522,7 +522,7 @@ public final class TruthFunctions {
      */
     private static float c2w(float c, float horizon) {
         if (!((Float.isFinite(c) && (c <= MAX_CONF) && (c >= Param.TRUTH_EPSILON))))
-            throw new RuntimeException("invalid confidence");
+            throw new RuntimeException("invalid confidence: " + c);
         return c2wSafe(c, horizon);
     }
 

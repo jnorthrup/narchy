@@ -13,11 +13,8 @@ public class NARServiceSet<X extends NARService> extends NARService {
 
     final Map<Term,X> devices = new ConcurrentHashMap<>();
 
-    private final NAR nar;
-
     public NARServiceSet(NAR nar) {
         super(nar);
-        this.nar = nar;
     }
 
     public X get(Term t) {

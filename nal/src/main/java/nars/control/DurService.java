@@ -22,8 +22,6 @@ abstract public class DurService extends NARService implements Runnable {
      */
     public final MutableFloat durations;
 
-    protected final NAR nar;
-
     /** when the last cycle ended */
     private long now;
 
@@ -37,7 +35,6 @@ abstract public class DurService extends NARService implements Runnable {
         super(n);
         this.durations = durations;
         this.now = n.time() - n.dur();
-        this.nar = n;
     }
 
 

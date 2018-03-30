@@ -322,12 +322,10 @@ public class IRCAgent extends IRC {
     }
 
     private class MyLeakOut extends TaskLeak {
-        private final NAR nar;
         private final String[] channels;
 
         public MyLeakOut(NAR nar, String... channels) {
             super(8, 1f, nar);
-            this.nar = nar;
             this.channels = channels;
         }
 

@@ -139,15 +139,18 @@
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==>+- (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
 
-    (M ==> C), C, is(C,"&&") |- (M ==>+- dropAnyEvent(C)), (Belief:StructuralReduction)
+    (M ==> C), X, is(C,"&&"), eventOf(C,X) |- (M ==>+- conjWithout(C,X)), (Belief:StructuralReduction)
+        (M ==> C), X, is(C,"&&"), eventOfNeg(C,X) |- (M ==>+- conjWithout(C,--X)), (Belief:StructuralReduction)
     //(M ==> C), C, is(C,"&&") |- (--,(M ==>+- dropAnyEvent(C))), (Belief:StructuralReductionN)
           //(M ==> C), D, belief("&&") |- (M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D)), (Belief:StructuralDeduction)
         //(--M ==> C), C, belief("&&") |- (--M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
           //(--M ==> C), D, belief("&&") |- (--M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D, strict)), (Belief:StructuralDeduction)
         //(M ==> (&&,(--,%S),A..+)), M |- (M ==>+- (&&,A..+)), (Belief:StructuralDeduction)
-    (C ==> M), C, is(C,"&&") |- (dropAnyEvent(C) ==>+- M), (Belief:StructuralReduction)
-        ((--,C) ==> M), C, is(C,"&&") |- ((--,dropAnyEvent(C)) ==>+- M), (Belief:StructuralReduction)
-    //TODO StructuralDeductionN like previous?
+    (C ==> M), X, is(C,"&&"), eventOf(C,X) |- (conjWithout(C,X) ==>+- M), (Belief:StructuralReduction)
+        (C ==> M), X, is(C,"&&"), eventOfNeg(C,X) |- (conjWithout(C,--X) ==>+- M), (Belief:StructuralReduction)
+    (--C ==> M), X, is(C,"&&"), eventOf(C,X) |- ((--,conjWithout(C,X)) ==>+- M), (Belief:StructuralReduction)
+        (--C ==> M), X, is(C,"&&"), eventOfNeg(C,X) |- ((--,conjWithout(C,--X)) ==>+- M), (Belief:StructuralReduction)
+
 
           //(C ==> M), D, belief("&&") |- (subIfUnifiesAny(dropAnyEvent(C), same, D) ==>+- M), (Belief:StructuralDeduction)
         //(C ==> --M), C, belief("&&") |- (dropAnyEvent(C) ==>+- --M), (Belief:StructuralDeduction)

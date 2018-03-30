@@ -29,7 +29,6 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
     public final TaskLeak buffer;
     final CauseChannel<ITask> recv;
     final MyUDPeer peer;
-    private final NAR nar;
 
 
     /**
@@ -54,7 +53,6 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
     public InterNAR(NAR nar, float outRate, int port, boolean discover) {
         super(nar);
 
-        this.nar = nar;
         try {
             peer = new MyUDPeer(port, discover);
         } catch (IOException e) {

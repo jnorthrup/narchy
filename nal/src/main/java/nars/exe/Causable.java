@@ -24,7 +24,7 @@ abstract public class Causable extends NARService {
     public final Can can;
 
     /** id as set by the scheduler to identify it */
-    public volatile int id = -1;
+    public volatile int scheduledID = -1;
 
 
     @Deprecated

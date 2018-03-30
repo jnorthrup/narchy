@@ -576,12 +576,12 @@ public class FasterList<X> extends FastList<X> {
             System.arraycopy(ii, index + 1, ii, index, totalOffset);
         ii[--size] = null;
     }
-
-    @Override
-    public X remove(int index) {
-        //when you dont need the returned item, use removeFast
-        return super.remove(index);
-    }
+//
+//    @Override
+//    public X remove(int index) {
+//        //when you dont need the returned item, use removeFast
+//        return super.remove(index);
+//    }
 
     @Override
     public boolean remove(Object object) {

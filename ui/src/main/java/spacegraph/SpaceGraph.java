@@ -91,10 +91,6 @@ public enum SpaceGraph { ;
         GLWindow win = new SpaceGraphFlat(
                 new ZoomOrtho(s) {
 
-                    @Override
-                    protected boolean maximize() {
-                        return true;
-                    }
 
                     @Override
                     public boolean autoresize() {
