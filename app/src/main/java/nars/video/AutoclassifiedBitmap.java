@@ -76,10 +76,10 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
     public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
-        super(sw * sh + metabits.get(0, 0).length, states, agent.nar.random());
+        super(sw * sh + metabits.get(0, 0).length, states, agent.random());
         this.metabits = metabits;
         this.agent = agent;
-        this.nar = agent.nar;
+        this.nar = agent.nar();
         this.pixIn = pixIn;
         this.sw = sw; //stride width
         this.sh = sh; //stride height

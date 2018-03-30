@@ -134,7 +134,7 @@ public class Line1D {
                         int history = 64;
                         SpaceGraph.window(
                                 row(
-                                        conceptPlot(a.nar, Lists.newArrayList(
+                                        conceptPlot(a.nar(), Lists.newArrayList(
                                                 () -> (float) a.i.floatValue(),
                                                 a.o,
                                                 //a.out.feedback.current!=null ? a.out.feedback.current.freq() : 0f,
@@ -147,13 +147,13 @@ public class Line1D {
                                                 new EmotionPlot(history, a),
                                                 new AutoSurface<>(a),
                                                 Vis.beliefCharts(history,
-                                                        Iterables.concat(a.sensors.keySet(), a.actions.keySet()), a.nar)
+                                                        Iterables.concat(a.sensors.keySet(), a.actions.keySet()), a.nar())
                                         )
                                 )
                                 , 900, 900);
 
                     }).start();
-                    a.nar.onTask(t -> {
+                    a.nar().onTask(t -> {
                         if (!t.isInput() && t instanceof DerivedTask
                                 && t.isGoal()) {
 
@@ -298,12 +298,13 @@ public class Line1D {
             //ImplicationBooster.implAccelerator(a);
 
 
+            NAR nar = agent.nar();
             agent.onFrame((z) -> {
 
                 if (AUTO.get()) {
                     agent.target(
                             //Math.signum(Math.sin(a.nar.time() * tHz * 2 * PI) ) > 0 ? 1f : -1f
-                            Util.round((float) (0.5f + 0.5f * Math.sin(agent.nar.time() * tHz * 2 * PI / agent.nar.dur())), yResolution)
+                            Util.round((float) (0.5f + 0.5f * Math.sin(nar.time() * tHz * 2 * PI / nar.dur())), yResolution)
                             //(float) ( Math.sin(a.nar.time() * tHz * 2 * PI) )
                             //Util.sqr((float) (0.5f * (Math.sin(n.time()/90f) + 1f)))
                             //(0.5f * (Math.sin(n.time()/90f) + 1f)) > 0.5f ? 1f : 0f
@@ -413,7 +414,7 @@ public class Line1D {
             this.a = a;
             this.lastReward = a.reward;
 
-            NAR n = a.nar;
+            NAR n = a.nar();
 
 
             float speed = a.speed.floatValue();

@@ -23,11 +23,8 @@ public class SubNAR extends DurService {
     }
 
     @Override
-    protected void start(NAR nar) {
-        synchronized(this) {
-            super.start(nar);
-            this.sub = subNAR.apply(nar);
-        }
+    protected void starting(NAR nar) {
+        this.sub = subNAR.apply(nar);
     }
 
     @Override

@@ -106,17 +106,14 @@ public class TextUI {
         }
 
         @Override
-        protected void start(NAR nar) {
-            super.start(nar);
-            synchronized (terminal) {
-                thread = new Thread(this);
-                thread.setUncaughtExceptionHandler((t, e) -> {
-                    off();
-                });
-                thread.start();
-            }
+        protected void starting(NAR nar) {
+            super.starting(nar);
+            thread = new Thread(this);
+            thread.setUncaughtExceptionHandler((t, e) -> {
+                off();
+            });
+            thread.start();
         }
-
 
         @Override
         public void run() {
@@ -273,10 +270,7 @@ public class TextUI {
         }
 
         @Override
-        public final synchronized void off() {
-
-            super.off();
-
+        protected void stopping(NAR nar) {
             if (screen != null) {
                 try {
                     screen.stopScreen();
@@ -304,7 +298,10 @@ public class TextUI {
             }
 
             sessions.remove(this);
+
         }
+
+
 
 
         private class InputTextBox extends TextBox {

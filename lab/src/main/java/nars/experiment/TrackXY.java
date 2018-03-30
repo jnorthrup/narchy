@@ -202,8 +202,7 @@ public class TrackXY extends NAgent {
     }
 
     @Override
-    protected void start(NAR nar) {
-        super.start(nar);
+    protected void starting(NAR nar) {
 
         actionTriState();
         //actionPushButton();

@@ -56,7 +56,7 @@ public class Line1DCalibrate {
         float yResolution = 0.1f; //in 0..1.0
         float periods = 16;
 
-        final int runtime = Math.round(periods / tHz);
+//        final int runtime = Math.round(periods / tHz);
 
         Collection actions = a.actions.values(); //Set.of(a.up.term(), a.down.term());
         n.onTask(t -> {
@@ -64,7 +64,7 @@ public class Line1DCalibrate {
                 if (t.isGoal()) {
                     if (actions.contains(t.term())) {
 
-                        float dir = new PreciseTruth(t.freq(), t.evi(a.nar.time(), a.nar.dur()), false).freq() - 0.5f;
+                        float dir = new PreciseTruth(t.freq(), t.evi(a.nar().time(), a.nar().dur()), false).freq() - 0.5f;
 
                         //TEST POLARITY
                         float i = a.i.floatValue();
@@ -111,7 +111,7 @@ public class Line1DCalibrate {
 
             a.target(
                     //Math.signum(Math.sin(a.nar.time() * tHz * 2 * PI) ) > 0 ? 1f : -1f
-                    Util.round((float) (0.5f + 0.5f * Math.sin(a.nar.time() * tHz * 2 * PI)), yResolution)
+                    Util.round((float) (0.5f + 0.5f * Math.sin(a.nar().time() * tHz * 2 * PI)), yResolution)
                     //(float) ( Math.sin(a.nar.time() * tHz * 2 * PI) )
                     //Util.sqr((float) (0.5f * (Math.sin(n.time()/90f) + 1f)))
                     //(0.5f * (Math.sin(n.time()/90f) + 1f)) > 0.5f ? 1f : 0f

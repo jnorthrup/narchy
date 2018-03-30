@@ -20,8 +20,7 @@ public class QuerySpider extends NARService {
     }
 
     @Override
-    protected void start(NAR nar) {
-        super.start(nar);
+    protected void starting(NAR nar) {
         nar.onTask(t -> {
             if (t.isQuestOrQuestion() && t.term().hasVarQuery()) {
                 Term tt = t.term();

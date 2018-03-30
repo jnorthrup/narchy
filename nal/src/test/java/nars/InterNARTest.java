@@ -41,16 +41,14 @@ public class InterNARTest {
 
         InterNAR ai = new InterNAR(a, 1, 0, false) {
             @Override
-            protected void start(NAR nar) {
-                super.start(nar);
+            protected void starting(NAR nar) {
                 runFPS(NET_FPS);
             }
         };
         InterNAR bi = new InterNAR(b, 1, 0, false) {
 
             @Override
-            protected void start(NAR nar) {
-                super.start(nar);
+            protected void starting(NAR nar) {
                 runFPS(NET_FPS);
             }
         };

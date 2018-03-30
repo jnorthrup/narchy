@@ -58,7 +58,7 @@ public class RLBooster implements Consumer<NAR> {
         this.env = env;
 
 
-        conf.set(Util.lerp(0.5f, env.nar.confMin.floatValue(), env.nar.confDefault(GOAL)));
+        conf.set(Util.lerp(0.5f, env.nar().confMin.floatValue(), env.nar().confDefault(GOAL)));
 
 //        env.curiosity().setValue(0f);
 
@@ -88,7 +88,7 @@ public class RLBooster implements Consumer<NAR> {
 //            output[i++] = () -> {            };
 //        }
 
-        in = env.nar.newCauseChannel(this);
+        in = env.nar().newCauseChannel(this);
 
         this.rl = rl.apply(inD, outD);
 

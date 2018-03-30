@@ -17,6 +17,8 @@ public class NARService extends Service<NAR> implements Termed {
     public final Term id;
     protected Ons ons;
 
+    protected NAR nar;
+
     @Deprecated protected NARService(NAR nar) {
         this((Term)null);
 
@@ -31,16 +33,23 @@ public class NARService extends Service<NAR> implements Termed {
 
 
     @Override
-    protected void start(NAR nar) {
+    protected final void start(NAR nar) {
         synchronized (this) {
             logger.debug("start {}", id);
-            ons = new Ons(nar.eventClear.on(n -> clear())) {
-                @Override
-                public void off() {
-                    super.off();
-                    stop(nar);
-                }
-            };
+            this.nar = nar;
+            ons = new Ons(nar.eventClear.on(n -> clear()));
+            starting(nar);
+        }
+    }
+
+    @Override
+    protected final void stop(NAR nar) {
+        synchronized (this) {
+            logger.debug("stop {}", id);
+            ons.off();
+            stopping(nar);
+            ons = null;
+            nar = null;
         }
     }
 
@@ -49,27 +58,16 @@ public class NARService extends Service<NAR> implements Termed {
     }
 
 
-    @Override
-    protected final void stop(NAR nar) {
-        synchronized (this) {
-            logger.debug("stop {}", id);
-            stopping(nar);
-            nar.services.remove(this.id);
-            ons = null;
-        }
+    protected void starting(NAR nar) {
+
     }
 
     protected void stopping(NAR nar) {
 
     }
 
-    public void off() {
-        synchronized (this) {
-            if (ons != null) {
-                ons.off();
-                ons = null;
-            }
-        }
+    public final void off() {
+        nar.services.remove(id);
     }
 
     @Override

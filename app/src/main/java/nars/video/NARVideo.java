@@ -38,13 +38,13 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
         }
 
         @Override
-        protected void start(NAR x) {
-            synchronized (cam) {
-                cam.open(true);
-                c = new WebCam(cam);
-                surface = c.view();
-                surfaceWindow = SpaceGraph.window(surface, 800, 600);
-            }
+        protected void starting(NAR x) {
+
+            cam.open(true);
+            c = new WebCam(cam);
+            surface = c.view();
+            surfaceWindow = SpaceGraph.window(surface, 800, 600);
+
         }
 
         @Override

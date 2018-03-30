@@ -35,12 +35,8 @@ public class GUI {
         //            }, 800, 600);
 
 
-        //window(new AutoSurface<>(nar), 700, 600);
-
-
         PhyWall w = SpaceGraph.wall(800, 600);
         w.put(new Gridding(new OmniBox()), 6, 1);
-        //w.put(new AutoSurface<>(nar.services), 4,4);
         w.put(Vis.top(nar), 4,4);
 
 

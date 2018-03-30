@@ -18,8 +18,7 @@ abstract public class CycleService extends NARService implements Consumer<NAR> {
     }
 
     @Override
-    protected void start(NAR nar)  {
-        super.start(nar);
+    protected void starting(NAR nar)  {
         ons.add(nar.onCycle(this));
     }
 

@@ -99,17 +99,18 @@ public class NARSpeak {
     public static class VocalCommentary {
         public VocalCommentary(NAgent a) {
 
-            a.nar.on1("str", (Term t)->$.quote(t.toString()));
+            NAR nar = a.nar();
+            nar.on1("str", (Term t)->$.quote(t.toString()));
 
             try {
-                a.nar.goal($.$("say(ready)"), Tense.Present, 1f, 0.9f);
-                a.nar.believe($.$("(" + a.happy + " =|> say(happy))"));
-                a.nar.goal($.$("(" + a.happy + " &| say(happy))"));
-                a.nar.believe($.$("(" + a.happy.neg() + " =|> say(sad))"));
-                a.nar.goal($.$("(" + a.happy.neg() + " &| say(sad))"));
-                a.nar.goal($.$("(#x &| say(#x))"));
-                a.nar.believe($.$("($x =|> say($x))"));
-                a.nar.goal($.$("say(#1)"));
+                nar.goal($.$("say(ready)"), Tense.Present, 1f, 0.9f);
+                nar.believe($.$("(" + a.happy + " =|> say(happy))"));
+                nar.goal($.$("(" + a.happy + " &| say(happy))"));
+                nar.believe($.$("(" + a.happy.neg() + " =|> say(sad))"));
+                nar.goal($.$("(" + a.happy.neg() + " &| say(sad))"));
+                nar.goal($.$("(#x &| say(#x))"));
+                nar.believe($.$("($x =|> say($x))"));
+                nar.goal($.$("say(#1)"));
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }

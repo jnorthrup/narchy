@@ -48,7 +48,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private Consumer<Scalar> touchMode = (x) -> { };
 
     public CameraSensorView(Bitmap2DSensor cam, NAgent a) {
-        this(cam, a.nar);
+        this(cam, a.nar());
     }
 
     public CameraSensorView(Bitmap2DSensor cam, NAR n) {

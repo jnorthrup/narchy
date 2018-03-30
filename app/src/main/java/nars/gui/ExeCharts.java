@@ -168,7 +168,7 @@ public class ExeCharts {
             {
 
                 on = a.onFrame(() -> {
-                    update(a.nar.causes, (c, i) -> {
+                    update(a.nar().causes, (c, i) -> {
                         float v = c.value();
                         float r, g, b;
                         if (v < 0) {

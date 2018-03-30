@@ -410,7 +410,7 @@ abstract public class NAgentX extends NAgent {
 
             chart(a);
 
-            SpaceGraph.window(Vis.top(a.nar), 800, 800);
+            SpaceGraph.window(Vis.top(a.nar()), 800, 800);
 
 //            window(new ConceptView(a.happy,n), 800, 600);
 
@@ -431,13 +431,13 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static void chart(NAgent a) {
-        NAR nar = a.nar;
-        a.nar.runLater(() -> {
+        NAR nar = a.nar();
+        nar.runLater(() -> {
             SpaceGraph.window(
                     grid(
                             new AutoSurface(a),
 
-                            Vis.beliefCharts(a.nar.dur() * 64, a.actions.keySet(), a.nar),
+                            Vis.beliefCharts(nar.dur() * 64, a.actions.keySet(), a.nar()),
 
                             new EmotionPlot(64, a),
                             grid(

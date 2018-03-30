@@ -97,7 +97,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      */
     public volatile float reward;
 
-    public NAR nar = null;
+
     private CauseChannel<ITask> in = null;
 
     private int dur;
@@ -234,13 +234,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      * TODO call this in the constructor
      */
     @Override
-    protected void start(NAR nar) {
+    protected void starting(NAR nar) {
         synchronized (this) {
-
-            assert(this.nar == null || this.nar == nar);
-            this.nar = nar;
-
-            super.start(nar);
 
             Term id = (this.id == null) ? nar.self() : this.id;
 

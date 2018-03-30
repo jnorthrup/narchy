@@ -2,7 +2,6 @@ package nars.control;
 
 import nars.NAR;
 import nars.Task;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
 
@@ -12,12 +11,11 @@ import java.util.function.BiConsumer;
 abstract public class TaskService extends NARService implements BiConsumer<NAR, Task> {
 
     @Override
-    protected void start(NAR nar) {
-        super.start(nar);
+    protected void starting(NAR nar) {
         ons.add(nar.onTask((t) -> accept(nar, t)));
     }
 
-    protected TaskService(@NotNull NAR nar) {
+    protected TaskService(NAR nar) {
         super(nar);
     }
 

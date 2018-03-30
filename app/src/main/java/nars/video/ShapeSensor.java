@@ -79,8 +79,8 @@ public class ShapeSensor implements Runnable {
 
         }
 
-        in = a.nar.newCauseChannel(this);
-        this.nar = a.nar;
+        in = a.nar().newCauseChannel(this);
+        this.nar = a.nar();
 
 //        a.actionUnipolar($.p(id, $.the("R")), (v) -> {
 //           return R = v;

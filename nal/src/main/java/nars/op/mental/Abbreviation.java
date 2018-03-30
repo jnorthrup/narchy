@@ -95,16 +95,14 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
     }
 
     @Override
-    protected void start(NAR nar) {
-        super.start(nar);
-
+    protected void starting(NAR nar) {
         onDur = DurService.on(nar, this::update);
     }
 
+
     @Override
-    public synchronized void off() {
+    protected void stopping(NAR nar) {
         onDur.off();
-        super.off();
     }
 
     protected void update(NAR nar) {

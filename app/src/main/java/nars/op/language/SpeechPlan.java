@@ -30,7 +30,6 @@ public class SpeechPlan extends NARService {
     private final float durationsPerWord;
     private float energy;
     private final float expectationThreshold = 0.5f;
-    private NAR nar;
 
     public SpeechPlan(NAR nar, float durationsPerWord, Consumer<Term> speak) {
         super(nar);
@@ -40,9 +39,7 @@ public class SpeechPlan extends NARService {
     }
 
     @Override
-    protected void start(NAR nar) {
-        super.start(nar);
-        this.nar = nar;
+    protected void starting(NAR nar) {
         nar.runLater(()->{
             ons.add(nar.onCycle((n) ->{
                 energy = Math.min(1f, energy + 1f/(this.durationsPerWord*nar.dur()));

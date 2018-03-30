@@ -95,11 +95,8 @@ abstract public class DurService extends NARService implements Runnable {
     }
 
     @Override
-    protected void start(NAR nar) {
-        synchronized (this) {
-            super.start(nar);
-            nar.run(this); //initial
-        }
+    protected void starting(NAR nar) {
+        nar.run(this); //initial
     }
 
     @Override

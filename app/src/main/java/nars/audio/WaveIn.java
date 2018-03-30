@@ -42,13 +42,13 @@ public class WaveIn extends NARService {
     }
 
     @Override
-    protected void start(NAR x) {
-        synchronized (this) {
-            capturing = capture.get();
-            capturing.frame.on(this::update);
-            capturing.runFPS(fps);
-            surfaceWindow = SpaceGraph.window(surface(), 800, 600);
-        }
+    protected void starting(NAR x) {
+
+        capturing = capture.get();
+        capturing.frame.on(this::update);
+        capturing.runFPS(fps);
+        surfaceWindow = SpaceGraph.window(surface(), 800, 600);
+
     }
 
     private void update() {

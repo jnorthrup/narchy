@@ -36,7 +36,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         this.src = src;
 
-        this.nar = agent.nar;
+        this.nar = agent.nar();
 
         this.net = new NeuralGasNet(3, (short)blobs) {
 
@@ -83,7 +83,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
         });
 
 
-        agent.nar.onCycle(this);
+        agent.onFrame(this);
 
         SpaceGraph.window(new Surface() {
             @Override

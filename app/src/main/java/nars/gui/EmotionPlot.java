@@ -16,7 +16,7 @@ public class EmotionPlot extends Gridding {
     Plot2D plot1, plot2, plot3;
 
     public EmotionPlot(int plotHistory, NAgent a) {
-        this(plotHistory, a, a.nar);
+        this(plotHistory, a, a.nar());
     }
 
     public EmotionPlot(int plotHistory, NAgent a, NAR x) {
@@ -37,13 +37,13 @@ public class EmotionPlot extends Gridding {
         plot2.add("Busy", nar.emotion.busyVol::getSum);
 
         plot1.add("Dex+0", () -> a.dexterity(a.now)/*, 0f, 1f*/);
-        plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar.dur()));
-        plot1.add("Dex+4", () -> a.dexterity(a.now + 4 * a.nar.dur()));
+        plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar().dur()));
+        plot1.add("Dex+4", () -> a.dexterity(a.now + 4 * a.nar().dur()));
 
         a.happy.forEach(h -> {
             @Nullable Concept hc = nar.concept(h);
             plot3.add(h.toString(), () -> {
-                return hc.beliefs().freq(a.now, a.nar);
+                return hc.beliefs().freq(a.now, a.nar());
             }, 0, 1f);
 //                plot3.add("WantHpy", () -> {
 //                    return hc.goals().freq(a.now, a.nar);
