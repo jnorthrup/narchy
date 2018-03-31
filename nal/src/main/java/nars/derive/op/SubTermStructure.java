@@ -62,8 +62,8 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
         for (PrediTerm x : p) {
             if (x instanceof TaskBeliefOp) {
                 TaskBeliefOp t = (TaskBeliefOp)x;
-                if (((subterm == 0 && t.task) || (subterm == 1 && t.belief)) &&
-                    (1 << t.op == bits)) {
+                if (t.isOrIsNot && ((subterm == 0 && t.task) || (subterm == 1 && t.belief)) &&
+                    (t.structure == bits)) {
                     return false; //the TaskBeliefOp test is equivalent to this, being more specific
                 }
             }

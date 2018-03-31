@@ -511,7 +511,7 @@ public enum TrieDeriver { ;
                     return ac.OR(x -> {
                         if (x instanceof TaskBeliefOp) {
                             TaskBeliefOp so = (TaskBeliefOp) x;
-                            if (so.task == taskOrBelief && so.belief == !taskOrBelief) {
+                            if (so.isOrIsNot && so.task == taskOrBelief && so.belief == !taskOrBelief) {
                                 PrediTerm acw = ac.without(so);
                                 if (null == cases.putIfAbsent(so, acw)) {
                                     removed.add(p);
@@ -534,8 +534,16 @@ public enum TrieDeriver { ;
                 }
 
                 EnumMap<Op, PrediTerm<D>> caseMap = new EnumMap(Op.class);
-                cases.forEach((c, p) -> caseMap.put(Op.values()[c.op], p));
-                bb.add(new OpSwitch<D>(taskOrBelief, caseMap));
+                cases.forEach((c, p) -> {
+                    int cs = c.structure;
+                    Op[] opVals = Op.values();
+                    for (int i = 0; i < opVals.length; i++) {
+                        if ((cs & (1 << i)) > 0)
+                            caseMap.put(opVals[i], p);
+                    }
+
+                });
+                bb.add(new OpSwitch<>(taskOrBelief, caseMap));
             } else {
                 bb.addAll(removed); //undo
             }

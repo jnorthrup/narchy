@@ -10,19 +10,23 @@ import nars.term.pred.AbstractPred;
  * Created by me on 5/19/17.
  */
 public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
-    public final byte op;
+    public final int structure;
     public final boolean task;
     public final boolean belief;
     public final boolean isOrIsNot;
 
     public TaskBeliefOp(Op op, boolean testTask, boolean testBelief) {
-        this(op, testTask, testBelief, true);
+        this(op.bit, testTask, testBelief, true);
     }
 
     public TaskBeliefOp(Op op, boolean testTask, boolean testBelief, boolean isOrIsNot) {
-        super($.func("op", $.quote(op.str), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)).negIf(!isOrIsNot));
+        this(op.bit, testTask, testBelief, isOrIsNot);
+    }
+
+    public TaskBeliefOp(int structure, boolean testTask, boolean testBelief, boolean isOrIsNot) {
+        super($.func("op", $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)).negIf(!isOrIsNot));
         this.isOrIsNot = isOrIsNot;
-        this.op = op.id;
+        this.structure = structure;
         this.task = testTask;
         this.belief = testBelief;
     }
@@ -34,9 +38,16 @@ public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
 
     @Override
     public boolean test(PreDerivation derivation) {
-        return (!task || (isOrIsNot ? derivation._taskOp == op : derivation._taskOp != op))
-                &&
-                (!belief || (isOrIsNot ? derivation._beliefOp == op: derivation._beliefOp != op));
+
+        return (!task || (isOrIsNot ?
+                        (((1<<derivation._taskOp) & structure) > 0) :
+                        (((1<<derivation._taskOp) & structure) == 0)))
+               &&
+               (!belief || (isOrIsNot ?
+                       (((1<<derivation._beliefOp) & structure) > 0) :
+                       (((1<<derivation._beliefOp) & structure) == 0)));
+
+
     }
 
 //    static boolean isSequence(int dt) {

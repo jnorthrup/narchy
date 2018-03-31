@@ -575,10 +575,10 @@ public class DeriveRuleProto extends DeriveRuleSource {
         constraints.add(new OpIsNot(x, struct));
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
 
-//        boolean isTask = taskPattern.equals(x);
-//        boolean isBelief = beliefPattern.equals(x);
-//        if (isTask || isBelief)
-//            pres.add(new TaskBeliefOp(struct, isTask, isBelief, false));
+        boolean isTask = taskPattern.equals(x);
+        boolean isBelief = beliefPattern.equals(x);
+        if (isTask || isBelief)
+            pres.add(new TaskBeliefOp(struct, isTask, isBelief, false));
     }
 
 //    private static void termHasAny(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, Op o) {
