@@ -202,6 +202,28 @@ public class NAL3Test extends NALTest {
     }
 
 
+    @Test public void testDisjoint() {
+        //disjoint implemented as negative intersection inheritance
+        //DecomposePositiveNegativeNegative-->Belief
+        test
+                .believe("--(x-->(RealNumber&ComplexNumber))")
+                .believe("(x-->RealNumber)")
+                .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f);
+        ;
+
+    }
+
+    @Test public void testDisjointWithVar() {
+        //disjoint implemented as negative intersection inheritance
+
+        test
+            .log()
+            .believe("--(#1-->(RealNumber&ComplexNumber))")
+            .believe("(x-->RealNumber)")
+            .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f);
+        ;
+
+    }
 
 }
 

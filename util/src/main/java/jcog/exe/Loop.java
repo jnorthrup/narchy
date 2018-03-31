@@ -29,14 +29,19 @@ abstract public class Loop {
     private final AtomicBoolean executing = new AtomicBoolean(false);
 
     /** global timer */
-    final static HashedWheelTimer timer =
-        new HashedWheelTimer(Loop.class.getName(),
-             TimeUnit.MILLISECONDS.toNanos(2),
-             96,
-            // HashedWheelTimer.WaitStrategy.YieldingWait,
-                HashedWheelTimer.WaitStrategy.SleepWait,
-            Util.executor());
+    private static HashedWheelTimer timer = null;
 
+    static synchronized HashedWheelTimer timer() {
+        if (timer == null) {
+            timer = new HashedWheelTimer(Loop.class.getName(),
+                    TimeUnit.MILLISECONDS.toNanos(2),
+                    96,
+                    // HashedWheelTimer.WaitStrategy.YieldingWait,
+                    HashedWheelTimer.WaitStrategy.SleepWait,
+                    Util.executor());
+        }
+        return timer;
+    }
 
 //    private float lag, lagSum;
 
@@ -114,7 +119,7 @@ abstract public class Loop {
                 synchronized (periodMS) {
 //                    Thread myNewThread = newThread();
 //                    myNewThread.start();
-                    task = timer.scheduleAtFixedRate(this::_next, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                    task = timer().scheduleAtFixedRate(this::_next, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
                 synchronized (periodMS) {

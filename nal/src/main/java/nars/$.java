@@ -240,7 +240,7 @@ public enum $ {
 
 
     public static <T extends Term> T impl(Term a, Term b) {
-        return (T) IMPL.the(DTERNAL, a, b);
+        return (T) IMPL.the(a, b);
     }
 
 

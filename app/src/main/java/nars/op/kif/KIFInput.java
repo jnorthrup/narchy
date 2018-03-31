@@ -18,8 +18,6 @@ package nars.op.kif;
 
 import jcog.Util;
 import nars.*;
-import nars.control.MetaGoal;
-import nars.op.prolog.PrologCore;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -32,16 +30,16 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static nars.Op.*;
-import static nars.op.rdfowl.NQuadsRDF.disjoint;
 import static nars.op.rdfowl.NQuadsRDF.equi;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * http://sigmakee.cvs.sourceforge.net/viewvc/sigmakee/sigma/suo-kif.pdf
@@ -49,43 +47,28 @@ import static nars.time.Tense.ETERNAL;
  * https://raw.githubusercontent.com/ontologyportal/sumo/master/Merge.kif
  * https://raw.githubusercontent.com/ontologyportal/sumo/master/Mid-level-ontology.kif
  **/
-public class KIFInput implements Runnable {
+public class KIFInput  {
 
     private final KIF kif;
-
-
-
-    private final NAR nar;
-
-    private final PrintStream output;
 
     private final boolean includeSubclass = true;
     private final boolean includeInstance = true;
     private final boolean includeRelatedInternalConcept = true;
-    private final boolean includeDisjoint = true;
+
     private final boolean includeDoc = false;
 
-    public KIFInput(NAR nar, String kifPath) throws Exception {
-        this.nar = nar;
-        this.kif = new KIF(kifPath);
-        this.output = System.out;
-    }
+    final Set<Term> beliefs = new TreeSet();
 
-    public void start() {
-        new Thread(this).start();
-    }
-
-
-    final Map<Term, FnDef> fn = new HashMap();
+    private transient final Map<Term, FnDef> fn = new HashMap();
 
     static class FnDef {
         final IntObjectHashMap<Term> domain = new IntObjectHashMap();
         Term range;
     }
 
-    @Override
-    public void run() {
-        Set<Term> beliefs = new TreeSet();
+    public KIFInput(String kifPath) throws Exception {
+        this.kif = new KIF(kifPath);
+
         kif.formulas().forEach(x->{
 
             try {
@@ -104,15 +87,18 @@ public class KIFInput implements Runnable {
 
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
-            Term[] vt =  Util.map(0, ds, i -> $.varIndep(1 + i), Term[]::new);
+            Term[] vt =  Util.map(0, ds, i -> $.varDep(1 + i), Term[]::new);
             Term v = null;
             if (s.range!=null) {
-                v = $.varIndep("R");
+                v = $.varDep("R");
                 vt = ArrayUtils.add(vt, v);
             }
+            final int[] k = {1};
             Term[] typeConds = Util.map(0, ds, i ->
-                    $.inh($.varIndep(1 + i),
-                            s.domain.getIfAbsent(1 + i, () -> True)), Term[]::new);
+                    $.inh($.varDep(1 + i),
+                            s.domain.getIfAbsent(1 + i, () -> {
+                                return $.varDep(k[0]++);
+                            })), Term[]::new);
             if (s.range!=null) {
                 typeConds = ArrayUtils.add(typeConds, $.inh(v, s.range));
             }
@@ -120,30 +106,31 @@ public class KIFInput implements Runnable {
                     typeConds
             );
             Term fxy = impl($.inh($.p( vt ), f), types, true);
-            if (fxy instanceof Bool) {
-                logger.error("bad function {} {} {}", f, s.domain, s.range);
-            } else {
-                beliefs.add(fxy);
+            if (fxy!=null) {
+                if (fxy instanceof Bool) {
+                    logger.error("bad function {} {} {}", f, s.domain, s.range);
+                } else {
+                    beliefs.add(fxy);
+                }
             }
 
         });
 
+        beliefs.removeIf(b->{
+            if (b.hasAny(BOOL)) {
+                return true;
+            }
+            Term bb = b.unneg().normalize();
+            if (!Task.validTaskTerm(bb, BELIEF, true)) {
+                logger.error("invalid task term: {}\n\t{}", b, bb);
+                return true;
+            }
+            return false;
+        });
         //nar.input( beliefs.stream().map(x -> task(x)) );
 
 //        long[] stamp = { new Random().nextLong() };
-        for (Term x : beliefs) {
-            output.println(x + ".");
-            try {
-                nar.believe(x);
-            } catch (Exception e) {
-                logger.error("{} {}", e.getMessage(), x);
-            }
-//            try {
-//                nar.input("$0.01$ " + x + ".");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-        }
+
 
         //nar.believe(y);
     }
@@ -168,7 +155,8 @@ public class KIFInput implements Runnable {
         if (x.theFormula.contains("@ROW"))
             return null; //ignore @ROW stuff
 
-        String root = x.car(); //root operate
+        String xCar = x.car();
+        String root = xCar; //root operate
 
         int l = x.listLength();
         if (l == 1)
@@ -240,16 +228,33 @@ public class KIFInput implements Runnable {
                 y = $.func("equal", args.get(0), args.get(1));
                 //y = $.sim(args.get(0), args.get(1));
                 break;
+
             case "disjointRelation":
             case "disjoint":
 
-                //TODO represent disjoint with a pair of implications, not this
-                if (includeDisjoint) {
-                    y = disjoint(args.get(0), args.get(1));
-                }
+                y = Op.INH.the(
+                        $.varDep(1),
+                        Op.SECTe.the(args.get(0), args.get(1))
+                    ).neg();
                 break;
 
             case "forall":
+                String forVar = sargs.get(0);
+                if (forVar.startsWith("(")) {
+                    forVar = forVar.substring(1, forVar.length()-1); //remove parens
+                }
+                boolean missingAParamVar = false;
+                String[] forVars = forVar.split(" ");
+                for (String vv : forVars) {
+                    if (!sargs.get(1).contains(vv)) {
+                        missingAParamVar = true;
+                        break;
+                    }
+                }
+                if (!missingAParamVar) {
+                    return args.get(1); //skip over the for variables since it is contained in the expression
+                }
+
                 y = impl(args.get(0), args.get(1), true);
                 break;
             case "exists":
@@ -257,9 +262,13 @@ public class KIFInput implements Runnable {
                 break;
             case "=>":
                 y = impl(args.get(0), args.get(1), true);
+                if (y == null)
+                    return null;
                 break;
             case "<=>":
                 y = impl(args.get(0), args.get(1), false);
+                if (y == null)
+                    return null;
                 break;
 
             case "termFormat":
@@ -300,8 +309,14 @@ public class KIFInput implements Runnable {
                 if (args.size() >= 2) {
                     Term a = args.get(0);
                     Term b = args.get(1);
-                    Variable v0 = nextVar(VAR_DEP);
-                    y = disjoint($.inh(v0, a), $.inh(v0, b.neg()));
+                    Variable v0 = $.varDep(1);
+                    y = Op.INH.the(
+                            v0,
+                            Op.SECTe.the(a, b)
+                    ).neg();
+                    //y = disjoint($.inh(v0, a), $.inh(v0, b.neg()));
+                } else {
+                    throw new UnsupportedOperationException(); //??
                 }
                 break;
             case "documentation":
@@ -326,10 +341,10 @@ public class KIFInput implements Runnable {
 
         if (y == null) {
 
-            if (x.car().equals("documentation") && !includeDoc)
+            if (!includeDoc && (xCar.equals("documentation") || xCar.equals("comment")))
                 return null;
 
-            Term z = formulaToTerm(x.car());
+            Term z = formulaToTerm(xCar);
 
             if (z != null) {
                 switch (z.toString()) {
@@ -344,7 +359,12 @@ public class KIFInput implements Runnable {
                         y = args.get(0).neg();
                         break;
                     default:
-                        y = $.inh($.p(args), z); //HACK
+                        if (!z.op().var)
+                            y = $.inh($.p(args), z); //HACK
+                        else {
+                            args.add(0, z); //re-attach
+                            y = $.p(args);
+                        }
                         break;
                 }
 
@@ -359,19 +379,29 @@ public class KIFInput implements Runnable {
         return y;
     }
 
-    private Variable nextVar(Op v) {
-        return $.v(v, nextVar());
-    }
+//    private Variable nextVar(Op v) {
+//        return $.v(v, nextVar());
+//    }
 
-    private final AtomicInteger serial = new AtomicInteger(0);
+//    private final AtomicInteger serial = new AtomicInteger(0);
 
-    private String nextVar() {
-        return Integer.toString(Math.abs(serial.incrementAndGet()), 36);
-    }
+//    private String nextVar() {
+//        return Integer.toString(Math.abs(serial.incrementAndGet()), 36);
+//    }
 
     //public final Set<Twin<Term>> impl = new HashSet();
 
     public Term impl(Term a, Term b, boolean implOrEquiv) {
+
+        //reduce as implication first
+        Term tmp = IMPL.the(a, b);
+        if (tmp.unneg().op()!=IMPL) {
+            logger.warn("un-impl: {} ==> {} ", a, b);
+            return null;
+        }
+        tmp = tmp.unneg();
+        a = tmp.sub(0);
+        b = tmp.sub(1);
 
         MutableSet<Term> aVars = new VarOnlySet();
         if (a instanceof Compound)
@@ -384,9 +414,10 @@ public class KIFInput implements Runnable {
         else if (b.op().var)
             bVars.add(b);
 
+        Map<Term, Term> remap = new HashMap();
+
         MutableSet<Term> common = aVars.intersect(bVars);
         if (!common.isEmpty()) {
-            Map<Term, Term> remap = new HashMap();
             common.forEach(t -> {
                 Variable u = $.v(
                         Op.VAR_INDEP,
@@ -396,14 +427,23 @@ public class KIFInput implements Runnable {
                 if (!t.equals(u))
                     remap.put(t, u);
             });
+        }
+        for (MutableSet<Term> ab : new MutableSet[]{aVars, bVars}) {
+            ab.forEach(aa -> {
+                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
+                    remap.put(aa, $.v(Op.VAR_DEP, aa.toString().substring(1)));
+                }
+            });
+        }
 
+        if (!remap.isEmpty()) {
             a = a.replace(remap);
             if (a == null)
-                return null;
+                throw new NullPointerException("transform failure");
 
             b = b.replace(remap);
             if (b == null)
-                return null;
+                throw new NullPointerException("transform failure");
         }
 
         try {
@@ -414,7 +454,7 @@ public class KIFInput implements Runnable {
 
             return
                     implOrEquiv ?
-                            $.impl(a, b) :
+                            IMPL.the(a, b) :
                             equi(a, b)
                     ;
         } catch (Exception ignore) {
@@ -427,13 +467,13 @@ public class KIFInput implements Runnable {
     public static void main(String[] args) throws Exception {
         Param.DEBUG = true;
 
-        NAR e = NARS.tmp();
+        NAR nar = NARS.tmp();
         //MetaGoal.Perceive.set(e.emotion.want, -0.1f);
-        e.emotion.want(MetaGoal.Perceive, -0.1f);
+        //e.emotion.want(MetaGoal.Perceive, -0.1f);
 
-        new PrologCore(e);
+        //new PrologCore(e);
 
-        KIFInput k = new KIFInput(e,
+        String I =
                 //"/home/me/sumo/Biography.kif"
                 //"/home/me/sumo/Military.kif"
                 //"/home/me/sumo/ComputerInput.kif"
@@ -441,9 +481,33 @@ public class KIFInput implements Runnable {
                 "/home/me/sumo/Merge.kif"
                 //"/home/me/sumo/emotion.kif"
                 //"/home/me/sumo/Weather.kif"
-        );
-        k.run();
+        ;
 
+        String O = "/home/me/d/sumo_merge.nal";
+        KIFInput k = new KIFInput(I);
+
+        k.output(O);
+
+        nar.log();
+
+        //nar.inputNarsese(new FileInputStream(O));
+        String[] x = new String(new FileInputStream(O).readAllBytes()).split("\n");
+        nar.input(x);
+
+//        final PrintStream output = System.out;
+//        for (Term x : k.beliefs) {
+//            output.println(x + ".");
+//            try {
+//                nar.believe(x);
+//            } catch (Exception e) {
+//                logger.error("{} {}", e.getMessage(), x);
+//            }
+//            try {
+//                nar.input("$0.01$ " + x + ".");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
 //https://github.com/ontologyportal/sumo/blob/master/tests/TQG1.kif.tq
 //(time 240)
@@ -451,14 +515,13 @@ public class KIFInput implements Runnable {
 //(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
 //(answer yes)
         //e.clear();
-        e.log();
-        e.believe("Organization:org1");
+//        nar.believe("Organization:org1");
 //        e.question("member(?1, org1)?", ETERNAL, (q,a)->{
 //            System.out.println(a);
 //        });
-        e.ask($.$$("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
-           System.out.println(t);
-        });
+//        nar.ask($.$$("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
+//           System.out.println(t);
+//        });
         //e.believe("accountHolder(xyz,1)");
 //        e.ask($.$safe("(EmotionalState<->?1)"), ETERNAL, QUESTION, (t)->{
 //           System.out.println(t);
@@ -466,7 +529,7 @@ public class KIFInput implements Runnable {
         //e.believe("attribute(xyz,Philosopher)");
         //e.input("(xyz<->?1)?");
 
-        e.run(1000);
+        nar.run(1000);
 //        Thread.sleep(1000);
 //        e.run(1000);
         //e.conceptsActive().forEach(s -> System.out.println(s));
@@ -519,10 +582,22 @@ public class KIFInput implements Runnable {
 //        e.input("starts(A,B).");
 //        e.input("[GovernmentFn]:A.");
 //        e.input("[WealthFn]:B.");
-        e.run(2500);
+        nar.run(2500);
 //        d.conceptsActive().forEach(System.out::println);
         //d.concept("[Phrase]").print();
 
+    }
+
+    public void output(String path) throws FileNotFoundException {
+        logger.info("output {} beliefs to {}", beliefs.size(), path);
+        output(new PrintStream(new FileOutputStream(path)));
+    }
+
+    public void output(PrintStream out) {
+        beliefs.forEach(b->{
+            out.print(b);
+            out.println(".");
+        });
     }
 
     /** HACK because recurseTermsToSet isnt designed to check only Op */
