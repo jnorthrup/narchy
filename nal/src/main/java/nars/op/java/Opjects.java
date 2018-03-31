@@ -83,9 +83,11 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class Opjects extends DefaultTermizer implements InvocationHandler {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
-    final static ClassLoadingStrategy.Default classLoadingStrategy =
+    final static ClassLoadingStrategy classLoadingStrategy =
             //ClassLoadingStrategy.Default.INJECTION
             ClassLoadingStrategy.Default.WRAPPER
+            //ClassLoadingStrategy.Default.WRAPPER_PERSISTENT
+            //ClassLoadingStrategy.Default.CHILD_FIRST
             ;
 
     final ByteBuddy bb = new ByteBuddy();

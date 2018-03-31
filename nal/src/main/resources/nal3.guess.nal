@@ -10,8 +10,8 @@
 
 ////composition on one side of a statement:
 
-    (W --> (|,B,A..+)), (W --> B), task("?") |- (W --> (|,B,A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    ((&,B,A..+) --> W), (B --> W), task("?") |- ((&,B,A..+) --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    (W --> S), (W --> B), task("?"), is(S,"|"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    (S --> W), (B --> W), task("?"), is(S,"&"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
     (W --> (S-B)), (W --> B), task("?"), neq(S,B) |- (W --> (S-B)), (Belief:BeliefStructuralDifference, Punctuation:Belief)
     ((S~B) --> W), (B --> W), task("?"), neq(S,B) |- ((S~B) --> W), (Belief:BeliefStructuralDifference, Punctuation:Belief)

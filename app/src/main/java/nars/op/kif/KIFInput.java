@@ -229,14 +229,6 @@ public class KIFInput  {
                 //y = $.sim(args.get(0), args.get(1));
                 break;
 
-            case "disjointRelation":
-            case "disjoint":
-
-                y = Op.INH.the(
-                        $.varDep(1),
-                        Op.SECTe.the(args.get(0), args.get(1))
-                    ).neg();
-                break;
 
             case "forall":
                 String forVar = sargs.get(0);
@@ -304,24 +296,29 @@ public class KIFInput  {
                     throw new UnsupportedOperationException("unrecognized range spec");
                 }
                 return null;
+
+
+            case "disjointRelation":
+            case "disjoint":
+            case "inverse":
             case "contraryAttribute":
                 //like n-ary disjoint
-                if (args.size() >= 2) {
-                    Term a = args.get(0);
-                    Term b = args.get(1);
-                    Variable v0 = $.varDep(1);
-                    y = Op.INH.the(
-                            v0,
-                            Op.SECTe.the(a, b)
-                    ).neg();
-                    //y = disjoint($.inh(v0, a), $.inh(v0, b.neg()));
-                } else {
-                    throw new UnsupportedOperationException(); //??
+
+                if (args.size()!=2) {
+                    System.out.println(args);
                 }
+                Variable v0 = $.varDep(1);
+                y = Op.INH.the(
+                        v0,
+                        Op.SECTe.the(args.toArray(new Term[0]))
+                ).neg();
+
                 break;
+
+            case "comment":
             case "documentation":
                 if (includeDoc) {
-                    if (args.size() >= 2) {
+                    if (args.size() == 2) {
                         Term subj = args.get(0);
                         Term lang = args.get(1);
                         Term desc = $.quote(args.get(2));
@@ -331,6 +328,8 @@ public class KIFInput  {
                             //e.printStackTrace();
                             y = null;
                         }
+                    } else {
+                        throw new UnsupportedOperationException();
                     }
                 }
                 break;

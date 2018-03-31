@@ -8,6 +8,7 @@ import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
@@ -202,7 +203,7 @@ public class NAL3Test extends NALTest {
     }
 
 
-    @Test public void testDisjoint() {
+    @Test public void testDisjoint2() {
         //disjoint implemented as negative intersection inheritance
         //DecomposePositiveNegativeNegative-->Belief
         test
@@ -212,7 +213,16 @@ public class NAL3Test extends NALTest {
         ;
 
     }
+    @Test public void testDisjoint3() {
 
+        test
+            .believe("--(x-->(&,RealNumber,ComplexNumber,Letter))")
+            .believe("(x-->RealNumber)")
+            .mustBelieve(cycles, "(x-->(ComplexNumber&Letter))", 0f, 0.81f)
+            .mustNotOutput(cycles, "(x-->((&,RealNumber,ComplexNumber,Letter)|RealNumber))", BELIEF, ETERNAL)
+        ;
+
+    }
     @Test public void testDisjointWithVar() {
         //disjoint implemented as negative intersection inheritance
 

@@ -5,17 +5,17 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((P | S) --> M), (Belief:Intersection)
-    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((P & S) --> M), (Belief:Union)
+    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((P | S) --> M), (Belief:Intersection)
+    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((P & S) --> M), (Belief:Union)
 
-    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (P & S)), (Belief:Intersection)
-    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (P | S)), (Belief:Union)
+    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P & S)), (Belief:Intersection)
+    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P | S)), (Belief:Union)
 
-    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((P ~ S) --> M), (Belief:Difference)
-    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse)
+    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((P ~ S) --> M), (Belief:Difference)
+    (P --> M), (S --> M), notSet(S), notSet(P), neqRCom(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse)
 
-    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (P - S)), (Belief:Difference)
-    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse)
+    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P - S)), (Belief:Difference)
+    (M --> P), (M --> S), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse)
 
         //(P --> M), (S --> M), is(P,"+"), is(S,"+") |- (differ(P,S) --> M), (Belief:Difference)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
@@ -55,8 +55,10 @@
 
 
     //NAL3 single premise decompose
-    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        //(M --> S), X, is(S,"&"), subOfNeg(S,X) |- (M --> without(S,--X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> M), X, is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction, Goal:StructuralDeduction)

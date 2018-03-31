@@ -551,7 +551,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
         boolean inTask = !isTask && taskPattern.containsRecursively(conj);
         boolean inBelief = !isBelief && beliefPattern.containsRecursively(conj);
         if (inTask || inBelief) {
-            pres.add(new TaskBeliefHasOrHasnt(CONJ.bit, inTask, inBelief, true));
+            pres.add(new TaskBeliefHasOrHasnt(CONJ.bit, isTask||inTask, isBelief||inBelief, true));
         }
     }
 
@@ -561,23 +561,24 @@ public class DeriveRuleProto extends DeriveRuleSource {
         boolean isBelief = beliefPattern.equals(x);
         if (isTask || isBelief)
             pres.add(new TaskBeliefOp(v, isTask, isBelief));
+        boolean inTask = (!isTask && taskPattern.containsRecursively(x));
+        boolean inBelief = (!isBelief && beliefPattern.containsRecursively(x));
+        if (inTask || inBelief) {
+            pres.add(new TaskBeliefHasOrHasnt(v, isTask || inTask, isBelief || inBelief, true));
+        }
 
-    }
-
-    private static void includesOp(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude) {
-        //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
-
-        boolean inTask = taskPattern.equals(x) || taskPattern.containsRecursively(x);
-        boolean inBelief = beliefPattern.equals(x) || beliefPattern.containsRecursively(x);
-        if (inTask || inBelief)
-            pres.add(new TaskBeliefHasOrHasnt(struct, inTask, inBelief, includeExclude));
     }
 
 
     private static void termIsNot(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
         constraints.add(new OpIsNot(x, struct));
-        includesOp(pres, taskPattern, beliefPattern, x, struct, false);
+        //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
+
+//        boolean isTask = taskPattern.equals(x);
+//        boolean isBelief = beliefPattern.equals(x);
+//        if (isTask || isBelief)
+//            pres.add(new TaskBeliefOp(struct, isTask, isBelief, false));
     }
 
 //    private static void termHasAny(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, Op o) {
