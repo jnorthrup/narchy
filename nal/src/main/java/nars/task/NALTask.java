@@ -43,7 +43,10 @@ public class NALTask extends Pri implements Task {
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new InvalidTaskException(term, "null truth");
 
-        if ((start == ETERNAL && end != ETERNAL) || (start != ETERNAL && start > end))
+        if ((start == ETERNAL && end != ETERNAL) ||
+            (start != ETERNAL && start > end) ||
+            (start == TIMELESS || end == TIMELESS)
+           )
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
 
         if (Param.DEBUG_EXTRA)

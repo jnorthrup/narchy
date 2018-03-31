@@ -5,15 +5,15 @@ import nars.Task;
 import nars.task.util.TaskRegion;
 
 import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 
-/** iterative calculator of evidential density
- *      evidensity: average evidence of a set of evidential components integrated through their unioned time-span
+/**
+ * iterative calculator of evidential density
+ * evidensity: average evidence of a set of evidential components integrated through their unioned time-span
  */
 public final class EviDensity {
 
-    public long unionStart = TIMELESS;
-    public long unionEnd = TIMELESS;
+    public long unionStart = ETERNAL;
+    public long unionEnd = ETERNAL;
 
     float sumEviIntegrals = Float.NaN, sumEviAvg = Float.NaN;
 
@@ -26,17 +26,19 @@ public final class EviDensity {
         this();
         assert (x.length > 1);
         for (TaskRegion xx : x) {
-            if (xx!=null)
+            if (xx != null)
                 add(xx);
         }
     }
 
-    /** has special handling for eternals */
+    /**
+     * has special handling for eternals
+     */
     public EviDensity(Iterable<TaskRegion> x) {
         this();
         boolean hasEternals = false;
         for (TaskRegion xx : x) {
-            if (xx!=null) {
+            if (xx != null) {
                 Task xxx = xx.task();
                 if (!xxx.isEternal()) {
                     add(xx);
@@ -45,26 +47,27 @@ public final class EviDensity {
                 }
             }
         }
-        if (hasEternals) {
-            if (unionStart!=TIMELESS) {
-                //process eternals with the learned interval
-                float range = range();
-                for (TaskRegion xx : x) {
-                    if (xx != null) {
-                        Task xxx = xx.task();
-                        if (xxx.isEternal()) {
-                            float xev = xxx.evi();
-                            //fill as if it were temporal for the range defined by the non-eternal tasks
-                            add(unionStart, unionEnd, xev, range * xev);
-                        }
+        if (hasEternals && unionStart!=ETERNAL) {
+
+            //process eternals with the learned interval
+            float range = range();
+            for (TaskRegion xx : x) {
+                if (xx != null) {
+                    Task xxx = xx.task();
+                    if (xxx.isEternal()) {
+                        float xev = xxx.evi();
+                        //fill as if it were temporal for the range defined by the non-eternal tasks
+                        add(unionStart, unionEnd, xev, range * xev);
                     }
                 }
             }
+
         }
     }
 
     public long range() {
-        if (unionStart==TIMELESS) throw new ArithmeticException();
+        if (unionStart == ETERNAL)
+            return 1;
         return 1 + (unionEnd - unionStart);
     }
 
@@ -79,34 +82,34 @@ public final class EviDensity {
 
     public void add(TaskRegion x) {
         Task xt = x.task();
-        if (xt!=null)
+        if (xt != null)
             add(xt);
     }
 
-    public void add(Task xt) {
+    void add(Task xt) {
         add(xt, xt.start(), xt.end());
     }
 
-    public void add(Task xt, long start, long end) {
+    void add(Task xt, long start, long end) {
         add(start, end, xt.evi(), xt.eviInteg());
     }
 
-    public void add(long xStart, long xEnd, float evi) {
+    void add(long xStart, long xEnd, float evi) {
         add(xStart, xEnd, evi, evi * (1 + (xEnd - xStart)));
     }
 
-    public void add(long xStart, long xEnd, float evi, float eviInteg) {
+    void add(long xStart, long xEnd, float evi, float eviInteg) {
         if (sumEviIntegrals != sumEviIntegrals) {
             //first add
             if (xStart > xEnd)
                 throw new RuntimeException("out of order interval");
-            if (xStart!=ETERNAL) {
+            if (xStart != ETERNAL) {
                 unionStart = xStart;
                 unionEnd = xEnd;
             }
             sumEviAvg = sumEviIntegrals = 0;
         } else {
-            if (xStart!=ETERNAL) {
+            if (xStart != ETERNAL) {
                 Longerval uu = new Longerval(unionStart, unionEnd).union(xStart, xEnd);
                 this.unionStart = uu.a;
                 this.unionEnd = uu.b;
@@ -123,9 +126,11 @@ public final class EviDensity {
 //        return sumEviIntegrals / unionRange;
 //    }
 
-    /** ratio of density to sum of averages */
+    /**
+     * ratio of density to sum of averages
+     */
     public float factor() {
-        if (unionStart == TIMELESS || unionStart == ETERNAL)
+        if (unionStart == ETERNAL)
             return 1; //no temporal range was specified, assume eternal
 
         long unionRange = 1 + (unionEnd - unionStart);

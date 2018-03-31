@@ -52,7 +52,7 @@ public class ExeCharts {
                 s, Math.max(1, (int) Math.ceil(Math.sqrt(s))),
                 Draw::colorBipolar) {
 
-            final DurService on;
+            DurService on;
 
             {
                 on = DurService.on(nar, this::update);
@@ -60,9 +60,11 @@ public class ExeCharts {
 
             @Override
             public void stop() {
-                super.stop();
                 on.off();
+                on = null;
+                super.stop();
             }
+
         };
 
         return new Splitting(bmp, new AutoSurface<>(gain), 0.1f);

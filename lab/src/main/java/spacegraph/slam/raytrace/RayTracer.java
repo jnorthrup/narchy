@@ -86,22 +86,22 @@ public final class RayTracer extends JPanel {
                     "    position: (0, 2, 4)\n" +
                     "    color: 0000ff\n";
 
-            String simple= "camera:\n" +
-                    "    position: (4, 4, 4)\n" +
-                    "    direction: (-1, -1, -1)\n" +
-                    "    fov: 90\n" +
-                    "    size: 0\n" +
-                    "cube:\n" +
-                    "    position: (0, 0, 0)\n" +
-                    "    sideLength: 2\n" +
-                    "    surface: diffuse\n" +
-                    "light:\n" +
-                    "    position: (0, -2, 4)\n" +
-                    "    color: ffffff\n";
+//            String simple= "camera:\n" +
+//                    "    position: (4, 4, 4)\n" +
+//                    "    direction: (-1, -1, -1)\n" +
+//                    "    fov: 90\n" +
+//                    "    size: 0\n" +
+//                    "cube:\n" +
+//                    "    position: (0, 0, 0)\n" +
+//                    "    sideLength: 2\n" +
+//                    "    surface: diffuse\n" +
+//                    "light:\n" +
+//                    "    position: (0, -2, 4)\n" +
+//                    "    color: ffffff\n";
 
             scene = new Scene(
-                    //defaults
-                    simple
+                    defaults
+                    //simple
             );
         } catch (Exception e) {
             System.out.println(e);

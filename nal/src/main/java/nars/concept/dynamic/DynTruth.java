@@ -123,7 +123,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
             if (size() > 1) {
                 if (superterm.op() == CONJ) {
-                    long min = Long.MAX_VALUE;
+                    long min = ETERNAL;
                     long maxRange = 0;
                     for (int i = 0, thisSize = size(); i < thisSize; i++) {
                         LongInterval ii = get(i);
@@ -134,12 +134,13 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                         }
                     }
 
-                    if (min == Long.MAX_VALUE)
-                        start = end = ETERNAL; //all eternal
-                    else {
-                        start = min;
-                        end = min + maxRange;
-                    }
+                    assert(min!=TIMELESS);
+//                    if (min == Long.MAX_VALUE)
+//                        start = end = ETERNAL; //all eternal
+//                    else {
+                    start = min;
+                    end = (start != ETERNAL) ? (min + maxRange) : min;
+//                    }
 
                 } else {
                     //dilute the evidence in proportion to temporal sparseness for non-temporal results
@@ -195,7 +196,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
                 tr.negIf(r.getTwo())
-                        .dither(freqRes, confRes, w2cSafe(eviMin)), nar, start, end,
+                        .dither(freqRes, confRes, w2cSafe(eviMin)),
+                nar, start, end,
                 ss.getOne());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 

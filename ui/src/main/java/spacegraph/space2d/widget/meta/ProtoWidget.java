@@ -89,8 +89,15 @@ public class ProtoWidget extends Widget {
         add("Color", TODO, "See");
 
         add("Audio", TODO, "Hear");
-        add("Tonify", TODO, "Hear");
+        add("Sonify", TODO, "Hear");
 
+        add("Geo", TODO, "Reality");
+        add("Weather", TODO, "Reality");
+
+        add("Files", TODO, "Connect");
+        add("SSH", TODO, "Connect");
+        add("RDP", TODO, "Connect");
+        add("WWW", TODO, "Connect");
 
     }};
 

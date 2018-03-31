@@ -1,7 +1,5 @@
 package jcog.math;
 
-import jcog.TODO;
-
 /** pair of 64-bit signed long integers representing an interval.
  *  a special 'ETERNAL' value represents (-infinity,+infinity)
  *
@@ -185,7 +183,8 @@ public interface LongInterval {
             return 0;
 
         if (a == ETERNAL) {
-            throw new TODO();
+            //throw new TODO();
+            return 0;
         }
 
         long e = end();

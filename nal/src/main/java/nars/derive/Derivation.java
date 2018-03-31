@@ -466,6 +466,9 @@ public class Derivation extends PreDerivation {
         else
             tAt = _task.nearestPointInternal(time);
 
+        if (tAt == TIMELESS)
+            throw new RuntimeException();
+
         this.taskAt = tAt;
         switch (this.taskPunc = _task.punc()) {
             case QUESTION:

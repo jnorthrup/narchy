@@ -44,6 +44,7 @@ import boofcv.factory.geo.*;
 import boofcv.gui.d3.ColorPoint3D;
 import boofcv.gui.feature.AssociationPanel;
 import boofcv.gui.image.ShowImages;
+import boofcv.gui.image.VisualizeImageData;
 import boofcv.io.UtilIO;
 import boofcv.io.calibration.CalibrationIO;
 import boofcv.io.image.ConvertBufferedImage;
@@ -89,9 +90,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.StringReader;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Example demonstrating how to use to images taken from a single calibrated camera to create a stereo disparity image,
@@ -143,11 +145,13 @@ public class ExampleStereoTwoViewsOneCamera {
 
 			@Override
 			public void renderAbsolute(GL2 gl, int dtMS) {
-				for (ColorPoint3D p : e.gui.view.cloud) {
-					int cc = p.rgb;
-					gl.glColor3f(Bitmap2D.decodeRed(cc), Bitmap2D.decodeGreen(cc), Bitmap2D.decodeBlue(cc));
-					Draw.rect(gl, (float)p.x, (float)p.y, 1, 1, (float)p.z);
-				}
+
+					for (ColorPoint3D p : e.gui.view.cloud) {
+						int cc = p.rgb;
+						gl.glColor3f(Bitmap2D.decodeRed(cc), Bitmap2D.decodeGreen(cc), Bitmap2D.decodeBlue(cc));
+						Draw.rect(gl, (float) p.x, (float) p.y, 1, 1, (float) p.z);
+					}
+
 			}
 
 
@@ -157,6 +161,9 @@ public class ExampleStereoTwoViewsOneCamera {
 		r.update();
 		r.renderProgressively();
 
+		r.scene.camera.position.x = 4 - 1;
+		//r.scene.camera.direction.x = -0.577 + 0.25f;
+
 		r.update();
 		r.renderProgressively();
 
@@ -164,19 +171,21 @@ public class ExampleStereoTwoViewsOneCamera {
 
 		Thread.sleep(200);
 
-		new Thread(()->{
+//		new Thread(()->{
 			double t = 0;
-			while (true) {
+//			while (true) {
+		r.scene.camera.position.x = 4 + 1;
+		//r.scene.camera.direction.x = -0.577 - 0.25f;
 				r.update();
 				if (r.renderProgressively()) {
 					r.input.waitForInput();
 				}
-				r.scene.camera.position.x += Math.cos(t)*0.2f;
+				//r.scene.camera.position.x += Math.cos(t)*0.2f;
 				t+=0.2f;
-			}
-		}).start();
-		new Thread(()->{
-			while (true) {
+//			}
+//		}).start();
+//		new Thread(()->{
+//			while (true) {
 				e.snap(r.image);
 
 				try {
@@ -184,9 +193,9 @@ public class ExampleStereoTwoViewsOneCamera {
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-			}
-
-		}).start();
+//			}
+//
+//		}).start();
 
 	}
 
@@ -195,7 +204,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		gui.setPreferredSize(new Dimension(800, 800));
 		ShowImages.showWindow(gui, "Point Cloud");
 
-		//ShowImages.showWindow(assocPanel, "Inlier Features").setSize(800, 800);
+		ShowImages.showWindow(assocPanel, "Inlier Features").setSize(800, 800);
 
 	}
 
@@ -227,7 +236,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		if (leftToRight == null)
 			return false; //no motion
 
-//		drawInliers(intrinsic, inliers);
+		drawInliers(intrinsic, inliers);
 
 		// Rectify and remove lens distortion for stereo processing
 		DMatrixRMaj rectifiedK = new DMatrixRMaj(3, 3);
@@ -242,7 +251,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		StereoDisparity<GrayS16, GrayF32> disparityAlg =
 				FactoryStereoDisparity.regionSubpixelWta(DisparityAlgorithms.RECT_FIVE,
 						minDisparity, maxDisparity,
-						3, 3, 16, 2,
+						3, 3, 0, 15,
 						0.1, GrayS16.class);
 
 		// Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
@@ -256,12 +265,11 @@ public class ExampleStereoTwoViewsOneCamera {
 		GrayF32 disparity = disparityAlg.getDisparity();
 
 		// show results
-//		BufferedImage visualized = VisualizeImageData.disparity(disparity, null, minDisparity, maxDisparity, 0);
-//		ShowImages.showWindow(visualized, "Disparity");
+		BufferedImage visualized = VisualizeImageData.disparity(disparity, null, minDisparity, maxDisparity, 0);
+		ShowImages.showWindow(visualized, "Disparity");
 
 		//BufferedImage outLeft = ConvertBufferedImage.convertTo(rectifiedLeft, null);
 		//BufferedImage outRight = ConvertBufferedImage.convertTo(rectifiedRight, null);
-
 		//ShowImages.showWindow(new RectifiedPairPanel(true, outLeft, outRight), "Rectification");
 
 		double baseline = leftToRight.getT().norm();
@@ -283,7 +291,9 @@ public class ExampleStereoTwoViewsOneCamera {
 	 */
 	public void computeMatches( GrayF32 left , GrayF32 right ) {
 		DetectDescribePoint detDesc = FactoryDetectDescribe.surfStable(
-				new ConfigFastHessian(1, 2, 400, 1, 9, 4, 4), null,null, GrayF32.class);
+				new ConfigFastHessian(
+						1, 2, 0, 1, 9, 4, 4),
+				null,null, GrayF32.class);
 		//DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(2,0,200,5),null,null);
 
 		ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
@@ -319,7 +329,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		ModelMatcher<Se3_F64, AssociatedPair> epipolarMotion =
 				FactoryMultiViewRobust.essentialRansac(
 						new ConfigEssential(intrinsic),
-						new ConfigRansac(15000,0.5));
+						new ConfigRansac(15000,0.1));
 
 		if (!epipolarMotion.process(matchedCalibrated))
 			return null;
@@ -413,7 +423,7 @@ public class ExampleStereoTwoViewsOneCamera {
 								   List<AssociatedPair> normalized) {
 		Point2Transform2_F64 n_to_p = LensDistortionOps.narrow(intrinsic).distort_F64(false,true);
 
-		List<AssociatedPair> pixels = new ArrayList<>();
+		List<AssociatedPair> pixels = new ArrayList<>(normalized.size());
 
 		for (AssociatedPair n : normalized) {
 			AssociatedPair p = new AssociatedPair();
@@ -431,6 +441,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		assocPanel.setAssociation(pixels);
 		assocPanel.setImages(ConvertBufferedImage.extractBuffered(distortedPrev), ConvertBufferedImage.extractBuffered(distortedNext));
 		assocPanel.repaint();
+		assocPanel.setSize(500,100);
 
 	}
 
@@ -654,7 +665,9 @@ public class ExampleStereoTwoViewsOneCamera {
     }
 
 	public static class DisparityPointCloudViewer extends JPanel {
-		ArrayDeque<ColorPoint3D> cloud = new ArrayDeque<>();
+		Deque<ColorPoint3D> cloud =
+				new ConcurrentLinkedDeque<>();//HACK
+				//new ArrayDeque<>();
 
 		// distance between the two camera centers
 		double baseline;
