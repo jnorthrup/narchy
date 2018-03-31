@@ -42,8 +42,8 @@ import static nars.Op.*;
 import static nars.op.rdfowl.NQuadsRDF.equi;
 
 /**
- * http://sigmakee.cvs.sourceforge.net/viewvc/sigmakee/sigma/suo-kif.pdf
- * http://sigma-01.cim3.net:8080/sigma/Browse.jsp?kb=SUMO&lang=EnglishLanguage&flang=SUO-KIF&term=subclass
+ * https://github.com/ontologyportal/sigmakee/blob/master/suo-kif.pdf
+ * http://sigma.ontologyportal.org:8080/sigma/Browse.jsp?kb=SUMO&lang=EnglishLanguage&flang=SUO-KIF&term=subclass
  * https://raw.githubusercontent.com/ontologyportal/sumo/master/Merge.kif
  * https://raw.githubusercontent.com/ontologyportal/sumo/master/Mid-level-ontology.kif
  **/
