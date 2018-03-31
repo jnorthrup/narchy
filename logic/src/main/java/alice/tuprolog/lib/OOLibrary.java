@@ -18,7 +18,6 @@
 package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.NumberTerm;
 import alice.util.AbstractDynamicClassLoader;
 import alice.util.InspectionUtils;
 import alice.util.JavaDynamicClassLoader;
@@ -28,9 +27,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.Double;
-import java.lang.Float;
-import java.lang.Long;
 import java.lang.reflect.*;
 import java.net.MalformedURLException;
 import java.net.URL;

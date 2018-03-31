@@ -18,7 +18,6 @@
 package alice.tuprologx.pj.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.NumberTerm;
 import alice.tuprolog.lib.InvalidObjectIdException;
 
 import java.io.FileWriter;

@@ -5,7 +5,6 @@ package alice.tuprolog.lib;
  */
 
 import alice.tuprolog.*;
-import alice.tuprolog.NumberTerm;
 
 import java.io.*;
 import java.util.*;

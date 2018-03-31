@@ -727,12 +727,10 @@ public class Struct extends Term {
      */
     public void append(Term t) {
         if (isEmptyList()) {
-            name = ".";
             subCount = 2;
-            key = name + '/' + subCount; /* Added by Paolo Contessi */
-            subs = new Term[subCount];
-            subs[0] = t;
-            subs[1] = emptyListMutable();
+            subs = new Term[] { t, emptyListMutable() };
+            name = ".";
+            key = "./2"; /* Added by Paolo Contessi */
         } else if (subs[1].isList()) {
             ((Struct) subs[1]).append(t);
         } else {

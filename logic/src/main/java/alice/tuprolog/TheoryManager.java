@@ -18,7 +18,6 @@
 package alice.tuprolog;
 
 import alice.util.Tools;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -187,7 +186,6 @@ public class TheoryManager {
      * Reviewed by Paolo Contessi: modified according to new ClauseDatabase
      * implementation
      */
-    @NotNull
     public /*synchronized*/ Deque<ClauseInfo> find(Term headt) {
 
         if (headt instanceof Struct) {
@@ -301,7 +299,7 @@ public class TheoryManager {
     public void removeLibraryTheory(String libName) {
         for (Iterator<ClauseInfo> allClauses = staticDBase.iterator(); allClauses.hasNext(); ) {
             ClauseInfo d = allClauses.next();
-            if (d.libName != null && libName.equals(d.libName)) {
+            if (libName.equals(d.libName)) {
                 try {
                     // Rimuovendolo da allClauses si elimina solo il valore e non la chiave
                     allClauses.remove();

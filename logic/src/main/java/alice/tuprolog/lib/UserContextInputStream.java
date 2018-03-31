@@ -2,113 +2,107 @@ package alice.tuprolog.lib;
 
 import alice.tuprolog.event.ReadEvent;
 import alice.tuprolog.event.ReadListener;
+import jcog.list.FasterList;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserContextInputStream extends InputStream {
-        
-        private boolean avalaible;
-        private boolean start;
-        private int i;
-        private InputStream result;
-        /**
-         * Changed from a single EventListener to multiple (ArrayList) ReadListeners
-         *
-         */
-        private final ArrayList<ReadListener> readListeners;
-        /***/
-        
-        public UserContextInputStream()
-        {
-        		this.avalaible = false;
-                this.start = true;
-                this.readListeners = new ArrayList<>();
+
+    /**
+     * Changed from a single EventListener to multiple (ArrayList) ReadListeners
+     */
+    private final List<ReadListener> readListeners;
+    private boolean available;
+    private boolean start;
+    private int i;
+    private InputStream result;
+
+    /***/
+
+    public UserContextInputStream() {
+        this.available = false;
+        this.start = true;
+        this.readListeners = new FasterList<>();
+    }
+
+    public synchronized InputStream getInput() {
+        while (!available) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        available = false;
+        notifyAll();
+        return this.result;
+    }
+
+    public synchronized void putInput(InputStream input) {
+        while (available) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+//        if (this.result != input) {
+//
+//        }
+        this.result = input;
+        available = true;
+        notifyAll();
+    }
+
+    public void setCounter() {
+        start = true;
+        result = null;
+    }
+
+    @Override
+    public int read() {
+        if (start) {
+            fireReadCalled();
+            getInput();
+            start = false;
         }
 
-        public synchronized InputStream getInput()
-        {
-                while (!avalaible){
-                        try {
-                                wait();
-                        } catch (InterruptedException e) {
-                                e.printStackTrace();
-                        }
+        do {
+            try {
+                i = result.read();
+
+                if (i == -1) {
+                    fireReadCalled();
+                    getInput();
+                    i = result.read();
                 }
-                avalaible = false;
-                notifyAll();
-                return this.result;
-        }
-        
-        public synchronized void putInput(InputStream input)
-        {
-                while (avalaible){
-                        try {
-                                wait();
-                        } catch (InterruptedException e) {
-                                e.printStackTrace();
-                        }
-                }
-                if(this.result != input)
-                {
-                        
-                }
-                this.result = input;
-                avalaible = true;
-                notifyAll();
-        }
-        
-        public void setCounter(){
-                start = true;
-                result = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } while (i < 0x20 && i >= -1);
+
+        return i;
+    }
+
+    /**
+     * Changed these methods because there are more readListeners
+     * from the previous version
+     */
+    private void fireReadCalled() {
+        ReadEvent event = new ReadEvent(this);
+
+        for (int i1 = 0, readListenersSize = readListeners.size(); i1 < readListenersSize; i1++) {
+            readListeners.get(i1).readCalled(event);
         }
 
-        @Override
-        public int read() {
-        	if(start)
-        	{
-        		fireReadCalled();
-        		getInput();
-        		start = false;
-        	}
+    }
 
-        	do {
-        		try {
-        			i = result.read();
-
-        			if(i == -1)
-        			{
-        				fireReadCalled();
-        				getInput();
-        				i = result.read();
-        			}
-        		} catch (IOException e) {
-        			e.printStackTrace();
-        		}
-        	} while (i < 0x20 && i >= -1);  
-
-        	return i;                                       
-        }
-        
-        /**
-         * Changed these methods because there are more readListeners
-         * from the previous version
-         */
-        private void fireReadCalled()
-        {
-                ReadEvent event = new ReadEvent(this);
-               
-                for(ReadListener r:readListeners){
-                        r.readCalled(event);
-                }
-                
-        }
-        
-        public void setReadListener(ReadListener r)
-        {
-                this.readListeners.add(r);
-        }
-        /***/
+//        public void setReadListener(ReadListener r)
+//        {
+//                this.readListeners.add(r);
+//        }
+    /***/
 }

@@ -18,7 +18,6 @@
 package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.NumberTerm;
 
 import java.util.ArrayList;
 
@@ -332,10 +331,10 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof NumberTerm))
+        if (!(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof NumberTerm))
+        if (!(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
         NumberTerm val0n = (NumberTerm) val0;
@@ -361,10 +360,10 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof NumberTerm))
+        if (!(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof NumberTerm))
+        if (!(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
         return expression_greater_than((NumberTerm) val0,
@@ -389,10 +388,10 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof NumberTerm))
+        if (!(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof NumberTerm))
+        if (!(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
         return !expression_greater_than((NumberTerm) val0,
@@ -422,10 +421,10 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof NumberTerm))
+        if (!(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof NumberTerm))
+        if (!(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
         return expression_less_than((NumberTerm) val0,
@@ -450,10 +449,10 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof NumberTerm))
+        if (!(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof NumberTerm))
+        if (!(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
         return !expression_less_than((NumberTerm) val0,
@@ -491,7 +490,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        return val0 != null && val0 instanceof NumberTerm ? val0 : null;
+        return val0 instanceof NumberTerm ? val0 : null;
     }
 
     public Term expression_minus_1(Term arg0) {
@@ -501,7 +500,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val0 instanceof NumberTerm) {
+        if (val0 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             if (val0n instanceof NumberTerm.Int) {
                 return new NumberTerm.Int(val0n.intValue() * -1);
@@ -526,7 +525,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        return val0 != null && val0 instanceof NumberTerm ? new NumberTerm.Long(~((NumberTerm) val0).longValue()) : null;
+        return val0 instanceof NumberTerm ? new NumberTerm.Long(~((NumberTerm) val0).longValue()) : null;
     }
 
     static NumberTerm getIntegerNumber(long num) {
@@ -542,7 +541,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -561,7 +560,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -580,7 +579,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -599,7 +598,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -618,7 +617,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -637,7 +636,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && (val1 instanceof NumberTerm)) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -657,7 +656,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -678,8 +677,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
-                && val1 instanceof NumberTerm) {
+        if (val0 instanceof NumberTerm                && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
             // return new Int(val0n.intValue() << val1n.intValue());
@@ -699,7 +697,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -720,7 +718,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+        if (val0 instanceof NumberTerm
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
@@ -1388,7 +1386,7 @@ public class BasicLibrary extends Library {
 
             (engine.engine).setBagOFvarSet(varSet);
             (engine.engine).setBagOFgoal(goal);
-            if ((engine.engine).getBagOFbag()==null)
+            if (goal /*(engine.engine).getBagOFbag()*/==null)
                 (engine.engine).setBagOFbag(tList);
     		
     	}
@@ -1397,7 +1395,7 @@ public class BasicLibrary extends Library {
     	//System.out.println("template "+temp);
     	//System.out.println("goal "+goal);
         Struct list = (Struct) wtList.term();
-        Struct varList = (Struct) varSet.term();
+        //Struct varList = (Struct) varSet.term();
         //String goalString = goal.toString();
         //System.out.println("goal string "+goalString);
         

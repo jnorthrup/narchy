@@ -1,6 +1,9 @@
 package nars.op.prolog;
 
-import alice.tuprolog.*;
+import alice.tuprolog.NumberTerm;
+import alice.tuprolog.Struct;
+import alice.tuprolog.Theory;
+import alice.tuprolog.Var;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;

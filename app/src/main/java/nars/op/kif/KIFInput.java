@@ -47,38 +47,41 @@ import static nars.op.rdfowl.NQuadsRDF.equi;
  * https://raw.githubusercontent.com/ontologyportal/sumo/master/Merge.kif
  * https://raw.githubusercontent.com/ontologyportal/sumo/master/Mid-level-ontology.kif
  **/
-public class KIFInput  {
+public class KIFInput {
 
+    static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
+    final Set<Term> beliefs = new TreeSet();
     private final KIF kif;
-
     private final boolean includeSubclass = true;
     private final boolean includeInstance = true;
     private final boolean includeRelatedInternalConcept = true;
-
     private final boolean includeDoc = false;
-
-    final Set<Term> beliefs = new TreeSet();
-
     private transient final Map<Term, FnDef> fn = new HashMap();
 
-    static class FnDef {
-        final IntObjectHashMap<Term> domain = new IntObjectHashMap();
-        Term range;
-    }
-
     public KIFInput(String kifPath) throws Exception {
-        this.kif = new KIF(kifPath);
+        this.kif = new KIF();
+        kif.readFile(kifPath);
 
-        kif.formulas().forEach(x->{
+        KB kb = KBmanager.getMgr().addKB("preprocess");
 
-            try {
-                Term y = formulaToTerm(x);
-                if (y != null) {
-                    beliefs.add(y);
+        FormulaPreprocessor fpp = new FormulaPreprocessor();
+        kif.formulaMap.values().forEach(_x -> {
+
+            ArrayList<Formula> xx = fpp.preProcess(_x, false, kb);
+//            if (xx.size() > 1) {
+//                System.out.println("expand " + _x + "to:\n" + xx);
+//            }
+            xx.forEach(x -> {
+                try {
+                    Term y = formulaToTerm(x, 0);
+                    if (y != null) {
+                        beliefs.add(y);
+                    }
+                } catch (Exception e) {
+                    logger.error("{} {}", x, e.getMessage());
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                logger.error("{} {}", x, e.getMessage());
-            }
+            });
 
             //  => Implies
             //  <=> Equivalance
@@ -87,9 +90,9 @@ public class KIFInput  {
 
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
-            Term[] vt =  Util.map(0, ds, i -> $.varDep(1 + i), Term[]::new);
+            Term[] vt = Util.map(0, ds, i -> $.varDep(1 + i), Term[]::new);
             Term v = null;
-            if (s.range!=null) {
+            if (s.range != null) {
                 v = $.varDep("R");
                 vt = ArrayUtils.add(vt, v);
             }
@@ -99,14 +102,14 @@ public class KIFInput  {
                             s.domain.getIfAbsent(1 + i, () -> {
                                 return $.varDep(k[0]++);
                             })), Term[]::new);
-            if (s.range!=null) {
+            if (s.range != null) {
                 typeConds = ArrayUtils.add(typeConds, $.inh(v, s.range));
             }
             Term types = CONJ.the(
                     typeConds
             );
-            Term fxy = impl($.inh($.p( vt ), f), types, true);
-            if (fxy!=null) {
+            Term fxy = impl($.inh($.p(vt), f), types, true);
+            if (fxy != null) {
                 if (fxy instanceof Bool) {
                     logger.error("bad function {} {} {}", f, s.domain, s.range);
                 } else {
@@ -116,7 +119,7 @@ public class KIFInput  {
 
         });
 
-        beliefs.removeIf(b->{
+        beliefs.removeIf(b -> {
             if (b.hasAny(BOOL)) {
                 return true;
             }
@@ -135,333 +138,14 @@ public class KIFInput  {
         //nar.believe(y);
     }
 
-    public Term formulaToTerm(String sx) {
-        sx = sx.replace("?", "#"); //query var to indepvar HACK
-
-        Formula f = Formula.the(sx);
-        if (f != null)
-            return formulaToTerm(f);
-        else
-            try {
-                return $.$(sx);
-            } catch (Narsese.NarseseException e) {
-                return $.quote(sx);
-            }
-    }
-
-    static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
-
-    public Term formulaToTerm(final Formula x) {
-        if (x.theFormula.contains("@ROW"))
-            return null; //ignore @ROW stuff
-
-        String xCar = x.car();
-        String root = xCar; //root operate
-
-        int l = x.listLength();
-        if (l == 1)
-            return formulaToTerm(root);
-
-        List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
-        List<Term> args = sargs != null ? sargs.stream().map(this::formulaToTerm).collect(Collectors.toList()) : Collections.emptyList();
-
-        assert(!args.isEmpty()); //should have been handled first
-
-        /**
-         *
-         *
-         * https://github.com/opencog/opencog/blob/04db8e557a2d67da9025fe455095d2cda0261ea7/opencog/python/sumo/sumo.py
-         * def special_link_type(predicate):
-         mapping = {
-         '=>':types.ImplicationLink,
-         '<=>':types.EquivalenceLink,
-         'and':types.AndLink,
-         'or':types.OrLink,
-         'not':types.NotLink,
-         'instance':types.MemberLink,
-         # This might break some of the formal precision of SUMO, but who cares
-         'attribute':types.InheritanceLink,
-         'member':types.MemberLink,
-         'subclass':types.InheritanceLink,
-         'exists':types.ExistsLink,
-         'forall':types.ForAllLink,
-         'causes':types.PredictiveImplicationLink
-         *
-         */
-
-        Term y = null;
-        switch (root) {
-            case "subrelation":
-            case "subclass":
-            case "subAttribute":
-                if (includeSubclass) {
-                    if (args.size() != 2) {
-                        System.err.println("subclass expects 2 arguments");
-                    } else {
-                        y = INH.the(args.get(0), args.get(1));
-                    }
-                }
-                break;
-            case "instance":
-                if (includeInstance) {
-                    if (args.size() != 2) {
-                        System.err.println("instance expects 2 arguments");
-                    } else {
-                        y = //$.inst
-                            $.inh
-                                (args.get(0), args.get(1));
-                    }
-                }
-                break;
-            case "relatedInternalConcept":
-                /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
-                if (includeRelatedInternalConcept) {
-                    if (args.size() != 2) {
-                        throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
-                    } else {
-                        y = $.sim(args.get(0), args.get(1));
-                    }
-                }
-                break;
-
-            case "equal":
-                y = $.func("equal", args.get(0), args.get(1));
-                //y = $.sim(args.get(0), args.get(1));
-                break;
-
-
-            case "forall":
-                String forVar = sargs.get(0);
-                if (forVar.startsWith("(")) {
-                    forVar = forVar.substring(1, forVar.length()-1); //remove parens
-                }
-                boolean missingAParamVar = false;
-                String[] forVars = forVar.split(" ");
-                for (String vv : forVars) {
-                    if (!sargs.get(1).contains(vv)) {
-                        missingAParamVar = true;
-                        break;
-                    }
-                }
-                if (!missingAParamVar) {
-                    return args.get(1); //skip over the for variables since it is contained in the expression
-                }
-
-                y = impl(args.get(0), args.get(1), true);
-                break;
-            case "exists":
-                y = args.get(1); //skip over the first parameter, since depvar is inherently existential
-                break;
-            case "=>":
-                y = impl(args.get(0), args.get(1), true);
-                if (y == null)
-                    return null;
-                break;
-            case "<=>":
-                y = impl(args.get(0), args.get(1), false);
-                if (y == null)
-                    return null;
-                break;
-
-            case "termFormat":
-                String language = args.get(0).toString();
-                language = language.replace("Language", "");
-
-                Term term = args.get(1);
-                Term string = args.get(2);
-                y = $.inh($.p($.the(language), string), term);
-                break;
-
-            case "domain":
-                //TODO use the same format as Range, converting quantity > 1 to repeats in an argument list
-                if (args.size() >= 3) {
-                    Term subj = (args.get(0));
-                    Term arg = (args.get(1));
-                    Term type = (args.get(2));
-                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
-                    Term existing = d.domain.put(((Int) arg).id, type);
-                    assert (existing == null || existing.equals(type));
-                } else {
-                    throw new UnsupportedOperationException("unrecognized domain spec");
-                }
-                return null;
-
-            case "range":
-                if (args.size() == 2) {
-                    Term subj = args.get(0);
-                    Term range = args.get(1);
-                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
-                    d.range = range;
-                } else {
-                    throw new UnsupportedOperationException("unrecognized range spec");
-                }
-                return null;
-
-
-            case "disjointRelation":
-            case "disjoint":
-            case "inverse":
-            case "contraryAttribute":
-                //like n-ary disjoint
-
-                if (args.size()!=2) {
-                    System.out.println(args);
-                }
-                Variable v0 = $.varDep(1);
-                y = Op.INH.the(
-                        v0,
-                        Op.SECTe.the(args.toArray(new Term[0]))
-                ).neg();
-
-                break;
-
-            case "comment":
-            case "documentation":
-                if (includeDoc) {
-                    if (args.size() == 2) {
-                        Term subj = args.get(0);
-                        Term lang = args.get(1);
-                        Term desc = $.quote(args.get(2));
-                        try {
-                            y = $.inh($.p(subj, desc), lang);
-                        } catch (Exception e) {
-                            //e.printStackTrace();
-                            y = null;
-                        }
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
-                }
-                break;
-            default:
-                //System.out.println("unknown: " + x);
-                break;
-        }
-
-        if (y == null) {
-
-            if (!includeDoc && (xCar.equals("documentation") || xCar.equals("comment")))
-                return null;
-
-            Term z = formulaToTerm(xCar);
-
-            if (z != null) {
-                switch (z.toString()) {
-                    case "and":
-                        Term[] a = args.toArray(new Term[args.size()]);
-                        y = CONJ.the(a);
-                        break;
-                    case "or":
-                        y = $.disj(args.toArray(new Term[args.size()]));
-                        break;
-                    case "not":
-                        y = args.get(0).neg();
-                        break;
-                    default:
-                        if (!z.op().var)
-                            y = $.inh($.p(args), z); //HACK
-                        else {
-                            args.add(0, z); //re-attach
-                            y = $.p(args);
-                        }
-                        break;
-                }
-
-            }
-
-
-        }
-
-        if (y instanceof Bool)
-            throw new UnsupportedOperationException("Bool singularity: args=" + args);
-
-        return y;
-    }
-
-//    private Variable nextVar(Op v) {
-//        return $.v(v, nextVar());
-//    }
-
-//    private final AtomicInteger serial = new AtomicInteger(0);
-
-//    private String nextVar() {
-//        return Integer.toString(Math.abs(serial.incrementAndGet()), 36);
-//    }
-
-    //public final Set<Twin<Term>> impl = new HashSet();
-
-    public Term impl(Term a, Term b, boolean implOrEquiv) {
-
-        //reduce as implication first
-        Term tmp = IMPL.the(a, b);
-        if (tmp.unneg().op()!=IMPL) {
-            logger.warn("un-impl: {} ==> {} ", a, b);
-            return null;
-        }
-        tmp = tmp.unneg();
-        a = tmp.sub(0);
-        b = tmp.sub(1);
-
-        MutableSet<Term> aVars = new VarOnlySet();
-        if (a instanceof Compound)
-            ((Compound) a).recurseTermsToSet(Op.VariableBits, aVars, true);
-        else if (a.op().var)
-            aVars.add(a);
-        MutableSet<Term> bVars = new VarOnlySet();
-        if (b instanceof Compound)
-            ((Compound) b).recurseTermsToSet(Op.VariableBits, bVars, true);
-        else if (b.op().var)
-            bVars.add(b);
-
-        Map<Term, Term> remap = new HashMap();
-
-        MutableSet<Term> common = aVars.intersect(bVars);
-        if (!common.isEmpty()) {
-            common.forEach(t -> {
-                Variable u = $.v(
-                        Op.VAR_INDEP,
-                        //Op.VAR_QUERY,
-                        //Op.VAR_PATTERN,
-                        t.toString().substring(1));
-                if (!t.equals(u))
-                    remap.put(t, u);
-            });
-        }
-        for (MutableSet<Term> ab : new MutableSet[]{aVars, bVars}) {
-            ab.forEach(aa -> {
-                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
-                    remap.put(aa, $.v(Op.VAR_DEP, aa.toString().substring(1)));
-                }
-            });
-        }
-
-        if (!remap.isEmpty()) {
-            a = a.replace(remap);
-            if (a == null)
-                throw new NullPointerException("transform failure");
-
-            b = b.replace(remap);
-            if (b == null)
-                throw new NullPointerException("transform failure");
-        }
-
+    static Term atomic(String sx) {
+        sx = sx.replace("?", "#"); //query var to depvar HACK
         try {
-//            impl.add(Tuples.twin(conditionTerm, actionTerm));
-//            if (!implOrEquiv) {
-//                impl.add(Tuples.twin(actionTerm, conditionTerm)); //reverse
-//            }
-
-            return
-                    implOrEquiv ?
-                            IMPL.the(a, b) :
-                            equi(a, b)
-                    ;
-        } catch (Exception ignore) {
-            ignore.printStackTrace();
+            return $.$(sx);
+        } catch (Narsese.NarseseException e) {
+            return $.quote(sx);
         }
-        return null;
     }
-
 
     public static void main(String[] args) throws Exception {
         Param.DEBUG = true;
@@ -480,7 +164,7 @@ public class KIFInput  {
                 "/home/me/sumo/Merge.kif"
                 //"/home/me/sumo/emotion.kif"
                 //"/home/me/sumo/Weather.kif"
-        ;
+                ;
 
         String O = "/home/me/d/sumo_merge.nal";
         KIFInput k = new KIFInput(I);
@@ -489,9 +173,7 @@ public class KIFInput  {
 
         nar.log();
 
-        //nar.inputNarsese(new FileInputStream(O));
-        String[] x = new String(new FileInputStream(O).readAllBytes()).split("\n");
-        nar.input(x);
+        nar.inputNarsese(new FileInputStream(O));
 
 //        final PrintStream output = System.out;
 //        for (Term x : k.beliefs) {
@@ -587,22 +269,359 @@ public class KIFInput  {
 
     }
 
+    public Term formulaToTerm(String sx, int level) {
+        sx = sx.replace("?", "#"); //query var to depvar HACK
+
+        Formula f = new Formula(sx);
+//        if (f != null)
+        return formulaToTerm(f, level);
+//        else {
+//            return atomic(sx);
+//        }
+    }
+
+    public Term formulaToTerm(final Formula x, int level) {
+//        if (x.theFormula.contains("@ROW"))
+//            return null; //HACK ignore @ROW stuff
+
+        String xCar = x.car();
+        String root = xCar; //root operate
+
+        int l = x.listLength();
+        if (l == -1)
+            return atomic(x.theFormula);
+
+        List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
+        List<Term> args = sargs != null ? sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList()) : Collections.emptyList();
+
+        if (args.contains(null)) {
+            throw new NullPointerException("in: " + args);
+        }
+
+        assert (!args.isEmpty()); //should have been handled first
+
+        /**
+         *
+         *
+         * https://github.com/opencog/opencog/blob/04db8e557a2d67da9025fe455095d2cda0261ea7/opencog/python/sumo/sumo.py
+         * def special_link_type(predicate):
+         mapping = {
+         '=>':types.ImplicationLink,
+         '<=>':types.EquivalenceLink,
+         'and':types.AndLink,
+         'or':types.OrLink,
+         'not':types.NotLink,
+         'instance':types.MemberLink,
+         # This might break some of the formal precision of SUMO, but who cares
+         'attribute':types.InheritanceLink,
+         'member':types.MemberLink,
+         'subclass':types.InheritanceLink,
+         'exists':types.ExistsLink,
+         'forall':types.ForAllLink,
+         'causes':types.PredictiveImplicationLink
+         *
+         */
+
+        Term y = null;
+        switch (root) {
+            case "ListFn":
+                return $.p(args);
+
+            case "subrelation":
+            case "subclass":
+            case "subAttribute":
+                if (includeSubclass) {
+                    if (args.size() != 2) {
+                        System.err.println("subclass expects 2 arguments");
+                    } else {
+                        y = INH.the(args.get(0), args.get(1));
+                    }
+                }
+                break;
+            case "instance":
+                if (includeInstance) {
+                    if (args.size() != 2) {
+                        System.err.println("instance expects 2 arguments");
+                    } else {
+                        y = //$.inst
+                                $.inh
+                                        (args.get(0), args.get(1));
+                    }
+                }
+                break;
+            case "relatedInternalConcept":
+                /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
+                if (includeRelatedInternalConcept) {
+                    if (args.size() != 2) {
+                        throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
+                    } else {
+                        y = $.sim(args.get(0), args.get(1));
+                    }
+                }
+                break;
+
+            case "equal":
+                y = $.func("equal", args.get(0), args.get(1));
+                //y = $.sim(args.get(0), args.get(1));
+                break;
+
+
+            case "forall":
+                String forVar = sargs.get(0);
+                if (forVar.startsWith("(")) {
+                    forVar = forVar.substring(1, forVar.length() - 1); //remove parens
+                }
+                boolean missingAParamVar = false;
+                String[] forVars = forVar.split(" ");
+                for (String vv : forVars) {
+                    if (!sargs.get(1).contains(vv)) {
+                        missingAParamVar = true;
+                        break;
+                    }
+                }
+                if (!missingAParamVar) {
+                    return args.get(1); //skip over the for variables since it is contained in the expression
+                }
+
+                y = impl(args.get(0), args.get(1), true);
+                break;
+            case "exists":
+                y = args.get(1); //skip over the first parameter, since depvar is inherently existential
+                break;
+            case "=>":
+                y = impl(args.get(0), args.get(1), true);
+                if (y == null)
+                    return null;
+                break;
+            case "<=>":
+                y = impl(args.get(0), args.get(1), false);
+                if (y == null)
+                    return null;
+                break;
+
+            case "termFormat":
+                String language = args.get(0).toString();
+                language = language.replace("Language", "");
+
+                Term term = args.get(1);
+                Term string = args.get(2);
+                y = $.inh($.p($.the(language), string), term);
+                break;
+
+            case "domain":
+                //TODO use the same format as Range, converting quantity > 1 to repeats in an argument list
+                if (level == 0) {
+                    if (args.size() >= 3) {
+                        Term subj = (args.get(0));
+                        Term arg = (args.get(1));
+                        Term type = (args.get(2));
+                        FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                        Term existing = d.domain.put(((Int) arg).id, type);
+                        assert (existing == null || existing.equals(type));
+                    } else {
+                        throw new UnsupportedOperationException("unrecognized domain spec");
+                    }
+                    return null;
+                }
+                break;
+            case "range":
+                if (level == 0) {
+                    if (args.size() == 2) {
+                        Term subj = args.get(0);
+                        Term range = args.get(1);
+                        FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                        d.range = range;
+                    } else {
+                        throw new UnsupportedOperationException("unrecognized range spec");
+                    }
+                    return null;
+                }
+                break;
+
+            case "disjointRelation":
+            case "disjoint":
+            case "inverse":
+            case "contraryAttribute":
+                //like n-ary disjoint
+                Variable v0 = $.varDep(1);
+                y = Op.INH.the(
+                        v0,
+                        Op.SECTe.the(args.toArray(new Term[0]))
+                ).neg();
+
+                break;
+
+            case "comment":
+            case "documentation":
+                if (includeDoc) {
+                    if (args.size() == 2) {
+                        Term subj = args.get(0);
+                        Term lang = args.get(1);
+                        Term desc = $.quote(args.get(2));
+                        try {
+                            y = $.inh($.p(subj, desc), lang);
+                        } catch (Exception e) {
+                            //e.printStackTrace();
+                            y = null;
+                        }
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                }
+                break;
+            default:
+                //System.out.println("unknown: " + x);
+                break;
+        }
+
+        if (y == null) {
+
+            if (!includeDoc && (xCar.equals("documentation") || xCar.equals("comment")))
+                return null;
+
+            Term z = formulaToTerm(xCar, level + 1);
+
+            if (z != null) {
+                switch (z.toString()) {
+                    case "and":
+                        Term[] a = args.toArray(new Term[args.size()]);
+                        y = CONJ.the(a);
+                        break;
+                    case "or":
+                        y = $.disj(args.toArray(new Term[args.size()]));
+                        break;
+                    case "not":
+                        y = args.get(0).neg();
+                        break;
+                    default:
+                        if (!z.op().var)
+                            y = $.inh($.p(args), z); //HACK
+                        else {
+                            args.add(0, z); //re-attach
+                            y = $.p(args);
+                        }
+                        break;
+                }
+
+            }
+
+
+        }
+
+        if (y instanceof Bool)
+            throw new UnsupportedOperationException("Bool singularity: args=" + args);
+
+        return y;
+    }
+
+//    private Variable nextVar(Op v) {
+//        return $.v(v, nextVar());
+//    }
+
+//    private final AtomicInteger serial = new AtomicInteger(0);
+
+//    private String nextVar() {
+//        return Integer.toString(Math.abs(serial.incrementAndGet()), 36);
+//    }
+
+    //public final Set<Twin<Term>> impl = new HashSet();
+
+    public Term impl(Term a, Term b, boolean implOrEquiv) {
+
+        //reduce as implication first
+        Term tmp = IMPL.the(a, b);
+        if (tmp.unneg().op() != IMPL) {
+            logger.warn("un-impl: {} ==> {} ", a, b);
+            return null;
+        }
+        tmp = tmp.unneg();
+        a = tmp.sub(0);
+        b = tmp.sub(1);
+
+        MutableSet<Term> aVars = new VarOnlySet();
+        if (a instanceof Compound)
+            ((Compound) a).recurseTermsToSet(Op.VariableBits, aVars, true);
+        else if (a.op().var)
+            aVars.add(a);
+        MutableSet<Term> bVars = new VarOnlySet();
+        if (b instanceof Compound)
+            ((Compound) b).recurseTermsToSet(Op.VariableBits, bVars, true);
+        else if (b.op().var)
+            bVars.add(b);
+
+        Map<Term, Term> remap = new HashMap();
+
+        MutableSet<Term> common = aVars.intersect(bVars);
+        if (!common.isEmpty()) {
+            common.forEach(t -> {
+                Variable u = $.v(
+                        Op.VAR_INDEP,
+                        //Op.VAR_QUERY,
+                        //Op.VAR_PATTERN,
+                        t.toString().substring(1));
+                if (!t.equals(u))
+                    remap.put(t, u);
+            });
+        }
+        for (MutableSet<Term> ab : new MutableSet[]{aVars, bVars}) {
+            ab.forEach(aa -> {
+                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
+                    remap.put(aa, $.v(Op.VAR_DEP, aa.toString().substring(1)));
+                }
+            });
+        }
+
+        if (!remap.isEmpty()) {
+            a = a.replace(remap);
+            if (a == null)
+                throw new NullPointerException("transform failure");
+
+            b = b.replace(remap);
+            if (b == null)
+                throw new NullPointerException("transform failure");
+        }
+
+        try {
+//            impl.add(Tuples.twin(conditionTerm, actionTerm));
+//            if (!implOrEquiv) {
+//                impl.add(Tuples.twin(actionTerm, conditionTerm)); //reverse
+//            }
+
+            return
+                    implOrEquiv ?
+                            IMPL.the(a, b) :
+                            equi(a, b)
+                    ;
+        } catch (Exception ignore) {
+            ignore.printStackTrace();
+        }
+        return null;
+    }
+
     public void output(String path) throws FileNotFoundException {
         logger.info("output {} beliefs to {}", beliefs.size(), path);
         output(new PrintStream(new FileOutputStream(path)));
     }
 
     public void output(PrintStream out) {
-        beliefs.forEach(b->{
+        beliefs.forEach(b -> {
             out.print(b);
             out.println(".");
         });
     }
 
-    /** HACK because recurseTermsToSet isnt designed to check only Op */
+    static class FnDef {
+        final IntObjectHashMap<Term> domain = new IntObjectHashMap();
+        Term range;
+    }
+
+    /**
+     * HACK because recurseTermsToSet isnt designed to check only Op
+     */
     private static class VarOnlySet extends UnifiedSet {
-        @Override public boolean add(Object key) { //HACK
-            if (!((Term)key).op().var)
+        @Override
+        public boolean add(Object key) { //HACK
+            if (!((Term) key).op().var)
                 return true;
             return super.add(key);
         }

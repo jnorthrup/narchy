@@ -29,5 +29,4 @@ import alice.tuprolog.PrologException;
  *
  */
 public class InvalidObjectIdException extends PrologException {
-	private static final long serialVersionUID = 1L;
 }

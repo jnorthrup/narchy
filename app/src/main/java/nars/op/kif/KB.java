@@ -1,129 +1,115 @@
+/** This code is copyright Articulate Software (c) 2003.  Some
+portions copyright Teknowledge (c) 2003 and reused under the termsof the GNU
+license.  This software is released under the GNU Public License
+<http://www.gnu.org/copyleft/gpl.html>.  Users of this code also consent,
+by use of this code, to credit Articulate Software and Teknowledge in any
+writings, briefings, publications, presentations, or other representations
+of any software which incorporates, builds on, or uses this code.  Please
+cite the following article in any publication with references:
+
+Pease, A., (2003). The Sigma Ontology Development Environment, in Working
+Notes of the IJCAI-2003 Workshop on Ontology and Distributed Systems,
+August 9, Acapulco, Mexico. see also
+http://sigmakee.sourceforge.net
+
+Note that this class, and therefore, Sigma, depends upon several terms
+being present in the ontology in order to function as intended.  They are:
+  and or forall exists
+  domain
+  EnglishLanguage
+  equal
+  format
+  instance
+  inverse
+  Predicate
+  Relation
+  SetOrClass
+  subclass
+  subrelation
+  termFormat
+  valence
+  VariableArityRelation
+*/
+
+/*************************************************************************************************/
 package nars.op.kif;
 
-/**
- * This code is copyright Articulate Software (c) 2003. Some portions copyright
- * Teknowledge (c) 2003 and reused under the terms of the GNU license. This
- * software is released under the GNU Public License
- * <http://www.gnu.org/copyleft/gpl.html>. Users of this code also consent, by
- * use of this code, to credit Articulate Software and Teknowledge in any
- * writings, briefings, publications, presentations, or other representations of
- * any software which incorporates, builds on, or uses this code. Please cite
- * the following article in any publication with references:
- *
- * Pease, A., (2003). The Sigma Ontology Development Environment, in Working
- * Notes of the IJCAI-2003 Workshop on Ontology and Distributed Systems, August
- * 9, Acapulco, Mexico.
- */
+/*
+Author: Adam Pease apease@articulatesoftware.com
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+some portions copyright Teknowledge, IPsoft
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program ; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+MA  02111-1307 USA
+
+Authors:
+Adam Pease
+Infosys LTD.
+*/
+
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
+import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
- * *****************************************************************
- * Contains methods for reading, writing knowledge bases and their
- * configurations. Also contains the logic engine process for the knowledge
- * base.
+ * ***************************************************************** Contains
+ * methods for reading, writing knowledge bases and their configurations. Also
+ * contains the inference engine process for the knowledge base.
  */
-public class KB {
+public class KB implements Serializable {
 
-    private static final boolean DEBUG = false;
+    private boolean isVisible = true;
+//
+//    /** The inference engine process for this KB. */
+//    public transient EProver eprover;
 
-    /**
-     * The name of the knowledge base.
-     */
-    public final String name;
-
-    /**
-     * An ArrayList of Strings which are the full path file names of the files
-     * which comprise the KB.
-     */
-    public final ArrayList constituents = new ArrayList();
+    /** The name of the knowledge base. */
+    public String name;
 
     /**
-     * The natural language in which axiom paraphrases should be presented.
+     * An ArrayList of Strings that are the full canonical pathnames of the
+     * files that comprise the KB.
      */
-    public String language = "en";
+    public ArrayList<String> constituents = new ArrayList<String>();
+
+    /** The natural language in which axiom paraphrases should be presented. */
+    public String language = "EnglishLanguage";
 
     /**
      * The location of preprocessed KIF files, suitable for loading into
-     * Vampire.
+     * EProver.
      */
-    public final String kbDir;
+    public String kbDir = null;
+//
+//    /** The instance of the CELT process. */
+//    public transient CELT celt = null;
 
     /**
-     * A HashMap of HashSets, which contain all the parent classes of a given
-     * class.
+     * A synchronized SortedSet of Strings, which are all the terms in the KB.
      */
-    public HashMap parents = new HashMap();
+    public SortedSet<String> terms = Collections.synchronizedSortedSet(new TreeSet<String>());
 
-    /**
-     * A HashMap of HashSets, which contain all the child classes of a given
-     * class.
-     */
-    public HashMap children = new HashMap();
-
-    /**
-     * A HashMap of HashSets, which contain all the disjoint classes of a given
-     * class.
-     */
-    public HashMap disjoint = new HashMap();
-
-    /**
-     * A threshold limiting the number of non-ground values that will be added
-     * to a single relation cache.
-     */
-    private static final int MAX_CACHE_SIZE = 1000000;
-
-    /**
-     * A List of the names of cached transitive relations.
-     */
-    public final List cachedTransitiveRelationNames = Arrays.asList("subclass",
-            "subrelation",
-            "subAttribute",
-            "subOrganization",
-            "subCollection",
-            "subProcess",
-            "geographicSubregion",
-            "geopoliticalSubdivision");
-
-    /**
-     * A List of the names of cached reflexive relations.
-     */
-    public final List cachedReflexiveRelationNames = Arrays.asList("subclass",
-            "subrelation",
-            "subAttribute",
-            "subOrganization",
-            "subCollection",
-            "subProcess");
-
-    /**
-     * A List of the names of cached relations.
-     */
-    public final List cachedRelationNames = Arrays.asList("instance", "disjoint");
-
-    /**
-     * An ArrayList of RelationCache objects.
-     */
-    public final ArrayList relationCaches = new ArrayList();
-
-    /**
-     * The instance of the CELT process.
-     */
-    //public CELT celt = null;
-    /**
-     * A Set of Strings, which are all the terms in the KB.
-     */
-    public final TreeSet terms = new TreeSet();
-
-    /**
-     * The String constant that is the suffix for files of user assertions.
-     */
+    /** The String constant that is the suffix for files of user assertions. */
     public static final String _userAssertionsString = "_UserAssertions.kif";
 
     /**
@@ -136,944 +122,515 @@ public class KB {
      * representation of a Formula. Each value is the Formula object
      * corresponding to the key.
      */
-    public final HashMap formulaMap = new HashMap();
+    public HashMap<String, Formula> formulaMap = new HashMap<String, Formula>();
 
     /**
-     * A HashMap of ArrayLists of Formulas, containing all the formulas in the
-     * KB. Keys are both the formula itself, and term indexes created in
-     * KIF.createKey().
+     * A HashMap of ArrayLists of String formulae, containing all the formulae
+     * in the KB. Keys are the formula itself, a formula ID, and term indexes
+     * created in KIF.createKey(). The actual formula can be retrieved by using
+     * the returned String as the key for the variable formulaMap
      */
-    private final HashMap formulas = new HashMap();
+    public HashMap<String, ArrayList<String>> formulas = new HashMap<String, ArrayList<String>>();
 
     /**
-     * The natural language formatting strings for relations in the KB.
+     * The natural language formatting strings for relations in the KB. It is a
+     * HashMap of language keys and HashMap values. The interior HashMap is term
+     * name keys and String values.
      */
-    private HashMap formatMap;
+    private HashMap<String, HashMap<String, String>> formatMap = new HashMap<String, HashMap<String, String>>();
 
-    /**
-     * The natural language strings for terms in the KB.
+    /** The natural language strings for terms in the KB. It is a HashMap of
+     * language keys and HashMap values. The interior HashMap is term name keys
+     * and String values.
      */
-    private HashMap termFormatMap;
+    private HashMap<String, HashMap<String, String>> termFormatMap = new HashMap<String, HashMap<String, String>>();
 
-    public KIFInference inferenceEngine; //was vampire
+    /** Errors found during loading of the KB constituents. */
+    public TreeSet<String> errors = new TreeSet<String>();
+
+    /** Warnings found during loading of the KB constituents. */
+    public TreeSet<String> warnings = new TreeSet<String>();
 
     /**
-     * *************************************************************
-     * Constructor which takes the name of the KB and the location where KBs
-     * preprocessed for Vampire should be placed.
+     * Future: If true, the contents of the KB have been modified without
+     * updating the caches
+     */
+    public boolean modifiedContents = false;
+
+    /**
+     * If true, assertions of the form (predicate x x) will be included in the
+     * relation cache tables.
+     */
+    private boolean cacheReflexiveAssertions = false;
+
+    public KBcache kbCache = null;
+
+    public Map<String, Integer> termFrequency = new HashMap<String, Integer>();
+
+    /*************************************************************** Constructor
+     * which takes the name of the KB and the location where KBs preprocessed
+     * for EProver should be placed.
      */
     public KB(String n, String dir) {
 
         name = n;
         kbDir = dir;
-        initRelationCaches();
-        KBmanager mgr = KBmanager.getMgr();
-        if (mgr != null) {
-            String loadCelt = mgr.getPref("loadCELT");
-            if ((loadCelt != null) && "yes".equalsIgnoreCase(loadCelt)) {
-                //celt = new CELT();
-            }
-        }
-    }
-
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * Get an ArrayList of Strings containing the language identifiers
-//     * of available natural language formatting templates.
-//     *
-//     * @return an ArrayList of Strings containing the language identifiers
-//     */
-//    public ArrayList availableLanguages() {
-//
-//        ArrayList al = new ArrayList();
-//        ArrayList col = ask("arg", 0, "format");
-//        if (col != null) {
-//            for (int i = 0; i < col.size(); i++) {
-//                String lang = ((Formula) col.get(i)).theFormula;
-//                int langStart = lang.indexOf(' ');
-//                int langEnd = lang.indexOf(' ',langStart+1);
-//                lang = lang.substring(langStart+1, langEnd);
-//                if (!al.contains(lang.intern()))
-//                    al.add(lang.intern());
-//            }
-//        }
-//        return al;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * *************************************************************
-     * Returns a list of the names of cached relations.
-     *
-     * @return An ArrayList of relation names (Strings).
-     */
-    private ArrayList getCachedRelationNames() {
-        ArrayList relationNames = new ArrayList(cachedTransitiveRelationNames);
-        relationNames.addAll(cachedRelationNames);
-        return relationNames;
-    }
-
-    /**
-     * *************************************************************
-     * Returns an ArrayList of RelationCache objects.
-     *
-     * @return An ArrayList of RelationCache objects.
-     */
-    protected ArrayList getRelationCaches() {
-        return relationCaches;
-    }
-
-    /**
-     * *************************************************************
-     * Initializes all RelationCaches. Creates the RelationCache objects if they
-     * do not yet exist, and clears all existing RelationCache objects.
-     *
-     * @return void
-     */
-    protected void initRelationCaches() {
-        // System.out.println("INFO in initRelationCaches()");
-        Iterator it;
-        if (relationCaches.isEmpty()) {
-            it = getCachedRelationNames().iterator();
-            String relname;
-            while (it.hasNext()) {
-                relname = (String) it.next();
-                relationCaches.add(new RelationCache(relname, 1, 2));
-
-                // Since disjoint is symmetric, we put all
-                // disjointness entries in one table.  All transitive
-                // binary relations are cached in two RelationCaches,
-                // one that looks "upward" from the keys, and another
-                // that looks "downward" from the keys.
-                if (!"disjoint".equals(relname)) {
-                    relationCaches.add(new RelationCache(relname, 2, 1));
-                }
-            }
-        } else {
-            RelationCache cache;
-            it = relationCaches.iterator();
-            while (it.hasNext()) {
-                cache = (RelationCache) it.next();
-                cache.clear();
-            }
-        }
-
-        // We still set these legacy variables.  Eventually, they
-        // should be removed.
-        parents = getRelationCache("subclass", 1, 2);
-        children = getRelationCache("subclass", 2, 1);
-        disjoint = getRelationCache("disjoint", 1, 2);
-
-    }
-
-    /**
-     * *************************************************************
-     * Returns the RelationCache object identified by the input arguments:
-     * relation name, key argument position, and value argument position.
-     *
-     * @param relName The name of the cached relation.
-     *
-     * @param keyArg An int value that indicates the argument position of the
-     * cache keys.
-     *
-     * @param valueArg An int value that indicates the argument position of the
-     * cache values.
-     *
-     * @return a RelationCache object, or null if there is no cache
-     * corresponding to the input arguments.
-     */
-    private RelationCache getRelationCache(String relName, int keyArg, int valueArg) {
-        if (Formula.isNonEmptyString(relName)) {
-            Iterator it = getRelationCaches().iterator();
-            RelationCache cache;
-            while (it.hasNext()) {
-                cache = (RelationCache) it.next();
-                if (cache.getRelationName().equals(relName)
-                        && (cache.getKeyArgument() == keyArg)
-                        && (cache.getValueArgument() == valueArg)) {
-                    return cache;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * *************************************************************
-     * Writes the cache .kif file, and then calls addConstituent() so that the
-     * file can be processed and loaded by the logic engine.
-     *
-     * @return a String indicating any errors, or the empty string if there were
-     * no errors.
-     */
-    public static String cache() {
-
-//        System.out.println("ENTER KB.cache()");
-//        String result = "";
-//        FileWriter fr = null;
+        kbCache  = new KBcache(this);
 //        try {
-//            boolean closureComputed = false;
-//            List caches = getRelationCaches();
-//            Iterator it = null;
-//            Iterator it2 = null;
-//            Iterator it3 = null;
-//            String relation = null;
-//            String arg1 = null;
-//            String arg2 = null;
-//            Set valSet = null;
-//            String tuple = null;
-//            RelationCache rc = null;
-//            if (caches != null) {
-//                it = caches.iterator();
-//                while (it.hasNext()) {
-//                    rc = (RelationCache) it.next();
-//                    if (rc.getIsClosureComputed()) {
-//                        closureComputed = true;
-//                        break;
-//                    }
-//                }
-//
-//                // Don't bother writing the cache file if we have not
-//                // at least partially computed the closure of the
-//                // various cached relations.
-//                if (closureComputed) {
-//                    File dir = new File(kbDir);
-//                    File f = new File(dir, (this.name + _cacheFileSuffix));
-//                    System.out.println("INFO in KB.cache()");
-//                    System.out.println("  User cache file == " + f.getCanonicalPath());
-//                    if (f.exists()) {
-//                        System.out.println("  Deleting " + f.getCanonicalPath());
-//                        f.delete();
-//                        if (f.exists()) {
-//                            System.out.println("  Could not delete " + f.getCanonicalPath());
-//                        }
-//                    }
-//                    String filename = f.getCanonicalPath();
-//                    fr = new FileWriter(f, true);
-//                    System.out.println("  Appending statements to " + f.getCanonicalPath());
-//                    it = caches.iterator();
-//                    while (it.hasNext()) {
-//                        rc = (RelationCache) it.next();
-//                        if (rc.getKeyArgument() == 1) {
-//                            relation = rc.getRelationName();
-//
-//                            // Unfortunately, there are just too many
-//                            // disjoint classes to consider writing
-//                            // them to a file, or to consider having
-//                            // Vampire try to load the assertions.
-//                            if (! relation.equals("disjoint")) {
-//                                it2 = rc.keySet().iterator();
-//                                while (it2.hasNext()) {
-//                                    arg1 = (String) it2.next();
-//                                    valSet = (Set) rc.get(arg1);
-//                                    it3 = valSet.iterator();
-//                                    while (it3.hasNext()) {
-//                                        arg2 = (String) it3.next();
-//                                        tuple = ("(" + relation + " " + arg1 + " " + arg2 + ")");
-//                                        if (! formulaMap.containsKey(tuple.intern())) {
-//                                            fr.write(tuple);
-//                                            fr.write("\n");
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                    if (fr != null) {
-//                        fr.close();
-//                        fr = null;
-//                    }
-//                    constituents.remove(filename);
-//                    System.out.println("INFO in KB.cache()");
-//                    System.out.println("  Adding " + filename);
-//                    result = addConstituent(filename, false, false);
-//                    KBmanager.getMgr().writeConfiguration();
-//                }
+//            KBmanager mgr = KBmanager.getMgr();
+//            if (mgr != null) {
+//                String loadCelt = mgr.getPref("loadCELT");
+//                if ((loadCelt != null) && loadCelt.equalsIgnoreCase("yes"))
+//                    celt = new CELT();
+//           }
+//        }
+//        catch (IOException ioe) {
+//            System.out.println("Error in KB(): " + ioe.getMessage());
+//            celt = null;
+//        }
+    }
+
+    public KB(String n, String dir, boolean visibility) {
+
+        this(n, dir);
+        isVisible = visibility;
+    }
+
+    /***************************************************************
+     * Perform a deep copy of the kb input
+     *
+     * @param kbIn
+     * @throws IOException
+     */
+    public KB(KB kbIn) throws IOException {
+        this.isVisible = kbIn.isVisible;
+
+//        if (kbIn.eprover != null) {
+//            this.eprover = kbIn.eprover;
+//        }
+
+        this.name = kbIn.name;
+
+        if (kbIn.constituents != null) {
+            this.constituents = Lists.newArrayList(kbIn.constituents);
+        }
+
+        this.language = kbIn.language;
+
+        this.kbDir = kbIn.kbDir;
+
+        if (kbIn.terms != null) {
+            this.terms = Collections.synchronizedSortedSet(new TreeSet<String>(kbIn.terms));
+        }
+
+        if (kbIn.formulaMap != null) {
+            for (Map.Entry<String, Formula> pair : kbIn.formulaMap.entrySet()) {
+                String key = pair.getKey();
+                Formula newFormula = new Formula(pair.getValue());
+                this.formulaMap.put(key, newFormula);
+            }
+        }
+
+        if (kbIn.formulas != null) {
+            for (Map.Entry<String, ArrayList<String>> pair : kbIn.formulas.entrySet()) {
+                String key = pair.getKey();
+                ArrayList<String> newList = Lists.newArrayList(pair.getValue());
+                this.formulas.put(key, newList);
+            }
+        }
+
+        if (kbIn.formatMap != null) {
+            this.formatMap = Maps.newHashMap(kbIn.formatMap);
+        }
+
+        if (kbIn.termFormatMap != null) {
+            this.termFormatMap = Maps.newHashMap(kbIn.termFormatMap);
+        }
+
+        if (kbIn.errors != null) {
+            this.errors = Sets.newTreeSet(kbIn.errors);
+        }
+
+        this.modifiedContents = kbIn.modifiedContents;
+
+        this.kbCache = new KBcache(kbIn.kbCache, this);
+
+//        // Must be done after kb manager set.
+//        if (kbIn.celt != null) {
+//            this.celt = new CELT();
+//        }
+    }
+
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    /***************************************************************
+     * Constructor
+     */
+    public KB(String n) {
+
+        name = n;
+//        try {
+            KBmanager mgr = KBmanager.getMgr();
+            kbDir = mgr.getPref("kbDir");
+//            if (mgr != null) {
+//                String loadCelt = mgr.getPref("loadCELT");
+//                if ((loadCelt != null) && loadCelt.equalsIgnoreCase("yes"))
+//                    celt = new CELT();
 //            }
+//        } catch (IOException ioe) {
+//            System.out.println("Error in KB(): " + ioe.getMessage());
+//            celt = null;
 //        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//        finally {
-//            if (fr != null) {
-//                try {
-//                    fr.close();
-//                }
-//                catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
-//            }
-//            System.out.println("EXIT KB.cache()");
-//            return result;
-//        }
-        return "";
     }
 
-    /**
-     * *************************************************************
-     * Adds one value to the cache, indexed under keyTerm.
-     *
-     * @param cache The RelationCache object to be updated.
-     *
-     * @param keyTerm The String that is the key for this entry.
-     *
-     * @param valueTerm The String that is the value for this entry.
-     *
-     * @return The int value 1 if a new entry is added, else 0.
+    /**************************************************************
+     * Returns a SortedSet of Strings, which are all the terms in the KB.
      */
-    private static int addRelationCacheEntry(RelationCache cache, String keyTerm, String valueTerm) {
-        int count = 0;
-        if ((cache != null) && (keyTerm != null) && (valueTerm != null)) {
-            Set valueSet = (Set) cache.get(keyTerm);
-            if (valueSet == null) {
-                valueSet = new HashSet();
-                cache.put(keyTerm, valueSet);
-            }
-            if (valueSet.add(valueTerm)) {
-                count++;
-            }
-        }
-        return count;
+    public SortedSet<String> getTerms() {
+
+        return this.terms;
     }
 
-    /**
-     * *************************************************************
-     * Returns the HashSet indexed by term in the RelationCache identified by
-     * relation, keyArg, and valueArg.
+    /****************************************************
+     * REswitch determines if
+     * a String is a RegEx or not based on its use of RE metacharacters.
+     * "1"=nonRE, "2"=RE
      *
-     * @param relation A String, the name of a relation.
-     *
-     * @param term A String (key) that indexes a HashSet.
-     *
-     * @param keyArg An int value that, with relation and valueArg, identifies a
-     * RelationCache.
-     *
-     * @param valueArg An int value that, with relation and keyArg, identifies a
-     * RelationCache.
-     *
-     * @return A HashSet, or null if no HashSet corresponds to term.
+     * @param term
+     *            A String
+     * @return "1" or "2"
      */
-    public HashSet getCachedRelationValues(String relation, String term, int keyArg, int valueArg) {
-        RelationCache cache = getRelationCache(relation, keyArg, valueArg);
-        if (cache != null) {
-            return (HashSet) cache.get(term);
-        }
-        return null;
+    public String REswitch(String term) {
+
+        if (term.contains("(") || term.contains("[") || term.contains("{") || term.contains("\\") || term.contains("^")
+                || term.contains("$") || term.contains("|") || term.contains("}") || term.contains("]")
+                || term.contains(")") || term.contains("?") || term.contains("*") || term.contains("+"))
+            return "2";
+        return "1";
     }
 
-    /**
-     * *************************************************************
-     * This method computes the transitive closure for the relation identified
-     * by relationName. The results are stored in the RelationCache object for
-     * the relation and "direction" (looking from the arg1 keys toward arg2
-     * parents, or looking from the arg2 keys toward arg1 children).
+    /***************************************************
+     * Only called in
+     * BrowseBody.jsp when a single match is found. Purpose is to simplify a
+     * RegEx to its only matching term
      *
-     * @param relationName The name of a relation.
-     *
-     * @return void
+     * @param term
+     *            a String
+     * @return modified term a String
      */
-    private void computeTransitiveCacheClosure(String relationName) {
+    public String simplifyTerm(String term) {
 
-        System.out.println("INFO in KB.computeTransitiveCacheClosure(" + relationName + ')');
+        if (getREMatch(term.intern()).size() == 1)
+            return getREMatch(term.intern()).get(0);
+        return term;
+    }
+
+    /****************************************************
+     * Takes a term
+     * (interpreted as a Regular Expression) and returns true if any term in the
+     * KB has a match with the RE.
+     *
+     * @param term
+     *            A String
+     * @return true or false.
+     */
+    public boolean containsRE(String term) {
+
+        return (getREMatch(term).size() > 0 ? true : false);
+    }
+
+    /****************************************************
+     * Takes a term
+     * (interpreted as a Regular Expression) and returns an ArrayList containing
+     * every term in the KB that has a match with the RE.
+     *
+     * @param term
+     *            A String
+     * @return An ArrayList of terms that have a match to term
+     */
+    public ArrayList<String> getREMatch(String term) {
 
         try {
-            long t1 = System.currentTimeMillis();
-            int count = 0;
-            if (cachedTransitiveRelationNames.contains(relationName)) {
-                RelationCache c1 = getRelationCache(relationName, 1, 2);
-                RelationCache c2 = getRelationCache(relationName, 2, 1);
-                RelationCache inst1 = null;
-                RelationCache inst2 = null;
-                boolean isSubrelationCache = "subrelation".equals(relationName);
-                if (isSubrelationCache) {
-                    inst1 = getRelationCache("instance", 1, 2);
-                    inst2 = getRelationCache("instance", 2, 1);
-                }
-                Set c1Keys = c1.keySet();
-                Iterator it1;
-                Iterator it2;
-                String keyTerm;
-                String valTerm;
-                Set valSet;
-                Set valSet2;
-                Object[] valArr;
-                boolean changed = true;
-                while (changed) {
-                    changed = false;
-                    it1 = c1Keys.iterator();
-                    while (it1.hasNext()) {
-                        keyTerm = (String) it1.next();
-                        if ((keyTerm == null) || keyTerm.isEmpty()) {
-                            System.out.println("Error in KB.computeTransitiveCacheClosure(" + relationName + ')');
-                            System.out.println("  keyTerm == " + ((keyTerm == null) ? null : '"' + keyTerm + '"'));
-                        } else {
-                            valSet = (Set) c1.get(keyTerm);
-                            valArr = valSet.toArray();
-                            for (Object aValArr : valArr) {
-                                valTerm = (String) aValArr;
-
-                                valSet2 = (Set) c1.get(valTerm);
-                                if (valSet2 != null) {
-                                    it2 = valSet2.iterator();
-                                    while (it2.hasNext() && (count < MAX_CACHE_SIZE)) {
-                                        if (valSet.add(it2.next())) {
-                                            changed = true;
-                                            count++;
-                                        }
-                                    }
-                                }
-
-                                if (count < MAX_CACHE_SIZE) {
-                                    valSet2 = (Set) c2.get(valTerm);
-                                    if (valSet2 == null) {
-                                        valSet2 = new HashSet();
-                                        c2.put(valTerm, valSet2);
-                                    }
-                                    if (valSet2.add(keyTerm)) {
-                                        changed = true;
-                                        count++;
-                                    }
-                                }
-                            }
-                            // Here we try to make sure that every Relation
-                            // has at least some entry in the "instance"
-                            // caches, since this information is sometimes
-                            // considered redundant and so could be left out
-                            // of .kif files.
-                            valTerm = "Relation";
-                            if (keyTerm.endsWith("Fn")) {
-                                valTerm = "Function";
-                            } else if (Character.isLowerCase(keyTerm.charAt(0)) && (keyTerm.indexOf('(') == -1)) {
-                                valTerm = "Predicate";
-                            }
-                            addRelationCacheEntry(inst1, keyTerm, valTerm);
-                            addRelationCacheEntry(inst2, valTerm, keyTerm);
-                        }
-                    }
-                    if (changed) {
-                        c1.setIsClosureComputed(true);
-                        c2.setIsClosureComputed(true);
-                    }
-                }
+            Pattern p = Pattern.compile(term);
+            ArrayList<String> matchesList = new ArrayList<String>();
+            Iterator<String> itr = getTerms().iterator();
+            while (itr.hasNext()) {
+                String t = itr.next();
+                Matcher m = p.matcher(t);
+                if (m.matches())
+                    matchesList.add(t);
             }
-            System.out.println("  "
-                    + count
-                    + ' '
-                    + relationName
-                    + " entries computed in "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-
-            /*
-             if (relationName.equals("subclass")) {
-             printParents();
-             printChildren();
-             }
-             */
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            return matchesList;
+        }
+        catch (PatternSyntaxException ex) {
+            ArrayList<String> err = new ArrayList<String>();
+            err.add("Invalid Input");
+            return err;
         }
     }
 
-    /**
-     * *************************************************************
-     * This method computes the closure for the cache of the instance relation,
-     * in both directions.
+    /**************************************************************
+     * Sets the
+     * synchronized SortedSet of all the terms in the KB to be kbTerms.
+     */
+    public void setTerms(SortedSet<String> newTerms) {
+
+        synchronized (getTerms()) {
+            getTerms().clear();
+            this.terms = Collections.synchronizedSortedSet(newTerms);
+        }
+        return;
+    }
+
+    /***************************************************************
+     * Get an
+     * ArrayList of Strings containing the language identifiers of available
+     * natural language formatting templates.
      *
-     * @return void
+     * @return an ArrayList of Strings containing the language identifiers
      */
-    private void computeInstanceCacheClosure() {
+    public ArrayList<String> availableLanguages() {
 
-        System.out.println("INFO in KB.computeInstanceCacheClosure()");
-
-        try {
-            long t1 = System.currentTimeMillis();
-            RelationCache ic1 = getRelationCache("instance", 1, 2);
-            RelationCache ic2 = getRelationCache("instance", 2, 1);
-            RelationCache sc1 = getRelationCache("subclass", 1, 2);
-            Set ic1KeySet = ic1.keySet();
-            Iterator it1 = ic1KeySet.iterator();
-            Iterator it2;
-            String ic1KeyTerm;
-            Set ic1ValSet;
-            Object[] ic1ValArr;
-            String ic1ValTerm;
-            Set sc1ValSet;
-            Set ic2ValSet;
-
-            int count = 0;
-            while (it1.hasNext()) {
-                ic1KeyTerm = (String) it1.next();
-                ic1ValSet = (Set) ic1.get(ic1KeyTerm);
-                ic1ValArr = ic1ValSet.toArray();
-                for (Object anIc1ValArr : ic1ValArr) {
-                    ic1ValTerm = (String) anIc1ValArr;
-                    if (ic1ValTerm != null) {
-                        sc1ValSet = (Set) sc1.get(ic1ValTerm);
-                        if (sc1ValSet != null) {
-                            it2 = sc1ValSet.iterator();
-                            while (it2.hasNext() && (count < MAX_CACHE_SIZE)) {
-                                if (ic1ValSet.add(it2.next())) {
-                                    count++;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (count < MAX_CACHE_SIZE) {
-                    it2 = ic1ValSet.iterator();
-                    while (it2.hasNext()) {
-                        ic1ValTerm = (String) it2.next();
-                        ic2ValSet = (Set) ic2.get(ic1ValTerm);
-                        if (ic2ValSet == null) {
-                            ic2ValSet = new HashSet();
-                            ic2.put(ic1ValTerm, ic2ValSet);
-                        }
-                        if (ic2ValSet.add(ic1KeyTerm)) {
-                            count++;
-                        }
-                    }
-                }
+        ArrayList<String> al = new ArrayList<String>();
+        ArrayList<Formula> col = ask("arg", 0, "format");
+        ArrayList<Formula> col2 = ask("arg", 0, "termFormat");
+        if (col != null) {
+            if (col2 != null)
+                col.addAll(col2);
+            for (int i = 0; i < col.size(); i++) {
+                Formula f = (Formula) col.get(i);
+                String lang = f.getArgument(1);
+                if (!al.contains(lang.intern()))
+                    al.add(lang.intern());
             }
-
-            ic1.setIsClosureComputed(true);
-            ic2.setIsClosureComputed(true);
-            System.out.println("  "
-                    + count
-                    + " instance entries computed in "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
+//        al.addAll(OMWordnet.lnames);
+        return al;
     }
 
-    /**
-     * *************************************************************
-     * This method computes the closure for the cache of the disjoint relation.
+    /***************************************************************
+     * Remove from
+     * the given set any item which is a superclass of another item in the set.
      *
-     * @return void
+     * @param set
+     * @return
      */
-    private void computeDisjointCacheClosure() {
+    public Set<String> removeSuperClasses(Set<String> set) {
 
-        System.out.println("INFO in KB.computeDisjointCacheClosure()");
+        Set<String> returnSet = Sets.newHashSet(set);
+        Set<String> removeSet = Sets.newHashSet();
 
-        try {
-            long t1 = System.currentTimeMillis();
-            RelationCache dc1 = getRelationCache("disjoint", 1, 2);
-            RelationCache sc2 = getRelationCache("subclass", 2, 1);
-            Set dc1KeySet;
-            Object[] dc1KeyArr;
-            String dc1KeyTerm;
-            Set dc1ValSet;
-            Object[] dc1ValArr;
-            String dc1ValTerm;
-            Set sc2ValSet;
-            Iterator it;
-            String sc2ValTerm;
-            Set dc1ValSet2;
-
-            int count = -1;
-            int passes = 0;
-            boolean changed;
-
-            // One pass is sufficient.
-            // while (changed) {
-            dc1KeySet = dc1.keySet();
-            dc1KeyArr = dc1KeySet.toArray();
-            changed = false;
-            for (int i = 0; (i < dc1KeyArr.length) && (count < MAX_CACHE_SIZE); i++) {
-
-                dc1KeyTerm = (String) dc1KeyArr[i];
-                dc1ValSet = (Set) dc1.get(dc1KeyTerm);
-                dc1ValArr = dc1ValSet.toArray();
-                for (Object aDc1ValArr : dc1ValArr) {
-                    dc1ValTerm = (String) aDc1ValArr;
-                    sc2ValSet = (Set) sc2.get(dc1ValTerm);
-                    if (sc2ValSet != null) {
-                        if (dc1ValSet.addAll(sc2ValSet)) {
-                            changed = true;
-                        }
-                    }
-                }
-
-                sc2ValSet = (Set) sc2.get(dc1KeyTerm);
-                if (sc2ValSet != null) {
-                    it = sc2ValSet.iterator();
-                    while (it.hasNext()) {
-                        sc2ValTerm = (String) it.next();
-                        dc1ValSet2 = (Set) dc1.get(sc2ValTerm);
-                        if (dc1ValSet2 == null) {
-                            dc1ValSet2 = new HashSet();
-                            dc1.put(sc2ValTerm, dc1ValSet2);
-                        }
-                        if (dc1ValSet2.addAll(dc1ValSet)) {
-                            changed = true;
-                        }
-                    }
-                }
-
-                it = dc1.values().iterator();
-                count = 0;
-                while (it.hasNext()) {
-                    dc1ValSet = (Set) it.next();
-                    count += dc1ValSet.size();
+        // Compare every element to every other.
+        for (String first : returnSet) {
+            for (String second : returnSet) {
+                if (isSubclass(first, second)) {
+                    removeSet.add(second);
                 }
             }
-
-            if (changed) {
-                dc1.setIsClosureComputed(true);
-            }
-
-            // System.out.println("  " + count + " disjoint entries after pass " + ++passes);
-            // }
-            System.out.println("  "
-                    + count
-                    + " disjoint entries computed in "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-
-            // printDisjointness();
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
+
+        returnSet.removeAll(removeSet);
+        return returnSet;
     }
 
-    private HashMap relnsWithRelnArgs;
-
-    /**
-     * *************************************************************
-     * This method builds a cache of all Relations in the current KB for which
-     * at least one argument must be filled by a relation name (or a variable
-     * denoting a relation name). This method should be called only after the
-     * subclass cache has been built.
+    /***************************************************************
+     * Arity
+     * errors should already have been trapped in addConstituent() unless a
+     * relation is used before it is defined. This routine is a comprehensive
+     * re-check.
      */
-    private void cacheRelnsWithRelnArgs() {
+    public void checkArity() {
 
-        System.out.println("INFO in KB.cacheRelnsWithRelnArgs()");
-
-        try {
-            long t1 = System.currentTimeMillis();
-            if (relnsWithRelnArgs == null) {
-                relnsWithRelnArgs = new HashMap();
-            }
-            relnsWithRelnArgs.clear();
-            Set relnClasses = getCachedRelationValues("subclass", "Relation", 2, 1);
-
-            // System.out.println("  relnClasses == " + relnClasses);
-            if (relnClasses != null) {
-                ArrayList formulas;
-                Iterator it = relnClasses.iterator();
-                Iterator it2;
-                String relnClass;
-                Formula f;
-                String reln;
-                int argPos;
-                int valence;
-                boolean[] signature;
-                while (it.hasNext()) {
-                    relnClass = (String) it.next();
-                    formulas = askWithRestriction(3, relnClass, 0, "domain");
-
-                    // System.out.println("  formulas == " + formulas);
-                    if (formulas != null) {
-                        it2 = formulas.iterator();
-                        while (it2.hasNext()) {
-                            f = (Formula) it2.next();
-                            reln = f.getArgument(1);
-                            valence = getValence(reln);
-                            if (valence < 1) {
-                                valence = Formula.MAX_PREDICATE_ARITY;
-                            }
-                            signature = (boolean[]) relnsWithRelnArgs.get(reln);
-                            if (signature == null) {
-                                signature = new boolean[valence + 1];
-                                for (int j = 0; j < signature.length; j++) {
-                                    signature[j] = false;
-                                }
-                                relnsWithRelnArgs.put(reln, signature);
-                            }
-                            argPos = Integer.parseInt(f.getArgument(2));
-                            try {
-                                signature[argPos] = true;
-                            } catch (Exception e1) {
-                                System.out.println("Error in KB.cacheRelnsWithRelnArgs():");
-                                System.out.println("  reln == " + reln
-                                        + ", argPos == " + argPos
-                                        + ", signature == " + Arrays.toString(signature));
-                                throw e1;
-                            }
-                        }
-                    }
+        ArrayList<String> toRemove = new ArrayList<String>();
+        System.out.print("INFO in KB.checkArity(): Performing Arity Check");
+        if (formulaMap != null && formulaMap.size() > 0) {
+            int counter = 0;
+            Iterator<String> formulas = formulaMap.keySet().iterator();
+            while (formulas.hasNext()) {
+                Formula f = (Formula) formulaMap.get(formulas.next());
+                if (counter == 100) {
+                    System.out.print(".");
+                    counter = 0;
                 }
-                // This is a kluge.  "format" (and "termFormat", which
-                // is not directly relevant here) should be defined as
-                // predicates (meta-predicates) in Merge.kif, or in
-                // some language-independent paraphrase scaffolding
-                // .kif file.
-                signature = (boolean[]) relnsWithRelnArgs.get("format");
-                if (signature == null) {
-                    signature = new boolean[4];
-                    // signature = { false, false, true, false };
-                    for (int i = 0; i < signature.length; i++) {
-                        signature[i] = (i == 2);
-                    }
-                    relnsWithRelnArgs.put("format", signature);
+                String term = PredVarInst.hasCorrectArity(f, this);
+                if (!StringUtil.emptyString(term)) {
+                    errors.add("Formula in " + f.sourceFile + " rejected due to arity error of predicate " + term
+                            + " in formula: \n" + f.theFormula);
+                    toRemove.add(f.theFormula);
                 }
             }
-            System.out.println("  "
-                    + relnsWithRelnArgs.size()
-                    + " relation argument entries computed in "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            System.out.println();
         }
+        // for (int i = 0; i < toRemove.size(); i++)
+        // formulaMap.remove(toRemove.get(i));
     }
 
-    /**
-     * *************************************************************
-     * Returns a boolean[] if the input relation has at least one argument that
-     * must be filled by a relation name.
+    /***************************************************************
+     * Returns the
+     * type (SUO-KIF SetOrClass name) for any argument in argPos position of an
+     * assertion formed with the SUO-KIF Relation reln. If no argument type
+     * value is directly stated for reln, this method tries to find a value
+     * inherited from one of reln's super-relations.
      *
+     * @param reln   A String denoting a SUO-KIF Relation
+     * @param argPos An int denoting an argument position, where 0 is the position
+     *               of reln itself
+     * @return A String denoting a SUO-KIF SetOrClass, or null if no value can
+     * be obtained
      */
-    protected boolean[] getRelnArgSignature(String relation) {
-        if (relnsWithRelnArgs != null) {
-            return (boolean[]) relnsWithRelnArgs.get(relation);
-        }
-        return null;
-    }
+    public String getArgType(String reln, int argPos) {
 
-    private final HashMap relationValences = new HashMap();
-
-    private void cacheRelationValences() {
-        System.out.println("INFO in KB.cacheRelationValences()");
-        try {
-            long t1 = System.currentTimeMillis();
-            Set relations = getCachedRelationValues("instance", "Relation", 2, 1);
-            if (relations != null) {
-                RelationCache ic1 = getRelationCache("instance", 1, 2);
-                RelationCache ic2 = getRelationCache("instance", 2, 1);
-                String reln;
-                String className;
-                int valence;
-                for (Object relation : relations) {
-                    reln = (String) relation;
-
-                    // Here we evaluate getValence() to builder the
-                    // relationValences cache, and use its return
-                    // value to fill in any info that might be missing
-                    // from the "instance" cache.
-                    valence = getValence(reln);
-                    className = null;
-                    if (valence >= 0) {
-                        switch (valence) {
-                            case 0:
-                                className = "VariableArityRelation";
-                                break;
-                            case 1:
-                                if (reln.endsWith("Fn")) {
-                                    className = "UnaryFunction";
-                                }
-                                break;
-                            case 2:
-                                className = "BinaryRelation";
-                                break;
-                            case 3:
-                                className = "TernaryRelation";
-                                break;
-                            case 4:
-                                className = "QuaternaryRelation";
-                                break;
-                            case 5:
-                                className = "QuintaryRelation";
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    if (className != null) {
-                        addRelationCacheEntry(ic1, reln, className);
-                        addRelationCacheEntry(ic2, className, reln);
-                    }
-                }
-            }
-            System.out.println("  "
-                    + relationValences.size()
-                    + " relation valence entries computed in "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    protected String getArgType(String reln, int argPos) {
         String className = null;
-        try {
-            List formulas = askWithRestriction(1, reln, 0, "domain");
-            if (!((formulas == null) || formulas.isEmpty())) {
-                String argN;
-                Formula f;
-                for (Object formula : formulas) {
-                    f = (Formula) formula;
-                    argN = f.getArgument(2);
-                    if (Integer.parseInt(argN) == argPos) {
-                        className = f.getArgument(3);
-                        break;
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        String argType = FormulaPreprocessor.findType(argPos, reln, this);
+        if (StringUtil.isNonEmptyString(argType)) {
+            if (argType.endsWith("+"))
+                argType = "SetOrClass";
+            className = argType;
         }
         return className;
     }
 
-    public boolean isVariableArityRelation(String relnName) {
-        boolean ans = false;
-        try {
-            ans = (getValence(relnName) == 0);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return ans;
-    }
-
-    protected ArrayList listRelnsWithRelnArgs() {
-        if (relnsWithRelnArgs != null) {
-            return new ArrayList(relnsWithRelnArgs.keySet());
-        }
-        return null;
-    }
-
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    protected boolean containsRelnWithRelnArg(String input) {
-//        try {
-//            if (Formula.isNonEmptyString(input)) {
-//                List relns = listRelnsWithRelnArgs();
-//                if (relns != null) {
-//                    int len = relns.size();
-//                    String reln = null;
-//                    for (int i = 0 ; i < len ; i++) {
-//                        reln = (String) relns.get(i);
-//                        if (input.indexOf(reln) >= 0) {
-//                            return true;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//        return false;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * debugging utility
-//     */
-//    private void printParents() {
-//
-//        System.out.println("INFO in printParents():  Printing parents.");
-//        System.out.println();
-//        Iterator it = parents.keySet().iterator();
-//        while (it.hasNext()) {
-//            String parent = (String) it.next();
-//            System.out.print(parent + " ");
-//            System.out.println(parents.get(parent));
-//        }
-//        System.out.println();
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * debugging utility
-//     */
-//    private void printChildren() {
-//
-//        System.out.println("INFO in printChildren():  Printing children.");
-//        System.out.println();
-//        Iterator it = children.keySet().iterator();
-//        while (it.hasNext()) {
-//            String child = (String) it.next();
-//            System.out.print(child + " ");
-//            System.out.println(children.get(child));
-//        }
-//        System.out.println();
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * debugging utility
-//     */
-//    private void printDisjointness() {
-//
-//        System.out.println("INFO in printDisjointness():  Printing disjoint.");
-//        System.out.println();
-//        Iterator it = disjoint.keySet().iterator();
-//        while (it.hasNext()) {
-//            String term = (String) it.next();
-//            System.out.print(term + " is disjoint with ");
-//            System.out.println(disjoint.get(term));
-//        }
-//        System.out.println();
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * *************************************************************
-     * Determine whether a particular term is an immediate instance, which has a
-     * statement of the form (instance term otherTerm). Note that this does not
-     * count for terms such as Attribute(s) and Relation(s), which may be
-     * defined as subAttribute(s) or subrelation(s) of another instance. If the
-     * term is not an instance, return an empty ArrayList. Otherwise, return an
-     * ArrayList of the Formula(s) in which the given term is defined as an
-     * instance.
+    /***************************************************************
+     * Returns the
+     * type (SUO-KIF SetOrClass name) for any argument in argPos position of an
+     * assertion formed with the SUO-KIF Relation reln. If no argument type
+     * value is directly stated for reln, this method tries to find a value
+     * inherited from one of reln's super-relations.
      *
-     * @param term A String.
-     *
-     * @return An ArrayList.
+     * @param reln   A String denoting a SUO-KIF Relation
+     * @param argPos An int denoting an argument position, where 0 is the position
+     *               of reln itself
+     * @return A String denoting a SUO-KIF SetOrClass, or null if no value can
+     * be obtained. A '+' is appended to the class name if the argument
+     * is a subclass of the class, rather than an instance
      */
-    public ArrayList instancesOf(String term) {
+    public String getArgTypeClass(String reln, int argPos) {
 
-        //System.out.println("INFO in KB.instancesOf()");
+        String className = null;
+        String argType = FormulaPreprocessor.findType(argPos, reln, this);
+        if (StringUtil.isNonEmptyString(argType))
+            className = argType;
+        return className;
+    }
+
+    /***************************************************************
+     * Determine whether a particular term is an immediate instance, which has a statement
+     * of the form (instance term otherTerm). Note that this does not count for
+     * terms such as Attribute(s) and Relation(s), which may be defined as
+     * subAttribute(s) or subrelation(s) of another instance. If the term is not
+     * an instance, return an empty ArrayList. Otherwise, return an ArrayList of
+     * the Formula(s) in which the given term is defined as an instance.
+     * Note! This does not return instances of the given term, but rather the
+     * terms of which the given term is an instance.
+     */
+    public ArrayList<Formula> instancesOf(String term) {
+
         return askWithRestriction(1, term, 0, "instance");
     }
 
-    /**
-     * *************************************************************
-     * Determine whether a particular class or instance "child" is a child of
-     * the given "parent".
-     *
-     * @param child A String, the name of a term.
-     *
-     * @param parent A String, the name of a term.
-     *
-     * @return true if child and parent constitute an actual or implied relation
-     * in the current KB, else false.
+    /***************************************************************
+     * Get all instances of a given term
      */
-    public boolean childOf(String child, String parent) {
+    public Set<String> instances(String term) {
 
-        if (child.equals(parent)) {
-            return true;
+        Set<String> result = new HashSet<>();
+        ArrayList<Formula> forms = askWithRestriction(2, term, 0, "instance");
+        for (Formula f : forms) {
+            result.add(f.getArgument(1));
         }
-        HashSet childs = (HashSet) children.get(parent);
-        if (childs != null && childs.contains(child)) {
-            return true;
-        }
-        ArrayList al = instancesOf(child);
-        for (Object anAl : al) {
-            Formula form = (Formula) anAl;
-            Formula f = new Formula();
-            f.read(form.theFormula);
-            f.read(f.cdr());
-            f.read(f.cdr());
-            String superTerm = f.car();
-            if (superTerm.equals(parent)) {
+        return result;
+    }
+
+    /***************************************************************
+     * Returns
+     * true if i is an instance of c, else returns false.
+     *
+     * @param i A String denoting an instance.
+     * @param c A String denoting a Class.
+     * @return true or false.
+     */
+    public boolean isInstanceOf(String i, String c) {
+
+        if (kbCache == null)
+            return false;
+        return kbCache.isInstanceOf(i, c);
+    }
+
+    /***************************************************************
+     * Returns
+     * true if i is an Attribute, else returns false.
+     *
+     * @param i A String denoting an possible instance of Attribute.
+     * @return true or false.
+     */
+    public boolean isAttribute(String i) {
+
+        if (kbCache == null)
+            return false;
+        return kbCache.isInstanceOf(i, "Attribute");
+    }
+
+    /***************************************************************
+     * Returns
+     * true if i is c, is an instance of c, or is subclass of c, or is
+     * subAttribute of c, else returns false.
+     *
+     * @param i A String denoting a class or instance.
+     * @param c A String denoting the parent Class.
+     * @return true or false.
+     */
+    public boolean isChildOf(String i, String c) {
+
+        return i.equals(c) || isInstanceOf(i, c) || isSubclass(i, c) || isSubAttribute(i, c);
+    }
+
+    /***************************************************************
+     * Returns
+     * true if i is an instance of Function in any loaded KB, else returns
+     * false.
+     *
+     * @param i A String denoting an instance.
+     * @return true or false.
+     */
+    public boolean isFunction(String i) {
+
+        if (kbCache != null && !StringUtil.emptyString(i)) {
+            if (isInstanceOf(i, "Function")) {
+                if (!i.endsWith(Formula.FN_SUFF) && !i.matches("\\w+Fn_\\d+")) {
+                    String warn = "Warnings in KB.isFunction(): functional relation type without 'Fn' suffix: " + i;
+                    System.out.println(warn);
+                    warnings.add(warn);
+                }
                 return true;
             }
-            if (childs != null && childs.contains(superTerm)) {
-                return true;
+            else if (i.endsWith(Formula.FN_SUFF) || i.matches("\\w+Fn_\\d+")) {
+                String warn = "Warnings in KB.isFunction(): 'Fn' suffix without functional relation type : " + i;
+                System.out.println(warn);
+                warnings.add(warn);
+            }
+        }
+        return false;
+    }
+
+    /***************************************************************
+     * Returns
+     * true if i is an instance of c in any loaded KB, else returns false.
+     *
+     * @param i A String denoting an instance.
+     * @return true or false.
+     */
+    public static boolean isRelationInAnyKB(String i) {
+
+        HashMap<String, KB> kbs = KBmanager.getMgr().kbs;
+        if (!kbs.isEmpty()) {
+            KB kb = null;
+            Iterator<KB> it = kbs.values().iterator();
+            while (it.hasNext()) {
+                kb = it.next();
+                if (kb.kbCache != null && kb.kbCache.relations != null && kb.kbCache.relations.contains(i))
+                    return true;
             }
         }
         return false;
@@ -1081,641 +638,1400 @@ public class KB {
 
     /**
      * *************************************************************
-     * Returns true if the subclass cache supports the conclusion that c1 is a
-     * subclass of c2, else returns false.
+     */
+    public boolean isInstance(String term) {
+
+        ArrayList<Formula> al = askWithRestriction(0, "instance", 1, term);
+        return (al != null && al.size() > 0);
+    }
+
+    /***************************************************************
+     * Determine
+     * whether a particular class or instance "child" is a child of the given
+     * "parent".
+     *
+     * @param child  A String, the name of a term.
+     * @param parent A String, the name of a term.
+     * @return true if child and parent constitute an actual or implied relation
+     * in the current KB, else false.
+     */
+    public boolean childOf(String child, String parent) {
+
+        if (child.equals(parent))
+            return true;
+        if (kbCache.transInstOf(child, parent))
+            return true;
+        if (kbCache.childOfP("instance", parent, child) || kbCache.childOfP("subclass", parent, child)
+                || kbCache.childOfP("subrelation", parent, child) || kbCache.childOfP("subAttribute", parent, child))
+            return true;
+        return false;
+    }
+
+    /***************************************************************
+     * Returns
+     * true if the subclass cache supports the conclusion that c1 is a subclass
+     * of c2, else returns false.
      *
      * @param c1 A String, the name of a SetOrClass.
-     *
-     * @param c2 A String, the name of a SetOrClass.
-     *
+     * @param parent A String, the name of a SetOrClass.
      * @return boolean
      */
-    public boolean isSubclass(String c1, String c2) {
-        boolean ans = false;
-        try {
-            if (Formula.isNonEmptyString(c1) && Formula.isNonEmptyString(c2)) {
-                Set classNames = getCachedRelationValues("subclass", c1, 1, 2);
-                ans = ((classNames != null) && classNames.contains(c2));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public boolean isSubclass(String c1, String parent) {
+
+        if (StringUtil.emptyString(c1)) {
+            System.out.println("Error in KB.isSubclass(): empty c1");
+            Thread.dumpStack();
+            return false;
         }
-        return ans;
+        if (StringUtil.emptyString(parent)) {
+            System.out.println("Error in KB.isSubclass(): empty parent");
+            Thread.dumpStack();
+            return false;
+        }
+        if (c1.equals(parent))
+            return true;
+        if (StringUtil.isNonEmptyString(c1) && StringUtil.isNonEmptyString(parent))
+            return kbCache.childOfP("subclass", parent, c1);
+        return false;
     }
 
-    /**
-     * *************************************************************
-     * Builds all of the relation caches for the current KB.
+    /***************************************************************
+     * Returns
+     * true if the KB cache supports the conclusion that c1 is a subAttribute of
+     * c2, else returns false.
+     *
+     * @param c1 A String, the name of a SetOrClass.
+     * @param parent A String, the name of a SetOrClass.
+     * @return boolean
      */
-    public void buildRelationCaches() {
+    public boolean isSubAttribute(String c1, String parent) {
 
-        try {
-            long t1 = System.currentTimeMillis();
-            initRelationCaches();
-            cacheGroundAssertions();
-
-            Iterator it = cachedTransitiveRelationNames.iterator();
-            String relationName;
-            while (it.hasNext()) {
-                relationName = (String) it.next();
-                computeTransitiveCacheClosure(relationName);
-            }
-
-            computeInstanceCacheClosure();
-            computeDisjointCacheClosure();
-            cacheRelnsWithRelnArgs();
-            cacheRelationValences();
-
-            System.out.println("Total elapsed time to builder all relation caches: "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if (StringUtil.isNonEmptyString(c1) && StringUtil.isNonEmptyString(parent)) {
+            return kbCache.childOfP("subAttribute", parent, c1);
         }
+        return false;
     }
 
-    /**
-     * *************************************************************
-     * Populates all caches with ground assertions, from which closures can be
-     * computed.
-     */
-    private void cacheGroundAssertions() {
-
-        System.out.println("INFO in KB.cacheGroundAssertions(): ");
-
-        // System.out.println("formulas == " + formulas.toString());
-        try {
-            long t1 = System.currentTimeMillis();
-            String relation;
-            String arg1;
-            String arg2;
-            List forms;
-            Formula formula;
-            RelationCache c1;
-            RelationCache c2;
-
-            Iterator formsIt;
-            Iterator it = getCachedRelationNames().iterator();
-            int total = 0;
-            int count;
-            while (it.hasNext()) {
-
-                count = 0;
-                relation = (String) it.next();
-                forms = ask("arg", 0, relation);
-                // System.out.println(forms.size() + " " + relation + " assertions retrieved");
-
-                if (forms != null) {
-
-                    // System.out.print(relation);
-                    c1 = getRelationCache(relation, 1, 2);
-                    c2 = getRelationCache(relation, 2, 1);
-                    formsIt = forms.iterator();
-                    while (formsIt.hasNext()) {
-                        formula = (Formula) formsIt.next();
-                        if ((formula.theFormula.indexOf('(', 2) == -1)
-                                && !(formula.sourceFile.endsWith(_cacheFileSuffix))) {
-
-                            arg1 = formula.getArgument(1).intern();
-                            arg2 = formula.getArgument(2).intern();
-                            if (Formula.isNonEmptyString(arg1) && Formula.isNonEmptyString(arg2)) {
-                                count += addRelationCacheEntry(c1, arg1, arg2);
-                                count += addRelationCacheEntry(c2, arg2, arg1);
-
-                                // Special cases.
-                                if (cachedReflexiveRelationNames.contains(relation)) {
-                                    count += addRelationCacheEntry(c1, arg1, arg1);
-                                    count += addRelationCacheEntry(c1, arg2, arg2);
-                                    count += addRelationCacheEntry(c2, arg1, arg1);
-                                    count += addRelationCacheEntry(c2, arg2, arg2);
-                                } else if ("disjoint".equals(relation)) {
-                                    count += addRelationCacheEntry(c1, arg2, arg1);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // More ways of collecting implied disjointness
-                // assertions.
-                if ("disjoint".equals(relation)) {
-                    List partitions = ask("arg", 0, "partition");
-                    List decompositions = ask("arg", 0, "disjointDecomposition");
-                    forms = new ArrayList();
-                    if (partitions != null) {
-                        forms.addAll(partitions);
-                    }
-                    if (decompositions != null) {
-                        forms.addAll(decompositions);
-                    }
-                    c1 = getRelationCache(relation, 1, 2);
-                    List arglist;
-                    formsIt = forms.iterator();
-                    while (formsIt.hasNext()) {
-                        formula = (Formula) formsIt.next();
-                        if ((formula.theFormula.indexOf('(', 2) == -1)
-                                && !(formula.sourceFile.endsWith(_cacheFileSuffix))) {
-
-                            arglist = formula.argumentsToArrayList(2);
-                            for (int i = 0; i < arglist.size(); i++) {
-                                for (int j = 0; j < arglist.size(); j++) {
-                                    if (i != j) {
-                                        arg1 = ((String) arglist.get(i)).intern();
-                                        arg2 = ((String) arglist.get(j)).intern();
-                                        if (Formula.isNonEmptyString(arg1) && Formula.isNonEmptyString(arg2)) {
-                                            count += addRelationCacheEntry(c1, arg1, arg2);
-                                            count += addRelationCacheEntry(c1, arg2, arg1);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                System.out.println("  " + count + " cache entries added for " + relation);
-                total += count;
-            }
-            System.out.println("  "
-                    + total
-                    + " ground assertions cached in "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * *************************************************************
-     * Converts all Formula objects in the input List to ArrayList tuples.
+    /***************************************************************
+     * Converts
+     * all Formula objects in the input List to ArrayList tuples.
      *
      * @param formulaList A list of Formulas.
-     *
      * @return An ArrayList of formula tuples (ArrayLists), or an empty
      * ArrayList.
      */
-    public static ArrayList formulasToArrayLists(List formulaList) {
+    public static ArrayList<ArrayList<String>> formulasToArrayLists(List<Formula> formulaList) {
 
-        ArrayList ans = new ArrayList();
-        try {
-            if (formulaList instanceof List) {
-                Iterator it = formulaList.iterator();
-                Formula f;
-                while (it.hasNext()) {
-                    f = (Formula) it.next();
-                    ans.add(f.literalToArrayList());
-                }
+        ArrayList<ArrayList<String>> ans = new ArrayList<ArrayList<String>>();
+        if (formulaList instanceof List) {
+            Iterator<Formula> it = formulaList.iterator();
+            Formula f = null;
+            while (it.hasNext()) {
+                f = (Formula) it.next();
+                ans.add(f.literalToArrayList());
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
         return ans;
     }
 
-    /**
-     * *************************************************************
-     * Converts all Strings in the input List to Formula objects.
+    /* *************************************************************
+     * Converts
+     * all Strings in the input List to Formula objects.
      *
      * @param strings A list of Strings.
-     *
      * @return An ArrayList of Formulas, or an empty ArrayList.
      */
-    public static ArrayList stringsToFormulas(List strings) {
+    public static ArrayList<Formula> stringsToFormulas(List<String> strings) {
 
-        ArrayList ans = new ArrayList();
-        try {
-            if (strings instanceof List) {
-                for (Object string : strings) {
-                    Formula f = new Formula();
-                    f.read((String) string);
-                    ans.add(f);
-                }
+        ArrayList<Formula> ans = new ArrayList<Formula>();
+        if (strings instanceof List) {
+            Iterator<String> it = strings.iterator();
+            while (it.hasNext()) {
+                Formula f = new Formula();
+                f.read(it.next());
+                ans.add(f);
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
         return ans;
     }
 
-    /**
-     * *************************************************************
-     * Converts a literal (List object) to a String.
+    /***************************************************************
+     * Converts a
+     * literal (List object) to a String.
      *
      * @param literal A List representing a SUO-KIF formula.
-     *
      * @return A String representing a SUO-KIF formula.
      */
-    public static String literalListToString(List literal) {
-        StringBuilder b = new StringBuilder();
-        try {
-            if (literal instanceof List) {
-                b.append('(');
-                for (int i = 0; i < literal.size(); i++) {
-                    if (i > 0) {
-                        b.append(' ');
-                    }
-                    b.append((String) literal.get(i));
-                }
-                b.append(')');
+    public static String literalListToString(List<String> literal) {
+
+        StringBuffer b = new StringBuffer();
+        if (literal instanceof List) {
+            b.append("(");
+            for (int i = 0; i < literal.size(); i++) {
+                if (i > 0)
+                    b.append(" ");
+                b.append(literal.get(i));
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            b.append(")");
         }
         return b.toString();
     }
 
-    /**
-     * *************************************************************
-     * Converts a literal (List object) to a Formula.
+    /***************************************************************
+     * Converts a
+     * literal (List object) to a Formula.
      *
-     * @param literal A List representing a SUO-KIF formula.
-     *
+     * @param lit A List representing a SUO-KIF formula.
      * @return A SUO-KIF Formula object, or null if no Formula can be created.
      */
-    public static Formula literalListToFormula(List lit) {
+    public static Formula literalListToFormula(List<String> lit) {
+
         Formula f = null;
-        try {
-            String theFormula = literalListToString(lit);
-            if (Formula.isNonEmptyString(theFormula)) {
-                f = new Formula();
-                f.read(theFormula);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        String theFormula = literalListToString(lit);
+        if (StringUtil.isNonEmptyString(theFormula)) {
+            f = new Formula();
+            f.read(theFormula);
         }
         return f;
     }
 
-    /**
-     * *************************************************************
-     * Returns an ArrayList of Formulas in which the two terms provided appear
-     * in the indicated argument positions. If there are no Formula(s) matching
-     * the given terms and respective argument positions, return an empty
-     * ArrayList.
+    /***************************************************************
+     * Returns an
+     * ArrayList containing the terms (Strings) that correspond to targetArgnum
+     * in the Formulas obtained from the method call askWithRestriction(argnum1,
+     * term1, argnum2, term2).
      *
-     * @return ArrayList
+     * @param predicatesUsed A Set to which will be added the predicates of the ground
+     *                       assertions actually used to gather the terms returned
+     * @return An ArrayList of terms, or an empty ArrayList if no terms can be
+     * retrieved.
      */
-    public ArrayList askWithRestriction(int argnum1, String term1, int argnum2, String term2) {
+    public ArrayList<String> getTermsViaAskWithRestriction(int argnum1, String term1, int argnum2, String term2,
+                                                           int targetArgnum, Set<String> predicatesUsed) {
 
-        ArrayList partial = ask("arg", argnum1, term1);
-        ArrayList result = new ArrayList();
-        if (partial != null) {
-            for (Object aPartial : partial) {
-                Formula f = (Formula) aPartial;
-                if (f.getArgument(argnum2).equals(term2)) {
-                    result.add(f);
+        ArrayList<String> result = new ArrayList<String>();
+        if (StringUtil.isNonEmptyString(term1) && !StringUtil.isQuotedString(term1)
+                && StringUtil.isNonEmptyString(term2) && !StringUtil.isQuotedString(term2)) {
+            ArrayList<Formula> formulae = askWithRestriction(argnum1, term1, argnum2, term2);
+            Formula f = null;
+            Iterator<Formula> it = formulae.iterator();
+            while (it.hasNext()) {
+                f = it.next();
+                result.add(f.getArgument(targetArgnum));
+            }
+            if (predicatesUsed instanceof Set) {
+                Iterator<Formula> it2 = formulae.iterator();
+                while (it2.hasNext()) {
+                    f = (Formula) it2.next();
+                    predicatesUsed.add(f.car());
                 }
             }
         }
         return result;
     }
 
-    /**
-     * *************************************************************
-     * Returns an ArrayList containing the Formulas that match the request.
+    /***************************************************************
+     * Returns an
+     * ArrayList containing the terms (Strings) that correspond to targetArgnum
+     * in the Formulas obtained from the method call askWithRestriction(argnum1,
+     * term1, argnum2, term2).
      *
-     * @param kind - May be one of "ant", "cons", "stmt", or "arg"
-     * @see KIF.createKey()
-     * @param term - The term that appears in the statements being requested.
-     * @param argnum - The argument position of the term being asked for. The
-     * first argument after the predicate is "1". This parameter is ignored if
-     * the kind is "ant", "cons" or "stmt".
-     * @return an ArrayList of Formula(s), or null if no match found.
+     * @return An ArrayList of terms, or an empty ArrayList if no terms can be
+     * retrieved.
      */
-    public ArrayList ask(String kind, int argnum, String term) {
+    public ArrayList<String> getTermsViaAskWithRestriction(int argnum1, String term1, int argnum2, String term2,
+                                                           int targetArgnum) {
 
-        return (ArrayList) formulas.get(kind.compareTo("arg") == 0 ? kind + '-' + argnum + '-' + term : kind + '-' + term);
+        return getTermsViaAskWithRestriction(argnum1, term1, argnum2, term2, targetArgnum, null);
     }
 
-    /**
-     * *************************************************************
-     * Merges a KIF object containing a single formula into the current KB.
+    /***************************************************************
+     * Returns the
+     * first term found that corresponds to targetArgnum in the Formulas
+     * obtained from the method call askWithRestriction(argnum1, term1, argnum2,
+     * term2).
      *
-     * @param kif A KIF object.
-     *
-     * @param pathname The full, canonical pathname string of the constituent
-     * file in which the formula will be saved, if known.
-     *
-     * @return If any of the formulas are already present, returns an ArrayList
-     * containing the old (existing) formulas, else returns an empty ArrayList.
+     * @return A SUO-KIF term (String), or null is no answer can be retrieved.
      */
-    private ArrayList merge(KIF kif, String pathname) {
+    public String getFirstTermViaAskWithRestriction(int argnum1, String term1, int argnum2, String term2,
+                                                    int targetArgnum) {
 
-        ArrayList formulasPresent = new ArrayList();
-        try {
-            // Add all the terms from the new formula into the KB's current list
-            terms.addAll(kif.terms);
+        String result = null;
+        ArrayList<String> terms = getTermsViaAskWithRestriction(argnum1, term1, argnum2, term2, targetArgnum);
+        if (!terms.isEmpty())
+            result = (String) terms.get(0);
+        return result;
+    }
 
-            Set keys = kif.formulas.keySet();
-            for (Object key1 : keys) {
-                String key = (String) key1;
-                ArrayList newFormulas = new ArrayList(kif.formulas.get(key));
-                if (formulas.containsKey(key)) {
-                    ArrayList oldFormulas = (ArrayList) formulas.get(key);
-                    for (Object newFormula1 : newFormulas) {
-                        Formula newFormula = (Formula) newFormula1;
-                        if (pathname != null) {
-                            newFormula.sourceFile = pathname;
-                        }
+    /***************************************************************
+     * @return an ArrayList of Formulas in which the two terms provided appear
+     * in the indicated argument positions. If there are no Formula(s)
+     * matching the given terms and respective argument positions,
+     * return an empty ArrayList. Iterate through the smallest list of
+     * results.
+     */
+    public ArrayList<Formula> askWithRestriction(int argnum1, String term1, int argnum2, String term2) {
 
-                        boolean found = false;
-                        for (Object oldFormula1 : oldFormulas) {
-                            Formula oldFormula = (Formula) oldFormula1;
-                            if (newFormula.theFormula.equals(oldFormula.theFormula)) {
-                                found = true;
-                                formulasPresent.add(oldFormula);
-                                // System.out.println("INFO in KB.merge)");
-                                // System.out.println("  newFormula == " + newFormula);
-                                // System.out.println("  oldFormula == " + oldFormula);
-                            }
-                        }
-                        if (!found) {
-                            // value.computeTheClausalForm();
-                            oldFormulas.add(newFormula);
-                            formulaMap.put(newFormula.theFormula.intern(), newFormula);
-                        }
-                    }
-                } else {
-                    formulas.put(key, newFormulas);
-                    Iterator it2 = newFormulas.iterator();
-                    Formula f;
-                    while (it2.hasNext()) {
-                        f = (Formula) it2.next();
-                        if (Formula.isNonEmptyString(f.theFormula)) {
-                            // f.computeTheClausalForm();
-                            formulaMap.put(f.theFormula.intern(), f);
-                        }
+        ArrayList<Formula> result = new ArrayList<Formula>();
+        if (StringUtil.isNonEmptyString(term1) && StringUtil.isNonEmptyString(term2)) {
+            ArrayList<Formula> partial1 = ask("arg", argnum1, term1);
+            ArrayList<Formula> partial2 = ask("arg", argnum2, term2);
+            // System.out.println("INFO in KB.askWithRestriction(): partial 2: "
+            // + partial2);
+            ArrayList<Formula> partial = partial1;
+            // partial.retainAll(partial2); - this should be faster than below
+            int arg = argnum2;
+            String term = term2;
+            if (partial1.size() > partial2.size()) {
+                partial = partial2;
+                arg = argnum1;
+                term = term1;
+            }
+            Formula f = null;
+            int plen = partial.size();
+            for (int i = 0; i < plen; i++) {
+                f = (Formula) partial.get(i);
+                if (f == null)
+                    System.out.println("Error in KB.askWithRestriction(): null formula searching on term: " + term);
+                String thisArg = f.getArgument(arg);
+                if (thisArg == null) {
+                    System.out.println("Error in KB.askWithRestriction(): null argument: " + f);
+                }
+                else if (f.getArgument(arg).equals(term))
+                    result.add(f);
+            }
+        }
+        return result;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList of Formulas in which the two terms provided appear in the
+     * indicated argument positions. If there are no Formula(s) matching the
+     * given terms and respective argument positions, return an empty ArrayList.
+     *
+     * @return ArrayList
+     */
+    public ArrayList<Formula> askWithTwoRestrictions(int argnum1, String term1, int argnum2, String term2, int argnum3,
+                                                     String term3) {
+
+        String[] args = new String[6];
+        args[0] = "argnum1 = " + argnum1;
+        args[1] = "term1 = " + term1;
+        args[0] = "argnum2 = " + argnum2;
+        args[1] = "term2 = " + term2;
+        args[0] = "argnum3 = " + argnum3;
+        args[1] = "term3 = " + term3;
+
+        ArrayList<Formula> result = new ArrayList<Formula>();
+        if (StringUtil.isNonEmptyString(term1) && StringUtil.isNonEmptyString(term2)
+                && StringUtil.isNonEmptyString(term3)) {
+            // a will get the smallest list then b then c
+            ArrayList<Formula> partiala = new ArrayList<Formula>();
+            ArrayList<Formula> partial1 = ask("arg", argnum1, term1);
+            ArrayList<Formula> partial2 = ask("arg", argnum2, term2);
+            ArrayList<Formula> partial3 = ask("arg", argnum3, term3);
+            int argb = -1;
+            String termb = "";
+            int argc = -1;
+            String termc = "";
+            if (partial1 == null || partial2 == null || partial3 == null)
+                return result;
+            if (partial1.size() > partial2.size() && partial1.size() > partial3.size()) {
+                argc = argnum1;
+                termc = term1;
+                if (partial2.size() > partial3.size()) {
+                    argb = argnum2;
+                    termb = term2;
+                    partiala = partial3;
+                }
+                else {
+                    argb = argnum3;
+                    termb = term3;
+                    partiala = partial2;
+                }
+            }
+            if (partial2.size() > partial1.size() && partial2.size() > partial3.size()) {
+                argc = argnum2;
+                termc = term2;
+                if (partial1.size() > partial3.size()) {
+                    argb = argnum1;
+                    termb = term1;
+                    partiala = partial3;
+                }
+                else {
+                    argb = argnum3;
+                    termb = term3;
+                    partiala = partial1;
+                }
+            }
+            if (partial3.size() > partial1.size() && partial3.size() > partial2.size()) {
+                argc = argnum3;
+                termc = term3;
+                if (partial1.size() > partial2.size()) {
+                    argb = argnum1;
+                    termb = term1;
+                    partiala = partial2;
+                }
+                else {
+                    argb = argnum2;
+                    termb = term2;
+                    partiala = partial1;
+                }
+            }
+            if (partiala != null) {
+                for (int i = 0; i < partiala.size(); i++) {
+                    Formula f = partiala.get(i);
+                    if (f.getArgument(argb).equals(termb)) {
+                        if (f.getArgument(argc).equals(termc))
+                            result.add(f);
                     }
                 }
             }
-            /* collectParents();
-             if (KBmanager.getMgr().getPref("cache") != null &&
-             KBmanager.getMgr().getPref("cache").equalsIgnoreCase("yes"))
-             cache();  */     // caching is too slow to perform for just one formula
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
+        }
+        return result;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList containing the SUO-KIF terms that match the request.
+     *
+     * @return An ArrayList of terms, or an empty ArrayList if no matches can be
+     * found.
+     */
+    public ArrayList<String> getTermsViaAWTR(int argnum1, String term1, int argnum2, String term2, int argnum3,
+                                             String term3, int targetArgnum) {
+
+        ArrayList<String> ans = new ArrayList<String>();
+        List<Formula> formulae = askWithTwoRestrictions(argnum1, term1, argnum2, term2, argnum3, term3);
+        Formula f = null;
+        for (int i = 0; i < formulae.size(); i++) {
+            f = formulae.get(i);
+            ans.add(f.getArgument(targetArgnum));
+        }
+        return ans;
+    }
+
+    /***************************************************************
+     * Returns the
+     * first SUO-KIF terms that matches the request, or null.
+     *
+     * @return A term (String), or null.
+     */
+    public String getFirstTermViaAWTR(int argnum1, String term1, int argnum2, String term2, int argnum3, String term3,
+                                      int targetArgnum) {
+
+        String ans = null;
+        List<String> terms = getTermsViaAWTR(argnum1, term1, argnum2, term2, argnum3, term3, targetArgnum);
+        if (!terms.isEmpty())
+            ans = (String) terms.get(0);
+        return ans;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList containing the terms (Strings) that correspond to targetArgnum
+     * in the ground atomic Formulae in which knownArg is in the argument
+     * position knownArgnum. The ArrayList returned will contain no duplicate
+     * terms.
+     *
+     * @param knownArgnum  The argument position of knownArg
+     * @param knownArg     The term that appears in the argument knownArgnum of the
+     *                     ground atomic Formulae in the KB
+     * @param targetArgnum The argument position of the terms being sought
+     * @return An ArrayList of Strings, which will be empty if no match found.
+     */
+    public ArrayList<String> getTermsViaAsk(int knownArgnum, String knownArg, int targetArgnum) {
+
+        ArrayList<String> result = new ArrayList<String>();
+        List<Formula> formulae = ask("arg", knownArgnum, knownArg);
+        if (!formulae.isEmpty()) {
+            TreeSet<String> ts = new TreeSet<String>();
+            Formula f = null;
+            Iterator<Formula> it = formulae.iterator();
+            while (it.hasNext()) {
+                f = it.next();
+                ts.add(f.getArgument(targetArgnum));
+            }
+            result.addAll(ts);
+        }
+        return result;
+    }
+
+    /***************************************************************
+     */
+    private ArrayList<Formula> stringsToFormulas(ArrayList<String> strings) {
+
+        ArrayList<Formula> result = new ArrayList<Formula>();
+        if (strings == null)
+            return result;
+        for (int i = 0; i < strings.size(); i++) {
+            String s = strings.get(i);
+            Formula f = formulaMap.get(s);
+            if (f != null)
+                result.add(f);
+            else
+                System.out.println("Error in KB.stringsToFormulas(): null formula for key: " + s);
+        }
+        return result;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList containing the Formulas that match the request.
+     *
+     * @param kind   May be one of "ant", "cons", "stmt", or "arg"
+     * @param term   The term that appears in the statements being requested.
+     * @param argnum The argument position of the term being asked for. The first
+     *               argument after the predicate is "1". This parameter is ignored
+     *               if the kind is "ant", "cons" or "stmt".
+     * @return An ArrayList of Formula(s), which will be empty if no match
+     * found.
+     * see KIF.createKey()
+     */
+    public ArrayList<Formula> ask(String kind, int argnum, String term) {
+
+        ArrayList<Formula> result = new ArrayList<Formula>();
+        String msg = null;
+        if (StringUtil.emptyString(term)) {
+            msg = ("Error in KB.ask(\"" + kind + "\", " + argnum + ", \"" + term + "\"), "
+                    + "search term is null, or an empty string");
+            errors.add(msg);
+        }
+        if (term.length() > 1 && term.charAt(0) == '"' && term.charAt(term.length() - 1) == '"') {
+            msg = ("Error in KB.ask(), Strings are not indexed.  No results for " + term);
+            errors.add(msg);
+        }
+        ArrayList<Formula> tmp = null;
+        String key = null;
+        if (kind.equals("arg"))
+            key = kind + "-" + argnum + "-" + term;
+        else
+            key = kind + "-" + term;
+        ArrayList<String> alstr = formulas.get(key);
+
+        tmp = stringsToFormulas(alstr);
+        if (tmp != null)
+            result.addAll(tmp);
+        return result;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList containing the Formulae retrieved, possibly via multiple asks
+     * that recursively use relation and all of its subrelations. Note that the
+     * Formulas might be formed with different predicates, but all of the
+     * predicates will be subrelations of relation and will be related to each
+     * other in a subsumption hierarchy.
+     * <p>
+     * FIXME: this routine only gets subrelations one level down
+     *
+     * @param relation  The name of a predicate, which is assumed to be the 0th
+     *                  argument of one or more atomic formulae
+     * @param idxArgnum The argument position occupied by idxTerm in each ground
+     *                  Formula to be retrieved
+     * @param idxTerm   A constant that occupied idxArgnum position in each ground
+     *                  Formula to be retrieved
+     * @return an ArrayList of Formulas that satisfy the query, or an empty
+     * ArrayList if no Formulae are retrieved.
+     */
+    public ArrayList<Formula> askWithPredicateSubsumption(String relation, int idxArgnum, String idxTerm) {
+
+        ArrayList<Formula> ans = new ArrayList<Formula>();
+        HashSet<Formula> accumulator = new HashSet<Formula>();
+        if (StringUtil.isNonEmptyString(relation) && StringUtil.isNonEmptyString(idxTerm) && (idxArgnum >= 0)) { // &&
+            // (idxArgnum
+            // <
+            // 7)
+
+            HashSet<String> relns = new HashSet<String>(); // relation and
+            // subrelations
+            relns.add(relation);
+            ArrayList<Formula> subrelForms = askWithRestriction(0, "subrelation", 2, relation);
+            for (int i = 0; i < subrelForms.size(); i++) {
+                Formula f = subrelForms.get(i);
+                String arg = f.getArgument(1);
+                relns.add(arg);
+            }
+            ArrayList<Formula> forms = ask("arg", idxArgnum, idxTerm);
+            for (int i = 0; i < forms.size(); i++) {
+                Formula f = forms.get(i);
+                if (!accumulator.contains(f)) {
+                    String arg = f.getArgument(0);
+                    if (relns.contains(arg))
+                        accumulator.add(f);
+                }
+            }
+            ans.addAll(accumulator);
+        }
+        return ans;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList containing SUO-KIF constants, possibly retrieved via multiple
+     * asks that recursively use relation and all of its subrelations.
+     *
+     * @param relation       The name of a predicate, which is assumed to be the 0th
+     *                       argument of one or more atomic Formulae
+     * @param idxArgnum      The argument position occupied by term in the ground atomic
+     *                       Formulae that will be retrieved to gather the target (answer)
+     *                       terms
+     * @param idxTerm        A constant that occupies idxArgnum position in each of the
+     *                       ground atomic Formulae that will be retrieved to gather the
+     *                       target (answer) terms
+     * @param targetArgnum   The argument position of the answer terms in the Formulae to
+     *                       be retrieved
+     * @param useInverses    If true, the inverses of relation and its subrelations will be
+     *                       also be used to try to find answer terms
+     * @param predicatesUsed A Set to which will be added the predicates of the ground
+     *                       assertions actually used to gather the terms returned
+     * @return an ArrayList of terms (SUO-KIF constants), or an empy ArrayList
+     * if no terms can be retrieved
+     */
+    public ArrayList<String> getTermsViaPredicateSubsumption(String relation, int idxArgnum, String idxTerm,
+                                                             int targetArgnum, boolean useInverses, Set predicatesUsed) {
+
+        ArrayList<String> ans = new ArrayList<String>();
+        if (StringUtil.isNonEmptyString(relation) && StringUtil.isNonEmptyString(idxTerm) && (idxArgnum >= 0)
+            // && (idxArgnum < 7)
+                ) {
+            TreeSet<String> reduced = new TreeSet<String>();
+            List<String> inverseSyns = null;
+            List<String> inverses = null;
+            if (useInverses) {
+                inverseSyns = getTermsViaAskWithRestriction(0, "subrelation", 2, "inverse", 1);
+                inverseSyns.addAll(getTermsViaAskWithRestriction(0, "equal", 2, "inverse", 1));
+                inverseSyns.addAll(getTermsViaAskWithRestriction(0, "equal", 1, "inverse", 2));
+                inverseSyns.add("inverse");
+                SetUtil.removeDuplicates(inverseSyns);
+                inverses = new ArrayList<String>();
+            }
+            List<String> accumulator = new ArrayList<String>();
+            List<String> predicates = new ArrayList<String>();
+            predicates.add(relation);
+            while (!predicates.isEmpty()) {
+                for (String pred : predicates) {
+                    reduced.addAll(
+                            getTermsViaAskWithRestriction(0, pred, idxArgnum, idxTerm, targetArgnum, predicatesUsed));
+                    accumulator.addAll(getTermsViaAskWithRestriction(0, "subrelation", 2, pred, 1));
+                    accumulator.addAll(getTermsViaAskWithRestriction(0, "equal", 2, "subrelation", 1));
+                    accumulator.addAll(getTermsViaAskWithRestriction(0, "equal", 1, "subrelation", 2));
+                    accumulator.remove(pred);
+                    if (useInverses) {
+                        for (String syn : inverseSyns) {
+                            inverses.addAll(getTermsViaAskWithRestriction(0, syn, 1, pred, 2));
+                            inverses.addAll(getTermsViaAskWithRestriction(0, syn, 2, pred, 1));
+                        }
+                    }
+                }
+                SetUtil.removeDuplicates(accumulator);
+                predicates.clear();
+                predicates.addAll(accumulator);
+                accumulator.clear();
+            }
+            if (useInverses) {
+                SetUtil.removeDuplicates(inverses);
+                for (String inv : inverses)
+                    reduced.addAll(getTermsViaPredicateSubsumption(inv, targetArgnum, idxTerm, idxArgnum, false,
+                            predicatesUsed));
+            }
+            ans.addAll(reduced);
+        }
+        return ans;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList containing SUO-KIF constants, possibly retrieved via multiple
+     * asks that recursively use relation and all of its subrelations.
+     *
+     * @param relation     The name of a predicate, which is assumed to be the 0th
+     *                     argument of one or more atomic Formulae
+     * @param idxArgnum    The argument position occupied by term in the ground atomic
+     *                     Formulae that will be retrieved to gather the target (answer)
+     *                     terms
+     * @param idxTerm      A constant that occupies idxArgnum position in each of the
+     *                     ground atomic Formulae that will be retrieved to gather the
+     *                     target (answer) terms
+     * @param targetArgnum The argument position of the answer terms in the Formulae to
+     *                     be retrieved
+     * @param useInverses  If true, the inverses of relation and its subrelations will be
+     *                     also be used to try to find answer terms
+     * @return an ArrayList of terms (SUO-KIF constants), or an empy ArrayList
+     * if no terms can be retrieved
+     */
+    public ArrayList<String> getTermsViaPredicateSubsumption(String relation, int idxArgnum, String idxTerm,
+                                                             int targetArgnum, boolean useInverses) {
+
+        return getTermsViaPredicateSubsumption(relation, idxArgnum, idxTerm, targetArgnum, useInverses, null);
+    }
+
+    /***************************************************************
+     * Returns the
+     * first SUO-KIF constant found via asks using relation and its
+     * subrelations.
+     *
+     * @param relation     The name of a predicate, which is assumed to be the 0th
+     *                     argument of one or more atomic Formulae.
+     * @param idxArgnum    The argument position occupied by term in the ground atomic
+     *                     Formulae that will be retrieved to gather the target (answer)
+     *                     terms.
+     * @param idxTerm      A constant that occupies idxArgnum position in each of the
+     *                     ground atomic Formulae that will be retrieved to gather the
+     *                     target (answer) terms.
+     * @param targetArgnum The argument position of the answer terms in the Formulae to
+     *                     be retrieved.
+     * @param useInverses  If true, the inverses of relation and its subrelations will be
+     *                     also be used to try to find answer terms.
+     * @return A SUO-KIF constants (String), or null if no term can be
+     * retrieved.
+     */
+    public String getFirstTermViaPredicateSubsumption(String relation, int idxArgnum, String idxTerm, int targetArgnum,
+                                                      boolean useInverses) {
+
+        String ans = null;
+        if (StringUtil.isNonEmptyString(relation) && StringUtil.isNonEmptyString(idxTerm) && (idxArgnum >= 0)
+            // && (idxArgnum < 7)
+                ) {
+            ArrayList<String> terms = getTermsViaPredicateSubsumption(relation, idxArgnum, idxTerm, targetArgnum,
+                    useInverses);
+            if (!terms.isEmpty())
+                ans = (String) terms.get(0);
+        }
+        return ans;
+    }
+
+    /***************************************************************
+     * Returns an
+     * ArrayList containing the transitive closure of relation starting from
+     * idxTerm in position idxArgnum. The result does not contain idxTerm.
+     *
+     * @param relation     The name of a predicate, which is assumed to be the 0th
+     *                     argument of one or more atomic Formulae
+     * @param idxArgnum    The argument position occupied by term in the ground atomic
+     *                     Formulae that will be retrieved to gather the target (answer)
+     *                     terms
+     * @param idxTerm      A constant that occupies idxArgnum position in the first
+     *                     "level" of ground atomic Formulae that will be retrieved to
+     *                     gather the target (answer) terms
+     * @param targetArgnum The argument position of the answer terms in the Formulae to
+     *                     be retrieved
+     * @param useInverses  If true, the inverses of relation and its subrelations will be
+     *                     also be used to try to find answer terms
+     * @return an ArrayList of terms (SUO-KIF constants), or an empy ArrayList
+     * if no terms can be retrieved
+     */
+    public ArrayList<String> getTransitiveClosureViaPredicateSubsumption(String relation, int idxArgnum, String idxTerm,
+                                                                         int targetArgnum, boolean useInverses) {
+
+        ArrayList<String> ans = new ArrayList<String>();
+        Set<String> reduced = new TreeSet<String>();
+        Set<String> accumulator = new TreeSet<String>(
+                getTermsViaPredicateSubsumption(relation, idxArgnum, idxTerm, targetArgnum, useInverses));
+        ArrayList<String> working = new ArrayList<String>();
+        while (!accumulator.isEmpty()) {
+            reduced.addAll(accumulator);
+            working.clear();
+            working.addAll(accumulator);
+            accumulator.clear();
+            for (String term : working)
+                accumulator
+                        .addAll(getTermsViaPredicateSubsumption(relation, idxArgnum, term, targetArgnum, useInverses));
+        }
+        ans.addAll(reduced);
+        return ans;
+    }
+
+    /***************************************************************
+     * Add all members of one collection to another.  If the argument
+     * is null, do nothing.
+     */
+    public void addAllSafe(Collection c1, Collection c2) {
+
+        if (c1 != null && c2 != null)
+            c1.addAll(c2);
+    }
+
+    /***************************************************************
+     * Get all children of the given term following instance and
+     * subclass relations as well as the indicated rel
+     */
+    public HashSet<String> getAllSub(String term, String rel) {
+
+        //System.out.println("KB.getAllSub(): "  + term + " : " + rel);
+        ArrayList<String> temp = new ArrayList<>();
+        HashSet<String> result = new HashSet<>();
+        temp.add(term);
+        HashSet<String> oldResult = new HashSet<>();
+        while (!result.equals(oldResult)) {
+            //System.out.println("KB.getAllSub(): "  + result);
+            oldResult = new HashSet<>();
+            oldResult.addAll(temp);
+            for (String s : result) {
+                addAllSafe(temp,kbCache.getChildTerms(s,"subclass"));
+                addAllSafe(temp,kbCache.getChildTerms(s,"instance"));
+                addAllSafe(temp,kbCache.getChildTerms(s,rel));
+                addAllSafe(temp,kbCache.getInstancesForType(s));
+            }
+            result.addAll(temp);
+            temp = new ArrayList<>();
+            temp.addAll(result);
+        }
+        return result;
+    }
+
+    /***************************************************************
+     * Merges a
+     * KIF object containing a single formula into the current KB.
+     *
+     * @param kif      A KIF object.
+     * @param pathname The full, canonical pathname string of the constituent file in
+     *                 which the formula will be saved, if known.
+     * @return If any of the formulas are already present, returns an ArrayList
+     * containing the old (existing) formulas, else returns an empty
+     * ArrayList.
+     */
+    public ArrayList<Formula> merge(KIF kif, String pathname) {
+
+        ArrayList<Formula> formulasPresent = new ArrayList<Formula>();
+        // Add all the terms from the new formula into the KB's current list
+        getTerms().addAll(kif.terms);
+        Set<String> keys = kif.formulas.keySet();
+        Iterator<String> it = keys.iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            ArrayList<String> newFormulas = new ArrayList<String>(kif.formulas.get(key));
+            if (formulas.containsKey(key)) {
+                ArrayList<String> oldFormulas = formulas.get(key);
+                for (int i = 0; i < newFormulas.size(); i++) {
+                    Formula newFormula = kif.formulaMap.get(newFormulas.get(i));
+                    if (pathname != null)
+                        newFormula.sourceFile = pathname;
+                    boolean found = false;
+                    for (int j = 0; j < oldFormulas.size(); j++) {
+                        Formula oldFormula = formulaMap.get(oldFormulas.get(j));
+                        if (oldFormula != null && newFormula.theFormula.equals(oldFormula.theFormula)) {
+                            found = true;
+                            // no duplicate formulas are allowed in
+                            // formulasPresent
+                            if (formulasPresent != null && !formulasPresent.contains(oldFormula))
+                                formulasPresent.add(oldFormula);
+                        }
+                    }
+                    if (!found) {
+                        oldFormulas.add(newFormula.theFormula);
+                        formulaMap.put(newFormula.theFormula.intern(), newFormula);
+                    }
+                }
+            }
+            else {
+                formulas.put(key, newFormulas);
+                Iterator<String> it2 = newFormulas.iterator();
+                Formula f = null;
+                while (it2.hasNext()) {
+                    String newformulaStr = it2.next();
+                    Formula newFormula = kif.formulaMap.get(newformulaStr);
+                    f = formulaMap.get(newformulaStr);
+                    if (f == null) // If kb.formulaMap does not contain the new
+                        // formula, should we add it into the kb?
+                        formulaMap.put(newFormula.theFormula.intern(), newFormula);
+                    else if (StringUtil.isNonEmptyString(f.theFormula))
+                        formulaMap.put(f.theFormula.intern(), f);
+                }
+            }
         }
         return formulasPresent;
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     *  Writes a list of Formulas to a file.
-//     * @param formulas an AraryList of Strings.
-//     * @param fname The fully qualified file name.
-//     * @return void
-//     */
-//    private void writeFormulas(ArrayList formulas, String fname) throws IOException {
-//
-//        FileWriter fr = null;
-//
-//        try {
-//            fr = new FileWriter(fname,true);
-//            for (int i = 0; i < formulas.size(); i++) {
-//                fr.write((String) formulas.get(i));
-//                fr.write("\n");
-//            }
-//        }
-//        catch (java.io.IOException e) {
-//            System.out.println("Error writing file " + fname);
-//        }
-//        finally {
-//            if (fr != null)
-//                fr.close();
-//        }
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * *************************************************************
-     * Writes a single user assertion (String) to the end of a file.
+    /***************************************************************
+     * Rename
+     * term2 as term1 throughout the knowledge base. This is an operation with
+     * side effects - the term names in the KB are changed.
+     */
+    public void rename(String term2, String term1) {
+
+        HashSet<Formula> formulas = new HashSet<Formula>();
+        for (int i = 0; i < 7; i++)
+            formulas.addAll(ask("arg", i, term2));
+        formulas.addAll(ask("ant", 0, term2));
+        formulas.addAll(ask("cons", 0, term2));
+        formulas.addAll(ask("stmt", 0, term2));
+        Iterator<Formula> it = formulas.iterator();
+        while (it.hasNext()) {
+            Formula f = it.next();
+            f.theFormula = f.rename(term2, term1).theFormula;
+        }
+    }
+
+    /***************************************************************
+     * Writes a
+     * single user assertion (String) to the end of a file.
      *
      * @param formula A String representing a SUO-KIF Formula.
-     * @param fname A String denoting the pathname of the target file.
+     * @param fname   A String denoting the pathname of the target file.
      * @return A long value indicating the number of bytes in the file after the
-     * formula has been written. A value of 0L means that the file does not
-     * exist, and so could not be written for some rule. A value of -1
-     * probably means that some error occurred.
+     * formula has been written. A value of 0L means that the file does
+     * not exist, and so could not be written for some reason. A value
+     * of -1 probably means that some error occurred.
      */
-    private static long writeUserAssertion(String formula, String fname) throws IOException {
+    private long writeUserAssertion(String formula, String fname) throws IOException {
 
         long flen = -1L;
         FileWriter fr = null;
-
         try {
             File file = new File(fname);
             fr = new FileWriter(file, true);
             fr.write(formula);
             fr.write("\n");
             flen = file.length();
-        } catch (IOException e) {
-            System.out.println("Error writing file " + fname);
-        } finally {
-            if (fr != null) {
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (fr != null)
                 fr.close();
-            }
         }
         return flen;
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * Adds a formula to the knowledge base.  Returns an XML formatted
-//     * String that contains the response of the logic engine.  It
-//     * should be of the form "<assertionResponse>...</assertionResponse>"
-//     * where the body should be " Formula has been added to the session
-//     * database" if all went well.
-//     *
-//     * @param input The String representation of a SUO-KIF Formula.
-//     *
-//     * @return A String indicating the status of the tell operation.
-//     */
-//    public String tell(String input) {
-//
-//        System.out.println("INFO in KB.tell(" + input + ")");
-//
-//        String result = "The formula could not be added";
-//        try {
-//            // 1. Parse the input string.
-//            KIF kif = new KIF();
-//            String msg = kif.parseStatement(input);
-//            if (msg != null) {
-//                result = "Error parsing \"" + input + "\": " + msg;
-//            }
-//            else if (kif.formulaSet.isEmpty()) {
-//                result = "The input could not be parsed";
-//            }
-//            else {
-//                // Make the pathname of the user assertions file.
-//                File dir = new File(this.kbDir);
-//                File file = new File(dir, (this.name + _userAssertionsString));
-//                String filename = file.getCanonicalPath();
-//                List formulasAlreadyPresent = merge(kif, filename);
-//                if (!formulasAlreadyPresent.isEmpty()) {
-//                    String sf = ((Formula)formulasAlreadyPresent.get(0)).sourceFile;
-//                    result = "The formula was already added from " + sf;
-//                }
-//                else {
-//                    ArrayList parsedFormulas = new ArrayList();
-//                    String fstr = null;
-//                    Formula parsedF = null;
-//                    Iterator it = kif.formulaSet.iterator();
-//                    boolean go = true;
-//                    while (go && it.hasNext()) {
-//                        // 2. Confirm that the input has been converted into
-//                        // 2. at least one Formula object and stored in
-//                        // 2. this.formulaMap.
-//                        fstr = (String) it.next();
-//                        parsedF = (Formula) this.formulaMap.get(fstr.intern());
-//                        if (parsedF == null) {
-//                            go = false;
-//                        }
-//                        else {
-//                            parsedFormulas.add(parsedF);
-//                        }
+    /* *************************************************************
+    Writes all
+     * the terms in the knowledge base to a file
+     */
+    public void writeTerms() throws IOException {
+
+        String fname = KBmanager.getMgr().getPref("kbDir") + File.separator + "terms.txt";
+        FileWriter fr = null;
+        try {
+            File file = new File(fname);
+            fr = new FileWriter(file, true);
+            Iterator<String> it = terms.iterator();
+            while (it.hasNext()) {
+                String term = it.next();
+                fr.write(term);
+                fr.write("\n");
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if (fr != null)
+                fr.close();
+        }
+    }
+
+    /***************************************************************
+     * Adds a
+     * formula to the knowledge base. Returns an XML formatted String that
+     * contains the response of the inference engine. It should be of the form
+     * "<assertionResponse>...</assertionResponse>" where the body should be "
+     * Formula has been added to the session database" if all went well.
+     * <p>
+     * TODO: If we find a way to directly add assertions into opened inference
+     * engine, we can roll back to 1.111 version
+     *
+     * @param input The String representation of a SUO-KIF Formula.
+     * @return A String indicating the status of the tell operation.
+     */
+    public String tell(String input) {
+
+//        System.out.println("KB.tell: eprover: " + eprover);
+        String result = "The formula could not be added";
+        KBmanager mgr = KBmanager.getMgr();
+        KIF kif = new KIF(); // 1. Parse the input string.
+        String msg = kif.parseStatement(input);
+        if (msg != null) {
+            result = "Error parsing \"" + input + "\" " + msg;
+            return result;
+        }
+        if (kif.formulaMap.keySet().isEmpty()) {
+            result = "The input could not be parsed";
+            return result;
+        }
+        try { // Make the pathname of the user assertions file.
+            String userAssertionKIF = this.name + _userAssertionsString;
+            String userAssertionTPTP = userAssertionKIF.substring(0, userAssertionKIF.indexOf(".kif")) + ".tptp";
+
+            File dir = new File(this.kbDir);
+            File kiffile = new File(dir, (userAssertionKIF)); // create
+            // kb.name_UserAssertions.kif
+            File tptpfile = new File(dir, (userAssertionTPTP)); // create
+            // kb.name_UserAssertions.tptp
+            String filename = kiffile.getCanonicalPath();
+            ArrayList<Formula> formulasAlreadyPresent = merge(kif, filename);
+            // only check formulasAlreadyPresent when filterSimpleOnly = false;
+            // otherwise, some user assertions/axioms will not be asserted for
+            // inference,
+            // since these axioms do exist in formulasAlreadyPresent but not in
+            // SUMO.tptp
+            // In the future, when SUMO can completely run using whole KB, we
+            // can remove
+            // SUMOKBtoTPTPKB.fitlerSimpleOnly==false;
+//            if (SUMOKBtoTPTPKB.filterSimpleOnly == false && !formulasAlreadyPresent.isEmpty()) {
+//                String sf = ((Formula) formulasAlreadyPresent.get(0)).sourceFile;
+//                result = "The formula was already added from " + sf;
+//            } else
+             {
+                ArrayList<Formula> parsedFormulas = new ArrayList<Formula>();
+                Iterator<Formula> it = kif.formulaMap.values().iterator();
+                while (it.hasNext()) { // 2. Confirm that the input has been
+                    // converted into
+                    // at least one Formula object and
+                    // stored in this.formulaMap.
+                    Formula parsedF = it.next();
+                    System.out.println("KB.tell: " + parsedF.toString());
+                    String term = PredVarInst.hasCorrectArity(parsedF, this);
+                    if (!StringUtil.emptyString(term)) {
+                        result = result + "Formula in " + parsedF.sourceFile
+                                + " rejected due to arity error of predicate " + term + " in formula: \n"
+                                + parsedF.theFormula;
+                    }
+                    else
+                        parsedFormulas.add(parsedF);
+                }
+                if (!parsedFormulas.isEmpty()) {
+                    if (!constituents.contains(filename)) {
+                        if (kiffile.exists()) // 3. If the assertions file
+                            // exists, delete it.
+                            kiffile.delete();
+                        if (tptpfile.exists())
+                            tptpfile.delete();
+                        constituents.add(filename);
+                        // mgr.writeConfiguration();
+                    }
+                    Iterator<Formula> pfit = parsedFormulas.iterator();
+                    while (pfit.hasNext()) {
+                        Formula parsedF = pfit.next();
+                        // 4. Write the formula to the user assertions file.
+                        parsedF.endFilePosition = writeUserAssertion(parsedF.theFormula, filename);
+                        parsedF.sourceFile = filename;
+                    }
+                    result = "The formula has been added for browsing";
+//                    System.out.println("KB.tell: eprover: " + eprover);
+//                    // 5. Write the formula to the kb.name_UserAssertions.tptp
+//                    boolean allAdded = false;
+//                    if (eprover != null) {
+//                        eprover.assertFormula(tptpfile.getCanonicalPath(), this, eprover, parsedFormulas,
+//                                !mgr.getPref("TPTP").equalsIgnoreCase("no"));
+//                        // 6. Add the new tptp file into EBatching.txt
+//                        eprover.addBatchConfig(tptpfile.getCanonicalPath(), 60);
+//                        // 7. Reload eprover
+//                        eprover = new EProver(mgr.getPref("inferenceEngine"));
 //                    }
-//                    System.out.println("INFO in KB.tell()");
-//                    System.out.println("  parsedFormulas == " + parsedFormulas);
-//                    if (go && !parsedFormulas.isEmpty()) {
-////                        if (!constituents.contains(filename)) {
-////                            // System.out.println("INFO in KB.tell():
-////                            // Adding file: " + filename + " to: " +
-////                            // constituents.toString());
-////
-////                            // 3. If the assertions file exists, delete it.
-////                            if (file.exists())
-////                                file.delete();
-////                            constituents.add(filename);
-////                            KBmanager.getMgr().writeConfiguration();
-////                        }
-//                        it = parsedFormulas.iterator();
-//                        while (it.hasNext()) {
-//                            parsedF = (Formula) it.next();
-//                            // 4. Write the formula to the user assertions file.
-//                            parsedF.endFilePosition = writeUserAssertion(parsedF.theFormula, filename);
-//                            parsedF.sourceFile = filename;
-//                        }
+//                    result += (allAdded ? " and inference" : " but not for local inference");
+                }
+            }
+        }
+        catch (IOException ioe) {
+            ioe.printStackTrace();
+            System.out.println(ioe.getMessage());
+            result = ioe.getMessage();
+        }
+        return result;
+    }
 //
-//                        result = "The formula has been added for browsing";
-//
-//                        boolean allAdded = (inferenceEngine != null);
-//                        ArrayList processedFormulas = new ArrayList();
-//                        it = parsedFormulas.iterator();
-//                        while (it.hasNext()) {
-//                            processedFormulas.clear();
-//                            parsedF = (Formula) it.next();
-//                            // 5. Preproccess the formula.
-//                            processedFormulas.addAll(parsedF.preProcess(false, this));
-//                            if (processedFormulas.isEmpty()) {
-//                                allAdded = false;
-//                            }
-//                            else {
-//                                // 6. If TPTP != no, translate to TPTP.
-//                                if (!KBmanager.getMgr().getPref("TPTP").equalsIgnoreCase("no")) {
-//                                    parsedF.tptpParse(false, this, processedFormulas);
-//
-//                                    System.out.println("INFO in KB.tell()");
-//                                    System.out.println("  theTptpFormulas == " + parsedF.getTheTptpFormulas());
-//                                }
-//                                // 7. If there is an logic engine,
-//                                // 7. assert the formula to the
-//                                // 7. logic engine's database.
-//                                if (inferenceEngine != null) {
-//                                    String ieResult = null;
-//                                    Formula processedF = null;
-//                                    Iterator it2 = processedFormulas.iterator();
-//                                    while (it2.hasNext()) {
-//                                        processedF = (Formula) it2.next();
-//                                        System.out.println("ENTER Vampire.assertFormula(" + processedF.theFormula + ")");
-//                                        ieResult = inferenceEngine.assertFormula(processedF.theFormula);
-//                                        System.out.println("EXIT Vampire.assertFormula(" + processedF.theFormula + ")");
-//                                        System.out.println("  " + ieResult);
-//                                        if (ieResult.indexOf("Formula has been added") < 0) {
-//                                            allAdded = false;
-//                                        }
-//                                    }
-//                                }
-//                            }
-//
-//                            // System.out.println("INFO in KB.tell(" + input + ")");
-//                            // System.out.println("  parsedF == " + parsedF);
-//                            // System.out.println("  formulaMap.get(parsedF.theFormula) == "
-//                            //                    + formulaMap.get(parsedF.theFormula));
-//                            // System.out.println("  parsedF.sourceFile == " + parsedF.sourceFile);
-//                            // System.out.println("  parsedF.endFilePosition == " + parsedF.endFilePosition);
-//                            // System.out.println("  parsedF.theTptpFormulas == " + parsedF.getTheTptpFormulas());
-//
-//                        }
-//                        result += (allAdded ? " and logic" : " but not for local logic");
-//                    }
-//                }
-//            }
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//            // System.out.println("Error in KB.tell(): " + ioe.getMessage());
-//        }
-//        /* collectParents();
-//           if (KBmanager.getMgr().getPref("cache") != null &&
-//           KBmanager.getMgr().getPref("cache").equalsIgnoreCase("yes"))
-//           cache();        */   // caching is currently not efficient enough to invoke it after every assertion
-//        System.out.println("INFO in KB.tell(" + input + ")");
-//        System.out.println("  -> " + result);
-//        return result;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * Submits a query to the logic engine.  Returns an XML
-//     * formatted String that contains the response of the logic
-//     * engine.  It should be in the form
+//    /***************************************************************
+//     * Submits a
+//     * query to the inference engine. Returns an XML formatted String that
+//     * contains the response of the inference engine. It should be in the form
 //     * "<queryResponse>...</queryResponse>".
 //     *
-//     * @param suoKifFormula The String representation of the SUO-KIF
-//     * query.
+//     * @param suoKifFormula The String representation of the SUO-KIF query.
+//     * @param timeout       The number of seconds after which the inference engine should
+//     *                      give up.
+//     * @param maxAnswers    The maximum number of answers (binding sets) the inference
+//     *                      engine should return.
+//     * @return A list of answers.
+//     */
+//    public ArrayList<String> ask(String suoKifFormula, int timeout, int maxAnswers) {
+//
+//        String result = "";
+//        // Start by assuming that the ask is futile.
+//        result = ("<queryResponse>" + System.getProperty("line.separator")
+//                + "  <answer result=\"no\" number=\"0\"> </answer>" + System.getProperty("line.separator")
+//                + "  <summary proofs=\"0\"/>" + System.getProperty("line.separator") + "</queryResponse>"
+//                + System.getProperty("line.separator"));
+//        if (StringUtil.isNonEmptyString(suoKifFormula)) {
+//            Formula query = new Formula();
+//            query.read(suoKifFormula);
+//            FormulaPreprocessor fp = new FormulaPreprocessor();
+//            ArrayList<Formula> processedStmts = fp.preProcess(query, true, this);
+//
+//            if (!processedStmts.isEmpty() && this.eprover != null) {
+//                // set timeout in EBatchConfig file and reload eprover
+//                try {
+//                    eprover.addBatchConfig(null, timeout);
+//                    eprover = new EProver(KBmanager.getMgr().getPref("inferenceEngine"));
+//                }
+//                catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                String strQuery = processedStmts.get(0).theFormula;
+//                result = this.eprover.submitQuery(strQuery, this);
+//                if (result == null || result.isEmpty())
+//                    System.out.println("KB.ask: No response from EProver!");
+//                else
+//                    System.out.println("KB.ask: Get response from EProver, start for parsing ...");
+//                // System.out.println("Results returned from E = \n" + EResult);
+//                ArrayList<String> answers = TPTP3ProofProcessor.parseAnswerTuples(result, this, fp);
+//                return answers;
+//            }
+//        }
+//        return null;
+//    }
+
+//    /***************************************************************
+//     * Submits a
+//     * query to the inference engine. Returns an XML formatted String that
+//     * contains the response of the inference engine. It should be in the form
+//     * "<queryResponse>...</queryResponse>".
 //     *
-//     * @param timeout The number of seconds after which the logic
-//     * engine should give up.
-//     *
-//     * @param maxAnswers The maximum number of answers (binding sets)
-//     * the logic engine should return.
-//     *
+//     * @param suoKifFormula The String representation of the SUO-KIF query.
+//     * @param timeout       The number of seconds after which the inference engine should
+//     *                      give up.
+//     * @param maxAnswers    The maximum number of answers (binding sets) the inference
+//     *                      engine should return.
 //     * @return A String indicating the status of the ask operation.
 //     */
-//    public String ask(String suoKifFormula, int timeout, int maxAnswers) {
+//    public String askEProver(String suoKifFormula, int timeout, int maxAnswers) {
 //
-//        System.out.println("INFO in KB.ask(" + suoKifFormula + ", " + timeout + ", " + maxAnswers + ")");
+//        String result = "";
+//        // Start by assuming that the ask is futile.
+//        result = ("<queryResponse>" + System.getProperty("line.separator")
+//                + "  <answer result=\"no\" number=\"0\"> </answer>" + System.getProperty("line.separator")
+//                + "  <summary proofs=\"0\"/>" + System.getProperty("line.separator") + "</queryResponse>"
+//                + System.getProperty("line.separator"));
+//        if (StringUtil.isNonEmptyString(suoKifFormula)) {
+//            Formula query = new Formula();
+//            query.read(suoKifFormula);
+//            FormulaPreprocessor fp = new FormulaPreprocessor();
+//            ArrayList<Formula> processedStmts = fp.preProcess(query, true, this);
+//            if (!processedStmts.isEmpty() && this.eprover != null) {
+//                String strQuery = processedStmts.get(0).theFormula;
+//                result = this.eprover.submitQuery(strQuery, this);
+//            }
+//
+//            if (!processedStmts.isEmpty() && this.eprover != null) {
+//                // set timeout in EBatchConfig file and reload eprover
+//                try {
+//                    eprover.addBatchConfig(null, timeout);
+//                    eprover = new EProver(KBmanager.getMgr().getPref("inferenceEngine"), maxAnswers < 1 ? 1 : maxAnswers);
+//                }
+//                catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                String strQuery = processedStmts.get(0).theFormula;
+//                result = this.eprover.submitQuery(strQuery, this);
+//            }
+//        }
+//        return result;
+//    }
+
+//    /***************************************************************
+//     * Submits a
+//     * query to the inference engine. Returns a list of answers from inference
+//     * engine. If no proof is found, return null;
+//     *
+//     * @param suoKifFormula The String representation of the SUO-KIF query.
+//     * @return A list of answers from inference engine; If no proof or answer is
+//     * found, return null;
+//     */
+//    public ArrayList<String> askNoProof(String suoKifFormula, int timeout, int maxAnswers) {
+//
+//        ArrayList<String> answers = new ArrayList<String>();
+//        if (StringUtil.isNonEmptyString(suoKifFormula)) {
+//            Formula query = new Formula();
+//            query.read(suoKifFormula);
+//            FormulaPreprocessor fp = new FormulaPreprocessor();
+//            ArrayList<Formula> processedStmts = fp.preProcess(query, true, this);
+//
+//            if (!processedStmts.isEmpty() && this.eprover != null) {
+//                // set timeout in EBatchConfig file and reload eprover
+//                try {
+//                    eprover.addBatchConfig(null, timeout);
+//                    eprover = new EProver(KBmanager.getMgr().getPref("inferenceEngine"));
+//                }
+//                catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                String strQuery = processedStmts.get(0).theFormula;
+//                String EResult = this.eprover.submitQuery(strQuery, this);
+//                if (EResult == null || EResult.isEmpty())
+//                    System.out.println("No response from EProver!");
+//                else
+//                    System.out.println("Get response from EProver, start for parsing ...");
+//                // System.out.println("Results returned from E = \n" + EResult);
+//                answers = TPTP3ProofProcessor.parseAnswerTuples(EResult, this, fp);
+//                return answers;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    /**
+//     * *************************************************************
+//     * Submits a
+//     * query to specified InferenceEngine object. Returns an XML formatted
+//     * String that contains the response of the inference engine. It should be
+//     * in the form "<queryResponse>...</queryResponse>".
+//     *
+//     * @param suoKifFormula The String representation of the SUO-KIF query.
+//     * @param timeout       The number of seconds after which the underlying inference
+//     *                      engine should give up. (Time taken by axiom selection doesn't
+//     *                      count.)
+//     * @param maxAnswers    The maximum number of answers (binding sets) the inference
+//     *                      engine should return.
+//     * @param engine        InferenceEngine object that will be used for the inference.
+//     * @return A String indicating the status of the ask operation.
+//     */
+//    public String askEngine(String suoKifFormula, int timeout, int maxAnswers, InferenceEngine engine) {
+//
+//        String result = "";
+//        // Start by assuming that the ask is futile.
+//        result = "<queryResponse>\n<answer result=\"no\" number=\"0\">\n</answer>\n<summary proofs=\"0\"/>\n</queryResponse>\n";
+//        if (!StringUtil.emptyString(suoKifFormula)) {
+//            Formula query = new Formula();
+//            query.read(suoKifFormula);
+//            FormulaPreprocessor fp = new FormulaPreprocessor();
+//            ArrayList<Formula> processedStmts = fp.preProcess(query, true, this);
+//            try {
+//                if (!processedStmts.isEmpty()) {
+//                    String strQuery = processedStmts.get(0).theFormula;
+//                    result = engine.submitQuery(strQuery, timeout, maxAnswers);
+//                }
+//            }
+//            catch (IOException ioe) {
+//                ioe.printStackTrace();
+//                String message = ioe.getMessage().replaceAll(":", "&58;");
+//                errors.add(message);
+//                result = ioe.getMessage();
+//            }
+//        }
+//        result = result.replaceAll("&lt;", "<");
+//        result = result.replaceAll("&gt;", ">");
+//        return result;
+//    }
+//
+//    /**************************************************************
+//     * Submits a query to the SInE inference engine. Returns an XML formatted String that
+//     * contains the response of the inference engine. It should be in the form
+//     * "<queryResponse>...</queryResponse>".
+//     *
+//     * @param suoKifFormula The String representation of the SUO-KIF query.
+//     * @param timeout       The number of seconds after which the underlying inference
+//     *                      engine should give up. (Time taken by axiom selection doesn't
+//     *                      count.)
+//     * @param maxAnswers    The maximum number of answers (binding sets) the inference
+//     *                      engine should return.
+//     * @return A String indicating the status of the ask operation.
+//     */
+//    public String askSInE(String suoKifFormula, int timeout, int maxAnswers) {
+//
+//        String result = "";
+//        InferenceEngine.EngineFactory factory = SInE.getFactory();
+//        InferenceEngine engine = createInferenceEngine(factory);
+//        result = askEngine(suoKifFormula, timeout, maxAnswers, engine);
+//        try {
+//            if (engine != null)
+//                engine.terminate();
+//        }
+//        catch (IOException ioe) {
+//            ioe.printStackTrace();
+//            String message = ioe.getMessage().replaceAll(":", "&58;");
+//            errors.add(message);
+//            result = ioe.getMessage();
+//        }
+//        return result;
+//    }
+//
+//    /**************************************************************
+//     * Submits a query to the LEO inference engine. Returns an XML formatted String that
+//     * contains the response of the inference engine. It should be in the form
+//     * "<queryResponse>...</queryResponse>".
+//     *
+//     * @param suoKifFormula The String representation of the SUO-KIF query.
+//     * @param timeout       The number of seconds after which the underlying inference
+//     *                      engine should give up. (Time taken by axiom selection doesn't
+//     *                      count.)
+//     * @param maxAnswers    The maximum number of answers (binding sets) the inference
+//     *                      engine should return.
+//     * @return A String indicating the status of the ask operation.
+//     */
+//    public String askLEO(String suoKifFormula, int timeout, int maxAnswers, String flag) {
 //
 //        String result = "";
 //        try {
+//            String LeoExecutable = KBmanager.getMgr().getPref("leoExecutable");
+//            String LeoInput = KBmanager.getMgr().getPref("inferenceTestDir") + "prob.p";
+//            String LeoProblem;
+//            String responseLine;
+//            String LeoOutput = "";
+//            File LeoExecutableFile = new File(LeoExecutable);
+//            File LeoInputFile = new File(LeoInput);
+//            FileWriter LeoInputFileW = new FileWriter(LeoInput);
 //
-//            // Start by assuming that the ask is futile.
-//            result = "<queryResponse>\n<answer result=\"no\" number=\"0\">\n</answer>\n<summary proofs=\"0\"/>\n</queryResponse>\n";
-//            result = result.replaceAll("&lt;","<");
-//            result = result.replaceAll("&gt;",">");
-//
-//            if (Formula.isNonEmptyString(suoKifFormula)) {
-//                Formula query = new Formula();
-//                query.read(suoKifFormula);
-//                ArrayList processedStmts = query.preProcess(true, this);
-//
-//                System.out.println("  processedStmts == " + processedStmts);
-//
-//                if (!processedStmts.isEmpty()) {
-//                    result = this.inferenceEngine.submitQuery(((Formula)processedStmts.get(0)).theFormula,
-//                                                              timeout,
-//                                                              maxAnswers);
+//            List<Formula> selectedQuery = new ArrayList<Formula>();
+//            Formula newQ = new Formula();
+//            newQ.read(suoKifFormula);
+//            selectedQuery.add(newQ);
+//            List<String> selFs = null;
+//            if (flag.equals("LeoSine")) {
+//                SInE sine = new SInE(this.formulaMap.keySet());
+//                selFs = new ArrayList<String>(sine.performSelection(suoKifFormula));
+//                sine.terminate();
+//            }
+//            else if (flag.equals("LeoLocal"))
+//                selFs = new ArrayList<String>();
+//            else if (flag.equals("LeoGlobal")) {
+//                selFs = new ArrayList<String>();
+//                Iterator<Formula> it = this.formulaMap.values().iterator();
+//                while (it.hasNext()) {
+//                    Formula entry = it.next();
+//                    selFs.add(entry.toString());
 //                }
+//            }
+//            try { // add user asserted formulas
+//                File dir = new File(this.kbDir);
+//                File file = new File(dir, (this.name + _userAssertionsString));
+//                String filename = file.getCanonicalPath();
+//                BufferedReader userAssertedInput = new BufferedReader(new FileReader(filename));
+//
+//                try {
+//                    String line = null;
+//                    /*
+//                     * readLine is a bit quirky : it returns the content of a
+//                     * line MINUS the newline. it returns null only for the END
+//                     * of the stream. it returns an empty String if two newlines
+//                     * appear in a row.
+//                     */
+//                    while ((line = userAssertedInput.readLine()) != null)
+//                        selFs.add(line);
+//                }
+//                finally {
+//                    userAssertedInput.close();
+//                }
+//            }
+//            catch (IOException ex) {
+//                System.out.println("Error in KB.askLEO(): " + ex.getMessage());
+//                ex.printStackTrace();
+//            }
+//            List<Formula> selectedFormulas = new ArrayList();
+//            Formula newF = new Formula();
+//
+//            Iterator<String> it = selFs.iterator();
+//            while (it.hasNext()) {
+//                String entry = it.next();
+//                newF = new Formula();
+//                newF.read(entry);
+//                selectedFormulas.add(newF);
+//            }
+//            System.out.println(selFs.toString());
+//            THF thf = new THF();
+//            LeoProblem = thf.KIF2THF(selectedFormulas, selectedQuery, this);
+//            LeoInputFileW.write(LeoProblem);
+//            LeoInputFileW.close();
+//
+//            String command = LeoExecutableFile.getCanonicalPath() + " -po 1 -t " + timeout + " "
+//                    + LeoInputFile.getCanonicalPath();
+//
+//            Process leo = Runtime.getRuntime().exec(command);
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(leo.getInputStream()));
+//            while ((responseLine = reader.readLine()) != null)
+//                LeoOutput += responseLine + "\n";
+//            reader.close();
+//            System.out.println(LeoOutput);
+//
+//            if (LeoOutput.contains("SZS status Theorem")) {
+//                result = "Answer 1. yes" + "<br> <br>" + LeoProblem.replaceAll("\\n", "<br>") + "<br> <br>"
+//                        + LeoOutput.replaceAll("\\n", "<br>");
+//            }
+//            else {
+//                result = "Answer 1. don't know" + "<br> <br>" + LeoProblem.replaceAll("\\n", "<br>") + "<br> <br>"
+//                        + LeoOutput.replaceAll("\\n", "<br>");
 //            }
 //        }
 //        catch (Exception ex) {
+//            System.out.println("Error in KB.askLEO(): " + ex.getMessage());
 //            ex.printStackTrace();
 //        }
 //        return result;
 //    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * ***************************************************************
+
+    /*****************************************************************
+     */
+    public int termDepth(String term) {
+
+        //System.out.println("KB.termDepth(): " + term);
+        if (!terms.contains(term)) {
+            System.out.println("KB.termDepth(): no such term " + term);
+            return 0;
+        }
+        if (term.equals("Entity") || StringUtil.isNumeric(term))
+            return 0;
+        if (!kbCache.subclassOf(term,"Entity") && !kbCache.transInstOf(term,"Entity"))
+            return 0;
+        Set<String> rents = immediateParents(term);
+        for (String s : rents)
+            return 1 + termDepth(s);
+        return 0;
+    }
+
+    /*****************************************************************
+     */
+    public HashSet<String> immediateParents(String term) {
+
+        //System.out.println("KB.immediateParents(): " + term);
+        HashSet<String> result = new HashSet<>();
+        if (!terms.contains(term)) {
+            System.out.println("KB.immediateParents(): no such term " + term);
+            return result;
+        }
+        ArrayList<Formula> forms = askWithRestriction(0,"subclass",1,term);
+        forms.addAll(askWithRestriction(0,"instance",1,term));
+        forms.addAll(askWithRestriction(0,"subrelation",1,term));
+        forms.addAll(askWithRestriction(0,"subAttribute",1,term));
+        Iterator<Formula> it = forms.iterator();
+        while (it.hasNext()) {
+            Formula f = it.next();
+            if (!f.isCached())
+                result.add(f.getArgument(2));
+        }
+        //System.out.println("KB.immediateParents(): result: " + result);
+        return result;
+    }
+
+    /*****************************************************************
+     * Analogous to compareTo(), return -1,0 or 1 depending on whether
+     * the first term is "smaller", equal to or "greater" than the
+     * second, respectively.  A term that is the parent of another
+     * is "smaller".  If not a parent of the other, the smaller term
+     * is that which is fewer "levels" from their common parent.
+     * Therefore, terms that are not the same can still be "equal"
+     * if they're at the same level of the taxonomy.
+     */
+    public int compareTerms(String t1, String t2) {
+
+        if (t1.equals(t2))
+            return 0;
+        if (kbCache.subAttributeOf(t1,t2) || kbCache.subclassOf(t1,t2))
+            return -1;
+        if (kbCache.subAttributeOf(t2,t1) || kbCache.subclassOf(t2,t1))
+            return 1;
+        String p = kbCache.getCommonParent(t1,t2);
+        boolean found = false;
+        int depthT1 = termDepth(t1);
+        int depthT2 = termDepth(t2);
+        if (depthT1 == depthT2)
+            return 0;
+        if (depthT1 > depthT2)
+            return 1;
+        return -1;
+    }
+
+    /*****************************************************************
      * Takes a term and returns true if the term occurs in the KB.
      *
      * @param term A String.
@@ -1723,279 +2039,379 @@ public class KB {
      */
     public boolean containsTerm(String term) {
 
-        return terms.contains(term.intern());
+        if (getTerms().contains(term.intern()))
+            return true;
+        else if (getREMatch(term.intern()).size() == 1)
+            return true;
+        return false;
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * Takes a formula string and returns true if the corresponding
-//     * Formula occurs in the KB.
-//     *
-//     * @param formula A String.
-//     * @return true or false.
-//     */
-//    public boolean containsFormula(String formula) {
-//
-//        return formulaMap.containsKey(formula.intern());
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * Count the number of terms in the knowledge base in order to
-//     * present statistics to the user.
-//     *
-//     * @return The int(eger) number of terms in the knowledge base.
-//     */
-//    public int getCountTerms() {
-//
-//        return terms.size();
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *  Count the number of relations in the knowledge base in order to
-//     *  present statistics to the user.
-//     *
-//     *  @return The int(eger) number of relations in the knowledge base.
-//     */
-//    public int getCountRelations() {
-//
-//        return this.getAllInstances("Relation").size();
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *  Count the number of formulas in the knowledge base in order to
-//     *  present statistics to the user.
-//     *
-//     *  @return The int(eger) number of formulas in the knowledge base.
-//     */
-//    public int getCountAxioms() {
-//
-//        return formulaMap.size();
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * ***************************************************************
-     * An accessor providing a TreeSet of un-preProcessed String representations
-     * of Formulas.
+    /*****************************************************************
+     * Takes a formula string and returns true if the corresponding Formula occurs in
+     * the KB.
+     *
+     * @param formula A String.
+     * @return true or false.
+     */
+    public boolean containsFormula(String formula) {
+
+        return formulaMap.containsKey(formula.intern());
+    }
+
+    /***************************************************************** Count the
+     * number of terms in the knowledge base in order to present statistics to
+     * the user.
+     *
+     * @return The int(eger) number of terms in the knowledge base.
+     */
+    public int getCountTerms() {
+
+        return getTerms().size();
+    }
+
+    /*****************************************************************
+     * Count the number of relations in the knowledge base in order to present statistics
+     * to the user.
+     *
+     * @return The int(eger) number of relations in the knowledge base.
+     */
+    public int getCountRelations() {
+
+        return kbCache.relations.size();
+    }
+
+    /*****************************************************************
+     * Count the number of formulas in the knowledge base in order to present statistics
+     * to the user.
+     *
+     * @return The int(eger) number of formulas in the knowledge base.
+     */
+    public int getCountAxioms() {
+
+        return formulaMap.size();
+    }
+
+    /*****************************************************************
+     * An accessor providing a TreeSet of un-preProcessed String representations of
+     * Formulae.
      *
      * @return A TreeSet of Strings.
      */
-    public TreeSet getFormulas() {
+    public TreeSet<String> getFormulas() {
 
-        TreeSet newFormulaSet = new TreeSet(formulaMap.keySet());
-        return newFormulaSet;
+        return new TreeSet<String>(formulaMap.keySet());
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *  Count the number of rules in the knowledge base in order to
-//     *  present statistics to the user. Note that the number of rules
-//     *  is a subset of the number of formulas.
-//     *
-//     *  @return The int(eger) number of rules in the knowledge base.
-//     */
-//    public int getCountRules() {
-//
-//        List symbols = Arrays.asList("=>", "<=>");
-//        int count = 0;
-//        Formula f = null;
-//        String arg0 = null;
-//        Iterator it = formulaMap.values().iterator();
-//        while (it.hasNext()) {
-//            f = (Formula) it.next();
-//            arg0 = f.car();
-//            if (symbols.contains(arg0)) {
-//                count++;
-//            }
-//        }
-//        return count;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * ***************************************************************
+    /*****************************************************************
+     * An accessor providing a Formula
+     */
+    public Formula getFormulaByKey(String key) {
+
+        Formula f = null;
+        ArrayList<String> al = formulas.get(key);
+        if ((al != null) && !al.isEmpty())
+            f = formulaMap.get(al.get(0));
+        return f;
+    }
+
+    /*****************************************************************
+     * Count the number of rules in the knowledge base in order to present statistics to
+     * the user. Note that the number of rules is a subset of the number of
+     * formulas.
+     *
+     * @return The int(eger) number of rules in the knowledge base.
+     */
+    public int getCountRules() {
+
+        int count = 0;
+        Iterator<Formula> it = formulaMap.values().iterator();
+        while (it.hasNext()) {
+            Formula f = it.next();
+            if (f.isRule())
+                count++;
+        }
+        return count;
+    }
+
+    /*****************************************************************
      * Create an ArrayList of the specific size, filled with empty strings.
      */
-    private static ArrayList arrayListWithBlanks(int size) {
+    private ArrayList<String> arrayListWithBlanks(int size) {
 
-        ArrayList al = new ArrayList(size);
-        for (int i = 0; i < size; i++) {
+        ArrayList<String> al = new ArrayList<String>(size);
+        for (int i = 0; i < size; i++)
             al.add("");
-        }
         return al;
     }
 
-    /**
-     * ***************************************************************
-     * Get the alphabetically nearest terms to the given term, which is not in
-     * the KB. Elements 0-14 should be alphabetically lesser and 15-29
+    /** ***************************************************************
+     * Get the alphabetically nearest terms to the given term, which is not in the KB.
+     * Elements 0-(k-1) should be alphabetically lesser and k-(2*k-1)
      * alphabetically greater. If the term is at the beginning or end of the
      * alphabet, fill in blank items with the empty string: "".
      */
-    private ArrayList getNearestTerms(String term) {
+    private ArrayList<String> getNearestKTerms(String term, int k) {
 
-        ArrayList al = arrayListWithBlanks(30);
-        Object[] t = terms.toArray();
+        ArrayList<String> al;
+        if (k == 0)
+            al = arrayListWithBlanks(1);
+        else
+            al = arrayListWithBlanks(2 * k);
+        Object[] t;
+        t = getTerms().toArray();
         int i = 0;
-        while (i < t.length && ((Comparable<String>) t[i]).compareTo(term) < 0) {
+        while (i < t.length - 1 && ((String) t[i]).compareTo(term) < 0)
             i++;
+        if (k == 0) {
+            al.set(0, (String) t[i]);
+            return al;
         }
         int lower = i;
-        while (i - lower < 15 && lower > 0) {
+        while (i - lower < k && lower > 0) {
             lower--;
-            al.set(15 - (i - lower), t[lower]);
+            al.set(k - (i - lower), (String) t[lower]);
         }
         int upper = i - 1;
-        System.out.println(t.length);
-        while (upper - i < 14 && upper < t.length - 1) {
+        while (upper - i < (k - 1) && upper < t.length - 1) {
             upper++;
-            al.set(15 + (upper - i), t[upper]);
+            al.set(k + (upper - i), (String) t[upper]);
         }
         return al;
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * Get the neighbors of this initial uppercase term (class or function).
-//     */
-//    public ArrayList getNearestRelations(String term) {
-//
-//        term = Character.toUpperCase(term.charAt(0)) + term.substring(1,term.length());
-//        return getNearestTerms(term);
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * Get the neighbors of this initial lowercase term (relation).
-//     */
-//    public ArrayList getNearestNonRelations(String term) {
-//
-//        term = Character.toLowerCase(term.charAt(0)) + term.substring(1,term.length());
-//        return getNearestTerms(term);
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * ***************************************************************
-     * Repopulates the format maps for lang.
+    /*****************************************************************
+     * Get the alphabetically nearest terms to the given term, which is not in the KB.
+     * Elements 0-14 should be alphabetically lesser and 15-29 alphabetically
+     * greater. If the term is at the beginning or end of the alphabet, fill in
+     * blank items with the empty string: "".
      */
-    @SuppressWarnings("HardcodedFileSeparator")
-    private void reloadFormatMaps(String lang) {
-        try {
+    private ArrayList<String> getNearestTerms(String term) {
 
-            String lingua;
+        return getNearestKTerms(term, 15);
+    }
 
-            if (formatMap == null) {
-                formatMap = new HashMap();
-            }
-            formatMap.clear();
-            if (termFormatMap == null) {
-                termFormatMap = new HashMap();
-            }
-            termFormatMap.clear();
+    /*****************************************************************
+     * Get the neighbors of this initial uppercase term (class or function).
+     */
+    public ArrayList<String> getNearestRelations(String term) {
 
-            // System.out.println("INFO in KB.reloadFormatMaps(): Reading the format maps for " + lang);
-            lingua = lang == null ? language : lang;
-            long t1 = System.currentTimeMillis();
-            ArrayList col = ask("arg", 0, "format");
-            if ((col == null) || col.isEmpty()) {
-                // System.out.println("Error in KB.reloadFormatMaps(): No relation formatting file loaded for language " + lang);
-                return;
-            }
-            //System.out.println("Number of format statements: " + (new Integer(col.size())).toString());
-            Iterator ite = col.iterator();
-            Formula f;
-            String arg1;
-            String key;
-            String format;
-            while (ite.hasNext()) {
-                f = (Formula) ite.next();
-                arg1 = f.getArgument(1);
-                if (arg1.equalsIgnoreCase(lingua)) {
-                    key = f.getArgument(2);
-                    format = f.getArgument(3);
-                    if (!format.isEmpty() && format.charAt(0) == '\"') {
-                        format = format.substring(1);
-                    }
-                    if (!format.isEmpty() && format.charAt(format.length() - 1) == '\"') {
-                        format = format.substring(0, format.length() - 1);
-                    }
-                    if (format.indexOf('$') < 0) {
-                        format = format.replaceAll("\\x26\\x25", "\\&\\%" + key + "\\$");
-                    }
-                    formatMap.put(key.intern(), format);
+        term = Character.toUpperCase(term.charAt(0)) + term.substring(1, term.length());
+        return getNearestTerms(term);
+    }
+
+    /*****************************************************************
+     * Get the neighbors of this initial lowercase term (relation).
+     */
+    public ArrayList<String> getNearestNonRelations(String term) {
+
+        term = Character.toLowerCase(term.charAt(0)) + term.substring(1, term.length());
+        return getNearestTerms(term);
+    }
+
+    /*****************************************************************
+     * Get the alphabetically num lower neighbor of this initial term, which must exist
+     * in the current KB otherwise an empty string is returned.
+     */
+    public String getAlphaBefore(String term, int num) {
+
+        if (!getTerms().contains(term)) {
+            ArrayList<String> al = getNearestKTerms(term, 0);
+            term = (String) al.get(0);
+        }
+        if (getTerms().size() < 1)
+            return "";
+        ArrayList<String> tal = new ArrayList<String>(getTerms());
+        int i = tal.indexOf(term.intern());
+        if (i < 0)
+            return "";
+        i = i - num;
+        if (i < 0)
+            i = 0;
+        return (String) tal.get(i);
+    }
+
+    /*****************************************************************
+     * Get the alphabetically num higher neighbor of this initial term, which must exist
+     * in the current KB otherwise an empty string is returned.
+     */
+    public String getAlphaAfter(String term, int num) {
+
+        if (!getTerms().contains(term)) {
+            ArrayList<String> al = getNearestKTerms(term, 0);
+            term = (String) al.get(0);
+        }
+        if (getTerms().size() < 1)
+            return "";
+        ArrayList<String> tal = new ArrayList<String>(getTerms());
+        int i = tal.indexOf(term.intern());
+        if (i < 0)
+            return "";
+        i = i + num;
+        if (i >= tal.size())
+            i = tal.size() - 1;
+        return (String) tal.get(i);
+    }
+
+    /****************************************************************
+     * This List is used to limit the number of warning messages logged by
+     * loadFormatMaps(lang). If an attempt to load format or termFormat values
+     * for lang is unsuccessful, the list is checked for the presence of lang.
+     * If lang is not in the list, a warning message is logged and lang is added
+     * to the list. The list is cleared whenever a constituent file is added or
+     * removed for KB, since the latter might affect the availability of format
+     * or termFormat values.
+     */
+    protected ArrayList<String> loadFormatMapsAttempted = new ArrayList<String>();
+
+    /****************************************************************
+     * Populates the format maps for language lang.
+     *
+     * see termFormatMap is a HashMap of language keys and HashMap values. The
+     *      interior HashMaps are term keys and format string values.
+     *
+     * see formatMap is the same but for relation format strings.
+     */
+    public void loadFormatMaps(String lang) {
+
+        if (formatMap == null)
+            formatMap = new HashMap<String, HashMap<String, String>>();
+        if (termFormatMap == null)
+            termFormatMap = new HashMap<String, HashMap<String, String>>();
+        if (formatMap.get(lang) == null)
+            formatMap.put(lang, new HashMap<String, String>());
+        if (termFormatMap.get(lang) == null)
+            termFormatMap.put(lang, new HashMap<String, String>());
+
+        if (!loadFormatMapsAttempted.contains(lang)) {
+            ArrayList<Formula> col = askWithRestriction(0, "format", 1, lang);
+            if ((col == null) || col.isEmpty())
+                System.out.println("Error in KB.loadFormatMaps(): No relation format file loaded for language " + lang);
+            else {
+                HashMap<String, String> langFormatMap = formatMap.get(lang);
+                Iterator<Formula> ite = col.iterator();
+                while (ite.hasNext()) {
+                    Formula f = (Formula) ite.next();
+                    String key = f.getArgument(2);
+                    String format = f.getArgument(3);
+                    format = StringUtil.removeEnclosingQuotes(format);
+                    langFormatMap.put(key, format);
                 }
             }
-            System.out.println("INFO in KB.reloadFormatMaps(): "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds to builder KB.formatMap");
-
-            t1 = System.currentTimeMillis();
-            col = ask("arg", 0, "termFormat");
-            if ((col == null) || col.isEmpty()) {
-                // System.out.println("Error in KB.reloadFormatMaps(): No term formatting file loaded for language: " + lang);
-                return;
-            }
-            //System.out.println("Number of format statements: " + (new Integer(col.size())).toString());
-            ite = col.iterator();
-            while (ite.hasNext()) {
-                f = (Formula) ite.next();
-                arg1 = f.getArgument(1);
-                if (arg1.equalsIgnoreCase(lingua)) {
-                    key = f.getArgument(2);
-                    format = f.getArgument(3);
-                    if (!format.isEmpty() && format.charAt(0) == '\"') {
-                        format = format.substring(1);
-                    }
-                    if (!format.isEmpty() && format.charAt(format.length() - 1) == '\"') {
-                        format = format.substring(0, format.length() - 1);
-                    }
-                    //if (format.indexOf("$") < 0)
-                    //    format = format.replaceAll("\\x26\\x25", "\\&\\%"+key+"\\$");
-                    termFormatMap.put(key.intern(), format);
+            col = askWithRestriction(0, "termFormat", 1, lang);
+            if ((col == null) || col.isEmpty())
+                System.out.println("Error in KB.loadFormatMaps(): No term format file loaded for language: " + lang);
+            else {
+                HashMap<String, String> langTermFormatMap = termFormatMap.get(lang);
+                Iterator<Formula> ite = col.iterator();
+                while (ite.hasNext()) {
+                    Formula f = (Formula) ite.next();
+                    String key = f.getArgument(2);
+                    String format = f.getArgument(3);
+                    format = StringUtil.removeEnclosingQuotes(format);
+                    langTermFormatMap.put(key, format);
                 }
             }
-            System.out.println("INFO in KB.reloadFormatMaps(): "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds to builder KB.termFormatMap");
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            loadFormatMapsAttempted.add(lang);
         }
         language = lang;
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *  This method creates an association list (Map) of the natural
-//     *  language format string and the relation name for which that
-//     *  format string applies.  If the map has already been built and
-//     *  the language hasn't changed, just return the existing map.
-//     *  This is a case of "lazy evaluation".
-//     *
-//     *  @return An instance of Map where the keys are relation names
-//     *  and the values are format strings.
-//     */
-//    public HashMap getFormatMap(String lang) {
-//
-//        if ((formatMap == null) || formatMap.isEmpty() || (!lang.equalsIgnoreCase(language))) {
-//
-//            // This is here to make sure LanguageFormatter.keywordMap
-//            // is initialized.
-//            LanguageFormatter.readKeywordMap(KBmanager.getMgr().getPref("kbDir"));
-//
-//            reloadFormatMaps(lang);
-//        }
-//        return formatMap;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * ***************************************************************
-     * Deletes the user assertions file, and then reloads the KB.
+    /*****************************************************************
+     * Clears all loaded format and termFormat maps, for all languages.
      */
-//    public void deleteUserAssertions() {
+    protected void clearFormatMaps() {
+
+        if (formatMap != null) {
+            Iterator<HashMap<String, String>> itf = formatMap.values().iterator();
+            while (itf.hasNext()) {
+                HashMap<String, String> m = itf.next();
+                if (m != null)
+                    m.clear();
+            }
+            formatMap.clear();
+        }
+        if (termFormatMap != null) {
+            Iterator<HashMap<String, String>> itf = termFormatMap.values().iterator();
+            while (itf.hasNext()) {
+                HashMap<String, String> m = itf.next();
+                if (m != null)
+                    m.clear();
+            }
+            termFormatMap.clear();
+        }
+        loadFormatMapsAttempted.clear();
+        return;
+    }
+
+    /*****************************************************************
+     * This method creates a dictionary (Map) of SUO-KIF term symbols -- the keys --
+     * and a natural language string for each key that is the preferred name for
+     * the term -- the values -- in the context denoted by lang. If the Map has
+     * already been built and the language hasn't changed, just return the
+     * existing map. This is a case of "lazy evaluation".
+     *
+     * @return An instance of Map where the keys are terms and the values are
+     *         format strings.
+     */
+    public HashMap<String, String> getTermFormatMap(String lang) {
+
+        if (!StringUtil.isNonEmptyString(lang))
+            lang = "EnglishLanguage";
+        if ((termFormatMap == null) || termFormatMap.isEmpty())
+            loadFormatMaps(lang);
+        HashMap<String, String> langTermFormatMap = termFormatMap.get(lang);
+        if ((langTermFormatMap == null) || langTermFormatMap.isEmpty())
+            loadFormatMaps(lang);
+        return (HashMap<String, String>) termFormatMap.get(lang);
+    }
+
+    /*****************************************************************
+     * This method creates an association list (Map) of the natural language format
+     * string and the relation name for which that format string applies. If the
+     * map has already been built and the language hasn't changed, just return
+     * the existing map. This is a case of "lazy evaluation".
+     *
+     * @return An instance of Map where the keys are relation names and the
+     *         values are format strings.
+     */
+    public HashMap<String, String> getFormatMap(String lang) {
+
+        if (!StringUtil.isNonEmptyString(lang))
+            lang = "EnglishLanguage";
+        if ((formatMap == null) || formatMap.isEmpty())
+            loadFormatMaps(lang);
+        HashMap<String, String> langFormatMap = formatMap.get(lang);
+        if ((langFormatMap == null) || langFormatMap.isEmpty())
+            loadFormatMaps(lang);
+        return formatMap.get(lang);
+    }
+
+    /*****************************************************************
+     * Deletes user assertions, both in the files and in the constituents list.
+     */
+    public void deleteUserAssertions() throws IOException {
+
+        String toRemove = null;
+        for (String name : constituents) {
+            if (name.endsWith(_userAssertionsString)) {
+                toRemove = name;
+                break;
+            }
+        }
+        // Remove the string from the list.
+        if (toRemove != null) {
+            constituents.remove(toRemove);
+        }
+    }
+
+//    /*****************************************************************
+//     * Deletes the user assertions key in the constituents map, and then reloads the
+//     * KBs.
+//     */
+//    public void deleteUserAssertionsAndReload() {
 //
 //        String cname = null;
-//        for (int i = 0 ; i < constituents.size() ; i++) {
+//        for (int i = 0; i < constituents.size(); i++) {
 //            cname = (String) constituents.get(i);
 //            if (cname.endsWith(_userAssertionsString)) {
 //                try {
@@ -2004,400 +2420,329 @@ public class KB {
 //                    reload();
 //                }
 //                catch (IOException ioe) {
-//                    System.out.println("Error in KB.deleteUserAssertions: Error writing configuration: " + ioe.getMessage());
+//                    System.out.println(
+//                            "Error in KB.deleteUserAssertionsAndReload(): writing configuration: " + ioe.getMessage());
 //                }
 //            }
 //        }
-//        return;
 //    }
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *  This method creates an association list (Map) of the natural
-//     *  language string and the term for which that format string
-//     *  applies.  If the map has already been built and the language
-//     *  hasn't changed, just return the existing map.  This is a case
-//     *  of "lazy evaluation".
-//     *
-//     *  @return An instance of Map where the keys are terms and the
-//     *  values are format strings.
-//     */
-//    public HashMap getTermFormatMap(String lang) {
-//
-//        //System.out.println("INFO in KB.getTermFormatMap(): Reading the format map for " + lang + " with language=" + language);
-//        if ((termFormatMap == null) || termFormatMap.isEmpty() || (!lang.equalsIgnoreCase(language))) {
-//
-//            // This is here to make sure LanguageFormatter.keywordMap
-//            // is initialized.
-//            LanguageFormatter.readKeywordMap(KBmanager.getMgr().getPref("kbDir"));
-//
-//            reloadFormatMaps(lang);
-//        }
-//        return termFormatMap;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * Add a new KB constituent by reading in the file, and then
-//     * merging the formulas with the existing set of formulas.  All
-//     * assertion caches are rebuilt, the current Vampire process is
-//     * destroyed, and a new one is created.
-//     *
-//     * @param filename - the full path of the file being added.
-//     */
-//    public String addConstituent(String filename) {
-//        return addConstituent(filename, true,  true);
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * *************************************************************
-     * Add a new KB constituent by reading in the file, and then merging the
-     * formulas with the existing set of formulas.
+
+    /***************************************************************
+     * Add a new KB constituent by reading in the file, and then merging the formulas with
+     * the existing set of formulas.
      *
-     * @param filename - The full path of the file being added.
-     * @param buildCachesP - If true, forces the assertion caches to be rebuilt.
-     * @param loadVampireP - If true, destroys the old Vampire process and
-     * starts a new one.
+     * @param filename
+     *            - The full path of the file being added
      */
-    public String addConstituent(String filename, boolean buildCachesP, boolean loadVampireP) {
+    public void addConstituent(String filename) {
+        // , boolean buildCachesP, boolean loadEProverP, boolean performArity) {
 
-        System.out.println("ENTER KB.addConstituent(" + filename + ", " + buildCachesP + ", " + loadVampireP + ')');
-        long t1 = System.currentTimeMillis();
-        StringBuilder result = new StringBuilder();
-
+        System.out.println("INFO in KB.addConstituent(): " + filename);
+        String canonicalPath = null;
+        KIF file = new KIF();
         try {
+//            if (filename.endsWith(".owl") || filename.endsWith(".OWL") || filename.endsWith(".rdf")
+//                    || filename.endsWith(".RDF")) {
+//                OWLtranslator.read(filename);
+//                filename = filename + ".kif";
+//            }
             File constituent = new File(filename);
-            String canonicalPath = constituent.getCanonicalPath();
-            Iterator it;
-            Iterator it2;
-            KIF file = new KIF();
-            String key;
-            String internedFormula;
-            ArrayList list;
-            ArrayList newList;
-            Formula f;
 
-            if (constituents.contains(canonicalPath)) {
-                return "Error: " + canonicalPath + " already loaded.";
-            }
-            System.out.println("INFO in KB.addConstituent(" + filename + ", " + buildCachesP + ", " + loadVampireP + ')');
-            System.out.println("  Adding " + canonicalPath);
-            try {
-                file.readFile(canonicalPath);
-            } catch (Exception ex1) {
-                result.append(ex1.getMessage());
-                if (ex1 instanceof ParseException) {
-                    result.append(" at line ").append(((ParseException) ex1).getErrorOffset());
-                }
-                result.append(" in file ").append(canonicalPath);
-                return result.toString();
-            }
-
-            System.out.println("INFO in KB.addConstituent(" + filename + ", " + buildCachesP + ", " + loadVampireP + ')');
-            System.out.println("  Parsed file "
-                    + canonicalPath
-                    + " of size "
-                    + file.formulas.keySet().size());
-            it = file.formulas.keySet().iterator();
-            int count = 0;
-            while (it.hasNext()) {
-                // Iterate through the formulas in the file, adding them to the KB, at the appropriate key.
-                key = (String) it.next();
-                // Note that this is a slow operation that needs to be improved
-                // System.out.println("INFO KB.addConstituent(): Key " + key);
-                if ((count++ % 100) == 1) {
-                    System.out.print(".");
-                }
-                list = (ArrayList) formulas.get(key);
-                if (list == null) {
-                    list = new ArrayList();
-                    formulas.put(key, list);
-                }
-                newList = (ArrayList) file.formulas.get(key);
-                it2 = newList.iterator();
-                while (it2.hasNext()) {
-                    f = (Formula) it2.next();
-                    internedFormula = f.theFormula.intern();
-                    if (!list.contains(f)) {
-                        list.add(f);
-                        formulaMap.put(internedFormula, f);
-
-                        // Force translation to clausal form, since it
-                        // will be used multiple times later.
-                        // f.computeTheClausalForm();
-                    } else {
-                        result.append("Warning: Duplicate axiom in ");
-                        result.append(f.sourceFile).append(" at line ").append(f.startLine).append("<BR>");
-                        result.append(f.theFormula).append("<P>");
-                        Formula existingFormula = (Formula) formulaMap.get(internedFormula);
-                        result.append("Warning: Existing formula appears in ");
-                        result.append(existingFormula.sourceFile).append(" at line ").append(existingFormula.startLine).append("<BR>");
-                        result.append("<P>");
-                    }
-
-                    /*
-                     boolean found = false;
-                     for (int j = 0; j < list.size(); j++) {         
-                     if (j % 10000 == 1) System.out.print("!");            
-                     if (f.deepEquals((Formula) list.get(j))) 
-                     found = true;
-                     }
-                     if (!found) 
-                     list.add(newArrayList.get(i));
-                     */
-                }
-            }
-            System.out.println("x");
-
-            terms.addAll(file.terms);
-
-            if (!constituents.contains(canonicalPath)) {
-                constituents.add(canonicalPath);
-            }
-
-            System.out.println("INFO in KB.addConstituent(" + filename + ", " + buildCachesP + ", " + loadVampireP + ')');
-            System.out.println("  File "
-                    + canonicalPath
-                    + " loaded in "
-                    + ((System.currentTimeMillis() - t1) / 1000.0)
-                    + " seconds");
-
-            if (buildCachesP && !canonicalPath.endsWith(_cacheFileSuffix)) {
-                buildRelationCaches();
-            }
-
-            if (loadVampireP) {
-                loadVampire();
-            }
-        } catch (Exception ex) {
-            result.append(ex.getMessage());
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
+            canonicalPath = constituent.getCanonicalPath();
+            if (constituents.contains(canonicalPath))
+                errors.add("Error. " + canonicalPath + " already loaded.");
+            file.readFile(canonicalPath);
+            warnings.addAll(file.warningSet);
         }
-        System.out.println("EXIT KB.addConstituent(" + filename + ", " + buildCachesP + ", " + loadVampireP + ')');
-        return result.toString();
+        catch (Exception ex1) {
+            StringBuilder error = new StringBuilder();
+            error.append(ex1.getMessage());
+            if (ex1 instanceof ParseException)
+                error.append(" at line " + ((ParseException) ex1).getErrorOffset());
+            error.append(" in file " + canonicalPath);
+            errors.add(error.toString());
+            System.out.println("Error in KB.addConstituent(): " + error.toString());
+            ex1.printStackTrace();
+        }
+        for (Map.Entry<String, Integer> entry : file.termFrequency.entrySet()) {
+            if (!termFrequency.containsKey(entry.getKey())) {
+                termFrequency.put(entry.getKey(), entry.getValue());
+            }
+            else {
+                termFrequency.put(entry.getKey(), termFrequency.get(entry.getKey()) + entry.getValue());
+            }
+        }
+
+        Iterator<String> it = file.formulas.keySet().iterator();
+        int count = 0;
+        while (it.hasNext()) { // Iterate through keys.
+            String key = it.next();
+            if ((count++ % 100) == 1)
+                System.out.print(".");
+            ArrayList<String> newlist = file.formulas.get(key);
+
+            // temporary debug test to find nulls
+            for (int i = 0; i < newlist.size(); i++) {
+                String form = newlist.get(i);
+                if (StringUtil.emptyString(form))
+                    System.out.println("Error in KB.addConstituent() 1: formula is null ");
+            }
+            ArrayList<String> list = formulas.get(key);
+
+            if (list != null) {
+                // temporary debug test to find nulls
+                for (int i = 0; i < list.size(); i++) {
+                    String form = list.get(i);
+                    if (StringUtil.emptyString(form))
+                        System.out.println("Error in KB.addConstituent() 2: formula is null ");
+                }
+                newlist.addAll(list);
+            }
+            formulas.put(key, newlist);
+        }
+
+        count = 0;
+        Iterator<Formula> it2 = file.formulaMap.values().iterator();
+        while (it2.hasNext()) { // Iterate through values
+            Formula f = (Formula) it2.next();
+            String internedFormula = f.theFormula.intern();
+            if ((count++ % 100) == 1)
+                System.out.print(".");
+            if (!formulaMap.containsKey(internedFormula))
+                formulaMap.put(internedFormula, f);
+        }
+        System.out.println("INFO in KB.addConstituent(): added " + file.formulaMap.values().size() + " formulas and "
+                + file.terms.size() + " terms.");
+        this.getTerms().addAll(file.terms);
+        if (!constituents.contains(canonicalPath))
+            constituents.add(canonicalPath);
+        // clearFormatMaps(); // Clear formatMap and termFormatMap for this KB.
+        // if (buildCachesP && !canonicalPath.endsWith(_cacheFileSuffix)) {
+        // kbCache = new KBcache(this);
+        // kbCache.buildCaches();
+        // }
+        // if (loadEProverP)
+        // loadEProver();
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * Reload all the KB constituents.
-//     */
-//    public String reload() {
-//
-//        System.out.println("ENTER KB.reload()");
-//        StringBuilder result = new StringBuilder();
-//        try {
-//            ArrayList newConstituents = new ArrayList();
-//            Iterator ci = constituents.iterator();
-//            String cName = null;
-//            while (ci.hasNext()) {
-//                cName = (String) ci.next();
-//
-//                // Don't reuse the same cached data.  Instead, recompute
-//                // it.
-//                if (!(cName.endsWith(_cacheFileSuffix))) {
-//                    newConstituents.add(cName);
-//                }
-//            }
-//            constituents.clear();
-//            language = "en";
-//            formulas.clear();
-//            formulaMap.clear();
-//            terms.clear();
-//            if (formatMap != null) {
-//                formatMap.clear();
-//            }
-//            if (termFormatMap != null) {
-//                termFormatMap.clear();
-//            }
-//
-//            ci = newConstituents.iterator();
-//            while (ci.hasNext()) {
-//                cName = (String) ci.next();
-//                System.out.println("INFO in KB.reload()");
-//                System.out.println("  constituent == " + cName);
-//                result.append(addConstituent(cName, false, false));
-//            }
-//
-//            // Rebuild the in-memory relation caches.
-//            buildRelationCaches();
-//
-//            // If cache == yes, write the cache file.
-//            if (KBmanager.getMgr().getPref("cache").equalsIgnoreCase("yes")) {
-//                result.append(this.cache());
-//            }
-//
-//            // At this point, we have reloaded all constituents, have
-//            // rebuilt the relation caches, and, if cache == yes, have
-//            // written out the _Cache.kif file.  Now we reload the
-//            // inferfence engine.
-//            loadVampire();
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//
-//        System.out.println("EXIT KB.reload()");
-//        return result.toString();
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * Write a KIF file.
-//     * @param fname - the name of the file to write, including full path.
-//     */
-//    public void writeFile(String fname) throws IOException {
-//
-//        FileWriter fr = null;
-//        PrintWriter pr = null;
-//        Iterator it;
-//        HashSet formulaSet = new  HashSet();
-//        ArrayList formulaArray;
-//        String key;
-//        ArrayList list;
-//        Formula f;
-//        String s;
-//
-//        try {
-//            fr = new FileWriter(fname);
-//            pr = new PrintWriter(fr);
-//
-//            it = formulas.keySet().iterator();
-//            while (it.hasNext()) {
-//                key = (String) it.next();
-//                list = (ArrayList) formulas.get(key);
-//                for (int i = 0; i < list.size(); i++) {
-//                    f = (Formula) list.get(i);
-//                    s = f.toString();
-//                    pr.println(s);
-//                    pr.println();
-//                }
-//            }
-//        }
-//        catch (java.io.IOException e) {
-//            throw new IOException("Error writing file " + fname);
-//        }
-//        finally {
-//            if (pr != null) {
-//                pr.close();
-//            }
-//            if (fr != null) {
-//                fr.close();
-//            }
-//        }
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * *************************************************************
-     * A HashMap for holding compiled regular expression patterns. The map is
-     * initialized by calling compilePatterns().
+    /*****************************************************************
+     * Reload all the KB constituents.
      */
-    private static HashMap REGEX_PATTERNS;
+    public String reload() {
 
-    /**
-     * ***************************************************************
-     * This method returns a compiled regular expression Pattern object indexed
-     * by key.
+        ArrayList<String> newConstituents = new ArrayList<String>();
+        synchronized (this.getTerms()) {
+            Iterator<String> ci = constituents.iterator();
+            while (ci.hasNext()) {
+                String cName = ci.next();
+                if (!cName.endsWith(_cacheFileSuffix)) // Recompute cached data
+                    newConstituents.add(cName);
+            }
+            constituents.clear();
+            formulas.clear();
+            formulaMap.clear();
+            terms.clear();
+            clearFormatMaps();
+            errors.clear();
+            Iterator<String> nci = newConstituents.iterator();
+            if (nci.hasNext())
+                System.out.println("INFO in KB.reload()");
+            while (nci.hasNext()) {
+                String cName = (String) nci.next();
+                addConstituent(cName);
+                // addConstituent(cName, false, false, false);
+            }
+            // build kb cache when "cache" = "yes"
+            if (KBmanager.getMgr().getPref("cache").equalsIgnoreCase("yes")) {
+                kbCache = new KBcache(this);
+                kbCache.buildCaches();
+                checkArity(); // Reperform arity checks on everything
+            }
+            else {
+                kbCache = new KBcache(this);
+                // checkArity needs the cache, so don't call it.
+            }
+            // At this point, we have reloaded all constituents, have
+            // rebuilt the relation caches, and, if cache == yes, have
+            // written out the _Cache.kif file. Now we reload the
+            // inference engine.
+//            loadEProver();
+        }
+        return "";
+    }
+
+    /*****************************************************************
+     * Write a KIF file consisting of all the formulas in the knowledge base.
      *
-     * @param key A String that is the retrieval key for a compiled regular
-     * expression Pattern.
+     * @param fname
+     *            - the name of the file to write, including full path.
+     */
+    public void writeFile(String fname) throws IOException {
+
+        FileWriter fr = null;
+        PrintWriter pr = null;
+        HashSet<String> formulaSet = new HashSet<String>();
+
+        Iterator<String> it = formulas.keySet().iterator();
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            ArrayList<String> list = formulas.get(key);
+            for (int i = 0; i < list.size(); i++) {
+                String s = list.get(i);
+                formulaSet.add(s);
+            }
+        }
+        try {
+            fr = new FileWriter(fname);
+            pr = new PrintWriter(fr);
+            it = formulaMap.keySet().iterator();
+            while (it.hasNext()) {
+                String s = (String) it.next();
+                pr.println(s);
+                pr.println();
+            }
+        }
+        catch (IOException e) {
+            System.out.println("Error in KB.writeFile(): Error writing file " + fname);
+            e.printStackTrace();
+        }
+        finally {
+            if (pr != null) {
+                pr.close();
+            }
+            if (fr != null) {
+                fr.close();
+            }
+        }
+    }
+
+//    /***************************************************************
+//     * Create the XML configuration element.
+//     */
+//    public SimpleElement writeConfiguration() {
+//
+//        SimpleElement se = new SimpleElement("kb");
+//        se.setAttribute("name", name);
+//        for (int i = 0; i < constituents.size(); i++) {
+//            SimpleElement constituent = new SimpleElement("constituent");
+//            String filename = (String) constituents.get(i);
+//            filename = KBmanager.escapeFilename(filename);
+//            constituent.setAttribute("filename", filename);
+//            se.addChildElement(constituent);
+//        }
+//        return se;
+//    }
+
+    /***************************************************************
+     * A HashMap for holding compiled regular expression patterns. The map is initialized
+     * by calling compilePatterns().
+     */
+    private static HashMap<String, ArrayList> REGEX_PATTERNS = null;
+
+    /*****************************************************************
+     * This method returns a compiled regular expression Pattern object indexed by
+     * key.
+     *
+     * @param key
+     *            A String that is the retrieval key for a compiled regular
+     *            expression Pattern.
      *
      * @return A compiled regular expression Pattern instance.
      */
     public static Pattern getCompiledPattern(String key) {
-        if (Formula.isNonEmptyString(key) && (REGEX_PATTERNS != null)) {
+
+        if (StringUtil.isNonEmptyString(key) && (REGEX_PATTERNS != null)) {
             ArrayList al = (ArrayList) REGEX_PATTERNS.get(key);
-            if (al != null) {
+            if (al != null)
                 return (Pattern) al.get(0);
-            }
         }
         return null;
     }
 
-    /**
-     * ***************************************************************
+    /*****************************************************************
      * This method returns the int value that identifies the regular expression
      * binding group to be returned when there is a match.
      *
-     * @param key A String that is the retrieval key for the binding group index
-     * associated with a compiled regular expression Pattern.
+     * @param key
+     *            A String that is the retrieval key for the binding group index
+     *            associated with a compiled regular expression Pattern.
      *
      * @return An int that indexes a binding group.
      */
     public static int getPatternGroupIndex(String key) {
-        if (Formula.isNonEmptyString(key) && (REGEX_PATTERNS != null)) {
+
+        if (StringUtil.isNonEmptyString(key) && (REGEX_PATTERNS != null)) {
             ArrayList al = (ArrayList) REGEX_PATTERNS.get(key);
-            if (al != null) {
-                return ((Number) al.get(1)).intValue();
-            }
+            if (al != null)
+                return ((Integer) al.get(1)).intValue();
         }
         return -1;
     }
 
-    /**
-     * ***************************************************************
-     * This method compiles and stores regular expression Pattern objects and
-     * binding group indexes as two cell ArrayList objects. Each ArrayList is
-     * indexed by a String retrieval key.
+    /*****************************************************************
+     * This method compiles and stores regular expression Pattern objects and binding
+     * group indexes as two cell ArrayList objects. Each ArrayList is indexed by
+     * a String retrieval key.
      *
      * @return void
      */
-    @SuppressWarnings("HardcodedFileSeparator")
     private static void compilePatterns() {
+
         if (REGEX_PATTERNS == null) {
-            REGEX_PATTERNS = new HashMap();
-            String[][] patternArray
-                    = {{"row_var", "\\@ROW\\d*", "0"},
-                    // { "open_lit", "\\(\\w+\\s+\\?\\w+\\s+.\\w+\\s*\\)", "0" },
-                    {"open_lit", "\\(\\w+\\s+\\?\\w+[a-zA-Z_0-9-?\\s]+\\)", "0"},
-                    {"pred_var_1", "\\(holds\\s+(\\?\\w+)\\W", "1"},
-                    {"pred_var_2", "\\((\\?\\w+)\\W", "1"},
-                    {"var_with_digit_suffix", "(\\D+)\\d*", "1"}
-                    };
-            String pName;
-            Pattern p;
-            Integer groupN;
-            ArrayList pVal;
-            for (String[] aPatternArray : patternArray) {
-                pName = aPatternArray[0];
-                p = Pattern.compile(aPatternArray[1]);
-                groupN = Integer.valueOf(aPatternArray[2]);
+            REGEX_PATTERNS = new HashMap<String, ArrayList>();
+            String[][] patternArray = { { "row_var", "\\@ROW\\d*", "0" },
+                    // { "open_lit", "\\(\\w+\\s+\\?\\w+\\s+.\\w+\\s*\\)", "0"
+                    // },
+                    { "open_lit", "\\(\\w+\\s+\\?\\w+[a-zA-Z_0-9-?\\s]+\\)", "0" },
+                    { "pred_var_1", "\\(holds\\s+(\\?\\w+)\\W", "1" }, { "pred_var_2", "\\((\\?\\w+)\\W", "1" },
+                    { "var_with_digit_suffix", "(\\D+)\\d*", "1" } };
+            String pName = null;
+            Pattern p = null;
+            Integer groupN = null;
+            ArrayList pVal = null;
+            for (int i = 0; i < patternArray.length; i++) {
+                pName = patternArray[i][0];
+                p = Pattern.compile(patternArray[i][1]);
+                groupN = Integer.valueOf(patternArray[i][2]);
                 pVal = new ArrayList();
                 pVal.add(p);
                 pVal.add(groupN);
                 REGEX_PATTERNS.put(pName, pVal);
             }
         }
+        return;
     }
 
-    /**
-     * ***************************************************************
+    /*****************************************************************
      * This method finds regular expression matches in an input string using a
      * compiled Pattern and binding group index retrieved with patternKey. If
      * the ArrayList accumulator is provided, match results are added to it and
      * it is returned. If accumulator is not provided (is null), then a new
      * ArrayList is created and returned if matches are found.
      *
-     * @param input The input String in which matches are sought.
+     * @param input
+     *            The input String in which matches are sought.
      *
-     * @param patternKey A String used as the retrieval key for a regular
-     * expression Pattern object, and an int index identifying a binding group.
+     * @param patternKey
+     *            A String used as the retrieval key for a regular expression
+     *            Pattern object, and an int index identifying a binding group.
      *
-     * @param accumulator An optional ArrayList to which matches are added. Note
-     * that if accumulator is provided, it will be the return value even if no
-     * new matches are found in the input String.
+     * @param accumulator
+     *            An optional ArrayList to which matches are added. Note that if
+     *            accumulator is provided, it will be the return value even if
+     *            no new matches are found in the input String.
      *
      * @return An ArrayList, or null if no matches are found and an accumulator
-     * is not provided.
+     *         is not provided.
      */
-    public static ArrayList getMatches(String input, String patternKey, ArrayList accumulator) {
-        ArrayList ans = null;
-        if (accumulator != null) {
+    public static ArrayList<String> getMatches(String input, String patternKey, ArrayList<String> accumulator) {
+
+        ArrayList<String> ans = null;
+        if (accumulator != null)
             ans = accumulator;
-        }
-        if (REGEX_PATTERNS == null) {
+        if (REGEX_PATTERNS == null)
             KB.compilePatterns();
-        }
-        if (Formula.isNonEmptyString(input) && Formula.isNonEmptyString(patternKey)) {
+        if (StringUtil.isNonEmptyString(input) && StringUtil.isNonEmptyString(patternKey)) {
             Pattern p = KB.getCompiledPattern(patternKey);
             if (p != null) {
                 Matcher m = p.matcher(input);
@@ -2405,13 +2750,11 @@ public class KB {
                 if (gidx >= 0) {
                     while (m.find()) {
                         String rv = m.group(gidx);
-                        if (Formula.isNonEmptyString(rv)) {
-                            if (ans == null) {
-                                ans = new ArrayList();
-                            }
-                            if (!(ans.contains(rv))) {
+                        if (StringUtil.isNonEmptyString(rv)) {
+                            if (ans == null)
+                                ans = new ArrayList<String>();
+                            if (!(ans.contains(rv)))
                                 ans.add(rv);
-                            }
                         }
                     }
                 }
@@ -2420,1236 +2763,551 @@ public class KB {
         return ans;
     }
 
-    /**
-     * ***************************************************************
+    /*****************************************************************
      * This method finds regular expression matches in an input string using a
      * compiled Pattern and binding group index retrieved with patternKey, and
      * returns the results, if any, in an ArrayList.
      *
-     * @param input The input String in which matches are sought.
+     * @param input
+     *            The input String in which matches are sought.
      *
-     * @param patternKey A String used as the retrieval key for a regular
-     * expression Pattern object, and an int index identifying a binding group.
+     * @param patternKey
+     *            A String used as the retrieval key for a regular expression
+     *            Pattern object, and an int index identifying a binding group.
      *
      * @return An ArrayList, or null if no matches are found.
      */
-    public static ArrayList getMatches(String input, String patternKey) {
+    public static ArrayList<String> getMatches(String input, String patternKey) {
         return KB.getMatches(input, patternKey, null);
     }
 
-    /**
-     * ***************************************************************
-     * This method retrieves Formulas by asking the query expression queryLit,
-     * and returns the results, if any, in an ArrayList.
+    /*****************************************************************
+     * This method retrieves Formulas by asking the query expression queryLit, and
+     * returns the results, if any, in an ArrayList.
      *
-     * @param queryLit The query, which is assumed to be a List (atomic literal)
-     * consisting of a single predicate and its arguments. The arguments could
-     * be variables, constants, or a mix of the two, but only the first constant
-     * encountered in a left to right sweep over the literal will be used in the
-     * actual query.
+     * @param queryLit
+     *            The query, which is assumed to be a List (atomic literal)
+     *            consisting of a single predicate and its arguments. The
+     *            arguments could be variables, constants, or a mix of the two,
+     *            but only the first constant encountered in a left to right
+     *            sweep over the literal will be used in the actual query.
      *
      * @return An ArrayList of Formula objects, or an empty ArrayList if no
-     * answers are retrieved.
+     *         answers are retrieved.
      */
-    public ArrayList askWithLiteral(List queryLit) {
-        ArrayList ans = new ArrayList();
+    public ArrayList<Formula> askWithLiteral(List<String> queryLit) {
+
+        ArrayList<Formula> ans = new ArrayList<Formula>();
         if ((queryLit instanceof List) && !(queryLit.isEmpty())) {
             String pred = (String) queryLit.get(0);
-            if ("instance".equals(pred)
-                    && isVariable((String) queryLit.get(1))
-                    && !(isVariable((String) queryLit.get(2)))) {
-                String className = (String) queryLit.get(2);
-                String inst;
-                String fStr;
-                Formula f;
-                Set ai = getAllInstances(className);
-                for (Object anAi : ai) {
-                    inst = (String) anAi;
-                    fStr = ("(instance " + inst + ' ' + className + ')');
+            if (pred.equals("instance") && isVariable(queryLit.get(1)) && !(isVariable(queryLit.get(2)))) {
+                String className = queryLit.get(2);
+                String inst = null;
+                String fStr = null;
+                Formula f = null;
+                Set<String> ai = getAllInstances(className);
+                Iterator<String> it = ai.iterator();
+                while (it.hasNext()) {
+                    inst = (String) it.next();
+                    fStr = ("(instance " + inst + " " + className + ")");
                     f = new Formula();
                     f.read(fStr);
                     ans.add(f);
                 }
-            } else if ("valence".equals(pred)
-                    && isVariable((String) queryLit.get(1))
+            }
+            else if (pred.equals("valence") && isVariable((String) queryLit.get(1))
                     && isVariable((String) queryLit.get(2))) {
-                String inst;
-                String fStr;
-                Formula f;
-                Set ai = getAllInstances("Relation");
-                Iterator it = ai.iterator();
-                int valence;
+                TreeSet<String> ai = getAllInstances("Relation");
+                Iterator<String> it = ai.iterator();
+                int valence = 0;
                 while (it.hasNext()) {
-                    inst = (String) it.next();
-                    valence = getValence(inst);
+                    String inst = (String) it.next();
+                    valence = kbCache.valences.get(inst);
                     if (valence > 0) {
-                        fStr = ("(valence " + inst + ' ' + valence + ')');
-                        f = new Formula();
+                        String fStr = ("(valence " + inst + " " + valence + ")");
+                        Formula f = new Formula();
                         f.read(fStr);
                         ans.add(f);
                     }
                 }
-            } else {
+            }
+            else {
                 String constant = null;
                 int cidx = -1;
                 int qlLen = queryLit.size();
-                String term;
+                String term = null;
                 for (int i = 1; i < qlLen; i++) {
                     term = (String) queryLit.get(i);
-                    if (Formula.isNonEmptyString(term)
-                            && !(isVariable(term))) {
+                    if (StringUtil.isNonEmptyString(term) && !isVariable(term)) {
                         constant = term;
                         cidx = i;
                         break;
                     }
                 }
-                ans = constant != null ? askWithRestriction(cidx, constant, 0, pred) : ask("arg", 0, pred);
+                if (constant != null)
+                    ans = askWithRestriction(cidx, constant, 0, pred);
+                else
+                    ans = ask("arg", 0, pred);
             }
         }
         return ans;
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * This method retrieves formulas by asking the query expression
-//     * queryLit, and returns the results, if any, in an ArrayList.
-//     *
-//     * @param queryLit The query, which is assumed to be an atomic
-//     * literal consisting of a single predicate and its arguments.
-//     * The arguments could be variables, constants, or a mix of the
-//     * two, but only the first constant encountered in a left to right
-//     * sweep over the literal will be used in the actual query.
-//     *
-//     * @return An ArrayList of Formula objects, or an empty ArrayList
-//     * if no answers are retrieved.
-//     */
-//    public ArrayList askWithLiteral(Formula queryLit) {
-//        List input = queryLit.literalToArrayList();
-//        return askWithLiteral(input);
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * This method retrieves the upward transitive closure of all Class
-//     * names contained in the input set.  The members of the input set are
-//     * not included in the result set.
-//     *
-//     * @param classNames A Set object containing SUO-KIF class names
-//     * (Strings).
-//     *
-//     * @return A Set of SUO-KIF class names, which could be empty.
-//     */
-//    private Set getAllSuperClasses(Set classNames) {
-//        Set ans = new HashSet();
-//        try {
-//            if ((classNames instanceof Set) && !(classNames.isEmpty())) {
-//                List accumulator = new ArrayList();
-//                List working = new ArrayList();
-//                String arg2 = null;
-//                working.addAll(classNames);
-//                while (!(working.isEmpty())) {
-//                    for (int i = 0 ; i < working.size() ; i++) {
-//                        List nextLits = askWithRestriction(1,
-//                                                           (String) working.get(i),
-//                                                           0,
-//                                                           "subclass");
-//
-//                        if (nextLits != null) {
-//                            for (int j = 0 ; j < nextLits.size() ; j++) {
-//                                Formula f = (Formula) nextLits.get(j);
-//                                arg2 = f.getArgument(2);
-//                                if (! working.contains(arg2)) {
-//                                    accumulator.add(arg2);
-//                                }
-//                            }
-//                        }
-//                    }
-//                    ans.addAll(accumulator);
-//                    working.clear();
-//                    working.addAll(accumulator);
-//                    accumulator.clear();
-//                }
-//            }
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//        return ans;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     * This method retrieves the downward transitive closure of all Class
-//     * names contained in the input set.  The members of the input set are
-//     * not included in the result set.
-//     *
-//     * @param classNames A Set object containing SUO-KIF class names
-//     * (Strings).
-//     *
-//     * @return A Set of SUO-KIF class names, which could be empty.
-//     */
-//    private Set getAllSubClasses(Set classNames) {
-//        Set ans = new HashSet();
-//        try {
-//            if ((classNames instanceof Set) && !(classNames.isEmpty())) {
-//                List accumulator = new ArrayList();
-//                List working = new ArrayList();
-//                String arg1 = null;
-//                working.addAll(classNames);
-//                while (!(working.isEmpty())) {
-//                    for (int i = 0 ; i < working.size() ; i++) {
-//                        List nextLits = askWithRestriction(2,
-//                                                           (String) working.get(i),
-//                                                           0,
-//                                                           "subclass");
-//
-//                        if (nextLits != null) {
-//                            for (int j = 0 ; j < nextLits.size() ; j++) {
-//                                Formula f = (Formula) nextLits.get(j);
-//                                arg1 = f.getArgument(1);
-//                                if (! working.contains(arg1)) {
-//                                    accumulator.add(arg1);
-//                                }
-//                            }
-//                        }
-//                    }
-//                    ans.addAll(accumulator);
-//                    working.clear();
-//                    working.addAll(accumulator);
-//                    accumulator.clear();
-//                }
-//            }
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//        return ans;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * ***************************************************************
-     * This method retrieves all instances of the classes named in the input
-     * set.
+    /*****************************************************************
+     * This method retrieves formulas by asking the query expression queryLit, and
+     * returns the results, if any, in an ArrayList.
      *
-     * @param classNames A Set object containing SUO-KIF class names (Strings).
+     * @param queryLit
+     *            The query, which is assumed to be an atomic literal consisting
+     *            of a single predicate and its arguments. The arguments could
+     *            be variables, constants, or a mix of the two, but only the
+     *            first constant encountered in a left to right sweep over the
+     *            literal will be used in the actual query.
      *
-     * @return A TreeSet, possibly empty, containing SUO-KIF constant names.
+     * @return An ArrayList of Formula objects, or an empty ArrayList if no
+     *         answers are retrieved.
      */
-    protected TreeSet getAllInstances(Set classNames) {
-        // System.out.println("ENTER KB.getAllInstances(" + classNames + ")");
-        TreeSet ans = new TreeSet();
-        try {
-            if ((classNames instanceof Set) && !(classNames.isEmpty())) {
-                Set partial;
-                String name;
-                for (Object className : classNames) {
-                    name = (String) className;
-                    partial = getCachedRelationValues("instance", name, 2, 1);
-                    if (partial != null) {
-                        ans.addAll(partial);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public ArrayList<Formula> askWithLiteral(Formula queryLit) {
+
+        List<String> input = queryLit.literalToArrayList();
+        return askWithLiteral(input);
+    }
+
+    /*****************************************************************
+     * This method retrieves the upward transitive closure of all Class names
+     * contained in the input set. The members of the input set are not included
+     * in the result set.
+     *
+     * @param classNames
+     *            A Set object containing SUO-KIF class names (Strings).
+     *
+     * @return A Set of SUO-KIF class names, which could be empty.
+     */
+    public Set<String> getAllSuperClasses(Set<String> classNames) {
+
+        Set<String> ans = new HashSet<String>();
+        Iterator<String> it = classNames.iterator();
+        while (it.hasNext()) {
+            String term = it.next();
+            ans.addAll(kbCache.getParentClasses(term));
         }
-        // System.out.println("EXIT KB.getAllInstances(" + classNames + ")");
-        // System.out.println("=> " + ans);
         return ans;
     }
 
-    /**
-     * ***************************************************************
-     * This method retrieves all instances of the class named in the input
-     * String.
+    /*****************************************************************
+     * This method retrieves all instances of the classes named in the input set.
      *
-     * @param className The name of a SUO-KIF Class.
-     *
+     * @param classNames
+     *            A Set of String, containing SUO-KIF class names
      * @return A TreeSet, possibly empty, containing SUO-KIF constant names.
      */
-    public TreeSet getAllInstances(String className) {
-        if (Formula.isNonEmptyString(className)) {
-            TreeSet input = new TreeSet();
+    protected TreeSet<String> getAllInstances(TreeSet<String> classNames) {
+
+        TreeSet<String> ans = new TreeSet<String>();
+        if ((classNames instanceof TreeSet) && !classNames.isEmpty()) {
+            String name = null;
+            Iterator<String> it = classNames.iterator();
+            while (it.hasNext()) {
+                name = it.next();
+                ans.addAll(kbCache.getParentClassesOfInstance(name));
+            }
+        }
+        return ans;
+    }
+
+    /*****************************************************************
+     * This method retrieves all instances of the class named in the input String.
+     *
+     * @param className
+     *            The name of a SUO-KIF Class.
+     * @return A TreeSet, possibly empty, containing SUO-KIF constant names.
+     */
+    public TreeSet<String> getAllInstances(String className) {
+
+        if (StringUtil.isNonEmptyString(className)) {
+            TreeSet<String> input = new TreeSet<String>();
             input.add(className);
             return getAllInstances(input);
         }
-        return new TreeSet();
+        return new TreeSet<String>();
     }
 
-    /**
-     * ***************************************************************
+    /*****************************************************************
      * This method tries to find or compute a valence for the input relation.
      *
-     * @param relnName A String, the name of a SUO-KIF Relation.
-     *
+     * @param relnName
+     *            A String, the name of a SUO-KIF Relation.
      * @return An int value. -1 means that no valence value could be found. 0
-     * means that the relation is a VariableArityRelation. 1-5 are the standard
-     * SUO-KIF valence values.
+     *         means that the relation is a VariableArityRelation. 1-5 are the
+     *         standard SUO-KIF valence values.
      */
     public int getValence(String relnName) {
 
-        // System.out.println("INFO in KB.getValence(" + relnName + ")");
-        int ans = -1;
-        try {
-            if (Formula.isNonEmptyString(relnName)) {
-
-                // First, see if the valence has already been cached.
-                if (relationValences != null) {
-                    int[] rv = (int[]) relationValences.get(relnName);
-                    if (rv != null) {
-                        ans = rv[0];
-                        return ans;
-                    }
-                }
-
-                // Grab all of the superrelations too, since we have
-                // already computed them.
-                Set relnSet = getCachedRelationValues("subrelation", relnName, 1, 2);
-                if (relnSet == null) {
-                    relnSet = new HashSet();
-                }
-                relnSet.add(relnName);
-
-                Iterator it = relnSet.iterator();
-                List literals;
-                String relation;
-                while (it.hasNext() && (ans < 0)) {
-
-                    relation = (String) it.next();
-
-                    // First, check to see if the KB actually contains an
-                    // explicit valence value.  This is unlikely.
-                    literals = askWithRestriction(1, relation, 0, "valence");
-                    if ((literals != null) && !(literals.isEmpty())) {
-                        Formula f = (Formula) literals.get(0);
-                        String digit = f.getArgument(2);
-                        if (Formula.isNonEmptyString(digit)) {
-                            ans = Integer.parseInt(digit);
-                            if (ans >= 0) {
-                                break;
-                            }
-                        }
-                    }
-
-                    // See which valence-determining class the
-                    // relation belongs to.
-                    Set classNames = getCachedRelationValues("instance", relation, 1, 2);
-
-                    // System.out.println("classNames == " + classNames);
-                    if (classNames != null) {
-                        String[][] tops = {{"VariableArityRelation", "0"},
-                        {"UnaryFunction", "1"},
-                        {"BinaryRelation", "2"},
-                        {"TernaryRelation", "3"},
-                        {"QuaternaryRelation", "4"},
-                        {"QuintaryRelation", "5"},};
-
-                        for (int i = 0; (ans < 0) && (i < tops.length); i++) {
-
-                            if (classNames.contains(tops[i][0])) {
-                                ans = Integer.parseInt(tops[i][1]);
-
-                                // Sigh.  It's never simple.  The
-                                // kluge below is to deal with the
-                                // fact that a function, by
-                                // definition, has a valence one less
-                                // than the corresponding predicate.
-                                // An instance of TernaryRelation that
-                                // is also an instance of Function has
-                                // a valence of 2, not 3.
-                                if ((i > 1)
-                                        && (relation.endsWith("Fn") || classNames.contains("Function"))
-                                        && !(tops[i][0]).endsWith("Function")) {
-                                    --ans;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                // Cache the answer, if there is one.
-                if (ans >= 0) {
-                    int[] rv = new int[1];
-                    rv[0] = ans;
-                    relationValences.put(relnName, rv);
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        if (kbCache.valences.get(relnName) == null) {
+            if (Formula.isLogicalOperator(relnName)) // logical operator arity
+                                                        // is checked in
+                                                        // KIF.parse()
+                return -1;
+            System.out.println("Error in KB.getValence(): No valence found for " + relnName);
+            return -1;
         }
-        // System.out.println("INFO in getValence(" + relnName + ") => " + ans);
-        return ans;
+        else
+            return kbCache.valences.get(relnName);
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *
-//     * @return an ArrayList containing all predicates in this KB.
-//     *
-//     */
-//    public ArrayList collectPredicates() {
-//        ArrayList ans = new ArrayList();
-//        Set preds = getCachedRelationValues("instance", "Predicate", 2, 1);
-//        if (preds != null) {
-//            ans.addAll(preds);
-//        }
-//        // System.out.println("Found " + ans.size() + " predicates");
-//        return ans;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *
-//     * @param obj Any object
-//     *
-//     * @return true if obj is a String representation of a LISP empty
-//     * list, else false.
-//     *
-//     */
-//    public static boolean isEmptyList(Object obj) {
-//        return ((obj instanceof String) && Formula.empty((String) obj));
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *
-//     * A utility method.
-//     *
-//     * @param objList A list of anything.
-//     *
-//     * @param label An optional label (String), or null.
-//     *
-//     * @return void
-//     *
-//     */
-//    public static void printAll(List objList, String label) {
-//        if (objList instanceof List) {
-//            Iterator it = objList.iterator();
-//            while (it.hasNext()) {
-//                if (Formula.isNonEmptyString(label)) {
-//                    System.out.println(label + ": " + it.next());
-//                }
-//                else {
-//                    System.out.println(it.next());
-//                }
-//            }
-//        }
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * ***************************************************************
+    /*****************************************************************
      *
+     * @return an ArrayList containing all predicates in this KB.
+     */
+    public ArrayList<String> collectPredicates() {
+
+        return new ArrayList<String>(kbCache.instances.get("Predicate"));
+    }
+
+    /*****************************************************************
+     *
+     * @param obj
+     *            Any object
+     *
+     * @return true if obj is a String representation of a LISP empty list, else
+     *         false.
+     */
+    public static boolean isEmptyList(Object obj) {
+        return (StringUtil.isNonEmptyString(obj) && Formula.empty((String) obj));
+    }
+
+    /*****************************************************************
      * A static utility method.
      *
-     * @param obj Presumably, a String.
-     *
+     * @param obj
+     *            Presumably, a String.
      * @return true if obj is a SUO-KIF variable, else false.
-     *
      */
     public static boolean isVariable(String obj) {
-        if (Formula.isNonEmptyString(obj)) {
-            return (!obj.isEmpty() && obj.charAt(0) == '?' || !obj.isEmpty() && obj.charAt(0) == '@');
+
+        if (StringUtil.isNonEmptyString(obj)) {
+            return (obj.startsWith("?") || obj.startsWith("@"));
         }
         return false;
     }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *
-//     * A static utility method.
-//     *
-//     * @param obj A String.
-//     *
-//     * @return true if obj is a SUO-KIF logical quantifier, else
-//     * false.
-//     *
-//     */
-//    public static boolean isQuantifier(String obj) {
-//
-//        return (Formula.isNonEmptyString(obj)
-//                && (obj.equals("forall") || obj.equals("exists")));
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** ***************************************************************
-//     *
-//     * A static utility method.
-//     *
-//     * @param obj Presumably, a String.
-//     *
-//     * @return true if obj is a SUO-KIF commutative logical operate,
-//     * else false.
-//     *
-//     */
-//    public static boolean isCommutative(String obj) {
-//
-//        return (Formula.isNonEmptyString(obj)
-//                && (obj.equals("and") || obj.equals("or")));
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * Hyperlink terms identified with '&%' to the URL that brings up
-//     * that term in the browser.  Handle (and ignore) suffixes on the term.
-//     * For example "&%Processes" would get properly linked to the term "Process",
-//     * if present in the knowledge base.
-//     */
-//    public String formatDocumentation(String href, String documentation) {
-//
-//        int i;
-//        int j;
-//        String term = "";
-//        String newFormula = documentation;
-//
-//        while (newFormula.indexOf("&%") != -1) {
-//            i = newFormula.indexOf("&%");
-//            j = i + 2;
-//            while (Character.isJavaIdentifierPart(newFormula.charAt(j)) && j < newFormula.length())
-//                j++;
-//            //System.out.println("Candidate term: " + newFormula.substring(i+2,j));
-//
-//            while (!containsTerm(newFormula.substring(i+2,j)) && j > i + 2)
-//                j--;
-//            term = newFormula.substring(i+2,j);
-//            if (!"".equals(term) && containsTerm(newFormula.substring(i+2,j))) {
-//                newFormula = newFormula.substring(0,i) +
-//                    "<a href=\"" + href + "&term=" + term + "\">" + term + "</a>" +
-//                    newFormula.substring(j,newFormula.length());
-//            }
-//            else
-//                newFormula = newFormula.substring(0,i) + newFormula.substring(j,newFormula.length());
-//        }
-//        return newFormula;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     *  Pull all the formulas into one TreeSet of Strings.
-//     */
-//    private TreeSet collectAllFormulas(HashMap forms) {
-//
-//        TreeSet ts = new TreeSet();
-//        ArrayList al = new ArrayList(forms.values());
-//
-//        for (int i = 0; i < al.size(); i++) {
-//            ArrayList al2 = (ArrayList) al.get(i);
-//            for (int j = 0; j < al2.size(); j++)
-//                ts.add(((Formula) al2.get(j)).theFormula);
-//        }
-//        return ts;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     *  Pull all the formulas in an ArrayList into one TreeSet of Strings.
-//     */
-//    private TreeSet collectFormulasFromList(ArrayList forms) {
-//
-//        TreeSet ts = new TreeSet();
-//        for (int j = 0; j < forms.size(); j++)
-//            ts.add(((Formula) forms.get(j)).theFormula);
-//        return ts;
-//    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * *************************************************************
+    /*****************************************************************
+     * A static utility method.
+     *
+     * @param obj
+     *            A String.
+     * @return true if obj is a SUO-KIF logical quantifier, else false.
+     */
+    public static boolean isQuantifier(String obj) {
+
+        return (StringUtil.isNonEmptyString(obj) && (obj.equals("forall") || obj.equals("exists")));
+    }
+
+    /*****************************************************************
+     * A static utility method.
+     *
+     * @param obj
+     *            Presumably, a String.
+     * @return true if obj is a SUO-KIF commutative logical operator, else
+     *         false.
+     */
+    public static boolean isCommutative(String obj) {
+
+        return (StringUtil.isNonEmptyString(obj) && (obj.equals("and") || obj.equals("or")));
+    }
+
+    /***************************************************************
+     * Hyperlink terms identified with '&%' to the URL that brings up that term in the
+     * browser. Handle (and ignore) suffixes on the term. For example
+     * "&%Processes" would get properly linked to the term "Process", if present
+     * in the knowledge base.
+     */
+    public String formatDocumentation(String href, String documentation, String language) {
+
+        String formatted = documentation;
+        if (StringUtil.isNonEmptyString(formatted)) {
+            boolean isStaticFile = false;
+            StringBuilder sb = new StringBuilder(formatted);
+            String suffix = "";
+            if (StringUtil.emptyString(href)) {
+                href = "";
+                suffix = ".html";
+                isStaticFile = true;
+            }
+            else if (!href.endsWith("&term="))
+                href += "&term=";
+            int i = -1;
+            int j = -1;
+            int start = 0;
+            String term = "";
+            String formToPrint = "";
+            while ((start < sb.length()) && ((i = sb.indexOf("&%", start)) != -1)) {
+                sb.delete(i, (i + 2));
+                j = i;
+                while ((j < sb.length()) && !Character.isWhitespace(sb.charAt(j)) && sb.charAt(j) != '"')
+                    j++;
+                while (j > i) {
+                    term = sb.substring(i, j);
+                    if (containsTerm(term))
+                        break;
+                    j--;
+                }
+                if (j > i) {
+                    // formToPrint =
+                    // DocGen.getInstance(this.name).showTermName(this,term,language);
+                    formToPrint = term;
+                    StringBuilder hsb = new StringBuilder("<a href=\"");
+                    hsb.append(href);
+                    hsb.append(isStaticFile ? StringUtil.toSafeNamespaceDelimiter(term) : term);
+                    hsb.append(suffix);
+                    hsb.append("\">");
+                    hsb.append(formToPrint);
+                    hsb.append("</a>");
+                    sb.replace(i, j, hsb.toString());
+                    start = (i + hsb.length());
+                }
+            }
+            formatted = sb.toString();
+        }
+        return formatted;
+    }
+
+    /***************************************************************
      * Save the contents of the current KB to a file.
      */
-    public String writeInferenceEngineFormulas(TreeSet forms) {
+    public String writeInferenceEngineFormulas(TreeSet<String> forms) {
 
-        // System.out.println("file separator == " + File.separator);
-        FileWriter fr = null;
-        PrintWriter pr = null;
+        FileWriter fw = null;
+        PrintWriter pw = null;
         String filename = null;
         try {
             String inferenceEngine = KBmanager.getMgr().getPref("inferenceEngine");
-            File executable;
-            if (Formula.isNonEmptyString(inferenceEngine)) {
-                executable = new File(inferenceEngine);
-                if (DEBUG || executable.exists()) {
+            if (StringUtil.isNonEmptyString(inferenceEngine)) {
+                File executable = new File(inferenceEngine);
+                if (executable.exists()) {
                     File dir = executable.getParentFile();
-                    File file = new File(dir, (name + "-v.kif"));
+                    File file = new File(dir, (this.name + "-v.kif"));
                     filename = file.getCanonicalPath();
-
-                    // System.out.println("filename == " + filename);
-                    fr = new FileWriter(filename);
-                    pr = new PrintWriter(fr);
-                    for (Object form : forms) {
-                        pr.println((String) form);
-                        pr.println();
-                    }
-                    if (!file.exists()) {
-                        filename = null;
-                        throw new Exception("Error writing " + file.getCanonicalPath());
+                    fw = new FileWriter(filename);
+                    pw = new PrintWriter(fw);
+                    Iterator<String> it = forms.iterator();
+                    while (it.hasNext()) {
+                        pw.println(it.next());
+                        pw.println();
                     }
                 }
-            }
-        } catch (Exception ex) {
-            System.out.println("Error in KB.writeInferenceEngineFormulas(): " + ex.getMessage());
-            ex.printStackTrace();
-        }
-        if (pr != null) {
-            try {
-                pr.close();
-            } catch (Exception e1) {
+                else
+                    System.out.println("Error in KB.writeInferenceEngineFormulas(): no executable " + inferenceEngine);
             }
         }
-        if (fr != null) {
+        catch (IOException ioe) {
+            System.out.println("Error in KB.writeInferenceEngineFormulas(): writing file: " + filename);
+            System.out.println(ioe.getMessage());
+            ioe.printStackTrace();
+        }
+        finally {
             try {
-                fr.close();
-            } catch (Exception e2) {
+                if (pw != null) {
+                    pw.close();
+                }
+                if (fw != null) {
+                    fw.close();
+                }
+            }
+            catch (Exception ex) {
             }
         }
         return filename;
     }
 
-    /**
-     * *************************************************************
-     * Starts Vampire and collects, preprocesses and loads all of the
-     * constituents into it.
-     */
-    public void loadVampire() {
-
-        // System.out.println("INFO in KB.loadVampire()");
-        try {
-            if (!formulaMap.isEmpty()) {
-
-                System.out.println("INFO in KB.loadVampire(): preprocessing " + formulaMap.size() + " formulas");
-
-                TreeSet forms = preProcess(formulaMap.keySet());
-                String filename = writeInferenceEngineFormulas(forms);
-                boolean vFileSaved = Formula.isNonEmptyString(filename);
-                if (vFileSaved) {
-                    System.out.println("INFO in KB.loadVampire(): " + forms.size() + " formulas saved to " + filename);
-                } else {
-                    System.out.println("INFO in KB.loadVampire(): new -v.kif file not written");
-                }
-
-                inferenceEngine = null;
-
-                if (Formula.isNonEmptyString(KBmanager.getMgr().getPref("inferenceEngine")) && vFileSaved) {
-                    //System.out.println("INFO in KB.loadVampire(): getting new logic engine");
-                    //inferenceEngine = Vampire.getNewInstance(filename);
-                    inferenceEngine = new KIFInference() {
-
-                        @Override
-                        public String assertFormula(String formula) {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                        }
-
-                        @Override
-                        public String submitQuery(String formula, int timeLimit, int bindingsLimit) {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                        }
-
-                        @Override
-                        public void terminate() {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                        }
-                    };
-                }
-                System.out.println("INFO in KB.loadVampire(): inferenceEngine == " + inferenceEngine);
-            }
-        } catch (Exception e) {
-            System.out.println("Error in KB.loadVampire(): " + e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-
-    /**
-     * A utility array for profiling subtasks in KB.preProcess().
-     */
-    protected static final long[] ppTimers = {0L, // type pred (sortal) computation
-        0L, // pred var instantion
-        0L, // row var expansion
-        0L, // Formula.getRowVarExpansionRange()
-        0L, // Formula.toNegAndPosLitsWithRenameInfo()
-        0L, // Formula.adjustExpansionCount()
-        0L // Formula.preProcessRecurse()
-};
-
-    /**
-     * ***************************************************************
-     * Preprocess the knowledge base to work with Vampire. This includes "holds"
-     * prefixing, ticking nested formulas, expanding row variables, and
-     * translating mathematical relation operators.
-     *
-     * @return a TreeSet of Strings.
-     */
-    public TreeSet preProcess(Set forms) {
-        // System.out.println("INFO in kb.preProcess()");
-        TreeSet newTreeSet = new TreeSet();
-        try {
-            for (int i = 0; i < ppTimers.length; i++) {
-                ppTimers[i] = 0L;
-            }
-
-            Formula.resetSortalTypeCache();
-
-            boolean tptpParseP = "yes".equalsIgnoreCase(KBmanager.getMgr().getPref("TPTP"));
-            long t1 = System.currentTimeMillis();
-            String form;
-            Formula f;
-            // Formula newFormula = null;
-            ArrayList processed;         // An ArrayList of Formula(s).
-            // If the Formula which is to be preprocessed does not contain row
-            // variables, then this list will have only one element.
-            for (Object form1 : forms) {
-                form = (String) form1;
-                f = (Formula) formulaMap.get(form);
-                // newFormula = new Formula();
-                // newFormula.theFormula = new String(f.theFormula);
-
-                // System.out.println("preProcess " + newFormula);
-                // processed = newFormula.preProcess(false,this);   // not queries
-                processed = f.preProcess(false, this);   // not queries
-
-                if (tptpParseP) {
-                    //try {
-                    f.tptpParse(false, this, processed);   // not a query
-                        /*
-                     } catch (ParseException pe) {
-                     String er = "Error in KB.preProcess(): " + pe.getMessage() + " for formula in file " + f.sourceFile + " at line " + f.startLine;
-                     KBmanager.getMgr().setError(KBmanager.getMgr().getError() + "\n<br/>" + er + "\n<br/>");
-                     System.out.println(er);
-                     } catch (IOException ioe) {
-                     System.out.println("Error in KB.preProcess: " + ioe.getMessage());
-                     }*/
-                }
-
-                for (Object aProcessed : processed) {
-                    Formula p = (Formula) aProcessed;
-                    if (p.theFormula != null) {
-                        newTreeSet.add(p.theFormula);
-                    }
-                }
-            }
-            long dur = (System.currentTimeMillis() - t1);
-            System.out.println("INFO in KB.preProcess()");
-            System.out.println("  "
-                    + (dur / 1000.0)
-                    + " seconds total to produce "
-                    + newTreeSet.size()
-                    + " formulas");
-            System.out.println("    "
-                    + (ppTimers[1] / 1000.0)
-                    + " seconds instantiating predicate variables");
-            System.out.println("    "
-                    + (ppTimers[2] / 1000.0)
-                    + " seconds expanding row variables");
-            System.out.println("      "
-                    + (ppTimers[3] / 1000.0)
-                    + " seconds in Formula.getRowVarExpansionRange()");
-            System.out.println("        "
-                    + (ppTimers[4] / 1000.0)
-                    + " seconds in Formula.toNegAndPosLitsWithRenameInfo()");
-            System.out.println("      "
-                    + (ppTimers[5] / 1000.0)
-                    + " seconds in Formula.adjustExpansionCount()");
-            System.out.println("    "
-                    + (ppTimers[0] / 1000.0)
-                    + " seconds adding type predicates");
-            System.out.println("    "
-                    + (ppTimers[6] / 1000.0)
-                    + " seconds in Formula.preProcessRecurse()");
-            for (int i = 0; i < ppTimers.length; i++) {
-                ppTimers[i] = 0L;
-            }
-
-            if (tptpParseP) {
-                int goodCount = 0;
-                int badCount = 0;
-                List badList = new ArrayList();
-                for (Object o : formulaMap.values()) {
-                    f = (Formula) o;
-                    if (f.getTheTptpFormulas().isEmpty()) {
-                        badCount++;
-                        if (badCount < 11) {
-                            badList.add(f);
-                        }
-                    } else {
-                        goodCount++;
-                        if (goodCount < 10) {
-                            System.out.println("Sample TPTP translation: " + f.getTheTptpFormulas().get(0));
-                        }
-                    }
-                }
-                System.out.println("INFO in KB.preProcess(): TPTP translation succeeded for "
-                        + goodCount
-                        + " formula"
-                        + ((goodCount == 1) ? "" : "s"));
-                boolean someAreBad = (badCount > 0);
-                System.out.println("INFO in KB.preProcess(): TPTP translation failed for "
-                        + badCount
-                        + " formula"
-                        + ((badCount == 1) ? "" : "s")
-                        + (someAreBad ? ":" : ""));
-                if (someAreBad) {
-                    Iterator it = badList.iterator();
-                    for (int i = 1; it.hasNext(); i++) {
-                        f = (Formula) it.next();
-                        System.out.println("[" + i + "]: " + f);
-                    }
-                    if (badCount > 10) {
-                        System.out.println("  " + (badCount - 10) + " more ...");
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        Formula.destroySortalTypeCache();
-
-        return newTreeSet;
-    }
-
-    /**
-     * *************************************************************
-     */
-    private static void writePrologFormulas(ArrayList forms, PrintWriter pr) {
-
-        TreeSet ts = new TreeSet(forms);
-        if (forms != null) {
-            int i = 0;
-            for (Object t : ts) {
-                Formula formula = (Formula) t;
-                String result = formula.toProlog();
-                if (result != null && !result.isEmpty()) {
-                    pr.println(result);
-                }
-                if (i % 100 == 1) {
-                    System.out.print(".");
-                }
-            }
-        }
-    }
-
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
+//    /***************************************************************
+//     * Creates InferenceEngine and loads all of the constituents into it.
+//     *
+//     * @param factory
+//     *            Factory object used to create new InferenceEngine.
+//     * @return InferenceEngine object with all constituents loaded.
 //     */
-//    public String writePrologFile(String fname) {
+//    public InferenceEngine createInferenceEngine(InferenceEngine.EngineFactory factory) {
 //
-//        File file = null;
-//        FileWriter fr = null;
-//        PrintWriter pr = null;
-//        String result = null;
-//
+//        InferenceEngine res = null;
 //        try {
-//            file = new File(fname);
-//
-//            System.out.println("INFO in KB.writePrologFile(): Writing " + file.getCanonicalPath());
-//
-//            if ((WordNet.wn != null) && WordNet.wn.wordFrequencies.isEmpty()) {
-//                WordNet.wn.readWordFrequencies();
+//            if (!formulaMap.isEmpty()) {
+//                TreeSet<String> forms = preProcess((HashSet<String>) formulaMap.keySet());
+//                String filename = writeInferenceEngineFormulas(forms);
+//                boolean vFileSaved = !StringUtil.emptyString(filename);
+//                if (!vFileSaved)
+//                    System.out.println("Error in KB.createInterenceEngine(): new -v.kif file not written");
+//                if (vFileSaved && !factory.getClass().getName().equals("com.articulate.sigma.STP$STPEngineFactory"))
+//                    res = factory.createFromKBFile(filename);
+//                if (factory.getClass().getName().equals("com.articulate.sigma.STP$STPEngineFactory"))
+//                    res = factory.createWithFormulas(forms);
 //            }
-//            fr = new FileWriter(file);
-//            pr = new PrintWriter(fr);
-//            pr.println("% Copyright (c) 2006 Articulate Software Incorporated");
-//            pr.println("% This software released under the GNU Public License <http://www.gnu.org/copyleft/gpl.html>.");
-//            pr.println("% This is a very lossy translation to prolog of the KIF ontologies available at www.ontologyportal.org\n");
-//
-//            pr.println("% subAttribute");
-//            writePrologFormulas(ask("arg",0,"subAttribute"),pr);
-//            pr.println("\n% subrelation");
-//            writePrologFormulas(ask("arg",0,"subrelation"),pr);
-//            pr.println("\n% disjoint");
-//            writePrologFormulas(ask("arg",0,"disjoint"),pr);
-//            pr.println("\n% partition");
-//            writePrologFormulas(ask("arg",0,"partition"),pr);
-//            pr.println("\n% instance");
-//            writePrologFormulas(ask("arg",0,"instance"),pr);
-//            pr.println("\n% subclass");
-//            writePrologFormulas(ask("arg",0,"subclass"),pr);
-//            System.out.println(" ");
-//
-//            pr.flush();
-//            result = file.getCanonicalPath();
 //        }
 //        catch (Exception e) {
+//            System.out.println("Error in KB.createInterenceEngine():" + e.getMessage());
 //            e.printStackTrace();
-//            System.out.println("Error in KB.writePrologFile(): " + e.getMessage());
 //        }
-//        if (pr != null) {
-//            try {
-//                pr.close();
-//            }
-//            catch (Exception e1) {
-//            }
-//        }
-//        if (fr != null) {
-//            try {
-//                fr.close();
-//            }
-//            catch (Exception e2) {
-//            }
-//        }
-//        return result;
+//        return res;
 //    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//    /** *************************************************************
-//     * This method translates the entire KB to TPTP format, storing
-//     * the translation for each Formula in the List identified by the
-//     * private member Formula.theTptpFormulas.  Use
-//     * Formula.getTheTptpFormulas() to accesss the TPTP sentences
-//     * (Strings) that constitute the translation for a single SUO-KIF
-//     * Formula.
-//     *
-//     * @return An int indicating the number of Formulas that were
-//     * successfully translated.
+//
+//    /***************************************************************
+//     * Starts EProver and collects, preprocesses and loads all of the constituents into
+//     * it.
 //     */
-//    public int tptpParse() {
-//        int goodCount = 0;
+//    public void loadEProver() {
+//
+//        System.out.println("INFO in KB.loadEProver(): Creating new process");
+//        KBmanager mgr = KBmanager.getMgr();
 //        try {
-//            int badCount = 0;
-//            ArrayList badList = new ArrayList();
-//            Formula f = null;
-//            Iterator it = this.formulaMap.values().iterator();
-//            while (it.hasNext()) {
-//                f = (Formula) it.next();
-//                f.tptpParse(false, this);
-//                if (f.getTheTptpFormulas().isEmpty()) {
-//                    badCount++;
-//                    if (badList.size() < 11) {
-//                        badList.add(f);
-//                    }
+//            if (!formulaMap.isEmpty()) {
+//                HashSet<String> formulaStrings = new HashSet<String>();
+//                formulaStrings.addAll(formulaMap.keySet());
+//                if (eprover != null) {
+//                    System.out.println("INFO in KB.loadEProver(): terminating old process first");
+//                    eprover.terminate();
+//                }
+//                eprover = null;
+//                SUMOKBtoTPTPKB skb = new SUMOKBtoTPTPKB();
+//                skb.kb = this;
+//                String tptpFilename = KBmanager.getMgr().getPref("kbDir") + File.separator + this.name + ".tptp";
+//                skb.writeTPTPFile(tptpFilename, true);
+//                if (StringUtil.isNonEmptyString(mgr.getPref("inferenceEngine")))
+//                    eprover = new EProver(mgr.getPref("inferenceEngine"), tptpFilename);
+//            }
+//        }
+//        catch (Exception e) {
+//            System.out.println(e.getMessage());
+//            e.printStackTrace();
+//        }
+//        if (eprover == null)
+//            mgr.setError(mgr.getError() + "\n<br/>No local inference engine is available\n<br/>");
+//        return;
+//    }
+
+//    /*****************************************************************
+//     * Preprocess the knowledge base to TPTP. This includes "holds" prefixing,
+//     * ticking nested formulas, expanding row variables, and translating
+//     * mathematical relation operators. All the real work is done in
+//     * Formula.preProcess().
+//     *
+//     * @return a TreeSet of Strings.
+//     */
+//    public TreeSet<String> preProcess(HashSet<String> forms) {
+//
+//        System.out.println("INFO in KB.preProcess(): ");
+//        TreeSet<String> newTreeSet = new TreeSet<String>();
+//        KBmanager mgr = KBmanager.getMgr();
+//        kbCache.kb = this;
+//        kbCache.buildCaches();
+//        boolean tptpParseP = mgr.getPref("TPTP").equalsIgnoreCase("yes");
+//        Iterator<String> it = forms.iterator();
+//        int counter = 0;
+//        while (it.hasNext()) {
+//            String form = it.next();
+//            if ((counter++ % 100) == 1)
+//                System.out.print(".");
+//            Formula f = formulaMap.get(form);
+//            if (f == null) {
+//                String warn = "Warning in KB.preProcess(): No formula for : " + form;
+//                System.out.println(warn);
+//                warnings.add(warn);
+//                continue;
+//            }
+//            // System.out.println("INFO in KB.preProcess(): form : " + form);
+//            // System.out.println("INFO in KB.preProcess(): f : " + f);
+//            FormulaPreprocessor fp = new FormulaPreprocessor();
+//            ArrayList<Formula> processed = fp.preProcess(f, false, this); // not
+//                                                                            // queries
+//            if (tptpParseP) {
+//                try {
+//                    SUMOformulaToTPTPformula stptp = new SUMOformulaToTPTPformula();
+//                    stptp._f = f;
+//                    stptp.tptpParse(f, false, this, processed); // not a query
+//                }
+//                catch (ParseException pe) {
+//                    String err = ("Error in KB.preProcess() " + pe.getMessage() + " at line " + f.startLine
+//                            + " in file " + f.sourceFile);
+//                    errors.add(err);
+//                }
+//                catch (IOException ioe) {
+//                    String err = "Error in KB.preProcess(): " + ioe.getMessage();
+//                    System.out.println(err);
+//                    errors.add(err);
+//                }
+//            }
+//            errors.addAll(f.getErrors());
+//            Formula p = null;
+//            Iterator<Formula> itp = processed.iterator();
+//            while (itp.hasNext()) {
+//                p = itp.next();
+//                if (StringUtil.isNonEmptyString(p.theFormula)) {
+//                    newTreeSet.add(p.theFormula);
+//                    errors.addAll(p.getErrors());
 //                }
 //                else {
-//                    goodCount++;
-//                }
-//            }
-//            System.out.println("INFO in KB.tptpParse(): TPTP translation succeeded for "
-//                               + goodCount
-//                               + " formula"
-//                               + ((goodCount == 1) ? "" : "s"));
-//            boolean someAreBad = (badCount > 0);
-//            System.out.println("INFO in KB.tptpParse(): TPTP translation failed for "
-//                               + badCount
-//                               + " formula"
-//                               + ((badCount == 1) ? "" : "s")
-//                               + (someAreBad ? ":" : ""));
-//            if (someAreBad) {
-//                it = badList.iterator();
-//                for (int i = 1 ; it.hasNext() ; i++) {
-//                    f = (Formula) it.next();
-//                    System.out.println("[" + i + "]: " + f);
-//                }
-//                if (badCount > 10) {
-//                    System.out.println("  " + (badCount - 10) + " more ...");
+//                    String warn = "Warning in KB.preProcess(): empty formula: " + p;
+//                    System.out.println(warn);
+//                    warnings.add(warn);
 //                }
 //            }
 //        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//
-//        return goodCount;
+//        System.out.println();
+//        // kbCache.clearSortalTypeCache();
+//        return newTreeSet;
 //    }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-    /**
-     * *************************************************************
+//
+    /*****************************************************************
+     * @return a defensive copy of loadFormatMapsAttempted.
      */
-    @SuppressWarnings("HardcodedFileSeparator")
-    public String writeTPTPFile(String fileName,
-                                Formula conjecture,
-                                boolean onlyPlainFOL,
-                                String reasoner) {
+    public ArrayList<String> getLoadFormatMapsAttempted() {
 
-        String result = null;
-        String sanitizedKBName;
-        File outputFile;
-        PrintWriter pr = null;
-        int axiomIndex = 1;
-        TreeSet orderedFormulae;
-        String theTPTPFormula;
-        boolean sanitizedFormula;
-        boolean commentedFormula;
-
-        sanitizedKBName = name.replaceAll("\\W", "_");
-        try {
-
-            System.out.println("INFO in KB.writeTPTPFile(\""
-                    + fileName
-                    + "\", "
-                    + conjecture
-                    + ", "
-                    + onlyPlainFOL
-                    + ", \""
-                    + reasoner
-                    + "\")");
-
-            //----If file name is a directory, create filename therein
-            if (fileName == null) {
-                outputFile = File.createTempFile(sanitizedKBName, ".p", null);
-                //----Delete temp file when program exits.
-                outputFile.deleteOnExit();
-            } else {
-                outputFile = new File(fileName);
-            }
-            String canonicalPath = outputFile.getCanonicalPath();
-            System.out.println("INFO in KB.writeTPTPFile(): Writing " + canonicalPath);
-
-            pr = new PrintWriter(new FileWriter(outputFile));
-            pr.println("% Copyright 2007 Articulate Software Incorporated");
-            pr.println("% This software released under the GNU Public License <http://www.gnu.org/copyleft/gpl.html>.");
-            pr.println("% This is a translation to TPTP of KB "
-                    + sanitizedKBName + '\n');
-
-            orderedFormulae = new TreeSet((o1, o2) -> {
-                Formula f1 = (Formula) o1;
-                Formula f2 = (Formula) o2;
-                int fileCompare = f1.sourceFile.compareTo(f2.sourceFile);
-                if (fileCompare == 0) {
-                    fileCompare = Integer.compare(f1.startLine, f2.startLine);
-                    if (fileCompare == 0) {
-                        fileCompare = Long.compare(f1.endFilePosition, f2.endFilePosition);
-                    }
-                }
-                return fileCompare;
-            });
-            orderedFormulae.addAll(formulaMap.values());
-
-            if (onlyPlainFOL) {
-                Formula.resetSortalTypeCache();
-            }
-
-            Iterator ite = orderedFormulae.iterator();
-            List tptpFormulas;
-            Iterator tptpIt;
-            Formula f;
-            while (ite.hasNext()) {
-                f = (Formula) ite.next();
-                tptpFormulas = f.getTheTptpFormulas();
-
-                // System.out.println("  1 : tptpFormulas == " + tptpFormulas);
-                //----If we are writing "sanitized" tptp, aka onlyPlainFOL,
-                //----here we rename all VariableArityRelations so that each
-                //----relation name has a numeric suffix corresponding to the
-                //----number of the relation's arguments.  This is required
-                //----for some provers, such as E and EP.
-                if (onlyPlainFOL
-                        && !tptpFormulas.isEmpty()
-                        && !"yes".equalsIgnoreCase(KBmanager.getMgr().getPref("holdsPrefix"))
-                        && f.containsVariableArityRelation(this)) {
-                    Formula tmpF = new Formula();
-                    tmpF.read(f.theFormula);
-                    List processed = tmpF.preProcess(false, this);
-                    List withRelnRenames;
-                    if (!processed.isEmpty()) {
-                        withRelnRenames = new ArrayList();
-                        Iterator it2 = processed.iterator();
-                        Formula f2;
-                        while (it2.hasNext()) {
-                            f2 = (Formula) it2.next();
-                            withRelnRenames.add(f2.renameVariableArityRelations(this));
-                        }
-                        tmpF.tptpParse(false, this, withRelnRenames);
-                        tptpFormulas = tmpF.getTheTptpFormulas();
-                        // System.out.println("  2 : tptpFormulas == " + tptpFormulas);
-                    }
-                }
-
-                tptpIt = tptpFormulas.iterator();
-                while (tptpIt.hasNext()) {
-                    theTPTPFormula = (String) tptpIt.next();
-                    commentedFormula = false;
-                    if (onlyPlainFOL) {
-                        //----Remove interpretations of arithmetic
-                        theTPTPFormula = theTPTPFormula.
-                                replaceAll("[$]less", "dollar_less").replaceAll("[$]greater", "dollar_greater").
-                                replaceAll("[$]time", "dollar_times").replaceAll("[$]divide", "dollar_divide").
-                                replaceAll("[$]plus", "dollar_plus").replaceAll("[$]minus", "dollar_minus");
-                        //----Don't output ""ed ''ed and numbers
-                        if (theTPTPFormula.indexOf('\'') >= 0
-                                || theTPTPFormula.indexOf('"') >= 0
-                                || theTPTPFormula.matches(".*[(,]-?[0-9].*")) {
-                            pr.print("%FOL ");
-                            commentedFormula = true;
-                        }
-                        if ("Equinox---1.0b".equals(reasoner) && f.theFormula.indexOf("equal") > 2) {
-                            Formula f2 = new Formula();
-                            f2.read(f.cdr());
-                            f2.read(f.car());
-                            if ("equals".equals(f2.theFormula)) {
-                                pr.print("%FOL ");
-                                commentedFormula = true;
-                            }
-                        }
-                    }
-                    pr.println("fof(kb_" + sanitizedKBName + '_' + axiomIndex++
-                            + ",axiom,(" + theTPTPFormula + ")).");
-                    // if (commentedFormula) {
-                    pr.println();
-                    // }
-                }
-                if (f.getTheTptpFormulas().isEmpty()) {
-                    String addErrStr = "No TPTP formula for <br/>" + f.htmlFormat(this);
-                    KBmanager.getMgr().setError(KBmanager.getMgr().getError()
-                            + "<br/>\n" + addErrStr + "\n<br/>");
-                    System.out.println("INFO in KB.writeTPTPFile(): No TPTP formula for\n" + f);
-                }
-            }
-            //----Print conjecture if one has been supplied
-            if (conjecture != null) {
-                tptpIt = conjecture.getTheTptpFormulas().iterator();
-                // conjecture.getTheTptpFormulas() should return a
-                // List containing only one String, so the iteration
-                // below is probably unnecessary.  I don't know if the
-                // provers on the target server can even handle
-                // multiple conjectures.
-                while (tptpIt.hasNext()) {
-                    theTPTPFormula = (String) tptpIt.next();
-                    pr.println("fof(prove_from_" + sanitizedKBName
-                            + ",conjecture,(" + theTPTPFormula + ")).");
-                }
-            }
-            result = canonicalPath;
-        } catch (Exception e) {
-            System.out.println("Error in KB.writeTPTPFile(): " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        if (onlyPlainFOL) {
-            Formula.destroySortalTypeCache();
-        }
-
-        if (pr != null) {
-            try {
-                pr.close();
-            } catch (Exception e1) {
-            }
-        }
-
-        return result;
+        return Lists.newArrayList(loadFormatMapsAttempted);
     }
 
-    /**
-     * *************************************************************
-     * Instances of RelationCache hold the cached extensions and, when possible,
-     * the computed closures, of selected relations. Canonical examples are the
-     * caches for subclass and instance.
-     *
-     */
-    static class RelationCache extends HashMap {
-
-        private String relationName = "";
-
-        public String getRelationName() {
-            return relationName;
-        }
-
-        private int keyArgument = -1;
-
-        public int getKeyArgument() {
-            return keyArgument;
-        }
-
-        private int valueArgument = -1;
-
-        public int getValueArgument() {
-            return valueArgument;
-        }
-
-        private boolean isClosureComputed;
-
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//        public boolean getIsClosureComputed() {
-//            return isClosureComputed;
+//    /*****************************************************************
+//     */
+//    public List<Pair> getSortedTermFrequency() {
+//        List<Pair> termFrequencies = new ArrayList<>();
+//        for (Map.Entry<String, Integer> entry : termFrequency.entrySet()) {
+//            termFrequencies.add(new Pair(entry.getValue(), entry.getKey()));
 //        }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-        public void setIsClosureComputed(boolean computed) {
-            isClosureComputed = computed;
-        }
+//        Collections.sort(termFrequencies, Collections.reverseOrder());
+//        return termFrequencies;
+//    }
 
-// --Commented out by Inspection START (8/15/14 2:38 AM):
-//        private RelationCache() {
-//        }
-// --Commented out by Inspection STOP (8/15/14 2:38 AM)
-        public RelationCache(String predName, int keyArg, int valueArg) {
-            relationName = predName;
-            keyArgument = keyArg;
-            valueArgument = valueArg;
-        }
-
-//        @SuppressWarnings("CloneReturnsClassType")
-//        @Override
-//        public Object clone() {
-//            return super.clone(); //To change body of generated methods, choose Tools | Templates.
-//        }
-    }
-
-    /**
-     * *************************************************************
-     * This method currently takes one command-line argument, which should be
-     * the absolute pathname of the directory in which the source Merge,kif file
-     * is located. The resulting tptp file will be named TPTP-TEST-KB.tptp, and
-     * will be written to the same directory.
+    /***************************************************************
      */
     public static void main(String[] args) {
 
+        // generateTPTPTestAssertions();
+        // testTPTP(args);
+        KB kb = null;
         try {
-            if (args[0] == null) {
-                System.out.println("Usage: java -classpath <path> com.articulate.sigma.KB <kb-dir>");
-                System.exit(1);
-            }
-
-            KBmanager mgr = KBmanager.getMgr();
-
-            // These three parameters, along with the consituent
-            // (.kif) files loaded, determine the set of SUO-KIF
-            // assertions that will serve as the source for a
-            // translation of the KB to TPTP.
-            mgr.setPref("holdsPrefix", "no");
-            mgr.setPref("typePrefix", "no");
-            mgr.setPref("cache", "no");
-
-            // This parameter determines if the entire KB will be
-            // translated to TPTP as part of the loading and
-            // processing of the .kif constituent files.
-            mgr.setPref("TPTP", "yes");
-
-            mgr.setPref("inferenceEngine", null);
-
-            mgr.setPref("kbDir", args[0]);
-
-            mgr.kbs.clear();
-
-            mgr.addKB("TPTP-TEST-KB");
-
-            KB kb = mgr.getKB("TPTP-TEST-KB");
-
-            kb.constituents.clear();
-
-            File kbDir = new File(mgr.getPref("kbDir"));
-
-            File kifFileToLoad = new File(kbDir, "Merge.kif");
-
-            kb.addConstituent(kifFileToLoad.getCanonicalPath(),
-                    // Compute caches of "virtual" assertions,
-                    true,
-                    // Don't write a file of processed
-                    // SUO-KIF formulas for the logic
-                    // engine, and don't try to start an
-                    // logic engine process.
-                    false
-            );
-
-            kb.preProcess(kb.getFormulas());
-
-            File tptpFile = new File(kbDir, kb.name + ".tptp");
-
-            String fileWritten = kb.writeTPTPFile(tptpFile.getCanonicalPath(), null, false, "none");
-
-            if (Formula.isNonEmptyString(fileWritten)) {
-                System.out.println("File written: " + fileWritten);
-            } else {
-                System.out.println("Could not write " + tptpFile.getCanonicalPath());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            KBmanager.getMgr().initializeOnce();
+            kb = KBmanager.getMgr().getKB(KBmanager.getMgr().getPref("sumokbname"));
+            System.out.println(kb.getAllSub("ColorAttribute","subAttribute"));
+            //kb.writeTerms();
+            // System.out.println("KB.main(): " + kb.isChildOf("Africa",
+            // "Region"));
+            // kb.askEProver("(subclass ?X Object)",30,1);
         }
-    }
+        catch (Exception ioe) {
+            System.out.println(ioe.getMessage());
+        }
 
+        // kb.generateSemanticNetwork();
+        // kb.generateRandomProof();
+        // kb.instanceOfInstanceP();
+        /*
+        System.out.println("KB.main(): termDepth of Object: " + kb.termDepth("Object"));
+        System.out.println("KB.main(): termDepth of Table: " + kb.termDepth("Table"));
+        System.out.println("KB.main(): termDepth of immediateSubclass: " + kb.termDepth("immediateSubclass"));
+        System.out.println("KB.main(): termDepth of Wagon: " + kb.termDepth("Wagon"));
+        System.out.println("KB.main(): termDepth of Foo: " + kb.termDepth("Foo"));
+*/
+        /*
+         * String foo = "(rel bar \"test\")"; Formula f = new Formula();
+         * f.read(foo); System.out.println(f.getArgument(2).equals("\"test\""));
+         */
+    }
 }

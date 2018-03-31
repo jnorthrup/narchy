@@ -35,7 +35,8 @@ public class PrologPrimitive {
     public final static int DIRECTIVE  = 0;
     public final static int PREDICATE  = 1;
     public final static int FUNCTOR    = 2;
-    
+    public static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+
     public final int type;
     /**
 	 * method to be call when evaluating the built-in
@@ -65,9 +66,9 @@ public class PrologPrimitive {
         try {
             m.setAccessible(true);
             if (Modifier.isStatic(m.getModifiers()))
-                mh = MethodHandles.lookup().unreflect(m);
+                mh = LOOKUP.unreflect(m);
             else
-                mh = MethodHandles.lookup().unreflect(m).bindTo(source);
+                mh = LOOKUP.unreflect(m).bindTo(source);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -128,6 +129,7 @@ public class PrologPrimitive {
             for (int i=0; i<primitive_args.length; i++) {
                 primitive_args[i] = g.subResolve(i);
             }
+
             return (Term)mh.invokeWithArguments(primitive_args);
             //return ((Term)method.invoke(source,primitive_args));
 //        } catch (Exception ex) {

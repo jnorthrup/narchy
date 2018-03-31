@@ -78,10 +78,10 @@ public class PrologTestCase  {
 		engine.addLibrary("alice.tuprolog.lib.IOLibrary");
 		TestPrologEventAdapter a = new TestPrologEventAdapter();
 		engine.addLibraryListener(a);
-		engine.addLibrary("alice.tuprolog.lib.JavaLibrary");
-		assertEquals("alice.tuprolog.lib.JavaLibrary", a.firstMessage);
-		engine.removeLibrary("alice.tuprolog.lib.JavaLibrary");
-		assertEquals("alice.tuprolog.lib.JavaLibrary", a.firstMessage);
+		engine.addLibrary("alice.tuprolog.lib.OOLibrary");
+		assertEquals("alice.tuprolog.lib.OOLibrary", a.firstMessage);
+		engine.removeLibrary("alice.tuprolog.lib.OOLibrary");
+		assertEquals("alice.tuprolog.lib.OOLibrary", a.firstMessage);
 	}
 	
 	@Test public void testTheoryListener() throws InvalidTheoryException {

@@ -31,9 +31,7 @@ import alice.tuprolog.Var;
  * 
  */
 public class DCGLibrary extends Library {
-	private static final long serialVersionUID = 1L;
-    public DCGLibrary() {
-    }
+
 
     @Override
     public String getTheory() {

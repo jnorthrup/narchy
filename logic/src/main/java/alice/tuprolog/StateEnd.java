@@ -100,12 +100,12 @@ public class StateEnd extends State {
     private static Term findVarName(Term link, Object[] a, Term initGoalBag, int pos) {
         boolean findName = false;
         //System.out.println("****!!!!!!! INIZIA FINDVARNAME link "+link+" bag "+initGoalBag+" pos "+pos);
-        while (link != null && link instanceof Var && !findName) {
+        while (link instanceof Var && !findName) {
             //System.out.println("****Trovato Link "+link);
             int y = 0;
             while (!findName && y < a.length) {
                 Term gVar = (Var) a[y];
-                while (!findName && gVar != null && gVar instanceof Var) {
+                while (!findName && gVar instanceof Var) {
                     //System.out.println("**** ----- verifico uguaglianza con "+gVar);
                     if (gVar==link || ((Var) gVar).name().equals(((Var) link).name())) {
                         //System.out.println(link +" **** ----- ***** il nome uguale a "+gVar);
@@ -384,7 +384,7 @@ public class StateEnd extends State {
                             lSolVar.add(l_temp.get(w));
                         }
                     } else if (t instanceof Var) {
-                        while (t != null && t instanceof Var) {
+                        while (t instanceof Var) {
                             resVar = (Var) t;
                             //System.out.println("---RESVAR BAG  VAR "+resVar);
                             t = resVar.link();
@@ -704,7 +704,7 @@ public class StateEnd extends State {
         if (s.subs() > 1)
             tt = s.sub(1);
         //System.out.println("Substitute var ---Termine "+t+" e termine "+tt);
-        if (tt != null && tt instanceof Var) {
+        if (tt instanceof Var) {
             int index = lSol.indexOf(((Var) tt).name());
             //System.out.println("Substitute var ---Indice di tt in lSol "+index);
             s.setSub(1, new Var(lgoal.get(index)));

@@ -18,7 +18,6 @@
 package alice.tuprologx.pj.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.NumberTerm;
 import alice.tuprolog.lib.InvalidObjectIdException;
 import alice.tuprolog.lib.OOLibrary;
 import alice.tuprologx.pj.annotations.PrologClass;
@@ -129,7 +128,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof Method))
+        if (!(o instanceof Method))
             return false;
         else {
             Method m = (Method)o;
@@ -152,7 +151,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof Field))
+        if (!(o instanceof Field))
             return false;
         else {
             Field f = (Field)o;
@@ -170,7 +169,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        return !(o == null || !(o instanceof Method));
+        return !(!(o instanceof Method));
     }
 
     public boolean is_iterable_1(Term method) {
@@ -183,7 +182,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof Method))
+        if (!(o instanceof Method))
             return false;
         else {
             Method m = (Method)o;
@@ -201,7 +200,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        return !(o == null || !(o instanceof Field));
+        return !(!(o instanceof Field));
     }
     
     public boolean marshal_2(Term term, Term marshalledTerm) {
@@ -214,7 +213,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof alice.tuprologx.pj.model.Term<?>))
+        if (!(o instanceof alice.tuprologx.pj.model.Term<?>))
             return unify(marshalledTerm, term);
         else {
             alice.tuprologx.pj.model.Term<?> t = (alice.tuprologx.pj.model.Term<?>)o;
@@ -343,7 +342,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof Method)) {
+        if (!(o instanceof Method)) {
             Prolog.warn("Method not found: " + method);
             return false;
         }
@@ -454,7 +453,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof alice.tuprologx.pj.engine.PrologObject))
+        if (!(o instanceof alice.tuprologx.pj.engine.PrologObject))
             return false;
         else {
             alice.tuprologx.pj.engine.PJ.assertClause((alice.tuprologx.pj.engine.PrologObject)o, clause);
@@ -472,7 +471,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof alice.tuprologx.pj.engine.PrologObject))
+        if (!(o instanceof alice.tuprologx.pj.engine.PrologObject))
             return false;
         else {
             alice.tuprologx.pj.engine.PJ.retractClause((alice.tuprologx.pj.engine.PrologObject)o, clause);
@@ -490,7 +489,7 @@ public class PJLibraryNew extends OOLibrary {
         catch (InvalidObjectIdException ex) {
             return false;
         }
-        if (o == null || !(o instanceof alice.tuprologx.pj.engine.PrologObject))
+        if (!(o instanceof alice.tuprologx.pj.engine.PrologObject))
             return false;
         else {
             alice.tuprologx.pj.engine.PJ.retractAllClauses((alice.tuprologx.pj.engine.PrologObject)o, clause);

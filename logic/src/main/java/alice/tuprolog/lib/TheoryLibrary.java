@@ -25,7 +25,6 @@ import alice.tuprolog.Theory;
  * 
  */
 public class TheoryLibrary extends Library {
-	private static final long serialVersionUID = 1L;
     private final Theory th;
     private final String name;
     

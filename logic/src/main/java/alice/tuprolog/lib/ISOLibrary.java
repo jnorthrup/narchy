@@ -18,7 +18,6 @@
 package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.NumberTerm;
 
 /**
  * This class represents a tuProlog library providing most of the built-ins
