@@ -1,5 +1,6 @@
 package alice.tuprologx.pj.model;
 
+import alice.tuprolog.NumberTerm;
 import alice.tuprologx.pj.annotations.Termifiable;
 
 /**
@@ -66,11 +67,11 @@ public abstract class Term<X extends Term<?>> {
     public static <Z extends Term<?>> Z unmarshal(alice.tuprolog.Term t) {
 		if (Int.matches(t)) {
 			// return (Z)Int.unmarshal((alice.tuprolog.Int)t);
-			return uncheckedCast(Int.unmarshal((alice.tuprolog.Int)t));
+			return uncheckedCast(Int.unmarshal((NumberTerm.Int)t));
 		}
 		else if (Double.matches(t)) {
 			//return (Z)Double.unmarshal((alice.tuprolog.Double)t);
-			return uncheckedCast(Double.unmarshal((alice.tuprolog.Double)t));
+			return uncheckedCast(Double.unmarshal((NumberTerm.Double)t));
 		}
         else if (JavaObject.matches(t)) {
 			//return (Z)JavaObject.unmarshalObject((alice.tuprolog.Struct)t);

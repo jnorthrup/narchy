@@ -9,34 +9,34 @@ public class IntTestCase {
 	
 	@Test
 	public void testIsAtomic() {
-		assertTrue(new Int(0).isAtom());
+		assertTrue(new NumberTerm.Int(0).isAtom());
 	}
 	
 	@Test public void testIsAtom() {
-		assertFalse(new Int(0).isAtomic());
+		assertFalse(new NumberTerm.Int(0).isAtomic());
 	}
 	
 	@Test public void testIsCompound() {
-		assertFalse(new Int(0).isCompound());
+		assertFalse(new NumberTerm.Int(0).isCompound());
 	}
 	
 	@Test public void testEqualsToStruct() {
 		Struct s = Struct.emptyList();
-		Int zero = new Int(0);
+		NumberTerm.Int zero = new NumberTerm.Int(0);
 		assertFalse(zero.equals(s));
 	}
 	
 	@Test public void testEqualsToVar() throws InvalidTermException {
 		Var x = new Var("X");
-		Int one = new Int(1);
+		NumberTerm.Int one = new NumberTerm.Int(1);
 		assertFalse(one.equals(x));
 	}
 	
 	@Test public void testEqualsToInt() {
-		Int zero = new Int(0);
-		Int one = new Int(1);
+		NumberTerm.Int zero = new NumberTerm.Int(0);
+		NumberTerm.Int one = new NumberTerm.Int(1);
 		assertFalse(zero.equals(one));
-		Int anotherZero = new Int(1-1);
+		NumberTerm.Int anotherZero = new NumberTerm.Int(1-1);
 		assertEquals(anotherZero, zero);
 	}
 	
@@ -45,8 +45,8 @@ public class IntTestCase {
 	}
 	
 	@Test public void testEqualsToDouble() {
-		Int integerOne = new Int(1);
-		alice.tuprolog.Double doubleOne = new alice.tuprolog.Double(1);
+		NumberTerm.Int integerOne = new NumberTerm.Int(1);
+		NumberTerm.Double doubleOne = new NumberTerm.Double(1);
 		assertFalse(integerOne.equals(doubleOne));
 	}
 	

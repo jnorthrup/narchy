@@ -23,7 +23,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("set_theory", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -34,12 +34,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("set_theory", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("set_theory", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -51,9 +51,9 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("set_theory", new Struct("a"))));
-		Int line = (Int) info.getTerm("Line");
+		NumberTerm.Int line = (NumberTerm.Int) info.getTerm("Line");
         assertEquals(1, line.intValue());
-		Int position = (Int) info.getTerm("Line");
+		NumberTerm.Int position = (NumberTerm.Int) info.getTerm("Line");
         assertEquals(1, position.intValue());
 		Struct message = (Struct) info.getTerm("Message");
 		assertTrue(message.isEqual(new Struct("The term 'a' is not ended with a period.")));
@@ -67,7 +67,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("add_theory", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -78,12 +78,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("add_theory", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("add_theory", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -95,9 +95,9 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("add_theory", new Struct("a"))));
-		Int line = (Int) info.getTerm("Line");
+		NumberTerm.Int line = (NumberTerm.Int) info.getTerm("Line");
         assertEquals(1, line.intValue());
-		Int position = (Int) info.getTerm("Line");
+		NumberTerm.Int position = (NumberTerm.Int) info.getTerm("Line");
         assertEquals(1, position.intValue());
 		Struct message = (Struct) info.getTerm("Message");
 		assertTrue(message.isEqual(new Struct("The term 'a' is not ended with a period.")));
@@ -111,7 +111,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("agent", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -122,12 +122,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("agent", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("agent", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -140,7 +140,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g
 				.isEqual(new Struct("agent", new Var("X"), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -153,7 +153,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g
 				.isEqual(new Struct("agent", new Struct("a"), new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -164,12 +164,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("agent", new Int(1), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("agent", new NumberTerm.Int(1), new Struct("a"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -180,12 +180,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("agent", new Struct("a"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("agent", new Struct("a"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("struct")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -197,8 +197,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_equality", new Var("X"),
-				new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -209,9 +209,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
 				new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -223,8 +223,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_equality", new Struct("a"),
-				new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -239,9 +239,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
 				new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -257,8 +257,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_equality", new Var("X"),
-				new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -269,9 +269,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
 				new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -283,8 +283,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_equality", new Struct("a"),
-				new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -299,9 +299,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
 				new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -317,8 +317,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_than",
-				new Var("X"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Var("X"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -329,9 +329,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_greater_than", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_greater_than", new NumberTerm.Int(1),
 				new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -343,8 +343,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_than", new Struct(
-				"a"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				"a"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -359,9 +359,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_greater_than", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_greater_than", new NumberTerm.Int(1),
 				new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -377,8 +377,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_than", new Var("X"),
-				new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -389,9 +389,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_less_than", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_less_than", new NumberTerm.Int(1),
 				new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -403,8 +403,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_than",
-				new Struct("a"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("a"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -419,9 +419,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_less_than", new Int(1),
+		assertTrue(g.isEqual(new Struct("expression_less_than", new NumberTerm.Int(1),
 				new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -437,8 +437,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_or_equal_than",
-				new Var("X"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Var("X"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -450,8 +450,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_or_equal_than",
-				new Int(1), new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Var("X"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -463,8 +463,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_or_equal_than",
-				new Struct("a"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("a"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -480,8 +480,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_or_equal_than",
-				new Int(1), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Struct("a"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -497,8 +497,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_or_equal_than",
-				new Var("X"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Var("X"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -510,8 +510,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_or_equal_than",
-				new Int(1), new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Var("X"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -523,8 +523,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_or_equal_than",
-				new Struct("a"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("a"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -540,8 +540,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_or_equal_than",
-				new Int(1), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Struct("a"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("evaluable")));
@@ -556,9 +556,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
-				new Struct("/", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
+				new Struct("/", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -571,9 +571,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
-				new Struct("/", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
+				new Struct("/", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -586,9 +586,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_greater_than", new Int(1),
-				new Struct("/", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_greater_than", new NumberTerm.Int(1),
+				new Struct("/", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -601,9 +601,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_less_than", new Int(1),
-				new Struct("/", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_less_than", new NumberTerm.Int(1),
+				new Struct("/", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -617,8 +617,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_or_equal_than",
-				new Int(1), new Struct("/", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Struct("/", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -632,8 +632,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_or_equal_than",
-				new Int(1), new Struct("/", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Struct("/", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -646,9 +646,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
-				new Struct("//", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
+				new Struct("//", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -661,9 +661,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_equality", new Int(1),
-				new Struct("//", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_equality", new NumberTerm.Int(1),
+				new Struct("//", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -676,9 +676,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_greater_than", new Int(1),
-				new Struct("//", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_greater_than", new NumberTerm.Int(1),
+				new Struct("//", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -691,9 +691,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("expression_less_than", new Int(1),
-				new Struct("//", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("expression_less_than", new NumberTerm.Int(1),
+				new Struct("//", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -707,8 +707,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_or_equal_than",
-				new Int(1), new Struct("//", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Struct("//", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -722,8 +722,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_or_equal_than",
-				new Int(1), new Struct("//", new Int(1), new Int(0)))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Struct("//", new NumberTerm.Int(1), new NumberTerm.Int(0)))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -738,8 +738,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_equality", new Struct(
-				"div", new Int(1), new Int(0)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				"div", new NumberTerm.Int(1), new NumberTerm.Int(0)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -754,8 +754,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_equality", new Struct(
-				"div", new Int(1), new Int(0)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				"div", new NumberTerm.Int(1), new NumberTerm.Int(0)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -770,8 +770,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_than", new Struct(
-				"div", new Int(1), new Int(0)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				"div", new NumberTerm.Int(1), new NumberTerm.Int(0)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -786,8 +786,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_than", new Struct(
-				"div", new Int(1), new Int(0)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				"div", new NumberTerm.Int(1), new NumberTerm.Int(0)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -802,8 +802,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_greater_or_equal_than",
-				new Struct("div", new Int(1), new Int(0)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("div", new NumberTerm.Int(1), new NumberTerm.Int(0)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -818,8 +818,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("expression_less_or_equal_than",
-				new Struct("div", new Int(1), new Int(0)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("div", new NumberTerm.Int(1), new NumberTerm.Int(0)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("Error");
 		assertTrue(validType.isEqual(new Struct("zero_divisor")));
@@ -834,7 +834,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("text_concat", new Var("X"),
 				new Struct("a"), new Struct("b"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -847,7 +847,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("text_concat", new Struct("a"),
 				new Var("X"), new Struct("b"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -858,13 +858,13 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("text_concat", new Int(1), new Struct(
+		assertTrue(g.isEqual(new Struct("text_concat", new NumberTerm.Int(1), new Struct(
 				"a"), new Struct("b"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -876,12 +876,12 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("text_concat", new Struct("a"),
-				new Int(1), new Struct("b"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1), new Struct("b"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -894,7 +894,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("num_atom", new Struct("a"), new Var(
 				"X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("number")));
@@ -909,12 +909,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("num_atom", new Int(1), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("num_atom", new NumberTerm.Int(1), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -926,8 +926,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g
-				.isEqual(new Struct("num_atom", new Int(1), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				.isEqual(new Struct("num_atom", new NumberTerm.Int(1), new Struct("a"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validDomain = (Struct) info.getTerm("ValidDomain");
 		assertTrue(validDomain.isEqual(new Struct("num_atom")));
@@ -943,8 +943,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("arg_guard", new Var("X"), new Struct(
-				"p", new Int(1)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				"p", new NumberTerm.Int(1)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -955,9 +955,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("arg_guard", new Int(1), new Var("X"),
-				new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("arg_guard", new NumberTerm.Int(1), new Var("X"),
+				new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -969,8 +969,8 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("arg_guard", new Struct("a"),
-				new Struct("p", new Int(1)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("p", new NumberTerm.Int(1)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("integer")));
@@ -985,9 +985,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("arg_guard", new Int(1),
-				new Struct("p"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("arg_guard", new NumberTerm.Int(1),
+				new Struct("p"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("compound")));
@@ -1002,13 +1002,13 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("arg_guard", new Int(0), new Struct(
-				"p", new Int(0)), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("arg_guard", new NumberTerm.Int(0), new Struct(
+				"p", new NumberTerm.Int(0)), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidDomain");
 		assertTrue(validType.isEqual(new Struct("greater_than_zero")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(0, culprit.intValue());
 	}
 
@@ -1021,7 +1021,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("clause_guard", new Var("X"),
 				new Struct("true"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -1033,7 +1033,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("call_guard", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -1044,12 +1044,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("call_guard", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("call_guard", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("callable")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1062,7 +1062,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("all_solutions_predicates_guard",
 				new Struct("a"), new Var("X"), new Var("L"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -1074,12 +1074,12 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("all_solutions_predicates_guard",
-				new Struct("a"), new Int(1), new Var("L"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("a"), new NumberTerm.Int(1), new Var("L"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("callable")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1092,7 +1092,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("all_solutions_predicates_guard",
 				new Struct("a"), new Var("X"), new Var("L"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -1104,12 +1104,12 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("all_solutions_predicates_guard",
-				new Struct("a"), new Int(1), new Var("L"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("a"), new NumberTerm.Int(1), new Var("L"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("callable")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1122,7 +1122,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("all_solutions_predicates_guard",
 				new Struct("a"), new Var("X"), new Var("L"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -1134,12 +1134,12 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("all_solutions_predicates_guard",
-				new Struct("a"), new Int(1), new Var("L"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new Struct("a"), new NumberTerm.Int(1), new Var("L"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("callable")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1151,7 +1151,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("assertz", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -1162,12 +1162,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("assertz", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("assertz", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("clause")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1179,7 +1179,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("retract_guard", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -1190,12 +1190,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("retract_guard", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("retract_guard", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("clause")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1207,7 +1207,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("retract_guard", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -1218,12 +1218,12 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("retract_guard", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("retract_guard", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("clause")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1235,12 +1235,12 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("member_guard", new Struct("a"),
-				new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("list")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -1253,7 +1253,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("reverse_guard", new Struct("a"),
                 Struct.emptyList())));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("list")));
@@ -1270,7 +1270,7 @@ public class BasicLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("delete_guard", new Struct("a"),
 				new Struct("a"), Struct.emptyList())));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("list")));
@@ -1285,9 +1285,9 @@ public class BasicLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("element_guard", new Int(1),
+		assertTrue(g.isEqual(new Struct("element_guard", new NumberTerm.Int(1),
 				new Struct("a"), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("list")));

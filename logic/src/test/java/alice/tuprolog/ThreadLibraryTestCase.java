@@ -38,7 +38,7 @@ public class ThreadLibraryTestCase {
 		Solution sinfo = engine.solve("thread_id(ID).");	//unifica ad ID l'identificativo del thread corrente (Root)
 		assertTrue(sinfo.isSuccess());
 		Term id = sinfo.getVarValue("ID");
-		assertEquals(new Int(0), id);
+		assertEquals(new NumberTerm.Int(0), id);
 	}
 
 	/**
@@ -382,7 +382,7 @@ public class ThreadLibraryTestCase {
 		assertTrue(sinfo.isSuccess());
 		
 		Term X = sinfo.getVarValue("S");
-		assertEquals(new Int(5), X);
+		assertEquals(new NumberTerm.Int(5), X);
 	}
 
 	/**
@@ -458,10 +458,10 @@ public class ThreadLibraryTestCase {
             assertTrue(sinfo.isSuccess());
             
             Term X = sinfo.getVarValue("X");
-            assertEquals(new Int(5040), X);
+            assertEquals(new NumberTerm.Int(5040), X);
             
             Term Y = sinfo.getVarValue("Y");
-            assertEquals(new Int(40320), Y);
+            assertEquals(new NumberTerm.Int(40320), Y);
     }
 	
 	@Test public void testMutex1() throws InvalidTheoryException, MalformedGoalException, NoSolutionException{

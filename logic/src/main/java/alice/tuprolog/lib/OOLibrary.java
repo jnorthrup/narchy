@@ -18,7 +18,7 @@
 package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.Number;
+import alice.tuprolog.NumberTerm;
 import alice.util.AbstractDynamicClassLoader;
 import alice.util.InspectionUtils;
 import alice.util.JavaDynamicClassLoader;
@@ -207,7 +207,7 @@ public class OOLibrary extends Library {
             // check for array type
             if (clName.endsWith("[]")) {
                 Object[] list = getArrayFromList(arg);
-                int nargs = ((Number) list[0]).intValue();
+                int nargs = ((NumberTerm) list[0]).intValue();
                 if (java_array(clName, nargs, id))
                     return true;
                 else
@@ -657,15 +657,15 @@ public class OOLibrary extends Library {
 
             // first check for primitive data field
             Field field = cl.getField(fieldName);
-            if (what instanceof Number) {
-                Number wn = (Number) what;
-                if (wn instanceof Int) {
+            if (what instanceof NumberTerm) {
+                NumberTerm wn = (NumberTerm) what;
+                if (wn instanceof NumberTerm.Int) {
                     field.setInt(obj, wn.intValue());
-                } else if (wn instanceof alice.tuprolog.Double) {
+                } else if (wn instanceof NumberTerm.Double) {
                     field.setDouble(obj, wn.doubleValue());
-                } else if (wn instanceof alice.tuprolog.Long) {
+                } else if (wn instanceof NumberTerm.Long) {
                     field.setLong(obj, wn.longValue());
-                } else if (wn instanceof alice.tuprolog.Float) {
+                } else if (wn instanceof NumberTerm.Float) {
                     field.setFloat(obj, wn.floatValue());
                 } else {
                     return false;
@@ -740,16 +740,16 @@ public class OOLibrary extends Library {
             field.setAccessible(true);
             if (fc.equals(Integer.TYPE) || fc.equals(Byte.TYPE)) {
                 int value = field.getInt(obj);
-                return unify(what, new alice.tuprolog.Int(value));
+                return unify(what, new NumberTerm.Int(value));
             } else if (fc.equals(java.lang.Long.TYPE)) {
                 long value = field.getLong(obj);
-                return unify(what, new alice.tuprolog.Long(value));
+                return unify(what, new NumberTerm.Long(value));
             } else if (fc.equals(java.lang.Float.TYPE)) {
                 float value = field.getFloat(obj);
-                return unify(what, new alice.tuprolog.Float(value));
+                return unify(what, new NumberTerm.Float(value));
             } else if (fc.equals(java.lang.Double.TYPE)) {
                 double value = field.getDouble(obj);
-                return unify(what, new alice.tuprolog.Double(value));
+                return unify(what, new NumberTerm.Double(value));
             } else {
                 // the field value is an object
                 Object res = field.get(obj);
@@ -769,7 +769,7 @@ public class OOLibrary extends Library {
     public boolean java_array_set_primitive_3(Term obj_id, Term i, Term what)
             throws JavaException {
         Struct objId = (Struct) obj_id.term();
-        Number index = (Number) i.term();
+        NumberTerm index = (NumberTerm) i.term();
         what = what.term();
         if (!index.isInteger()) {
             throw new JavaException(new IllegalArgumentException(index
@@ -793,38 +793,38 @@ public class OOLibrary extends Library {
             String name = cl.toString();
             switch (name) {
                 case "class [I": {
-                    if (!(what instanceof Number)) {
+                    if (!(what instanceof NumberTerm)) {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    byte v = (byte) ((Number) what).intValue();
+                    byte v = (byte) ((NumberTerm) what).intValue();
                     Array.setInt(obj, index.intValue(), v);
                     break;
                 }
                 case "class [D": {
-                    if (!(what instanceof Number)) {
+                    if (!(what instanceof NumberTerm)) {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    double v = ((Number) what).doubleValue();
+                    double v = ((NumberTerm) what).doubleValue();
                     Array.setDouble(obj, index.intValue(), v);
                     break;
                 }
                 case "class [F": {
-                    if (!(what instanceof Number)) {
+                    if (!(what instanceof NumberTerm)) {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    float v = ((Number) what).floatValue();
+                    float v = ((NumberTerm) what).floatValue();
                     Array.setFloat(obj, index.intValue(), v);
                     break;
                 }
                 case "class [L": {
-                    if (!(what instanceof Number)) {
+                    if (!(what instanceof NumberTerm)) {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    long v = ((Number) what).longValue();
+                    long v = ((NumberTerm) what).longValue();
                     Array.setFloat(obj, index.intValue(), v);
                     break;
                 }
@@ -848,20 +848,20 @@ public class OOLibrary extends Library {
                     }
                     break;
                 case "class [B": {
-                    if (!(what instanceof Number)) {
+                    if (!(what instanceof NumberTerm)) {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    int v = ((Number) what).intValue();
+                    int v = ((NumberTerm) what).intValue();
                     Array.setByte(obj, index.intValue(), (byte) v);
                     break;
                 }
                 case "class [S":
-                    if (!(what instanceof Number)) {
+                    if (!(what instanceof NumberTerm)) {
                         throw new JavaException(new IllegalArgumentException(what
                                 .toString()));
                     }
-                    short v = (short) ((Number) what).intValue();
+                    short v = (short) ((NumberTerm) what).intValue();
                     Array.setShort(obj, index.intValue(), v);
                     break;
                 default:
@@ -884,7 +884,7 @@ public class OOLibrary extends Library {
      */
     public boolean java_array_get_primitive_3(Term obj_id, Term i, Term what) throws JavaException {
         Struct objId = (Struct) obj_id.term();
-        Number index = (Number) i.term();
+        NumberTerm index = (NumberTerm) i.term();
         what = what.term();
         if (!index.isInteger()) {
             throw new JavaException(new IllegalArgumentException(index.toString()));
@@ -905,14 +905,14 @@ public class OOLibrary extends Library {
             String name = cl.toString();
             switch (name) {
                 case "class [I": {
-                    Term value = new Int(Array.getInt(obj, index.intValue()));
+                    Term value = new NumberTerm.Int(Array.getInt(obj, index.intValue()));
                     if (unify(what, value))
                         return true;
                     else
                         throw new JavaException(new IllegalArgumentException(what.toString()));
                 }
                 case "class [D": {
-                    Term value = new alice.tuprolog.Double(Array.getDouble(obj, index.intValue()));
+                    Term value = new NumberTerm.Double(Array.getDouble(obj, index.intValue()));
                     if (unify(what, value))
                         return true;
                     else
@@ -920,7 +920,7 @@ public class OOLibrary extends Library {
                                 .toString()));
                 }
                 case "class [F": {
-                    Term value = new alice.tuprolog.Float(Array.getFloat(obj, index
+                    Term value = new NumberTerm.Float(Array.getFloat(obj, index
                             .intValue()));
                     if (unify(what, value))
                         return true;
@@ -929,7 +929,7 @@ public class OOLibrary extends Library {
                                 .toString()));
                 }
                 case "class [L": {
-                    Term value = new alice.tuprolog.Long(Array.getLong(obj, index
+                    Term value = new NumberTerm.Long(Array.getLong(obj, index
                             .intValue()));
                     if (unify(what, value))
                         return true;
@@ -961,7 +961,7 @@ public class OOLibrary extends Library {
                                     what.toString()));
                     }
                 case "class [B": {
-                    Term value = new Int(Array.getByte(obj, index
+                    Term value = new NumberTerm.Int(Array.getByte(obj, index
                             .intValue()));
                     if (unify(what, value))
                         return true;
@@ -970,7 +970,7 @@ public class OOLibrary extends Library {
                                 .toString()));
                 }
                 case "class [S":
-                    Term value = new Int(Array.getInt(obj, index
+                    Term value = new NumberTerm.Int(Array.getInt(obj, index
                             .intValue()));
                     if (unify(what, value))
                         return true;
@@ -1119,18 +1119,18 @@ public class OOLibrary extends Library {
                         types[i] = values[i].getClass();
                         break;
                 }
-            } else if (term instanceof Number) {
-                Number t = (Number) term;
-                if (t instanceof Int) {
+            } else if (term instanceof NumberTerm) {
+                NumberTerm t = (NumberTerm) term;
+                if (t instanceof NumberTerm.Int) {
                     values[i] = t.intValue();
                     types[i] = java.lang.Integer.TYPE;
-                } else if (t instanceof alice.tuprolog.Double) {
+                } else if (t instanceof NumberTerm.Double) {
                     values[i] = t.doubleValue();
                     types[i] = java.lang.Double.TYPE;
-                } else if (t instanceof alice.tuprolog.Long) {
+                } else if (t instanceof NumberTerm.Long) {
                     values[i] = t.longValue();
                     types[i] = java.lang.Long.TYPE;
-                } else if (t instanceof alice.tuprolog.Float) {
+                } else if (t instanceof NumberTerm.Float) {
                     values[i] = t.floatValue();
                     types[i] = java.lang.Float.TYPE;
                 }
@@ -1168,7 +1168,7 @@ public class OOLibrary extends Library {
     private boolean parse_as(Object[] values, Class<?>[] types, int i,
             Term castWhat, Term castTo) {
         try {
-            if (!(castWhat instanceof Number)) {
+            if (!(castWhat instanceof NumberTerm)) {
                 String castTo_name = alice.util.Tools
                         .removeApostrophes(((Struct) castTo).name());
                 String castWhat_name = alice.util.Tools.removeApostrophes(castWhat
@@ -1285,7 +1285,7 @@ public class OOLibrary extends Library {
                     }
                 }
             } else {
-                Number num = (Number) castWhat;
+                NumberTerm num = (NumberTerm) castWhat;
                 String castTo_name = ((Struct) castTo).name();
                 switch (castTo_name) {
                     case "byte":
@@ -1336,18 +1336,18 @@ public class OOLibrary extends Library {
             if (Boolean.class.isInstance(obj)) {
                 return unify(id, (Boolean) obj ? Term.TRUE : Term.FALSE);
             } else if (Byte.class.isInstance(obj)) {
-                return unify(id, new Int(((Byte) obj).intValue()));
+                return unify(id, new NumberTerm.Int(((Byte) obj).intValue()));
             } else if (Short.class.isInstance(obj)) {
-                return unify(id, new Int(((Short) obj).intValue()));
+                return unify(id, new NumberTerm.Int(((Short) obj).intValue()));
             } else if (Integer.class.isInstance(obj)) {
-                return unify(id, new Int((Integer) obj));
+                return unify(id, new NumberTerm.Int((Integer) obj));
             } else if (java.lang.Long.class.isInstance(obj)) {
-                return unify(id, new alice.tuprolog.Long((Long) obj));
+                return unify(id, new NumberTerm.Long((Long) obj));
             } else if (java.lang.Float.class.isInstance(obj)) {
-                return unify(id, new alice.tuprolog.Float(
+                return unify(id, new NumberTerm.Float(
                         (Float) obj));
             } else if (java.lang.Double.class.isInstance(obj)) {
-                return unify(id, new alice.tuprolog.Double(
+                return unify(id, new NumberTerm.Double(
                         (Double) obj));
             } else if (String.class.isInstance(obj)) {
                 return unify(id, new Struct((String) obj));

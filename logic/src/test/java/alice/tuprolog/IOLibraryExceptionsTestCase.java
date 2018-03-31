@@ -26,7 +26,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("see", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -37,12 +37,12 @@ public class IOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("see", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("see", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -55,7 +55,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("see", new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validDomain = (Struct) info.getTerm("ValidDomain");
 		assertTrue(validDomain.isEqual(new Struct("stream")));
@@ -71,7 +71,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("tell", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -82,12 +82,12 @@ public class IOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("tell", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("tell", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -99,7 +99,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("put", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -110,12 +110,12 @@ public class IOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("put", new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("put", new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("character")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -127,7 +127,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("put", new Struct("aa"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("character")));
@@ -143,7 +143,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("tab", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -155,7 +155,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("tab", new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("integer")));
@@ -175,9 +175,9 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("read", new Var("X"))));
-		Int line = (Int) info.getTerm("Line");
+		NumberTerm.Int line = (NumberTerm.Int) info.getTerm("Line");
         assertEquals(1, line.intValue());
-		Int position = (Int) info.getTerm("Line");
+		NumberTerm.Int position = (NumberTerm.Int) info.getTerm("Line");
         assertEquals(1, position.intValue());
 		Struct message = (Struct) info.getTerm("Message");
 		assertTrue(message.isEqual(new Struct("@term")));
@@ -193,7 +193,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("write", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -205,7 +205,7 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("print", new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -218,7 +218,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("text_from_file", new Var("X"),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -229,13 +229,13 @@ public class IOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("text_from_file", new Int(1), new Var(
+		assertTrue(g.isEqual(new Struct("text_from_file", new NumberTerm.Int(1), new Var(
 				"Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -249,7 +249,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("text_from_file", new Struct("text"),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ObjectType");
 		assertTrue(validType.isEqual(new Struct("stream")));
@@ -268,7 +268,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.unifiable(new Struct("text_from_file", new Var("X"), new Var(
 				"Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -279,13 +279,13 @@ public class IOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.unifiable(new Struct("text_from_file", new Int(1),
+		assertTrue(g.unifiable(new Struct("text_from_file", new NumberTerm.Int(1),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -299,7 +299,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.unifiable(new Struct("text_from_file", new Struct("text"),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ObjectType");
 		assertTrue(validType.isEqual(new Struct("stream")));
@@ -318,7 +318,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.unifiable(new Struct("text_from_file", new Var("X"), new Var(
 				"Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -329,13 +329,13 @@ public class IOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.unifiable(new Struct("text_from_file", new Int(1),
+		assertTrue(g.unifiable(new Struct("text_from_file", new NumberTerm.Int(1),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -349,7 +349,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.unifiable(new Struct("text_from_file", new Struct("text"),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ObjectType");
 		assertTrue(validType.isEqual(new Struct("stream")));
@@ -368,7 +368,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("solve_file_goal_guard", new Struct(
 				"text"), new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 	}
 
@@ -380,12 +380,12 @@ public class IOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("solve_file_goal_guard", new Struct(
-				"text"), new Int(1))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+				"text"), new NumberTerm.Int(1))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("callable")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -398,7 +398,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.unifiable(new Struct("text_from_file", new Var("X"), new Var(
 				"Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -409,13 +409,13 @@ public class IOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.unifiable(new Struct("text_from_file", new Int(1),
+		assertTrue(g.unifiable(new Struct("text_from_file", new NumberTerm.Int(1),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 
@@ -429,7 +429,7 @@ public class IOLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.unifiable(new Struct("text_from_file", new Struct("text"),
 				new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ObjectType");
 		assertTrue(validType.isEqual(new Struct("stream")));

@@ -22,7 +22,7 @@ public class ISOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("atom_length", new Var("X"), new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -33,12 +33,12 @@ public class ISOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("atom_length", new Int(1), new Var("Y"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("atom_length", new NumberTerm.Int(1), new Var("Y"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 	
@@ -49,12 +49,12 @@ public class ISOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("atom_chars", new Int(1), new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("atom_chars", new NumberTerm.Int(1), new Var("X"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 	
@@ -66,7 +66,7 @@ public class ISOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("atom_chars", new Var("X"), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("list")));
@@ -82,7 +82,7 @@ public class ISOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("char_code", new Struct("ab"), new Var("X"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("character")));
@@ -98,7 +98,7 @@ public class ISOLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("char_code", new Var("X"), new Struct("a"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("integer")));
@@ -113,12 +113,12 @@ public class ISOLibraryExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("sub_atom_guard", new Int(1), new Var("B"),  new Var("C"),  new Var("D"),  new Var("E"))));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		assertTrue(g.isEqual(new Struct("sub_atom_guard", new NumberTerm.Int(1), new Var("B"),  new Var("C"),  new Var("D"),  new Var("E"))));
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
 		assertTrue(validType.isEqual(new Struct("atom")));
-		Int culprit = (Int) info.getTerm("Culprit");
+		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
         assertEquals(1, culprit.intValue());
 	}
 

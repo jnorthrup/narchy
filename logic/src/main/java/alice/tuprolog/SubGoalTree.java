@@ -47,6 +47,7 @@ public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
 //    }
 
     public SubGoalTree copy(){
-        return new SubGoalTree(this);
+        //return new SubGoalTree(this);
+        return this;
     }
 }

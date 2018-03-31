@@ -17,8 +17,6 @@
  */
 package alice.tuprolog;
 
-import com.google.common.collect.Lists;
-
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -90,7 +88,8 @@ public class MutableClauseIndex extends ConcurrentHashMap<String,FamilyClausesLi
 
 		public CompleteIterator(MutableClauseIndex clauseDatabase) {
 			//copy so that this can be done concurrently
-			values = Lists.newArrayList(clauseDatabase.values()).iterator();
+			//values = Lists.newArrayList(clauseDatabase.values()).iterator();
+			values = clauseDatabase.values().iterator();
 		}
 
 		@Override

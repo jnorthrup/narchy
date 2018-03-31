@@ -136,7 +136,7 @@ public abstract class Library implements Serializable {
                 if ((bt.type == FUNCTOR)) // check for library functors
                     return bt.evalAsFunctor(t);
             }
-        } else if (val instanceof Number) {
+        } else if (val instanceof NumberTerm) {
             return val;
         }
         return null;

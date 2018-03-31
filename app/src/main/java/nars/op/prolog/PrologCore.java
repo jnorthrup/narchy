@@ -39,8 +39,8 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     final static Logger logger = LoggerFactory.getLogger(PrologCore.class);
 
     public static final String AxiomTheory;
-    public static final alice.tuprolog.Term ONE = new alice.tuprolog.Int(1);
-    public static final alice.tuprolog.Term ZERO = new alice.tuprolog.Int(0);
+    public static final alice.tuprolog.Term ONE = new NumberTerm.Int(1);
+    public static final alice.tuprolog.Term ZERO = new NumberTerm.Int(0);
 
     static {
         String a;

@@ -26,7 +26,7 @@ public class StructIteratorTestCase {
 	}
 	
 	@Test public void testIteratorCount() {
-		Struct list = new Struct(new Term[] {new Int(1), new Int(2), new Int(3), new Int(5), new Int(7)});
+		Struct list = new Struct(new Term[] {new NumberTerm.Int(1), new NumberTerm.Int(2), new NumberTerm.Int(3), new NumberTerm.Int(5), new NumberTerm.Int(7)});
 		Iterator<? extends Term> i = list.listIterator();
 		int count = 0;
 		for (; i.hasNext(); count++)
@@ -45,15 +45,15 @@ public class StructIteratorTestCase {
 	}
 	
 	@Test public void testMultipleNext() {
-		Struct list = new Struct(new Term[] {new Int(0), new Int(1), new Int(2), new Int(3), new Int(5), new Int(7)});
+		Struct list = new Struct(new Term[] {new NumberTerm.Int(0), new NumberTerm.Int(1), new NumberTerm.Int(2), new NumberTerm.Int(3), new NumberTerm.Int(5), new NumberTerm.Int(7)});
 		Iterator<? extends Term> i = list.listIterator();
 		assertTrue(i.hasNext());
 		i.next(); // skip the first term
-		assertEquals(new Int(1), i.next());
-		assertEquals(new Int(2), i.next());
-		assertEquals(new Int(3), i.next());
-		assertEquals(new Int(5), i.next());
-		assertEquals(new Int(7), i.next());
+		assertEquals(new NumberTerm.Int(1), i.next());
+		assertEquals(new NumberTerm.Int(2), i.next());
+		assertEquals(new NumberTerm.Int(3), i.next());
+		assertEquals(new NumberTerm.Int(5), i.next());
+		assertEquals(new NumberTerm.Int(7), i.next());
 		// no more terms
 		assertFalse(i.hasNext());
 		try {
@@ -63,7 +63,7 @@ public class StructIteratorTestCase {
 	}
 	
 	@Test public void testRemoveOperationNotSupported() {
-		Struct list = new Struct(new Int(1), Struct.emptyList());
+		Struct list = new Struct(new NumberTerm.Int(1), Struct.emptyList());
 		Iterator<? extends Term> i = list.listIterator();
 		assertNotNull(i.next());
 		try {

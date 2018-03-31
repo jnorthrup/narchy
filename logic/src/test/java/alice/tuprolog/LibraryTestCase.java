@@ -14,7 +14,7 @@ public class LibraryTestCase {
 		engine.addLibrary(new TestLibrary());
 		Solution goal = engine.solve("N is sum(1, 3).");
 		assertTrue(goal.isSuccess());
-		assertEquals(new Int(4), goal.getVarValue("N"));
+		assertEquals(new NumberTerm.Int(4), goal.getVarValue("N"));
 	}
 	
 	@Test public void testLibraryPredicate() throws PrologException {

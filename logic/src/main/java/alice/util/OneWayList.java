@@ -38,15 +38,15 @@ public final class OneWayList<E> {
             case 0:
                 return null;
             case 1:
-                return new OneWayList<T>(d.getFirst(), null);
+                return new OneWayList<>(d.getFirst(), null);
             case 2:
-                return new OneWayList<T>(d.getFirst(), new OneWayList<T>(d.getLast(), null));
+                return new OneWayList<>(d.getFirst(), new OneWayList<>(d.getLast(), null));
             default:
                 Iterator<T> i = d.descendingIterator();
                 i.hasNext(); //trigger just in case
                 OneWayList<T> o = new OneWayList<>(i.next(), null); //inner seed
                 while (i.hasNext()) {
-                    o = new OneWayList<T>(i.next(), o); //wrap in prevous
+                    o = new OneWayList<>(i.next(), o); //wrap in prevous
                 }
                 return o;
         }

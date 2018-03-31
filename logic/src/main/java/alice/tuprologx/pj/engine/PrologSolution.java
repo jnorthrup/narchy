@@ -10,7 +10,7 @@
 package alice.tuprologx.pj.engine;
 
 import alice.tuprolog.Solution;
-import alice.tuprolog.UnknownVarException;
+import alice.tuprolog.Var;
 import alice.tuprologx.pj.model.Term;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class PrologSolution<Q extends Term<?>, S extends Term<?>> /*implements I
         return Term.unmarshal(retValue);
     }
 
-    public <Z extends Term<?>> Z getTerm(String varName) throws alice.tuprolog.NoSolutionException, UnknownVarException {
+    public <Z extends Term<?>> Z getTerm(String varName) throws alice.tuprolog.NoSolutionException, Var.UnknownVarException {
         alice.tuprolog.Term retValue = _solveInfo.getTerm(varName);
         return Term.unmarshal(retValue);
     }

@@ -20,7 +20,7 @@ public class FamilyClausesList extends
         //FasterList<ClauseInfo> {
         ArrayDeque<ClauseInfo> {
 
-    private final FamilyClausesIndex<Number> numCompClausesIndex;
+    private final FamilyClausesIndex<NumberTerm> numCompClausesIndex;
     private final FamilyClausesIndex<String> constantCompClausesIndex;
     private final FamilyClausesIndex<String> structCompClausesIndex;
     private final Deque<ClauseInfo> listCompClausesList;
@@ -150,7 +150,7 @@ public class FamilyClausesList extends
                 //return new ReadOnlyLinkedList<>(this);
                 return /*Collections.unmodifiableList*/(this);
             } else if (t.isAtom()) {
-                if (t instanceof Number) {
+                if (t instanceof NumberTerm) {
                     /* retrieves clauses whose first argument is numeric (or Var)
                      * and same as goal's first argument, if no clauses
                      * are retrieved, all clauses with a variable
@@ -158,7 +158,7 @@ public class FamilyClausesList extends
                      */
                     //return new ReadOnlyLinkedList<>(
                     return /*Collections.unmodifiableList*/(
-                            numCompClausesIndex.get((Number) t));
+                            numCompClausesIndex.get((NumberTerm) t));
                 } else if (t instanceof Struct) {
                     /* retrieves clauses whose first argument is a constant (or Var)
                      * and same as goal's first argument, if no clauses
@@ -227,8 +227,8 @@ public class FamilyClausesList extends
                 listCompClausesList.addLast(ci);
             }
         } else if (t.isAtom()) {
-            if (t instanceof Number) {
-                numCompClausesIndex.insert((Number) t, ci, first);
+            if (t instanceof NumberTerm) {
+                numCompClausesIndex.insert((NumberTerm) t, ci, first);
             } else if (t instanceof Struct) {
                 constantCompClausesIndex.insert(((Struct) t).name(), ci, first);
             }
@@ -264,8 +264,8 @@ public class FamilyClausesList extends
 
                 listCompClausesList.remove(ci);
             } else if (t.isAtom()) {
-                if (t instanceof Number) {
-                    numCompClausesIndex.remove((Number) t, ci);
+                if (t instanceof NumberTerm) {
+                    numCompClausesIndex.remove((NumberTerm) t, ci);
                 } else if (t instanceof Struct) {
                     constantCompClausesIndex.remove(((Struct) t).name(), ci);
                 }

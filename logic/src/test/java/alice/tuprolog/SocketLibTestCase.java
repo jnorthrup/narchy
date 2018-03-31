@@ -15,7 +15,7 @@ public class SocketLibTestCase {
 	final Prolog engine = new Prolog("alice.tuprolog.lib.SocketLibrary", "alice.tuprolog.lib.ThreadLibrary");
 	String theory;
 
-	@Test public void test_server_write() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, UnknownVarException{
+	@Test public void test_server_write() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, Var.UnknownVarException {
 		//THIS FAILS INTERMITTENTLY PROBABLY DUE TO A MISSING DELAY THAT ALLOWS THE SERVER TO BE READY BEFORE A CLIENT CONNECTS
 		String theory =
 		"server(Y) :- thread_create(ID1, Y).\n"+
@@ -49,7 +49,7 @@ public class SocketLibTestCase {
 	
 	}
 	
-	@Test public void test_client_write() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, UnknownVarException{
+	@Test public void test_client_write() throws InvalidTheoryException, MalformedGoalException, NoSolutionException, Var.UnknownVarException {
 		String theory = 
 		"server(ID1):- thread_create(ID1, doServer(SS, Msg)). \n"+
 		"doServer(S, Msg) :- tcp_socket_server_open('127.0.0.1:4446', S, []), " +

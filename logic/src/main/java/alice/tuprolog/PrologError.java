@@ -53,7 +53,7 @@ public class PrologError extends Throwable {
 
 	public static PrologError instantiation_error(EngineManager engineManager, int argNo) {
 		Term errorTerm = new Struct("instantiation_error");
-		Term tuPrologTerm = new Struct("instantiation_error", engineManager.getEnv().currentContext.currentGoal, new Int(argNo));
+		Term tuPrologTerm = new Struct("instantiation_error", engineManager.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo));
 		/*Castagna 06/2011*/
 		//return new PrologError(new Struct("error", errorTerm, tuPrologTerm));		
 		String descriptionError =  "Instantiation error" +
@@ -69,7 +69,7 @@ public class PrologError extends Throwable {
 
 	public static PrologError type_error(EngineManager e, int argNo, String validType, Term culprit) {
 		Term errorTerm = new Struct("type_error", new Struct(validType), culprit);
-		Term tuPrologTerm = new Struct("type_error", e.getEnv().currentContext.currentGoal, new Int(argNo), new Struct(validType), culprit);
+		Term tuPrologTerm = new Struct("type_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(validType), culprit);
 		/*Castagna 06/2011*/
 		//return new PrologError(new Struct("error", errorTerm, tuPrologTerm));	
 		String descriptionError =  "Type error" + 
@@ -81,7 +81,7 @@ public class PrologError extends Throwable {
 
 	public static PrologError domain_error(EngineManager e, int argNo, String validDomain, Term culprit) {
 		Term errorTerm = new Struct("domain_error", new Struct(validDomain), culprit);
-		Term tuPrologTerm = new Struct("domain_error", e.getEnv().currentContext.currentGoal, new Int(argNo), new Struct(validDomain), culprit);
+		Term tuPrologTerm = new Struct("domain_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(validDomain), culprit);
 		/*Castagna 06/2011*/		
 		//return new PrologError(new Struct("error", errorTerm, tuPrologTerm));	
 		String descriptionError =  "Domain error" + 
@@ -93,7 +93,7 @@ public class PrologError extends Throwable {
 
 	public static PrologError existence_error(EngineManager e, int argNo, String objectType, Term culprit, Term message) {
 		Term errorTerm = new Struct("existence_error", new Struct(objectType), culprit);
-		Term tuPrologTerm = new Struct("existence_error", e.getEnv().currentContext.currentGoal, new Int(argNo), new Struct(objectType), culprit, message);
+		Term tuPrologTerm = new Struct("existence_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(objectType), culprit, message);
 		/*Castagna 06/2011*/
 		//return new PrologError(new Struct("error", errorTerm, tuPrologTerm));	
 		String descriptionError =  "Existence error" + 
@@ -116,7 +116,7 @@ public class PrologError extends Throwable {
 
 	public static PrologError representation_error(EngineManager e, int argNo, String flag) {
 		Term errorTerm = new Struct("representation_error", new Struct(flag));
-		Term tuPrologTerm = new Struct("representation_error", e.getEnv().currentContext.currentGoal, new Int(argNo), new Struct(flag));
+		Term tuPrologTerm = new Struct("representation_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(flag));
 		/*Castagna 06/2011*/
 		//return new PrologError(new Struct("error", errorTerm, tuPrologTerm));
 		String descriptionError =  "Representation error" + 
@@ -128,7 +128,7 @@ public class PrologError extends Throwable {
 
 	public static PrologError evaluation_error(EngineManager e, int argNo, String error) {
 		Term errorTerm = new Struct("evaluation_error", new Struct(error));
-		Term tuPrologTerm = new Struct("evaluation_error", e.getEnv().currentContext.currentGoal, new Int(argNo), new Struct(error));
+		Term tuPrologTerm = new Struct("evaluation_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(argNo), new Struct(error));
 		/*Castagna 06/2011*/		
 		//return new PrologError(new Struct("error", errorTerm, tuPrologTerm));	
 		String descriptionError =  "Evaluation error" + 
@@ -155,7 +155,7 @@ public class PrologError extends Throwable {
 			/**/			
 			int line, int position, Term message) {
 		Term errorTerm = new Struct("syntax_error", message);
-		Term tuPrologTerm = new Struct("syntax_error", e.getEnv().currentContext.currentGoal, new Int(line), new Int(position), message);
+		Term tuPrologTerm = new Struct("syntax_error", e.getEnv().currentContext.currentGoal, new NumberTerm.Int(line), new NumberTerm.Int(position), message);
 		/*Castagna 06/2011*/
 		//return new PrologError(new Struct("error", errorTerm, tuPrologTerm));
 

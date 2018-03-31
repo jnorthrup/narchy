@@ -17,9 +17,6 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
     final Prolog prolog;
 
 
-    static final String incipit =
-        "tuProlog system - release " + Prolog.getVersion() + '\n';
-       
     public PrologRepl(String... args){
 
         if (args.length>1){
@@ -61,7 +58,6 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
 
     @Override
     public void boot(){
-        System.out.println(incipit);
         become("goalRequest");
     }
 

@@ -25,7 +25,7 @@ public class DCGLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("phrase_guard", new Var("X"),
                 Struct.emptyList())));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 
@@ -39,7 +39,7 @@ public class DCGLibraryExceptionsTestCase {
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("phrase_guard", new Var("X"),
                 Struct.emptyList(), Struct.emptyList())));
-		Int argNo = (Int) info.getTerm("ArgNo");
+		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}
 

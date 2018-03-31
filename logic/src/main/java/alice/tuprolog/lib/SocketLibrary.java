@@ -556,17 +556,17 @@ public boolean getAddress_2(Term sock, Term addr) throws PrologError {
 	AbstractSocket abs = (AbstractSocket) sock.term();
 	if (abs.isClientSocket()) {
 		Socket s = ((Client_Socket) sock.term()).getSocket();
-		addr.unify(engine, new Struct(s.getInetAddress().toString(), new Struct(new Int(s.getLocalPort()).toString())));
+		addr.unify(engine, new Struct(s.getInetAddress().toString(), new Struct(new NumberTerm.Int(s.getLocalPort()).toString())));
 		return true;
 	}
 	if (abs.isServerSocket()) {
 		ServerSocket s = ((Server_Socket) sock.term()).getSocket();
-		addr.unify(engine, new Struct(s.getInetAddress().toString(), new Struct(new Int(s.getLocalPort()).toString())));
+		addr.unify(engine, new Struct(s.getInetAddress().toString(), new Struct(new NumberTerm.Int(s.getLocalPort()).toString())));
 		return true;
 	}
 	if (abs.isDatagramSocket()) {
 		DatagramSocket s = ((Datagram_Socket) sock.term()).getSocket();
-		addr.unify(engine, new Struct(s.getInetAddress().toString(), new Struct(new Int(s.getLocalPort()).toString())));
+		addr.unify(engine, new Struct(s.getInetAddress().toString(), new Struct(new NumberTerm.Int(s.getLocalPort()).toString())));
 		return true;
 	}
 

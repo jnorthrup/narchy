@@ -24,11 +24,11 @@ public class ThrowCatchTestCase {
 		assertTrue(info.isSuccess());
 		Struct e = (Struct) info.getTerm("E");
 		assertTrue(e.isEqual(new Struct("error")));
-		Int length = (Int) info.getTerm("Length");
+		NumberTerm.Int length = (NumberTerm.Int) info.getTerm("Length");
         assertEquals(5, length.intValue());
-		Int x = (Int) info.getTerm("X");
+		NumberTerm.Int x = (NumberTerm.Int) info.getTerm("X");
         assertEquals(5, x.intValue());
-		Int y = (Int) info.getTerm("Y");
+		NumberTerm.Int y = (NumberTerm.Int) info.getTerm("Y");
         assertEquals(10, y.intValue());
 	}
 
@@ -43,7 +43,7 @@ public class ThrowCatchTestCase {
 		assertTrue(info.isSuccess());
 		Struct e = (Struct) info.getTerm("E");
 		assertTrue(e.isEqual(new Struct("error")));
-		Int length = (Int) info.getTerm("Length");
+		NumberTerm.Int length = (NumberTerm.Int) info.getTerm("Length");
         assertEquals(5, length.intValue());
 	}
 

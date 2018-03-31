@@ -156,12 +156,12 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
     /**
      * Gets the value of a variable in the substitution.
      * @throws NoSolutionException if the solve request has no solution
-     * @throws UnknownVarException if the variable does not appear in the substitution.
+     * @throws Var.UnknownVarException if the variable does not appear in the substitution.
      */
-    public Term getTerm(String varName) throws NoSolutionException, UnknownVarException {
+    public Term getTerm(String varName) throws NoSolutionException, Var.UnknownVarException {
         Term t = getVarValue(varName);
         if (t == null)
-            throw new UnknownVarException();
+            throw new Var.UnknownVarException();
         return t;
     }
     

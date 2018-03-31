@@ -5,8 +5,7 @@ package alice.tuprolog.lib;
  */
 
 import alice.tuprolog.*;
-import alice.tuprolog.Long;
-import alice.tuprolog.Number;
+import alice.tuprolog.NumberTerm;
 
 import java.io.*;
 import java.util.*;
@@ -599,7 +598,7 @@ public class ISOIOLibrary extends Library{
             throw PrologError.instantiation_error(engine.engine, 2);
         }
         else{
-            if(!(position instanceof Number)){
+            if(!(position instanceof NumberTerm)){
                 throw PrologError.domain_error(engine.engine, 2, "stream_position", position);
             }
         }
@@ -621,7 +620,7 @@ public class ISOIOLibrary extends Library{
             try {                                
                 buffer.reset();
                                 
-                Number n = (Number)position;
+                NumberTerm n = (NumberTerm)position;
                 long pos = n.longValue();
                 if(pos < 0){
                     throw PrologError.domain_error(engine.engine, 2, "+long", position);
@@ -637,8 +636,8 @@ public class ISOIOLibrary extends Library{
                 }
                 
                 buffer.skip(pos);
-                int new_pos = (new Long(pos)).intValue();
-                entry.put("position", new Int(new_pos));
+                int new_pos = (new NumberTerm.Long(pos)).intValue();
+                entry.put("position", new NumberTerm.Int(new_pos));
                 inputStreams.put(buffer, entry);
                 
             } catch (IOException e) {
@@ -698,7 +697,7 @@ public class ISOIOLibrary extends Library{
         
         //se e' un file invece devo effettuare tutti i controlli sullo stream.
         try{        
-                Number position  = (Number) (element.get("position"));
+                NumberTerm position  = (NumberTerm) (element.get("position"));
                 Struct eof = (Struct) element.get("end_of_stream");
                 
                 //se e' stata raggiunta la fine del file, controllo ed eseguo l'azione prestabilita nelle opzioni al momento dell'apertura del file.
@@ -713,7 +712,7 @@ public class ISOIOLibrary extends Library{
                             return unify(arg, new Struct("-1"));
                         case "reset":
                             element.put("end_of_stream", new Struct("not"));
-                            element.put("position", new Int(0));
+                            element.put("position", new NumberTerm.Int(0));
                             stream.reset();
                             break;
                     }
@@ -730,10 +729,10 @@ public class ISOIOLibrary extends Library{
                         throw PrologError.representation_error(engine.engine, 2, "character");
                     }
                 }
-                Int i = (Int)position;
+                NumberTerm.Int i = (NumberTerm.Int)position;
                 int i2 = i.intValue();
                 i2++;
-                element.put("position",new Int(i2));
+                element.put("position",new NumberTerm.Int(i2));
                 
                 if(value != -1){
                     //vado a controllare il prossimo carattere
@@ -741,7 +740,7 @@ public class ISOIOLibrary extends Library{
                     Var nextChar = new Var();
                     peek_code_2(stream_or_alias,nextChar);
                     Term nextCharTerm = nextChar.term();
-                    Number nextCharValue = (Number)nextCharTerm;
+                    NumberTerm nextCharValue = (NumberTerm)nextCharTerm;
                     if(nextCharValue.intValue() == -1){
                         element.put("end_of_stream", new Struct("at"));
                     }
@@ -795,12 +794,12 @@ public class ISOIOLibrary extends Library{
                                     e.getMessage()));
                 }
 
-            return unify(char_code, new Int(value));
+            return unify(char_code, new NumberTerm.Int(value));
         }
         
         //se invece lo stream e' un normale file, devo controllare tutte le opzioni decise in apertura.
         try{    
-                Number position  = (Number) (element.get("position"));
+                NumberTerm position  = (NumberTerm) (element.get("position"));
                 Struct eof = (Struct) element.get("end_of_stream");
                 if(eof.equals("past")){
                     Term actionTemp = element.get("eof_action");
@@ -812,7 +811,7 @@ public class ISOIOLibrary extends Library{
                             return unify(char_code, new Struct("-1"));
                         case "reset":
                             element.put("end_of_stream", new Struct("not"));
-                            element.put("position", new Int(0));
+                            element.put("position", new NumberTerm.Int(0));
                             stream.reset();
                             break;
                     }
@@ -828,23 +827,23 @@ public class ISOIOLibrary extends Library{
                         throw PrologError.representation_error(engine.engine, 2, "character");
                     }
                 }
-                Int i = (Int)position;
+                NumberTerm.Int i = (NumberTerm.Int)position;
                 int i2 = i.intValue();
                 i2++;
-                element.put("position",new Int(i2));
+                element.put("position",new NumberTerm.Int(i2));
                 
                 if(value != -1){
                     Var nextChar = new Var();
                     peek_code_2(stream_or_alias,nextChar);
                     Term nextCharTerm = nextChar.term();
-                    Number nextCharValue = (Number)nextCharTerm;
+                    NumberTerm nextCharValue = (NumberTerm)nextCharTerm;
                     if(nextCharValue.intValue() == -1){
                         element.put("end_of_stream", new Struct("at"));
                     }
                 }
 
                 inputStreams.put(stream, element);
-                return unify(char_code,new Int(value));
+                return unify(char_code,new NumberTerm.Int(value));
         }catch(IOException ioe){
                 ioe.printStackTrace();
                 throw PrologError.system_error(new Struct("An I/O error has occurred."));
@@ -899,7 +898,7 @@ public class ISOIOLibrary extends Library{
         }
         
         try{
-                Number position  = (Number) (element.get("position"));
+                NumberTerm position  = (NumberTerm) (element.get("position"));
                 Struct eof = (Struct) element.get("end_of_stream");
             int value = 0;
             if(eof.equals("past")){
@@ -912,13 +911,13 @@ public class ISOIOLibrary extends Library{
                             return unify(in_char, new Struct("-1"));
                         case "reset":
                             element.put("end_of_stream", new Struct("not"));
-                            element.put("position", new Int(0));
+                            element.put("position", new NumberTerm.Int(0));
                             stream.reset();
                             break;
                     }
                 }
                 else{
-                    Int i = (Int)position;
+                    NumberTerm.Int i = (NumberTerm.Int)position;
                     long nBytes = i.longValue();
                     stream2.skip(nBytes);
                     value = stream2.read();
@@ -988,7 +987,7 @@ public class ISOIOLibrary extends Library{
         }
         
         try{
-                Number position  = (Number) (element.get("position"));
+                NumberTerm position  = (NumberTerm) (element.get("position"));
                 Struct eof = (Struct) element.get("end_of_stream");
             int value = 0;
             if(eof.equals("past")){
@@ -1001,13 +1000,13 @@ public class ISOIOLibrary extends Library{
                             return unify(char_code, new Struct("-1"));
                         case "reset":
                             element.put("end_of_stream", new Struct("not"));
-                            element.put("position", new Int(0));
+                            element.put("position", new NumberTerm.Int(0));
                             stream.reset();
                             break;
                     }
                 }
                 else{
-                    Int i = (Int)position;
+                    NumberTerm.Int i = (NumberTerm.Int)position;
                     long nBytes = i.longValue();
                     stream2.skip(nBytes);
                     value = stream2.read();
@@ -1018,7 +1017,7 @@ public class ISOIOLibrary extends Library{
                     throw PrologError.representation_error(engine.engine, 2, "character");
                 }
                 inputStreams.put(stream, element);
-                return unify(char_code,new Int(value));
+                return unify(char_code,new NumberTerm.Int(value));
         }catch(IOException ioe){
                 ioe.printStackTrace();
                 throw PrologError.system_error(new Struct("An I/O error has occurred."));
@@ -1081,12 +1080,12 @@ public class ISOIOLibrary extends Library{
             throw PrologError.permission_error(engine.engine, "input", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
         
-        Number arg0 = (Number) char_code.term();
+        NumberTerm arg0 = (NumberTerm) char_code.term();
         
 //        if(arg0 instanceof Var){
 //            throw PrologError.instantiation_error(engine.engine, 2);
 //        }
-        if (!(arg0 instanceof alice.tuprolog.Number)) {
+        if (!(arg0 instanceof NumberTerm)) {
             throw PrologError.type_error(engine.engine, 2, "character", arg0);
         } 
         else {
@@ -1147,8 +1146,8 @@ public class ISOIOLibrary extends Library{
         
         try{
             DataInputStream reader = new DataInputStream(stream);
-            Number position  = (Number) (element.get("position"));
-            Int i = (Int)position;
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            NumberTerm.Int i = (NumberTerm.Int)position;
             int i2 = i.intValue();
             reader.skipBytes(i2-1);
             Struct eof = (Struct) element.get("end_of_stream");
@@ -1162,7 +1161,7 @@ public class ISOIOLibrary extends Library{
                         return unify(in_byte, new Struct("-1"));
                     case "reset":
                         element.put("end_of_stream", new Struct("not"));
-                        element.put("position", new Int(0));
+                        element.put("position", new NumberTerm.Int(0));
                         reader.reset();
                         break;
                 }
@@ -1172,13 +1171,13 @@ public class ISOIOLibrary extends Library{
             Byte b = reader.readByte();
 
             i2++; //incremento la posizione dello stream
-            element.put("position",new Int(i2));
+            element.put("position",new NumberTerm.Int(i2));
             
             //if(b != -1){
                 Var nextByte = new Var();
                 peek_byte_2(stream_or_alias,nextByte);
                 Term nextByteTerm = nextByte.term();
-                Number nextByteValue = (Number)nextByteTerm;
+                NumberTerm nextByteValue = (NumberTerm)nextByteTerm;
                 if(nextByteValue.intValue() == -1){
                     element.put("end_of_stream", new Struct("at"));
                 }
@@ -1213,8 +1212,8 @@ public class ISOIOLibrary extends Library{
         
         try{
             DataInputStream reader = new DataInputStream(stream);
-            Number position  = (Number) (element.get("position"));
-            Int i = (Int)position;
+            NumberTerm position  = (NumberTerm) (element.get("position"));
+            NumberTerm.Int i = (NumberTerm.Int)position;
             int i2 = i.intValue();
             reader.skipBytes(i2-2);
             Struct eof = (Struct) element.get("end_of_stream");
@@ -1229,7 +1228,7 @@ public class ISOIOLibrary extends Library{
                         return unify(in_byte, new Struct("-1"));
                     case "reset":
                         element.put("end_of_stream", new Struct("not"));
-                        element.put("position", new Int(0));
+                        element.put("position", new NumberTerm.Int(0));
                         reader.reset();
                         break;
                 }
@@ -1265,7 +1264,7 @@ public class ISOIOLibrary extends Library{
         initLibrary();
         OutputStream stream = find_output_stream(stream_or_alias);
         out_byte = out_byte.term();
-        Number b = (Number)out_byte.term();
+        NumberTerm b = (NumberTerm)out_byte.term();
         
         Hashtable<String,Term> element = outputStreams.get(stream);
         Struct type =(Struct) element.get("type");
@@ -1284,14 +1283,14 @@ public class ISOIOLibrary extends Library{
         else {
                try {
                    DataOutputStream writer = new DataOutputStream(stream);
-                    Number position  = (Number) (element.get("position"));
-                    Int i = (Int)position;
+                    NumberTerm position  = (NumberTerm) (element.get("position"));
+                    NumberTerm.Int i = (NumberTerm.Int)position;
                     int i2 = i.intValue();
                     
                     writer.writeByte(b.intValue());
                     
                     i2++;
-                    element.put("position",new Int(i2));
+                    element.put("position",new NumberTerm.Int(i2));
                     outputStreams.put(stream, element);
                 } 
                 catch (IOException e) {
@@ -1319,7 +1318,7 @@ public class ISOIOLibrary extends Library{
         Struct type =(Struct) element.get("type");
         Struct eof = (Struct) element.get("end_of_stream");
         Struct action = (Struct) element.get("eof_action");
-        Number position = (Number) element.get("position");
+        NumberTerm position = (NumberTerm) element.get("position");
         if(type.name().equals("binary")){
             throw PrologError.permission_error(engine.engine, "input", "binary_stream", stream_or_alias, new Struct("Target stream is associated with a binary stream."));
         }
@@ -1393,14 +1392,14 @@ public class ISOIOLibrary extends Library{
                 }
             } while (true);
             
-            Int p = (Int)position;
+            NumberTerm.Int p = (NumberTerm.Int)position;
             int p2 = p.intValue();
             p2 += (st.getBytes()).length;
             
             if(ch == -1){
                 st = "-1";
                 element.put("end_of_stream",new Struct("past"));
-                element.put("position",new Int(p2));
+                element.put("position",new NumberTerm.Int(p2));
                 inputStreams.put(stream, element);
                 return unify(in_term,Term.term(st));
             }
@@ -1498,7 +1497,7 @@ public class ISOIOLibrary extends Library{
             }
             
             //vado a modificare la posizione di lettura
-            element.put("position",new Int(p2));
+            element.put("position",new NumberTerm.Int(p2));
             inputStreams.put(stream, element);
             return unify(in_term, engine.toTerm(string_term));
         } catch (Exception ex){
@@ -1680,11 +1679,11 @@ public class ISOIOLibrary extends Library{
             if(i > 0 && flagOp==0)
                 result += ",";
             Term arg = term.sub(i);
-            if(arg instanceof Number){
+            if(arg instanceof NumberTerm){
                 if(term.name().contains("$VAR")){
                 //sono nel tipo $VAR
                     if(numbervars){
-                        Int argNumber = (Int)term.sub(i);
+                        NumberTerm.Int argNumber = (NumberTerm.Int)term.sub(i);
                         int res = argNumber.intValue() % 26;
                         int div = argNumber.intValue()/26;
                         Character ch = 'A';
@@ -1926,7 +1925,7 @@ public class ISOIOLibrary extends Library{
         map.put("input", new Struct("false"));
         map.put("output", new Struct("false"));
         map.put("alias", s);
-        map.put("position", new Int(0));
+        map.put("position", new NumberTerm.Int(0));
         map.put("end_of_stream", new Struct("not"));
         map.put("eof_action", new Struct("error"));
         map.put("reposition", new Struct("false"));
@@ -2106,7 +2105,7 @@ public class ISOIOLibrary extends Library{
     }
     
     public boolean set_write_flag_1(Term number) throws PrologError{
-        Number n = (Number)number;
+        NumberTerm n = (NumberTerm)number;
         if(n.intValue() == 1){
             write_flag = 1;
             return true;

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 /**
@@ -581,17 +582,17 @@ public class Parser {
 
 	// commodity methods to parse numbers
 
-	static Number parseInteger(String s) {
+	static NumberTerm parseInteger(String s) {
 		long num = java.lang.Long.parseLong(s);
-		return num > Integer.MIN_VALUE && num < Integer.MAX_VALUE ? new Int((int) num) : new Long(num);
+		return num > Integer.MIN_VALUE && num < Integer.MAX_VALUE ? new NumberTerm.Int((int) num) : new NumberTerm.Long(num);
 	}
 
-	static Double parseFloat(String s) {
+	static NumberTerm.Double parseFloat(String s) {
 		double num = java.lang.Double.parseDouble(s);
-		return new Double(num);
+		return new NumberTerm.Double(num);
 	}
 
-	static Number createNumber(String s){
+	static NumberTerm createNumber(String s){
 		try {
 			return parseInteger(s);
 		} catch (Exception e) {
@@ -653,4 +654,68 @@ public class Parser {
 
 	 static private final Pattern atom = Pattern.compile("(!|[a-z][a-zA-Z_0-9]*)");
 
+    /**
+     * This class represents an iterator of terms from Prolog text embedded
+     * in a parser. Note that this class resembles more a generator than an
+     * iterator type. In fact, both {@link TermIterator#next()} and
+     * {@link TermIterator#hasNext()} throws {@link InvalidTermException} if
+     * the next term they are trying to return or check for contains a syntax
+     * error; this is due to both methods trying to generate the next term
+     * instead of just returning it or checking for its existence from a pool
+     * of already produced terms.
+     */
+    static class TermIterator implements Iterator<Term> {
+
+        private final Parser parser;
+        private boolean hasNext;
+        private Term next;
+
+        TermIterator(Parser p) {
+            parser = p;
+            next = parser.nextTerm(true);
+            hasNext = (next != null);
+        }
+
+        @Override
+        public Term next() {
+            if (hasNext) {
+                if (next == null) {
+                    next = parser.nextTerm(true);
+                    if (next == null)
+                        throw new NoSuchElementException();
+                }
+                hasNext = false;
+                Term temp = next;
+                next = null;
+                return temp;
+            } else
+                if (hasNext()) {
+                    hasNext = false;
+                    Term temp = next;
+                    next = null;
+                    return temp;
+                }
+            throw new NoSuchElementException();
+        }
+
+        /**
+         * @throws InvalidTermException if, while the parser checks for the
+         * existence of the next term, a syntax error is encountered.
+         */
+        @Override
+        public boolean hasNext() {
+            if (hasNext)
+                return hasNext;
+            next = parser.nextTerm(true);
+            if (next != null)
+                hasNext = true;
+            return hasNext;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+    }
 }

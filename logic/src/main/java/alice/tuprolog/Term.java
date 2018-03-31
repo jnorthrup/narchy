@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Term class is the root abstract class for prolog data type
  * @see Struct
  * @see Var
- * @see  Number
+ * @see  NumberTerm
  */
 public abstract class Term implements Serializable, SubTree {
 	private static final long serialVersionUID = 1L;

@@ -18,7 +18,7 @@
 package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.Number;
+import alice.tuprolog.NumberTerm;
 
 import java.util.ArrayList;
 
@@ -148,7 +148,7 @@ public class BasicLibrary extends Library {
         java.util.Iterator<Operator> it = engine.operators().iterator();
         while (it.hasNext()) {
             Operator o = it.next();
-            list = new Struct(new Struct("op", new alice.tuprolog.Int(o.prio),
+            list = new Struct(new Struct("op", new NumberTerm.Int(o.prio),
                     new Struct(o.type), new Struct(o.name)), list);
         }
         return unify(arg, list);
@@ -247,20 +247,20 @@ public class BasicLibrary extends Library {
     }
 
     public static boolean number_1(Term t) {
-        return (t.term() instanceof Number);
+        return (t.term() instanceof NumberTerm);
     }
 
     public static boolean integer_1(Term t) {
-        if (!(t.term()  instanceof Number))
+        if (!(t.term()  instanceof NumberTerm))
             return false;
-        alice.tuprolog.Number n = (alice.tuprolog.Number) t.term();
+        NumberTerm n = (NumberTerm) t.term();
         return (n.isInteger());
     }
 
     public static boolean float_1(Term t) {
-        if (!(t instanceof Number))
+        if (!(t instanceof NumberTerm))
             return false;
-        alice.tuprolog.Number n = (alice.tuprolog.Number) t.term();
+        NumberTerm n = (NumberTerm) t.term();
         return (n.isReal());
     }
 
@@ -332,14 +332,14 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof Number))
+        if (val0 == null || !(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof Number))
+        if (val1 == null || !(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
-        alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-        alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
+        NumberTerm val0n = (NumberTerm) val0;
+        NumberTerm val1n = (NumberTerm) val1;
         return val0n.isInteger() && val1n.isInteger() ? val0n.longValue() == val1n.longValue() : val0n.doubleValue() == val1n.doubleValue();
     }
 
@@ -361,14 +361,14 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof Number))
+        if (val0 == null || !(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof Number))
+        if (val1 == null || !(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
-        return expression_greater_than((alice.tuprolog.Number) val0,
-                (alice.tuprolog.Number) val1);
+        return expression_greater_than((NumberTerm) val0,
+                (NumberTerm) val1);
     }
 
     public boolean expression_less_or_equal_than_2(Term arg0, Term arg1)
@@ -389,18 +389,18 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof Number))
+        if (val0 == null || !(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof Number))
+        if (val1 == null || !(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
-        return !expression_greater_than((alice.tuprolog.Number) val0,
-                (alice.tuprolog.Number) val1);
+        return !expression_greater_than((NumberTerm) val0,
+                (NumberTerm) val1);
     }
 
-    private static boolean expression_greater_than(alice.tuprolog.Number num0,
-                                                   alice.tuprolog.Number num1) {
+    private static boolean expression_greater_than(NumberTerm num0,
+                                                   NumberTerm num1) {
         return num0.isInteger() && num1.isInteger() ? num0.longValue() > num1.longValue() : num0.doubleValue() > num1.doubleValue();
     }
 
@@ -422,14 +422,14 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof Number))
+        if (val0 == null || !(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof Number))
+        if (val1 == null || !(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
-        return expression_less_than((alice.tuprolog.Number) val0,
-                (alice.tuprolog.Number) val1);
+        return expression_less_than((NumberTerm) val0,
+                (NumberTerm) val1);
     }
 
     public boolean expression_greater_or_equal_than_2(Term arg0, Term arg1)
@@ -450,18 +450,18 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
             handleError(e, 2);
         }
-        if (val0 == null || !(val0 instanceof Number))
+        if (val0 == null || !(val0 instanceof NumberTerm))
             throw PrologError.type_error(engine, 1,
                     "evaluable", arg0.term());
-        if (val1 == null || !(val1 instanceof Number))
+        if (val1 == null || !(val1 instanceof NumberTerm))
             throw PrologError.type_error(engine, 2,
                     "evaluable", arg1.term());
-        return !expression_less_than((alice.tuprolog.Number) val0,
-                (alice.tuprolog.Number) val1);
+        return !expression_less_than((NumberTerm) val0,
+                (NumberTerm) val1);
     }
 
-    private static boolean expression_less_than(alice.tuprolog.Number num0,
-                                                alice.tuprolog.Number num1) {
+    private static boolean expression_less_than(NumberTerm num0,
+                                                NumberTerm num1) {
         return num0.isInteger() && num1.isInteger() ? num0.longValue() < num1.longValue() : num0.doubleValue() < num1.doubleValue();
     }
 
@@ -491,7 +491,7 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        return val0 != null && val0 instanceof Number ? val0 : null;
+        return val0 != null && val0 instanceof NumberTerm ? val0 : null;
     }
 
     public Term expression_minus_1(Term arg0) {
@@ -501,16 +501,16 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val0 instanceof Number) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            if (val0n instanceof Int) {
-                return new Int(val0n.intValue() * -1);
-            } else if (val0n instanceof alice.tuprolog.Double) {
-                return new alice.tuprolog.Double(val0n.doubleValue() * -1);
-            } else if (val0n instanceof alice.tuprolog.Long) {
-                return new alice.tuprolog.Long(val0n.longValue() * -1);
-            } else if (val0n instanceof alice.tuprolog.Float) {
-                return new alice.tuprolog.Float(val0n.floatValue() * -1);
+        if (val0 != null && val0 instanceof NumberTerm) {
+            NumberTerm val0n = (NumberTerm) val0;
+            if (val0n instanceof NumberTerm.Int) {
+                return new NumberTerm.Int(val0n.intValue() * -1);
+            } else if (val0n instanceof NumberTerm.Double) {
+                return new NumberTerm.Double(val0n.doubleValue() * -1);
+            } else if (val0n instanceof NumberTerm.Long) {
+                return new NumberTerm.Long(val0n.longValue() * -1);
+            } else if (val0n instanceof NumberTerm.Float) {
+                return new NumberTerm.Float(val0n.floatValue() * -1);
             } else {
                 return null;
             }
@@ -526,11 +526,11 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        return val0 != null && val0 instanceof Number ? new alice.tuprolog.Long(~((Number) val0).longValue()) : null;
+        return val0 != null && val0 instanceof NumberTerm ? new NumberTerm.Long(~((NumberTerm) val0).longValue()) : null;
     }
 
-    static alice.tuprolog.Number getIntegerNumber(long num) {
-        return num > Integer.MIN_VALUE && num < Integer.MAX_VALUE ? new Int((int) num) : new alice.tuprolog.Long(num);
+    static NumberTerm getIntegerNumber(long num) {
+        return num > Integer.MIN_VALUE && num < Integer.MAX_VALUE ? new NumberTerm.Int((int) num) : new NumberTerm.Long(num);
     }
 
     public Term expression_plus_2(Term arg0, Term arg1) {
@@ -542,11 +542,11 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && (val1 instanceof Number)) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
-            return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() + val1n.longValue()) : new alice.tuprolog.Double(val0n.doubleValue()
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && (val1 instanceof NumberTerm)) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
+            return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() + val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     + val1n.doubleValue());
         } else
             return null;
@@ -561,11 +561,11 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && (val1 instanceof Number)) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
-            return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() - val1n.longValue()) : new alice.tuprolog.Double(val0n.doubleValue()
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && (val1 instanceof NumberTerm)) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
+            return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() - val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     - val1n.doubleValue());
         } else
             return null;
@@ -580,11 +580,11 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && (val1 instanceof Number)) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
-            return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() * val1n.longValue()) : new alice.tuprolog.Double(val0n.doubleValue()
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && (val1 instanceof NumberTerm)) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
+            return val0n.isInteger() && (val1n.isInteger()) ? getIntegerNumber(val0n.longValue() * val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     * val1n.doubleValue());
         } else
             return null;
@@ -599,11 +599,11 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && val1 instanceof Number) {
-            Number val0n = (Number) val0;
-            Number val1n = (Number) val1;
-            return val0n.isInteger() && val1n.isInteger() ? getIntegerNumber(val0n.longValue() / val1n.longValue()) : new alice.tuprolog.Double(val0n.doubleValue()
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && val1 instanceof NumberTerm) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
+            return val0n.isInteger() && val1n.isInteger() ? getIntegerNumber(val0n.longValue() / val1n.longValue()) : new NumberTerm.Double(val0n.doubleValue()
                     / val1n.doubleValue());
         } else
             return null;
@@ -618,10 +618,10 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && (val1 instanceof Number)) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && (val1 instanceof NumberTerm)) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
             return getIntegerNumber(val0n.longValue() / val1n.longValue());
         } else {
             return null;
@@ -637,11 +637,11 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && (val1 instanceof Number)) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
-            return new alice.tuprolog.Double(Math.pow(val0n.doubleValue(),
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && (val1 instanceof NumberTerm)) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
+            return new NumberTerm.Double(Math.pow(val0n.doubleValue(),
                     val1n.doubleValue()));
         } else {
             return null;
@@ -657,13 +657,13 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && val1 instanceof Number) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && val1 instanceof NumberTerm) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
             // return new Int(val0n.intValue() >> val1n.intValue());
             // CORRECTED BY ED ON JAN 28, 2011
-            return new alice.tuprolog.Long(val0n.longValue() >> val1n.longValue());
+            return new NumberTerm.Long(val0n.longValue() >> val1n.longValue());
         } else {
             return null;
         }
@@ -678,13 +678,13 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && val1 instanceof Number) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && val1 instanceof NumberTerm) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
             // return new Int(val0n.intValue() << val1n.intValue());
             // CORRECTED BY ED ON JAN 28, 2011
-            return new alice.tuprolog.Long(val0n.longValue() << val1n.longValue());
+            return new NumberTerm.Long(val0n.longValue() << val1n.longValue());
         } else {
             return null;
         }
@@ -699,13 +699,13 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && val1 instanceof Number) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && val1 instanceof NumberTerm) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
             // return new Int(val0n.intValue() & val1n.intValue());
             // CORRECTED BY ED ON JAN 28, 2011
-            return new alice.tuprolog.Long(val0n.longValue() & val1n.longValue());
+            return new NumberTerm.Long(val0n.longValue() & val1n.longValue());
         } else {
             return null;
         }
@@ -720,13 +720,13 @@ public class BasicLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 != null && val1 != null && val0 instanceof Number
-                && val1 instanceof Number) {
-            alice.tuprolog.Number val0n = (alice.tuprolog.Number) val0;
-            alice.tuprolog.Number val1n = (alice.tuprolog.Number) val1;
+        if (val0 != null && val1 != null && val0 instanceof NumberTerm
+                && val1 instanceof NumberTerm) {
+            NumberTerm val0n = (NumberTerm) val0;
+            NumberTerm val1n = (NumberTerm) val1;
             // return new Int(val0n.intValue() | val1n.intValue());
             // CORRECTED BY ED ON JAN 28, 2011
-            return new alice.tuprolog.Long(val0n.longValue() | val1n.longValue());
+            return new NumberTerm.Long(val0n.longValue() | val1n.longValue());
         } else {
             return null;
         }
@@ -781,11 +781,11 @@ public class BasicLibrary extends Library {
         arg0 = arg0.term();
         arg1 = arg1.term();
         if (arg1 instanceof Var) {
-            if (!(arg0 instanceof Number)) {
+            if (!(arg0 instanceof NumberTerm)) {
                 throw PrologError.type_error(engine, 1,
                         "number", arg0);
             }
-            alice.tuprolog.Number n0 = (alice.tuprolog.Number) arg0;
+            NumberTerm n0 = (NumberTerm) arg0;
             String st = n0.isInteger() ? Integer.valueOf(n0.intValue()).toString() : java.lang.Double.toString(n0.doubleValue());
             return (unify(arg1, new Struct(st)));
         } else {
@@ -887,12 +887,12 @@ public class BasicLibrary extends Library {
             	st2=st3;
             Term term = null;
             try {
-                term = new alice.tuprolog.Int(java.lang.Integer.parseInt(st2));
+                term = new NumberTerm.Int(java.lang.Integer.parseInt(st2));
             } catch (Exception ex) {
             }
             if (term == null) {
                 try {
-                    term = new alice.tuprolog.Double(java.lang.Double
+                    term = new NumberTerm.Double(java.lang.Double
                             .parseDouble(st2));
                 } catch (Exception ex) {
                 }
@@ -1265,13 +1265,13 @@ public class BasicLibrary extends Library {
             throw PrologError.instantiation_error(engine, 1);
         if (arg1 instanceof Var)
             throw PrologError.instantiation_error(engine, 2);
-        if (!(arg0 instanceof Int))
+        if (!(arg0 instanceof NumberTerm.Int))
             throw PrologError.type_error(engine, 1,
                     "integer", arg0);
         if (!arg1.isCompound())
             throw PrologError.type_error(engine, 2,
                     "compound", arg1);
-        Int arg0int = (Int) arg0;
+        NumberTerm.Int arg0int = (NumberTerm.Int) arg0;
         if (arg0int.intValue() < 1)
             throw PrologError.domain_error(engine.engine, 1,
                     "greater_than_zero", arg0);

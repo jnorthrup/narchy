@@ -21,17 +21,17 @@ public class JavaThrowCatchTestCase {
 		String goal = "atom_length(err, 3), java_catch(java_object('Counter', ['MyCounter'], c), [('java.lang.ClassNotFoundException'(Cause, Message, StackTrace), ((X is Cause+2, 5 is X+3)))], Y is 2+3), Z is X+5.";
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
-		Int cause = (Int) info.getTerm("Cause");
+		NumberTerm.Int cause = (NumberTerm.Int) info.getTerm("Cause");
 		assertEquals(0, cause.intValue());
 		Struct message = (Struct) info.getTerm("Message");
 		assertTrue(message.isEqual(new Struct("Counter")));
 		Struct stackTrace = (Struct) info.getTerm("StackTrace");
 		assertTrue(stackTrace.isList());
-		Int x = (Int) info.getTerm("X");
+		NumberTerm.Int x = (NumberTerm.Int) info.getTerm("X");
 		assertEquals(2, x.intValue());
-		Int y = (Int) info.getTerm("Y");
+		NumberTerm.Int y = (NumberTerm.Int) info.getTerm("Y");
 		assertEquals(5, y.intValue());
-		Int z = (Int) info.getTerm("Z");
+		NumberTerm.Int z = (NumberTerm.Int) info.getTerm("Z");
 		assertEquals(7, z.intValue());
 	}
 
@@ -43,13 +43,13 @@ public class JavaThrowCatchTestCase {
 		String goal = "java_catch(java_object('Counter', ['MyCounter'], c), [('java.lang.ClassNotFoundException'(Cause, Message, StackTrace), true)], true), java_catch(java_object('Counter', ['MyCounter2'], c2), [('java.lang.ClassNotFoundException'(C, M, ST), X is C+2)], true).";
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
-		Int cause = (Int) info.getTerm("Cause");
+		NumberTerm.Int cause = (NumberTerm.Int) info.getTerm("Cause");
 		assertEquals(0, cause.intValue());
 		Struct message = (Struct) info.getTerm("Message");
 		assertTrue(message.isEqual(new Struct("Counter")));
 		Struct stackTrace = (Struct) info.getTerm("StackTrace");
 		assertTrue(stackTrace.isList());
-		Int x = (Int) info.getTerm("X");
+		NumberTerm.Int x = (NumberTerm.Int) info.getTerm("X");
 		assertEquals(2, x.intValue());
 	}
 
@@ -80,9 +80,9 @@ public class JavaThrowCatchTestCase {
 		assertTrue(info.isSuccess());
 		Term e = info.getTerm("E");
 		assertTrue(e instanceof Var);
-		Int x = (Int) info.getTerm("X");
+		NumberTerm.Int x = (NumberTerm.Int) info.getTerm("X");
 		assertEquals(5, x.intValue());
-		Int y = (Int) info.getTerm("Y");
+		NumberTerm.Int y = (NumberTerm.Int) info.getTerm("Y");
 		assertEquals(8, y.intValue());
 	}
 
@@ -105,8 +105,8 @@ public class JavaThrowCatchTestCase {
 		Term x = info.getTerm("X");
 		assertTrue(x instanceof Var);
 		Term y = info.getTerm("Y");
-		assertTrue(y instanceof Int);
-		assertEquals(8, ((Int) y).intValue());
+		assertTrue(y instanceof NumberTerm.Int);
+		assertEquals(8, ((NumberTerm.Int) y).intValue());
 	}
 
 }

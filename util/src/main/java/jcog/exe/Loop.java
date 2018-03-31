@@ -119,6 +119,7 @@ abstract public class Loop {
                 synchronized (periodMS) {
 //                    Thread myNewThread = newThread();
 //                    myNewThread.start();
+                    onStart();
                     task = timer().scheduleAtFixedRate(this::_next, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
@@ -139,6 +140,7 @@ abstract public class Loop {
 //                            ii.printStackTrace();
 //                        }
 
+                        onStop();
                     }
                 }
             } else if (prevPeriodMS >= 0) {
@@ -153,6 +155,7 @@ abstract public class Loop {
         }
         return false;
     }
+
 
 //    private synchronized Thread newThread() {
 //        if (this.thread!=null)

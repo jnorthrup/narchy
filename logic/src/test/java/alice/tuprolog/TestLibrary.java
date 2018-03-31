@@ -28,10 +28,10 @@ public class TestLibrary extends StringLibrary {
 		return "TestLibraryName";
 	}
 
-	public Term sum_2(Number arg0, Number arg1){
+	public Term sum_2(NumberTerm arg0, NumberTerm arg1){
 		int a0 = arg0.intValue();
 		int a1 = arg1.intValue();
-		return new Int(a0+a1);
+		return new NumberTerm.Int(a0+a1);
 	}
 	
 	public boolean println_1(Term arg0){

@@ -986,4 +986,39 @@ public class Struct extends Term {
 
     /**/
 
+    /**
+     * This class represents an iterator through the arguments of a Struct list.
+     *
+     * @see Struct
+     */
+    static class StructIterator implements Iterator<Term>, java.io.Serializable {
+        Struct list;
+
+        StructIterator(Struct t) {
+            this.list = t;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !list.isEmptyList();
+        }
+
+        @Override
+        public Term next() {
+            if (list.isEmptyList())
+                throw new NoSuchElementException();
+            // Using Struct#getTerm(int) instead of Struct#listHead and Struct#listTail
+            // to avoid redundant Struct#isList calls since it is only possible to get
+            // a StructIterator on a Struct instance which is already a list.
+            Term head = list.subResolve(0);
+            list = (Struct) list.subResolve(1);
+            return head;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+    }
 }

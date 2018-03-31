@@ -14,27 +14,27 @@ public class StructTestCase {
 			fail("");
 		} catch (InvalidTermException expected) {}
 		try {
-			new Struct("p", new Int(1), null);
+			new Struct("p", new NumberTerm.Int(1), null);
 			fail("");
 		} catch (InvalidTermException expected) {}
 		try {
-			new Struct("p", new Int(1), new Int(2), null);
+			new Struct("p", new NumberTerm.Int(1), new NumberTerm.Int(2), null);
 			fail("");
 		} catch (InvalidTermException expected) {}
 		try {
-			new Struct("p", new Int(1), new Int(2), new Int(3), null);
+			new Struct("p", new NumberTerm.Int(1), new NumberTerm.Int(2), new NumberTerm.Int(3), null);
 			fail("");
 		} catch (InvalidTermException expected) {}
 		try {
-			new Struct("p", new Int(1), new Int(2), new Int(3), new Int(4), null);
+			new Struct("p", new NumberTerm.Int(1), new NumberTerm.Int(2), new NumberTerm.Int(3), new NumberTerm.Int(4), null);
 			fail("");
 		} catch (InvalidTermException expected) {}
 		try {
-			new Struct("p", new Int(1), new Int(2), new Int(3), new Int(4), new Int(5), null);
+			new Struct("p", new NumberTerm.Int(1), new NumberTerm.Int(2), new NumberTerm.Int(3), new NumberTerm.Int(4), new NumberTerm.Int(5), null);
 			fail("");
 		} catch (InvalidTermException expected) {}
 		try {
-			new Struct("p", new Int(1), new Int(2), new Int(3), new Int(4), new Int(5), new Int(6), null);
+			new Struct("p", new NumberTerm.Int(1), new NumberTerm.Int(2), new NumberTerm.Int(3), new NumberTerm.Int(4), new NumberTerm.Int(5), new NumberTerm.Int(6), null);
 			fail("");
 		} catch (InvalidTermException expected) {}
 		try {
@@ -46,7 +46,7 @@ public class StructTestCase {
 	
 	@Test public void testStructWithNullName() {
 		try {
-			new Struct(null, new Int(1), new Int(2));
+			new Struct(null, new NumberTerm.Int(1), new NumberTerm.Int(2));
 			fail("");
 		} catch (InvalidTermException expected) {}
 	}
@@ -54,7 +54,7 @@ public class StructTestCase {
 	/** Structs with an empty name can only be atoms. */
 	@Test public void testStructWithEmptyName() {
 		try {
-			new Struct("", new Int(1), new Int(2));
+			new Struct("", new NumberTerm.Int(1), new NumberTerm.Int(2));
 			fail("");
 		} catch (InvalidTermException expected) {}
 		assertEquals(0, new Struct("").name().length());
@@ -127,7 +127,7 @@ public class StructTestCase {
 	}
 	
 	@Test public void testNonListTail() {
-		Struct s = new Struct("h", new Int(1));
+		Struct s = new Struct("h", new NumberTerm.Int(1));
 		try {
 			assertNotNull(s.listTail()); // just to make an assertion...
 			fail("");
@@ -147,7 +147,7 @@ public class StructTestCase {
 	}
 	
 	@Test public void testNonListIterator() {
-		Struct s = new Struct("f", new Int(2));
+		Struct s = new Struct("f", new NumberTerm.Int(2));
 		try {
 			assertNotNull(s.listIterator()); // just to make an assertion...
 			fail("");
@@ -213,7 +213,7 @@ public class StructTestCase {
 		assertTrue(emptyList.isAtom());
 		Struct atom = new Struct("atom");
 		assertTrue(atom.isAtom());
-		Struct list = new Struct(new Term[] {new Int(0), new Int(1)});
+		Struct list = new Struct(new Term[] {new NumberTerm.Int(0), new NumberTerm.Int(1)});
 		assertFalse(list.isAtom());
 		Struct compound = new Struct("f", new Struct("a"), new Struct("b"));
 		assertFalse(compound.isAtom());
@@ -228,7 +228,7 @@ public class StructTestCase {
 		assertTrue(emptyList.isAtomic());
 		Struct atom = new Struct("atom");
 		assertTrue(atom.isAtomic());
-		Struct list = new Struct(new Term[] {new Int(0), new Int(1)});
+		Struct list = new Struct(new Term[] {new NumberTerm.Int(0), new NumberTerm.Int(1)});
 		assertFalse(list.isAtomic());
 		Struct compound = new Struct("f", new Struct("a"), new Struct("b"));
 		assertFalse(compound.isAtomic());
@@ -243,7 +243,7 @@ public class StructTestCase {
 		assertFalse(emptyList.isCompound());
 		Struct atom = new Struct("atom");
 		assertFalse(atom.isCompound());
-		Struct list = new Struct(new Term[] {new Int(0), new Int(1)});
+		Struct list = new Struct(new Term[] {new NumberTerm.Int(0), new NumberTerm.Int(1)});
 		assertTrue(list.isCompound());
 		Struct compound = new Struct("f", new Struct("a"), new Struct("b"));
 		assertTrue(compound.isCompound());

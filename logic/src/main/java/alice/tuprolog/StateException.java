@@ -142,8 +142,8 @@ public class StateException extends State {
                 Term curFinallyTerm = finallyTerm.term();
                 // verifico se c'? il blocco finally
                 boolean isFinally = true;
-                if (curFinallyTerm instanceof Int) {
-                    Int finallyInt = (Int) curFinallyTerm;
+                if (curFinallyTerm instanceof NumberTerm.Int) {
+                    NumberTerm.Int finallyInt = (NumberTerm.Int) curFinallyTerm;
                     if (finallyInt.intValue() == 0)
                         isFinally = false;
                     else {

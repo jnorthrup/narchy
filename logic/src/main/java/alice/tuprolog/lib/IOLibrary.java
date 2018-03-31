@@ -18,7 +18,7 @@
 package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.Number;
+import alice.tuprolog.NumberTerm;
 
 import java.io.*;
 import java.util.Random;
@@ -247,7 +247,7 @@ public class IOLibrary extends Library {
                     "input", "stream", new Struct(inputStreamName), new Struct(
                             e.getMessage()));
         }
-        return unify(arg0, ch == -1 ? new Int(-1) : new Struct(Character.toString((char) ch)));
+        return unify(arg0, ch == -1 ? new NumberTerm.Int(-1) : new Struct(Character.toString((char) ch)));
     }
 
     public boolean get_1(Term arg0) throws PrologError {
@@ -261,18 +261,18 @@ public class IOLibrary extends Library {
                         new Struct(e.getMessage()));
             }
         } while (ch < 0x20 && ch >= 0);
-        return unify(arg0, ch == -1 ? new Int(-1) : new Struct(Character.toString((char) ch)));
+        return unify(arg0, ch == -1 ? new NumberTerm.Int(-1) : new Struct(Character.toString((char) ch)));
     }
 
     public boolean tab_1(Term arg) throws PrologError {
         arg = arg.term();
         if (arg instanceof Var)
             throw PrologError.instantiation_error(engine.engine, 1);
-        if (!(arg instanceof Int))
+        if (!(arg instanceof NumberTerm.Int))
             throw PrologError.type_error(engine.engine, 1,
                     "integer", arg);
         // int n = ((Int)arg).intValue(); // OLD BUGGED  VERSION (signaled by MViroli) 
-        int n = ((Int) arg.term()).intValue(); // NEW CORRECT VERSION (by MViroli, EDenti)
+        int n = ((NumberTerm.Int) arg.term()).intValue(); // NEW CORRECT VERSION (by MViroli, EDenti)
         if (outputStreamName.equals(STDOUT_NAME)) { /* Changed from STDOUT_NAME to STDOUT_NAME */
             for (int i = 0; i < n; i++) {
                 engine.output(" ");
@@ -438,10 +438,10 @@ public class IOLibrary extends Library {
      */
     public boolean set_seed_1(Term t) throws PrologError {
         t = t.term();
-        if (!(t instanceof Number)) {
+        if (!(t instanceof NumberTerm)) {
             throw PrologError.type_error(engine.engine, 1, "Integer Number", t);
         }
-        Number seed = (Number) t;
+        NumberTerm seed = (NumberTerm) t;
         if (!seed.isInteger()) {
             throw PrologError.type_error(engine.engine, 1, "Integer Number", t);
         }
@@ -450,12 +450,12 @@ public class IOLibrary extends Library {
     }
 
     public boolean rand_float_1(Term t) {
-        return unify(t, new alice.tuprolog.Double(gen.nextFloat()));
+        return unify(t, new NumberTerm.Double(gen.nextFloat()));
     }
 
     public boolean rand_int_2(Term argNum, Term num) {
-        alice.tuprolog.Number arg = (alice.tuprolog.Number) argNum.term();
-        return unify(num, new Int(gen.nextInt(arg.intValue())));
+        NumberTerm arg = (NumberTerm) argNum.term();
+        return unify(num, new NumberTerm.Int(gen.nextInt(arg.intValue())));
     }
 
     @Override

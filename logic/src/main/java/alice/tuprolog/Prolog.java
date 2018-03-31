@@ -173,12 +173,6 @@ public class Prolog {
     }
 
 
-    /**
-     * Gets the current version of the tuProlog system
-     */
-    public static String getVersion() {
-        return alice.util.VersionInfo.getEngineVersion();
-    }
 
     /**
      * Gets the last Element of the path list

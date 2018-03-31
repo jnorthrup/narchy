@@ -9,6 +9,8 @@
 
 package alice.tuprologx.pj.model;
 
+import alice.tuprolog.NumberTerm;
+
 /**
  *
  * @author maurizio
@@ -25,18 +27,18 @@ public class Double extends Term<Double> {
 	public Double (java.lang.Double d) {_theDouble = d;}
            
         @Override
-        public alice.tuprolog.Double marshal() {
-            return new alice.tuprolog.Double(_theDouble);
+        public NumberTerm.Double marshal() {
+            return new NumberTerm.Double(_theDouble);
         }
         
-        static Double unmarshal(alice.tuprolog.Double d) {
+        static Double unmarshal(NumberTerm.Double d) {
             if (!matches(d))
                 throw new UnsupportedOperationException();
             return new Double(d.doubleValue());
         }
         
         static boolean matches(alice.tuprolog.Term t) {
-            return (t instanceof alice.tuprolog.Double);
+            return (t instanceof NumberTerm.Double);
         }
         
 	public String toString() {

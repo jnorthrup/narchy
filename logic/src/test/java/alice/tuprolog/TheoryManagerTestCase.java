@@ -45,7 +45,7 @@ public class TheoryManagerTestCase {
 		Struct testTerm = new Struct("test", new Struct("a"), new Struct("b"));
 		Deque<ClauseInfo> testClauses = manager.find(testTerm);
 		assertEquals(1, testClauses.size());
-		manager.abolish(new Struct("/", new Struct("test"), new Int(2)));
+		manager.abolish(new Struct("/", new Struct("test"), new NumberTerm.Int(2)));
 		testClauses = manager.find(testTerm);
 		// The predicate should also disappear completely from the clause
 		// database, i.e. ClauseDatabase#get(f/a) should return null

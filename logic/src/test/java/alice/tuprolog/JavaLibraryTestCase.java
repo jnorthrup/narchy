@@ -73,7 +73,7 @@ public class JavaLibraryTestCase {
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo(Value).");
         assertTrue(info.isSuccess());
-		alice.tuprolog.Number result2 = (alice.tuprolog.Number) info.getVarValue("Value");
+		NumberTerm result2 = (NumberTerm) info.getVarValue("Value");
 		assertEquals(2, result2.intValue());
 
 		// Testing URLClassLoader with java.lang.String class
@@ -99,7 +99,7 @@ public class JavaLibraryTestCase {
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo_hierarchy(Res).");
         assertFalse(info.isHalted());
-		alice.tuprolog.Number result2 = (alice.tuprolog.Number) info.getVarValue("Res");
+		NumberTerm result2 = (NumberTerm) info.getVarValue("Res");
 		assertEquals(8, result2.intValue());
 	}
 	
@@ -167,7 +167,7 @@ public class JavaLibraryTestCase {
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo(Value).");
         assertTrue(info.isSuccess());
-		alice.tuprolog.Number resultInt = (alice.tuprolog.Number) info.getVarValue("Value");
+		NumberTerm resultInt = (NumberTerm) info.getVarValue("Value");
 		assertEquals(10, resultInt.intValue());
 
 		//Testing java_array_set and java_array_get
@@ -182,7 +182,7 @@ public class JavaLibraryTestCase {
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo(Value).");
         assertTrue(info.isSuccess());
-		alice.tuprolog.Number resultInt2 = (alice.tuprolog.Number) info.getVarValue("Value");
+		NumberTerm resultInt2 = (NumberTerm) info.getVarValue("Value");
 		assertEquals(1, resultInt2.intValue());
 	}
 
@@ -199,7 +199,7 @@ public class JavaLibraryTestCase {
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo(Value).");
         assertTrue(info.isSuccess());
-		alice.tuprolog.Number resultInt = (alice.tuprolog.Number) info.getVarValue("Value");
+		NumberTerm resultInt = (NumberTerm) info.getVarValue("Value");
 		assertEquals(10, resultInt.intValue());
 	}
 	

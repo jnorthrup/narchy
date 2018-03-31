@@ -62,7 +62,7 @@ public class UDPeer extends UDP {
     public final PriorityHijackBag<Msg, Msg> seen;
 
     public final UDiscover<Discoverability> discover;
-    public final Every discoverEvery;
+    public Every discoverEvery;
 
     /**
      * TODO use a variable size identifier, 32+ bit. ethereumj uses 512bits.
@@ -209,10 +209,7 @@ public class UDPeer extends UDP {
                 }
             }
         } : null;
-        if (discovery)
-            discoverEvery = new Every(discover::update, 250);
-        else
-            discoverEvery = Every.Never;
+
     }
 
     static class Discoverability implements Serializable {
@@ -273,16 +270,22 @@ public class UDPeer extends UDP {
     protected void onStart() {
         synchronized (this) {
             super.onStart();
-            if (discover != null)
+            if (discover != null) {
                 discover.start();
+                discoverEvery = new Every(discover::update, 250);
+            } else {
+                discoverEvery = Every.Never;
+            }
         }
     }
 
     @Override
     protected void onStop() {
         synchronized (this) {
-            if (discover != null)
+            if (discover != null) {
                 discover.stop();
+                discoverEvery = null;
+            }
             them.clear();
             super.onStop();
         }

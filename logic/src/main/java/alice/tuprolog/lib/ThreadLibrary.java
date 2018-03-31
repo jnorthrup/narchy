@@ -23,7 +23,7 @@ public class ThreadLibrary extends Library {
 	//Tenta di unificare a t l'identificativo del thread corrente
 	public boolean thread_id_1 (Term t) {
         int id = engineManager.runnerId();
-        unify(t,new Int(id));
+        unify(t,new NumberTerm.Int(id));
 		return true;
 	}
 	
@@ -36,10 +36,10 @@ public class ThreadLibrary extends Library {
 	unificando il goal risolto a result. Il thread viene eliminato dal sistema*/
 	public boolean thread_join_2(Term id, Term result) throws PrologError{
 		id = id.term();
-		if (!(id instanceof Int))
+		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(engine.engine, 1,
                     "integer", id);
-		Solution res = engineManager.join(((Int)id).intValue());
+		Solution res = engineManager.join(((NumberTerm.Int)id).intValue());
 		if (res == null) return false;
 		Term status;
 		try {
@@ -58,10 +58,10 @@ public class ThreadLibrary extends Library {
 		
 	public boolean thread_read_2(Term id, Term result) throws PrologError{
 		id=id.term();
-		if (!(id instanceof Int))
+		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(engine.engine, 1,
                     "integer", id);
-		Solution res=engineManager.read( ((Int)id).intValue());
+		Solution res=engineManager.read( ((NumberTerm.Int)id).intValue());
 		if (res==null) return false;
 		Term status;
 		try {
@@ -80,36 +80,36 @@ public class ThreadLibrary extends Library {
 	
 	public boolean thread_has_next_1(Term id) throws PrologError{
 		id=id.term();
-		if (!(id instanceof Int))
+		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(engine.engine, 1,
                     "integer", id);
-		return engineManager.hasNext(((Int)id).intValue());
+		return engineManager.hasNext(((NumberTerm.Int)id).intValue());
 	}
 	
 	
 	public boolean thread_next_sol_1(Term id) throws PrologError{
 		id=id.term();
-		if (!(id instanceof Int))
+		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(engine.engine, 1,
                     "integer", id);
-		return engineManager.nextSolution(((Int)id).intValue());
+		return engineManager.nextSolution(((NumberTerm.Int)id).intValue());
 	}
 	
 	public boolean thread_detach_1 (Term id) throws PrologError{
 		id=id.term();
-		if (!(id instanceof Int))
+		if (!(id instanceof NumberTerm.Int))
 			throw PrologError.type_error(engine.engine, 1,
                     "integer", id);
-		engineManager.detach(((Int)id).intValue());
+		engineManager.detach(((NumberTerm.Int)id).intValue());
 		return true;
 	}
 	
 	public boolean thread_sleep_1(Term millisecs) throws PrologError{
 		millisecs=millisecs.term();
-		if (!(millisecs instanceof Int))
+		if (!(millisecs instanceof NumberTerm.Int))
 			throw PrologError.type_error(engine.engine, 1,
                     "integer", millisecs);
-		long time=((Int)millisecs).intValue();
+		long time=((NumberTerm.Int)millisecs).intValue();
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {
@@ -121,8 +121,8 @@ public class ThreadLibrary extends Library {
 	
 	public boolean thread_send_msg_2(Term id, Term msg) throws PrologError{
 		id=id.term();
-		if (id instanceof Int) 
-			return engineManager.sendMsg(((Int)id).intValue(), msg);
+		if (id instanceof NumberTerm.Int)
+			return engineManager.sendMsg(((NumberTerm.Int)id).intValue(), msg);
 		if (!id.isAtom() || !id.isAtomic())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom, atomic or integer", id);
@@ -131,8 +131,8 @@ public class ThreadLibrary extends Library {
 	
 	public  boolean  thread_get_msg_2(Term id, Term msg) throws PrologError{
 		id=id.term();
-		if (id instanceof Int) 
-			return engineManager.getMsg(((Int)id).intValue(), msg);
+		if (id instanceof NumberTerm.Int)
+			return engineManager.getMsg(((NumberTerm.Int)id).intValue(), msg);
 		if (!id.isAtomic() || !id.isAtom())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom, atomic or integer", id);
@@ -141,8 +141,8 @@ public class ThreadLibrary extends Library {
 	
 	public  boolean  thread_peek_msg_2(Term id, Term msg) throws PrologError{
 		id=id.term();
-		if (id instanceof Int) 
-			return engineManager.peekMsg(((Int)id).intValue(), msg);
+		if (id instanceof NumberTerm.Int)
+			return engineManager.peekMsg(((NumberTerm.Int)id).intValue(), msg);
 		if (!id.isAtomic() || !id.isAtom())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom, atomic or integer", id);
@@ -151,8 +151,8 @@ public class ThreadLibrary extends Library {
 
 	public  boolean  thread_wait_msg_2(Term id, Term msg) throws PrologError{
 		id=id.term();
-		if (id instanceof Int) 
-			return engineManager.waitMsg(((Int)id).intValue(), msg);
+		if (id instanceof NumberTerm.Int)
+			return engineManager.waitMsg(((NumberTerm.Int)id).intValue(), msg);
 		if (!id.isAtomic() || !id.isAtom())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom, atomic or integer", id);
@@ -161,8 +161,8 @@ public class ThreadLibrary extends Library {
 
 	public  boolean  thread_remove_msg_2(Term id, Term msg) throws PrologError{
 		id=id.term();
-		if (id instanceof Int) 
-			return engineManager.removeMsg(((Int)id).intValue(), msg);
+		if (id instanceof NumberTerm.Int)
+			return engineManager.removeMsg(((NumberTerm.Int)id).intValue(), msg);
 		if (!id.isAtomic() || !id.isAtom())
 			throw PrologError.type_error(engine.engine, 1,
                     "atom, atomic or integer", id);
@@ -189,8 +189,8 @@ public class ThreadLibrary extends Library {
 	public boolean msg_queue_size_2(Term id, Term n) throws PrologError{
 		id=id.term();
 		int size;
-		if (id instanceof Int) 
-			size=engineManager.queueSize(((Int)id).intValue());
+		if (id instanceof NumberTerm.Int)
+			size=engineManager.queueSize(((NumberTerm.Int)id).intValue());
 		else{
 			if (!id.isAtomic() || !id.isAtom())
 				throw PrologError.type_error(engine.engine, 1,
@@ -198,7 +198,7 @@ public class ThreadLibrary extends Library {
 			size=engineManager.queueSize(id.toString());
 		}
 		if (size<0) return false;
-		return unify(n, new Int(size));
+		return unify(n, new NumberTerm.Int(size));
 	}	
 	
 	public boolean mutex_create_1(Term mutex) throws PrologError{

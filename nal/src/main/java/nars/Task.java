@@ -282,16 +282,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
 
                     t.pathsTo(
-                            x -> (x.op().statement && x.varIndep() > 0) || (x.op() == VAR_INDEP) ? x : null,
+                            x -> {
+                                Op xo = x.op();
+                                return (xo.statement && x.varIndep() > 0) || (xo == VAR_INDEP) ? x : null;
+                            },
                             x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
                             (ByteList path, Term indepVarOrStatement) -> {
                                 if (path.isEmpty())
                                     return true; //skip the input term
 
                                 if (indepVarOrStatement.op() == VAR_INDEP) {
-                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), () -> new FasterList(1)).add(
-                                            path.toImmutable()
-                                    );
+                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
+                                            () -> new FasterList<>(2))
+                                        .add( path.toImmutable() );
                                 } else {
                                     statements.add(path.toImmutable());
                                 }
@@ -312,10 +315,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                                 return true;
                             });
 
+                    if (indepVarPaths.anySatisfy(p->p.size() < 2))
+                        return false; //there is an indep variable that appears only once
+
                     if (statements.size() > 1) {
                         statements.sortThisByInt(PrimitiveIterable::size);
                         //Comparator.comparingInt(PrimitiveIterable::size));
                     }
+
 
                     boolean rootIsStatement = t.op().statement;
                     if (!indepVarPaths.allSatisfy((varPaths) -> {

@@ -86,22 +86,22 @@ public abstract class AbstractDynamicClassLoader extends ClassLoader
 		return classCache.values().toArray(new Class[classCache.size()]);
 	}
 	
-	public void clearCache()
-	{
-		classCache.clear();
-	}
-
-	public void removeClassCacheEntry(String className)
-	{
-		classCache.remove(className);
-		
-	}
-
-	public void setClassCacheEntry(Class<?> cls)
-	{
-		if(classCache.containsValue(cls))
-			classCache.remove(cls.getName());
-		classCache.put(cls.getName(), cls);
-	}
+//	public void clearCache()
+//	{
+//		classCache.clear();
+//	}
+//
+//	public void removeClassCacheEntry(String className)
+//	{
+//		classCache.remove(className);
+//
+//	}
+//
+//	public void setClassCacheEntry(Class<?> cls)
+//	{
+//		if(classCache.containsValue(cls))
+//			classCache.remove(cls.getName());
+//		classCache.put(cls.getName(), cls);
+//	}
 
 }

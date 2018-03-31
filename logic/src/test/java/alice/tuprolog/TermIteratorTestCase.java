@@ -58,11 +58,11 @@ public class TermIteratorTestCase {
 		Iterator<Term> i = Term.getIterator(theory);
 		assertTrue(i.hasNext());
 		i.next(); // skip the first term
-		assertEquals(new Struct("q", new Int(1)), i.next());
-		assertEquals(new Struct("q", new Int(2)), i.next());
-		assertEquals(new Struct("q", new Int(3)), i.next());
-		assertEquals(new Struct("q", new Int(5)), i.next());
-		assertEquals(new Struct("q", new Int(7)), i.next());
+		assertEquals(new Struct("q", new NumberTerm.Int(1)), i.next());
+		assertEquals(new Struct("q", new NumberTerm.Int(2)), i.next());
+		assertEquals(new Struct("q", new NumberTerm.Int(3)), i.next());
+		assertEquals(new Struct("q", new NumberTerm.Int(5)), i.next());
+		assertEquals(new Struct("q", new NumberTerm.Int(7)), i.next());
 		// no more terms
 		assertFalse(i.hasNext());
 		try {
@@ -85,8 +85,8 @@ public class TermIteratorTestCase {
 						"q(3) " + "\n" + // missing the End-Of-Clause!
 						"q(5)." + "\n" +
 						"q(7).";
-		Struct firstTerm = new Struct("q", new Int(1));
-		Struct secondTerm = new Struct("q", new Int(2));
+		Struct firstTerm = new Struct("q", new NumberTerm.Int(1));
+		Struct secondTerm = new Struct("q", new NumberTerm.Int(2));
 		Iterator<Term> i1 = Term.getIterator(theory);
 		assertTrue(i1.hasNext());
 		assertEquals(firstTerm, i1.next());

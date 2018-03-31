@@ -199,8 +199,8 @@ public final class BuiltIn extends Library {
 	  */
 
 	 public boolean halt_1(Term arg0) throws PrologError {
-		 if (arg0 instanceof Int)
-			 System.exit(((Int) arg0).intValue());
+		 if (arg0 instanceof NumberTerm.Int)
+			 System.exit(((NumberTerm.Int) arg0).intValue());
 		 if (arg0 instanceof Var)
 			 throw PrologError.instantiation_error(engineManager, 1);
 		 else {
@@ -342,9 +342,9 @@ public final class BuiltIn extends Library {
 	  * corresponds to T.
 	  */
 	 static Term convertTermToGoal(Term term) {
-		 if (term instanceof Number)
+		 if (term instanceof NumberTerm)
 			 return null;
-		 if(term instanceof Var && ((Var)term).link() instanceof Number)
+		 if(term instanceof Var && ((Var)term).link() instanceof NumberTerm)
 			 return null;
 		 term = term.term();
 		 if (term instanceof Var)
@@ -503,7 +503,7 @@ public final class BuiltIn extends Library {
 					 arg0);
 		 if (!f.isModifiable())
 			 throw PrologError.permission_error(engineManager, "modify", "flag",
-					 arg0, new Int(0));
+					 arg0, new NumberTerm.Int(0));
 		 if (!f.isValidValue(arg1))
 			 throw PrologError
 			 .domain_error(engineManager, 2, "flag_value", arg1);
@@ -537,14 +537,14 @@ public final class BuiltIn extends Library {
 			 throw PrologError.instantiation_error(engineManager, 2);
 		 if (arg2 instanceof Var)
 			 throw PrologError.instantiation_error(engineManager, 3);
-		 if (!(arg0 instanceof Int))
+		 if (!(arg0 instanceof NumberTerm.Int))
 			 throw PrologError.type_error(engineManager, 1, "integer", arg0);
 		 if (!arg1.isAtomic())
 			 throw PrologError.type_error(engineManager, 2, "atom", arg1);
 		 if (!arg2.isAtomic() && !arg2.isList())
 			 throw PrologError.type_error(engineManager, 3, "atom_or_atom_list",
 					 arg2);
-		 int priority = ((Int) arg0).intValue();
+		 int priority = ((NumberTerm.Int) arg0).intValue();
 		 if (priority < OperatorManager.OP_LOW || priority > OperatorManager.OP_HIGH)
 			 throw PrologError.domain_error(engineManager, 1, "operator_priority", arg0);
 		 String specifier = ((Struct) arg1).name();

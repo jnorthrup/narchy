@@ -1,6 +1,7 @@
 package alice.tuprologx.spyframe;
 
 
+import alice.tuprolog.NumberTerm;
 import alice.tuprolog.Struct;
 import alice.tuprolog.Term;
 import alice.tuprolog.Var;
@@ -38,7 +39,7 @@ public class TermPanel extends JPanel implements ActionListener{
                 node.kids = new Node[1];
                 node.kids[0] = makeTreeFrom(var.term());
             }
-        } else if (term instanceof alice.tuprolog.Number) {
+        } else if (term instanceof NumberTerm) {
             node.textcolor = node.bordercolor = Color.MAGENTA;
         } else if (term instanceof Struct) {
             Struct struct = (Struct) term;

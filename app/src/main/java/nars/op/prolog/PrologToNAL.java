@@ -1,9 +1,6 @@
 package nars.op.prolog;
 
-import alice.tuprolog.Int;
-import alice.tuprolog.Struct;
-import alice.tuprolog.Theory;
-import alice.tuprolog.Var;
+import alice.tuprolog.*;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;
@@ -104,8 +101,8 @@ public class PrologToNAL {
         } else if (t instanceof Var) {
             return $.varQuery(((Var) t).name());
             //throw new RuntimeException(t + " untranslated");
-        } else if (t instanceof Int) {
-            return $.the(((Int)t).intValue());
+        } else if (t instanceof NumberTerm.Int) {
+            return $.the(((NumberTerm.Int)t).intValue());
         } else {
             throw new TODO(t + " (" + t.getClass() + ") untranslatable");
         }

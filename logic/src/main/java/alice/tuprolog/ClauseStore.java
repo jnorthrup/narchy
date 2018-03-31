@@ -37,10 +37,10 @@ public class ClauseStore {
 //     */
     public static ClauseStore build(Term goal, List<Var> vars, Deque<ClauseInfo> familyClauses) {
         ClauseStore clauseStore = new ClauseStore(goal, vars);
-        clauseStore.clauses = OneWayList.get(familyClauses);
-        if (clauseStore.clauses == null || !clauseStore.existCompatibleClause())
-            return null;
-        return clauseStore;
+        return (clauseStore.clauses = OneWayList.get(familyClauses)) == null ||
+                !clauseStore.existCompatibleClause() ? null
+                :
+                clauseStore;
     }
 
 

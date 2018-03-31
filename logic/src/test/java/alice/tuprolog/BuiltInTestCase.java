@@ -14,7 +14,7 @@ public class BuiltInTestCase {
 		assertEquals(result, BuiltIn.convertTermToGoal(t));
 		assertEquals(result, BuiltIn.convertTermToGoal(new Struct("call", t)));
 		
-		t = new Int(2);
+		t = new NumberTerm.Int(2);
 		assertNull(BuiltIn.convertTermToGoal(t));
 		
 		t = new Struct("p", new Struct("a"), new Var("B"), new Struct("c"));

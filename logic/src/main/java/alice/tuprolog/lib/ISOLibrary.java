@@ -18,7 +18,7 @@
 package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
-import alice.tuprolog.Number;
+import alice.tuprolog.NumberTerm;
 
 /**
  * This class represents a tuProlog library providing most of the built-ins
@@ -42,7 +42,7 @@ public class ISOLibrary extends Library {
             throw PrologError.type_error(engine.engine, 1, "atom",
                     arg0);
         Struct atom = (Struct) arg0;
-        return unify(len, new Int(atom.name().length()));
+        return unify(len, new NumberTerm.Int(atom.name().length()));
     }
 
     public boolean atom_chars_2(Term arg0, Term arg1) throws PrologError {
@@ -104,16 +104,16 @@ public class ISOLibrary extends Library {
             if (arg0.isAtomic()) {
                 String st = ((Struct) arg0).name();
                 if (st.length() <= 1)
-                    return unify(arg1, new Int(st.charAt(0)));
+                    return unify(arg1, new NumberTerm.Int(st.charAt(0)));
                 else
                     throw PrologError.type_error(engine.engine, 1,
                             "character", arg0);
             } else
                 throw PrologError.type_error(engine.engine, 1,
                         "character", arg0);
-        } else if ((arg1 instanceof Int)
-                || (arg1 instanceof alice.tuprolog.Long)) {
-            char c = (char) ((Number) arg1).intValue();
+        } else if ((arg1 instanceof NumberTerm.Int)
+                || (arg1 instanceof NumberTerm.Long)) {
+            char c = (char) ((NumberTerm) arg1).intValue();
             return unify(arg0, new Struct(String.valueOf(c)));
         } else
             throw PrologError.type_error(engine.engine, 2,
@@ -131,8 +131,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double(Math.sin(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double(Math.sin(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -144,8 +144,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double(Math.cos(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double(Math.cos(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -157,8 +157,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double(Math.exp(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double(Math.exp(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -170,8 +170,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double(Math.atan(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double(Math.atan(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -183,8 +183,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double(Math.log(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double(Math.log(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -196,8 +196,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double(Math.sqrt(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double(Math.sqrt(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -209,11 +209,11 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Int || val0 instanceof alice.tuprolog.Long)
-            return new alice.tuprolog.Int(Math.abs(((Number) val0).intValue()));
-        if (val0 instanceof alice.tuprolog.Double
-                || val0 instanceof alice.tuprolog.Float)
-            return new alice.tuprolog.Double(Math.abs(((Number) val0)
+        if (val0 instanceof NumberTerm.Int || val0 instanceof NumberTerm.Long)
+            return new NumberTerm.Int(Math.abs(((NumberTerm) val0).intValue()));
+        if (val0 instanceof NumberTerm.Double
+                || val0 instanceof NumberTerm.Float)
+            return new NumberTerm.Double(Math.abs(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -225,13 +225,13 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Int || val0 instanceof alice.tuprolog.Long)
-            return new alice.tuprolog.Double(
-                    ((Number) val0).intValue() > 0 ? 1.0 : -1.0);
-        if (val0 instanceof alice.tuprolog.Double
-                || val0 instanceof alice.tuprolog.Float)
-            return new alice.tuprolog.Double(
-                    ((Number) val0).doubleValue() > 0 ? 1.0 : -1.0);
+        if (val0 instanceof NumberTerm.Int || val0 instanceof NumberTerm.Long)
+            return new NumberTerm.Double(
+                    ((NumberTerm) val0).intValue() > 0 ? 1.0 : -1.0);
+        if (val0 instanceof NumberTerm.Double
+                || val0 instanceof NumberTerm.Float)
+            return new NumberTerm.Double(
+                    ((NumberTerm) val0).doubleValue() > 0 ? 1.0 : -1.0);
         return null;
     }
 
@@ -242,8 +242,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double((long) Math.rint(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double((long) Math.rint(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -255,9 +255,9 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number) {
-            double fl = ((Number) val0).doubleValue();
-            return new alice.tuprolog.Double(Math.abs(fl - Math.rint(fl)));
+        if (val0 instanceof NumberTerm) {
+            double fl = ((NumberTerm) val0).doubleValue();
+            return new NumberTerm.Double(Math.abs(fl - Math.rint(fl)));
         }
         return null;
     }
@@ -269,8 +269,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Double(((Number) val0).doubleValue());
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Double(((NumberTerm) val0).doubleValue());
         return null;
     }
 
@@ -281,8 +281,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new Int((int) Math.floor(((Number) val0).doubleValue()));
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Int((int) Math.floor(((NumberTerm) val0).doubleValue()));
         return null;
     }
 
@@ -293,8 +293,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new alice.tuprolog.Long(Math.round(((Number) val0)
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Long(Math.round(((NumberTerm) val0)
                     .doubleValue()));
         return null;
     }
@@ -306,8 +306,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new Int((int) Math.rint(((Number) val0).doubleValue()));
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Int((int) Math.rint(((NumberTerm) val0).doubleValue()));
         return null;
     }
 
@@ -318,8 +318,8 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number)
-            return new Int((int) Math.ceil(((Number) val0).doubleValue()));
+        if (val0 instanceof NumberTerm)
+            return new NumberTerm.Int((int) Math.ceil(((NumberTerm) val0).doubleValue()));
         return null;
     }
 
@@ -332,9 +332,9 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number && val1 instanceof Number)
-            return new alice.tuprolog.Int(((Number) val0).intValue()
-                    / ((Number) val1).intValue());
+        if (val0 instanceof NumberTerm && val1 instanceof NumberTerm)
+            return new NumberTerm.Int(((NumberTerm) val0).intValue()
+                    / ((NumberTerm) val1).intValue());
         return null;
     }
 
@@ -347,12 +347,12 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number && val1 instanceof Number) {
-            int x = ((Number) val0).intValue();
-            int y = ((Number) val1).intValue();
+        if (val0 instanceof NumberTerm && val1 instanceof NumberTerm) {
+            int x = ((NumberTerm) val0).intValue();
+            int y = ((NumberTerm) val1).intValue();
             int f = new java.lang.Double(Math.floor((double) x / y))
                     .intValue();
-            return new Int(x - (f * y));
+            return new NumberTerm.Int(x - (f * y));
         }
         return null;
     }
@@ -366,9 +366,9 @@ public class ISOLibrary extends Library {
         } catch (Throwable e) {
 
         }
-        if (val0 instanceof Number && val1 instanceof Number) {
-            return new alice.tuprolog.Double(Math.IEEEremainder(((Number) val0)
-                    .doubleValue(), ((Number) val1).doubleValue()));
+        if (val0 instanceof NumberTerm && val1 instanceof NumberTerm) {
+            return new NumberTerm.Double(Math.IEEEremainder(((NumberTerm) val0)
+                    .doubleValue(), ((NumberTerm) val1).doubleValue()));
         }
         return null;
     }

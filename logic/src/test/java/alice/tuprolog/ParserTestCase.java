@@ -36,7 +36,7 @@ public class ParserTestCase {
 		// SICStus Prolog interprets "n(+100)" as "n(100)"
 		// GNU Prolog interprets "n(+100)" as "n(+(100))"
 		// What does the ISO Standard say about that?
-		Struct result = new Struct("n", new Int(-100));
+		Struct result = new Struct("n", new NumberTerm.Int(-100));
 		result.resolveTerm();
 		assertEquals(result, p.nextTerm(true));
 	}
@@ -44,7 +44,7 @@ public class ParserTestCase {
 	@Test public void testBinaryMinusOperator() throws InvalidTermException {
 		String s = "abs(3-11)";
 		Parser p = new Parser(s);
-		Struct result = new Struct("abs", new Struct("-", new Int(3), new Int(11)));
+		Struct result = new Struct("abs", new Struct("-", new NumberTerm.Int(3), new NumberTerm.Int(11)));
 		assertEquals(result, p.nextTerm(false));
 	}
 	
@@ -106,7 +106,7 @@ public class ParserTestCase {
 	@Test public void testIntegerBinaryRepresentation() throws InvalidTermException {
 		String n = "0b101101";
 		Parser p = new Parser(n);
-		alice.tuprolog.Number result = new Int(45);
+		NumberTerm result = new NumberTerm.Int(45);
 		assertEquals(result, p.nextTerm(false));
 		String invalid = "0b101201";
 		try {
@@ -118,7 +118,7 @@ public class ParserTestCase {
 	@Test public void testIntegerOctalRepresentation() throws InvalidTermException {
 		String n = "0o77351";
 		Parser p = new Parser(n);
-		alice.tuprolog.Number result = new Int(32489);
+		NumberTerm result = new NumberTerm.Int(32489);
 		assertEquals(result, p.nextTerm(false));
 		String invalid = "0o78351";
 		try {
@@ -130,7 +130,7 @@ public class ParserTestCase {
 	@Test public void testIntegerHexadecimalRepresentation() throws InvalidTermException {
 		String n = "0xDECAF";
 		Parser p = new Parser(n);
-		alice.tuprolog.Number result = new Int(912559);
+		NumberTerm result = new NumberTerm.Int(912559);
 		assertEquals(result, p.nextTerm(false));
 		String invalid = "0xG";
 		try {
@@ -167,7 +167,7 @@ public class ParserTestCase {
         String input = "{A =.. B, hotel, 2}";
         Struct result = new Struct("{}",
                             new Struct(",", new Struct("=..", new Var("A"), new Var("B")),
-                                new Struct(",", new Struct("hotel"), new Int(2))));
+                                new Struct(",", new Struct("hotel"), new NumberTerm.Int(2))));
         result.resolveTerm();
         Parser p = new Parser(input);
         //assertEquals(result, p.nextTerm(false));

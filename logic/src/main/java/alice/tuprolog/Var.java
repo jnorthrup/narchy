@@ -178,7 +178,7 @@ public class Var extends Term {
         if (t instanceof Struct) {
             v.link = t.copy(vMap, substMap);
         }
-        if (t instanceof Number) v.link = t;
+        if (t instanceof NumberTerm) v.link = t;
         return v;
     }
 
@@ -400,7 +400,7 @@ public class Var extends Term {
                 if (occurCheck(vl2, (Struct) t)) {
                     return false;
                 }
-            } else if (!(t instanceof Number) && !(t instanceof AbstractSocket)) {
+            } else if (!(t instanceof NumberTerm) && !(t instanceof AbstractSocket)) {
                 return false;
             }
             link = t;
@@ -505,4 +505,12 @@ public class Var extends Term {
 
     /**/
 
+    /**
+     * This exception means that a not well formed goal has been specified.
+     *
+     *
+     *
+     */
+    public static class UnknownVarException extends PrologException {
+    }
 }

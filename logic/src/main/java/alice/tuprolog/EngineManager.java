@@ -59,7 +59,7 @@ public class EngineManager implements java.io.Serializable {
         };
         er.initialize(vm);
 
-        if (!vm.unify(threadID, new Int(id)))
+        if (!vm.unify(threadID, new NumberTerm.Int(id)))
             return false;
 
         er.setGoal(goal);

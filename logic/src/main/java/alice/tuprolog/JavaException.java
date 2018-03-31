@@ -19,10 +19,10 @@ public class JavaException extends Throwable {
         String java_exception = e.getClass().getName();
         // Cause
         Throwable cause = e.getCause();
-        Term causeTerm = cause != null ? new Struct(cause.toString()) : new Int(0);
+        Term causeTerm = cause != null ? new Struct(cause.toString()) : new NumberTerm.Int(0);
         // Message
         String message = e.getMessage();
-        Term messageTerm = message != null ? new Struct(message) : new Int(0);
+        Term messageTerm = message != null ? new Struct(message) : new NumberTerm.Int(0);
         // StackTrace
 
         StackTraceElement[] elements = e.getStackTrace();
