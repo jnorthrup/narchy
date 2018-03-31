@@ -64,7 +64,7 @@ public class Derivation extends PreDerivation {
 
     public final Anon anon =
             //new Anon(ANON_CAPACITY);
-            new CachedAnon(ANON_CAPACITY, 1024);
+            new CachedAnon(ANON_CAPACITY, 16*1024);
 
 
 

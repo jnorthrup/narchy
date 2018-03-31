@@ -2,6 +2,7 @@ package nars.nal.nal6;
 
 import nars.NAR;
 import nars.NARS;
+import nars.Narsese;
 import nars.Param;
 import nars.test.TestNAR;
 import nars.util.NALTest;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
+import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
@@ -682,11 +684,36 @@ public class NAL6Test extends NALTest {
 //    }
 
     @Test
-    public void testDecomposeImplSubj1() {
+    public void testDecomposeImplSubj1Conj() {
         test
                 .believe("( (y && z) ==> x )")
                 .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
                 .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
+        ;
+    }
+
+    @Test
+    public void testDecomposeImplSubjDisjBelief() {
+        test
+                .believe("( (||, y, z) ==> x )")
+                .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
+                .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
+        ;
+    }
+    @Test
+    public void testDecomposeImplSubjConjQuestion() throws Narsese.NarseseException {
+        test
+                .ask("( (&&, y, z) ==> x )")
+                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
+                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
+        ;
+    }
+    @Test
+    public void testDecomposeImplSubjDisjQuestion() throws Narsese.NarseseException {
+        test
+                .ask("( (||, y, z) ==> x )")
+                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
+                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
         ;
     }
 
@@ -696,6 +723,30 @@ public class NAL6Test extends NALTest {
                 .believe("( x ==> (y && z) )")
                 .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
                 .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
+        ;
+    }
+    @Test
+    public void testDecomposeImplPredDisjBelief() {
+        test
+                .believe("( x ==> (||, y, z))")
+                .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
+                .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
+        ;
+    }
+    @Test
+    public void testDecomposeImplPredConjQuestion() throws Narsese.NarseseException {
+        test
+                .ask("( x ==> (&&, y, z) )")
+                .mustOutput(cycles, "( x ==>+- y )", QUESTION)
+                .mustOutput(cycles, "( x ==>+- z )", QUESTION)
+        ;
+    }
+    @Test
+    public void testDecomposeImplPredDisjQuestion() throws Narsese.NarseseException {
+        test
+                .ask("( x ==> (||, y, z) )")
+                .mustOutput(cycles, "( x ==>+- y )", QUESTION)
+                .mustOutput(cycles, "( x ==>+- z )", QUESTION)
         ;
     }
 

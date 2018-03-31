@@ -210,7 +210,7 @@ public class KIFInput {
         //e.believe("attribute(xyz,Philosopher)");
         //e.input("(xyz<->?1)?");
 
-        nar.run(1000);
+        nar.run(10000);
 //        Thread.sleep(1000);
 //        e.run(1000);
         //e.conceptsActive().forEach(s -> System.out.println(s));

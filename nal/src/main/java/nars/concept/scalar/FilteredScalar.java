@@ -3,8 +3,8 @@ package nars.concept.scalar;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.util.ArrayIterator;
+import nars.$;
 import nars.NAR;
-import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -17,7 +17,7 @@ public class FilteredScalar extends DemultiplexedScalar {
     public final Filter[] filter;
 
     public FilteredScalar(FloatSupplier input, NAR nar, Pair<Term,FloatToFloatFunction>... filters) {
-        super(input, Op.SETe.the(Util.map(Pair::getOne, Term[]::new, filters)), nar);
+        super(input, $.disj(Util.map(Pair::getOne, Term[]::new, filters)), nar);
 
         this.filter = new Filter[filters.length];
 
