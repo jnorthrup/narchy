@@ -192,13 +192,14 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     @Override
     public void windowDestroyNotify(WindowEvent windowEvent) {
+        a.pause();
         stop();
-        windows.remove(this);
-        a.remove(window);
     }
 
     @Override
     public void windowDestroyed(WindowEvent windowEvent) {
+        windows.remove(this);
+        //a.remove(window); //<- probably unnecesary since the animator should be stopped is stopped it wont
         window = null;
     }
 

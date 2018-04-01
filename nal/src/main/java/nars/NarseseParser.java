@@ -13,6 +13,7 @@ import jcog.list.FasterList;
 import nars.derive.match.Ellipsis;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
@@ -555,7 +556,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             int count = 0;
             int max = context.getInputBuffer().length() - context.getCurrentIndex();
 
-            while (count < max && Narsese.isValidAtomChar(context.getCurrentChar())) {
+            while (count < max && Atom.isValidAtomChar(context.getCurrentChar())) {
                 context.advanceIndex(1);
                 count++;
             }

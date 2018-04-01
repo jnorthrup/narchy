@@ -100,6 +100,7 @@ public class Narsese {
     static {
 
         try {
+
             ParserClassNode node = ParserTransformer.extendParserClass(NarseseParser.class);
             parser = node.getExtendedClass();
         } catch (Exception e) {
@@ -108,56 +109,6 @@ public class Narsese {
     }
 
     public static final String NARSESE_TASK_TAG = "Narsese";
-
-    public static boolean isValidAtomChar(char x) {
-
-        //TODO replace these with Symbols. constants
-        switch (x) {
-            case ' ':
-            case ARGUMENT_SEPARATOR:
-            case BELIEF:
-            case GOAL:
-            case QUESTION:
-            case QUEST:
-            case COMMAND:
-
-            case '^':
-
-            case '<':
-            case '>':
-
-            case '~':
-            case '=':
-
-            case '+':
-            case '-':
-            case '*':
-
-            case '|':
-            case '&':
-            case '(':
-            case ')':
-            case '[':
-            case ']':
-            case '{':
-            case '}':
-            case '%':
-            case '#':
-            case '$':
-            case ':':
-            case '`':
-
-            case '\"':
-            case '\'':
-
-            case '\t':
-            case '\n':
-            case '\r':
-            case 0:
-                return false;
-        }
-        return true;
-    }
 
     static class MyParseRunner extends ParseRunner {
 

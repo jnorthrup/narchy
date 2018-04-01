@@ -3,7 +3,6 @@ package nars.term.atom;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Texts;
 import nars.$;
-import nars.Narsese;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -278,7 +277,7 @@ public interface Atomic extends Term {
 
 
         for (int i = 0; i < len; i++) {
-            if (!Narsese.isValidAtomChar(t.charAt(i)))
+            if (!Atom.isValidAtomChar(t.charAt(i)))
                 return true;
         }
 

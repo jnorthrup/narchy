@@ -6,7 +6,7 @@ import nars.subterm.util.TermMetadata;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
-import static nars.Op.ATOM;
+import static nars.Op.*;
 
 /**
  * default Atom implementation: wraps a String instance as closely as possible.
@@ -57,6 +57,56 @@ public class Atom extends AtomicConst implements The {
     }
 
     public final static int AtomString = Term.opX(ATOM, 1);
+
+    public static boolean isValidAtomChar(char x) {
+
+        //TODO replace these with Symbols. constants
+        switch (x) {
+            case ' ':
+            case ARGUMENT_SEPARATOR:
+            case BELIEF:
+            case GOAL:
+            case QUESTION:
+            case QUEST:
+            case COMMAND:
+
+            case '^':
+
+            case '<':
+            case '>':
+
+            case '~':
+            case '=':
+
+            case '+':
+            case '-':
+            case '*':
+
+            case '|':
+            case '&':
+            case '(':
+            case ')':
+            case '[':
+            case ']':
+            case '{':
+            case '}':
+            case '%':
+            case '#':
+            case '$':
+            case ':':
+            case '`':
+
+            case '\"':
+            case '\'':
+
+            case '\t':
+            case '\n':
+            case '\r':
+            case 0:
+                return false;
+        }
+        return true;
+    }
 
     @Override public int opX() {
         return AtomString;
