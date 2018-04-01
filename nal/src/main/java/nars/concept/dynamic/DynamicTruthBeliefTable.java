@@ -51,7 +51,14 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
-            return yy.task(template, model, beliefOrGoal, nar);
+            Task generated = yy.task(template, model, beliefOrGoal, nar);
+
+            if (generated!=null) {
+                //cache this generated belief, allowing it to revise with others in the future
+                add(generated, nar);
+            }
+
+            return generated;
         } else {
             return null;
         }

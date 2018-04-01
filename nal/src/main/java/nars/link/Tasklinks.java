@@ -46,12 +46,11 @@ public class Tasklinks {
     public static void linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
 
         /** non-zero for safety */
-        final float priCause = Math.max(_pri * nar.activationRate.floatValue(), Pri.EPSILON);
+        final float priCause = Math.max(_pri, Pri.EPSILON);
 
-        float balance = nar.termlinkBalance.floatValue();
 
         //MutableFloat overflow = new MutableFloat();
-        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, balance * priCause);
+        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, priCause);
 
         linkTask(link, src.tasklinks(), null);
 
@@ -62,10 +61,10 @@ public class Tasklinks {
         assert(priEffect >= 0);
 
         //activate the task's concept
-        nar.activate(src, balance * priEffect);
+        nar.activate(src,  nar.activationRate.floatValue() * priEffect);
 
         //activate the task concept templates
-        src.templates().activate(src, (1f-balance) * priEffect, nar);
+        src.templates().activate(src, priEffect, nar);
 
         {
             //adjust the cause values according to the input's actual demand

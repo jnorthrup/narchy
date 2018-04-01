@@ -87,8 +87,8 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                //fps * 2, //NYQUIST
-                fps * 1, //1:1
+                fps * 2, //NYQUIST
+                //fps * 1, //1:1
                 fps);
     }
 

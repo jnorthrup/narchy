@@ -33,8 +33,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.table.TemporalBeliefTable.value;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -64,8 +63,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             3f;
 
 
-    private static final int SCAN_CONF_DIVISIONS_MAX = 2;
-    private static final int SCAN_TIME_DIVISIONS_MAX = 5;
+    private static final int SCAN_CONF_DIVISIONS_MAX = 1; //2;
+    private static final int SCAN_TIME_DIVISIONS_MAX = 1; //5;
 
     private static final int MIN_TASKS_PER_LEAF = 3;
     private static final int MAX_TASKS_PER_LEAF = 4;
@@ -706,7 +705,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     filter)
                     .scan(this, start, end);
 
-            return Revision.mergeTemporal(nar, start, end, new FasterList(tt.size(), tt.list), tt.size());
+            return Revision.mergeTemporal(nar, tt.list, tt.size());
         }
     }
 
@@ -727,19 +726,49 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     filter)
                 .scan(this, start, end);
 
-//            //merge up to the top 2
-//            switch (tt.size()) {
-//                case 0:
-//                    return null;
-//
-//                case 1:
-//                    return tt.first().task();
-//
-//                default:
-//                    return merge2(tt.first(), tt.last(), start, end, dur, template, nar);
-//            }
 
-            return Revision.mergeTemporal(nar, start, end, new FasterList(tt.size(), tt.list), tt.size());
+            int n = tt.size();
+            if (n == 0)
+                return null;
+
+            TaskRegion[] ttt = (TaskRegion[]) tt.array();
+
+            if (n > 1) {
+                //find the most consistent term of the set of tasks and remove any that dont match it
+                //terms are classified by their dt:
+                //
+                int pos = 0, neg = 0;
+
+                for (TaskRegion x : ttt) {
+                    if (x == null)
+                        break;//end of list
+                    int dt = (((Task) x).term()).dt();
+                    if (dt!=0 && dt!=DTERNAL) {
+                        if (dt < -dur/2) neg++;
+                        else if (dt > +dur/2) pos++;
+                    }
+                }
+                if (pos > 0 && neg > 0) {
+                    boolean polarity =
+                            pos == neg ? nar.random().nextBoolean() //if equal, choose on polarity at random
+                                    :
+                                pos > neg;
+
+                    FasterList<TaskRegion> xx = new FasterList<>(0, new TaskRegion[n - (polarity ? neg : pos)]);
+                    for (TaskRegion x: ttt) {
+                        if (x == null)
+                            break;//end of list
+                        int dt = (((Task) x).term()).dt();
+                        if (dt == 0 || dt == DTERNAL || (polarity && dt > +dur/2) || (!polarity && dt < -dur/2))
+                            xx.addWithoutResizeCheck(x);
+                    }
+                    ttt = xx.array();
+                    n = ttt.length;
+                }
+            }
+
+
+            return Revision.mergeTemporal(nar, ttt, n);
         }
 
 

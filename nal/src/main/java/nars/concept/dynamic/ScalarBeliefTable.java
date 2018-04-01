@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.link.Tasklinks;
 import nars.table.TemporalBeliefTable;
@@ -392,6 +393,21 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         return x;
     }
 
+    @Override
+    public boolean add(Task input, TaskConcept concept, NAR nar) {
+
+        if (Param.FILTER_DYNAMIC_MATCHES) {
+            if (!(input instanceof SignalTask) && input.punc() == punc() && !input.isInput()) {
+
+                PredictionFeedback.feedbackNonSignal(input, this, nar);
+                if (input.isDeleted())
+                    return false;
+
+            }
+        }
+
+        return super.add(input, concept, nar);
+    }
 
     static class ScalarSignalTask extends SignalTask {
 

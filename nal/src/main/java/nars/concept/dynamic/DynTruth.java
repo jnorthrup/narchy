@@ -123,23 +123,30 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
             if (size() > 1) {
                 if (superterm.op() == CONJ) {
-                    long min = ETERNAL;
+                    long min = TIMELESS;
                     long maxRange = 0;
+                    boolean eternals = false;
                     for (int i = 0, thisSize = size(); i < thisSize; i++) {
                         LongInterval ii = get(i);
                         long iis = ii.start();
                         if (iis != ETERNAL) {
                             min = Math.min(min, iis);
                             maxRange = Math.max(maxRange, ii.end() - iis);
+                        } else {
+                            eternals = true;
                         }
                     }
 
-                    assert(min!=TIMELESS);
+                    if (eternals && min == TIMELESS) {
+                        start = end = ETERNAL;
+                    } else {
+                        assert (min != TIMELESS);
 //                    if (min == Long.MAX_VALUE)
 //                        start = end = ETERNAL; //all eternal
 //                    else {
-                    start = min;
-                    end = (start != ETERNAL) ? (min + maxRange) : min;
+                        start = min;
+                        end = (min + maxRange);
+                    }
 //                    }
 
                 } else {

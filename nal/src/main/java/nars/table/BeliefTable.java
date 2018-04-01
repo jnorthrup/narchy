@@ -9,7 +9,6 @@ import nars.concept.TaskConcept;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -234,7 +233,7 @@ public interface BeliefTable extends TaskTable {
 
         //project if different occurrence
 
-        boolean relevantTime = answer.isEternal() || start==ETERNAL || !answer.intersects(start, end);
+        boolean relevantTime = start==ETERNAL || answer.intersects(start, end);
 
         if (/*!answer.isEternal() && */!relevantTime) {
 
@@ -247,8 +246,9 @@ public interface BeliefTable extends TaskTable {
                         content,
                         aa.punc(),
                         truth, nar.time(), t, t,
-                        (question != null) ?
-                                Stamp.zip(aa.stamp(), question.stamp(), 0.5f) : aa.stamp()));
+                        aa.stamp()));
+                        //(question != null) ?
+                          //      Stamp.zip(aa.stamp(), question.stamp(), 0.5f) : aa.stamp()));
                 if (a == null)
                     return null;
 

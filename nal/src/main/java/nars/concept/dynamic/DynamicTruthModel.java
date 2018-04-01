@@ -247,7 +247,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             //long estVolume = ((FasterList<TaskRegion>)components).sumOfInt(xt -> ((Task)xt).term().volume());
             //TODO heuristic for range sampling parameters
             for (TaskRegion t : components) {
-                if (!c.add(((Task)t).term(), t.start(), t.end(), 2, 1))
+                if (!c.add(((Task)t).term(), t.start(), t.end(), 1, 1))
                     return Null; //TODO maybe try with less aggressive sampling, if sampling was used
             }
             return c.term();

@@ -35,7 +35,6 @@ import java.util.TreeSet;
 import static jcog.Util.lerp;
 import static nars.Op.*;
 import static nars.time.Tense.*;
-import static nars.truth.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -604,25 +603,22 @@ public class Revision {
 //        factor *= (1f / (1f + intermvalDistance));
 //        if (factor < Prioritized.EPSILON) return null;
 
-        float confMin =
-                Param.TRUTH_EPSILON;
-
         EviDensity density = new EviDensity(a, b);
         long start = density.unionStart;
         long end = density.unionEnd;
 
 
-        Truth an = a.truth(start, end, dur, confMin);
+        Truth an = a.truth(start, end, dur, 0);
         if (an == null)
             return null;
-        Truth bn = b.truth(start, end, dur, confMin);
+        Truth bn = b.truth(start, end, dur, 0);
         if (bn == null)
             return null;
 
         Truth rawTruth = revise(an, bn,
                 //joint.factor(Math.abs( an.freq() - bn.freq() ))
                 density.factor()
-                , c2wSafe(confMin));
+                , Truth.EVI_MIN);
         if (rawTruth == null)
             return null;
 
@@ -759,7 +755,7 @@ public class Revision {
         return mergeTemporal(nar, tt, tt.length);
     }
 
-    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, FasterList<TaskRegion> tt, int results) {
+    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, FasterList<TaskRegion> tt) {
         //filter the task set:
         // if there are any exact matches to the interval, remove any others
         RoaringBitmap oob = new RoaringBitmap();
@@ -776,7 +772,7 @@ public class Revision {
             }
         }
 
-        return mergeTemporal(nar, tt.array(), results);
+        return mergeTemporal(nar, tt.array(), tt.size());
     }
 
 
@@ -790,7 +786,8 @@ public class Revision {
 
             default:
                 return Revision.mergeTemporal(
-                        c2wSafe(nar.confMin.floatValue()),
+                        Truth.EVI_MIN,
+                        //c2wSafe(nar.confMin.floatValue()),
                         nar, results, tt
                 );
 
@@ -804,7 +801,7 @@ public class Revision {
      * the input minEvi corresponds to the absolute minimum accepted
      * evidence integral (evidence * time) for a point-like result (dtRange == 0)
      * */
-    @Nullable public static Task mergeTemporal(float minEviInteg, NAR nar, int results, TaskRegion... tt) {
+    @Nullable static Task mergeTemporal(float eviMinInteg, NAR nar, int results, TaskRegion... tt) {
         assert(tt.length > 1);
 
         Task first = tt[0].task();
@@ -878,7 +875,7 @@ public class Revision {
             return first; //return the top one, nothing could be merged
         }
 
-        minEviInteg = Math.max(first.eviInteg(), minEviInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
+        eviMinInteg = Math.max(first.eviInteg(), eviMinInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
 
         float overlapFactor = Param.overlapFactor(((float)overlap)/totalEv);
         if (overlapFactor < Float.MIN_NORMAL)
@@ -933,7 +930,7 @@ public class Revision {
 //            eAdjusted = Util.lerp(densityFactor, truth.eviEternalized(), truth.evi());
 //        }
 
-        if ((eAdjusted * range) < minEviInteg)
+        if ((eAdjusted * range) < eviMinInteg)
             return first;
 
         Task t = Task.tryTask(content, first.punc(), truth, (c, tr)->{
@@ -1044,8 +1041,12 @@ public class Revision {
             int bdt = b.dt();
 
             //ockham temoral razor - prefer temporally shorter explanations
-            if (adt == DTERNAL) adt = 0; //dternal prefer match with immediate dt=0
-            if (bdt == DTERNAL) bdt = 0; //dternal prefer match with immediate dt=0
+            if (adt == DTERNAL) adt =
+                    //0; //dternal prefer match with immediate dt=0
+                    bdt; //any
+            if (bdt == DTERNAL) bdt =
+                    //bdt = 0; //dternal prefer match with immediate dt=0
+                    adt; //any
 
             if (adt == XTERNAL) adt = bdt;
             if (bdt == XTERNAL) bdt = adt;

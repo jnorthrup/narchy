@@ -1320,6 +1320,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return match(c, BELIEF, start, end);
     }
 
+    public final Task belief(String c, long when) throws NarseseException {
+        return belief($.$(c), when);
+    }
     public final Task belief(Termed c, long when) {
         return belief(c, when, when);
     }

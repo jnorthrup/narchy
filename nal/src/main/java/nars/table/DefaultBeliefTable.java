@@ -125,6 +125,12 @@ public class DefaultBeliefTable implements BeliefTable {
         return (input.isEternal() ? eternal : temporal).add(input, concept, nar);
     }
 
+    protected boolean add(Task input, NAR nar) {
+        TaskConcept concept = (TaskConcept) input.concept(nar, true);
+        if (concept == null)
+            return false;
+        return (input.isEternal() ? eternal : temporal).add(input, concept, nar);
+    }
 
 }
 
