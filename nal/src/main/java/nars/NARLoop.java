@@ -1,6 +1,6 @@
 package nars;
 
-import jcog.exe.Loop;
+import jcog.exe.InstrumentedLoop;
 import jcog.math.FloatRange;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * self managed set of processes which run a NAR
  * as a loop at a certain frequency.
  */
-public class NARLoop extends Loop {
+public class NARLoop extends InstrumentedLoop {
 
     public final NAR nar;
 

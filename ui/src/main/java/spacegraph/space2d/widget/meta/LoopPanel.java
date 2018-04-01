@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.meta;
 
+import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import jcog.math.MutableInteger;
 import spacegraph.space2d.container.Gridding;
@@ -25,9 +26,15 @@ public class LoopPanel extends Widget {
         this.loop = loop;
         fps = new MutableInteger(Math.round(loop.getFPS()));
         fpsLabel = new IntSpinner(fps, (f)-> f + "fps", 0, 100);
-        cycleTimePlot = new Plot2D(128, Plot2D.Line)
-                .add("cycleTime", ()->loop.cycleTime.getMean())
-                .add("dutyTime", ()->loop.dutyTime.getMean());
+
+        if (loop instanceof InstrumentedLoop) {
+            InstrumentedLoop iloop = (InstrumentedLoop) loop;
+            cycleTimePlot = new Plot2D(128, Plot2D.Line)
+                    .add("cycleTime", () -> iloop.cycleTime.getMean())
+                    .add("dutyTime", () -> iloop.dutyTime.getMean());
+        } else {
+            cycleTimePlot = null; //TODO
+        }
 
         content(
             new Gridding(

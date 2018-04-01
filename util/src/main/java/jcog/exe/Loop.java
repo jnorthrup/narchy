@@ -3,13 +3,11 @@ package jcog.exe;
 import com.ifesdjeen.timer.FixedRateTimedFuture;
 import com.ifesdjeen.timer.HashedWheelTimer;
 import jcog.Util;
-import jcog.math.MutableInteger;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.slf4j.Logger;
 
-import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -18,9 +16,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 abstract public class Loop {
 
-    protected static final Logger logger = getLogger(Loop.class);
-
-    //private volatile Thread thread = null;
+    protected final Logger logger;
 
     //make Loop extend FixedRateFuture...
     @Deprecated private volatile FixedRateTimedFuture task = null;
@@ -43,17 +39,6 @@ abstract public class Loop {
         return timer;
     }
 
-//    private float lag, lagSum;
-
-    protected final int windowLength = 4;
-
-//    /**
-//     * in seconds
-//     */
-    public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); //in millisecond
-    public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); //in millisecond
-
-
     public static Loop of(Runnable iteration) {
         return new Loop() {
             @Override
@@ -69,7 +54,7 @@ abstract public class Loop {
      * 0: loop at full speed
      * > 0: delay in milliseconds
      */
-    public final MutableInteger periodMS = new MutableInteger(-1);
+    public final AtomicInteger periodMS = new AtomicInteger(-1);
 
 
     @Override
@@ -82,15 +67,14 @@ abstract public class Loop {
      * create but do not start
      */
     public Loop() {
-
+        logger = getLogger(getClass());
     }
 
     /**
      * create and auto-start
      */
     public Loop(float fps) {
-        this();
-        runFPS(fps);
+        this(fpsToMS(fps));
     }
 
     /**
@@ -103,12 +87,16 @@ abstract public class Loop {
     }
 
     public boolean isRunning() {
-        return task != null;
+        return periodMS.intValue() >= 0;
     }
 
     public final Loop runFPS(float fps) {
-        setPeriodMS(Math.round(1000f / fps));
+        setPeriodMS(fpsToMS(fps));
         return this;
+    }
+
+    static int fpsToMS(float fps) {
+        return Math.round(1000f / fps);
     }
 
 
@@ -120,16 +108,13 @@ abstract public class Loop {
 //                    Thread myNewThread = newThread();
 //                    myNewThread.start();
                     onStart();
-                    task = timer().scheduleAtFixedRate(this::_next, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                    this.task = timer().scheduleAtFixedRate(this::_next, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
                 synchronized (periodMS) {
                     //Thread prevThread = this.thread;
                     FixedRateTimedFuture prevTask = this.task;
                     if (prevTask != null) {
-                        //this.thread = null;
-
-                        logger.info("stop {}", this);
 
                         this.task = null;
                         //try {
@@ -140,8 +125,10 @@ abstract public class Loop {
 //                            ii.printStackTrace();
 //                        }
 
-                        onStop();
                     }
+
+                    logger.info("stop {}", this);
+                    onStop();
                 }
             } else if (prevPeriodMS >= 0) {
                 //change speed
@@ -236,17 +223,18 @@ abstract public class Loop {
     }
 
 
-
     protected final void _next() {
 
         if (!executing.compareAndSet(false, true)) {
             //already in-progress
             return;
         }
+        if (periodMS.intValue()<0)
+            return; //stopped
 
         try {
-            long beforeIteration = System.nanoTime();
 
+            beforeNext();
             try {
                 if (!next()) {
                     stop(); //will exit after statistics at the end of this loop
@@ -255,20 +243,18 @@ abstract public class Loop {
                 thrown(e);
             }
 
-            long lastIteration = this.last;
-            long afterIteration = System.nanoTime();
-            this.last = afterIteration;
-
-            long dutyTimeNS = afterIteration - beforeIteration;
-            double dutyTimeS = (dutyTimeNS) / 1.0E9;
-
-            double cycleTimeS = (afterIteration - lastIteration) / 1.0E9;
-
-            this.dutyTime.addValue(dutyTimeS);
-            this.cycleTime.addValue(cycleTimeS);
+            afterNext();
         } finally {
             executing.set(false);
         }
+    }
+
+    protected void beforeNext() {
+
+    }
+
+    protected void afterNext() {
+
     }
 
     volatile long last = System.nanoTime();
@@ -302,13 +288,6 @@ abstract public class Loop {
 //        return l;
 //    }
 
-    public void stats(String prefix, SortedMap<String, Object> x) {
-        x.put(prefix + " cycle time mean", cycleTime.getMean()); //in seconds
-        x.put(prefix + " cycle time vary", cycleTime.getVariance()); //in seconds
-        x.put(prefix + " duty time mean", dutyTime.getMean()); //in seconds
-        x.put(prefix + " duty time vary", dutyTime.getVariance()); //in seconds
-        //x.put(prefix + " lag", lag);
-    }
 
     public float getFPS() {
         if (isRunning()) {
