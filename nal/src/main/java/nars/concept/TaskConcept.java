@@ -20,8 +20,7 @@ import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
 public class TaskConcept extends NodeConcept implements Concept {
-
-
+    
     protected final BeliefTable beliefs;
     protected final BeliefTable goals;
     protected final QuestionTable quests;
@@ -34,6 +33,13 @@ public class TaskConcept extends NodeConcept implements Concept {
                 conceptBuilder.questionTable(term, true),
                 conceptBuilder.questionTable(term, false),
                 conceptBuilder.newLinkBags(term));
+    }
+
+
+    public TaskConcept(Term term, ConceptBuilder b) {
+        this(term, b.newTable(term, true), b.newTable(term, false),
+                b.questionTable(term, true), b.questionTable(term, false),
+                b.newLinkBags(term));
     }
 
     /**
@@ -53,21 +59,6 @@ public class TaskConcept extends NodeConcept implements Concept {
         this.questions = questions;
         this.quests = quests;
 
-    }
-
-
-    /**
-     * used for setting an explicit OperationConcept instance via java; activates it on initialization
-     */
-    public TaskConcept(Term term, NAR n) {
-        this(term, n.conceptBuilder);
-    }
-
-
-    public TaskConcept(Term term, ConceptBuilder b) {
-        this(term, b.newTable(term, true), b.newTable(term, false),
-                b.questionTable(term, true), b.questionTable(term, false),
-                b.newLinkBags(term));
     }
 
 
@@ -128,7 +119,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Directly process a new task, if belief tables agree to store it.
      * Called exactly once on each task.
      */
-    public boolean add(Task t, NAR n) {
+    public final boolean add(Task t, NAR n) {
         return table(t.punc()).add(t, this, n);
     }
 

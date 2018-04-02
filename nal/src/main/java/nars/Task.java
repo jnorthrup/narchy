@@ -1,5 +1,6 @@
 package nars;
 
+import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.bag.impl.PLinkArrayBag;
 import jcog.bloom.StableBloomFilter;
@@ -9,14 +10,12 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Priority;
 import nars.concept.Concept;
-import nars.control.proto.TaskAdd;
 import nars.concept.Operator;
-import nars.task.DerivedTask;
-import nars.task.ITask;
-import nars.task.NALTask;
-import nars.task.TaskProxy;
+import nars.control.proto.TaskAdd;
+import nars.task.*;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
+import nars.term.Solution;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
@@ -35,10 +34,9 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.w2cSafe;
@@ -112,31 +110,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                         a : b;
             }
         }
-    }
-
-    @Override
-    default float freqMin() {
-        return freq();
-    }
-
-    @Override
-    default float freqMean() {
-        return freq();
-    }
-
-    @Override
-    default float freqMax() {
-        return freq();
-    }
-
-    @Override
-    default float confMin() {
-        return conf();
-    }
-
-    @Override
-    default float confMax() {
-        return conf();
     }
 
     /**
@@ -254,7 +227,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return o.atomic || validTaskCompound(t, safe);
     }
 
-
     /**
      * call this directly instead of taskContentValid if the level, volume, and normalization have already been tested.
      * these can all be tested prenormalization, because normalization will not affect the result
@@ -294,7 +266,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                                 if (indepVarOrStatement.op() == VAR_INDEP) {
                                     indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
                                             () -> new FasterList<>(2))
-                                        .add( path.toImmutable() );
+                                            .add(path.toImmutable());
                                 } else {
                                     statements.add(path.toImmutable());
                                 }
@@ -315,7 +287,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                                 return true;
                             });
 
-                    if (indepVarPaths.anySatisfy(p->p.size() < 2))
+                    if (indepVarPaths.anySatisfy(p -> p.size() < 2))
                         return false; //there is an indep variable that appears only once
 
                     if (statements.size() > 1) {
@@ -388,7 +360,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             throw new InvalidTaskException(t, reason);
     }
 
-
     @Nullable
     static NALTask clone(Task x, Term newContent) {
         return clone(x, newContent, x.truth(), x.punc());
@@ -407,11 +378,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     @Nullable
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long creation, long start, long end) {
 
-        NALTask y = (NALTask) Task.tryTask(newContent, newPunc, newTruth, (c, t)->
-            new NALTask(c, newPunc,
-                t,
-                creation, start, end,
-                x.stamp()));
+        NALTask y = (NALTask) Task.tryTask(newContent, newPunc, newTruth, (c, t) ->
+                new NALTask(c, newPunc,
+                        t,
+                        creation, start, end,
+                        x.stamp()));
         if (y == null)
             return null;
 
@@ -426,13 +397,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         //y.meta.putAll(x.meta());
         return y;
     }
-
-
-    //    @Nullable
-//    static boolean taskStatementValid(/*@NotNull*/Compound t, boolean safe) {
-//        return taskStatementValid(t, (byte) 0, safe); //ignore the punctuation-specific conditions
-//    }
-
 
     static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> withResult) {
         return tryTask(t, punc, tr, withResult, !Param.DEBUG_EXTRA);
@@ -469,16 +433,16 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //            reduced = true;
 
 
-            if (o == NEG) {
-                t = t.unneg();
-                o = t.op();
-                negated = !negated;
-            }
+        if (o == NEG) {
+            t = t.unneg();
+            o = t.op();
+            negated = !negated;
+        }
 
-            if (o.statement && t.hasAny(BOOL)) {
-                fail(t, "statement term containing boolean", safe);
-                return null;
-            }
+        if (o.statement && t.hasAny(BOOL)) {
+            fail(t, "statement term containing boolean", safe);
+            return null;
+        }
 
 //            if (!t.hasAny(ConstantAtomics)) {
 //                fail(t, "contains no constant atomics (ATOM | INT)", safe);
@@ -511,6 +475,51 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return Task.validTaskTerm(t, punc, safe) ? pair(t, negated) : null;
     }
 
+    /**
+     * creates lazily computing proxy task which facades the task to the target time range
+     */
+    static Task project(@Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
+        if (!negated && t.contains(subStart, subEnd))
+            return t;
+
+        int dur = n.dur();
+
+
+        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () ->
+                t.truth(subStart, subEnd, dur, Float.MIN_NORMAL)
+        );
+    }
+
+    @Override
+    default float freqMin() {
+        return freq();
+    }
+
+
+    //    @Nullable
+//    static boolean taskStatementValid(/*@NotNull*/Compound t, boolean safe) {
+//        return taskStatementValid(t, (byte) 0, safe); //ignore the punctuation-specific conditions
+//    }
+
+    @Override
+    default float freqMean() {
+        return freq();
+    }
+
+    @Override
+    default float freqMax() {
+        return freq();
+    }
+
+    @Override
+    default float confMin() {
+        return conf();
+    }
+
+    @Override
+    default float confMax() {
+        return conf();
+    }
 
     /**
      * amount of evidence measured at a given time with a given duration window
@@ -520,7 +529,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * @param when time
      * @param dur  duration period across which evidence can decay before and after its defined start/stop time.
      *             if (dur <= 0) then no extrapolation is computed
-     *
      * @return value >= 0 indicating the evidence
      */
     default float evi(long when, final long dur) {
@@ -543,7 +551,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 float ecw = ete > 0 ? eviEternalized() * ete : 0;
                 cw = ecw + dur > 0 ?
                         (float) Param.evi(
-                            cw - ecw /* delta to eternalization, >= 0 */,
+                                cw - ecw /* delta to eternalization, >= 0 */,
                                 dist, dur)
                         :
                         0;
@@ -553,7 +561,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
     }
-
 
     default float eternalizability() {
 
@@ -594,10 +601,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return (punc() == QUESTION);
     }
 
-    default boolean isBelief() {
-        return (punc() == BELIEF);
-    }
-
 //    /**
 //     * called if this task is entered into a concept's belief tables
 //     * TODO what about for questions/quests
@@ -605,12 +608,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //    void feedback(TruthDelta delta, float deltaConfidence, float deltaSatisfaction, NAR nar);
 //
 
-    default boolean isGoal() {
-        return (punc() == GOAL);
+    default boolean isBelief() {
+        return (punc() == BELIEF);
     }
 
-    default boolean isQuest() {
-        return (punc() == QUEST);
+    default boolean isGoal() {
+        return (punc() == GOAL);
     }
 
 //    /** allows for budget feedback that occurrs on revision */
@@ -618,8 +621,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        return true;
 //    }
 
-    default boolean isCommand() {
-        return (punc() == COMMAND);
+    default boolean isQuest() {
+        return (punc() == QUEST);
     }
 
 //    @Nullable
@@ -627,6 +630,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        sb.append(appendTo(null));
 //        return sb;
 //    }
+
+    default boolean isCommand() {
+        return (punc() == COMMAND);
+    }
 
     @Nullable
     default Appendable toString(boolean showStamp) {
@@ -641,12 +648,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //                    //System.err.println
 //                    (this, "unconceptualized");
 //        }
-    }
-
-
-    default boolean isQuestOrQuestion() {
-        byte c = punc();
-        return c == Op.QUESTION || c == Op.QUEST;
     }
 
 
@@ -697,6 +698,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        }
 //    }
 
+    default boolean isQuestOrQuestion() {
+        byte c = punc();
+        return c == Op.QUESTION || c == Op.QUEST;
+    }
+
     default boolean isBeliefOrGoal() {
         byte c = punc();
         return c == Op.BELIEF || c == Op.GOAL;
@@ -742,7 +748,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         return answer;
     }
-
 
     default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb /**@Nullable*/) {
         return appendTo(sb, false);
@@ -849,7 +854,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * or if its origin has been forgotten or never known
      */
     default boolean isInput() {
-        return stamp().length <=1 && !isCyclic();
+        return stamp().length <= 1 && !isCyclic();
 
         //return evidence().length <= 1;
         //return (getParentTask() == null);
@@ -875,7 +880,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return conf(when, when, dur);
     }
 
-
     @Nullable
     default Truth truth(long when, long dur, NAR nar) {
         Truth t = truth(when, dur, nar.confMin.floatValue());
@@ -891,23 +895,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     default float evi(long targetStart, long targetEnd, final long dur) {
         return evi(nearestPointExternal(targetStart, targetEnd), dur);
-    }
-
-    @Nullable
-    default Truth truth(long when, long dur, float minConf) {
-        float eve = evi(when, dur);
-        if (eve == eve && w2cSafe(eve) >= minConf) {
-
-            return new PreciseTruth(freq(), eve, false);
-
-            //quantum entropy uncertainty:
-//                float ff = freq();
-//                ff = (float) Util.unitize(
-//                        (ThreadLocalRandom.current().nextFloat() - 0.5f) *
-//                                2f * Math.pow((1f-conf),4) + ff);
-//                return $.t(ff, conf);
-        }
-        return null;
     }
 
 
@@ -934,6 +921,23 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //                .append('\n');
 //
 //    }
+
+    @Nullable
+    default Truth truth(long when, long dur, float minConf) {
+        float eve = evi(when, dur);
+        if (eve == eve && w2cSafe(eve) >= minConf) {
+
+            return new PreciseTruth(freq(), eve, false);
+
+            //quantum entropy uncertainty:
+//                float ff = freq();
+//                ff = (float) Util.unitize(
+//                        (ThreadLocalRandom.current().nextFloat() - 0.5f) *
+//                                2f * Math.pow((1f-conf),4) + ff);
+//                return $.t(ff, conf);
+        }
+        return null;
+    }
 
     /**
      * append an entry to this task's log history
@@ -994,39 +998,54 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     default ITask run(NAR n) {
 
-
-        n.emotion.onInput(this, n);
-
-
         Term x = term();
 
         //invoke dynamic functors and apply aliases
-        Term y = x.eval(n.concepts.functors);
+        //Term y = x.eval(n.concepts.functors);
 
+        //this might be overkill
+        Set<ITask> yy = Streams.stream(Solution.solve(x, n.concepts.functors))
+                .map(y -> preProcess(n, x, y))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        switch (yy.size()) {
+            case 0: return null;
+            case 1: return yy.iterator().next();
+            default:
+                return new NativeTask.RunTask(()->
+                   yy.forEach(z -> z.run(n))
+                );
+        }
+
+    }
+
+    @Nullable
+    default ITask preProcess(NAR n, Term x, Term y) {
         if (!x.equals(y)) {
 
             //clone a new task because it has changed
 
             Task result;
-            if (y instanceof Bool && isQuestOrQuestion()) {
-                //convert to final implicit answer
-                byte p = isQuestion() ? BELIEF : GOAL;
+            if (y instanceof Bool) {
+                if (isQuestOrQuestion()) {
+                    //convert to final implicit answer
+                    byte p = isQuestion() ? BELIEF : GOAL;
 
-                @Nullable NALTask finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
+                    @Nullable NALTask finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
 
-                delete();
+                    delete();
 
-                if (finalResult != null) {
-                    return new TaskAdd(finalResult);
+                    if (finalResult != null) {
+                        return new TaskAdd(finalResult);
+                    } else {
+                        //TODO maybe print error, at least in debug mode
+                        return null;
+                    }
                 } else {
-                    //TODO maybe print error, at least in debug mode
+                    //belief or goal boolean, wtf
                     return null;
                 }
-
             } else {
-                if (y.op() == Op.BOOL)
-                    return null;
-
                 @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(),
                         false
                         //!isInput() || !Param.DEBUG_EXTRA
@@ -1084,17 +1103,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return null;
     }
 
-    /**
-     * projected truth value
-     */
-    @Nullable
-    default Truth truth(long when, long dur) {
-        float e = evi(when, dur);
-        if (e <= Float.MIN_NORMAL)
-            return null;
-        return new PreciseTruth(freq(), e, false);
-    }
-
 //    @Override
 //    default boolean intersectsConf(float cMin, float cMax) {
 //        float c = conf();
@@ -1108,28 +1116,25 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //    }
 
     /**
+     * projected truth value
+     */
+    @Nullable
+    default Truth truth(long when, long dur) {
+        float e = evi(when, dur);
+        if (e <= Float.MIN_NORMAL)
+            return null;
+        return new PreciseTruth(freq(), e, false);
+    }
+
+    /**
      * TODO cause should be merged if possible when merging tasks in belief table or otherwise
      */
     short[] cause();
 
-    /**
-     * creates lazily computing proxy task which facades the task to the target time range
-     */
-    static Task project(@Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
-        if (!negated && t.contains(subStart, subEnd))
-            return t;
-
-        int dur = n.dur();
-
-
-        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () ->
-                t.truth(subStart, subEnd, dur, Float.MIN_NORMAL)
-        );
-    }
-
     default float eviInteg() {
         return isEternal() ? Float.POSITIVE_INFINITY : range() * evi();
     }
+
     default float confInteg() {
         return isEternal() ? Float.POSITIVE_INFINITY : range() * conf();
     }

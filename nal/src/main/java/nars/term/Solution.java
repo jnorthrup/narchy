@@ -7,7 +7,6 @@ import jcog.version.VersionMap;
 import jcog.version.Versioning;
 import nars.Op;
 import nars.index.term.TermContext;
-import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -105,11 +104,11 @@ public class Solution {
 
                 @Nullable Term y = x.replace(subst);
 
-                if (y != null && !(y instanceof Bool) && !y.equals(x)) {
+                if (y != null && !y.equals(x)) {
 
                     y = y.eval(context);
 
-                    if (y != null && !(y instanceof Bool) && !y.equals(x)) {
+                    if (y != null && !y.equals(x)) {
                         result.add(y);
                     }
                 }

@@ -3,6 +3,7 @@ package nars.nal.nal4;
 import nars.NAR;
 import nars.NARS;
 import nars.term.Solution;
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -12,7 +13,7 @@ import static nars.Op.False;
 import static nars.Op.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ListTest {
+public class ListFuncTest {
 
 
     @Test
@@ -134,6 +135,7 @@ public class ListTest {
 
         assertEquals(
                 Set.of(
+                        (Term)False,
                         $$("(append((),(x,y),(x,y)) && append((),(x,b),(x,b)))"),
                         $$("(append((x),(y),(x,y)) && append((x),(b),(x,b)))")
                 ),

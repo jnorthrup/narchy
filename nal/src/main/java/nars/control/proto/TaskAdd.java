@@ -7,7 +7,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.task.ITask;
 import nars.task.NativeTask;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,7 +16,7 @@ public class TaskAdd extends NativeTask {
 
     private final Task task;
 
-    public TaskAdd(@NotNull Task task) {
+    public TaskAdd(Task task) {
         this.task = task;
     }
 
@@ -27,7 +26,10 @@ public class TaskAdd extends NativeTask {
     }
 
     @Override
-    public ITask run(NAR n) {
+    public final ITask run(NAR n) {
+
+        n.emotion.onInput(task, n);
+
         @Nullable Concept c = task.concept(n, true);
         if (c == null) {
             return null; //may not have capacity in the concept index
