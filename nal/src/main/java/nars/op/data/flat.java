@@ -48,19 +48,16 @@ public abstract class flat extends Functor.UnaryFunctor {
         return l;
     }
 
-    @NotNull
     public abstract Term result(List<Term> terms);
 
-    public static class flatProduct extends flat {
+    public static flat flatProduct = new flat() {
 
-
-        @NotNull
         @Override
-        public Term result(@NotNull List<Term> terms) {
+        public Term result(List<Term> terms) {
             return $.p(terms);
         }
 
-    }
+    };
 
     //public Flat(boolean productOrSet, boolean breadthOrDepth) {
         //generate each of the 4 different operate names

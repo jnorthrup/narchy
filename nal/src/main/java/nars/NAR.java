@@ -23,7 +23,7 @@ import nars.concept.util.ConceptState;
 import nars.control.*;
 import nars.exe.Exec;
 import nars.index.term.ConceptIndex;
-import nars.op.Operator;
+import nars.concept.Operator;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;

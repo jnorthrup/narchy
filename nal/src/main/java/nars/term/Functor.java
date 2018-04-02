@@ -181,12 +181,19 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
     public static LambdaFunctor f2(@NotNull String termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
         return f2(fName(termAtom), ff);
     }
+    public static LambdaFunctor f3(@NotNull String termAtom, @NotNull TriFunction<Term, Term, Term, Term> ff) {
+        return f3(fName(termAtom), ff);
+    }
 
     /**
      * three argument functor (convenience method)
      */
     public static LambdaFunctor f3(@NotNull Atom termAtom, @NotNull TriFunction<Term, Term, Term, Term> ff) {
         return f(termAtom, 3, (tt) -> ff.apply(tt.sub(0), tt.sub(1), tt.sub(2)));
+    }
+
+    public static LambdaFunctor f2Or3(@NotNull String termAtom, @NotNull Function<Term[], Term> ff) {
+        return f2Or3(fName(termAtom), ff);
     }
 
     public static LambdaFunctor f2Or3(@NotNull Atom termAtom, @NotNull Function<Term[], Term> ff) {

@@ -8,7 +8,7 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.Task;
-import nars.op.Operator;
+import nars.concept.Operator;
 import nars.op.language.util.Twenglish;
 import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;

@@ -10,7 +10,6 @@ import nars.term.Functor;
 import nars.term.Solution;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.Atom;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -25,7 +24,7 @@ public class ListTest {
     /**
      * emulates prolog append/3
      */
-    final static Functor append = Functor.f2Or3((Atom) $.the("append"), (Term[] aa) -> {
+    final static Functor append = Functor.f2Or3("append", (Term[] aa) -> {
         Term x = aa[0];
         Term y = aa[1];
 
@@ -139,6 +138,9 @@ public class ListTest {
                                 ));
                     }
                 } else {
+                    if (x.equals(EmptyProduct) && y.equals(xy)) return null; //true, unchanged
+                    if (y.equals(EmptyProduct) && x.equals(xy)) return null; //true, unchanged
+
                     //Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
                     Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
                     if (_xy.equals($.pFast(Terms.concat(xx.subterms().arrayShared(), yy)))) {
@@ -248,6 +250,40 @@ public class ListTest {
                         $$("append((),(x,y,z),(x,y,z))")
                 ),
                 Solution.solve($$("append(#x,#y,(x,y,z))"), n.concepts.functors));
+    }
+    @Test
+    public void testAppendHeadAndTailMulti() {
+        NAR n = NARS.shell();
+        n.on(append);
+
+        assertEquals(
+            Set.of(
+                    $$("(append((),(x,y),(x,y)),append((a),(b),(a,b)))"),
+                    $$("(append((x),(y),(x,y)),append((),(a,b),(a,b)))"),
+                    $$("(append((),(x,y),(x,y)),append((a,b),(),(a,b)))"),
+                    $$("(append((x),(y),(x,y)),append((a,b),(),(a,b)))"),
+                    $$("(append((x,y),(),(x,y)),append((a,b),(),(a,b)))"),
+                    $$("(append((),(x,y),(x,y)),append((),(a,b),(a,b)))"),
+                    $$("(append((x),(y),(x,y)),append((a),(b),(a,b)))"),
+                    $$("(append((x,y),(),(x,y)),append((a),(b),(a,b)))"),
+                    $$("(append((x,y),(),(x,y)),append((),(a,b),(a,b)))")
+            ),
+            Solution.solve($$("(append(#x,#y,(x,y)), append(#a,#b,(a,b)))"), n.concepts.functors));
+
+        assertEquals(
+                Set.of(
+                        $$("(append((),(x,y),(x,y)),append((),(x,b),(x,b)))"),
+                        $$("(append((x),(y),(x,y)),append((x),(b),(x,b)))")
+                ),
+                Solution.solve($$("(append(#x,#y,(x,y)), append(#x,#b,(x,b)))"), n.concepts.functors));
+
+        assertEquals(
+                Set.of(
+                        $$("(append((),(x,y),(x,y)) && append((),(x,b),(x,b)))"),
+                        $$("(append((x),(y),(x,y)) && append((x),(b),(x,b)))")
+                ),
+                Solution.solve($$("(&&,append(#x,#y,(x,y)),append(#a,#b,(x,b)),equal(#x,#a))"), n.concepts.functors));
+
     }
 
     @Test

@@ -5,6 +5,7 @@ import nars.concept.Concept;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
+import nars.util.AtomicExec;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.COMMAND;
-import static nars.op.Operator.argsArray;
+import static nars.concept.Operator.argsArray;
 import static org.junit.jupiter.api.Assertions.*;
 
 

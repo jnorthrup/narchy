@@ -10,7 +10,7 @@ import jcog.pri.PriReference;
 import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.control.proto.TaskAdd;
-import nars.op.Operator;
+import nars.concept.Operator;
 import nars.task.DerivedTask;
 import nars.task.ITask;
 import nars.task.NALTask;

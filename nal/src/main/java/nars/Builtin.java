@@ -1,12 +1,13 @@
 package nars;
 
 import jcog.TODO;
+import jcog.Texts;
 import jcog.User;
 import jcog.list.FasterList;
 import jcog.pri.PriReference;
 import nars.concept.Concept;
 import nars.op.DepIndepVarIntroduction;
-import nars.op.Operator;
+import nars.concept.Operator;
 import nars.op.Subst;
 import nars.op.data.*;
 import nars.op.java.Opjects;
@@ -37,6 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Built-in set of default Functors and Operators, registered into a NAR on initialization
  * Provides the standard core function library
+ *
+ * see:
+ * https://en.wikibooks.org/wiki/Prolog/Built-in_predicates
  */
 public class Builtin {
 
@@ -60,7 +64,7 @@ public class Builtin {
                         Term f = from.sub(i);
                         Term t = to.sub(i);
                         if (!f.equals(t)) {
-                            if (m == null) m = new UnifiedMap(1);
+                            if (m == null) m = new UnifiedMap<>(1);
                             m.put(f, t);
                         }
                     }
@@ -151,17 +155,41 @@ public class Builtin {
             Functor.f1Const("toChars", x -> $.p(x.toString().toCharArray(), $::the)),
             Functor.f1Const("complexity", x -> $.the(x.complexity())),
 
+            flat.flatProduct,
 
-            new flat.flatProduct(),
-            new similaritree(),
+            Functor.f2("similaritree", (a,b)->
+                ((a instanceof Variable) || (b instanceof Variable)) ? null :
+                    $.the(Texts.levenshteinDistance(a.toString(), b.toString()))
+            ),
 
             Functor.f2("equal", (x, y) -> {
                 if (x.equals(y))
                     return True; //unconditionally true
-                if ((x.vars() > 0) || (y.vars() > 0)) {
+                if ((x.hasVars() || y.hasVars())) {
                     return null; //unknown, fall-through
                 }
                 return False;
+            }),
+
+
+            Functor.f2("if", (condition, conseq) -> {
+                if (condition.hasVars()) return null; //unknown
+                else {
+                    if (condition.equals(True))
+                        return conseq;
+                }
+                return Null;
+            }),
+
+            Functor.f3("ifOrElse", (condition, conseqTrue, conseqFalse) -> {
+                if (condition.hasVars()) return null; //unknown
+                else {
+                    if (condition.equals(True))
+                        return conseqTrue;
+                    else if (condition.equals(False))
+                        return conseqFalse;
+                }
+                return Null;
             }),
 
             Functor.f2("ifNeqRoot", (returned, compareTo) ->
@@ -513,14 +541,7 @@ public class Builtin {
         }));
     }
 
-    private static Term nullToNull(Term t) {
-        if (t == null)
-            return Null;
-        else
-            return t;
-    }
-
-    public static void registerOperators(NAR nar) {
+    static void registerOperators(NAR nar) {
 
         //new System(nar);
 
@@ -550,7 +571,7 @@ public class Builtin {
         initMemoryOps(nar);
     }
 
-    public static void initMemoryOps(NAR nar) {
+    static void initMemoryOps(NAR nar) {
         nar.onOp1("load", (id, nn) -> {
             nar.runLater(() -> {
                 User.the().get(id.toString(), (byte[] x) -> {

@@ -1,4 +1,4 @@
-package nars.op;
+package nars.util;
 
 import jcog.bag.impl.ArrayBag;
 import jcog.bag.impl.PLinkArrayBag;
@@ -11,6 +11,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.Operator;
 import nars.control.DurService;
 import nars.subterm.Subterms;
 import nars.term.Term;

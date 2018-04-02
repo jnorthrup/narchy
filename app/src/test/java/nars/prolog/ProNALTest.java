@@ -3,7 +3,7 @@ package nars.prolog;
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Theory;
 import nars.*;
-import nars.op.Operator;
+import nars.concept.Operator;
 import nars.op.prolog.PrologToNAL;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;

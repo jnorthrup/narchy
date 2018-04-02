@@ -1,11 +1,9 @@
-package nars.op;
+package nars.concept;
 
 import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.concept.NodeConcept;
-import nars.concept.PermanentConcept;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
