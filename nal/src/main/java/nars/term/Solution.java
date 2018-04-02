@@ -8,6 +8,7 @@ import nars.index.term.TermContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Solution {
@@ -32,33 +33,34 @@ public class Solution {
         //TODO length=1 special case doesnt need cartesian product
         assert(proc.size()==1);
 
-        Iterator<Predicate<VersionMap<Term,Term>>[]> ci = proc.iterator();
 
-        Set<Term> result = new HashSet() ; //TODO stream an iterable
+        Set<Term> result = new HashSet(1) ; //TODO stream an iterable
 
 //        Iterator<Predicate<VersionMap<Term,Term>>> ci = new CartesianIterator(
 //                Predicate[]::new,
 //                Iterables.transform(proc, (Predicate<VersionMap<Term,Term>>[] p)
 //                        -> (Iterable<Predicate<VersionMap<Term,Term>>>)(()->ArrayIterator.get(p))));
 
+        Iterator<Predicate<VersionMap<Term,Term>>[]> ci = proc.iterator();
         while (ci.hasNext()) {
             Predicate<VersionMap<Term, Term>>[] n = ci.next();
             assert(n.length > 0);
 
             int start = v.now();
             for (Predicate p : n) {
-                if (!p.test(subst))
-                    return null;
+                if (p.test(subst)) {
 
-                @Nullable Term y = x.replace(subst);
 
-                if (y!=null && !y.equals(x)) {
+                    @Nullable Term y = x.replace(subst);
+
+                    if (y != null && !y.equals(x)) {
 
 //                y = y.eval(context);
 //
 //                if (y!=null && !y.equals(x)) {
-                    result.add(y);
+                        result.add(y);
 //                }
+                    }
                 }
 
                 v.revert(start);
@@ -70,23 +72,35 @@ public class Solution {
         return result;
     }
 
+    public static Term solve(Consumer<Solution> c) {
+        Solution s = Solution.the();
+        if (s != null) {
+            c.accept(s);
+        }
+        return null;
+    }
+
     public static Iterable<Term> solve(Term x, TermContext context) {
-        if (!x.hasAny(Op.VariableBits) || !x.hasAny(Op.funcBits))
+        if (!x.hasAny(Op.funcBits))
             return Collections.singleton(x);
         else {
-            Solution s = new Solution();
             assert(solving.get()==null);
+            Solution s = new Solution();
             solving.set(s);
 
-            Term y = x.eval(context);
-            if (y.op().atomic)
-                return Collections.singleton(y);
+            try {
+                Term y = x.eval(context);
+                Iterable<Term> solution;
+                if (y.op().atomic)
+                    solution = Collections.singleton(y);
+                else
+                    solution = s.get(y, context);
+                return solution;
+            } finally {
+                solving.remove();
+            }
 
-            Iterable<Term> solution = s.get(y, context);
 
-            solving.remove();
-
-            return solution;
         }
     }
 

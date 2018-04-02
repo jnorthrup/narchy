@@ -1,6 +1,5 @@
 package nars.nal.nal4;
 
-import jcog.TODO;
 import jcog.Util;
 import nars.$;
 import nars.NAR;
@@ -10,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Solution;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atom;
 import org.junit.jupiter.api.Test;
 
@@ -17,8 +17,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import static nars.$.$$;
-import static nars.Op.Null;
-import static nars.Op.PROD;
+import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ListTest {
@@ -26,96 +25,184 @@ public class ListTest {
     /**
      * emulates prolog append/3
      */
-    final static Functor append = Functor.f3((Atom) $.the("append"), (x, y, xy) -> {
-        if (xy.op().var) {
-            //forward
+    final static Functor append = Functor.f3((Atom) $.the("append"), (x, y, _xy) -> {
+        if (_xy.op().var) {
+            //forwards
             if (x.op().var || y.op().var) {
                 return null; //uncomputable; no change
             } else {
-                throw new TODO();
+                Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
+                Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
+                return Solution.solve(s ->
+                        s.replace(_xy, $.pFast(Terms.concat(xx, yy)))
+                );
             }
         } else {
-            //reverse
+            //backwards
 
-            if (xy.op() != PROD)
-                xy = $.pFast(xy);
+            Term xy;
+            if (_xy.op() != PROD)
+                xy = $.pFast(_xy);
+            else
+                xy = _xy;
+
+            Subterms xys = xy.subterms();
+            Term xx;
+            if (x.op() != PROD)
+                xx = $.pFast(x);
+            else
+                xx = x;
+
 
             if (x.op().var && !y.op().var) {
-                //solve head
-                throw new TODO();
-            } else if (!x.op().var && y.op().var) {
-                //solve tail
-                Subterms xys = xy.subterms();
+                //solve HEAD
 
+                Term yy;
+                if (y.op() != PROD)
+                    yy = $.pFast(y);
+                else
+                    yy = y;
 
-                //solve head
+                int ys = yy.subs();
 
-                Term _x = x;
-                if (x.op() != PROD)
-                    x = $.pFast(x);
-
-                int xs = x.subs();
-                int remainderLength = xy.subs() - xs;
-                if (remainderLength < 0)
-                    return Null; //impossible
-                else {
-                    Solution s = Solution.the();
-                    if (s == null) return Null; //unsolvable without permuting solution context
-
-                    Term yy = $.pFast(xys.terms((i, ii) -> i >= xs));
-                    s.replace(y, yy);
-                    return null;
+                int remainderLength = xy.subs() - ys;
+                if (remainderLength >= 0) {
+                    if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength+yii).equals(yi))) {
+                    //the suffix matches
+                        if (remainderLength == 0)
+                            return Solution.solve(s -> s.replace(x, Op.EmptyProduct) );
+                        else
+                            return Solution.solve(s ->
+                                    s.replace(x, $.pFast(xys.terms((i, ii) -> i < ys)))
+                            );
+                    }
                 }
+                return Null; //impossible
+            } else if (!x.op().var && y.op().var) {
+                //solve TAIL
+                int xs = xx.subs();
+                int remainderLength = xy.subs() - xs;
+                if (remainderLength >= 0) {
+                    if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
+                        //the prefix matches
+                        if (remainderLength == 0)
+                            return Solution.solve(s -> s.replace(y, Op.EmptyProduct) );
+                        else
+                            return Solution.solve(s ->
+                                s.replace(y, $.pFast(xys.terms((i, ii) -> i >= xs)))
+                            );
+                    }
+                }
+                return Null; //impossible
 
             } else if (x.op().var && y.op().var) {
-                Subterms xys = xy.subterms();
-                Solution s = Solution.the();
-                if (s == null) return Null; //unsolvable without permuting solution context
 
                 int l = xy.subs();
                 if (l == 0) {
-                    s.replace(
-                            x, Op.EmptyProduct,
-                            y, Op.EmptyProduct);
-                    return null;
+                    return Solution.solve(s ->
+                            s.replace(
+                                    x, Op.EmptyProduct,
+                                    y, Op.EmptyProduct)
+                    );
                 } else if (l == 1) {
-                    s.replace(
-                            x, Op.EmptyProduct,
-                            y, xy);
-                    s.replace(
-                            x, xy,
-                            y, Op.EmptyProduct);
-                    return null;
-                } else {
-                    Term xx = x;
-                    s.replace(
-                            Util.map(-1, l+1, finalI ->
-                                s.subst(
-                                        xx, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                                        y,  $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
-                                ,
-                                Predicate[]::new
+                    return Solution.solve(s ->
+                            s.replace(
+                                    s.subst(
+                                            x, Op.EmptyProduct,
+                                            y, xy),
+                                    s.subst(
+                                            x, xy,
+                                            y, Op.EmptyProduct)
                             )
                     );
-                    return null;
+                } else {
+                    return Solution.solve(s ->
+                            s.replace(
+                                    Util.map(-1, l, finalI ->
+                                                    s.subst(
+                                                            x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                                                            y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
+                                            ,
+                                            Predicate[]::new
+                                    )
+                            ));
                 }
             } else {
-                throw new TODO("append(x,y,xy) -> True or False");
+                //Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
+                Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
+                if (_xy.equals($.pFast(Terms.concat(xx.subterms().arrayShared(), yy)))) {
+                    return null; //true, unchanged
+                } else {
+                    return False;
+                }
             }
 
         }
     });
 
     @Test
-    public void testAppend1() {
+    public void testAppendResult() {
+        NAR n = NARS.shell();
+        n.on(append);
+
+        //solve result
+        assertEquals(
+                Set.of($$("append((x),(y),(x,y))")),
+                Solution.solve($$("append((x),(y),#what)"), n.concepts.functors));
+
+        //solve result in multiple instances
+        assertEquals(
+                Set.of($$("(append((x),(y),(x,y)) && ((x,y)<->solution))")),
+                Solution.solve($$("(append((x),(y),#what) && (#what<->solution))"), n.concepts.functors));
+
+    }
+
+
+    @Test
+    public void testTestResult() {
         NAR n = NARS.shell();
         n.on(append);
 
         assertEquals(
                 Set.of($$("append((x),(y),(x,y))")),
+                Solution.solve($$("append((x),(y),(x,y))"), n.concepts.functors));
+
+        assertEquals(
+                Set.of($$("append(x,y,(x,y))")),
+                Solution.solve($$("append(x,y,(x,y))"), n.concepts.functors));
+
+        assertEquals(
+                Set.of(False),
+                Solution.solve($$("append((x),(y),(x,y,z))"), n.concepts.functors));
+
+    }
+
+    @Test
+    public void testAppendTail() {
+        NAR n = NARS.shell();
+        n.on(append);
+
+        //solve tail
+        assertEquals(
+                Set.of($$("append((x),(y),(x,y))")),
                 Solution.solve($$("append((x),#what,(x,y))"), n.concepts.functors));
 
-        //TODO 0 and 1 element xy lists
+        //solve tail with non-list prefix that still matches
+        assertEquals(
+                Set.of($$("append(x,(y),(x,y))")),
+                Solution.solve($$("append(x,#what,(x,y))"), n.concepts.functors));
+
+        //solve tail but fail
+        assertEquals(
+                Set.of(Null),
+                Solution.solve($$("append((z),#what,(x,y))"), n.concepts.functors));
+
+    }
+
+    @Test
+    public void testAppendHeadAndTail() {
+        NAR n = NARS.shell();
+        n.on(append);
 
         assertEquals(
                 Set.of(
@@ -125,7 +212,21 @@ public class ListTest {
                         $$("append((),(x,y,z),(x,y,z))")
                 ),
                 Solution.solve($$("append(#x,#y,(x,y,z))"), n.concepts.functors));
+    }
 
+    @Test
+    public void testAppendHead() {
+        NAR n = NARS.shell();
+        n.on(append);
+
+        //solve head
+        assertEquals(
+                Set.of($$("append((x),(y),(x,y))")),
+                Solution.solve($$("append(#what,(y),(x,y))"), n.concepts.functors));
+
+        assertEquals(
+                Set.of($$("append((),(x,y),(x,y))")),
+                Solution.solve($$("append(#what,(x,y),(x,y))"), n.concepts.functors));
 
     }
 //    @Test
