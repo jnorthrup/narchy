@@ -25,120 +25,151 @@ public class ListTest {
     /**
      * emulates prolog append/3
      */
-    final static Functor append = Functor.f3((Atom) $.the("append"), (x, y, _xy) -> {
-        if (_xy.op().var) {
-            //forwards
+    final static Functor append = Functor.f2Or3((Atom) $.the("append"), (Term[] aa) -> {
+        Term x = aa[0];
+        Term y = aa[1];
+
+        if (aa.length == 2) {
             if (x.op().var || y.op().var) {
                 return null; //uncomputable; no change
             } else {
-                Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
-                Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
-                return Solution.solve(s ->
-                        s.replace(_xy, $.pFast(Terms.concat(xx, yy)))
-                );
+                return _append(x, y);
             }
         } else {
-            //backwards
+            Term _xy = aa[2];
 
-            Term xy;
-            if (_xy.op() != PROD)
-                xy = $.pFast(_xy);
-            else
-                xy = _xy;
-
-            Subterms xys = xy.subterms();
-            Term xx;
-            if (x.op() != PROD)
-                xx = $.pFast(x);
-            else
-                xx = x;
-
-
-            if (x.op().var && !y.op().var) {
-                //solve HEAD
-
-                Term yy;
-                if (y.op() != PROD)
-                    yy = $.pFast(y);
-                else
-                    yy = y;
-
-                int ys = yy.subs();
-
-                int remainderLength = xy.subs() - ys;
-                if (remainderLength >= 0) {
-                    if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength+yii).equals(yi))) {
-                    //the suffix matches
-                        if (remainderLength == 0)
-                            return Solution.solve(s -> s.replace(x, Op.EmptyProduct) );
-                        else
-                            return Solution.solve(s ->
-                                    s.replace(x, $.pFast(xys.terms((i, ii) -> i < ys)))
-                            );
-                    }
-                }
-                return Null; //impossible
-            } else if (!x.op().var && y.op().var) {
-                //solve TAIL
-                int xs = xx.subs();
-                int remainderLength = xy.subs() - xs;
-                if (remainderLength >= 0) {
-                    if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
-                        //the prefix matches
-                        if (remainderLength == 0)
-                            return Solution.solve(s -> s.replace(y, Op.EmptyProduct) );
-                        else
-                            return Solution.solve(s ->
-                                s.replace(y, $.pFast(xys.terms((i, ii) -> i >= xs)))
-                            );
-                    }
-                }
-                return Null; //impossible
-
-            } else if (x.op().var && y.op().var) {
-
-                int l = xy.subs();
-                if (l == 0) {
-                    return Solution.solve(s ->
-                            s.replace(
-                                    x, Op.EmptyProduct,
-                                    y, Op.EmptyProduct)
-                    );
-                } else if (l == 1) {
-                    return Solution.solve(s ->
-                            s.replace(
-                                    s.subst(
-                                            x, Op.EmptyProduct,
-                                            y, xy),
-                                    s.subst(
-                                            x, xy,
-                                            y, Op.EmptyProduct)
-                            )
-                    );
+            if (_xy.op().var) {
+                //forwards
+                if (x.op().var || y.op().var) {
+                    return null; //uncomputable; no change
                 } else {
-                    return Solution.solve(s ->
-                            s.replace(
-                                    Util.map(-1, l, finalI ->
-                                                    s.subst(
-                                                            x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                                                            y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
-                                            ,
-                                            Predicate[]::new
-                                    )
-                            ));
+                    return Solution.solve(s -> {
+                        Term XY = _append(x, y);
+                        s.replace(_xy, XY);
+                    });
                 }
             } else {
-                //Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
-                Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
-                if (_xy.equals($.pFast(Terms.concat(xx.subterms().arrayShared(), yy)))) {
-                    return null; //true, unchanged
-                } else {
-                    return False;
-                }
-            }
+                //backwards
 
+                Term xy;
+                if (_xy.op() != PROD)
+                    xy = $.pFast(_xy);
+                else
+                    xy = _xy;
+
+                Subterms xys = xy.subterms();
+                Term xx;
+                if (x.op() != PROD)
+                    xx = $.pFast(x);
+                else
+                    xx = x;
+
+
+                if (x.op().var && !y.op().var) {
+                    //solve HEAD
+
+                    Term yy;
+                    if (y.op() != PROD)
+                        yy = $.pFast(y);
+                    else
+                        yy = y;
+
+                    int ys = yy.subs();
+
+                    int remainderLength = xy.subs() - ys;
+                    if (remainderLength >= 0) {
+                        if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
+                            //the suffix matches
+                            if (remainderLength == 0)
+                                return Solution.solve(s -> s.replace(x, Op.EmptyProduct));
+                            else
+                                return Solution.solve(s ->
+                                        s.replace(x, $.pFast(xys.terms((i, ii) -> i < ys)))
+                                );
+                        }
+                    }
+                    return Null; //impossible
+                } else if (!x.op().var && y.op().var) {
+                    //solve TAIL
+                    int xs = xx.subs();
+                    int remainderLength = xy.subs() - xs;
+                    if (remainderLength >= 0) {
+                        if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
+                            //the prefix matches
+                            if (remainderLength == 0)
+                                return Solution.solve(s -> s.replace(y, Op.EmptyProduct));
+                            else
+                                return Solution.solve(s ->
+                                        s.replace(y, $.pFast(xys.terms((i, ii) -> i >= xs)))
+                                );
+                        }
+                    }
+                    return Null; //impossible
+
+                } else if (x.op().var && y.op().var) {
+
+                    int l = xy.subs();
+                    if (l == 0) {
+                        return Solution.solve(s ->
+                                s.replace(
+                                        x, Op.EmptyProduct,
+                                        y, Op.EmptyProduct)
+                        );
+                    } else if (l == 1) {
+                        return Solution.solve(s ->
+                                s.replace(
+                                        s.subst(
+                                                x, Op.EmptyProduct,
+                                                y, xy),
+                                        s.subst(
+                                                x, xy,
+                                                y, Op.EmptyProduct)
+                                )
+                        );
+                    } else {
+                        return Solution.solve(s ->
+                                s.replace(
+                                        Util.map(-1, l, finalI ->
+                                                        s.subst(
+                                                                x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                                                                y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
+                                                ,
+                                                Predicate[]::new
+                                        )
+                                ));
+                    }
+                } else {
+                    //Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
+                    Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
+                    if (_xy.equals($.pFast(Terms.concat(xx.subterms().arrayShared(), yy)))) {
+                        return null; //true, unchanged
+                    } else {
+                        return False;
+                    }
+                }
+
+            }
         }
     });
+
+    private static Term _append(Term x, Term y) {
+        Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
+        Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
+        return $.pFast(Terms.concat(xx, yy));
+    }
+
+    @Test
+    public void testAppendTransform() {
+        NAR n = NARS.shell();
+        n.on(append);
+        assertEquals(
+                Set.of($$("(x,y)")),
+                Solution.solve($$("append((x),(y))"), n.concepts.functors));
+        assertEquals(
+                Set.of($$("append(#x,(y))")),
+                Solution.solve($$("append(#x,(y))"), n.concepts.functors));
+
+    }
 
     @Test
     public void testAppendResult() {
@@ -196,6 +227,11 @@ public class ListTest {
         assertEquals(
                 Set.of(Null),
                 Solution.solve($$("append((z),#what,(x,y))"), n.concepts.functors));
+
+        //solve result in multiple instances
+        assertEquals(
+                Set.of($$("(append((x),(),(x)) && (()<->solution))")),
+                Solution.solve($$("(append((x),#what,(x)) && (#what<->solution))"), n.concepts.functors));
 
     }
 

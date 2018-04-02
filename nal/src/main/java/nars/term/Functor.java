@@ -88,10 +88,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
     public static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
         return f(termAtom, (tt) ->
-                (tt.subs() != arityRequired) ? Null : ff.apply(tt)
+                (tt.subs() == arityRequired) ? ff.apply(tt) : Null
         );
     }
-
+    public static LambdaFunctor f(@NotNull Atom termAtom, int minArity, int maxArity, @NotNull Function<Subterms, Term> ff) {
+        return f(termAtom, (tt) -> {
+            int n = tt.subs();
+            return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : Null;
+        });
+    }
     /**
      * zero argument (void) functor (convenience method)
      */
@@ -178,13 +183,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
     }
 
     /**
-     * two argument functor (convenience method)
+     * three argument functor (convenience method)
      */
     public static LambdaFunctor f3(@NotNull Atom termAtom, @NotNull TriFunction<Term, Term, Term, Term> ff) {
         return f(termAtom, 3, (tt) -> ff.apply(tt.sub(0), tt.sub(1), tt.sub(2)));
     }
 
-
+    public static LambdaFunctor f2Or3(@NotNull Atom termAtom, @NotNull Function<Term[], Term> ff) {
+        return f(termAtom, 2, 3, (tt) -> ff.apply(tt.arrayShared()));
+    }
     /**
      * two argument non-variable integer functor (convenience method)
      */
