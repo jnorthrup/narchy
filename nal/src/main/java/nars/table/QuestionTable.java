@@ -1,6 +1,7 @@
 package nars.table;
 
 import jcog.data.map.MRUCache;
+import jcog.pri.Pri;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
@@ -132,7 +133,11 @@ public interface QuestionTable extends TaskTable {
             }
 
             if (u != t) {
+                //absorbed
+                tPri = t.priElseZero();
                 t.delete();
+                if (u.priElseZero() - tPri < Pri.EPSILON)
+                    return false; //dont re-link
             }
 
             Tasklinks.linkTask(u, tPri, c, n);

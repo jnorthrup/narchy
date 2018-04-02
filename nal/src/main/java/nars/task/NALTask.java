@@ -108,13 +108,16 @@ public class NALTask extends Pri implements Task {
      */
     public void causeMerge(Task incoming) {
         if (incoming == this) return;
-        if (!Arrays.equals(cause(), incoming.cause())) {
+
+        float remain = Param.taskMerge.merge(this, incoming);
+        incoming.priSet(remain);
+
+        if (Arrays.equals(cause(), incoming.cause())) {
             return; //dont merge if they are duplicates, it's pointless here
         }
 
         int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); //TODO use NAR's?
         this.cause = Cause.sample(causeCap, this, incoming);
-        Param.taskMerge.merge(this, incoming);
     }
 
     @Nullable
