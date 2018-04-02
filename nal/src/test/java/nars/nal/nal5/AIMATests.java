@@ -103,7 +103,7 @@ public class AIMATests {
         });
         Param.DEBUG = true;
         //n.log();
-        n.run(900);
+        n.run(1500);
 //        n.concept($.$("Criminal")).print();
 //        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {

@@ -10,6 +10,7 @@ import nars.concept.action.GoalActionConcept;
 import nars.control.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -26,6 +27,7 @@ import java.util.function.IntPredicate;
 
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
+import static nars.Op.SECTe;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.w2c;
@@ -496,14 +498,14 @@ public interface NAct {
 
         Term pt =
                 //$.p(s, PLUS);
-                //$.inh(s, PLUS);
-                $.prop(s,PLUS);
+                $.inh(s, PLUS);
+                //$.prop(s,PLUS);
                 //$.p(s, ZeroProduct);
                 //$.p(s,$.the("\"+\""));
         Term nt =
                 //$.p(s, NEG);
-                //$.inh(s, NEG);
-                $.prop(s, NEG);
+                $.inh(s, NEG);
+                //$.prop(s, NEG);
                 //$.p(ZeroProduct, s);
                 //$.p(s,$.the("\"-\""));
 
@@ -732,7 +734,7 @@ public interface NAct {
 
         addAction(p);
         addAction(n);
-
+        nar().believe($.inh(s, SECTe.the(PLUS, NEG)).neg(), Tense.Eternal);
         CC[0] = p; CC[1] = n;
         return CC;
     }

@@ -554,7 +554,7 @@ public class NarseseBaseTest extends NarseseTest {
     @Test
     public void testEmptyProduct() throws Narsese.NarseseException {
         Term e = term("()");
-        assertSame(Op.ZeroProduct, e);
+        assertSame(Op.EmptyProduct, e);
         assertEquals(PROD, e.op());
         assertEquals(0, e.subs());
         assertEquals(term("()"), term("( )"));

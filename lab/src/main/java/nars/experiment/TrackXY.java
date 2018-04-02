@@ -3,7 +3,6 @@ package nars.experiment;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.learn.ql.HaiQae;
-import jcog.meter.TemporalMetrics;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
@@ -22,7 +21,6 @@ import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.video.Draw;
 
-import java.io.FileNotFoundException;
 import java.util.function.Consumer;
 
 import static jcog.Texts.n4;
@@ -34,24 +32,24 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY extends NAgent {
 
     final ArrayBitmap2D view;
-
+    public Bitmap2DSensor cam;
     //target position, to reach
     float tx, ty;
-
     //source position, to control
     float sx, sy;
-    public Bitmap2DSensor cam;
-
-
+    Consumer<TrackXY> updater =
+            //new RandomTarget();
+            //new CyclicTarget();
+            new CircleTarget();
     private float controlSpeed =
             1f;
     //0.5f;
     private float visionContrast = 0.9f;
 
-    Consumer<TrackXY> updater =
-            //new RandomTarget();
-            //new CyclicTarget();
-            new CircleTarget();
+    protected TrackXY(int x, int y) {
+        super("trackXY", null);
+        this.view = new ArrayBitmap2D(x, y);
+    }
 
     public static void main(String[] args) {
 
@@ -82,43 +80,45 @@ public class TrackXY extends NAgent {
         n.on(t);
 
         int experimentTime = 8048;
+//        n.synch();
+//        n.run(1);
 
-        TemporalMetrics m = new TemporalMetrics(experimentTime + 100);
-        n.onCycle(() -> m.update(n.time()));
-        m.add("reward", () -> t.reward);
-        m.add("happy", () -> {
-            float h = t.happy.asFloat();
-            if (h != h)
-                return 0.5f;
-            return h;
+//        n.runLater(() -> {
+//            TemporalMetrics m = new TemporalMetrics(experimentTime + 100);
+//            n.onCycle(() -> m.update(n.time()));
+//            m.add("reward", () -> t.reward);
+//            m.add("happy", () -> {
+//                float h = t.happy.asFloat();
+//                if (h != h)
+//                    return 0.5f;
+//                return h;
+//            });
+//            m.add("dex", () -> t.dexterity());
+//            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+//                String filename = "/tmp/x.csv";
+//                System.err.println("saving " + m + " to: " + filename);
+//                try {
+//                    m.printCSV(filename);
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//            }));
+//        });
+
+
+        n.runLater(() -> {
+            window(Vis.top(n), 800, 250);
+            NAgentX.chart(t);
+            window(new CameraSensorView(t.cam, n) {
+                @Override
+                protected void paint(GL2 gl, int dtMS) {
+                    super.paint(gl, dtMS);
+                    RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
+                    gl.glColor4f(1, 0, 0, 0.9f);
+                    Draw.rect(gl, at.move(x(), y(), 0.01f));
+                }
+            }.withControls(), 800, 800);
         });
-        m.add("dex", () -> t.dexterity());
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            String filename = "/tmp/x.csv";
-            System.err.println("saving " + m + " to: " + filename);
-            try {
-                m.printCSV(filename);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }));
-
-
-        n.synch();
-
-
-        window(Vis.top(n), 800, 250);
-        NAgentX.chart(t);
-        window(new CameraSensorView(t.cam, n) {
-            @Override
-            protected void paint(GL2 gl, int dtMS) {
-                super.paint(gl, dtMS);
-                RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
-                gl.glColor4f(1, 0, 0, 0.9f);
-                Draw.rect(gl, at.move(x(), y(), 0.01f));
-            }
-        }.withControls(), 800, 800);
-
 
         if (rl) {
             new RLBooster(t,
@@ -139,19 +139,19 @@ public class TrackXY extends NAgent {
 //                n.goal($.the(action), Tense.Present, 1f, 0.1f);
 //            }
 
-        Deriver d = new Deriver(Derivers.rules(
-                //1,
-                1,
-                8, n,
-                //"list.nal",
-                "motivation.nal"), n);
-        d.conceptsPerIteration.set(32);
-        n.timeFocus.set(2);
+            Deriver d = new Deriver(Derivers.rules(
+                    //1,
+                    1,
+                    8, n,
+                    //"list.nal",
+                    "motivation.nal"), n);
+            d.conceptsPerIteration.set(32);
+            n.timeFocus.set(2);
 
-        ConjClustering cjB = new ConjClustering(n, BELIEF,
-                //(tt)->true,
-                (tt) -> tt.isInput(),
-                4, 16);
+            ConjClustering cjB = new ConjClustering(n, BELIEF,
+                    //(tt)->true,
+                    (tt) -> tt.isInput(),
+                    4, 16);
 
 //            ConjClustering cjG = new ConjClustering(n, GOAL,
 //                    (tt)->true,
@@ -162,43 +162,38 @@ public class TrackXY extends NAgent {
 
 //            ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
 
-        window(new Gridding(
-                new AutoSurface(d),
-                new AutoSurface(cjB)
+            window(new Gridding(
+                    new AutoSurface(d),
+                    new AutoSurface(cjB)
 //                    new AutoSurface(cjG)
 
-                //,new AutoSurface(ai)
-        ), 400, 300);
-        n.onTask(tt -> {
-            if (tt instanceof DerivedTask && tt.isGoal()) {
-                System.out.println(tt.proof());
-            }
-        });
-    }
+                    //,new AutoSurface(ai)
+            ), 400, 300);
+            n.onTask(tt -> {
+                if (tt instanceof DerivedTask && tt.isGoal()) {
+                    System.out.println(tt.proof());
+                }
+            });
+        }
 
-    n.log();
+        n.log();
 
 //        n.startFPS(fps);
 //        t.runFPS(fps);
         n.onCycle(t);
-    final double[] rewardSum = {0};
-        n.onCycle(()->
+        final double[] rewardSum = {0};
+        n.onCycle(() ->
 
-    {
-        rewardSum[0] += t.reward;
-    });
+        {
+            rewardSum[0] += t.reward;
+        });
         n.run(experimentTime);
 
         System.out.println(
 
-    n4(rewardSum[0]/n.time())+" avg reward");
+                n4(rewardSum[0] / n.time()) + " avg reward");
 
         System.exit(0);
-}
-
-    protected TrackXY(int x, int y) {
-        super("trackXY", null);
-        this.view = new ArrayBitmap2D(x, y);
     }
 
     @Override
@@ -225,29 +220,29 @@ public class TrackXY extends NAgent {
             actionTriState($.inh($.the("Y"), id), (dy) -> {
                 float py = sy;
                 sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
-                return !Util.equals(py,sy, 0.01f);
+                return !Util.equals(py, sy, 0.01f);
             });
         }
 
         actionTriState($.inh($.the("X"), id), (dx) -> {
             float px = sx;
             sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
-            return !Util.equals(px,sx, 0.01f);
+            return !Util.equals(px, sx, 0.01f);
         });
     }
 
     private void actionPushButton() {
         if (view.height() > 1) {
-            actionPushButton(PROD.the($.the("up"),id), () -> {
+            actionPushButton(PROD.the($.the("up"), id), () -> {
                 sy = Util.clamp(sy + controlSpeed, 0, view.height() - 1);
 
             });
-            actionPushButton(PROD.the($.the("down"),id), () -> {
+            actionPushButton(PROD.the($.the("down"), id), () -> {
                 sy = Util.clamp(sy - controlSpeed, 0, view.height() - 1);
             });
         }
 
-        actionPushButton(PROD.the($.the("right"),id), () -> {
+        actionPushButton(PROD.the($.the("right"), id), () -> {
             sx = Util.clamp(sx + controlSpeed, 0, view.width() - 1);
         });
         actionPushButton(PROD.the($.the("left"), id), () -> {
@@ -273,71 +268,6 @@ public class TrackXY extends NAgent {
     public int height() {
         return view.height();
     }
-
-public static class RandomTarget implements Consumer<TrackXY> {
-    private float targetSpeed = 0.5f;
-
-    public void accept(TrackXY t) {
-
-        float tx, ty;
-        tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.width() - 1);
-        if (t.height() > 1) {
-            ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.height() - 1);
-        } else {
-            ty = 0;
-        }
-
-        t.tx = tx;
-        t.ty = ty;
-    }
-}
-
-public static class CyclicTarget implements Consumer<TrackXY> {
-
-
-    float speed = 0.02f;
-    float x = 0;
-
-    @Override
-    public void accept(TrackXY t) {
-        x += speed;
-        t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
-//            int tw = t.width();
-//            if (t.tx > tw -1)
-//                t.tx -= tw;
-        t.ty = 0;
-    }
-}
-
-/**
- * ellipse, technically
- */
-public static class CircleTarget implements Consumer<TrackXY> {
-
-
-    float speed =
-            0.02f;
-    float theta = 0;
-
-
-    @Override
-    public void accept(TrackXY t) {
-        theta += speed;
-
-        t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.width() - 1);
-
-        if (t.height() > 1)
-            t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.height() - 1);
-        else
-            t.ty = 0;
-
-//            int tw = t.width();
-//            if (t.tx > tw -1)
-//                t.tx -= tw;
-
-    }
-
-}
 
     @Override
     protected synchronized float act() {
@@ -385,6 +315,71 @@ public static class CircleTarget implements Consumer<TrackXY> {
         //return controlSpeed - dist*dist; //controlSpeed is margin of tolerance
         return -dist; //chase
         //return +dist; //avoid
+    }
+
+    public static class RandomTarget implements Consumer<TrackXY> {
+        private float targetSpeed = 0.5f;
+
+        public void accept(TrackXY t) {
+
+            float tx, ty;
+            tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.width() - 1);
+            if (t.height() > 1) {
+                ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.height() - 1);
+            } else {
+                ty = 0;
+            }
+
+            t.tx = tx;
+            t.ty = ty;
+        }
+    }
+
+    public static class CyclicTarget implements Consumer<TrackXY> {
+
+
+        float speed = 0.02f;
+        float x = 0;
+
+        @Override
+        public void accept(TrackXY t) {
+            x += speed;
+            t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
+//            int tw = t.width();
+//            if (t.tx > tw -1)
+//                t.tx -= tw;
+            t.ty = 0;
+        }
+    }
+
+    /**
+     * ellipse, technically
+     */
+    public static class CircleTarget implements Consumer<TrackXY> {
+
+
+        float speed =
+                0.02f;
+        float theta = 0;
+
+
+        @Override
+        public void accept(TrackXY t) {
+            theta += speed;
+
+            t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.width() - 1);
+
+            if (t.height() > 1)
+                t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.height() - 1);
+            else
+                t.ty = 0;
+
+//            int tw = t.width();
+//            if (t.tx > tw -1)
+//                t.tx -= tw;
+
+        }
+
     }
 }
 

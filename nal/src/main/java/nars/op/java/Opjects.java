@@ -618,7 +618,7 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                     return null;
 
                 int as = args.subs();
-                Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.ZeroProduct;
+                Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.EmptyProduct;
 
                 boolean maWrapped = methodArgs.op() == PROD;
 

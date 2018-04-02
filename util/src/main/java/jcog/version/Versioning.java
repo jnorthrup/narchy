@@ -107,4 +107,11 @@ public class Versioning<X>
     public final void setTTL(int ttl) {
         this.ttl = ttl;
     }
+
+    /**
+     * stack counter, not time
+     */
+    public final int now() {
+        return size;
+    }
 }

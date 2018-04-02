@@ -910,7 +910,7 @@ public class TermTest {
 
     @Test public void testEmptyProductEquality() throws Narsese.NarseseException {
         assertEquals( $("()"),$("()") );
-        assertEquals(ZeroProduct, $("()"));
+        assertEquals(EmptyProduct, $("()"));
     }
 
 

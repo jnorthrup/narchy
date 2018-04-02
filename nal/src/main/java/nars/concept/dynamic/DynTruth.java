@@ -15,7 +15,6 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -252,7 +251,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return true;
     }
 
-    public boolean filterOverlap(Task task) {
+    public boolean doesntOverlap(Task task) {
         if (evi != null) {
 
             long[] s = task.stamp();
@@ -275,14 +274,14 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     public static class DynamicTruthTask extends NALTask {
 
         DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, NAR nar, long start, long end, long[] stamp) throws InvalidTaskException {
-            super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, nar.time(), start, (start == Tense.ETERNAL || c.op().temporal) ? start : end, stamp);
+            super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, nar.time(), start, end, stamp);
         }
 
-        @Override
-        public DynamicTruthTask pri(float p) {
-            super.pri(p);
-            return this;
-        }
+//        @Override
+//        public DynamicTruthTask pri(float p) {
+//            super.pri(p);
+//            return this;
+//        }
 
         @Override
         public void meta(String key, Object value) {

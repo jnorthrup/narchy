@@ -828,7 +828,10 @@ public enum $ {
         return new CompoundLight(Op.PROD,x);
     }
     public static Term pFast(Term... x) {
-        return new CompoundLight(Op.PROD, $.vFast(x));
+        if (x.length == 0)
+            return Op.EmptyProduct;
+        else
+            return new CompoundLight(Op.PROD, $.vFast(x));
     }
 
     public static Term sFast(Term... x) {

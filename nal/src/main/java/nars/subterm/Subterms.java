@@ -511,7 +511,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 added++;
             }
         }
-        return added > 0 ? Term.EmptyArray : l.toArray(new Term[added]);
+        return added == 0 ? Term.EmptyArray : l.toArray(new Term[added]);
     }
 
 

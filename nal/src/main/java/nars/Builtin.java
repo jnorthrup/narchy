@@ -495,7 +495,7 @@ public class Builtin {
                                     int ei = ((Int) end).id;
                                     if (ei >= 0 && ei <= len) {
                                         if (si == ei)
-                                            return Op.ZeroProduct;
+                                            return Op.EmptyProduct;
                                         if (si < ei) {
                                             return $.p(Arrays.copyOfRange(x.subterms().arrayClone(), si, ei));
                                         }

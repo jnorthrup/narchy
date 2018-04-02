@@ -147,7 +147,7 @@ public enum Op {
         @Override
         public Term the(int dt, Term... t) {
             assert (dt == DTERNAL);
-            return (t.length == 0) ? ZeroProduct : super.the(dt, t);
+            return (t.length == 0) ? EmptyProduct : super.the(dt, t);
         }
     },
 
@@ -550,7 +550,7 @@ public enum Op {
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
-    public static final Compound ZeroProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
+    public static final Compound EmptyProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
     static final ImmutableMap<String, Op> stringToOperator;

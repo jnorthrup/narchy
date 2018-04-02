@@ -383,12 +383,7 @@ public abstract class Unify extends Versioning implements Subst {
         return xy.tryPut(x, y);
     }
 
-    /**
-     * stack counter, not time
-     */
-    public final int now() {
-        return this.size;
-    }
+
 //
 //    /** returns the updated value */
 //    public int addTTL(int x) {

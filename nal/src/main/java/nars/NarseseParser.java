@@ -379,7 +379,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                                         //                                        sequence(Term(), s(), "{-]", s(), Term(), s(), COMPOUND_TERM_CLOSER, push($.instprop(the(peek()).sub(1), the(pop()).sub(0)))),
 
                                         sequence(
-                                                COMPOUND_TERM_CLOSER, push(ZeroProduct)
+                                                COMPOUND_TERM_CLOSER, push(EmptyProduct)
                                         ),
 
                                         MultiArgTerm(null, COMPOUND_TERM_CLOSER, true, false),
@@ -427,7 +427,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 COMPOUND_TERM_OPENER, s(),
 
                 firstOf(
-                        seq(COMPOUND_TERM_CLOSER, push(ZeroProduct)),// nonNull($.exec((Term)pop())) )),
+                        seq(COMPOUND_TERM_CLOSER, push(EmptyProduct)),// nonNull($.exec((Term)pop())) )),
                         MultiArgTerm(PROD, COMPOUND_TERM_CLOSER, false, false)
                 ),
 

@@ -823,6 +823,8 @@ public interface Compound extends Term, IPair, Subterms {
         return u;
     }
 
+
+
     @Override
     @Nullable
     default Term normalize(byte varOffset) {

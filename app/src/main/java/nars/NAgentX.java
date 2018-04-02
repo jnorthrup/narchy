@@ -87,8 +87,8 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                fps * 2, //NYQUIST
-                //fps * 1, //1:1
+                //fps * 2, //NYQUIST
+                fps * 1, //1:1
                 fps);
     }
 
@@ -403,7 +403,6 @@ abstract public class NAgentX extends NAgent {
         //get ready
         System.gc();
 
-        Loop loop = n.startFPS(narFPS);
 
 
         n.runLater(() -> {
@@ -426,6 +425,7 @@ abstract public class NAgentX extends NAgent {
 //                ).apply(n).deriver, n); //{
 //            });
         });
+        Loop loop = n.startFPS(narFPS);
 
         return n;
     }
