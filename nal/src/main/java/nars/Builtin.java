@@ -6,9 +6,10 @@ import jcog.User;
 import jcog.list.FasterList;
 import jcog.pri.PriReference;
 import nars.concept.Concept;
-import nars.op.DepIndepVarIntroduction;
 import nars.concept.Operator;
+import nars.op.DepIndepVarIntroduction;
 import nars.op.Subst;
+import nars.op.ListFunc;
 import nars.op.data.*;
 import nars.op.java.Opjects;
 import nars.subterm.Subterms;
@@ -46,10 +47,14 @@ public class Builtin {
 
     public static final Concept[] statik = {
 
+            Subst.the,
+
+            //TODO move these to fields of SetFunc
             intersect.the,
             differ.the,
             union.the,
-            Subst.the,
+
+            ListFunc.append,
 
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {

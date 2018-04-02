@@ -306,15 +306,15 @@ public enum Terms {
     }
 
 
-    public static int maxLevel(Term term) {
-        int[] max = {0};
-        term.recurseTerms((t) -> {
-            int m = t.op().minLevel;
-            if (m > max[0])
-                max[0] = m;
-        });
-        return max[0];
-    }
+//    public static int maxLevel(Term term) {
+//        int[] max = {0};
+//        term.recurseTerms((t) -> {
+//            int m = t.op().minLevel;
+//            if (m > max[0])
+//                max[0] = m;
+//        });
+//        return max[0];
+//    }
 
     @Nullable
     public static Term[] concat(@Nullable Term[] a, Term... b) {
@@ -327,8 +327,6 @@ public enum Terms {
         if (b.length == 0) return a;
 
         int L = a.length + b.length;
-
-        //TODO apply preventUnnecessaryDeepCopy to more cases
 
         Term[] arr = new Term[L];
 

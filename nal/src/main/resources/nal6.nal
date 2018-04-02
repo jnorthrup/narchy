@@ -16,7 +16,7 @@
     B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
     B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:InductionPN)
 
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAndy(C,A,B), (Belief:DeductionN, Goal:InductionN)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:InductionN)
     B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionNN, Goal:InductionNN)
 
     B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)

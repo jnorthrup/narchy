@@ -23,7 +23,6 @@ import spacegraph.video.Draw;
 
 import java.util.function.Consumer;
 
-import static jcog.Texts.n4;
 import static nars.Op.BELIEF;
 import static nars.Op.PROD;
 import static spacegraph.SpaceGraph.window;
@@ -80,7 +79,7 @@ public class TrackXY extends NAgent {
         n.on(t);
 
         int experimentTime = 8048;
-//        n.synch();
+        n.synch();
 //        n.run(1);
 
 //        n.runLater(() -> {
@@ -106,19 +105,6 @@ public class TrackXY extends NAgent {
 //        });
 
 
-        n.runLater(() -> {
-            window(Vis.top(n), 800, 250);
-            NAgentX.chart(t);
-            window(new CameraSensorView(t.cam, n) {
-                @Override
-                protected void paint(GL2 gl, int dtMS) {
-                    super.paint(gl, dtMS);
-                    RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
-                    gl.glColor4f(1, 0, 0, 0.9f);
-                    Draw.rect(gl, at.move(x(), y(), 0.01f));
-                }
-            }.withControls(), 800, 800);
-        });
 
         if (rl) {
             new RLBooster(t,
@@ -176,7 +162,7 @@ public class TrackXY extends NAgent {
             });
         }
 
-        n.log();
+//        n.log();
 
 //        n.startFPS(fps);
 //        t.runFPS(fps);
@@ -187,22 +173,41 @@ public class TrackXY extends NAgent {
         {
             rewardSum[0] += t.reward;
         });
+
+
+        n.runLater(() -> {
+            window(Vis.top(n), 800, 250);
+            NAgentX.chart(t);
+            window(new CameraSensorView(t.cam, n) {
+                @Override
+                protected void paint(GL2 gl, int dtMS) {
+                    super.paint(gl, dtMS);
+                    RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
+                    gl.glColor4f(1, 0, 0, 0.9f);
+                    Draw.rect(gl, at.move(x(), y(), 0.01f));
+                }
+            }.withControls(), 800, 800);
+        });
         n.run(experimentTime);
+        //n.startFPS(10f);
+        //t.runFPS(10f);
 
-        System.out.println(
+//        System.out.println(
+//
+//                n4(rewardSum[0] / n.time()) + " avg reward");
 
-                n4(rewardSum[0] / n.time()) + " avg reward");
-
-        System.exit(0);
+//        System.exit(0);
     }
 
     @Override
     protected void starting(NAR nar) {
 
-        actionTriState();
-        //actionPushButton();
+        super.starting(nar);
 
-        this.cam = new Bitmap2DSensor(id /* (Term) null*/, view, nar);
+        //actionTriState();
+        actionPushButton();
+
+        this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
         this.cam.pixelPri.set(0.2f);
         //this.cam.resolution(0.1f);
         sensorCam.add(cam);

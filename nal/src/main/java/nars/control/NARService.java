@@ -32,6 +32,7 @@ public class NARService extends Service<NAR> implements Termed {
     }
 
 
+
     @Override
     protected final void start(NAR nar) {
         synchronized (this) {

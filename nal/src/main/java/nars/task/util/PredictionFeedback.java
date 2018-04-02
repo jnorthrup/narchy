@@ -51,7 +51,7 @@ public class PredictionFeedback {
 
     public static void scan(BeliefTable table, long start, long end, Consumer<Task> each) {
         if (table instanceof ScalarBeliefTable) {
-            ((ScalarBeliefTable)table).series.forEach(start, end, false, each);
+            ((ScalarBeliefTable)table).series.forEach(start, end, true, each);
         } else {
             ((DefaultBeliefTable) table).temporal.whileEach(start, end, (tt)->{ each.accept(tt); return true; });
         }
@@ -73,7 +73,7 @@ public class PredictionFeedback {
         List<SignalTask> signals = new FasterList<>(8);
         Consumer<Task> each = existing -> {
             //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
-            if (existing instanceof SignalTask && existing.intersects(y)) {
+            if (existing instanceof SignalTask) {
                 signals.add((SignalTask) existing);
             }
         };
@@ -132,8 +132,6 @@ public class PredictionFeedback {
      */
     static boolean absorb(SignalTask x, Task y, long start, long end, int dur, float fThresh, NAR nar) {
         if (x == y)
-            return false;
-        if (!x.intersects(y))
             return false;
 
         //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
