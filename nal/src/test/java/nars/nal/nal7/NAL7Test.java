@@ -625,22 +625,21 @@ public class NAL7Test extends NALTest {
         compositionTest(4, 3);
     }
 
-    @Test
-    public void induction_on_events_composition_post() {
+
+    @ValueSource(ints={0,1,2,3,4})
+    @ParameterizedTest
+    public void induction_on_events_composition_post(int dt) {
         TestNAR tester = test;
 
-        int t = 1;
-        int dt = 7;
+        int t = 0;
         String component = "(open(John,door) &| hold(John,key))";
         tester.inputAt(t, component + ". :|:");
         tester.inputAt(t + dt, "enter(John,room). :|:");
 
-        tester.mustBelieve((t + dt) + dt + 1 /** approx */,
+        tester.mustBelieve((2 * (t + Math.max(2,dt)) + Math.max(2,dt) + 1) /** approx */,
                 "(" + component + " ==>+" + dt + " enter(John,room))",
                 1.00f, 0.45f,
                 t);
-
-
     }
 
     private void compositionTest(int t, int dt) {

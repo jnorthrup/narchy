@@ -110,7 +110,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
     public static LambdaFunctor r0(@NotNull String termAtom, @NotNull Supplier<Runnable> ff) {
         Atom fName = fName(termAtom);
-        return f0(fName, () -> new AbstractPred<Object>($.inst($.quote(Util.uuid64()), fName)) {
+        return f0(fName, () -> new AbstractPred<>($.inst($.quote(Util.uuid64()), fName)) {
 
             @Override
             public boolean test(Object o) {
@@ -247,7 +247,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
     public static final class LambdaFunctor extends Functor {
 
-        @NotNull
         private final Function<Subterms, Term> f;
 
         public LambdaFunctor(@NotNull Atom termAtom, @NotNull Function<Subterms, Term> f) {
@@ -336,5 +335,79 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
             return x;
         }
+    }
+
+
+    /** Functor template for a binary functor with bidirectional parameter cases */
+    public abstract static class BidiBinaryFunctor extends Functor {
+
+        public BidiBinaryFunctor(String name) {
+            this(fName(name));
+        }
+
+        public BidiBinaryFunctor(Atom atom) {
+            super(atom);
+        }
+
+        @Nullable
+        @Override
+        public final Term apply(Subterms terms) {
+            int s = terms.subs();
+            switch (s) {
+                case 2:
+                    return apply2(terms.sub(0), terms.sub(1));
+                case 3:
+                    return apply3(terms.sub(0), terms.sub(1), terms.sub(2));
+                default:
+                    return Null; //invalid
+            }
+        }
+
+        protected Term apply2(Term x, Term y) {
+            if (x.op().var || y.op().var)
+                return null; //do nothing
+            else {
+                return compute(x,y); //replace with result
+            }
+        }
+
+        protected abstract Term compute(Term x, Term y);
+
+        protected Term apply3(Term x, Term y, Term xy) {
+            boolean xVar = x.op().var;
+            boolean yVar = y.op().var;
+            if (xy.op().var) {
+                //forwards
+                if (xVar || yVar) {
+                    return null; //uncomputable; no change
+                } else {
+                    return Solution.solve(s -> {
+                        s.replace(xy, compute(x, y));
+                    });
+                }
+            } else {
+                if (xVar && !yVar) {
+                    return computeXfromYandXY(x, y, xy);
+                } else if (yVar && !xVar) {
+                    return computeYfromXandXY(x, y, xy);
+                } else if (!yVar && !xVar) {
+                    if (compute(x, y).equals(xy)) {
+                        //equal
+                        return null; //unchanged
+                    } else {
+                        //inequal
+                        return False;
+                    }
+                } else {
+                    return computeFromXY(x, y, xy); //all variables
+                }
+            }
+        }
+
+        protected abstract Term computeFromXY(Term x, Term y, Term xy);
+
+        protected abstract Term computeXfromYandXY(Term x, Term y, Term xy);
+
+        protected abstract Term computeYfromXandXY(Term x, Term y, Term xy);
     }
 }
