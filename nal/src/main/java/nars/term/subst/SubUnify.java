@@ -3,16 +3,15 @@ package nars.term.subst;
 import nars.Op;
 import nars.Param;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
 
 /**
  * Less powerful one-match only unification
  */
 public class SubUnify extends Unify {
 
-    @NotNull
-    private final Unify parent;
     @Nullable
     protected Term transformed;
 
@@ -21,9 +20,8 @@ public class SubUnify extends Unify {
     private Term result;
 
 
-    public SubUnify(Unify parent, @Nullable Op type, int ttl) {
-        super(type, parent.random, Param.UnificationStackMax, ttl);
-        this.parent = parent;
+    public SubUnify(Random rng, @Nullable Op type, int ttl) {
+        super(type, rng, Param.UnificationStackMax, ttl);
     }
 
     /**

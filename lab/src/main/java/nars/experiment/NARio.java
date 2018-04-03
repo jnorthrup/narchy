@@ -23,8 +23,6 @@ public class NARio extends NAgentX {
 
     private final MarioComponent mario;
 
-//    private final SensorConcept vx;
-
     public NARio(NAR nar) {
         super("nario", nar);
         //super(nar, HaiQAgent::new);

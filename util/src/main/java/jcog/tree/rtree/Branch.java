@@ -328,7 +328,9 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         Node<T, ?>[] cc = this.data;
         short s = this.size;
         for (int i = 0; i < s; i++) {
-            cc[i].forEach(consumer);
+            Node<T, ?> x = cc[i];
+            if (x!=null) //for concurrent optimistic reads
+                x.forEach(consumer);
         }
     }
 
@@ -337,28 +339,30 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         Node<T, ?>[] c = this.data;
         short s = this.size;
         for (int i = 0; i < s; i++) {
-            if (!c[i].AND(p))
+            Node<T, ?> x = c[i];
+            if (x!=null && !x.AND(p))
                 return false;
         }
         return true;
     }
 
-    private boolean nodeAND(Predicate<Node<T, ?>> p) {
-        Node<T, ?>[] c = this.data;
-        int s = size;
-        for (int i = 0; i < s; i++) {
-            if (!p.test(c[i]))
-                return false;
-        }
-        return true;
-    }
+//    private boolean nodeAND(Predicate<Node<T, ?>> p) {
+//        Node<T, ?>[] c = this.data;
+//        int s = size;
+//        for (int i = 0; i < s; i++) {
+//            if (!p.test(c[i]))
+//                return false;
+//        }
+//        return true;
+//    }
 
     @Override
     public boolean OR(Predicate<T> p) {
         Node<T, ?>[] c = this.data;
         int s = size;
         for (int i = 0; i < s; i++) {
-            if (c[i].OR(p))
+            Node<T, ?> x = c[i];
+            if (x!=null && x.OR(p))
                 return true;
         }
         return false;

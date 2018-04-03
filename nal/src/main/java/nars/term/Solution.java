@@ -108,9 +108,13 @@ public class Solution {
 
                     y = y.eval(context);
 
-                    if (y != null && !y.equals(x)) {
-                        result.add(y);
-                    }
+                    if (y != null)
+
+                        y = y.normalize();
+
+                        if (!y.equals(x)) {
+                            result.add(y);
+                        }
                 }
             }
 

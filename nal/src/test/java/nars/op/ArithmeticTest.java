@@ -17,20 +17,7 @@ public class ArithmeticTest {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    @Test
-    public void test1() throws Narsese.NarseseException {
-        assertEquals(
-                "((#1,add(#1,1))&&(#1<->2))",
-                //"(($1,add($1,1))==>($1<->2))",
-                ArithmeticIntroduction.apply($.$("(2,3)"), rng).toString());
-    }
 
-    @Test public void test2() throws Narsese.NarseseException {
-        assertEquals(
-                "(x(#1,add(#1,1))&&(#1<->2))",
-                //"(x($1,add($1,1))==>($1<->2))",
-                ArithmeticIntroduction.apply($.$("x(2,3)"), rng).toString());
-    }
 
     @Test
     public void testAdd() throws Narsese.NarseseException {
@@ -78,6 +65,24 @@ public class ArithmeticTest {
                 $.$("mul(#1,1)").eval(t.concepts.functors).toString());
 
     }
+
+    @Test
+    public void test1() throws Narsese.NarseseException {
+        assertEquals(
+                "((#1,add(#1,1))&&(#1<->2))",
+                //"(($1,add($1,1))==>($1<->2))",
+                //"((#1,#2) && add(#1,1,#2))",
+                //"(2,#1)&&add(#1,",
+                ArithmeticIntroduction.apply($.$("(2,3)"), rng).toString());
+    }
+
+    @Test public void test2() throws Narsese.NarseseException {
+        assertEquals(
+                "(x(#1,add(#1,1))&&(#1<->2))",
+                //"(x($1,add($1,1))==>($1<->2))",
+                ArithmeticIntroduction.apply($.$("x(2,3)"), rng).toString());
+    }
+
     @Test
     public void testCompleteAddInduction() throws Narsese.NarseseException {
         NAR n = NARS.tmp();

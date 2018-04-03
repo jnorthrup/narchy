@@ -18,7 +18,7 @@ public enum ListFunc { ;
     /**
      * emulates prolog append/3
      */
-    public final static Functor append = new Functor.BidiBinaryFunctor("append") {
+    public final static Functor append = new Functor.BinaryBidiFunctor("append") {
 
         @Override
         protected Term compute(Term x, Term y) {

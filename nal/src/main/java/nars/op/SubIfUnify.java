@@ -160,7 +160,7 @@ public class SubIfUnify extends Functor {
         private final boolean strict;
 
         MySubUnify(@Nullable Op op, boolean strict) {
-            super(parent, op, parent.ttl);
+            super(parent.random, op, parent.ttl);
             this.strict = strict;
         }
 

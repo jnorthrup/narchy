@@ -8,6 +8,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
+import nars.link.TaskLink;
 import nars.link.Tasklinks;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
@@ -51,7 +52,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public interface TimeSeries {
 
         /** the provided truth value should already be dithered */
-        SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, NAR nar);
+        SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, int dur, NAR nar);
 
         @Nullable DynTruth truth(long start, long end, long dur, NAR nar);
 
@@ -168,9 +169,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         @Override
-        public SignalTask add(Term term, byte punc, long nextStart, long nextEnd, Truth next, NAR nar) {
-
-            int dur = nar.dur();
+        public SignalTask add(Term term, byte punc, long nextStart, long nextEnd, Truth next, int dur, NAR nar) {
 
             SignalTask nextTask = null;
 
@@ -214,7 +213,9 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 }
 
                 if (removePrev) {
-                    at.remove(lastEntryKey);
+                    Task p = at.remove(lastEntryKey);
+                    if (p!=null)
+                        p.delete();
                 }
 
                 if (nextTask!=null)
@@ -380,10 +381,10 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         this.res = res;
     }
 
-    public SignalTask add(Truth value, long start, long end, NAR nar) {
+    public SignalTask add(Truth value, long start, long end, int dur, NAR nar) {
 
         value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
-        SignalTask x = series.add(term, punc(), start, end, value, nar);
+        SignalTask x = series.add(term, punc(), start, end, value, dur, nar);
 
         if (x!=null)
             x.pri(pri.asFloat());
@@ -411,19 +412,40 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
     static class ScalarSignalTask extends SignalTask {
 
+        /** the tasklink, so it can be removed if this task is stretched (replaced by another and its tasklink) */
+        private TaskLink.GeneralTaskLink link;
+
         public ScalarSignalTask(Term term, byte punc, Truth value, long start, long end, long stamp) {
             super(term, punc, value, start, end, stamp);
         }
 
         @Override
+        public boolean delete() {
+            if (super.delete()) {
+                TaskLink.GeneralTaskLink l = link;
+                if (l!=null) {
+                    l.delete();
+                    link = null;
+                }
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
         public ITask run(NAR n) {
+            float pri = this.pri();
+            if (pri!=pri)
+                return null; //deleted before it could be processed
 
             n.emotion.onInput(this, n);
 
             //only activate
             Concept c = n.concept(term);
-            if (c!=null) //shouldnt be null, ever
-                Tasklinks.linkTask(this, pri, c, n);
+            if (c!=null) { //shouldnt be null, ever
+                link = Tasklinks.linkTask(this, pri, c, n);
+            }
 
             return null;
         }

@@ -18,6 +18,7 @@ import nars.term.subst.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.BELIEF;
+import static nars.Op.VAR_QUERY;
 
 /**
  * Defines the conditions used in an instance of a derivation
@@ -47,7 +48,7 @@ public class Premise {
         return termLink.get();
     }
 
-    final static int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+    final static int var = Op.VAR_QUERY.bit;// | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
 
     /**
      * resolve the most relevant belief of a given term/concept
@@ -107,12 +108,11 @@ public class Premise {
                 beliefConceptCanAnswerTaskConcept[0] = true;
             } else {
 
-                //non-symmetric unify only variables in the task by belief contents
-                if ((beliefTerm.op().conceptualizable) && (beliefTerm.hasAny(var) && taskTerm.hasAny(var))) {
+                if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
 
                     Term _beliefTerm = beliefTerm;
                     final Term[] unifiedBeliefTerm = new Term[]{null};
-                    UnifySubst u = new UnifySubst(null, n, (y) -> {
+                    UnifySubst u = new UnifySubst(/*null*/VAR_QUERY, n, (y) -> {
                         if (y.op().conceptualizable) {
                             y = y.normalize();
 

@@ -440,12 +440,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
 //        commitIfPressured();
 
-        //quick test for max merge cases
-        if (mergeFunction == PriMerge.max && size() >= capacity) {
-            if (priMin() > p){
-                return null;
-            }
-        }
+//        //quick test for max merge cases
+            //not safe if there exist unknown deleted entries that would be removable for the incoming
+//        if (mergeFunction == PriMerge.max && size() >= capacity) {
+//            if (priMin() > p){
+//                return null;
+//            }
+//        }
 
 
         X key = key(incoming);
@@ -565,7 +566,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
             update(incoming, null, false, trash);
             if (trash.remove(incoming))  {
-                //rejected this one
+                //update() has rejected this one
                 return false;
             }
 

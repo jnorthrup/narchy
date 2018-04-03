@@ -80,7 +80,22 @@ public interface Variable extends Atomic {
                     if (common == this || common == y)
                         return true; //no change
 
-                    return u.putXY(this, common) && u.putXY(y, common);
+                    Term xBound = u.xy.get(this);
+                    Term yBound = u.xy.get(y);
+                    if (xBound!=null && yBound!=null) {
+                        return xBound.unify(yBound, u);
+                    }
+                    Term target;
+                    if (xBound!=null) target = xBound;
+                    else if (yBound!=null) target = yBound;
+                    else target = null;
+
+                    if (u.replaceXY(this, common) && u.replaceXY(y, common)) {
+                        if (target!=null)
+                            return u.putXY(common, target);
+                        else
+                            return true;
+                    }
                 }
 
             }

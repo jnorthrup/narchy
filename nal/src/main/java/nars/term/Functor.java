@@ -207,7 +207,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         int apply(int x, int y);
     }
 
-    public static Concept f2Int(String termAtom, boolean commutive, @Nullable IntPredicate identityComponent, IntPredicate zeroIfArgIs, IntIntToIntFunction ff) {
+    public static Functor f2Int(String termAtom, boolean commutive, @Nullable IntPredicate identityComponent, IntPredicate zeroIfArgIs, IntIntToIntFunction ff) {
         Atom f = fName(termAtom);
         return f2(f, (xt, yt) -> {
             boolean xi = xt.op() == INT;
@@ -339,13 +339,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
 
     /** Functor template for a binary functor with bidirectional parameter cases */
-    public abstract static class BidiBinaryFunctor extends Functor {
+    public abstract static class BinaryBidiFunctor extends Functor {
 
-        public BidiBinaryFunctor(String name) {
+        public BinaryBidiFunctor(String name) {
             this(fName(name));
         }
 
-        public BidiBinaryFunctor(Atom atom) {
+        public BinaryBidiFunctor(Atom atom) {
             super(atom);
         }
 
@@ -381,9 +381,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 if (xVar || yVar) {
                     return null; //uncomputable; no change
                 } else {
-                    return Solution.solve(s -> {
-                        s.replace(xy, compute(x, y));
-                    });
+                    Term XY = compute(x, y);
+                    if (XY!=null) {
+                        return Solution.solve(s ->
+                                s.replace(xy, XY)
+                        );
+                    } else {
+                        return null; //unchanged
+                    }
                 }
             } else {
                 if (xVar && !yVar) {
@@ -391,9 +396,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else if (yVar && !xVar) {
                     return computeYfromXandXY(x, y, xy);
                 } else if (!yVar && !xVar) {
-                    if (compute(x, y).equals(xy)) {
+                    Term XY = compute(x, y);
+                    if (XY==null || XY.equals(xy)) {
                         //equal
                         return null; //unchanged
+                        //return True;
                     } else {
                         //inequal
                         return False;
@@ -409,5 +416,31 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         protected abstract Term computeXfromYandXY(Term x, Term y, Term xy);
 
         protected abstract Term computeYfromXandXY(Term x, Term y, Term xy);
+    }
+
+    public abstract static class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
+
+
+        public CommutiveBinaryBidiFunctor(String name) {
+            super(name);
+        }
+
+        public CommutiveBinaryBidiFunctor(Atom atom) {
+            super(atom);
+        }
+
+        @Override
+        protected Term apply2(Term x, Term y) {
+            //TODO commutive rearrange
+            if ((x.op().var || y.op().var) && x.compareTo(y) > 0) {
+                return $.func((Atomic)term(), y, x);
+            }
+            return super.apply2(x, y);
+        }
+
+        @Override
+        protected final Term computeYfromXandXY(Term x, Term y, Term xy) {
+            return computeXfromYandXY(y, x, xy);
+        }
     }
 }

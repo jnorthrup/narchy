@@ -315,8 +315,8 @@ public class ConjClustering extends Causable {
                         if (Math.abs(cj.dtRange() - (end - start)) < ditherTime) { //test if merge collapse occurred and occurrence time needs recalculated
 
 
-                            ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, false);
-                            /*if (cp != null)*/ {
+                            ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, true);
+                            if (cp != null) {
 
 
                                 NALTask m = new STMClusterTask(cp, t, start, start, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined

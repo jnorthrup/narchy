@@ -209,6 +209,7 @@ public interface NSense {
                 states
         );
 
+
         onFrame(fs);
         return fs;
     }

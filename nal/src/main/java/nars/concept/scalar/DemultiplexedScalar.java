@@ -31,6 +31,8 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
 
     public final Term term;
 
+    private long last;
+
     @Override
     public final float asFloat() {
         return value.floatValue();
@@ -41,6 +43,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
 
         this.term = id;
 
+        this.last = nar.time();
         this.input = input;
         this.in = nar.newCauseChannel(id);
         this.truther = (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null;
@@ -55,15 +58,15 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
     @Override
     public void accept(NAR n) {
         long now = n.time();
-        int dur = n.dur();
-        update(now-dur/2, now+dur/2, n);
+        //update(now-dur/2, now+dur/2, n.dur(), n);
+        update(last, now, Math.max((int)(now-last), 1), n);
     }
 
-    public void update(long start, long end, NAR n) {
+    public void update(long start, long end, int dur, NAR n) {
 
         value.set(input.asFloat());
 
-        in.input(Iterables.transform(this, x -> x.update(start, end, truther, n)));
+        in.input(Iterables.transform(this, x -> x.update(start, end, truther, dur, n)));
     }
 
     public void pri(FloatSupplier p) {

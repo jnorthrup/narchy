@@ -900,7 +900,7 @@ public class Revision {
             if (!Float.isFinite(diff))
                 return null; //impossible
             if (diff > 0)
-                differenceFactor = 1f - (float) Param.evi(1f, diff, Math.max(1,range)); //proport
+                differenceFactor = (float) Param.evi(1f, diff, Math.max(1,range)); //proport
 
             float e1 = first.eviInteg();
             float e2 = second.eviInteg();

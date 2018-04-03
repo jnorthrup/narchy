@@ -100,7 +100,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     private CauseChannel<ITask> in = null;
 
-    private int dur;
+
 
     public final FloatRange motivation = new FloatRange(1f, 0f, 2f);
     protected List<Task> always = $.newArrayList();
@@ -320,9 +320,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             );
 
             this.in = nar.newCauseChannel(this);
-            this.dur = nar.dur();
             this.now = nar.time();
-            this.last = now - dur; //head-start
+            this.last = now - nar.dur(); //head-start
 
             //finally:
             enabled.set(true);
@@ -354,23 +353,23 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
     @Override
-    public synchronized void run() {
+    public void run() {
         if (!enabled.get())
             return;
 
         this.last = this.now;
         this.now = nar.time();
-        if (now == last)
+        if (now <= last)
             return;
 
-        this.dur = nar.dur();
+        int dur = Math.max(nar.dur(), (int)(now - last)); //stretched perceptual duration to the NAgent's effective framerate
 
         reward = act();
 
-        happy.update(last, now, nar);
+        happy.update(last, now, dur, nar);
 
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
-        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, nar)));
+        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, dur, nar)));
 
         always( motivation.floatValue() );
 

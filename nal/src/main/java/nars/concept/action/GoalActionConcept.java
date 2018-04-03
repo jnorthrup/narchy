@@ -154,7 +154,7 @@ public class GoalActionConcept extends ActionConcept {
         Truth feedback = this.motor.apply(belief, goal);
 
         Task feedbackBelief = feedback!=null ?
-                this.feedback.add(feedback, gStart,gEnd, nar) : null;
+                this.feedback.add(feedback, gStart,gEnd, dur, nar) : null;
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief!=null) {

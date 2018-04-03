@@ -43,7 +43,7 @@ public class Tasklinks {
     }
 
 
-    public static void linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
+    public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
 
         /** non-zero for safety */
         final float priCause = Math.max(_pri, Pri.EPSILON);
@@ -81,6 +81,7 @@ public class Tasklinks {
 //        if (effectiveness >= Param.TASK_ACTIVATION_THRESHOLD)
             nar.eventTask.emit(t);
 
+            return link;
     }
 
     public static void linkTaskTemplates(Concept c, Task t, float priApplied, NAR nar) {

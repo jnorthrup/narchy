@@ -8,8 +8,9 @@ import jcog.pri.PriReference;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.op.DepIndepVarIntroduction;
-import nars.op.Subst;
 import nars.op.ListFunc;
+import nars.op.MathFunc;
+import nars.op.Subst;
 import nars.op.data.*;
 import nars.op.java.Opjects;
 import nars.subterm.Subterms;
@@ -217,8 +218,8 @@ public class Builtin {
             }),
 
             //TODO add exceptions for identities: ex: add(#x,0) --> #x  etc
-            Functor.f2Int("add", true, (i) -> i == 0, (n) -> false, (x, y) -> x + y),
-            Functor.f2Int("mul", true, (i) -> i == 1, (n) -> n == 0, (x, y) -> x * y),
+            MathFunc.add,
+            MathFunc.mul,
 
             //Functor.f2Int("sub", (x, y) -> x - y),
 

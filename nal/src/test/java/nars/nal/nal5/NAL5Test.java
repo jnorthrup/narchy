@@ -40,6 +40,25 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> animal>>", 1.00f, 0.81f); //.en("If robin can fly then robin is a type of animal.");
 
     }
+    @Test
+    public void deductionPosCommon() {
+
+        test
+                .believe("(x ==> z)")
+                .believe("(z ==> y)")
+                .mustBelieve(cycles, "(x ==> y)", 1.00f, 0.81f);
+
+    }
+
+    @Test
+    public void deductionNegCommon() {
+
+        test
+            .believe("(x ==> --z)")
+            .believe("(--z ==> y)")
+            .mustBelieve(cycles, "(x ==> y)", 1.00f, 0.81f);
+
+    }
 
     @Test
     public void exemplification() {

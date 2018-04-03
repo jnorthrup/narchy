@@ -750,9 +750,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 }
                 if (pos > 0 && neg > 0) {
                     boolean polarity =
-                            pos == neg ? nar.random().nextBoolean() //if equal, choose on polarity at random
+                            (pos == neg) ?
+                                ((template.dt()!=DTERNAL && template.dt()!=0 && template.dt()!=XTERNAL)) ? (template.dt() > 0) : nar.random().nextBoolean() //if equal, choose on polarity at random
                                     :
-                                pos > neg;
+                                    (pos > neg);
 
                     FasterList<TaskRegion> xx = new FasterList<>(0, new TaskRegion[n - (polarity ? neg : pos)]);
                     for (TaskRegion x: ttt) {
@@ -787,7 +788,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
 
         @Override
-        public double epsilon() {
+        public final double epsilon() {
             return EPSILON;
         }
 
