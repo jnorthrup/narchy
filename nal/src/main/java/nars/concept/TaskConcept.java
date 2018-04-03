@@ -20,7 +20,7 @@ import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
 public class TaskConcept extends NodeConcept implements Concept {
-    
+
     protected final BeliefTable beliefs;
     protected final BeliefTable goals;
     protected final QuestionTable quests;

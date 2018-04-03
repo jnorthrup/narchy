@@ -522,7 +522,8 @@ abstract public class NAgentX extends NAgent {
                                     //"agentPredict",
 
                                     a instanceof NAgentX ?
-                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width, cs.height))
+                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(
+                                                    new CameraSensorView(cs, a).withControls(), AspectAlign.Align.Center, cs.width, cs.height))
                                                     .toArray(Surface[]::new))
                                             ) : grid()
                             )

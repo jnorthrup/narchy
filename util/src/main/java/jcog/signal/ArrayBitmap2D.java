@@ -1,5 +1,7 @@
 package jcog.signal;
 
+import jcog.util.IntIntToFloatFunction;
+
 import java.lang.reflect.Array;
 
 public class ArrayBitmap2D implements Bitmap2D {
@@ -32,9 +34,7 @@ public class ArrayBitmap2D implements Bitmap2D {
     public void set(int x, int y, float v) {
         this.b[y][x] = v;
     }
-    public interface IntIntToFloatFunction {
-        public float value(int x, int y);
-    }
+
     public void set(IntIntToFloatFunction set) {
         int W = width();
         int H = height();

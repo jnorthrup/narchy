@@ -376,7 +376,7 @@ public enum Op {
                 }
             }
 
-            return implInConjReduce(ci);
+            return ci;
         }
 
     },
@@ -417,13 +417,10 @@ public enum Op {
     VAR_QUERY('?', Op.ANY_LEVEL, OpType.Variable),
     VAR_PATTERN('%', Op.ANY_LEVEL, OpType.Variable),
 
-    INT("+", Op.ANY_LEVEL, OpType.Other) {
+    INT("+", Op.ANY_LEVEL, OpType.Other),
 
-    },
+    BOOL("B", Op.ANY_LEVEL, OpType.Other),
 
-    BOOL("B", Op.ANY_LEVEL, OpType.Other) {
-
-    },
     //SPACE("+", true, 7, Args.GTEOne),
 
 
@@ -535,18 +532,92 @@ public enum Op {
     public static final char TrueSym = '†';
     public static final char FalseSym = 'Ⅎ';
     public static final char NullSym = '☢';
+
     /**
      * absolutely nonsense
      */
-    public static final Bool Null = new BoolNull();
+    public static final Bool Null = new Bool(String.valueOf(Op.NullSym)) {
+
+        final int rankBoolNull = Term.opX(BOOL, 0);
+
+        @Override
+        public final int opX() {
+            return rankBoolNull;
+        }
+
+        @Override
+        public Term neg() {
+            return this;
+        }
+
+        @Override
+        public boolean equalsNeg(Term t) {
+            return false;
+        }
+
+        @Override
+        public Term unneg() {
+            return this;
+        }
+    };
+
     /**
      * tautological absolute false
      */
-    public static final Bool False = new BoolFalse();
+    public static final Bool False = new Bool(String.valueOf(Op.FalseSym)) {
+
+        final int rankBoolFalse = Term.opX(BOOL, 1);
+
+        @Override
+        public final int opX() {
+            return rankBoolFalse;
+        }
+
+        @Override
+        public boolean equalsNeg(Term t) {
+            return t == True;
+        }
+
+        @Override
+        public Term neg() {
+            return True;
+        }
+
+        @Override
+        public Term unneg() {
+            return True;
+        }
+    };
+
+
     /**
      * tautological absolute true
      */
-    public static final Bool True = new BoolTrue();
+    public static final Bool True = new Bool(String.valueOf(Op.TrueSym)) {
+
+        final int rankBoolTrue = Term.opX(BOOL, 2);
+
+        @Override
+        public final int opX() {
+            return rankBoolTrue;
+        }
+
+        @Override
+        public Term neg() {
+            return False;
+        }
+
+        @Override
+        public boolean equalsNeg(Term t) {
+            return t == False;
+        }
+
+        @Override
+        public Term unneg() {
+            return True; //doesnt change
+        }
+    };
+
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
@@ -1116,13 +1187,6 @@ public enum Op {
         }
     }
 
-    /**
-     * precondition combiner: a combination nconjunction/implication reduction
-     */
-    @Deprecated
-    public static Term implInConjReduce(final Term conj /* possibly a conjunction */) {
-        return conj;
-    }
 
     static boolean hasNull(Term[] t) {
         for (Term x : t)
@@ -2212,89 +2276,8 @@ public enum Op {
         }
     }
 
-    private static class BoolNull extends Bool {
-        final static int rankBoolNull = Term.opX(BOOL, 0);
 
-        public BoolNull() {
-            super(String.valueOf(Op.NullSym));
-        }
 
-        @Override
-        public final int opX() {
-            return rankBoolNull;
-        }
-
-        @Override
-        public Term neg() {
-            return this;
-        }
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return false;
-        }
-
-        @Override
-        public Term unneg() {
-            return this;
-        }
-    }
-
-    private static class BoolFalse extends Bool {
-        final static int rankBoolFalse = Term.opX(BOOL, 1);
-
-        public BoolFalse() {
-            super(String.valueOf(Op.FalseSym));
-        }
-
-        @Override
-        public final int opX() {
-            return rankBoolFalse;
-        }
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return t == True;
-        }
-
-        @Override
-        public Term neg() {
-            return True;
-        }
-
-        @Override
-        public Term unneg() {
-            return True;
-        }
-    }
-
-    private static class BoolTrue extends Bool {
-        final static int rankBoolTrue = Term.opX(BOOL, 2);
-
-        public BoolTrue() {
-            super(String.valueOf(Op.TrueSym));
-        }
-
-        @Override
-        public final int opX() {
-            return rankBoolTrue;
-        }
-
-        @Override
-        public Term neg() {
-            return False;
-        }
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return t == False;
-        }
-
-        @Override
-        public Term unneg() {
-            return True;
-        } //doesnt change
-    }
 
 
 //        /**

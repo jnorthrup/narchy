@@ -27,48 +27,54 @@ public class PredictionFeedback {
         if (x == null)
             return;
 
+        int dur = nar.dur();
+        long predictionLimit = nar.time() - dur / 2;
+
         long start = x.start();
         long end = x.end();
 
-        int dur = nar.dur();
+
         float fThresh = nar.freqResolution.floatValue();
 
-        List<Task> trash = new FasterList(8);
-        Consumer<Task> each = y -> {
-            if (!(y instanceof SignalTask)) {
-                if (absorb(x, y, start, end, dur, fThresh, nar)) {
-                    trash.add(y);
-                }
+        List<Task> trash = new FasterList<>(8);
+
+        ((DefaultBeliefTable) table).temporal.whileEach(start, end, (y)->{
+            //if (!(y instanceof SignalTask)) {
+            if (y.end() < predictionLimit)
+                trash.add(y);
+            //}
+            return true; //continue
+        });
+
+
+        //test evidences etc outside of critical section that would lock the RTreeBeliefTable
+        trash.forEach(y-> {
+            if (absorb(x, y, start, end, dur, fThresh, nar)) {
+                table.removeTask(y);
             }
-        };
-
-        scan(table, start, end, each);
-
-
-        trash.forEach(table::removeTask);
+        });
 
     }
 
-    public static void scan(BeliefTable table, long start, long end, Consumer<Task> each) {
-        if (table instanceof ScalarBeliefTable) {
-            ((ScalarBeliefTable)table).series.forEach(start, end, true, each);
-        } else {
-            ((DefaultBeliefTable) table).temporal.whileEach(start, end, (tt)->{ each.accept(tt); return true; });
-        }
-    }
+
 
 
     /**
      * TODO handle stretched tasks
      */
-    public static void feedbackNonSignal(Task y, BeliefTable table, NAR nar) {
+    public static void feedbackNonSignal(Task y, ScalarBeliefTable table, NAR nar) {
 
         if (table.isEmpty())
             return; //nothing to contradict
 
-        long start = y.start();
-        long end = y.end();
         int dur = nar.dur();
+        long end = y.end();
+        long predictionLimit = nar.time() - dur / 2;
+        if (end >= predictionLimit)
+            return; //dont absorb if at least part of the task predicts the future
+
+        long start = y.start();
+
 
         List<SignalTask> signals = new FasterList<>(8);
         Consumer<Task> each = existing -> {
@@ -78,15 +84,14 @@ public class PredictionFeedback {
             }
         };
 
-        scan(table, start, end, each);
+        table.series.forEach(start, end, true, each);
 
-        if (signals.isEmpty())
-            return;
-        else {
+        if (!signals.isEmpty()) {
             //TODO combine into one batch absorb function
             float fThresh = nar.freqResolution.floatValue();
-            for (int i = 0, signalsSize = signals.size(); i < signalsSize; i++)
+            for (int i = 0, signalsSize = signals.size(); i < signalsSize; i++) {
                 absorb(signals.get(i), y, start, end, dur, fThresh, nar);
+            }
         }
     }
 

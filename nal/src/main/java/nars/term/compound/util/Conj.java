@@ -691,7 +691,7 @@ public class Conj {
         }
 
 
-        return Op.implInConjReduce(instance(CONJ, dt, left, right));
+        return instance(CONJ, dt, left, right);
     }
 
     public void forEachTerm(Object what, Consumer<Term> each) {

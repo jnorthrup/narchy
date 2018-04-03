@@ -61,9 +61,11 @@ public interface TaskLink extends Priority, Termed {
         public static Pair<Term, ByteLongPair> seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
             Term tt = t.term();
             return seed(
-                    tt.negIf(
-                        polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
-                    ),
+                    tt
+                        .root()
+                        .negIf(
+                            polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
+                        ),
                     t.punc(), Tense.dither(
                         //t.mid()
                        t.mid() + tt.dtRange()/2
