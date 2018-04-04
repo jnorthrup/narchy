@@ -30,7 +30,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 
 /**
- * Modifications to guava's ServiceManager
+ * Modifications of Guava's ServiceManager
+ *
  * <p>
  * A manager for monitoring and controlling a set of {@linkplain Service services}. This class
  * provides methods for {@linkplain #startAsync() starting}, {@linkplain #stopAsync() stopping} and
@@ -80,8 +81,7 @@ import java.util.stream.Stream;
  * <p>This class uses the ServiceManager's methods to start all of its services, to respond to
  * service failure and to ensure that when the JVM is shutting down all the services are stopped.
  *
- * @author Luke Sandberg
- * @since 14.0
+ * @author Luke Sandberg (original)
  */
 public class Services<X, C>  {
 
@@ -89,26 +89,7 @@ public class Services<X, C>  {
     public final C id;
     private final Executor exe;
     public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
-
-
-
-//    abstract public static class SubService<C,X> extends Services<C,X> implements Service<C> {
-//
-//        private final Services<?,C> parent;
-//
-//        public SubService(C id, Services<?,C> parent) {
-//            super(id);
-//            this.parent = parent;
-//            parent.add(id, this);
-//        }
-//
-//
-//        @Override
-//        public void stop(P x, Executor exe, @Nullable Runnable afterDelete) {
-//            super.stop();
-//        }
-//
-//    }
+    private final ConcurrentMap<X, Service<C>> services;
 
     enum ServiceState {
         Off {
@@ -122,12 +103,6 @@ public class Services<X, C>  {
         Deleted
     }
 
-    public void print(PrintStream out) {
-        services.forEach((k, s) -> out.println(k + " " + s.get()));
-    }
-
-
-    private final ConcurrentMap<X, Service<C>> services;
 
     public Services(C id) {
         this(id, ForkJoinPool.commonPool());
@@ -145,7 +120,7 @@ public class Services<X, C>  {
         this.id = id == null ? (C)this : id;
         this.logger = LoggerFactory.getLogger(id.toString());
         this.exe = exe;
-        this.services = new ConcurrentHashMap(64);
+        this.services = new ConcurrentHashMap<>(64);
     }
 
     public Stream<Service<C>> stream() {
@@ -174,22 +149,7 @@ public class Services<X, C>  {
                 s.start(this, exe);
             }
         }
-
-
     }
-//    public final boolean on(X key) {
-//        Service<C> s = services.get(key);
-//        if (s.isOff()) {
-//            s.start(this, exe);
-//        }
-//    }
-//
-//    public void off(X key) {
-//        Service<C> s = services.get(key);
-//        if (s.isOn()) {
-//            s.stop(this, exe, null);
-//        }
-//    }
 
     public void remove(X serviceID) {
         Service<C> s = services.get(serviceID);
@@ -218,4 +178,11 @@ public class Services<X, C>  {
     public int size() {
         return services.size();
     }
+
+
+    public void print(PrintStream out) {
+        services.forEach((k, s) -> out.println(k + " " + s.get()));
+    }
+
+
 }

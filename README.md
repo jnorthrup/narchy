@@ -259,9 +259,9 @@ In keeping with a design preference for unity and balanced spectral continuity, 
  Reward sensor concept which can be desired and focused as the object of procedural questions
  and future predictions with respect to the sensor and motor concepts of its context.
 
-### InterNARS   
- The InterNARS is a multi-agent p2p mesh network protocol allowing individual NAR peers to communicate
-  asynchronously and remotely through messages containing serialized tasks.  In the InterNARS, 
+### InterNARchy
+ The InterNARchy is a multi-agent p2p mesh network protocol allowing individual NAR peers to communicate
+  asynchronously and remotely through messages containing serialized tasks.  In the InterNARchy,
   peers learn to intelligently route their own and others' communications according to the
   budget and/or truth heuristics inherent in the reasoning itself.  Another peer's beliefs can 
   be corroborated, doubted, augmented, summarized, misrepresented, or ignored.  Their questions
@@ -297,8 +297,8 @@ than what both types of Images were designed to generate. Please create an Issue
 
 
 ## Requirements
- - Java 9 (OpenJDK or Oracle JDK)
- - Maven
+ - Java 10+
+ - Gradle
 
 ## References
 
@@ -320,9 +320,3 @@ than what both types of Images were designed to generate. Please create an Issue
  - Discussion Group https://groups.google.com/forum/?fromgroups#!forum/open-nars
 
 [![](https://images.microbadger.com/badges/image/automenta/narchy.svg)](http://microbadger.com/images/automenta/narchy "image badge from microbadger.com")
-
-̳̺̊N̲̠̥̻A̙ͨ͋ͪR̳̖̯̲̞̪߮߯ͫ̈́́ͮc̙͎̑ͮ߬͟͏h̨͍߳y͈߭߳᷉͘͜
-̶N̛̫͈ͤ͟͠͏͉Ȧ̲᷅ͩR҆̑߬c゚̰͂҇҇͡h͇᷈ͥ̓̀y̸̗̕
-̼߲᷆̋N゙̺҄߰͋Ả̀R߲̞͈̜ͧ͌ͤc̸͉᷄̀ẖ̈̊y゚̡̤͎᷁
-㛨
-Ⓐ
