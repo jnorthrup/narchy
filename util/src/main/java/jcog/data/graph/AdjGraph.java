@@ -82,7 +82,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            return this == obj || v.equals(obj) || (obj instanceof Node && v.equals(((Node) obj).v));
+            return this == obj || (obj instanceof Node && v.equals(((Node) obj).v)) || v.equals(obj);
         }
 
         @Override

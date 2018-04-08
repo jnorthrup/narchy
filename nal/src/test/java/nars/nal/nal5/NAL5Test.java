@@ -544,7 +544,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<(&&,<robin --> [chirping]>,<robin --> [flying]>) ==> <robin --> bird>>"); //.en("If robin can fly and robin chirps, then robin is a bird");
         tester.believe("<<robin --> [flying]> ==> <robin --> [withBeak]>>", 0.9f, 0.9f); //.en("If robin can fly then usually robin has a beak.");
-        tester.mustBelieve(cycles, "<(&&,<robin --> [chirping]>,<robin --> [withBeak]>) ==> <robin --> bird>>", 1.00f, 0.45f); //.en("I guess that if robin chirps and robin has a beak, then robin is a bird.");
+        tester.mustBelieve(cycles, "<(&&,<robin --> [chirping]>,<robin --> [withBeak]>) ==> <robin --> bird>>",
+                1.00f, 0.45f); //.en("I guess that if robin chirps and robin has a beak, then robin is a bird.");
 
     }
 

@@ -132,8 +132,8 @@ public class NodeConcept implements Concept {
     @Override
     public final boolean equals(Object obj) {
         //return this == obj || term.equals(obj);
-        //return this == obj || (obj instanceof Termed && term.equals(((Termed) obj).term()));
-        return this == obj || (term.equals(((Termed) obj).term()));
+        return this == obj || (obj instanceof Termed && term.equals(((Termed) obj).term()));
+        //return this == obj || (term.equals(((Termed) obj).term()));
     }
 
     @Override

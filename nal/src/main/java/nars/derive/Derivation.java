@@ -331,7 +331,10 @@ public class Derivation extends PreDerivation {
                 nar.get(Atomic.the("dropAnySet")),
                 nar.get(Atomic.the("without")),
                 nar.get(Atomic.the("withoutPosOrNeg")),
+
                 nar.get(Atomic.the("conjWithout")),
+                nar.get(Atomic.the("conjWithoutPosOrNeg")),
+
                 nar.get(Atomic.the("conjDropIfEarliest")),
                 nar.get(Atomic.the("conjDropIfLatest")),
                 nar.get(Atomic.the("conjEvent")),

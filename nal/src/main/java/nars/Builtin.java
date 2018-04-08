@@ -23,7 +23,6 @@ import nars.term.compound.util.Conj;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -428,40 +427,16 @@ public class Builtin {
 //            return c.sub(target);
         }));
 
-        /** similar to without() but special handling for CONJ sub-events */
-        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
-            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
-                return Null;
+        /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
+        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) ->
+            Conj.without(conj, event, false, nar)
+        ));
 
+        /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
+        nar.on(Functor.f2((Atom) $.the("conjWithoutPosOrNeg"), (Term conj, Term event) ->
+            Conj.without(conj, event, true, nar)
+        ));
 
-            FasterList<LongObjectPair<Term>> events = Conj.eventList(conj);
-            IntArrayList found = new IntArrayList(2);
-            int es = events.size();
-            assert (es > 1);
-            for (int i = 0; i < es; i++) {
-                if (event.equalsRoot(events.get(i).getTwo())) {
-                    found.add(i);
-                }
-            }
-
-
-            int fs = found.size(), r;
-            switch (fs) {
-                case 0:
-                    return Null;
-                case 1:
-                    r = found.get(0);
-                    break;
-                default:
-                    r = found.get(nar.random().nextInt(fs));
-                    break;
-            }
-            events.remove(r);
-            return Conj.conj(events);
-//            } else {
-//                return nullToNull(Op.without(conj, event::equalsRoot, nar.random()));
-//            }
-        }));
         /** extracts only the events preceding the specified events */
         nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) ->
                 Conj.conjDrop(conj, event, false)

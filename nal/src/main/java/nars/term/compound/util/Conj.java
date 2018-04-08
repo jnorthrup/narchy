@@ -1,6 +1,7 @@
 package nars.term.compound.util;
 
 import jcog.list.FasterList;
+import nars.NAR;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -154,7 +155,7 @@ public class Conj {
     }
 
     public static Conj from(Term t) {
-        return from(t, t.dt()==DTERNAL ? DTERNAL : 0);
+        return from(t, t.dt()==DTERNAL ? ETERNAL : 0);
     }
 
     public static Conj from(Term t, long rootTime) {
@@ -199,12 +200,25 @@ public class Conj {
         return ce.term();
     }
 
+    public static Term without(Term conj, Term event, boolean includeNeg, NAR nar) {
+        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+            return Null;
+
+        Conj c = Conj.from(conj);
+        if (c.removeAll(event, true, includeNeg)) {
+            return c.term(); //return the changed conj
+        } else {
+            return Null; //same
+        }
+    }
+
     /**
      * returns false if contradiction occurred, in which case this
      * ConjEvents instance is
      * now corrupt and its result via .term() should be considered final
      */
     public boolean add(Term t, long at) {
+
         if (term != null)
             throw new RuntimeException("already terminated");
 
@@ -346,18 +360,63 @@ public class Conj {
         int i = add(t); //should be get(), add doesnt apply
         if (neg)
             i = -i;
+        return removeFromEvent(at, o, i);
+    }
+
+    private boolean removeFromEvent(long at, Object o, int... i) {
         if (o instanceof RoaringBitmap) {
-            return ((RoaringBitmap)o).checkedRemove(i);
+            boolean b = false;
+            for (int ii : i)
+                b|=((RoaringBitmap)o).checkedRemove(ii);
+            return b;
         } else {
             byte[] b = (byte[]) o;
-            int bi = ArrayUtils.indexOf(b, (byte)i);
-            if (bi!=-1) {
-                event.put(at, ArrayUtils.remove(b, bi));
+            boolean removed = false;
+            for (int ii : i) {
+                int bi = ArrayUtils.indexOf(b, (byte) ii);
+                if (bi!=-1) {
+                    b = ArrayUtils.remove(b, bi);
+                    removed = true;
+                }
+            }
+            if (removed) {
+                event.put(at, b);
                 return true;
             } else {
                 return false;
             }
         }
+    }
+
+    public boolean removeAll(Term t, boolean pos, boolean neg) {
+
+        boolean negateInput;
+        if (t.op()==NEG) {
+            negateInput = true;
+            t = t.unneg();
+        } else {
+            negateInput = false;
+        }
+
+        int i = add(t); //should be get(), add doesnt apply
+        int[] ii;
+        if (pos && neg) {
+            ii = new int[] { i, -i };
+        } else if (pos) {
+            if (negateInput) i = -i;
+            ii = new int[] { i };
+        } else if (neg) {
+            if (negateInput) i = -i;
+            ii = new int[] { -i };
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+        final boolean[] removed = {false};
+        event.forEachKeyValue((when, o)->{
+            removed[0] |= removeFromEvent(when, o, ii);
+        });
+        return removed[0];
     }
 
 //    private byte id(long w) {
@@ -455,17 +514,19 @@ public class Conj {
 
             e.add(pair(when, wt));
         }
-        assert (!e.isEmpty());
 
+        int ee = e.size();
         Term temporal;
-        if (e.size() > 1) {
-            e.sortThisBy(LongObjectPair::getOne);
-
-            temporal = conjSeq(e);
-            if (temporal instanceof Bool)
-                return temporal;
-        } else {
-            temporal = e.get(0).getTwo();
+        switch (ee) {
+            case 0:
+                return True;
+            case 1:
+                temporal = e.get(0).getTwo();
+                break;
+            default:
+                e.sortThisBy(LongObjectPair::getOne);
+                temporal = conjSeq(e);
+                break;
         }
 
         return eternal != null ?
