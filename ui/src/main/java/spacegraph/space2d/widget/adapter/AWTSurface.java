@@ -40,8 +40,9 @@ public class AWTSurface extends Widget {
 //        System.setProperty("java.awt.headless", "true");
 //    }
 
-    final Component component;
-    private final Tex tex;
+    Component component;
+    private final Tex tex = new Tex();
+    private final Dimension psize;
     BufferedImage buffer = null;
     int lpx = -1, lpy = -1;
     private On ons;
@@ -53,46 +54,48 @@ public class AWTSurface extends Widget {
 
     public AWTSurface(Component component, int pw, int ph) {
 
-        tex = new Tex();
-
-
-        if (component instanceof JFrame) {
-            component.setVisible(false);
-            component = ((JFrame) component).getRootPane();
-        }
-
-
-        Window frame = new MyFrame();
-//        frame.getContentPane().setLayout(new BorderLayout());
-//        frame.getContentPane().add(component, BorderLayout.CENTER);
-//        frame.add(component);
-        //frame.setIgnoreRepaint(true);
-
-//        frame.addNotify();
-        component.addNotify();
-
         this.component = component;
+        this.psize = new Dimension(pw, ph);
 
-        Dimension psize = new Dimension(pw, ph);
-        //frame.setIgnoreRepaint(true);
-        component.setPreferredSize(psize);
-        //component.setMaximumSize(psize);
-        component.setSize(psize);
-        frame.pack();
-
-        component.setVisible(true);
-
-        //component.requestFocus();
-
-        component.validate();
-
-        content(tex.view());
     }
+
 
     @Override
     public void start(@Nullable SurfaceBase parent) {
         synchronized (this) {
+
+            if (component instanceof JFrame) {
+                component.setVisible(false);
+                component = ((JFrame) component).getRootPane();
+            }
+
+
+            Window frame = new MyFrame();
+//        frame.getContentPane().setLayout(new BorderLayout());
+//        frame.getContentPane().add(component, BorderLayout.CENTER);
+//        frame.add(component);
+            //frame.setIgnoreRepaint(true);
+
+//        frame.addNotify();
+            component.addNotify();
+
+
+            //frame.setIgnoreRepaint(true);
+            component.setPreferredSize(psize);
+            //component.setMaximumSize(psize);
+            component.setSize(psize);
+            frame.pack();
+
+            component.setVisible(true);
+
+            //component.requestFocus();
+
+            component.validate();
+
             super.start(parent);
+
+            content(tex.view());
+
 
             AtomicBoolean busy = new AtomicBoolean(false);
             ons = root().onUpdate(w -> {
