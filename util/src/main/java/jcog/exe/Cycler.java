@@ -1,5 +1,7 @@
 package jcog.exe;
 
+import jcog.TODO;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
@@ -54,8 +56,9 @@ public interface Cycler extends Runnable {
      * run asynchronously with no delay
      */
     @Deprecated default Loop start() {
+        throw new TODO();
         //return startPeriodMS(0);
-        return startPeriodMS(1);
+        //return startPeriodMS(1);
     }
 
     /**

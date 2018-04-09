@@ -486,7 +486,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
         return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () ->
-                t.truth(subStart, subEnd, dur, Float.MIN_NORMAL)
+                t.truth(subStart, subEnd, dur, 0)
         );
     }
 

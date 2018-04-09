@@ -1,10 +1,5 @@
 package nars.experiment.connect4;
 
-import jcog.Util;
-import nars.NAR;
-import nars.NARS;
-import nars.op.java.Opjects;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -34,7 +29,7 @@ import java.util.Objects;
  */
 public class ConnectFour {
 
-    static JFrame constructApplicationFrame(ConnectFourState game) {
+    public static JFrame constructApplicationFrame(ConnectFourState game) {
         JFrame frame = new JFrame();
         JPanel panel = new ConnectFourPanel(game);
         frame.add(panel, BorderLayout.CENTER);
@@ -42,33 +37,7 @@ public class ConnectFour {
         return frame;
     }
 
-    public static void main(String[] args) {
-        NAR n = NARS.tmp();
-        n.log();
-        Opjects o = new Opjects(n);
-        ConnectFourState game = o.a("c", ConnectFourState.class);
 
-        JFrame frame = constructApplicationFrame(game);
-        frame.setSize(450, 450);
-        frame.setVisible(true);
-
-        while (true) {
-            switch (game.moving()) {
-                case 1:
-                    game.drop(n.random().nextInt(game.cols));
-                    break;
-                case 2:
-                    game.drop(n.random().nextInt(game.cols));
-                    break;
-            }
-            frame.repaint();
-            n.run(1);
-            Util.sleep(25);
-            if (game.isTerminal())
-                game.clear();
-        }
-
-    }
 
     /**
      * A state of the Connect Four game is characterized by a board containing a
@@ -91,7 +60,8 @@ public class ConnectFour {
          */
         private byte[] board;
 
-        private int moveCount;
+        private int moveCount, invalidCount;
+
         /**
          * Indicates the utility of the state. 1: win for player 1, 0: win for
          * player 2, 0.5: draw, -1 for all non-terminal states.
@@ -105,16 +75,16 @@ public class ConnectFour {
         }
 
         public ConnectFourState(int rows, int cols) {
-            utility = -1;
             this.cols = cols;
             this.rows = rows;
             board = new byte[rows * cols];
+            clear();
         }
 
         public void clear() {
             Arrays.fill(board, (byte) 0);
             utility = -1;
-            moveCount = winPositions1 = winPositions2 = 0;
+            invalidCount = moveCount = winPositions1 = winPositions2 = 0;
         }
 
         private double utility() {
@@ -133,8 +103,16 @@ public class ConnectFour {
             return moveCount;
         }
 
-        public void drop(int col) {
+        public int invalidCount() {
+            return invalidCount;
+        }
+
+        public synchronized void drop(int col, int whoamI) {
             int playerNum = moving();
+            if (playerNum != whoamI) {
+                invalidMove();
+                return;
+            }
             int row = freeRow(col);
             if (row != -1) {
                 moveCount++;
@@ -153,7 +131,13 @@ public class ConnectFour {
                 set(row, col, playerNum);
                 if (utility == -1)
                     analyzeWinPositions(row, col);
+            } else {
+                invalidMove();
             }
+        }
+
+        public void invalidMove() {
+            invalidCount++;
         }
 
         public void set(int row, int col, int playerNum) {
@@ -479,11 +463,11 @@ public class ConnectFour {
 //                if (e.getSource() == proposeButton) {
 //                    proposeMove();
                 /*} else */
-                if (e.getSource() instanceof GridElement) {
-                    GridElement el = (GridElement) e.getSource();
-                    game.drop(el.col);
-                    // turn
-                }
+//                if (e.getSource() instanceof GridElement) {
+//                    GridElement el = (GridElement) e.getSource();
+//                    game.drop(el.col, ..);
+//                    // turn
+//                }
             }
             repaint(); // paint all disks!
 
@@ -493,7 +477,7 @@ public class ConnectFour {
         /**
          * Uses adversarial search for selecting the next action.
          */
-        private void proposeMove() {
+//        private void proposeMove() {
 //                Integer action;
 //                int time = (timeCombo.getSelectedIndex() + 1) * 5;
 //                AdversarialSearch<ConnectFourState, Integer> search;
@@ -519,7 +503,7 @@ public class ConnectFour {
             //searchMetrics = search.getMetrics();
 
             //currState = game.getResult(currState, action);
-        }
+//        }
 
         /**
          * Updates the status bar.
@@ -598,3 +582,54 @@ public class ConnectFour {
     }
 
 }
+//package nars.experiment.connect4;
+//
+//import java.util.List;
+//
+///**
+// * Artificial Intelligence A Modern Approach (3rd Edition): page 165.<br>
+// * <br>
+// * A game can be formally defined as a kind of search problem with the following
+// * elements: <br>
+// * <ul>
+// * <li>S0: The initial state, which specifies how the game is set up at the
+// * start.</li>
+// * <li>PLAYER(s): Defines which player has the move in a state.</li>
+// * <li>ACTIONS(s): Returns the set of legal moves in a state.</li>
+// * <li>RESULT(s, a): The transition model, which defines the result of a move.</li>
+// * <li>TERMINAL-TEST(s): A terminal test, which is true when the game is over
+// * and false TERMINAL STATES otherwise. States where the game has ended are
+// * called terminal states.</li>
+// * <li>UTILITY(s, p): A utility function (also called an objective function or
+// * payoff function), defines the final numeric value for a game that ends in
+// * terminal state s for a player p. In chess, the outcome is a win, loss, or
+// * draw, with values +1, 0, or 1/2 . Some games have a wider variety of possible
+// * outcomes; the payoffs in backgammon range from 0 to +192. A zero-sum game is
+// * (confusingly) defined as one where the total payoff to all players is the
+// * same for every instance of the game. Chess is zero-sum because every game has
+// * payoff of either 0 + 1, 1 + 0 or 1/2 + 1/2 . "Constant-sum" would have been a
+// * better term, but zero-sum is traditional and makes sense if you imagine each
+// * player is charged an entry fee of 1/2.</li>
+// * </ul>
+// *
+// * @param <S>  Type which is used for states in the game.
+// * @param <A> Type which is used for actions in the game.
+// * @param <P> Type which is used for players in the game.
+// * @author Ruediger Lunde
+// */
+//public interface Game<S, A, P> {
+//
+//    S getInitialState();
+//
+//    P[] getPlayers();
+//
+//    P getPlayer(S state);
+//
+//    List<A> getActions(S state);
+//
+//    S getResult(S state, A action);
+//
+//    boolean isTerminal(S state);
+//
+//    double getUtility(S state, P player);
+//}

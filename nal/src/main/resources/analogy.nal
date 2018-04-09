@@ -8,22 +8,22 @@
   //want/notWant X, and X similar Y then want/notWant Y
     X, (X<->Y)                          |- Y, (Belief:Analogy, Goal:Strong)
   //want/notWant X,  and not X similar Y then not/want Y
-    X, (X<->Y)                          |- --Y, (Goal:WeakPN)
+    //X, (X<->Y)                          |- --Y, (Goal:WeakPN)
 
-    X, (--X<->Y)                        |- Y, (Belief:AnalogyN, Goal:StrongN)
-    X, (--X<->Y)                        |- --Y, (Goal:WeakNN)
+    //X, (--X<->Y)                        |- Y, (Belief:AnalogyN, Goal:StrongN)
+    //X, (--X<->Y)                        |- --Y, (Goal:WeakNN)
 
-    Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:Weak)
-    Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, --X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
-    Z, (X<->Y), in(Z,X)               |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Weak)
-    Z, (X<->Y), inNeg(Z,X)             |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
+    Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Weak)
+    //Z, (X<->Y), inNeg(Z,X)             |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
+    //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:Weak)
+    //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, --X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
       //X, (X<->Y)                 |- (--,Y), (Goal:WeakPN)
       //X, (--X<->Y)               |- (--,Y), (Goal:WeakNN)
       //(X-->A), (($1-->A)<->($1-->B)), neqRCom(X,B) |- (X-->B), (Belief:Analogy, Goal:Induction)
 
 //Similarity in Conjunction spreading
-    (&&,(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,(X<->Z),A..+), (Belief:Analogy, Goal:Weak)
-    (&&,--(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,--(X<->Z),A..+), (Belief:Analogy, Goal:Weak)
+ //   (&&,(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,(X<->Z),A..+), (Belief:Analogy, Goal:Weak)
+ //   (&&,--(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,--(X<->Z),A..+), (Belief:Analogy, Goal:Weak)
     //TODO (&&,(X<->Y),A..+), (&&,(Y<->Z),A..+), neq(X,Z) |- (&&,(X<->Z),A..+), (Belief:...
 
  //suspect:

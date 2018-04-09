@@ -607,7 +607,7 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
 
             this.methodName = $.the(_methodName);
 
-            runCache = new SoftMemoize<Term,Runnable>((term)->{
+            runCache = new SoftMemoize<>((term) -> {
                 Subterms args = validArgs(Operator.args(term));
                 if (args == null)
                     return null;
@@ -627,7 +627,7 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                 Object[] instanceAndArgs;
                 List<Class<?>> types;
                 if (aa == 0) {
-                    instanceAndArgs = new Object[] { instance };
+                    instanceAndArgs = new Object[]{instance};
                     types = Collections.emptyList();
                 } else {
                     instanceAndArgs = object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
@@ -644,7 +644,7 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                     return null;
                 }
 
-                return ()-> {
+                return () -> {
 
                     AtomicBoolean flag = evoking.get();
                     flag.set(true);

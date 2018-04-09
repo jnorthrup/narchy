@@ -314,8 +314,7 @@
     //C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //C, X, task("&&"), eventOfPosOrNeg(X,C)  |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, eventOf(C,X)   |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPosOrNeg(C,X)   |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //C, X, task(negative), task("&&"), in(X,C)  |- (--,dropAnyEvent(C)), (Goal:StructuralDeduction)
 

@@ -1,7 +1,6 @@
 package nars.task;
 
 import jcog.list.FasterList;
-import nars.Param;
 import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.truth.PreciseTruth;
@@ -20,6 +19,11 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
+
+
+    private final static int minDur =
+            //0; //<- anything besides what matches the specified interval is ignored
+            1; //<- allows some bleed-through during interpolation when an exact match is present
 
     static class TaskComponent {
         public final Task task;
@@ -86,7 +90,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
         if (dur > 0) {
             if (dd < dur)
-                dur = (int) dd;
+                dur = Math.max(minDur, (int) dd);
 
 //            if (computeDensity) {
 //                long ts = Util.clamp(t.start(), start, end);
@@ -108,7 +112,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         {
             removeIf(tc -> {
                 Task t = tc.task;
-                Truth tt = t.truth(start, end, dur, Truth.EVI_MIN);
+                Truth tt = t.truth(start, end, dur, 0);
                 if (tt != null) {
                     tc.freq = tt.freq(); //not necessarily the task's reported "average" freq in case of Truthlets
                     tc.evi = tt.evi();
@@ -152,6 +156,8 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
                     return null;
                 case 1: {
                     TaskComponent only = get(0);
+                    if (only.evi < Truth.EVI_MIN)
+                        return null;
                     return new PreciseTruth(only.freq, only.evi, false);
                 }
                 default: {
@@ -168,13 +174,12 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
                         wFreqSum += ee * x.freq;
                     }
                     assert(Float.isFinite(eviSum));
-                    float c = w2cSafe(eviSum);
-                    if (c < Param.TRUTH_EPSILON)
+                    if (eviSum < Truth.EVI_MIN)
                         return null;
                     else {
                         //float f = (wFreqSum / confSum);
                         float f = (wFreqSum / eviSum);
-                        return new PreciseTruth(f, c);
+                        return new PreciseTruth(f, w2cSafe(eviSum));
                     }
                 }
             }
