@@ -40,7 +40,7 @@ import static nars.truth.TruthFunctions.*;
 public interface Truth extends Truthed {
 
 
-    float EVI_MIN = c2w(Param.TRUTH_EPSILON);
+//    float EVI_MIN = c2w(Param.TRUTH_EPSILON);
 
     @Override
     float freq();

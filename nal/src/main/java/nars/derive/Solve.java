@@ -47,7 +47,7 @@ abstract public class Solve extends AbstractPred<Derivation> {
 
                 single = f.single();
 
-                Truth beliefTruth = d.beliefTruth;
+                Truth beliefTruth = f.beliefProjected() ? d.beliefTruthProjected : d.beliefTruth;
 
                 if (!single && beliefTruth == null)
                     return false; //double premise requiring a belief, but belief is null

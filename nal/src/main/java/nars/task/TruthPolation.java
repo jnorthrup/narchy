@@ -9,7 +9,6 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Float.NaN;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Truth Interpolation and Extrapolation of Temporal Beliefs/Goals
@@ -22,8 +21,8 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
 
     private final static int minDur =
-            //0; //<- anything besides what matches the specified interval is ignored
-            1; //<- allows some bleed-through during interpolation when an exact match is present
+            0; //<- anything besides what matches the specified interval is ignored
+            //1; //<- allows some bleed-through during interpolation when an exact match is present
 
     static class TaskComponent {
         public final Task task;
@@ -156,7 +155,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
                     return null;
                 case 1: {
                     TaskComponent only = get(0);
-                    if (only.evi < Truth.EVI_MIN)
+                    if (only.evi < Float.MIN_NORMAL)
                         return null;
                     return new PreciseTruth(only.freq, only.evi, false);
                 }
@@ -174,12 +173,12 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
                         wFreqSum += ee * x.freq;
                     }
                     assert(Float.isFinite(eviSum));
-                    if (eviSum < Truth.EVI_MIN)
+                    if (eviSum < Float.MIN_NORMAL)
                         return null;
                     else {
                         //float f = (wFreqSum / confSum);
                         float f = (wFreqSum / eviSum);
-                        return new PreciseTruth(f, w2cSafe(eviSum));
+                        return new PreciseTruth(f, eviSum, false);
                     }
                 }
             }

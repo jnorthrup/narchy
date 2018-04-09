@@ -6,7 +6,7 @@ import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Float.floatToIntBits;
-import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
@@ -27,9 +27,10 @@ public class PreciseTruth implements Truth {
         this.f = freq;
 
         if (xIsConfOrEvidence) {
-            this.e = c2w(ce);
+            this.e = c2wSafe(ce);
+            assert(e > Float.MIN_NORMAL);
         } else {
-            assert(Float.isFinite(ce) && ce > 0);
+            assert(Float.isFinite(ce) && ce > Float.MIN_NORMAL);
             this.e = ce;
         }
     }

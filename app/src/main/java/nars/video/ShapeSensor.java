@@ -7,7 +7,9 @@ import boofcv.alg.misc.ImageStatistics;
 import boofcv.alg.shapes.ShapeFittingOps;
 import boofcv.struct.ConnectRule;
 import boofcv.struct.PointIndex_I32;
+import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU8;
+import com.jogamp.opengl.GL2;
 import georegression.geometry.UtilPolygons2D_I32;
 import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Polygon2D_I32;
@@ -17,22 +19,28 @@ import nars.$;
 import nars.NAR;
 import nars.NAgent;
 import nars.control.CauseChannel;
+import nars.control.NARService;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
+import nars.term.atom.Int;
 import nars.truth.Truth;
+import spacegraph.SpaceGraph;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Gridding;
+import spacegraph.video.Draw;
+import spacegraph.video.Tex;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 
+import static com.jogamp.opengl.GL2.GL_POLYGON;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
@@ -41,46 +49,102 @@ import static nars.time.Tense.ETERNAL;
 //import boofcv.gui.image.ScaleOptions;
 //import boofcv.gui.image.ShowImages;
 
-public class ShapeSensor implements Runnable {
+public class ShapeSensor extends NARService {
 
     private final Bitmap2D input;
     private final CauseChannel<ITask> in;
     private final Term id;
-    private final NAR nar;
-    //GrayF32 img = null;
-    GrayU8 img;
 
-    final static boolean debug = true;
+
+    /** filtered */
+    GrayU8 img = null;
+
+    /** unfiltered */
+    GrayF32 imgF;
+
+    //final static boolean debug = true;
 
     // Polynomial fitting tolerances
-    static double splitFraction = 0.05;
-    static double minimumSideFraction = 0.1;
+    static double minimumSideFraction = 0.25;
 
-    static ImagePanel gui = debug ? new ImagePanel(400, 200) : null;
-    private BufferedImage polyDebug;
+    //static ImagePanel gui = debug ? new ImagePanel(400, 200) : null;
+    //private BufferedImage polyDebug;
 
     private final float R = 1f;
     private final float G = 1f;
     private final float B = 1f;
-    private Graphics2D g2;
 
+    private Grid grid;
+
+    private GrayU8 filtered;
+    private Tex filteredTex = new Tex();
+    private BufferedImage filteredRGB;
+
+
+    class ShapeSensorControl extends Gridding {
+        public ShapeSensorControl() {
+            super(
+                    new ShapeSensorSurface(),
+                    filteredTex.view()
+            );
+        }
+    }
+    class ShapeSensorSurface extends Surface {
+
+        @Override
+        protected void paint(GL2 gl, int dtMS) {
+
+            if (grid!=null) {
+                final int[] i = {0};
+                grid.image.forEach(pSet->{
+                   //System.out.println(pSet);
+
+                    float scale = Math.max(w(), h()) / Math.max(grid.gx, grid.gy);
+
+                    float dx = x();
+                    float dy = y();
+                    gl.glLineWidth(2f);
+                    //gl.glBegin(GL_TRIANGLE_FAN);
+                    //gl.glBegin(GL_LINE_LOOP);
+                    gl.glBegin(GL_POLYGON);
+                    //int n = pSet.subs();
+                    Draw.colorHash(gl, i[0], 0.75f);
+                    for (Term xy : pSet.subterms()) {
+                        int x = ((Int)xy.sub(0)).id;
+                        int y = grid.gy - ((Int)xy.sub(1)).id;
+                        gl.glVertex2f(dx + x * scale, dy + y * scale);
+                    }
+                    gl.glEnd();
+                    i[0]++;
+//                    g2.setColor(Color.getHSBColor(k / 10f, 0.8f, 0.8f));
+//                    g2.setStroke(new BasicStroke(2));
+//                    drawPolygon(outer, true, g2);
+//                    //System.out.println(c + ": " + polygon);
+                });
+            }
+        }
+    }
 
     public ShapeSensor(Term id, Bitmap2D input, NAgent a) {
+        super(a.nar());
         this.id = id;
         this.input = input;
 
-        if (debug) {
 
-            JFrame j = new JFrame();
-            //j.setSize(400,400);
-            j.setContentPane(gui);
-            j.pack();
-            j.setVisible(true);
 
-        }
+//        if (debug) {
+//
+//            JFrame j = new JFrame();
+//            //j.setSize(400,400);
+//            j.setContentPane(gui);
+//            j.pack();
+//            j.setVisible(true);
+//
+//        }
 
         in = a.nar().newCauseChannel(this);
-        this.nar = a.nar();
+
+        a.onFrame(this::update);
 
 //        a.actionUnipolar($.p(id, $.the("R")), (v) -> {
 //           return R = v;
@@ -91,7 +155,12 @@ public class ShapeSensor implements Runnable {
 //        a.actionUnipolar($.p(id, $.the("B")), (v) -> {
 //           return B = v;
 //        });
-        a.onFrame(this);
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        SpaceGraph.window(new ShapeSensorControl(), 400, 800);
     }
 
     public static boolean isConvex(List<PointIndex_I32> poly) {
@@ -118,10 +187,10 @@ public class ShapeSensor implements Runnable {
         return true;
     }
 
+
     long now = ETERNAL;
 
-    @Override
-    public void run() {
+    public void update() {
 
         long last = now;
         now = nar.time();
@@ -130,93 +199,96 @@ public class ShapeSensor implements Runnable {
 
         input.update();
 
-        if (img == null || img.width != input.width() || img.height != input.height()) {
-            //img = new GrayF32(input.width(), input.height());
+        if (imgF == null || imgF.width != input.width() || imgF.height != input.height()) {
+            imgF = new GrayF32(input.width(), input.height());
             img = new GrayU8(input.width(), input.height());
         }
 
-        int w = img.width;
-        int h = img.height;
+        int w = imgF.width;
+        int h = imgF.height;
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
-                img.set(x, y, Math.round(256f * input.brightness(x, y, R, G, B)));
+                float b = input.brightness(x, y, R, G, B);
+                imgF.unsafe_set(x, y, b);
+                //img.set(x, y, Math.round(256f * b));
             }
         }
 
         //GrayU8 binary = new GrayU8(img.width, img.height);
 
 
-        if (debug) {
-            if (polyDebug == null)
-                polyDebug = new BufferedImage(img.width, img.height, BufferedImage.TYPE_INT_RGB);
-        }
+//        if (debug) {
+//            if (polyDebug == null)
+//                polyDebug = new BufferedImage(img.width, img.height, BufferedImage.TYPE_INT_RGB);
+//        }
 
         // the mean pixel value is often a reasonable threshold when creating a binary image
-        int mean = (int) ImageStatistics.mean(img);
+        float mean = ImageStatistics.mean(imgF);
 
         // create a binary image by thresholding
-        ThresholdImageOps.threshold(img, img, mean, true);
+        ThresholdImageOps.threshold(imgF, img, mean, true);
 
         // reduce noise with some filtering
-        GrayU8 filtered = img;
-        //for (int i = 0; i < 2; i++) {
-        filtered = BinaryImageOps.dilate8(filtered, 1, null);
+        ////for (int i = 0; i < 2; i++) {
+        filtered = BinaryImageOps.dilate8(img, 1, null);
         filtered = BinaryImageOps.erode8(filtered, 1, null);
-        //}
+        ////}
+
+        GrayU8 filteredShown = filtered.clone();
+        byte[] data = filteredShown.data;
+        for (int i = 0, dataLength = data.length; i < dataLength; i++) {
+            data[i] = (byte) (data[i] * 255);
+        }
+        filteredRGB = filteredTex.update(filteredShown, filteredRGB);
 
 
         // Find the contour around the shapes
 
 
 //		// Fit a polygon to each shape and draw the results
-        if (debug) {
-            if (g2 == null) {
-                g2 = polyDebug.createGraphics();
-            }
-            g2.setColor(Color.BLACK);
-            g2.clearRect(0, 0, polyDebug.getWidth(), polyDebug.getHeight());
-        } else {
-            g2 = null;
-        }
+//        if (debug) {
+//            if (g2 == null) {
+//                g2 = polyDebug.createGraphics();
+//            }
+//            g2.setColor(Color.BLACK);
+//            g2.clearRect(0, 0, polyDebug.getWidth(), polyDebug.getHeight());
+//        } else {
+//            g2 = null;
+//        }
 
         List<Contour> contours = BinaryImageOps.contour(filtered,
                 //ConnectRule.EIGHT,
                 ConnectRule.FOUR,
                 null);
-        Grid g = new Grid(id, 12, 8, w, h) {
+        Grid g = new Grid(id, 12, 12, w, h) {
 
-            @Override
-            public Term line(int ax, int ay, int bx, int by) {
-                Term l = super.line(ax, ay, bx, by);
-                if (g2 != null) {
-
-                    int aax = Math.round(ax * sx);
-                    int aay = Math.round(ay * sy);
-                    int bbx = Math.round(bx * sx);
-                    int bby = Math.round(by * sy);
-                    g2.setColor(Color.GRAY);
-                    g2.setStroke(new BasicStroke(1));
-                    g2.drawLine(
-                            Math.round(aax / sx), Math.round(aay / sy),
-                            Math.round(bbx / sx), Math.round(bby / sy));
-                }
-                return l;
-            }
+//            @Override
+//            public Term line(int ax, int ay, int bx, int by) {
+//                Term l = super.line(ax, ay, bx, by);
+////                if (surface != null) {
+////
+////                    int aax = Math.round(ax * sx);
+////                    int aay = Math.round(ay * sy);
+////                    int bbx = Math.round(bx * sx);
+////                    int bby = Math.round(by * sy);
+////                    g2.setColor(Color.GRAY);
+////                    g2.setStroke(new BasicStroke(1));
+////                    g2.drawLine(
+////                            Math.round(aax / sx), Math.round(aay / sy),
+////                            Math.round(bbx / sx), Math.round(bby / sy));
+////                }
+//                return l;
+//            }
         };
 
         int k = 0;
         for (Contour c : contours) {
             // Fit the polygon to the found external contour.  Note loop = true
             List<PointIndex_I32> outer = ShapeFittingOps.fitPolygon(c.external,
-                    true, 100, minimumSideFraction);
+                    false, Math.min(g.w/g.gx, g.h/g.gy),
+                    minimumSideFraction);
 
 
-            if (debug) {
-                g2.setColor(Color.getHSBColor(k / 10f, 0.8f, 0.8f));
-                g2.setStroke(new BasicStroke(2));
-                drawPolygon(outer, true, g2);
-                //System.out.println(c + ": " + polygon);
-            }
 
             g.addPoly(k++, outer, true);
 
@@ -232,12 +304,14 @@ public class ShapeSensor implements Runnable {
 
         g.input(in, last, nar);
 
-        if (debug) {
+        this.grid = g;
 
-            gui.setImageRepaint(polyDebug);
-
-
-        }
+//        if (debug) {
+//
+//            gui.setImageRepaint(polyDebug);
+//
+//
+//        }
 
     }
 
@@ -245,7 +319,7 @@ public class ShapeSensor implements Runnable {
         public final int gx, gy, w, h;
         private final Term id;
         float sx, sy;
-        Set<Term> image = new HashSet();
+        final Set<Term> image = new LinkedHashSet();
 
         public Grid(Term id, int gx, int gy, int w, int h) {
             this.id = id;
@@ -475,208 +549,208 @@ public class ShapeSensor implements Runnable {
 //
 
 
-    /**
-     * Simple JPanel for displaying buffered images.
-     *
-     * @author Peter Abeles
-     */
-    public static class ImagePanel extends JPanel {
-        // the image being displayed
-        protected BufferedImage img;
-        // should it re-size the image based on the panel's size
-//	protected ScaleOptions scaling = ScaleOptions.DOWN;
-
-        public double scale = 1;
-        public double offsetX;
-        public double offsetY;
-
-        //  this variable must only be touched inside the GUI thread
-        private final ScaleOffset adjustmentGUI = new ScaleOffset();
-
-//	protected SaveImageOnClick mouseListener;
-
-        protected AffineTransform transform = new AffineTransform();
-        private boolean center;
-
-        public ImagePanel(BufferedImage img) {
-//		this(img,ScaleOptions.NONE);
-//	}
-
-//	public ImagePanel(final BufferedImage img , ScaleOptions scaling ) {
-            this(true);
-            this.img = img;
-//		this.scaling = scaling;
-            autoSetPreferredSize();
-        }
-
-        public ImagePanel(int width, int height) {
-            this(true);
-            setPreferredSize(new Dimension(width, height));
-        }
-
-        /**
-         * Adds the ability to save an image using the middle mouse button.  A dialog is shown to the user
-         * so that they know what has happened.  They can hide it in the future if they wish.
-         */
-
-        public ImagePanel(boolean addMouseListener) {
-            if (addMouseListener) {
-                // Adds the ability to save an image using the middle mouse button.  A dialog is shown to the user
-                // so that they know what has happened.  They can hide it in the future if they wish.
-//			mouseListener = new SaveImageOnClick(this);
-//			addMouseListener(mouseListener);
-            }
-        }
-
-        public ImagePanel() {
-            this(true);
-        }
-
-        @Override
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g;
-            AffineTransform original = g2.getTransform();
-            configureDrawImageGraphics(g2);
-
-            //draw the image
-            BufferedImage img = this.img;
-            if (img != null) {
-                computeOffsetAndScale(img, adjustmentGUI);
-                scale = adjustmentGUI.scale;
-                offsetX = adjustmentGUI.offsetX;
-                offsetY = adjustmentGUI.offsetY;
-
-                if (scale == 1) {
-                    g2.drawImage(img, (int) offsetX, (int) offsetY, this);
-                } else {
-                    transform.setTransform(scale, 0, 0, scale, offsetX, offsetY);
-                    g2.drawImage(img, transform, null);
-                }
-            }
-
-            g2.setTransform(original);
-        }
-
-        protected void configureDrawImageGraphics(Graphics2D g2) {
-        }
-
-        private void computeOffsetAndScale(BufferedImage img, ScaleOffset so) {
-//		if( scaling != ScaleOptions.NONE ) {
-            double ratioW = (double) getWidth() / img.getWidth();
-            double ratioH = (double) getHeight() / img.getHeight();
-
-            so.scale = Math.min(ratioW, ratioH);
-//			if( scaling == ScaleOptions.DOWN && so.scale >= 1 )
-//				so.scale = 1;
-
-            if (center) {
-                so.offsetX = (getWidth() - img.getWidth() * so.scale) / 2;
-                so.offsetY = (getHeight() - img.getHeight() * so.scale) / 2;
-            } else {
-                so.offsetX = 0;
-                so.offsetY = 0;
-            }
-
-            if (scale == 1) {
-                so.offsetX = (int) so.offsetX;
-                so.offsetY = (int) so.offsetY;
-            }
-//		} else {
-//			if( center ) {
-//				so.offsetX = (getWidth()-img.getWidth())/2;
-//				so.offsetY = (getHeight()-img.getHeight())/2;
-//			} else {
-//				so.offsetX = 0;
-//				so.offsetY = 0;
-//			}
+//    /**
+//     * Simple JPanel for displaying buffered images.
+//     *
+//     * @author Peter Abeles
+//     */
+//    public static class ImagePanel extends JPanel {
+//        // the image being displayed
+//        protected BufferedImage img;
+//        // should it re-size the image based on the panel's size
+////	protected ScaleOptions scaling = ScaleOptions.DOWN;
 //
-//			so.scale = 1;
-//		}
-        }
-
-        /**
-         * Change the image being displayed. If panel is active then don't call unless inside the GUI thread.  Repaint()
-         * is not automatically called.
-         *
-         * @param image The new image which will be displayed.
-         */
-        public void setImage(BufferedImage image) {
-            this.img = image;
-        }
-
-        /**
-         * Changes the buffered image and calls repaint.  Does not need to be called in the UI thread.
-         */
-        public void setImageRepaint(BufferedImage image) {
-            // if image is larger before  than the new image then you need to make sure you repaint
-            // the entire image otherwise a ghost will be left
-            ScaleOffset workspace;
-            if (SwingUtilities.isEventDispatchThread()) {
-                workspace = adjustmentGUI;
-            } else {
-                workspace = new ScaleOffset();
-            }
-            repaintJustImage(img, workspace);
-            this.img = image;
-            repaintJustImage(img, workspace);
-        }
-
-        /**
-         * Changes the image and will be invoked inside the UI thread at a later time.  repaint() is automatically
-         * called.
-         *
-         * @param image The new image which will be displayed.
-         */
-        public void setImageUI(final BufferedImage image) {
-            SwingUtilities.invokeLater(() -> {
-                repaintJustImage(ImagePanel.this.img, adjustmentGUI);
-                ImagePanel.this.img = image;
-                repaintJustImage(ImagePanel.this.img, adjustmentGUI);
-            });
-        }
-
-        public boolean isCentered() {
-            return center;
-        }
-
-        public void setCentering(boolean center) {
-            this.center = center;
-        }
-
-        /**
-         * Repaints just the region around the image.
-         */
-        public void repaintJustImage() {
-            repaintJustImage(img, new ScaleOffset());
-        }
-
-        protected void repaintJustImage(BufferedImage img, ScaleOffset workspace) {
-            if (img == null) {
-                repaint();
-                return;
-            }
-            computeOffsetAndScale(img, workspace);
-
-            repaint((int) Math.round(workspace.offsetX) - 1, (int) Math.round(workspace.offsetY) - 1,
-                    (int) (img.getWidth() * workspace.scale + 0.5) + 2, (int) (img.getHeight() * workspace.scale + 0.5) + 2);
-        }
-
-        public BufferedImage getImage() {
-            return img;
-        }
-
-
-        public void autoSetPreferredSize() {
-            setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
-        }
-
-        public void setScale(double scale) {
-            this.scale = scale;
-        }
-
-
-    }
+//        public double scale = 1;
+//        public double offsetX;
+//        public double offsetY;
+//
+//        //  this variable must only be touched inside the GUI thread
+//        private final ScaleOffset adjustmentGUI = new ScaleOffset();
+//
+////	protected SaveImageOnClick mouseListener;
+//
+//        protected AffineTransform transform = new AffineTransform();
+//        private boolean center;
+//
+//        public ImagePanel(BufferedImage img) {
+////		this(img,ScaleOptions.NONE);
+////	}
+//
+////	public ImagePanel(final BufferedImage img , ScaleOptions scaling ) {
+//            this(true);
+//            this.img = img;
+////		this.scaling = scaling;
+//            autoSetPreferredSize();
+//        }
+//
+//        public ImagePanel(int width, int height) {
+//            this(true);
+//            setPreferredSize(new Dimension(width, height));
+//        }
+//
+//        /**
+//         * Adds the ability to save an image using the middle mouse button.  A dialog is shown to the user
+//         * so that they know what has happened.  They can hide it in the future if they wish.
+//         */
+//
+//        public ImagePanel(boolean addMouseListener) {
+//            if (addMouseListener) {
+//                // Adds the ability to save an image using the middle mouse button.  A dialog is shown to the user
+//                // so that they know what has happened.  They can hide it in the future if they wish.
+////			mouseListener = new SaveImageOnClick(this);
+////			addMouseListener(mouseListener);
+//            }
+//        }
+//
+//        public ImagePanel() {
+//            this(true);
+//        }
+//
+//        @Override
+//        public void paintComponent(Graphics g) {
+//            super.paintComponent(g);
+//            Graphics2D g2 = (Graphics2D) g;
+//            AffineTransform original = g2.getTransform();
+//            configureDrawImageGraphics(g2);
+//
+//            //draw the image
+//            BufferedImage img = this.img;
+//            if (img != null) {
+//                computeOffsetAndScale(img, adjustmentGUI);
+//                scale = adjustmentGUI.scale;
+//                offsetX = adjustmentGUI.offsetX;
+//                offsetY = adjustmentGUI.offsetY;
+//
+//                if (scale == 1) {
+//                    g2.drawImage(img, (int) offsetX, (int) offsetY, this);
+//                } else {
+//                    transform.setTransform(scale, 0, 0, scale, offsetX, offsetY);
+//                    g2.drawImage(img, transform, null);
+//                }
+//            }
+//
+//            g2.setTransform(original);
+//        }
+//
+//        protected void configureDrawImageGraphics(Graphics2D g2) {
+//        }
+//
+//        private void computeOffsetAndScale(BufferedImage img, ScaleOffset so) {
+////		if( scaling != ScaleOptions.NONE ) {
+//            double ratioW = (double) getWidth() / img.getWidth();
+//            double ratioH = (double) getHeight() / img.getHeight();
+//
+//            so.scale = Math.min(ratioW, ratioH);
+////			if( scaling == ScaleOptions.DOWN && so.scale >= 1 )
+////				so.scale = 1;
+//
+//            if (center) {
+//                so.offsetX = (getWidth() - img.getWidth() * so.scale) / 2;
+//                so.offsetY = (getHeight() - img.getHeight() * so.scale) / 2;
+//            } else {
+//                so.offsetX = 0;
+//                so.offsetY = 0;
+//            }
+//
+//            if (scale == 1) {
+//                so.offsetX = (int) so.offsetX;
+//                so.offsetY = (int) so.offsetY;
+//            }
+////		} else {
+////			if( center ) {
+////				so.offsetX = (getWidth()-img.getWidth())/2;
+////				so.offsetY = (getHeight()-img.getHeight())/2;
+////			} else {
+////				so.offsetX = 0;
+////				so.offsetY = 0;
+////			}
+////
+////			so.scale = 1;
+////		}
+//        }
+//
+//        /**
+//         * Change the image being displayed. If panel is active then don't call unless inside the GUI thread.  Repaint()
+//         * is not automatically called.
+//         *
+//         * @param image The new image which will be displayed.
+//         */
+//        public void setImage(BufferedImage image) {
+//            this.img = image;
+//        }
+//
+//        /**
+//         * Changes the buffered image and calls repaint.  Does not need to be called in the UI thread.
+//         */
+//        public void setImageRepaint(BufferedImage image) {
+//            // if image is larger before  than the new image then you need to make sure you repaint
+//            // the entire image otherwise a ghost will be left
+//            ScaleOffset workspace;
+//            if (SwingUtilities.isEventDispatchThread()) {
+//                workspace = adjustmentGUI;
+//            } else {
+//                workspace = new ScaleOffset();
+//            }
+//            repaintJustImage(img, workspace);
+//            this.img = image;
+//            repaintJustImage(img, workspace);
+//        }
+//
+//        /**
+//         * Changes the image and will be invoked inside the UI thread at a later time.  repaint() is automatically
+//         * called.
+//         *
+//         * @param image The new image which will be displayed.
+//         */
+//        public void setImageUI(final BufferedImage image) {
+//            SwingUtilities.invokeLater(() -> {
+//                repaintJustImage(ImagePanel.this.img, adjustmentGUI);
+//                ImagePanel.this.img = image;
+//                repaintJustImage(ImagePanel.this.img, adjustmentGUI);
+//            });
+//        }
+//
+//        public boolean isCentered() {
+//            return center;
+//        }
+//
+//        public void setCentering(boolean center) {
+//            this.center = center;
+//        }
+//
+//        /**
+//         * Repaints just the region around the image.
+//         */
+//        public void repaintJustImage() {
+//            repaintJustImage(img, new ScaleOffset());
+//        }
+//
+//        protected void repaintJustImage(BufferedImage img, ScaleOffset workspace) {
+//            if (img == null) {
+//                repaint();
+//                return;
+//            }
+//            computeOffsetAndScale(img, workspace);
+//
+//            repaint((int) Math.round(workspace.offsetX) - 1, (int) Math.round(workspace.offsetY) - 1,
+//                    (int) (img.getWidth() * workspace.scale + 0.5) + 2, (int) (img.getHeight() * workspace.scale + 0.5) + 2);
+//        }
+//
+//        public BufferedImage getImage() {
+//            return img;
+//        }
+//
+//
+//        public void autoSetPreferredSize() {
+//            setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
+//        }
+//
+//        public void setScale(double scale) {
+//            this.scale = scale;
+//        }
+//
+//
+//    }
 
     private static class ScaleOffset {
         double scale, offsetX, offsetY;

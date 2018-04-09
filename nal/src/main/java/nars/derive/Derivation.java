@@ -94,7 +94,7 @@ public class Derivation extends PreDerivation {
     public Task belief;
 
     public Truth taskTruth;
-    public Truth beliefTruth;
+    public Truth beliefTruth, beliefTruthProjected;
 
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
@@ -432,7 +432,7 @@ public class Derivation extends PreDerivation {
         this._task = this._belief = null;
         this._beliefTerm = null;
 
-        this.beliefTruth = this.taskTruth = null;
+        this.beliefTruth = this.beliefTruthProjected = this.taskTruth = null;
 
         this.forEachMatch = null;
         this.concTruth = null;
@@ -489,16 +489,19 @@ public class Derivation extends PreDerivation {
 
         if (belief != null) {
             long bAt = belief.nearestPointExternal(_task.start(), _task.end());
-            if ((this.beliefTruth = belief.truth(bAt, dur))!=null) {
-//                this.beliefPolarity = polarity(this.beliefTruth);
-                this.beliefAt =
-                        //bAt;
-                        belief.start();
-            } else {
-                this.belief = null;
-//                this.beliefPolarity = 0;
-                this.beliefAt = TIMELESS;
-            }
+            this.beliefAt =
+                    //bAt;
+                    belief.start();
+
+            this.beliefTruth = belief.truth(beliefAt,dur);
+            this.beliefTruthProjected = belief.truth(bAt, dur);
+
+////                this.beliefPolarity = polarity(this.beliefTruth);
+//            } else {
+//                this.belief = null;
+////                this.beliefPolarity = 0;
+//                this.beliefAt = TIMELESS;
+//            }
 
         } else {
             this.beliefTruth = null;

@@ -15,7 +15,6 @@ import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
@@ -68,11 +67,16 @@ public class TemporalInductionTest {
         testInduction("--x", "x", 10);
     }
 
+    /** tests that conj and impl induction results dont have diminished
+     * confidence as a result of temporal distance, as
+     * would ordinarily happen due to using projected belief truth
+     * rather than raw belief truth
+     */
     static void testInduction(String a, String b, int dt) {
         int cycles = dt * 24;
         TestNAR t = new TestNAR(NARS.tmp())
                 //.log()
-                .confTolerance(0.99f)
+//                .confTolerance(0.99f)
                 .input(a + ". :|:")
                 .inputAt(dt, b + ". :|:")
                 .mustBelieve(cycles, "(" + a + " &&+" + dt + " " + b + ")", 1.00f, 0.81f /*intersectionConf*/, 0)
@@ -84,23 +88,6 @@ public class TemporalInductionTest {
     }
 
 
-    @Test
-    public void testTemporalInduction() throws Narsese.NarseseException {
-
-        String task = "<a --> b>. :|:";
-        String task2 = "<c --> d>. :|:";
-
-        NAR n = NARS.tmp();
-
-        //TextOutput.out(n);
-
-        n.input(task);
-        n.run(10);
-        n.input(task2);
-
-        n.run(10);
-
-    }
 
     @Test
     public void testTemporalRevision() throws Narsese.NarseseException {
@@ -211,7 +198,7 @@ public class TemporalInductionTest {
     }
 
 
-    private static int getBeliefCount(@NotNull NAR n) {
+    private static int getBeliefCount(NAR n) {
         AtomicInteger a = new AtomicInteger(0);
         n.tasks(true, false, false, false).forEach(t -> {
             a.addAndGet(1);
@@ -278,7 +265,7 @@ public class TemporalInductionTest {
             }
         }
 
-        m.printCSV4("/tmp/x.csv");
+//        m.printCSV4("/tmp/x.csv");
         m.printCSV4(System.out);
     }
 

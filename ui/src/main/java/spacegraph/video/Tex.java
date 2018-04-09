@@ -1,5 +1,7 @@
 package spacegraph.video;
 
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayU8;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.texture.TextureData;
@@ -130,21 +132,37 @@ public class Tex {
         return new AspectAlign(new TexSurface(), aspect);
     }
 
-//    public void update(GrayU8 x) {
-//        this.src = x;
-//
+    /** less efficient than: b = update(x, b) */
+    public BufferedImage update(GrayU8 x) {
+        return update(x, null);
+    }
+
+    public BufferedImage update(GrayU8 x, BufferedImage b) {
+        this.src = x;
+
+        if (b == null || b.getWidth()!=x.width || b.getHeight()!=x.height)
+            b = new BufferedImage(x.width, x.height, BufferedImage.TYPE_INT_ARGB);
+
+        //HACK
+        update(
+            ConvertBufferedImage.convertTo(x, b)
+        );
+
+        return b;
+
 //        ByteBuffer buffer = ByteBuffer.wrap(x.data);
 //        nextData = new TextureData(profile, GL_RGB,
 //                x.width, x.height,
 //                0 /* border */,
-//                GL_BGRA, GL_UNSIGNED_BYTE,
+//                GL_BGRA,
+//                GL_UNSIGNED_BYTE,
 //                mipmap,
 //                false,
 //                false,
 //                buffer, null
 //        );
-//
-//    }
+
+    }
 
     private class TexSurface extends Surface {
 

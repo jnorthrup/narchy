@@ -338,7 +338,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
         float confRes =
                 0; //nar.confResolution.floatValue();
-        float eviMin = Truth.EVI_MIN;
+        float eviMin = Float.MIN_NORMAL;
         return d.eval(term, (dd, n) -> pp, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
     }
 

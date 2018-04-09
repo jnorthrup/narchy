@@ -44,6 +44,7 @@ public interface TruthOperator {
 
     boolean allowOverlap();
     boolean single();
+    boolean beliefProjected();
 
 
     final class SwappedTruth implements TruthOperator {
@@ -76,6 +77,11 @@ public interface TruthOperator {
         public boolean single() {
             return o.single();
         }
+
+        @Override
+        public boolean beliefProjected() {
+            return o.beliefProjected();
+        }
     }
 
     /** ____N , although more accurately it would be called: 'NP' */
@@ -100,6 +106,11 @@ public interface TruthOperator {
         @Override public boolean single() {
             return o.single();
         }
+
+        @Override
+        public boolean beliefProjected() {
+            return o.beliefProjected();
+        }
     }
 
     final class NegatedBeliefTruth implements TruthOperator {
@@ -122,6 +133,11 @@ public interface TruthOperator {
 
         @Override public boolean single() {
             return o.single();
+        }
+
+        @Override
+        public boolean beliefProjected() {
+            return o.beliefProjected();
         }
     }
     /** for when a conclusion's subterms have already been negated accordingly, so that conclusion confidence is positive and maximum
@@ -163,6 +179,11 @@ public interface TruthOperator {
         @Override public boolean single() {
             return o.single();
         }
+
+        @Override
+        public boolean beliefProjected() {
+            return o.beliefProjected();
+        }
     }
 
     /** negates both task and belief frequency */
@@ -186,6 +207,11 @@ public interface TruthOperator {
 
         @Override public boolean single() {
             return o.single();
+        }
+
+        @Override
+        public boolean beliefProjected() {
+            return o.beliefProjected();
         }
     }
 

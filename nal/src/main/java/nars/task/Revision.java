@@ -618,7 +618,7 @@ public class Revision {
         Truth rawTruth = revise(an, bn,
                 //joint.factor(Math.abs( an.freq() - bn.freq() ))
                 density.factor()
-                , Truth.EVI_MIN);
+                , Float.MIN_NORMAL /*Truth.EVI_MIN*/);
         if (rawTruth == null)
             return null;
 
@@ -786,7 +786,7 @@ public class Revision {
 
             default:
                 return Revision.mergeTemporal(
-                        Truth.EVI_MIN,
+                        Float.MIN_NORMAL /*Truth.EVI_MIN*/,
                         //c2wSafe(nar.confMin.floatValue()),
                         nar, results, tt
                 );

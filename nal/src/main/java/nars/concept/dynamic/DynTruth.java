@@ -264,11 +264,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     public final Truth truth(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
-        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, Truth.EVI_MIN, nar);
+        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, Float.MIN_NORMAL /*Truth.EVI_MIN*/, nar);
     }
 
     public final Task task(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
-        return (Task) eval(term, o, true, beliefOrGoal, 0, 0, Truth.EVI_MIN, nar);
+        return (Task) eval(term, o, true, beliefOrGoal, 0, 0, Float.MIN_NORMAL /*Truth.EVI_MIN*/, nar);
     }
 
     public static class DynamicTruthTask extends NALTask {
