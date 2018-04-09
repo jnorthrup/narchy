@@ -190,11 +190,9 @@ public class TaskConcept extends NodeConcept implements Concept {
         if (includeQuestions) s[j++] = (questions.streamTasks());
         if (includeQuests) s[j++] = (quests.streamTasks());
 
-        if (c == 1)
-            return s[0];
-        else
-            return Stream.of(s).flatMap(x -> x)
-                    .filter(Objects::nonNull); //HACK
+        //HACK
+        return (j == 1 ? s[0] : Stream.of(s).flatMap(x -> x))
+                .filter(Objects::nonNull);
     }
 
 

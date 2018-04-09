@@ -992,7 +992,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     @NotNull
     public Stream<Task> tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests) {
-        return concepts().flatMap(c -> c.tasks(includeConceptBeliefs, includeConceptQuestions, includeConceptGoals, includeConceptQuests));
+        return concepts().flatMap(c ->
+                c.tasks(includeConceptBeliefs, includeConceptQuestions, includeConceptGoals, includeConceptQuests));
     }
 
     @NotNull

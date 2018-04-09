@@ -34,17 +34,17 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
     private long last;
 
     @Override
-    public final float asFloat() {
+    public float asFloat() {
         return value.floatValue();
     }
 
-    protected DemultiplexedScalar(FloatSupplier input, @Nullable Term id, NAR nar) {
+    protected DemultiplexedScalar(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
         super(id);
 
         this.term = id;
 
         this.last = nar.time();
-        this.input = input;
+        this.input = input; //input==null ? ((FloatSupplier)this) : input;
         this.in = nar.newCauseChannel(id);
         this.truther = (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null;
     }
@@ -67,7 +67,8 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
 
     public void update(long start, long end, int dur, NAR n) {
 
-        value.set(input.asFloat());
+        if (input!=null)
+            value.set(input.asFloat());
 
         in.input(Iterables.transform(this, x -> x.update(start, end, truther, dur, n)));
     }

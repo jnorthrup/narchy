@@ -6,6 +6,7 @@ import jcog.learn.ql.HaiQae;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
+import nars.concept.scalar.SwitchAction;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.UniExec;
@@ -17,14 +18,18 @@ import nars.task.DerivedTask;
 import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
+import org.eclipse.collections.impl.block.factory.Comparators;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.video.Draw;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static nars.Op.BELIEF;
-import static nars.Op.PROD;
+import static nars.Op.INH;
 import static spacegraph.SpaceGraph.window;
 
 /* 1D and 2D grid tracking */
@@ -55,7 +60,7 @@ public class TrackXY extends NAgent {
         boolean nars = true;
         boolean rl = false;
 
-        int dur = 1;
+        int dur = 2;
 
         NARS nb = new NARS()
                 .exe(new UniExec(64))
@@ -78,7 +83,7 @@ public class TrackXY extends NAgent {
         TrackXY t = new TrackXY(4, 4);
         n.on(t);
 
-        int experimentTime = 8048;
+        int experimentTime = 1280;
         n.synch();
 //        n.run(1);
 
@@ -189,6 +194,13 @@ public class TrackXY extends NAgent {
             }.withControls(), 800, 800);
         });
         n.run(experimentTime);
+
+        long now = n.time();
+        List<Task> l = n.tasks(false, false, true, false)
+                .sorted(Comparators.byFloatFunction(tt -> -tt.evi(now, dur)))
+                .collect(Collectors.toList());
+        l.forEach(System.out::println);
+
         //n.startFPS(10f);
         //t.runFPS(10f);
 
@@ -205,7 +217,8 @@ public class TrackXY extends NAgent {
         super.starting(nar);
 
         //actionTriState();
-        actionPushButton();
+        //actionPushButton();
+        actionSwitch();
 
         this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
         this.cam.pixelPri.set(0.2f);
@@ -217,6 +230,54 @@ public class TrackXY extends NAgent {
 
 
         randomize();
+    }
+
+    private void actionSwitch() {
+        SwitchAction s = new SwitchAction(nar, (a)->{
+            switch (a) {
+                case 0: {
+                    //up
+                    float dy = -1;
+                    float py = sy;
+                    sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
+                    return !Util.equals(py, sy, 0.01f);
+                }
+                case 1: {
+                    //down
+                    float dy = +1;
+                    float py = sy;
+                    sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
+                    return !Util.equals(py, sy, 0.01f);
+                }
+                case 2: {
+                    //left
+                    float dx = -1;
+                    float px = sx;
+                    sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
+                    return !Util.equals(px, sx, 0.01f);
+                }
+                case 3: {
+                    //right
+                    float dx = +1;
+                    float px = sx;
+                    sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
+                    return !Util.equals(px, sx, 0.01f);
+                }
+                case 4: {
+                    //stay
+                    return true;
+                }
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }, INH.the($.the("up"), id),
+           INH.the($.the("down"), id),
+           INH.the($.the("left"), id),
+           INH.the($.the("right"), id),
+           INH.the($.the("stay"), id)
+        );
+        onFrame(s);
+        SpaceGraph.window(Vis.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 
     private void actionTriState() {
@@ -238,19 +299,19 @@ public class TrackXY extends NAgent {
 
     private void actionPushButton() {
         if (view.height() > 1) {
-            actionPushButton(PROD.the($.the("up"), id), () -> {
+            actionPushButton(INH.the($.the("up"), id), () -> {
                 sy = Util.clamp(sy + controlSpeed, 0, view.height() - 1);
 
             });
-            actionPushButton(PROD.the($.the("down"), id), () -> {
+            actionPushButton(INH.the($.the("down"), id), () -> {
                 sy = Util.clamp(sy - controlSpeed, 0, view.height() - 1);
             });
         }
 
-        actionPushButton(PROD.the($.the("right"), id), () -> {
+        actionPushButton(INH.the($.the("right"), id), () -> {
             sx = Util.clamp(sx + controlSpeed, 0, view.width() - 1);
         });
-        actionPushButton(PROD.the($.the("left"), id), () -> {
+        actionPushButton(INH.the($.the("left"), id), () -> {
             sx = Util.clamp(sx - controlSpeed, 0, view.width() - 1);
         });
     }

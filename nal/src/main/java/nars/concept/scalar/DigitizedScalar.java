@@ -1,6 +1,5 @@
 package nars.concept.scalar;
 
-import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -146,8 +145,8 @@ public class DigitizedScalar extends DemultiplexedScalar {
 
     public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, @NotNull NAR nar, @NotNull Term... states) {
         super(input, $.func(DigitizedScalar.class.getSimpleName(),
-                SETe.the(states),
-                $.quote(Util.toString(input)), $.the(freqer.getClass().getSimpleName())
+                SETe.the(states)
+                /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
         ), nar);
 
 //        this.conf = nar.confDefault(BELIEF);
