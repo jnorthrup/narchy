@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 /**
  * executes approximately once every N durations
  */
-abstract public class DurService extends NARService implements Runnable {
+abstract public class DurService extends NARService implements Consumer<NAR> {
 
     static final Logger logger = LoggerFactory.getLogger(DurService.class);
 
@@ -97,7 +97,7 @@ abstract public class DurService extends NARService implements Runnable {
     }
 
     @Override
-    public void run() {
+    public final void accept(NAR nar) {
         //long lastNow = this.now;
         //long now = nar.time();
         //if (now - lastNow >= durations.floatValue() * nar.dur()) {
@@ -128,7 +128,7 @@ abstract public class DurService extends NARService implements Runnable {
             } finally {
                 now = (this.now = nar.time());
                 if (!isOff()) {
-                    nar.at((now) + durCycles, this);
+                    nar.runAt((now) + durCycles, this);
                     busy.set(false);
                 }
             }

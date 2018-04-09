@@ -68,7 +68,7 @@ public class WorkerMultiExec extends AbstractExec {
 
 
     @Override
-    public void execute(Object t) {
+    public final void execute(Object t) {
 
         if (t instanceof Task || isWorker()) {
             executeNow(t);

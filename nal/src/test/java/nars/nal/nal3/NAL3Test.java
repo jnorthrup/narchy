@@ -13,7 +13,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    public static final int cycles = 1600;
+    public static final int cycles = 100;
     
     @Override protected NAR nar() { return NARS.tmp(3); }
 
@@ -227,7 +227,6 @@ public class NAL3Test extends NALTest {
         //disjoint implemented as negative intersection inheritance
 
         test
-            .log()
             .believe("--(#1-->(RealNumber&ComplexNumber))")
             .believe("(x-->RealNumber)")
             .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f);

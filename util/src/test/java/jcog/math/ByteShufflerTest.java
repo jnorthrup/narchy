@@ -1,5 +1,6 @@
 package jcog.math;
 
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -13,14 +14,14 @@ public class ByteShufflerTest {
     @Test
     public void testByteShuffler() {
         ByteShuffler b = new ByteShuffler(16);
-        Random rng = new Random();
-        for (int i = 2; i < 4; i ++)
+        Random rng = new XoRoShiRo128PlusRandom(1);
+        for (int i = 2; i < 5; i ++)
             testPermutes(b, rng, i);
     }
 
     void testPermutes(ByteShuffler b, Random rng, int len) {
         int permutations = (int) org.apache.commons.math3.util.CombinatoricsUtils.factorial(len);
-        int iterates = permutations * 6 /* to be sure */;
+        int iterates = permutations * 12 /* to be sure */;
         TreeSet<String> combos = new TreeSet<>();
         for (int i = 0; i < iterates; i++) {
             byte[] order = b.shuffle(rng, len, true);

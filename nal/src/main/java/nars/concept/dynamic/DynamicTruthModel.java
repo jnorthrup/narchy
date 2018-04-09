@@ -237,7 +237,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
     public static class ConjIntersection extends Intersection {
 
-        public static DynamicTruthModel the = new ConjIntersection();
+        public static final DynamicTruthModel the = new ConjIntersection();
 
         private ConjIntersection() {
 

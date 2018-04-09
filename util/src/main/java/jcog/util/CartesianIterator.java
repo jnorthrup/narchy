@@ -22,7 +22,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	 * Constructor
 	 * @param iterables array of Iterables being the source for the Cartesian product.
 	 */
-	public CartesianIterator(IntFunction<X[]> arrayBuilder, Iterable<X>[] iterables) {
+	public CartesianIterator(IntFunction<X[]> arrayBuilder, Iterable<X>... iterables) {
 		this.size = iterables.length;
 		this.iterables = iterables;
 		this.iterators = new Iterator[size];

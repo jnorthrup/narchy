@@ -1,10 +1,12 @@
 package jcog.util;
 
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Streams;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 /** TODO optionally skip nulls */
 public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
@@ -15,6 +17,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     public ArrayIterator(E[] array) {
         this.array = array;
     }
+
 
     @Override
     public boolean hasNext() {
@@ -59,6 +62,17 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         }
     }
 
+
+    public static <X> Stream<X> stream(X[] list, int size) {
+        switch (size) {
+            case 0: return Stream.empty();
+            case 1: return Stream.of(list[0]);
+            case 2: return Stream.of(list[0], list[1]);
+            //..
+            default:
+                return Streams.stream(ArrayIterator.get(list, size));
+        }
+    }
 
     static final class PartialArrayIterator<E> extends ArrayIterator<E> {
 

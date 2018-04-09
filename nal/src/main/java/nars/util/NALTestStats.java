@@ -25,7 +25,7 @@ public class NALTestStats implements AfterEachCallback, AfterAllCallback {
         NALTest n = ((NALTest) context.getTestInstance().get());
 
         context.publishReportEntry(context.getUniqueId() + " NAR stats",
-                n.nar.stats().toString());
+                n.test.nar.stats().toString());
 
         if (n.metagoals != null)
             metagoals.add(n.metagoals);

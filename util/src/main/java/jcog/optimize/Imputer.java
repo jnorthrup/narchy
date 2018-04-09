@@ -18,7 +18,7 @@ public class Imputer {
     public <X> Tweaks<X> learn(X example, String... tags) {
 
         //Class clz = example.getClass();
-        Tweaks<X> t = new Tweaks<>(example).learn();
+        Tweaks<X> t = new Tweaks<>(example).discover();
         for (Tweak<X,?> u : t.tweaks) {
             Object v = u.get(example);
             //System.out.println(clz + " * " + Joiner.on(',').join(tags) + " ==> " + u + " = " + v);
@@ -44,7 +44,7 @@ public class Imputer {
         Imputing(X subject, String... tags) {
             assert(tags.length > 0);
             this.subject = subject;
-            new Tweaks<>(subject).learn().tweaks.forEach((Tweak x) -> {
+            new Tweaks<>(subject).discover().tweaks.forEach((Tweak x) -> {
                 Map<String, Object> rr = rules.row(x.id);
                 if (rr.isEmpty()) {
                     issues.add("unknown: " + x.id);

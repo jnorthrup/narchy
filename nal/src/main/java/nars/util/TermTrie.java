@@ -125,11 +125,7 @@ public class TermTrie<K extends Term, V> extends Trie<List<K>, V> implements Tri
         }
     }
 
-    public String getSummary() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        print(new PrintStream(baos));
-        return baos.toString();
-    }
+
 
     /**
      * override this to implement custom merging behavior; there can be only one

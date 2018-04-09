@@ -170,7 +170,7 @@ public class NARTest {
 
         long[] events = {2, 4, 4 /* test repeat */};
         for (long w : events) {
-            n.at(w, () -> {
+            n.runAt(w, () -> {
                 assertEquals(w, n.time());
                 runs[0]++;
             });

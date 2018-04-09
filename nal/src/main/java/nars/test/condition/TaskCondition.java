@@ -35,7 +35,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     private final LongPredicate end;
 
     /** whether to apply meta-feedback to drive the reasoner toward success conditions */
-    public boolean feedback = false;
+    public static final boolean feedback = false;
 
     boolean succeeded;
     //long successTime = Tense.TIMELESS;

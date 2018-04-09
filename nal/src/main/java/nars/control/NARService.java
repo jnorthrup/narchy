@@ -35,23 +35,22 @@ public class NARService extends Service<NAR> implements Termed {
 
     @Override
     protected final void start(NAR nar) {
-        synchronized (this) {
-            logger.debug("start {}", id);
-            this.nar = nar;
-            ons = new Ons(nar.eventClear.on(n -> clear()));
-            starting(nar);
-        }
+        logger.debug("start {}", id);
+        this.nar = nar;
+        ons = new Ons(nar.eventClear.on(n -> clear()));
+        starting(nar);
     }
 
     @Override
     protected final void stop(NAR nar) {
-        synchronized (this) {
-            logger.debug("stop {}", id);
-            ons.off();
-            stopping(nar);
-            ons = null;
-            nar = null;
-        }
+        logger.debug("stop {}", id);
+
+        this.ons.off();
+        this.ons = null;
+
+        stopping(nar);
+
+        this.nar = null;
     }
 
     public void clear() {
@@ -68,7 +67,9 @@ public class NARService extends Service<NAR> implements Termed {
     }
 
     public final void off() {
-        nar.services.remove(id);
+        synchronized (this) {
+            nar.services.remove(id);
+        }
     }
 
     @Override

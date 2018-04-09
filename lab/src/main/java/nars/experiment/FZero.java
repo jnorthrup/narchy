@@ -10,8 +10,10 @@ import nars.Task;
 import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
+import nars.concept.scalar.SwitchAction;
 import nars.gui.Vis;
 import nars.task.NALTask;
+import nars.time.Tense;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
@@ -25,6 +27,7 @@ import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.INH;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -102,6 +105,7 @@ public class FZero extends NAgentX {
 //                .resolution(0.05f);
 
 
+        //actionSwitch();
         //initTankDiscrete();
         //initTankContinuous();
         initToggle();
@@ -303,6 +307,60 @@ public class FZero extends NAgentX {
 //        actionToggle($.inh($.the("left"), $.the("fz")), (b)->{ fz.left = b; });
 //        actionToggle($.inh($.the("right"), $.the("fz")), (b)->{ fz.right = b; });
 
+    }
+    private void actionSwitch() {
+        SwitchAction s = new SwitchAction(nar, (a)->{
+
+
+            fz.rotVel = 0.1f;
+
+            float conf = 0.05f;
+            switch (a) {
+                case 0: {
+                    fz.thrust = true;
+                    nar.goal(INH.the($.the("fwd"), id), Tense.Present, 1f, conf);
+                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                    break;
+                }
+                case 1: {
+                    fz.thrust = false;
+                    fz.left = fz.right = false;
+                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 1f, conf);
+                    nar.goal(INH.the($.the("fwd"), id), Tense.Present, 0f, conf);
+                    nar.goal(INH.the($.the("left"), id), Tense.Present, 0f, conf);
+                    nar.goal(INH.the($.the("right"), id), Tense.Present, 0f, conf);
+                    break;
+                }
+                case 2: {
+                    fz.left = true;
+                    fz.right = false;
+                    nar.goal(INH.the($.the("left"), id), Tense.Present, 1f, conf);
+                    //nar.goal(INH.the($.the("fwd"), id), Tense.Present, 0f, conf);
+                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                    nar.goal(INH.the($.the("right"), id), Tense.Present, 0f, conf);
+                    break;
+                }
+                case 3: {
+                    fz.right = true;
+                    fz.left = false;
+                    nar.goal(INH.the($.the("right"), id), Tense.Present, 1f, conf);
+                    nar.goal(INH.the($.the("left"), id), Tense.Present, 0f, conf);
+                    nar.goal(INH.the($.the("brake"), id), Tense.Present, 0f, conf);
+                    break;
+                }
+//                default:
+//                    throw new UnsupportedOperationException();
+
+            }
+            return true;
+        }, INH.the($.the("fwd"), id),
+                INH.the($.the("brake"), id),
+                INH.the($.the("left"), id),
+                INH.the($.the("right"), id)
+                //,INH.the($.the("none"), id)
+        );
+        onFrame(s);
+        SpaceGraph.window(Vis.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 
     private void initToggle() {

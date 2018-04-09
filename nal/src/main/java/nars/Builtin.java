@@ -33,8 +33,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Built-in set of default Functors and Operators, registered into a NAR on initialization
@@ -528,7 +527,7 @@ public class Builtin {
 
         nar.onOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)
-                assertTrue(/*msg,*/ x == True);
+                assertSame(x, True);
         });
 
         nar.onOp2("assertEquals", (x, y, nn) -> {

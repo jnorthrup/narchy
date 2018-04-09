@@ -25,7 +25,7 @@ public class PatternIndex extends MapConceptIndex {
 
 
     public PatternIndex() {
-        super(new HashMap<>());
+        super(new HashMap<>(512));
     }
 
 //    /**

@@ -196,8 +196,8 @@ public class ConjClustering extends Causable {
         //Iterators.peekingIterator();
 
 
-        Map<LongObjectPair<Term>, Task> vv = new HashMap<>();
-        FasterList<Task> actualTasks = new FasterList();
+        Map<LongObjectPair<Term>, Task> vv = new HashMap<>(16);
+        FasterList<Task> actualTasks = new FasterList(8);
 
 
         int centroidGen = 0;

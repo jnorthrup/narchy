@@ -77,15 +77,15 @@ public abstract class Time implements Clock, Serializable {
     public abstract Time dur(int d);
 
 
-    public void at(long whenOrAfter, Runnable then) {
-        at(new SchedTask(whenOrAfter, then));
+    public void runAt(long whenOrAfter, Runnable then) {
+        runAt(new SchedTask(whenOrAfter, then));
     }
 
-    public void at(long whenOrAfter, Consumer<NAR> then) {
-        at(new SchedTask(whenOrAfter, then));
+    public void runAt(long whenOrAfter, Consumer<NAR> then) {
+        runAt(new SchedTask(whenOrAfter, then));
     }
 
-    private void at(SchedTask event) {
+    private void runAt(SchedTask event) {
 
         //try {
             if (!preSched.offer(event)) {

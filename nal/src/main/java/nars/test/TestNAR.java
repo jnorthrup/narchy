@@ -44,8 +44,7 @@ public class TestNAR {
     float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
     float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
 
-    @NotNull
-    public final NAR nar;
+    public NAR nar;
 
     public boolean trace = true;
 
@@ -62,7 +61,7 @@ public class TestNAR {
     //TODO initialize this once in constructor
 
     @NotNull
-    private final Topic<Tasked>[] outputEvents;
+    private Topic<Tasked>[] outputEvents;
     //public final List<ExplainableTask> explanations = new ArrayList();
 
     @Nullable
@@ -79,6 +78,10 @@ public class TestNAR {
     public float score;
 
     public TestNAR(NAR nar) {
+        set(nar);
+    }
+
+    public void set(NAR nar) {
         this.outputEvents = new Topic[]{
                 //nar.memory.eventDerived,
                 //nar.memory.eventInput,
@@ -175,8 +178,12 @@ public class TestNAR {
 
 
         long time = nar.time();
-        int duration = (int)(time - startTime);
-        this.score = success ? (+1/(+1f+duration)) : 0;
+        int runtime = (int)(time - startTime);
+        this.score = success ?
+                //(+1/(+1f+runtime))
+                (float) (+1 / (Math.log(1 + runtime)))
+                :
+                0;
 
         if (testAndPrintReport) {
 

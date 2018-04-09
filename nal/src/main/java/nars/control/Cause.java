@@ -106,7 +106,7 @@ public class Cause implements Comparable<Cause> {
         return Short.compare(id, o.id);
     }
 
-    public static short[] sample(int causeCapacity, @Nullable TaskRegion... e) {
+    public static short[] sample(int causeCapacity, TaskRegion... e) {
         short[] a = e[0].cause();
         switch (e.length) {
             case 0:
@@ -129,8 +129,9 @@ public class Cause implements Comparable<Cause> {
 
                 return sample(causeCapacity, a, b);
             default:
-                return sample(causeCapacity, Util.map(TaskRegion::cause, short[][]::new,
-                        ArrayUtils.removeNulls(e, TaskRegion[]::new))); //HACK
+                return sample(causeCapacity,
+                        Util.map(TaskRegion::cause, short[][]::new,
+                            ArrayUtils.removeNulls(e, TaskRegion[]::new))); //HACK
         }
     }
 
@@ -246,7 +247,7 @@ public class Cause implements Comparable<Cause> {
 
     static final class AwesomeShortArrayList extends ShortArrayList {
 
-        public AwesomeShortArrayList(int cap) {
+        AwesomeShortArrayList(int cap) {
             super(cap);
         }
 

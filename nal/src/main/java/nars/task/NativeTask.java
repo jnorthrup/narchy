@@ -3,7 +3,6 @@ package nars.task;
 import com.google.common.primitives.Longs;
 import jcog.pri.Priority;
 import nars.NAR;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -49,7 +48,7 @@ public abstract class NativeTask implements ITask, Priority {
 
     public abstract ITask run(NAR n);
 
-    public boolean isInput() {
+    public final boolean isInput() {
         return false;
     }
 
@@ -64,7 +63,7 @@ public abstract class NativeTask implements ITask, Priority {
     /**
      * wraps a Runnable
      */
-    public static class RunTask extends NativeTask {
+    public static final class RunTask extends NativeTask {
 
         public final Runnable run;
 
@@ -86,59 +85,53 @@ public abstract class NativeTask implements ITask, Priority {
     }
 
 
-    public static class SchedTask extends NativeTask implements Comparable<SchedTask>, Consumer<NAR> {
+    public static final class SchedTask extends NativeTask implements Comparable<SchedTask> {
 
         public final long when;
-        public final Object then;
+        public final Object what;
 
-        public SchedTask(long whenOrAfter, Consumer<NAR> then) {
+        public SchedTask(long whenOrAfter, Consumer<NAR> what) {
             this.when = whenOrAfter;
-            this.then = then;
+            this.what = what;
         }
 
-        public SchedTask(long whenOrAfter, Runnable then) {
+        public SchedTask(long whenOrAfter, Runnable what) {
             this.when = whenOrAfter;
-            this.then = then;
+            this.what = what;
         }
 
         @Override
         public String toString() {
-            return "@" + when + ':' + then;
-        }
-
-        @Override
-        public final void accept(NAR nar) {
-            run(nar);
+            return "@" + when + ':' + what;
         }
 
         @Override
         public final ITask run(NAR n) {
-            if (then instanceof Consumer)
-                ((Consumer) then).accept(n);
-            else if (then instanceof Runnable)
-                ((Runnable) then).run();
+            if (what instanceof Consumer)
+                ((Consumer) what).accept(n);
+            else if (what instanceof Runnable)
+                ((Runnable) what).run();
 
             return null;
         }
 
         @Override
-        public int compareTo(NativeTask.SchedTask b) {
-            if (this == b) return 0;
+        public int compareTo(NativeTask.SchedTask that) {
+            if (this == that) return 0;
 
-            int t = Longs.compare(when, b.when);
+            int t = Longs.compare(when, that.when);
             if (t != 0) {
                 return t;
             }
 
-            if (this.equals(b))
-                return 0;
-
-            Object aa = then;
-            Object bb = b.then;
-            if (aa == bb) return 0;
+//            Object aa = what;
+//            Object bb = that.what;
+//            if (aa == bb) return 0;
 
             //as a last resort, compare their system ID
-            return Integer.compare(System.identityHashCode(aa), System.identityHashCode(bb)); //maintains uniqueness in case they occupy the same time
+            //return Integer.compare(System.identityHashCode(aa), System.identityHashCode(bb)); //maintains uniqueness in case they occupy the same time
+
+            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that)); //maintains uniqueness in case they occupy the same time
         }
     }
 
@@ -175,28 +168,28 @@ public abstract class NativeTask implements ITask, Priority {
 //    }
 //
 
-    /**
-     * wraps a Runnable
-     */
-    public static class NARTask extends NativeTask {
-
-        final Consumer run;
-
-        public NARTask(@NotNull Consumer<NAR> runnable) {
-            run = runnable;
-        }
-
-        @Override
-        public String toString() {
-            return run.toString();
-        }
-
-        @Override
-        public ITask run(NAR x) {
-            run.accept(x);
-            return null;
-        }
-
-    }
+//    /**
+//     * wraps a Runnable
+//     */
+//    public static class NARTask extends NativeTask {
+//
+//        final Consumer run;
+//
+//        public NARTask(@NotNull Consumer<NAR> runnable) {
+//            run = runnable;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return run.toString();
+//        }
+//
+//        @Override
+//        public ITask run(NAR x) {
+//            run.accept(x);
+//            return null;
+//        }
+//
+//    }
 
 }

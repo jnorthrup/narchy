@@ -902,7 +902,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        time.at(time(), t);
+        time.runAt(time(), t);
     }
 
     /**
@@ -910,7 +910,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Consumer<NAR> t) {
-        time.at(time(), t);
+        time.runAt(time(), t);
     }
 
     @NotNull
@@ -943,7 +943,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         assert (tt.length > 0);
 
-        at(time, () -> {
+        runAt(time, () -> {
             List<Task> yy = $.newArrayList(tt.length);
             for (String s : tt) {
                 try {
@@ -973,20 +973,29 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             //past or current cycle
             input(x);
         } else {
-            at(when, () -> input(x));
+            runAt(when, () -> input(x));
         }
     }
 
     /**
      * schedule a task to be executed no sooner than a given NAR time
      */
-    public final void at(long whenOrAfter, Runnable then) {
+    public final void runAt(long whenOrAfter, Runnable then) {
         if (whenOrAfter <= time())
             run(then);
         else
-            time.at(whenOrAfter, then);
+            time.runAt(whenOrAfter, then);
     }
 
+    /**
+     * schedule a task to be executed no sooner than a given NAR time
+     */
+    public final void runAt(long whenOrAfter, Consumer<NAR> then) {
+        if (whenOrAfter <= time())
+            run(then);
+        else
+            time.runAt(whenOrAfter, then);
+    }
     /**
      * tasks in concepts
      */
@@ -1204,7 +1213,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
-            tasks().map(each).filter(Objects::nonNull).forEach(x -> {
+            tasks().map(each).forEach(x -> {
 
                 total.increment();
 
@@ -1249,7 +1258,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
             StringBuilder sb = new StringBuilder();
-            tasks().map(each).filter(Objects::nonNull).forEach(x -> {
+            tasks().map(each).forEach(x -> {
 
                 total.increment();
 

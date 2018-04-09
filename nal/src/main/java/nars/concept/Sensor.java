@@ -25,7 +25,7 @@ import nars.term.Term;
  * */
 public class Sensor extends TaskConcept implements PermanentConcept {
 
-    public FloatRange resolution = new FloatRange(Param.TRUTH_EPSILON, 0f, 1f);
+    public final FloatRange resolution = new FloatRange(Param.TRUTH_EPSILON, 0f, 1f);
 
 //    protected Sensor(Term term, ConceptBuilder b) {
 //        super(term, b);

@@ -387,27 +387,17 @@ public class IO {
     }
 
     public static byte[] asBytes(Task t) {
-        try {
-            ByteArrayOutputStream bs = new ByteArrayOutputStream();
-            IO.writeTask(new DataOutputStream(bs), t);
-            return bs.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return IO.taskToBytes(t, TermFirst);
     }
 
     public static byte[] termToBytes(Term t) {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
+        } else {
+            DynBytes d = new DynBytes(t.volume() * 3 /* estimate */);
+            t.append((ByteArrayDataOutput) d);
+            return d.array();
         }
-
-        //bb = ArrayPool.bytes().
-        DynBytes d = new DynBytes(t.volume() * 4 /* estimate */);
-        //ByteArrayOutputStream bs = new ByteArrayOutputStream();
-
-        t.append((ByteArrayDataOutput) d);
-
-        return d.array(); //bs.toByteArray();
     }
 
 //    public static void saveTasksToTemporaryTSVFile(NAR nar) throws IOException {

@@ -50,7 +50,7 @@ public abstract class flat extends Functor.UnaryFunctor {
 
     public abstract Term result(List<Term> terms);
 
-    public static flat flatProduct = new flat() {
+    public static final flat flatProduct = new flat() {
 
         @Override
         public Term result(List<Term> terms) {

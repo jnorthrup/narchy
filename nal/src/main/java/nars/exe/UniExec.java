@@ -22,27 +22,28 @@ public class UniExec extends AbstractExec {
     }
 
     @Override
-    public synchronized void start(NAR n) {
-        super.start(n);
+    public void start(NAR n) {
+        synchronized (this) {
+            super.start(n);
 
+            List<Causable> can = n.services().map(x -> x instanceof Causable ? ((Causable) x) : null).filter(Objects::nonNull).collect(Collectors.toList());
+            n.services.change.on((xb) -> {
+                Service<NAR> s = xb.getOne();
+                if (s instanceof Causable) {
+                    if (xb.getTwo())
+                        can.add((Causable) s);
+                    else
+                        can.remove(s);
+                }
+            });
 
-        List<Causable> can = n.services().map(x -> x instanceof Causable ? ((Causable) x) : null).filter(Objects::nonNull).collect(Collectors.toList());
-        n.services.change.on((xb) -> {
-            Service<NAR> s = xb.getOne();
-            if (s instanceof Causable) {
-                if (xb.getTwo())
-                    can.add((Causable) s);
-                else
-                    can.remove(s);
-            }
-        });
-
-        n.onCycle(() -> {
-            revaluator.update(n);
-            for (int i = 0, canSize = can.size(); i < canSize; i++) {
-                can.get(i).run(n, WORK_PER_CYCLE);
-            }
-        });
+            n.onCycle(() -> {
+                revaluator.update(n);
+                for (int i = 0, canSize = can.size(); i < canSize; i++) {
+                    can.get(i).run(n, WORK_PER_CYCLE);
+                }
+            });
+        }
     }
 
     @Override

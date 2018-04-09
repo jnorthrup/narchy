@@ -202,27 +202,27 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 //        return null;
 //    }
 
-    /**
-     * Extended indexing and aggregate functionality
-     * TODO - computes Subterms-like aggregates on the keySet
-     */
-    static class TermHashMapX<X> extends TermHashMap<X> {
-        /**
-         * an accumulated structure of the keys, lazily updated
-         */
-        public int structure() {
-            throw new TODO();
-        }
-
-        /**
-         * an accumulated structure of the keys, lazily updated
-         */
-        public int volume() {
-            throw new TODO();
-        }
-
-        //other Subterms methods
-    }
+//    /**
+//     * Extended indexing and aggregate functionality
+//     * TODO - computes Subterms-like aggregates on the keySet
+//     */
+//    static class TermHashMapX<X> extends TermHashMap<X> {
+//        /**
+//         * an accumulated structure of the keys, lazily updated
+//         */
+//        public int structure() {
+//            throw new TODO();
+//        }
+//
+//        /**
+//         * an accumulated structure of the keys, lazily updated
+//         */
+//        public int volume() {
+//            throw new TODO();
+//        }
+//
+//        //other Subterms methods
+//    }
 
     static class AnonMapEntrySet<X> extends AbstractSet<Map.Entry<Term, X>> {
         private final ShortObjectHashMap<X> id;

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -33,9 +34,9 @@ import static java.util.stream.Collectors.toList;
 public class NARTestOptimize {
 
     static final int threads =
-            2;
+            //2;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
-            //4;
+            4;
 
     /** necessary to do what jdk "parallel" streams refuses to do... WTF */
     static final ExecutorService exe = Executors.newFixedThreadPool(threads);
@@ -72,20 +73,27 @@ public class NARTestOptimize {
     private static float test(Supplier<NAR> s, Method m) {
         try {
             NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
-            t.nar = s.get(); //overwrite NAR with the supplier
-            t.nar.random().setSeed(
+            t.test.set(s.get()); //overwrite NAR with the supplier
+            t.test.nar.random().setSeed(
                 System.nanoTime()
                 //1 //should change on each iteration so constant value wont work
             );
-            m.invoke(t);
             try {
-                Param.DEBUG = false;
+                m.invoke(t);
+            } catch (Throwable ee) {
+                return -1; //fatal setup
+            }
+
+            Param.DEBUG = false;
+
+            try {
                 t.test.test(false);
                 return t.test.score;
                 //return 1 + t.test.score; //+1 for successful completion
             } catch (Throwable ee) {
                 //return -2f;
-                return 0f;
+                //return -1f;
+                return 0f; //fatal during test
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,10 +103,9 @@ public class NARTestOptimize {
 
     public static void main(String[] args) {
 
-        PrintStream out = System.out;
-        OutputStream fout = null;
         try {
-            fout = new FileOutputStream(new File("/tmp/" + NARTestOptimize.class.getSimpleName() + ".csv"));
+            PrintStream out = System.out;
+            OutputStream fout = new FileOutputStream(new File("/tmp/" + NARTestOptimize.class.getSimpleName() + ".csv"));
             System.setOut(new PrintStream(new MultiOutputStream(out, fout)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -108,33 +115,46 @@ public class NARTestOptimize {
             Result<NAR> r = new Tweaks<>(() -> {
                 NAR n = NARS.tmp();
                 return n;
-            }) {
-                @Override
-                protected boolean includeField(Field f) {
-                    return !f.getName().equals("DEBUG");
-                }
+            })
+                .discover(new Tweaks.DiscoveryFilter() {
 
-                final Set<Class> exclude = Set.of(NARLoop.class);
+                    final Set<Class> excludeClasses = Set.of(NARLoop.class);
+                    final Set<String> excludeFields = Set.of(
+                            "DEBUG",
+                            "dtMergeOrChoose",
+                            "TEMPORAL_SOLVER_ITERATIONS",
+                            "dtDither",
+                            "timeFocus",
+                            "beliefConfDefault",
+                            "goalConfDefault"
+                    );
 
-                @Override
-                protected boolean includeClass(Class<?> targetType) {
-                    return !exclude.contains(targetType);
-                }
-            }
-                .learn()
+                    @Override
+                    protected boolean includeClass(Class<?> targetType) {
+                        return !excludeClasses.contains(targetType);
+                    }
+
+                    @Override
+                    protected boolean includeField(Field f) {
+                        return
+                            !Modifier.isStatic(f.getModifiers()) &&
+                            !excludeFields.contains(f.getName());
+                    }
+
+                })
                 .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Perceive, p)
                 )
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(32*1024, 4, (n) ->
+                .optimize(32*1024, 3, (n) ->
                         tests(n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
                                 NAL2Test.class,
-                                NAL3Test.class,
-                                NAL5Test.class
+                                NAL3Test.class
+                                ,NAL5Test.class
                                 //NAL6Test.class
 
                                 //NAL7Test.class,

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 1550;
+    static final int cycles = 550;
 
 
     @Override
@@ -98,7 +98,6 @@ public class NAL2Test extends NALTest {
     public void resemblance() {
 
         TestNAR tester = test;
-        //tester.log();
         tester.believe("<robin <-> swan>");//Robin is similar to swan.");
         tester.believe("<gull <-> swan>");//Gull is similar to swan.");
         tester.mustBelieve(cycles, "<gull <-> robin>", 1.0f, 0.81f);//Gull is similar to robin.");
@@ -397,8 +396,8 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
         tester.believe("<planetX --> [earthly,saturny]>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles*2, "<planetX --> [marsy,earthly,saturny,venusy]>", 0.1f ,0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-        tester.mustBelieve(cycles*2, "<planetX --> [marsy,venusy]>", 0.90f ,0.81f); //.en("PlanetX is either Mars or Venus.");
+        tester.mustBelieve(cycles*4, "<planetX --> [marsy,earthly,saturny,venusy]>", 0.1f ,0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
+        tester.mustBelieve(cycles*4, "<planetX --> [marsy,venusy]>", 0.90f ,0.81f); //.en("PlanetX is either Mars or Venus.");
     }
 
     @Test

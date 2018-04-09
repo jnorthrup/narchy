@@ -1,6 +1,5 @@
 package nars.table;
 
-import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.Priority;
@@ -124,11 +123,12 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 //        else return Stream.of(values);
 
         Object[] list = this.list;
-        if (list.length == 0)
+        int size = Math.min(list.length, this.size);
+        if (size == 0)
             return Stream.empty();
         else {
             //TODO may not be null filtered properly for certain multithread cases of removal
-            return Streams.stream(ArrayIterator.get((Task[])list, Math.min(list.length, size)));
+            return ArrayIterator.stream((Task[])list, size);
         }
     }
 

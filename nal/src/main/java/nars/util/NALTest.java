@@ -19,14 +19,13 @@ public abstract class NALTest {
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
-    public NAR nar;
     public final TestNAR test;
     public final MetaGoal.Report metagoals = new MetaGoal.Report();
 
     private TestInfo testInfo;
 
     protected NALTest() {
-        test = new TestNAR(nar = nar()) {
+        test = new TestNAR(nar()) {
             @Override
             protected void assertSuccess(boolean success) {
                 afterTest(testInfo);
@@ -35,7 +34,7 @@ public abstract class NALTest {
         };
     }
     protected NALTest(Supplier<NAR> s) {
-        test = new TestNAR(nar = s.get()) {
+        test = new TestNAR(s.get()) {
             @Override
             protected void assertSuccess(boolean success) {
                 afterTest(testInfo);
@@ -64,7 +63,7 @@ public abstract class NALTest {
 
         test.test();
 
-        nar.stop();
+        test.nar.stop();
 
 //        metagoals.add(nar.causes).print(System.out);
 

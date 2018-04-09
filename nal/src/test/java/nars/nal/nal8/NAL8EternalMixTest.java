@@ -583,7 +583,7 @@ public class NAL8EternalMixTest extends NALTest {
     @Test
     public void testGoalImplComponentWithVar() {
 
-        test.nar.at(cycles * 4, () -> {
+        test.nar.runAt(cycles * 4, () -> {
             try {
                 test.nar.concept($.$("c($1)")).print();
             } catch (Narsese.NarseseException e) {

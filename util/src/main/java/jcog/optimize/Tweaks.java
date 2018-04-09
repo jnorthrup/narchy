@@ -74,15 +74,19 @@ public class Tweaks<X> {
      * learns how to modify the possibility space of the parameters of a subject
      * (generates accessors via reflection)
      */
-    public Tweaks<X> learn() {
-        return discover((root, path, targetType) -> {
+    public Tweaks<X> discover() {
+        return discover(DiscoveryFilter.all);
+    }
+
+    public Tweaks<X> discover(DiscoveryFilter filter) {
+        return discover(filter, (root, path, targetType) -> {
             FastList<Pair<Class, ObjectGraph.Accessor>> p = path.clone();
             String key = key(p);
 
             //TODO find matching Super-types
             tweakers.get(Primitives.wrap(targetType)).learn(root, key, p);
 
-            learn(key, p);
+            discover(key, p);
         });
     }
 
@@ -92,10 +96,24 @@ public class Tweaks<X> {
         void discovered(X x, FasterList<Pair<Class, ObjectGraph.Accessor>> path, Class type);
     }
 
+    public static class DiscoveryFilter {
+
+        public static final DiscoveryFilter all = new DiscoveryFilter();
+
+        protected boolean includeField(Field f) {
+            return true;
+        }
+
+        protected boolean includeClass(Class<?> targetType) {
+            return true;
+        }
+
+    }
+
     /**
      * auto discovers tweaks by reflecting a sample of the subject
      */
-    public Tweaks<X> discover(Discovery<X> each) {
+    public Tweaks<X> discover(DiscoveryFilter filter, Discovery<X> each) {
 
         //sample instance
         X x = (this.subjects.get());
@@ -108,7 +126,7 @@ public class Tweaks<X> {
                     return false; //prevent cycle
 
                 Class<?> targetType = target.getClass();
-                if (!Tweaks.this.includeClass(targetType))
+                if (!filter.includeClass(targetType))
                     return false;
 
                 if (tweakable(targetType)) {
@@ -122,23 +140,23 @@ public class Tweaks<X> {
             @Override
             public boolean recurse(Object x) {
                 Class<?> xc = x.getClass();
-                return Tweaks.this.includeClass(xc) && !tweakable(xc);
+                return filter.includeClass(xc) && !tweakable(xc);
             }
 
             @Override
             public boolean includeValue(Object v) {
-                return Tweaks.this.includeClass(v.getClass());
+                return filter.includeClass(v.getClass());
             }
 
             @Override
             public boolean includeClass(Class<?> c) {
-                return Tweaks.this.includeClass(c);
+                return filter.includeClass(c);
             }
 
             @Override
             public boolean includeField(Field f) {
                 int m = f.getModifiers();
-                if (!Modifier.isPublic(m) || !Tweaks.this.includeField(f))
+                if (!Modifier.isPublic(m) || !filter.includeField(f))
                     return false;
 
                 Class<?> t = Primitives.wrap(f.getType());
@@ -181,7 +199,7 @@ public class Tweaks<X> {
                 AtomicBoolean fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
                 tweak(k, 0, 1, 0.5f, (x, v) -> {
                     boolean b = v >= 0.5f;
-                    fr.set(b);
+                    get.apply(x).set(b);
                     return b ? 1f : 0f;
                 });
             },
@@ -195,7 +213,7 @@ public class Tweaks<X> {
                 final Function<X, IntRange> get = ObjectGraph.getter(p);
                 IntRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
                 tweak(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> {
-                    fr.set(v);
+                    get.apply(x).set(v);  //use the min/max at the time this is constructed, which assumes they will remain the same
                 });
             },
 //            AtomicInteger.class, null,
@@ -234,7 +252,7 @@ public class Tweaks<X> {
     /**
      * extract any hints from the path (ex: annotations, etc)
      */
-    private void learn(String key, FastList<Pair<Class, ObjectGraph.Accessor>> path) {
+    private void discover(String key, FastList<Pair<Class, ObjectGraph.Accessor>> path) {
         ObjectGraph.Accessor a = path.getLast().getTwo();
         if (a instanceof ObjectGraph.FieldAccessor) {
             Field field = ((ObjectGraph.FieldAccessor) a).field;
@@ -261,12 +279,6 @@ public class Tweaks<X> {
                 e.getOne().getName() + '.' + e.getTwo()));
     }
 
-    protected boolean includeField(Field f) {
-        return true;
-    }
-    protected boolean includeClass(Class<?> targetType) {
-        return true;
-    }
 
 
     public Tweaks<X> tweak(String key, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
