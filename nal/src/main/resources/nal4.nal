@@ -1,0 +1,12 @@
+//image structural transform forward
+(P --> I), X, is(P,"*"), subsMin(P,2), subOf(P,X) |- (X --> append(I,substitute(P,X,/))), (Belief:Identity, Goal:Identity)
+(I --> P), X, is(P,"*"), subsMin(P,2), subOf(P,X) |- (append(I,substitute(P,X,\)) --> X), (Belief:Identity, Goal:Identity)
+
+//image structural transform reverse
+(X --> P), X, is(P,"*"), subOf(P,/) |- (substitute(subs(P,1),/,X) --> sub(P,0)), (Belief:Identity, Goal:Identity)
+(P --> X), X, is(P,"*"), subOf(P,\) |- (sub(P,0) --> substitute(subs(P,1),\,X)), (Belief:Identity, Goal:Identity)
+//TODO int
+
+//TODO structural transform forward lightweight shortcuts, eliminate need for intermediate image term/concept
+//(P-->I), (R-->I), is(P,"*"), subsMin(P,2), subsMin(R,2), neqAndCom(P,R) |- ...
+

@@ -42,6 +42,10 @@ public class Subst extends Functor {
 
         final Term y = xx.sub(2); //replacement term (y)
 
+        return apply(xx, input, x, y);
+    }
+
+    public @Nullable Term apply(Subterms xx, Term input, Term x, Term y) {
         Term result = input.replace(x, y);
         if (xx.subEquals(3, STRICT) && input.equals(result))
             return Null;

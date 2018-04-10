@@ -8,6 +8,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.derive.time.DeriveTime;
+import nars.op.ListFunc;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.op.data.differ;
@@ -323,6 +324,11 @@ public class Derivation extends PreDerivation {
                 union.the,
                 differ.the,
                 intersect.the,
+                Subst.the,
+
+                ListFunc.sub,
+                ListFunc.subs,
+                ListFunc.append,
 
 //                nar.get(Atomic.the("add")),
 //                nar.get(Atomic.the("mul")),
@@ -716,13 +722,23 @@ public class Derivation extends PreDerivation {
 
         @Override
         public @Nullable Term apply(Subterms xx) {
-            Term y = super.apply(xx);
+            Term input = xx.sub(0);
+            Term replaced = xx.sub(1);
+            Term replacement = xx.sub(2);
+            if (replaced instanceof Atom) {
+                //resolve any constants which appear in the rules in terms of what has been Anon'd
+                replaced = anon.put(replaced);
+            }
+
+            Term y = super.apply(xx, input, replaced, replacement);
+
             if (y != null && !(y instanceof Bool)) {
+
 
                 replaceXY(xx.sub(0), y);
 
                 Term a = xx.sub(1);
-                Term b = xx.sub(2);
+                Term b = replacement;
                 if (!a.equals(b)) {
                     replaceXY(a, b); //also include the subterms in case the structure of the compound changed signficantly the events may still hold the clue
 //                    //replaceXY(b, a); //reverse mapping

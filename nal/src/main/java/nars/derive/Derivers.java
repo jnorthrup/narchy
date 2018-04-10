@@ -36,6 +36,8 @@ public class Derivers {
                     break;
                 case 5:
                 case 4:
+                    files.add("nal4.nal");
+                    break;
                 case 3:
                 case 2:
                     files.add("nal3.nal");

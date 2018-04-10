@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.TODO;
 import jcog.Util;
 import nars.$;
 import nars.Op;
@@ -8,6 +9,7 @@ import nars.term.Functor;
 import nars.term.Solution;
 import nars.term.Term;
 import nars.term.Terms;
+import nars.term.atom.Int;
 
 import java.util.function.Predicate;
 
@@ -120,4 +122,32 @@ public enum ListFunc { ;
     };
 
 
+    public static Functor sub = Functor.f2("sub", (x,n)->{
+        if (n.op()==INT) {
+            return x.sub( ((Int)n).id, Null );
+        } else {
+            return null;
+        }
+    });
+    public static Functor subs = Functor.f2Or3("subs", (Term[] args)->{
+        if (args.length == 2) {
+            //from arg N to end
+            Term x = args[0];
+            Term n = args[1];
+            if (n.op()==INT) {
+                int nn = ((Int)n).id;
+                Subterms xx = x.subterms();
+                int m = xx.subs();
+                if (nn < m) {
+                    return PROD.the(xx.toArraySubRange(nn, m));
+                } else {
+                    return Null; //OOB or empty range
+                }
+            } else {
+                return null;
+            }
+        } else {
+            throw new TODO();
+        }
+    });
 }

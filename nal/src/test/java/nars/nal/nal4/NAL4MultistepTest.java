@@ -3,7 +3,6 @@ package nars.nal.nal4;
 import nars.Narsese;
 import nars.test.TestNAR;
 import nars.util.NALTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class NAL4MultistepTest extends NALTest {
@@ -32,7 +31,8 @@ public class NAL4MultistepTest extends NALTest {
         //return mustOutput(cycleStart, cycleEnd, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, occTimeAbsolute, occTimeAbsolute);
         tester.mustBelieve(time, "likes(cat,[blue])",
                 1f,
-                0.16F);
+                0.45f);
+                //0.16F);
 
     }
 
@@ -58,11 +58,11 @@ public class NAL4MultistepTest extends NALTest {
 
     }
 
-    @Test @Disabled
+    @Test
     public void nal4_everyday_reasoning_easier() throws Narsese.NarseseException {
         int time = 2550;
 
-        //Global.DEBUG = true;
+        //Param.DEBUG = true;
 
         TestNAR tester = test;
         //tester.nar.log();
@@ -77,7 +77,7 @@ public class NAL4MultistepTest extends NALTest {
         //tester.askAt(time/2, "<(cat,blue) --> likes>"); //cats like blue?
 
 
-        tester.mustBelieve(time, "<(cat,blue) --> likes>", 1.0f, 0.42f); //en("A base is something that has a reaction with an acid.");
+        tester.mustBelieve(time, "<(cat,blue) --> likes>", 1.0f, 0.45f); //en("A base is something that has a reaction with an acid.");
 
     }
 

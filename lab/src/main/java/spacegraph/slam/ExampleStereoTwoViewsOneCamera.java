@@ -44,7 +44,6 @@ import boofcv.factory.geo.*;
 import boofcv.gui.d3.ColorPoint3D;
 import boofcv.gui.feature.AssociationPanel;
 import boofcv.gui.image.ShowImages;
-import boofcv.gui.image.VisualizeImageData;
 import boofcv.io.UtilIO;
 import boofcv.io.calibration.CalibrationIO;
 import boofcv.io.image.ConvertBufferedImage;
@@ -68,6 +67,7 @@ import georegression.struct.point.Vector3D_F64;
 import georegression.struct.se.Se3_F64;
 import georegression.transform.se.SePointOps_F64;
 import jcog.TODO;
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.signal.Bitmap2D;
 import org.ddogleg.fitting.modelset.ModelFitter;
@@ -106,8 +106,8 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class ExampleStereoTwoViewsOneCamera {
 
 	// Disparity calculation parameters
-	private static final int minDisparity = 5;
-	private static final int maxDisparity = 200;
+	private static final int minDisparity = 15;
+	private static final int maxDisparity = 100;
 	private final PointCloudTiltPanel gui;
 	List<AssociatedPair> matchedCalibrated = new ArrayList<>();
 	List<AssociatedPair> matchedFeatures = new ArrayList();
@@ -136,7 +136,7 @@ public class ExampleStereoTwoViewsOneCamera {
 
 	private GrayF32 next, prev;
 	private GrayU8 distortedNext, distortedPrev;
-	private AssociationPanel assocPanel = new AssociationPanel(20);;
+	private AssociationPanel assocPanel = new AssociationPanel(20);
 
 
 	public static void main(String args[]) throws InterruptedException {
@@ -149,7 +149,7 @@ public class ExampleStereoTwoViewsOneCamera {
 					for (ColorPoint3D p : e.gui.view.cloud) {
 						int cc = p.rgb;
 						gl.glColor3f(Bitmap2D.decodeRed(cc), Bitmap2D.decodeGreen(cc), Bitmap2D.decodeBlue(cc));
-						Draw.rect(gl, (float) p.x, (float) p.y, 1, 1, (float) p.z);
+						Draw.rect(gl, (float) p.x, -(float) p.y, 2, 2, (float) p.z);
 					}
 
 			}
@@ -158,44 +158,47 @@ public class ExampleStereoTwoViewsOneCamera {
 		}).show(800, 800);
 
 		RayTracer r = RayTracer.raytracer();
+
+		r.scene.camera.position.x = 4;
+		r.scene.camera.position.y = 1;
+		r.scene.camera.position.z = 1;
+
 		r.update();
 		r.renderProgressively();
 
-		r.scene.camera.position.x = 4 - 1;
+
 		//r.scene.camera.direction.x = -0.577 + 0.25f;
 
 		r.update();
-		r.renderProgressively();
-
+		if (r.renderProgressively()) {
+			//r.input.waitForInput();
+		}
+		Thread.sleep(500);
 		e.snap(r.image);
 
-		Thread.sleep(200);
+		Thread.sleep(100);
 
-//		new Thread(()->{
-			double t = 0;
-//			while (true) {
-		r.scene.camera.position.x = 4 + 1;
-		//r.scene.camera.direction.x = -0.577 - 0.25f;
+
+
+				//r.scene.camera.position.x += Math.cos(t)*0.2f;
+				//t+=0.2f;
+//			}
+//		}).start();
+		new Thread(()->{
+			while (true) {
+				r.scene.camera.position.x = 4 + .15f;
+				r.scene.camera.direction.x -= 0.01f;
+
 				r.update();
 				if (r.renderProgressively()) {
-					r.input.waitForInput();
+					//r.input.waitForInput();
 				}
-				//r.scene.camera.position.x += Math.cos(t)*0.2f;
-				t+=0.2f;
-//			}
-//		}).start();
-//		new Thread(()->{
-//			while (true) {
-				e.snap(r.image);
 
-				try {
-					Thread.sleep(250);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-//			}
-//
-//		}).start();
+				Util.sleep(500);
+				e.snap(r.image);
+			}
+
+		}).start();
 
 	}
 
@@ -223,7 +226,7 @@ public class ExampleStereoTwoViewsOneCamera {
 	protected boolean update(BufferedImage inLeft) {
 
 
-		//ShowImages.showGrid(2, "source", prev, next);
+//		ShowImages.showGrid(2, "source", prev, next);
 
 		// matched features between the two images
 		computeMatches(prev, next);
@@ -235,6 +238,8 @@ public class ExampleStereoTwoViewsOneCamera {
 		Se3_F64 leftToRight = estimateCameraMotion(intrinsic);
 		if (leftToRight == null)
 			return false; //no motion
+
+		System.out.println(leftToRight);
 
 		drawInliers(intrinsic, inliers);
 
@@ -251,7 +256,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		StereoDisparity<GrayS16, GrayF32> disparityAlg =
 				FactoryStereoDisparity.regionSubpixelWta(DisparityAlgorithms.RECT_FIVE,
 						minDisparity, maxDisparity,
-						3, 3, 0, 15,
+						5, 5, 20, 1,
 						0.1, GrayS16.class);
 
 		// Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
@@ -265,12 +270,13 @@ public class ExampleStereoTwoViewsOneCamera {
 		GrayF32 disparity = disparityAlg.getDisparity();
 
 		// show results
-		BufferedImage visualized = VisualizeImageData.disparity(disparity, null, minDisparity, maxDisparity, 0);
-		ShowImages.showWindow(visualized, "Disparity");
+//		BufferedImage visualized = VisualizeImageData.disparity(
+//				disparity, null, minDisparity, maxDisparity, 0);
+//		ShowImages.showWindow(visualized, "Disparity");
 
-		//BufferedImage outLeft = ConvertBufferedImage.convertTo(rectifiedLeft, null);
-		//BufferedImage outRight = ConvertBufferedImage.convertTo(rectifiedRight, null);
-		//ShowImages.showWindow(new RectifiedPairPanel(true, outLeft, outRight), "Rectification");
+//		BufferedImage outLeft = ConvertBufferedImage.convertTo(rectifiedLeft, null);
+//		BufferedImage outRight = ConvertBufferedImage.convertTo(rectifiedRight, null);
+//		ShowImages.showWindow(new RectifiedPairPanel(true, outLeft, outRight), "Rectification");
 
 		double baseline = leftToRight.getT().norm();
 
@@ -279,8 +285,8 @@ public class ExampleStereoTwoViewsOneCamera {
 
 
 
-//		System.out.println("Total found " + matchedCalibrated.size());
-//		System.out.println("Total Inliers " + inliers.size());
+		System.out.println("Total found " + matchedCalibrated.size());
+		System.out.println("Total Inliers " + inliers.size());
 
 		return true;
 	}
@@ -294,10 +300,10 @@ public class ExampleStereoTwoViewsOneCamera {
 				new ConfigFastHessian(
 						1, 2, 0, 1, 9, 4, 4),
 				null,null, GrayF32.class);
-		//DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(2,0,200,5),null,null);
+		//DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(200),null,null);
 
 		ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
-		AssociateDescription<BrightFeature> associate = FactoryAssociation.greedy(scorer, 0.9, true);
+		AssociateDescription<BrightFeature> associate = FactoryAssociation.greedy(scorer, 0.9f, true);
 
 		ExampleAssociatePoints<GrayF32,BrightFeature> findMatches =
 				new ExampleAssociatePoints<>(detDesc, associate, GrayF32.class);
@@ -329,7 +335,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		ModelMatcher<Se3_F64, AssociatedPair> epipolarMotion =
 				FactoryMultiViewRobust.essentialRansac(
 						new ConfigEssential(intrinsic),
-						new ConfigRansac(15000,0.1));
+						new ConfigRansac(200,0.5));
 
 		if (!epipolarMotion.process(matchedCalibrated))
 			return null;
@@ -932,7 +938,7 @@ public class ExampleStereoTwoViewsOneCamera {
 		// Tilts the camera up and down
 		JSlider tiltSlider;
 
-		int maxPoints = 1500;
+		int maxPoints = 5500;
 
 		// bounds on scale adjustment
 		double minRange = 0;
@@ -1004,12 +1010,12 @@ public class ExampleStereoTwoViewsOneCamera {
 			while (view.cloud.size() > maxPoints)
 				view.cloud.removeFirst();
 
-//			newMotion = newMotion.invert(null);
-//			System.out.println(newMotion);
+			newMotion = newMotion.invert(null);
+			System.out.println(newMotion);
 
-//			for (Point3D_F64 p : view.cloud) {
-//				SePointOps_F64.transform(newMotion, p, p);
-//			}
+			for (Point3D_F64 p : view.cloud) {
+				SePointOps_F64.transform(newMotion, p, p);
+			}
 
 
 			view.process(disparity,color);

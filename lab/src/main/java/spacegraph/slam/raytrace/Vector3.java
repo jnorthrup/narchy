@@ -2,8 +2,8 @@ package spacegraph.slam.raytrace;
 
 public final class Vector3 {
     public double x;
-    private double y;
-    private double z;
+    public double y;
+    public double z;
     public Vector3(double x, double y, double z) {
         this.x = x;
         this.y = y;

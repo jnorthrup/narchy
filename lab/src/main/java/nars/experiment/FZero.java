@@ -15,9 +15,7 @@ import nars.gui.Vis;
 import nars.task.NALTask;
 import nars.time.Tense;
 import nars.util.signal.Bitmap2DConcepts;
-import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;
-import nars.video.ShapeSensor;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
@@ -96,7 +94,7 @@ public class FZero extends NAgentX {
 //            }
 //        };
 
-        new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
+        //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
 
 //        CameraSensor<Scale> c = senseCameraReduced(id, new Scale(() -> fz.image,
 //                128, 64), 8, 8, 2, 2).resolution(0.1f);

@@ -1,0 +1,216 @@
+package spacegraph.slam;
+
+import boofcv.abst.feature.associate.AssociateDescription;
+import boofcv.abst.feature.associate.ScoreAssociation;
+import boofcv.abst.feature.detdesc.DetectDescribePoint;
+import boofcv.abst.feature.detect.interest.ConfigFastHessian;
+import boofcv.abst.feature.detect.interest.ConfigGeneralDetector;
+import boofcv.abst.feature.disparity.StereoDisparitySparse;
+import boofcv.abst.feature.tracker.PointTrackerTwoPass;
+import boofcv.abst.sfm.AccessPointTracks3D;
+import boofcv.abst.sfm.d3.StereoVisualOdometry;
+import boofcv.alg.tracker.klt.PkltConfig;
+import boofcv.factory.feature.associate.FactoryAssociation;
+import boofcv.factory.feature.detdesc.FactoryDetectDescribe;
+import boofcv.factory.feature.disparity.FactoryStereoDisparity;
+import boofcv.factory.feature.tracker.FactoryPointTrackerTwoPass;
+import boofcv.factory.geo.ConfigEssential;
+import boofcv.factory.geo.ConfigRansac;
+import boofcv.factory.geo.FactoryMultiViewRobust;
+import boofcv.factory.sfm.FactoryVisualOdometry;
+import boofcv.gui.image.ImagePanel;
+import boofcv.gui.image.ShowImages;
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.io.wrapper.DynamicWebcamInterface;
+import boofcv.io.wrapper.WebcamInterface;
+import boofcv.struct.calib.CameraPinholeRadial;
+import boofcv.struct.calib.StereoParameters;
+import boofcv.struct.feature.AssociatedIndex;
+import boofcv.struct.feature.BrightFeature;
+import boofcv.struct.geo.AssociatedPair;
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.GrayS16;
+import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.ImageType;
+import com.github.sarxos.webcam.Webcam;
+import georegression.struct.point.Vector3D_F64;
+import georegression.struct.se.Se3_F64;
+import jcog.Util;
+import jcog.list.FasterList;
+import org.ddogleg.fitting.modelset.ModelMatcher;
+import org.ddogleg.struct.FastQueue;
+
+import java.util.List;
+
+/**
+ * Bare bones example showing how to estimate the camera's ego-motion using a stereo camera system. Additional
+ * information on the scene can be optionally extracted from the algorithm if it implements AccessPointTracks3D.
+ *
+ * @author Peter Abeles
+ */
+public class ExampleVisualOdometryStereo {
+
+	public static void main( String args[] ) {
+
+//		MediaManager media = DefaultMediaManager.INSTANCE;
+
+//		String directory = UtilIO.pathExample("vo/backyard/");
+
+		// load camera description and the video sequence
+//		StereoParameters stereoParam =
+//				//CalibrationIO.load(media.openFile(directory + "stereo.yaml"));
+//				ExampleStereoTwoViewsOneCamera.intrinsic;
+		//SimpleImageSequence<GrayU8> video1;
+//		SimpleImageSequence<GrayU8> video2;
+		//= media.openVideo(directory + "left.mjpeg", ImageType.single(GrayU8.class));
+		//SimpleImageSequence<GrayU8> video2 = media.openVideo(directory+"right.mjpeg", ImageType.single(GrayU8.class));
+
+		WebcamInterface webcamInterface = new DynamicWebcamInterface();
+		webcamInterface.open(null, 640, 480, ImageType.single(GrayU8.class));
+
+
+		// specify how the image features are going to be tracked
+		PkltConfig configKlt = new PkltConfig();
+		configKlt.pyramidScaling = new int[]{1, 2, 4, 8};
+		configKlt.templateRadius = 3;
+
+		PointTrackerTwoPass<GrayU8> tracker =
+				FactoryPointTrackerTwoPass.klt(configKlt, new ConfigGeneralDetector(300, 3, 1),
+						GrayU8.class, GrayS16.class);
+
+		// computes the depth of each point
+		StereoDisparitySparse<GrayU8> disparity =
+				FactoryStereoDisparity.regionSparseWta(0, 150, 3, 3, 50, -1, true, GrayU8.class);
+
+		// declares the algorithm
+		StereoVisualOdometry<GrayU8> visualOdometry = FactoryVisualOdometry.stereoDepth(1.5,120, 2,300,50,true,
+				disparity, tracker, GrayU8.class);
+
+		// Pass in intrinsic/extrinsic calibration.  This can be changed in the future.
+//		Se3_F64 initialEstimate = new Se3_F64();
+//		initialEstimate.reset();
+//		initialEstimate.setTranslation(1,0,0);
+
+
+		GrayU8 left = null, right = null;
+
+		StereoParameters stereoParam = new StereoParameters(
+				ExampleStereoTwoViewsOneCamera.intrinsic, ExampleStereoTwoViewsOneCamera.intrinsic,
+				new Se3_F64());
+
+		// Process the video sequence and output the location plus number of inliers
+		List<AssociatedPair> matchedFeatures = new FasterList();
+
+		ImagePanel i = ShowImages.showWindow(Webcam.getDefault().getImage(),"cam");
+
+		while( true ) {
+			left = right;
+			right = ConvertBufferedImage.convertFrom(Webcam.getDefault().getImage(), (GrayU8)null);
+			if (left == null) {
+				left = right;
+			}
+
+			i.setImageRepaint(ConvertBufferedImage.convertTo(right, null));
+
+
+			computeMatches(left, right, matchedFeatures);
+
+			//System.out.println("matchedFeatures: " + matchedFeatures.size());
+
+			Se3_F64 cameraMotion = estimateCameraMotion(ExampleStereoTwoViewsOneCamera.intrinsic, matchedFeatures);
+			if (cameraMotion == null) {
+				//System.out.println("no motion");
+			} else {
+
+				System.out.println("motion: " + cameraMotion.getT());
+
+				visualOdometry.setCalibration(stereoParam);
+
+				if( !visualOdometry.process(left,right) ) {
+					//throw new RuntimeException("VO Failed!");
+					System.out.println("odom fail");
+				} else {
+
+					Se3_F64 leftToWorld = visualOdometry.getCameraToWorld();
+					Vector3D_F64 T = leftToWorld.getT();
+
+					System.out.printf("Location %8.2f %8.2f %8.2f      inliers %s\n", T.x, T.y, T.z, inlierPercent(visualOdometry));
+				}
+
+			}
+
+			Util.sleep(10);
+		}
+	}
+
+	/**
+	 * Use the associate point feature example to create a list of {@link AssociatedPair} for use in computing the
+	 * fundamental matrix.
+	 */
+	static public void computeMatches(GrayU8 left, GrayU8 right, List<AssociatedPair> matchedFeatures) {
+		DetectDescribePoint detDesc = FactoryDetectDescribe.surfStable(
+//				new ConfigFastHessian(
+//						1, 2, 0, 1, 9, 4, 4),
+//				null,null, GrayU8.class);
+				new ConfigFastHessian(1, 2, 200, 1, 9, 4, 4), null,null, GrayU8.class);
+
+		//DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(2,0,200,5),null,null);
+
+		ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
+		AssociateDescription<BrightFeature> associate = FactoryAssociation.greedy(scorer, 1, true);
+
+		ExampleStereoTwoViewsOneCamera.ExampleAssociatePoints<GrayU8,BrightFeature> findMatches =
+				new ExampleStereoTwoViewsOneCamera.ExampleAssociatePoints<>(detDesc, associate, GrayF32.class);
+
+		findMatches.associate(left,right);
+
+
+		FastQueue<AssociatedIndex> matchIndexes = associate.getMatches();
+
+		matchedFeatures.clear();
+
+		for( int i = 0; i < matchIndexes.size; i++ ) {
+			AssociatedIndex a = matchIndexes.get(i);
+			matchedFeatures.add(new AssociatedPair(findMatches.pointsA.get(a.src) , findMatches.pointsB.get(a.dst)));
+		}
+
+	}
+
+
+	public static Se3_F64 estimateCameraMotion(CameraPinholeRadial intrinsic, List<AssociatedPair> x)
+	{
+		ModelMatcher<Se3_F64, AssociatedPair> epipolarMotion =
+				FactoryMultiViewRobust.essentialRansac(
+						new ConfigEssential(intrinsic),
+						new ConfigRansac(200,0.5));
+
+		if (!epipolarMotion.process(x))
+			return null;
+		//throw new RuntimeException("Motion estimation failed");
+
+		// save inlier set for debugging purposes
+//		inliers.clear();
+//		inliers.addAll(epipolarMotion.getMatchSet());
+
+		return epipolarMotion.getModelParameters();
+	}
+	/**
+	 * If the algorithm implements AccessPointTracks3D, then count the number of inlier features
+	 * and return a string.
+	 */
+	public static String inlierPercent(StereoVisualOdometry alg) {
+		if( !(alg instanceof AccessPointTracks3D))
+			return "";
+
+		AccessPointTracks3D access = (AccessPointTracks3D)alg;
+
+		int count = 0;
+		int N = access.getAllTracks().size();
+		for( int i = 0; i < N; i++ ) {
+			if( access.isInlier(i) )
+				count++;
+		}
+
+		return String.format("%%%5.3f", 100.0 * count / N);
+	}
+}

@@ -54,6 +54,8 @@ public class Builtin {
             union.the,
 
             ListFunc.append,
+            ListFunc.sub,
+            ListFunc.subs,
 
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {

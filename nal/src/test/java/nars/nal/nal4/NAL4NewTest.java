@@ -13,6 +13,37 @@ public class NAL4NewTest extends NALTest {
     public static final int CYCLES = 450;
 
     @Test
+    public void structural_transformationExt_forward() {
+        test
+        .believe("((acid,base) --> reaction)", 1.0f, 0.9f) //en("An acid and a base can have a reaction.");
+        .mustBelieve(CYCLES, "(acid --> (reaction,/,base))", 1.0f, 0.9f) //en("Acid can react with base.");
+        .mustBelieve(CYCLES, "(base --> (reaction,acid,/))", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
+    }
+    @Test
+    public void structural_transformationExt_reverse() {
+        test
+        .believe("(acid --> (reaction,/,base))", 1.0f, 0.9f)
+        .mustBelieve(CYCLES, "((acid,base) --> reaction)", 1.0f, 0.9f);
+    }
+
+    @Test
+    public void structural_transformationInt() {
+        test
+        .believe("(neutralization --> (acid,base))", 1.0f, 0.9f) //en("Neutralization is a relation between an acid and a base. ");
+        .mustBelieve(CYCLES, "((neutralization,\\,base) --> acid)", 1.0f, 0.9f) //en("Something that can neutralize a base is an acid.");
+        .mustBelieve(CYCLES, "((neutralization,acid,\\) --> base)", 1.0f, 0.9f) //en("Something that can be neutralized by an acid is a base.");
+        ;
+    }
+    @Test
+    public void structural_transformationInt_reverse() {
+        test
+                .believe("((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
+                .mustBelieve(CYCLES, "(neutralization --> (acid,base))", 1.0f, 0.9f)
+        ;
+    }
+
+    @Disabled
+    @Test
     public void testCompositionFromProductInh() throws nars.Narsese.NarseseException {
         //((A..+) --> Z), (X --> Y), contains(A..+,X), task("?") |- ((A..+) --> (substitute(A..+,X,Y))), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
@@ -22,6 +53,7 @@ public class NAL4NewTest extends NALTest {
                 .mustBelieve(CYCLES, "((drink,soda) --> (drink,acid))", 1.0f, 0.81f);
     }
 
+    @Disabled
     @Test
     public void testCompositionFromProductSim() throws nars.Narsese.NarseseException {
 

@@ -228,7 +228,10 @@ public class TextUI {
                 return new BagListBox<Activate>(64) {
                     @Override
                     public void update() {
-                        nar.conceptsActive().forEach(this::add);
+                        NAR n = TextGUI.this.nar;
+                        if (n == null)
+                            return;
+                        n.conceptsActive().forEach(this::add);
                         super.update();
                     }
                 };
