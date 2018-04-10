@@ -182,7 +182,7 @@ public class Int implements Intlike, The {
     /**
      * a contiguous range of 1 or more integers
      */
-    public static class IntRange implements Intlike {
+    public static class IntRange implements Intlike, The {
 
 
         public final int min, max;

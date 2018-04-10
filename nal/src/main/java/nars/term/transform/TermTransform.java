@@ -208,9 +208,14 @@ public interface TermTransform extends TermContext {
                         return y2;
                 }
             } else {
-                return TermTransform.super.transformCompound(x);
+                return transformCompoundUnneg(x);
             }
 
+        }
+
+        /** transforms a compound that has been un-negged */
+        @Nullable default Term transformCompoundUnneg(Compound x) {
+            return TermTransform.super.transformCompound(x);
         }
     }
 

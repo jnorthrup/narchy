@@ -87,7 +87,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
     }
 
     public static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
-        return f(termAtom, (tt) ->
+        return f(termAtom, tt ->
                 (tt.subs() == arityRequired) ? ff.apply(tt) : Null
         );
     }
@@ -172,7 +172,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
      * two argument functor (convenience method)
      */
     public static LambdaFunctor f2(@NotNull Atom termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
-        return f(termAtom, 2, (tt) -> ff.apply(tt.sub(0), tt.sub(1)));
+        return f(termAtom, 2, tt -> ff.apply(tt.sub(0), tt.sub(1)));
     }
 
     /**

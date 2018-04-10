@@ -1,5 +1,7 @@
 package nars.nal.nal4;
 
+import nars.NAR;
+import nars.NARS;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -10,7 +12,9 @@ import static nars.time.Tense.ETERNAL;
 public class NAL4NewTest extends NALTest {
 
 
-    public static final int CYCLES = 450;
+    public static final int CYCLES = 650;
+
+    @Override protected NAR nar() { return NARS.tmp(4); }
 
     @Test
     public void structural_transformationExt_forward() {
@@ -66,7 +70,14 @@ public class NAL4NewTest extends NALTest {
                 .mustBelieve(CYCLES, "(neutralization --> (acid,base))", 1.0f, 0.9f)
         ;
     }
-
+    @Test
+    public void concludeImageIntInheritImageExt() {
+        test
+                .believe("(neutralization --> (acid,base))")
+                .believe("((acid,base) --> reaction)")
+                .mustBelieve(CYCLES, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
+        ;
+    }
     @Disabled
     @Test
     public void testCompositionFromProductInh() throws nars.Narsese.NarseseException {

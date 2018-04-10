@@ -917,7 +917,10 @@ public enum Op {
 
 
         conceptualizable = !(var ||
-                str.equals("+") /* INT */ || str.equals("B") /* Bool */);
+                str.equals("B") /* Bool */
+
+                //str.equals("+") /* INT */ ||
+        );
 
         goalable = conceptualizable && !isImpl;
 

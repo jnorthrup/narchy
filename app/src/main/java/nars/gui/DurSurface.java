@@ -41,9 +41,10 @@ abstract public class DurSurface extends Widget {
     @Override
     public void stop() {
         synchronized (this) {
-            super.stop();
             on.off();
             on = null;
+
+            super.stop();
         }
     }
 

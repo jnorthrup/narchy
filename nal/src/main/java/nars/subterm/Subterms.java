@@ -89,11 +89,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (x instanceof EllipsisMatch)
                 throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
 
-            Term y = Image.imageNormalize(x);
-            if (y!=x) {
-                t[i] = x = y;
-            }
-
             if (purelyAnon) {
                 if (!(x instanceof AnonID)) {
                     Term ux = x.unneg();

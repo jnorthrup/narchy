@@ -35,7 +35,6 @@ import nars.term.pred.AbstractPred;
 import nars.term.subst.Unify;
 import nars.term.transform.Retemporalize;
 import nars.term.transform.TermTransform;
-import nars.term.transform.VariableNormalization;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -802,7 +801,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         //recursively compute contained subterm functors
         //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
-        if (o == INH && u.hasAll(Op.funcBits)) {
+        if (o == INH && uu.hasAll(Op.funcInnerBits)) {
             Term pred, subj;
             if ((pred=uu.sub(1)) instanceof Functor && (subj=uu.sub(0)).op() == PROD) {
 
@@ -831,23 +830,17 @@ public interface Compound extends Term, IPair, Subterms {
         if (varOffset == 0 && this.isNormalized())
             return this;
 
+//            ((vars == 1) && (pVars == 0) && varOffset == 0) ?
+//                    VariableNormalization.singleVariableNormalization //special case for efficiency
+//                    :
 
-        int vars = this.vars();
-        int pVars = this.varPattern();
-        int totalVars = vars + pVars;
-
-        assert (totalVars > 0);
         Term y = transform(
-                ((vars == 1) && (pVars == 0) && varOffset == 0) ?
-                        VariableNormalization.singleVariableNormalization //special case for efficiency
-                        :
-                        new VariableNormalization(totalVars /* estimate */, varOffset)
+                new nars.term.transform.CompoundNormalization(this, varOffset)
         );
 
         if (varOffset == 0 && y instanceof Compound) {
             if (!(y instanceof UnitCompound)) {
-                Subterms st = y.subterms();
-                st.setNormalized();
+                y.subterms().setNormalized();
             }
         }
 

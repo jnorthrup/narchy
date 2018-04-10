@@ -28,7 +28,7 @@ public class TermlinkTemplates extends FasterList<Term> {
     };
 
     /** index of the last concept template; any others beyond this index are non-conceptualizable */
-    byte concepts = -1;
+    byte concepts;
 
     TermlinkTemplates(Term[] terms) {
         super(terms.length, terms);
@@ -95,9 +95,10 @@ public class TermlinkTemplates extends FasterList<Term> {
     /**
      * recurses
      */
-    static void templates(Term _x, Set<Term> tc, int depth, Term root, int maxDepth) {
+    static void templates(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
-        Term x = _x;
+        if (x == Op.imExt || x == Op.imInt)
+            return; //NO
 
 //        switch (o) {
 //            case VAR_QUERY:

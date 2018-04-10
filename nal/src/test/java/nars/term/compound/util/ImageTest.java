@@ -1,5 +1,7 @@
 package nars.term.compound.util;
 
+import nars.term.Term;
+import nars.term.atom.Int;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -38,6 +40,24 @@ class ImageTest {
                 "(reaction(acid,base)<->x)",
                 $$("(x <-> (acid --> (reaction,/,base)))").toString()
         );
+    }
+
+    @Test public void testImageIntWithNumbers() {
+        String x = "((0,1,0)-->bitmap)";
+        Term xx = $$(x);
+
+        assertEquals("(0-->(bitmap,/,1,/))",
+                Image.imageExt(xx, Int.the(0)).toString());
+
+        assertEquals($$("(0-->(bitmap,/,1,/))"),
+                Image.imageExt(xx, Int.the(0)));
+
+        assertEquals("(1-->(bitmap,0,/,0))",
+                Image.imageExt(xx, Int.the(1)).toString());
+
+        assertEquals(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(1))));
+        assertEquals(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(0))));
+
     }
 
 }

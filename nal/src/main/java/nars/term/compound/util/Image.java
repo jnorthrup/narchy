@@ -52,8 +52,12 @@ public enum Image { ;
         return Null;
     }
 
-    public static Term imageNormalize(Term t) {
-        if (t instanceof Compound && t.hasAll(imageBits) && t.op()==INH) {
+    @Deprecated public static Term imageNormalize(Term t) {
+        return t instanceof Compound ? imageNormalize((Compound)t) : t;
+    }
+
+    public static Term imageNormalize(Compound t) {
+        if (t.hasAll(imageBits) && t.op()==INH) {
             Term s = t.sub(0);
             Subterms ss = null;
             boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.imInt);

@@ -247,6 +247,19 @@ public class ActivateTest {
         testTemplates("(($1-->[melted])=|>($1-->[pliable]))",
                 "[($1-->[pliable]), ($1-->[melted])]");
     }
+    @Test
+    public void testImageExt() throws Narsese.NarseseException {
+
+        testTemplates("(chronic-->(trackXY,happy,/))",
+                "[(trackXY,happy,/), happy, chronic, trackXY]");
+    }
+
+    @Test
+    public void testImageExtWithNumbers() throws Narsese.NarseseException {
+        testTemplates("(1-->(bitmap,0,/))",
+                "[(bitmap,0,/), bitmap, 0, 1]");
+    }
+
 
     @Test
     public void testTemplateSimProdCompound() throws Narsese.NarseseException {

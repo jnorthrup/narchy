@@ -35,16 +35,6 @@ public class VariableNormalization extends VariableTransform {
         this(0);
     }*/
 
-    /**
-     * for use with compounds that have exactly one variable (when offset=0, default)
-     */
-    public static final VariableTransform singleVariableNormalization = new VariableTransform() {
-
-        @Override public Term transformAtomic(Term atomic) {
-            return normalizable(atomic) ? atomic.normalize((byte)1) : atomic;
-        }
-    };
-
 
     @Override
     public final Termed transformAtomic(Term atomic) {

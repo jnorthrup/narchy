@@ -17,7 +17,7 @@ public class NARService extends Service<NAR> implements Termed {
     public final Term id;
     protected Ons ons;
 
-    protected NAR nar;
+    protected volatile NAR nar;
 
     @Deprecated protected NARService(NAR nar) {
         this((Term)null);
@@ -67,9 +67,10 @@ public class NARService extends Service<NAR> implements Termed {
     }
 
     public final void off() {
-        synchronized (this) {
-            nar.services.remove(id);
-        }
+        NAR n = nar;
+        if (n!=null)
+            n.services.remove(id);
+        //else: already off
     }
 
     @Override
