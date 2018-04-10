@@ -479,31 +479,19 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         }
     }
 
-
-    final AtomicBoolean updatingMouse = new AtomicBoolean();
-
     /** called each frame regardless of mouse activity */
     Surface updateMouse(float sx, float sy, short[] buttonsDown) {
-
-        if (!updatingMouse.compareAndSet(false, true)) {
-            error(this, 1f, "update collision; skipped");
-            return null; //skipped - this is BAD. maybe should be properly queued
-        }
 
         /*if (e == null) {
             off();
         } else {*/
 
-        try {
-            Surface touching = finger.touching;
-            Surface touchedNext = finger.on(surface, sx, sy, buttonsDown);
-            if (touchedNext!=null && touchedNext!=touching) {
-                debug(this, 1f, ()->"touch(" + touchedNext + ")");
-            }
-            return touchedNext;
-        } finally {
-            updatingMouse.set(false);
+        Surface touching = finger.touching;
+        Surface touchedNext = finger.on(surface, sx, sy, buttonsDown);
+        if (touchedNext!=null && touchedNext!=touching) {
+            debug(this, 1f, ()->"touch(" + touchedNext + ")");
         }
+        return touchedNext;
     }
 
 

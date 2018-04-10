@@ -5,6 +5,7 @@ import jcog.util.ArrayIterator;
 import jcog.util.CartesianIterator;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
+import nars.NAR;
 import nars.Op;
 import nars.index.term.TermContext;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,10 @@ public class Solution {
             c.accept(s);
         }
         return null;
+    }
+
+    public static Iterable<Term> solve(Term x, NAR n) {
+        return solve(x, n.concepts.functors);
     }
 
     public static Iterable<Term> solve(Term x, TermContext context) {

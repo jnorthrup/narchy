@@ -11,10 +11,6 @@ public class SpaceGraphFlat extends JoglSpace {
             add(s);
     }
 
-    @Override
-    protected void update(long dtMS) {
-
-    }
 
     @Override
     protected void initDepth(GL2 gl) {

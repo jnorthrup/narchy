@@ -8,7 +8,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.math.FloatUtil;
-import jcog.list.FasterList;
+import jcog.list.FastCoWList;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.Ortho;
@@ -19,7 +19,9 @@ import spacegraph.util.math.v3;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT;
@@ -35,10 +37,11 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     protected int debug;
 
 
-    final List<Surface> layers = new FasterList<>(1);
+    final List<Surface> layers = new FastCoWList(Surface[]::new);
+
+    final Queue<Runnable> pending = new ConcurrentLinkedQueue();
 
 
-    final List<Surface> preAdd = new FasterList();
 
     protected float aspect;
     private final float cameraSpeed = 5f;
@@ -57,21 +60,21 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     public JoglSpace() {
         super();
-        onUpdate(((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed))));
-        onUpdate(((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed) {
+        onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
+        onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed) {
             @Override
             protected float interp(float dt) {
                 interpLERP(dt);
                 return 0;
             }
-        }))); //new AnimVector3f(0,0,1,dyn, 10f);
-        onUpdate(((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed) {
+        })); //new AnimVector3f(0,0,1,dyn, 10f);
+        onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed) {
             @Override
             protected float interp(float dt) {
                 interpLERP(dt);
                 return 0;
             }
-        }))); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
+        })); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
     }
 
     @Override
@@ -79,42 +82,23 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         super.windowDestroyed(windowEvent);
         layers.clear();
         onUpdate.clear();
-        preAdd.clear();
     }
 
 
     public JoglSpace add(Surface layer) {
-        synchronized (this) {
-            if (window == null) {
-                preAdd.add(layer);
-            } else {
-                _add(layer);
-            }
-        }
+        this.layers.add(layer);
+        pending.add(()->{
+            if (layer instanceof Ortho)
+                ((Ortho) layer).start(this);
+            else
+                layer.start(null);
+        });
         return this;
     }
 
     public boolean remove(Surface layer) {
-        synchronized (this) {
-            if (window == null) {
-                return preAdd.remove(layer);
-            } else {
-                return _remove(layer);
-            }
-        }
-    }
-
-    private void _add(Surface c) {
-        this.layers.add(c);
-        if (c instanceof Ortho)
-            ((Ortho)c).start(this);
-        else
-            c.start(null);
-    }
-
-    private boolean _remove(Surface c) {
-        if (this.layers.remove(c)) {
-            c.stop();
+        if (this.layers.remove(layer)) {
+            layer.stop();
             return true;
         }
         return false;
@@ -123,13 +107,8 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     @Override
     protected void init(GL2 gl) {
 
-        initInput();
         updateWindowInfo();
 
-        synchronized (this) {
-            preAdd.forEach(this::_add);
-            preAdd.clear();
-        }
 
 
         //gl.glEnable(GL_POINT_SPRITE);
@@ -183,6 +162,12 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         initLighting();
 
+        initInput();
+
+        onUpdate((Consumer) ((w)->pending.removeIf((x)->{
+            x.run();
+            return true;
+        })));
     }
 
     protected void initDepth(GL2 gl) {
@@ -399,7 +384,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     }
 
-    private final AtomicBoolean gettingScreenPointer = new AtomicBoolean(false);
+    //private final AtomicBoolean gettingScreenPointer = new AtomicBoolean(false);
     public int windowX, windowY;
 
 //    @Override
@@ -423,22 +408,22 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         GLWindow rww = window;
         if (rww == null)
             return;
-        if (!rww.isRealized() || !rww.isVisible() || !rww.isNativeValid()) {
-            return;
-        }
+//        if (!rww.isRealized() || !rww.isVisible() || !rww.isNativeValid()) {
+//            return;
+//        }
 
-        if (gettingScreenPointer.compareAndSet(false, true)) {
-
-            window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
-                try {
+//        if (gettingScreenPointer.compareAndSet(false, true)) {
+//
+//            window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
+//                try {
                     Point p = rww.getLocationOnScreen(new Point());
                     windowX = p.getX();
                     windowY = p.getY();
-                } finally {
-                    gettingScreenPointer.set(false);
-                }
-            });
-        }
+//                } finally {
+//                    gettingScreenPointer.set(false);
+//                }
+//            });
+//        }
     }
 
     @Override

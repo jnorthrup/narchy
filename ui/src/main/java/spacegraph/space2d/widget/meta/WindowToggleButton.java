@@ -43,37 +43,37 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
 
     @Override
     public void value(ToggleButton t, boolean enabled) {
-        if (enabled) {
-            JoglSpace space;
-            synchronized (spacer) {
+        synchronized (this) {
+            if (enabled) {
+                JoglSpace space;
+
                 space = this.space;
                 if (space == null) {
                     space = this.space = SpaceGraph.window(spacer.get(), width, height);
                     space.addWindowListener(this);
                 }
-            }
-            int sx = Finger.pointer.getX();
-            int sy = Finger.pointer.getY();
-            int nx = sx - width / 2;
-            int ny = sy - height / 2;
-            space.window.setPosition(nx, ny);
 
-            //space.show(this.toString(), width,height, nx, ny);
-            //space.window.setTitle(label.value());
+                int sx = Finger.pointer.getX();
+                int sy = Finger.pointer.getY();
+                int nx = sx - width / 2;
+                int ny = sy - height / 2;
+                space.window.setPosition(nx, ny);
+
+                //space.show(this.toString(), width,height, nx, ny);
+                //space.window.setTitle(label.value());
 
 
-        } else {
+            } else {
 
-            synchronized (spacer) {
+
                 if (space != null) {
                     GLWindow win = this.space.window;
                     this.space = null;
                     if (win.getWindowHandle() != 0)
                         win.destroy();
                 }
+
             }
-
-
         }
     }
 

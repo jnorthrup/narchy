@@ -76,12 +76,13 @@ public class DynamicTruthBeliefTableTest {
         n.believe($$("--(a:x && a:y)"), now); //contradict
 
         //n.concept("(a:x && a:y)").beliefs().print();
-        assertTrue($.t(0.32f, 0.93f).equals( n.beliefTruth($("(a:x && a:y)"), now), n));
+        Truth tt = n.beliefTruth($("(a:x && a:y)"), now);
+        assertTrue($.t(0.32f, 0.93f).equals(tt, n));
     }
 
     @Test
     public void testDynamicIntersection() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("a:x", 1f, 0.9f);
         n.believe("a:y", 1f, 0.9f);
         n.believe("a:(--,y)", 0f, 0.9f);
@@ -110,7 +111,7 @@ public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicIntRange() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("x:1", 1f, 0.9f);
         n.believe("x:2", 0.5f, 0.9f);
         n.believe("x:3", 0f, 0.9f);
@@ -126,7 +127,7 @@ public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicIntVectorRange() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("x(1,1)", 1f, 0.9f);
         n.believe("x(1,2)", 0.5f, 0.9f);
         n.believe("x(1,3)", 0f, 0.9f);
@@ -147,7 +148,7 @@ public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicConjunction3() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("a:x", 1f, 0.9f);
         n.believe("a:y", 1f, 0.9f);
         n.believe("a:z", 1f, 0.9f);
@@ -197,7 +198,7 @@ public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicConjunctionEternal() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe($("x"));
         n.believe($("y"));
         n.believe($("--z"));
@@ -270,7 +271,7 @@ public class DynamicTruthBeliefTableTest {
         //only needs to consider the evidence which effectively short-circuits the result
         //ie. once Intersection hits zero frequency it can not go any higher.
 
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("x", 1f, 0.50f);
         n.believe("y", 1f, 0.50f);
         n.believe("z", 0f, 0.81f);
@@ -315,7 +316,7 @@ public class DynamicTruthBeliefTableTest {
     @Test
     public void testDynamicConjunctionShortCircuitEvenWithMissing() throws Narsese.NarseseException {
 
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("x", 1f, 0.50f);
         //n.believe("y", ...); //Y unknown
         n.believe("z", 0f, 0.81f);
@@ -329,7 +330,7 @@ public class DynamicTruthBeliefTableTest {
 
     @Test
     public void testDynamicUnionShortCircuit() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         n.believe("a:x", 0f, 0.50f);
         n.believe("a:y", 0f, 0.50f);
         n.believe("a:z", 1f, 0.81f);
@@ -347,7 +348,7 @@ public class DynamicTruthBeliefTableTest {
 
     @Test public void testDynamicConjConceptWithNegations() throws Narsese.NarseseException {
 
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         for (String s : new String[] {
                 "((y-->t) &&+1 (t-->happy))",
                 "(--(y-->t) &&+1 (t-->happy))",

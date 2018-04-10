@@ -36,12 +36,13 @@ import spacegraph.space3d.phys.collision.broad.Intersecter;
 import spacegraph.space3d.phys.constraint.BroadConstraint;
 import spacegraph.space3d.phys.math.DebugDrawModes;
 import spacegraph.space3d.widget.DynamicListSpace;
+import spacegraph.util.animate.Animated;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglSpace;
 
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL2.*;
@@ -100,6 +101,10 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
         dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
+        onUpdate((Animated)(dt)->{
+            update(dtMS);
+            return true;
+        });
     }
 
     public SpaceGraphPhys3D(AbstractSpace<X>... cc) {
@@ -164,13 +169,12 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
     }
 
+    final Queue<Spatial> toRemove =
+            //new ArrayBlockingQueue(1024);
+            new ConcurrentLinkedQueue<>();
 
-
-
-
-    final Queue<Spatial> toRemove = new ArrayBlockingQueue(1024);
     final List<AbstractSpace<X>> inputs = new FasterList<>(1);
-    @Override
+
     protected void update(long dtMS) {
 
         toRemove.forEach(x -> x.delete(dyn));

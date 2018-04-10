@@ -55,7 +55,7 @@ public class Finger {
 
     }
 
-    public synchronized Surface on(Surface root, float lx, float ly, short[] nextButtonDown) {
+    public Surface on(Surface root, float lx, float ly, short[] nextButtonDown) {
 
         Fingering ff = this.fingering.get();
         Fingering f0 = ff;
@@ -143,13 +143,12 @@ public class Finger {
             touching.touch(null);
         }
 
-        touching = touched;
-
-        if (touching != null) {
+        if ((touching = touched) != null) {
             touching.touch(this);
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
 

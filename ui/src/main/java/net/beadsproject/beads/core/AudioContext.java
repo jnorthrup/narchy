@@ -12,6 +12,7 @@ import net.beadsproject.beads.ugens.DelayTrigger;
 import net.beadsproject.beads.ugens.FuncGen;
 import net.beadsproject.beads.ugens.Gain;
 import net.beadsproject.beads.ugens.RecordToSample;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.audio.Audio;
 import spacegraph.audio.SoundSource;
 
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * TODO this needs stereo support for the SoNAR sound system
@@ -93,10 +94,17 @@ public class AudioContext {
     /**
      * Used for concurrency-friendly method execution.
      */
-    private final Queue<Auvent> beforeFrameQueue = new ArrayBlockingQueue(128);
-    private final Queue<Auvent> afterFrameQueue = new ArrayBlockingQueue(128);
-    private final Queue<Auvent> beforeEveryFrameList = new ArrayBlockingQueue(128);
-    private final Queue<Auvent> afterEveryFrameList = new ArrayBlockingQueue(128);
+    private final Queue<Auvent> beforeFrameQueue = newQueue();
+
+    @NotNull
+    private Queue newQueue() {
+        //return new ArrayBlockingQueue(128);
+        return new ConcurrentLinkedQueue(); //doesnt lock like ArrayBlockingQueue
+    }
+
+    private final Queue<Auvent> afterFrameQueue = newQueue();
+    private final Queue<Auvent> beforeEveryFrameList = newQueue();
+    private final Queue<Auvent> afterEveryFrameList = newQueue();
 
 
 	/*
