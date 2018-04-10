@@ -18,9 +18,9 @@ import nars.table.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -197,7 +197,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
     public static Map newBagMap(int volume) {
-        //int defaultInitialCap = 0;
+        int initialCap = 2;
         float loadFactor = 0.75f;
 
 //        if (concurrent()) {
@@ -217,8 +217,9 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 ////                return new SynchronizedUnifiedMap(0, loadFactor);
 ////            }
 //        } else {
-        //return new UnifiedMap(0, loadFactor);
-        return new HashMap(0, loadFactor);
+
+        return new UnifiedMap(initialCap, loadFactor);
+        //return new HashMap(initialCap, loadFactor);
 //        }
 
     }

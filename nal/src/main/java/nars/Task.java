@@ -549,12 +549,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             if (dist > 0) {
                 float ete = eternalizability();
                 float ecw = ete > 0 ? eviEternalized() * ete : 0;
-                cw = ecw + dur > 0 ?
-                        (float) Param.evi(
-                                cw - ecw /* delta to eternalization, >= 0 */,
+//                cw = ecw + (dur > 0 ?
+//                        (float) Param.evi(
+//                                cw - ecw /* delta to eternalization, >= 0 */,
+//                                dist, dur)
+//                        :
+//                        0);
+                cw = (dur > 0 ?
+                        Math.max(ecw,  (float) Param.evi(
+                                cw,
                                 dist, dur)
-                        :
-                        0;
+
+                ):
+                        0);
             }
 
             return cw;

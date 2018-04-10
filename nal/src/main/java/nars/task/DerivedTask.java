@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.Util;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.term.Term;
@@ -24,9 +23,10 @@ public class DerivedTask extends NALTask {
 //            throw new RuntimeException();
 //        }
 
-        eternalizability = !d.single ?
-                eternalizability(d._task.eternalizability(), d._belief.eternalizability()) :
-                d._task.eternalizability();
+        eternalizability = 1f;
+//        eternalizability = !d.single ?
+//                eternalizability(d._task.eternalizability(), d._belief.eternalizability()) :
+//                d._task.eternalizability();
 
 //        if (!isBeliefOrGoal() || tc.term().dt()!=DTERNAL) {
 //            //if this is a question or temporal relation use default method
@@ -55,10 +55,10 @@ public class DerivedTask extends NALTask {
 
     }
 
-    static float eternalizability(float taskEternalizability, float beliefEternalizability) {
-        //return Math.max(taskEternalizability, beliefEternalizability);
-        return Util.mean(taskEternalizability, beliefEternalizability);
-    }
+//    static float eternalizability(float taskEternalizability, float beliefEternalizability) {
+//        //return Math.max(taskEternalizability, beliefEternalizability);
+//        return Util.mean(taskEternalizability, beliefEternalizability);
+//    }
 
 //    @Override
 //    public long start() {

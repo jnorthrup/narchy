@@ -474,9 +474,9 @@ public class IO {
             return IO.readTerm(input(b));
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (Term.InvalidTermException ignored) {
+        } /*catch (Term.InvalidTermException ignored) {
             return null;
-        }
+        }*/
     }
 
     public static ByteArrayDataInput input(byte[] b) {

@@ -8,10 +8,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.term.Term;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.ByteLongPair;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -91,14 +88,14 @@ public class Tasklinks {
         if (ccs <= 0)
             return;
 
-        MutableFloat overflow = new MutableFloat();
-        float p = priApplied;
-        float pEach = p / ccs;
-        if (pEach > Pri.EPSILON) {
+        float pEach = Math.max(Pri.EPSILON, priApplied / ccs);
+        //if (pEach > Pri.EPSILON)
+        {
 
-            Pair<Term, ByteLongPair> tlSeed = TaskLink.GeneralTaskLink.seed(t, false, nar);
+            TaskLink.Tasklike tlSeed = TaskLink.GeneralTaskLink.seed(t, false, nar);
 
             final float headRoom = 1f - pEach;
+            MutableFloat overflow = new MutableFloat();
             for (int i = 0; i < ccs; i++) {
                 float o = overflow.get();
 

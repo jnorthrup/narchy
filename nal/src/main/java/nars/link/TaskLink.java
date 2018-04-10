@@ -1,18 +1,17 @@
 package nars.link;
 
+import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
-import jcog.util.HashCachedPair;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.ByteLongPair;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
+
+import static nars.time.Tense.ETERNAL;
 
 public interface TaskLink extends Priority, Termed {
 
@@ -27,12 +26,72 @@ public interface TaskLink extends Priority, Termed {
 //     */
 //    void reincarnate(TaskLinkCurveBag taskLinks);
 
+    /** Tasklike productions */
+    class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
+        final Term term;
+        //final byte[] term;
+        final byte punc;
+        final long when;
+        private final int hash;
+
+        public Tasklike(Term term, byte punc, long when) {
+            this.punc = punc;
+            this.when = when;
+            this.term = term;
+            //this.term = IO.termToBytes(term);
+            this.hash = Util.hashCombine(term.hashCode(), punc, Long.hashCode(when));
+        }
+
+        public final Term term() {
+            //return IO.termFromBytes(term);
+            return term;
+        }
+
+        @Override
+        public String toString() {
+            return term().toString() +
+                   Character.valueOf((char)punc) +
+                   (when!=ETERNAL ? ("@" + when) : "");
+        }
+
+        @Override public boolean equals(Object o) {
+            if (this == o) return true;
+
+            //if (o == null || getClass() != o.getClass()) return false;
+            Tasklike tasklike = (Tasklike) o;
+            if (hash != tasklike.hash) return false;
+
+            return punc == tasklike.punc && when == tasklike.when &&
+                    //Arrays.equals(term, tasklike.term);
+                    term.equals(tasklike.term);
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        public Task get(NAR n) {
+
+            Term t = term().unneg();
+            Concept c = n.conceptualize(t);
+            if (c == null)
+                return null;
+
+            long[] se = n.timeFocus(when);
+            Task result = c.table(punc).sample(se[0], se[1], t, n);
+
+            return result == null || result.isDeleted() ? null : result;
+
+        }
+    }
+
     /**
      * dynamically resolves a task.
      * serializable and doesnt maintain a direct reference to a task.
      * may delete itself if the target concept is not conceptualized.
      */
-    class GeneralTaskLink extends PLink<Pair<Term, ByteLongPair>> implements TaskLink {
+    class GeneralTaskLink extends PLink<Tasklike> implements TaskLink {
 
 //        public GeneralTaskLink(Task template, NAR nar, float pri) {
 //            this(template.term().concept(), template.punc(), Tense.dither(template.mid(), nar), pri);
@@ -54,11 +113,11 @@ public interface TaskLink extends Priority, Termed {
          * use this to create a tasklink seed shared by several different tasklinks
          * each with its own distinct priority
          */
-        public static Pair<Term, ByteLongPair> seed(Term t, byte punc, long when) {
-            return new HashCachedPair<>(t, PrimitiveTuples.pair(punc, when));
+        public static Tasklike seed(Term t, byte punc, long when) {
+            return new Tasklike(t, punc, when);
         }
 
-        public static Pair<Term, ByteLongPair> seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
+        public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
             Term tt = t.term();
             return seed(
                     tt
@@ -73,7 +132,7 @@ public interface TaskLink extends Priority, Termed {
         }
 
 
-        public GeneralTaskLink(Pair<Term, ByteLongPair> seed, float pri) {
+        public GeneralTaskLink(Tasklike seed, float pri) {
             super(seed, pri);
         }
 
@@ -83,22 +142,16 @@ public interface TaskLink extends Priority, Termed {
             return toBudgetString() + " " + term() + ((char)punc()) + ":" + when();
         }
 
-        @Override
-        public boolean equals(Object that) {
-            return (this == that) || (that instanceof GeneralTaskLink) &&
-                    id.equals(((GeneralTaskLink) that).id);
-        }
-
         public Term term() {
-            return id.getOne();
+            return id.term();
         }
 
         public byte punc() {
-            return id.getTwo().getOne();
+            return id.punc;
         }
 
         public long when() {
-            return id.getTwo().getTwo();
+            return id.when;
         }
 
 //        @Override
@@ -108,18 +161,11 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public Task get(NAR n) {
-
-            Term t = term().unneg();
-            Concept c = n.concept(t);
-            if (c == null) {
+            Task t = get().get(n);
+            if (t == null) {
                 delete();
-                return null;
             }
-
-            long[] se = n.timeFocus(when());
-            Task result = c.table(punc()).sample(se[0], se[1], t, n);
-
-            return result == null || result.isDeleted() ? null : result;
+            return t;
         }
     }
 
