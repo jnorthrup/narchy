@@ -24,7 +24,9 @@ import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.compound.util.Conj;
+import nars.term.subst.Unify;
 import nars.term.var.UnnormalizedVariable;
+import nars.term.var.VarDep;
 import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -533,6 +535,9 @@ public enum Op {
     public static final char FalseSym = 'Ⅎ';
     public static final char NullSym = '☢';
 
+    public static final char imIntSym = '\\';
+    public static final char imExtSym = '/';
+
     /**
      * absolutely nonsense
      */
@@ -617,6 +622,47 @@ public enum Op {
             return True; //doesnt change
         }
     };
+
+    final static class ImDep extends VarDep {
+
+        private final String str;
+        private final char symChar;
+        private final int rank;
+
+        public ImDep(byte id, byte sym) {
+            super(id);
+            this.str = String.valueOf((char)sym);
+            this.symChar = (char)sym;
+            this.rank = Term.opX(VAR_DEP, (short)id);
+        }
+
+        @Override
+        public Term concept() {
+            return Null;
+        }
+
+        @Override public int opX() { return rank;    }
+
+        @Override
+        public boolean unify(Term y, Unify u) {
+            return y == this;
+        }
+
+        @Override
+        public final void append(Appendable w) throws IOException {
+            w.append(symChar);
+        }
+
+        @Override
+        public final String toString() {
+            return str;
+        }
+
+    }
+
+    public static final VarDep imInt = new ImDep((byte)126, (byte)'\\');
+    public static final VarDep imExt = new ImDep((byte)127, (byte)'/');
+
 
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);

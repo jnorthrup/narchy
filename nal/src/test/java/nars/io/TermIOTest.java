@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 
 import static java.lang.System.out;
 import static nars.$.$;
+import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -101,6 +102,16 @@ public class TermIOTest {
     }
 
     @Test
+    public void testNegationSerialization() throws Narsese.NarseseException {
+        assertEqualSerialize("--x");
+
+        //neg op serializes one byte less than a similar PROD compound
+        assertEquals(1,
+                IO.termToBytes($$("(x)")).length -
+                IO.termToBytes($$("(--,x)")).length);
+    }
+
+    @Test
     public void testTemporalSerialization() throws Narsese.NarseseException {
 
         assertEqualSerialize(("(a &&+1 b)") /* term, not the concept */);
@@ -114,6 +125,17 @@ public class TermIOTest {
 
     }
 
+    @Test
+    public void testImageSerialization() throws Narsese.NarseseException {
+        assertEqualSerialize(("/"));
+        assertEqualSerialize(("\\"));
+        assertEqualSerialize(("(a,/,1)"));
+        assertEqualSerialize(("(a,/,1,/,x)"));
+        assertEqualSerialize(("(x --> (a,/,1))"));
+        assertEqualSerialize(("(a,\\,1)"));
+        assertEqualSerialize(("(a,\\,1,\\,2)"));
+        assertEqualSerialize(("((a,\\,1)--> y)"));
+    }
 
     @Test
     public void testTermSerialization2() throws Narsese.NarseseException {

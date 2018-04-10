@@ -47,8 +47,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
     private final byte[] bytes;
 
     protected NormalizedVariable(/*@NotNull*/ Op type, byte num) {
-        assert(num > 0);
-        assert(num < Byte.MAX_VALUE);
+        assert(num > 0 && num <= 127);
 
         id = AnonID.termToId(type, num );
 
@@ -102,7 +101,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 
 
     @Override
-    public @Nullable Variable normalize(byte vid) {
+    public @Nullable NormalizedVariable normalize(byte vid) {
         if (anonNum() == vid)
             return this;
         else
@@ -196,7 +195,15 @@ public abstract class NormalizedVariable implements Variable, AnonID {
             case VAR_QUERY:
                 return new VarQuery(id);
             case VAR_DEP:
-                return new VarDep(id);
+                switch (id) {
+                    case 126:
+                        return Op.imInt;
+                    case 127:
+                        return Op.imExt;
+                    default:
+                        assert(id > 0);
+                        return new VarDep(id);
+                }
             case VAR_INDEP:
                 return new VarIndep(id);
             default:
@@ -209,6 +216,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         if (id < Param.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(type)][id];
         } else {
+            assert(id <= 127);
             return vNew(type, id);
         }
     }

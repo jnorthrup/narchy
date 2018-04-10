@@ -1,5 +1,6 @@
 package nars.subterm;
 
+import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.The;
 import nars.term.Term;
@@ -20,6 +21,12 @@ public final class Neg extends UnitCompound implements The {
             default:
                 return new Neg(x);
         }
+    }
+
+    /** condensed NEG compound byte serialization - elides length byte */
+    @Override public final void append(ByteArrayDataOutput out) {
+        out.writeByte(Op.NEG.id);
+        sub.append(out);
     }
 
     @Override

@@ -41,23 +41,28 @@ public class VariableNormalization extends VariableTransform {
     public static final VariableTransform singleVariableNormalization = new VariableTransform() {
 
         @Override public Term transformAtomic(Term atomic) {
-            return atomic instanceof Variable ? atomic.normalize((byte)1) : atomic;
+            return normalizable(atomic) ? atomic.normalize((byte)1) : atomic;
         }
     };
 
 
     @Override
     public final Termed transformAtomic(Term atomic) {
-        if (atomic instanceof Variable) {
+        if (normalizable(atomic)) {
+
             if (atomic.equals(Op.Imdex)) {
                 //anonymized to a unique variable each occurrence
                 return newVariableIncreasingCount((Variable) atomic);
             } else {
                 return map.computeIfAbsent((Variable) atomic, this::newVariableIncreasingCount);
             }
-        } else {
-            return atomic;
         }
+
+        return atomic;
+    }
+
+    static boolean normalizable(Term atomic) {
+        return atomic instanceof Variable && !(atomic == Op.imExt || atomic == Op.imInt);
     }
 
 

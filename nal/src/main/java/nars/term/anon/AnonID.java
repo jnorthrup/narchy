@@ -39,7 +39,6 @@ public interface AnonID extends Term, The {
                 throw new UnsupportedOperationException();
         }
 
-        assert (id > 0);
         return (short) (mask | id);
     }
 

@@ -19,6 +19,31 @@ public class NAL4NewTest extends NALTest {
         .mustBelieve(CYCLES, "(acid --> (reaction,/,base))", 1.0f, 0.9f) //en("Acid can react with base.");
         .mustBelieve(CYCLES, "(base --> (reaction,acid,/))", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
     }
+
+    @Test
+    public void structural_transformationExt_forward_repeats2() {
+        test
+                .believe("((a,b,a) --> bitmap)", 1.0f, 0.9f) //en("An acid and a base can have a reaction.");
+                .mustBelieve(CYCLES, "(b --> (bitmap,a,/,a))", 1.0f, 0.9f) //en("Acid can react with base.");
+                .mustBelieve(CYCLES, "(a --> (bitmap,/,b,/))", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
+    }
+
+    @Test
+    public void structural_transformationExt_forward_repeats2numeric() {
+        test
+                .believe("((0,1,0) --> bitmap)", 1.0f, 0.9f) //en("An acid and a base can have a reaction.");
+                .mustBelieve(CYCLES, "(1 --> (bitmap,0,/,0))", 1.0f, 0.9f) //en("Acid can react with base.");
+                .mustBelieve(CYCLES, "(0 --> (bitmap,/,1,/))", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
+    }
+
+    @Test
+    public void structural_transformationExt_forward_repeats3() {
+        test
+                .believe("((0,1,0,1) --> bitmap)", 1.0f, 0.9f) //en("An acid and a base can have a reaction.");
+                .mustBelieve(CYCLES, "(1 --> (bitmap, 0,/,0,/))", 1.0f, 0.9f) //en("Acid can react with base.");
+                .mustBelieve(CYCLES, "(0 --> (bitmap, /,1,/,1))", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
+    }
+
     @Test
     public void structural_transformationExt_reverse() {
         test

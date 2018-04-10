@@ -307,6 +307,8 @@ public class IO {
             return readVariable(in, o);
         else if (o.atomic)
             return readAtomic(in, o);
+        else if (o == NEG)
+            return readNegated(in);
         else
             return readCompound(in, o);
     }
@@ -319,18 +321,6 @@ public class IO {
         }
     }
 
-//    public static void writeTerm(Stream<? extends Term> term, DataOutput out) throws IOException {
-//        DynBytes d = new DynBytes(64 * 1024); //HACK make configurable size
-//        term.forEach(x -> x.append((ByteArrayDataOutput) d));
-//        d.appendTo(out);
-//    }
-
-    //    public static void writeTermContainer(DataOutput out, Term... subterms) throws IOException {
-//        out.writeByte(subterms.length);
-//        for (Term x : subterms) {
-//            writeTerm(out, x);
-//        }
-//    }
 
 
     public static void writeCompoundSuffix(DataOutput out, int dt, Op o) throws IOException {
@@ -359,11 +349,14 @@ public class IO {
         return s;
     }
 
+    static Term readNegated(DataInput in) throws IOException {
+        return readTerm(in).neg();
+    }
+
     /**
      * called by readTerm after determining the op type
      * TODO make a version which reads directlyinto TermIndex
      */
-    @NotNull
     static Term readCompound(DataInput in, /*@NotNull*/ Op o) throws IOException {
 
         Term[] v = readTermContainer(in);

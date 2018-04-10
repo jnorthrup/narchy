@@ -121,6 +121,10 @@ public interface Atomic extends Term {
                     return Op.True;
                 case Op.FalseSym:
                     return Op.False;
+                case Op.imIntSym:
+                    return Op.imInt;
+                case Op.imExtSym:
+                    return Op.imExt;
                 case '0':
                     return Int.pos[0];
                 case '1':
