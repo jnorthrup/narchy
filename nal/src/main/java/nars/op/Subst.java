@@ -24,7 +24,7 @@ public class Subst extends Functor {
 
     final static Atom id = (Atom) $.the("substitute");
 
-    public static final Subst the = new Subst();
+    public static final Subst substitute = new Subst();
 
     protected Subst() {
         super(id);

@@ -2374,6 +2374,16 @@ public enum Util {
         executor = e;
     }
 
+    /** modifies the input; instance compare, not .equals */
+    public static <X> X[] replaceDirect(X[] xx, X from, X to) {
+        for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
+            X x = xx[i];
+            if (x == from)
+                xx[i] = to;
+        }
+        return xx;
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,

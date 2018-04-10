@@ -25,6 +25,7 @@ import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.compound.util.Conj;
 import nars.term.subst.Unify;
+import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
 import nars.time.Tense;
@@ -642,6 +643,11 @@ public enum Op {
         }
 
         @Override public int opX() { return rank;    }
+
+        @Override
+        public @Nullable NormalizedVariable normalize(byte vid) {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
         public boolean unify(Term y, Unify u) {

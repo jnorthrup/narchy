@@ -7,10 +7,7 @@ import jcog.list.FasterList;
 import jcog.pri.PriReference;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.op.DepIndepVarIntroduction;
-import nars.op.ListFunc;
-import nars.op.MathFunc;
-import nars.op.Subst;
+import nars.op.*;
 import nars.op.data.*;
 import nars.op.java.Opjects;
 import nars.subterm.Subterms;
@@ -20,6 +17,7 @@ import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import nars.term.compound.util.Conj;
+import nars.term.compound.util.Image;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -33,7 +31,8 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Built-in set of default Functors and Operators, registered into a NAR on initialization
@@ -46,16 +45,20 @@ public class Builtin {
 
     public static final Concept[] statik = {
 
-            Subst.the,
+            Subst.substitute,
 
             //TODO move these to fields of SetFunc
-            intersect.the,
-            differ.the,
-            union.the,
+            SetFunc.intersect,
+            SetFunc.differ,
+            SetFunc.union,
 
             ListFunc.append,
             ListFunc.sub,
             ListFunc.subs,
+
+            Image.imageNormalize,
+            Image.imageInt,
+            Image.imageExt,
 
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {

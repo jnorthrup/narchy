@@ -5813,6 +5813,14 @@ public enum ArrayUtils { ;
         return result;
     }
 
+    public static <X> X[] prepend(final X element, final X[] x, IntFunction<X[]> arrayBuilder) {
+        int len = x.length;
+        X[] y = arrayBuilder.apply(len +1);
+        y[0] = element;
+        System.arraycopy(x, 0, y, 1, len);
+        return y;
+    }
+
     /**
      * <p>Removes the element at the specified position from the specified array.
      * All subsequent elements are shifted to the left (subtracts one from

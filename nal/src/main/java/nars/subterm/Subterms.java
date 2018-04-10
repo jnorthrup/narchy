@@ -16,14 +16,13 @@ import nars.term.Termlike;
 import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
+import nars.term.compound.util.Image;
 import nars.term.subst.Unify;
 import nars.term.var.Variable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
-import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
-import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +30,6 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.PROD;
@@ -46,44 +44,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);
 
-    Function<Term[], Subterms> RawSubtermBuilder = (t) -> {
-            if (t.length == 0)
-                return Empty;
-
-            boolean purelyAnon = true;
-            for (Term x : t) {
-                if (x instanceof EllipsisMatch)
-                    throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
-                if (purelyAnon) {
-                    if (!(x instanceof AnonID)) {
-                        Term ux = x.unneg();
-                        if (x != ux && ux instanceof AnonID) {
-                            //allow anon here, but not t.length > 1 there is still some problem probably with commutives
-                            //purelyAnon = true
-                        } else {
-                          purelyAnon = false;
-                        }
-                    }
-                }
-            }
-
-            if (!purelyAnon) {
-                switch (t.length) {
-                    case 0:
-                        throw new UnsupportedOperationException();
-                    case 1:
-                        //return new TermVector1(t[0]);
-                        return new UnitSubterm(t[0]);
-                    //case 2:
-                    //return new TermVector2(t);
-                    default:
-                        return new ArrayTermVector(t);
-                }
-            } else {
-                return new AnonVector(t);
-            }
-
-        };
 
     static int hash(List<Term> term) {
         int n = term.size();
@@ -118,31 +78,74 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return subtermsInstance(s);
     }
 
-    static Subterms subtermsInstance(Term... s) {
-        return RawSubtermBuilder.apply(s);
+    static Subterms subtermsInstance(Term... t) {
+        final int tLength = t.length;
+        if (tLength == 0)
+            return Empty;
+
+        boolean purelyAnon = true;
+        for (int i = 0; i < tLength; i++) {
+            Term x = t[i];
+            if (x instanceof EllipsisMatch)
+                throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
+
+            Term y = Image.imageNormalize(x);
+            if (y!=x) {
+                t[i] = x = y;
+            }
+
+            if (purelyAnon) {
+                if (!(x instanceof AnonID)) {
+                    Term ux = x.unneg();
+                    if (x != ux && ux instanceof AnonID) {
+                        //allow anon here, but not t.length > 1 there is still some problem probably with commutives
+                        //purelyAnon = true
+                    } else {
+                        purelyAnon = false;
+                    }
+                }
+            }
+        }
+
+        if (!purelyAnon) {
+            switch (t.length) {
+                case 0:
+                    throw new UnsupportedOperationException();
+                case 1:
+                    //return new TermVector1(t[0]);
+                    return new UnitSubterm(t[0]);
+                //case 2:
+                //return new TermVector2(t);
+                default:
+                    return new ArrayTermVector(t);
+            }
+        } else {
+            return new AnonVector(t);
+        }
+
     }
 
 
-    //TODO optionally allow atomic structure positions to differ
-    default boolean equivalentStructures() {
-        int t0Struct = sub(0).structure();
-        int s = subs();
-        for (int i = 1; i < s; i++) {
-            if (sub(i).structure() != t0Struct)
-                return false;
-        }
-
-        ByteList structureKey = sub(0).structureKey();
-        ByteArrayList reuseKey = new ByteArrayList(structureKey.size());
-        for (int i = 1; i < s; i++) {
-            //all subterms must share the same structure
-            //TODO only needs to construct the key while comparing equality with the first
-            if (!sub(i).structureKey(reuseKey).equals(structureKey))
-                return false;
-            reuseKey.clear();
-        }
-        return true;
-    }
+//    //TODO optionally allow atomic structure positions to differ
+//    default boolean equivalentStructures() {
+//        int t0Struct = sub(0).structure();
+//        int s = subs();
+//        for (int i = 1; i < s; i++) {
+//            if (sub(i).structure() != t0Struct)
+//                return false;
+//        }
+//
+//        ByteList structureKey = sub(0).structureKey();
+//        ByteArrayList reuseKey = new ByteArrayList(structureKey.size());
+//        for (int i = 1; i < s; i++) {
+//            //all subterms must share the same structure
+//            //TODO only needs to construct the key while comparing equality with the first
+//            if (!sub(i).structureKey(reuseKey).equals(structureKey))
+//                return false;
+//            reuseKey.clear();
+//        }
+//        return true;
+//    }
 
 
     /*@NotNull*/
@@ -586,16 +589,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     @Nullable
     default IntArrayList indicesOf(Predicate<Term> t) {
-        IntArrayList a = new IntArrayList(1);
+        IntArrayList a = null; //lazily constructed
         int s = subs();
         for (int i = 0; i < s; i++) {
-            if (t.test(sub(i)))
+            if (t.test(sub(i))) {
+                if (a == null)
+                    a = new IntArrayList(1);
                 a.add(i);
+            }
         }
-        if (!a.isEmpty())
-            return a;
-        else
-            return null;
+        return a;
     }
 
 

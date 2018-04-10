@@ -9,11 +9,9 @@ import nars.Task;
 import nars.control.Cause;
 import nars.derive.time.DeriveTime;
 import nars.op.ListFunc;
+import nars.op.SetFunc;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
-import nars.op.data.differ;
-import nars.op.data.intersect;
-import nars.op.data.union;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Functor;
@@ -24,6 +22,7 @@ import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.compound.util.Image;
 import nars.term.pred.PrediTerm;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -319,16 +318,23 @@ public class Derivation extends PreDerivation {
     /**
      * functors to be inserted in PatternIndex's for direct usage
      */
-    public static Termed[] ruleFunctors(NAR nar) {
+    static Termed[] ruleFunctors(NAR nar) {
+
         return new Termed[]{
-                union.the,
-                differ.the,
-                intersect.the,
-                Subst.the,
+
+                SetFunc.union,
+                SetFunc.differ,
+                SetFunc.intersect,
+
+                Subst.substitute,
 
                 ListFunc.sub,
                 ListFunc.subs,
                 ListFunc.append,
+
+                Image.imageNormalize,
+                Image.imageInt,
+                Image.imageExt,
 
 //                nar.get(Atomic.the("add")),
 //                nar.get(Atomic.the("mul")),

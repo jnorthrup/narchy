@@ -176,7 +176,7 @@ public class PatternIndex extends MapConceptIndex {
             if (x instanceof Ellipsis.EllipsisPrototype) {
                 return Ellipsis.EllipsisPrototype.make((byte) count,
                         ((Ellipsis.EllipsisPrototype) x).minArity);
-            } else if (x instanceof Ellipsis) {
+            } else if (x instanceof Ellipsis || x == Op.imExt || x == Op.imInt) {
                 return x;
 
                 //throw new UnsupportedOperationException("?");

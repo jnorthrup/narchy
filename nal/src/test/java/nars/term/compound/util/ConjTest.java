@@ -1,9 +1,9 @@
-package nars.term;
+package nars.term.compound.util;
 
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
-import nars.term.compound.util.Conj;
+import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

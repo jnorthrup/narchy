@@ -73,32 +73,12 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         return bytes[1];
     }
 
-    //@Override abstract public boolean equals(Object other);
-
     @Override
     public final boolean equals(Object obj) {
         return obj == this ||
                 (obj instanceof NormalizedVariable
                         && ((NormalizedVariable) obj).id == id);
     }
-
-
-    //    @Override
-//    public boolean equals(Object that) {
-//        boolean e = that == this ||
-//                (that instanceof AbstractVariable && that.hashCode() == hash);
-//
-//        if (e) {
-//            if (!toString().equals(that.toString()))
-//                System.err.println("warning: " + this + " and " + that + " are not but considered equal");
-//            return true;
-//        } else {
-//            if (toString().equals(that.toString()))
-//                System.err.println("warning: " + this + " and " + that + " are but considered not equal");
-//            return false;
-//        }
-//    }
-
 
     @Override
     public @Nullable NormalizedVariable normalize(byte vid) {
