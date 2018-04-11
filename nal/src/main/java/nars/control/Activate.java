@@ -61,8 +61,14 @@ public class Activate extends PLink<Concept> implements Termed {
             Task task = tasklink.get(nar);
             if (task != null) {
 
+                float taskLinkMomentum = nar.taskLinkMomentum.floatValue();
+                float priTotal = tasklink.priElseZero();
+                float priTransferred = (1f - taskLinkMomentum) * priTotal;
+                tasklink.priSub(priTransferred);
+                tasklinks.pressurize(-priTransferred); //depressurize
+
                 //if (priApplied > Pri.EPSILON)
-                Tasklinks.linkTaskTemplates(id, tasklink,  nar);
+                Tasklinks.linkTaskTemplates(id, tasklink,  priTransferred, nar);
 
                 termlinks.sample(rng, _termlinksPerTasklink, (termlink) -> {
                     if (!each.test(task, termlink)) {

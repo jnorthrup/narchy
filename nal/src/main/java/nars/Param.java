@@ -251,6 +251,8 @@ public abstract class Param {
 //     */
     public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
+    public final FloatRange taskLinkMomentum = new FloatRange(0.25f, 0, 1f);
+
     public final FloatRange activationRate = new FloatRange(1f, 0, 1f);
 
 

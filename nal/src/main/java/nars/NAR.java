@@ -10,6 +10,7 @@ import jcog.event.On;
 import jcog.event.Topic;
 import jcog.exe.Cycler;
 import jcog.list.FasterList;
+import jcog.math.FloatRange;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
@@ -80,6 +81,8 @@ import static org.fusesource.jansi.Ansi.ansi;
  * * thread mode - runs in a pausable closed-loop at a specific maximum framerate.
  */
 public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR>, Cycler {
+
+
 
     protected volatile Logger logger;
 

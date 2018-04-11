@@ -83,17 +83,13 @@ public class Tasklinks {
     }
 
     /** propagate tasklink to templates */
-    public static void linkTaskTemplates(Concept c, TaskLink tasklink, NAR nar) {
+    public static void linkTaskTemplates(Concept c, TaskLink tasklink, float priTransferred, NAR nar) {
 
         Concept[] cc = c.templates().conceptsShuffled(nar, true);
         int ccs = cc.length;
         if (ccs <= 0)
             return;
 
-        float taskLinkMomentum = 0.25f;
-        float priTotal = tasklink.priElseZero();
-        float priTransferred = (1f - taskLinkMomentum) * priTotal;
-        tasklink.priSub(priTransferred);
         float pEach = Math.max(Pri.EPSILON, priTransferred / ccs);
         {
 
