@@ -9,6 +9,7 @@ import net.beadsproject.beads.core.UGen;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A mixer for a speaker config in any number of dimensions (we haven't tested D>3 yet).
@@ -178,7 +179,7 @@ public class Spatial extends UGen {
     /**
      * The sources.
      */
-    private Map<UGen, Location> sources;
+    private final Map<UGen, Location> sources = new ConcurrentHashMap<>();
 
     /**
      * The dead sources.
@@ -284,7 +285,6 @@ public class Spatial extends UGen {
      */
     private void setup() {
         outputInitializationRegime = OutputInitializationRegime.ZERO;
-        sources = Collections.synchronizedMap(new Hashtable<UGen, Location>());
         deadSources = new ArrayList<>();
         curve = 3f;
     }

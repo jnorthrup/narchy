@@ -151,12 +151,11 @@ public class PremiseRuleTest {
 
     @Test
     public void testDoubleOnlyTruthAddsRequiresBeliefPredicate() {
-        //test that the constraint on %2 being of size > 1 is testable in the Proto phase
 
         DeriveRules d = new DeriveRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)").compile();
 
         d.printRecursive();
-        assertEquals("((\".!\"-->task),Belief,can({0}))", d.what.toString());
+        assertEquals("((\".!\"-->task),can({0}))", d.what.toString());
     }
 
     @Test

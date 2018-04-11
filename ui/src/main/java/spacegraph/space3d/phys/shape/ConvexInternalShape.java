@@ -132,7 +132,7 @@ public abstract class ConvexInternalShape extends ConvexShape {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + "{" +
+		return getClass().getSimpleName() + '{' +
 				"implicitDim=" + implicitShapeDimensions +
 				'}';
 	}

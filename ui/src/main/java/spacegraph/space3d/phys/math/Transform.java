@@ -86,7 +86,7 @@ public final class Transform extends v3 {
 	@Override
 	public String toString() {
 		return "t(" +
-				super.toString() + "," + basis.toStringCompact() +
+				super.toString() + ',' + basis.toStringCompact() +
 				')';
 	}
 

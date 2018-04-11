@@ -246,7 +246,7 @@ public class Islands {
     }
 
     static void islandError(Collidable colObj0) {
-        System.err.println("error in island management, maybe spatial is in the display list multiple times: " + colObj0 + " " + colObj0.data());
+        System.err.println("error in island management, maybe spatial is in the display list multiple times: " + colObj0 + ' ' + colObj0.data());
     }
 
     public <X> void buildAndProcessIslands(Intersecter intersecter, List<Collidable> collidables, IslandCallback callback) {

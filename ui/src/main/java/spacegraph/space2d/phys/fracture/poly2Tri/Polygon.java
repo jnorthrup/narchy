@@ -602,7 +602,7 @@ public class Polygon {
         }
 
         int id;
-        while (_qpoints.size() > 0) {
+        while (!_qpoints.isEmpty()) {
             Pointbase vertex = qpointsPop();
 
             id = vertex.id;

@@ -84,8 +84,8 @@ public class ProtoWidget extends Widget {
         add("PID", TODO, "Control");
 
         add("Text", LabeledPort::generic, "See");
-        add("Plot", ()->new PlotChip(), "See");
-        add("Cluster2D", ()->new Cluster2DChip(), "See");
+        add("Plot", PlotChip::new, "See");
+        add("Cluster2D", Cluster2DChip::new, "See");
         add("Color", TODO, "See");
 
         add("Audio", TODO, "Hear");

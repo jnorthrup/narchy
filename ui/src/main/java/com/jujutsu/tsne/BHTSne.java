@@ -227,8 +227,8 @@ public class BHTSne implements BarnesHutTSne {
 		return expand(Y,N,no_dims);
 	}
 
-	void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
-			double[] gains) {
+	static void updateGradient(int N, int no_dims, double[] Y, double momentum, double eta, double[] dY, double[] uY,
+							   double[] gains) {
 		for(int i = 0; i < N * no_dims; i++)  {
 			// Update gains
 			gains[i] = (sign_tsne(dY[i]) != sign_tsne(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
@@ -241,7 +241,7 @@ public class BHTSne implements BarnesHutTSne {
 	}
 
 	// Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
-	void computeGradient(double [] P, int [] inp_row_P, int [] inp_col_P, double [] inp_val_P, double [] Y, int N, int D, double [] dC, double theta)
+	static void computeGradient(double[] P, int[] inp_row_P, int[] inp_col_P, double[] inp_val_P, double[] Y, int N, int D, double[] dC, double theta)
 	{
 		// Construct space-partitioning tree on current map
 		SPTree tree = new SPTree(D, Y, N);

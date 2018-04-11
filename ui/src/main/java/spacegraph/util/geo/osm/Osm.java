@@ -48,7 +48,7 @@ public class Osm {
     }
 
     public static URL url(String apiURL, double lonMin, double latMin, double lonMax, double latMax) throws IOException {
-        return new URL(apiURL + "/api/0.6/map?bbox=" + lonMin + "," + latMin + "," + lonMax + "," + latMax );
+        return new URL(apiURL + "/api/0.6/map?bbox=" + lonMin + ',' + latMin + ',' + lonMax + ',' + latMax );
     }
 
     public void load(String apiURL, double lonMin, double latMin, double lonMax, double latMax) throws SAXException, IOException, ParserConfigurationException {

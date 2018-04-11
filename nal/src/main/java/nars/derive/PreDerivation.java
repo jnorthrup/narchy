@@ -3,7 +3,6 @@ package nars.derive;
 import nars.Op;
 import nars.term.Term;
 import nars.term.subst.Unify;
-import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
@@ -39,9 +38,9 @@ public abstract class PreDerivation extends Unify {
     }
 
 
-    static int polarity(Truth t) {
-        return (t.isPositive() ? +1 : -1);
-    }
+//    static int polarity(Truth t) {
+//        return (t.isPositive() ? +1 : -1);
+//    }
 
     public PreDerivation reset() {
 

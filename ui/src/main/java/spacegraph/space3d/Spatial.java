@@ -49,7 +49,7 @@ public abstract class Spatial<X> implements Active {
 
         return id + "<" +
                 //(body!=null ? body.shape() : "shapeless")  +
-                ">";
+                '>';
     }
 
 

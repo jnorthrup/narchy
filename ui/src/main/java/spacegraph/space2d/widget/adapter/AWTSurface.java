@@ -66,7 +66,7 @@ public class AWTSurface extends Widget {
 
             if (component instanceof JFrame) {
                 component.setVisible(false);
-                component = ((JFrame) component).getRootPane();
+                component = ((RootPaneContainer) component).getRootPane();
             }
 
 
@@ -195,15 +195,16 @@ public class AWTSurface extends Widget {
 
 
     @Override
-    public synchronized void touch(@Nullable Finger finger) {
+    public void touch(@Nullable Finger finger) {
         boolean wasTouching = isTouched();
 
 
+        long now = System.currentTimeMillis();
         if (finger == null) {
             if (wasTouching) {
                 handle(new MouseEvent(component,
                         MouseEvent.MOUSE_EXITED,
-                        System.currentTimeMillis(), 0,
+                        now, 0,
                         lpx, lpy, lpx, lpy, 0, false, NOBUTTON
                 ));
             }
@@ -221,7 +222,7 @@ public class AWTSurface extends Widget {
         if (!wasTouching) {
             handle(new MouseEvent(component,
                     MouseEvent.MOUSE_ENTERED,
-                    System.currentTimeMillis(), 0,
+                    now, 0,
                     px, py, px, py, 0, false, NOBUTTON)
             );
         }
@@ -241,19 +242,19 @@ public class AWTSurface extends Widget {
         if (finger.buttonDown[0] && !finger.prevButtonDown[0]) {
             handle(new MouseEvent(target,
                     MouseEvent.MOUSE_PRESSED,
-                    System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK,
+                    now, InputEvent.BUTTON1_DOWN_MASK,
                     px, py, px, py, 0, false, MouseEvent.BUTTON1
             ));
         }
         if (!finger.buttonDown[0] && finger.prevButtonDown[0]) {
             handle(new MouseEvent(target,
                     MouseEvent.MOUSE_RELEASED,
-                    System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK,
+                    now, InputEvent.BUTTON1_DOWN_MASK,
                     px, py, px, py, 0, false, MouseEvent.BUTTON1
             ));
             handle(new MouseEvent(target,
                     MouseEvent.MOUSE_CLICKED,
-                    System.currentTimeMillis(), InputEvent.BUTTON1_DOWN_MASK,
+                    now, InputEvent.BUTTON1_DOWN_MASK,
                     px, py, px, py, 1, false, MouseEvent.BUTTON1
             ));
         }
@@ -266,7 +267,7 @@ public class AWTSurface extends Widget {
             if (moved && finger.prevButtonDown[0]) {
                 handle(new MouseEvent(target,
                         MouseEvent.MOUSE_DRAGGED,
-                        System.currentTimeMillis(), 0,
+                        now, 0,
                         px, py, px, py, 0, false, MouseEvent.BUTTON1
                 ));
             }
@@ -283,7 +284,7 @@ public class AWTSurface extends Widget {
             if (moved) {
                 handle(new MouseEvent(target,
                         MouseEvent.MOUSE_MOVED,
-                        System.currentTimeMillis(), 0,
+                        now, 0,
                         px, py, px, py, 0, false, NOBUTTON
                 ));
             }

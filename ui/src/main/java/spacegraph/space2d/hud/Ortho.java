@@ -489,7 +489,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         Surface touching = finger.touching;
         Surface touchedNext = finger.on(surface, sx, sy, buttonsDown);
         if (touchedNext!=null && touchedNext!=touching) {
-            debug(this, 1f, ()->"touch(" + touchedNext + ")");
+            debug(this, 1f, ()->"touch(" + touchedNext + ')');
         }
         return touchedNext;
     }

@@ -116,12 +116,10 @@ public class MiscUtil {
 		}
 		catch (IllegalAccessException | InstantiationException e) {
 			throw new IllegalStateException(e);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (NoSuchMethodException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
-	}
+    }
 	
 	/**
 	 * Searches object in array.

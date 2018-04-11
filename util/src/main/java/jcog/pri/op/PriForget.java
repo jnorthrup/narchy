@@ -40,7 +40,8 @@ public class PriForget<P extends Priority> implements Consumer<P> {
 
         if ((s > 0) && (pressure > 0) && (c > 0) && (mass > 0) && temperature > 0) {
 
-            float eachForget = (temperature * pressure)/(mass) * ((float)s)/c;
+            float eachForget = (temperature * pressure)/(mass) / s;
+                    //* ((float)s)/c;
                     //* (mass/c) /* absolute density factor */
             ;
 
@@ -68,13 +69,14 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     public void accept(P b) {
 
         //average constant removed, not fair to low priority items
-        //b.priSub(priRemoved);
+        b.priSub(priRemoved);
 
         //proportional removal, tax rate proportional to priority
-        float p = b.pri();
-        if (p==p) {
-            b.priSet( p * (1-(p * priRemoved)) );
-        }
+//        float p = b.pri();
+//        if (p==p) {
+//            //b.priSet( p * (1-(p * priRemoved)) );
+//            b.priSet( p * (1-priRemoved) );
+//        }
 
 
 

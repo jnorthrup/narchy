@@ -407,9 +407,9 @@ public class ClipBMP extends Component {
                         for (int i8 = 0; i8 < (nwidth) - 1; i8 += 2) {
                             ndata8[nwidth * (nheight - j8 - 1) + i8] = npalette[bdata[nindex8] & 0x0f];
                             ndata8[nwidth * (nheight - j8 - 1) + i8 + 1] = npalette[((bdata[nindex8] & 0xf0) / 0xf)];
-                            System.out.print("1:" + (bdata[nindex8] & 0x0f) + "\t");
+                            System.out.print("1:" + (bdata[nindex8] & 0x0f) + '\t');
                             System.out.print("2:" + ((bdata[nindex8] & 0xf0) / 0xf)
-                                    + "\t");
+                                    + '\t');
                             // System.out.print(nindex8 + "/" + nsizeimage + "\t");
                             // ndata8[nwidth * j8 + i8] = npalette[((int)
                             // (bdata[nindex8] & 0x0f))];

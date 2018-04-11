@@ -84,7 +84,7 @@ public class Plot2D extends Widget {
 
         @Override
         public String toString() {
-            return name + '[' + size() + "/" + capacity + "]";
+            return name + '[' + size() + '/' + capacity + ']';
         }
 
         public void update() {

@@ -161,13 +161,12 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
     public void windowDestroyNotify(WindowEvent windowEvent) {
         a.stop();
         stop();
-        windows.remove(this);
-        window = null;
     }
 
     @Override
     public void windowDestroyed(WindowEvent windowEvent) {
-
+        windows.remove(this);
+        window = null;
     }
 
     @Override

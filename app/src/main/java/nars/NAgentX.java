@@ -86,8 +86,8 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                //fps * 2, //NYQUIST
-                fps * 1, //1:1
+                fps * 2, //NYQUIST
+                //fps * 1, //1:1
                 fps);
     }
 
@@ -172,7 +172,7 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //800 * 1024,
-                                2500 * 1024,
+                                2000 * 1024,
                                 //1200 * 1024,
                                 //50 * 1024
                                 //20 * 1024,

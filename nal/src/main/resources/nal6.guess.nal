@@ -26,8 +26,8 @@
 
 
 //implication to similarity (equivalence emulation)
-    (P ==> S), (S ==> P), task(".")   |-   (S <-> P),  (Punctuation:Question)
-    (P ==> S), (--S ==> P), task(".") |- (--S <-> P),  (Punctuation:Question)
+//    (P ==> S), (S ==> P), task(".")   |-   (S <-> P),  (Punctuation:Question)
+//    (P ==> S), (--S ==> P), task(".") |- (--S <-> P),  (Punctuation:Question)
 
     //all these are probably wrong:
         //(--P ==> S), (S ==> P),  task("?") |- (--P ==>+- --S), (Belief:ConversionPN, Punctuation:Belief)

@@ -16,7 +16,7 @@ public class BufferUtils {
         }
         for (int i = oldCapacity; i < newCapacity; i++) {
             try {
-                newBuffer[i] = klass.newInstance();
+                newBuffer[i] = klass.getConstructor().newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

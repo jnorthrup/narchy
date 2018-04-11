@@ -87,7 +87,7 @@ public class JRdpLoader {
                         default:
                             String p = getParam(identifier);
                             if (p != null)
-                                outArgs += p + " " + value + " ";
+                                outArgs += p + ' ' + value + ' ';
                             break;
                     }
                 }

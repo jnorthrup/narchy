@@ -30,8 +30,8 @@ public class LoopPanel extends Widget {
         if (loop instanceof InstrumentedLoop) {
             InstrumentedLoop iloop = (InstrumentedLoop) loop;
             cycleTimePlot = new Plot2D(128, Plot2D.Line)
-                    .add("cycleTime", () -> iloop.cycleTime.getMean())
-                    .add("dutyTime", () -> iloop.dutyTime.getMean());
+                    .add("cycleTime", iloop.cycleTime::getMean)
+                    .add("dutyTime", iloop.dutyTime::getMean);
         } else {
             cycleTimePlot = null; //TODO
         }

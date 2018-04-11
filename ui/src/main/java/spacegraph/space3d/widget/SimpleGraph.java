@@ -50,7 +50,7 @@ public class SimpleGraph<X> extends DynamicListSpace<X> {
     };
 
     //private SpatialCache<X, DefaultSpaceWidget<X>> cache;
-    private Map<X, DefaultSpaceWidget<X>> cache = new LinkedHashMap();
+    private final Map<X, DefaultSpaceWidget<X>> cache = new LinkedHashMap();
 
     protected final SpaceWidget.SimpleNodeVis vis;
 
@@ -67,17 +67,17 @@ public class SimpleGraph<X> extends DynamicListSpace<X> {
 
     @Override
     public void start(SpaceGraphPhys3D<X> space) {
-        synchronized (this) {
+        //synchronized (this) {
             //cache = new SpatialCache<>(space, 512);
-        }
+        //}
     }
 
     @Override
     public void stop() {
-        synchronized (this) {
+        //synchronized (this) {
 //            cache.clear();
 //            cache = null;
-        }
+        //}
     }
 
     @Override

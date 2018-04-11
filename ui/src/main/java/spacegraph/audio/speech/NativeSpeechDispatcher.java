@@ -21,7 +21,7 @@ public class NativeSpeechDispatcher {
     public String[] command(String s) {
         return new String[]{
             //"/usr/bin/spd-say", "\"" + s + "\"" //speech-dispatcher -- buffers messages and does not allow multiple voices
-            "/usr/bin/espeak-ng", "\"" + s + "\"" //espeak-ng (next generation) -- directly synthesize on command
+            "/usr/bin/espeak-ng", '"' + s + '"' //espeak-ng (next generation) -- directly synthesize on command
         };
     }
 

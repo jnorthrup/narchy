@@ -189,7 +189,7 @@ public class AutoSurface<X> extends Gridding {
 
         @Override
         public String text() {
-            return k + "=" + super.text();
+            return k + '=' + super.text();
         }
     }
 
@@ -203,7 +203,7 @@ public class AutoSurface<X> extends Gridding {
 
         @Override
         public String text() {
-            return k + "=" + super.text();
+            return k + '=' + super.text();
         }
     }
 

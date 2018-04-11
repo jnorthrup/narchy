@@ -253,6 +253,13 @@ public enum BeliefFunction implements TruthOperator {
             return Intersection.apply(T, B, m, minConf);
         }
     },
+    @UnprojectedBelief
+    UnionUnprojected() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return Union.apply(T, B, m, minConf);
+        }
+    },
 
     IntersectionSym() {
         @Override

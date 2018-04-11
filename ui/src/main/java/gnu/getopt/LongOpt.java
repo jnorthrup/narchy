@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
  * @version 1.0.5
  * @see Getopt
  */
-public class LongOpt extends Object {
+public class LongOpt  {
 
 /**************************************************************************/
 

@@ -30,7 +30,7 @@ public class SoundEventManager {
             Class<? extends SoundEvent> soundEventClass = (Class<? extends SoundEvent>) parameters.get("class");
             if (soundEventClass == null) System.out.println("could not find class for SoundEvent");
             Method playMethod = soundEventClass.getMethod("play", UGen.class, Map.class);
-            SoundEvent event = soundEventClass.newInstance();
+            SoundEvent event = soundEventClass.getConstructor().newInstance();
             return (UGen) playMethod.invoke(event, output, parameters);
         } catch (Exception e) {
             e.printStackTrace();

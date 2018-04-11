@@ -543,34 +543,31 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return eternalizability() * eviEternalized();
         } else {
 
-            float cw = evi();
+
 
             long dist = minDistanceTo(when);
-            if (dist > 0) {
+            if (dist == 0) {
+                return evi();
+            } else {
                 float ete = eternalizability();
                 float ecw = ete > 0 ? eviEternalized() * ete : 0;
-                cw = ecw + (dur > 0 ?
-                        (float) Param.evi(
-                                cw - ecw /* delta to eternalization, >= 0 */,
-                                dist, dur)
-                        :
-                        0);
-//                cw = (dur > 0 ?
-//                        Math.max(ecw,  (float) Param.evi(
-//                                cw,
-//                                dist, dur)
-//
-//                ):
-//                        0);
+                if (dur == 0) {
+                    return ecw; //eternalized value only
+                } else {
+
+                    return ecw + (float) Param.evi(
+                                    evi() - ecw /* delta to eternalization, >= 0 */,
+                                    dist, dur);
+
+                    //return Math.max(ecw,  (float) Param.evi(evi(), dist, dur));
+                }
             }
 
-            return cw;
         }
 
     }
 
     default float eternalizability() {
-
         return 1f; //always
         //return 0.5f; //some
         //return punc()==BELIEF ? 1f: 0f; //always if belief

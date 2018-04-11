@@ -36,7 +36,6 @@ import spacegraph.space3d.phys.collision.broad.Intersecter;
 import spacegraph.space3d.phys.constraint.BroadConstraint;
 import spacegraph.space3d.phys.math.DebugDrawModes;
 import spacegraph.space3d.widget.DynamicListSpace;
-import spacegraph.util.animate.Animated;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglSpace;
 
@@ -101,7 +100,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
 
         dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
-        onUpdate((Animated)(dt)->{
+        onUpdate((dt)->{
             update(dtMS);
             return true;
         });

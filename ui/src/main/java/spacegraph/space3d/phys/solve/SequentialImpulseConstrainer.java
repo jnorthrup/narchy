@@ -150,7 +150,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             solverBody.body = rb;
             solverBody.angularFactor = rb.getAngularFactor();
         } else {
-            solverBody.angularVelocity.zero();;
+            solverBody.angularVelocity.zero();
             solverBody.linearVelocity.zero();
             solverBody.centerOfMassPosition.set(collidable.transform);
             solverBody.friction = collidable.getFriction();

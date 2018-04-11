@@ -1,6 +1,7 @@
 package nars.nal.nal4;
 
 import nars.Narsese;
+import nars.derive.Deriver;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
@@ -78,6 +79,24 @@ public class NAL4MultistepTest extends NALTest {
 
 
         tester.mustBelieve(time, "<(cat,blue) --> likes>", 1.0f, 0.45f); //en("A base is something that has a reaction with an acid.");
+
+    }
+
+    @Test
+    public void testImagePatternMatching()  {
+
+        Deriver.derivers(test.nar).forEach(d->d.conceptsPerIteration.set(200));
+        test
+            //.log()
+            .inputAt(0, "x(0,0,0,0). :|:")
+            .inputAt(2, "x(0,1,0,1). :|:")
+            .inputAt(4, "x(0,0,0,0). :|:")
+            .inputAt(6, "x(0,1,0,1). :|:")
+            .inputAt(8, "$1.0 (?1-->x)? :|:")
+            .inputAt(10, "$1.0 (?1-->x)? :|:")
+            .mustBelieve(8, "x(0,0,0,0)", 1f, 0.5f)
+            .mustBelieve(10, "x(0,1,0,1)", 1f, 0.5f)
+        ;
 
     }
 

@@ -78,7 +78,7 @@ public abstract class Param {
 
 
     /** default bag forget rate */
-    public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
+    public final FloatRange forgetRate = new FloatRange(0.5f, 0f, 2f);
 
 //    /**
 //     * hard limit to prevent infinite looping
@@ -173,7 +173,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange matchTTLmean = new IntRange(256, 0, 1024);
+    public final IntRange matchTTLmean = new IntRange(192, 0, 1024);
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */
@@ -423,7 +423,7 @@ public abstract class Param {
      * dt >= 0
      */
     public static double evi(double evi, double dt, long dur) {
-        assert(Double.isFinite(dt) && dt>=0);
+        assert(Double.isFinite(dt) && dt>=0 && dur > 0);
         return evi / (1.0 + (dt / dur)); //inverse linear
 
         //double ddt = dt;
