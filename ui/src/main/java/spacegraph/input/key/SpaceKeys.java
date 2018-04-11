@@ -13,9 +13,7 @@ import spacegraph.video.JoglWindow;
 
 import java.util.function.Consumer;
 
-/**
- * Created by me on 11/20/16.
- */
+
 public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
     public final JoglSpace space;
@@ -41,7 +39,7 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindo
 
         RoaringBitmap queue = this.queue;
         if (!queue.isEmpty()) {
-            float dt = j.dtMS()/1000f;
+            float dt = j.dtS;
             synchronized (on) {
                 this.queue = new RoaringBitmap();
             }

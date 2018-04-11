@@ -4,7 +4,6 @@ import com.jogamp.nativewindow.WindowClosingProtocol;
 import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.util.AnimatorBase;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
@@ -12,20 +11,22 @@ import jcog.event.On;
 import jcog.event.Topic;
 import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spacegraph.util.animate.Animated;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
-
 
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
-    protected float renderFPS = 30f;
+    public float renderFPS = 30f;
     protected float updateFPS = 30f;
+
+    final AtomicBoolean rendering = new AtomicBoolean(false);
 
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
 
@@ -45,12 +46,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     protected long dtMS = 0;
 
     /** update time since last cycle (S) */
-    protected float dtS = 0;
+    public float dtS = 0;
 
     private long lastRenderMS = System.currentTimeMillis();
 
+    public final Logger logger;
 
     protected JoglWindow() {
+        logger = LoggerFactory.getLogger(toString());
+
         renderer = new GameAnimatorControl();
         updater = new InstrumentedLoop() {
             @Override public boolean next() {
@@ -201,8 +205,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return dtMS;
     }
 
-    final AtomicBoolean rendering = new AtomicBoolean(false);
-
     @Override
     public final void display(GLAutoDrawable drawable) {
         rendering.set(true);
@@ -290,6 +292,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     public void setFPS(float render, float update) {
         //synchronized (this) {
+        logger.info("fps render={} update={}", render, update);
             renderFPS = render;
             updateFPS = update;
             if (updater.isRunning()) {
@@ -336,36 +339,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         });
     }
 
-    // See http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
-    protected void ortho() {
-        int w = getWidth();
-        int h = getHeight();
-        gl.glViewport(0, 0, w, h);
-        gl.glMatrixMode(GL_PROJECTION);
-        gl.glLoadIdentity();
-
-        //gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -1.5, 1.5);
-        gl.glOrtho(0, w, 0, h, -1.5, 1.5);
-
-//        // switch to projection mode
-//        gl.glMatrixMode(gl.GL_PROJECTION);
-//        // save previous matrix which contains the
-//        //settings for the perspective projection
-//        // gl.glPushMatrix();
-//        // reset matrix
-//        gl.glLoadIdentity();
-//        // set a 2D orthographic projection
-//        glu.gluOrtho2D(0f, screenWidth, 0f, screenHeight);
-//        // invert the y axis, down is positive
-//        //gl.glScalef(1f, -1f, 1f);
-//        // mover the origin from the bottom left corner
-//        // to the upper left corner
-//        //gl.glTranslatef(0f, -screenHeight, 0f);
-        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-        //gl.glLoadIdentity();
-
-
-    }
 
 
     /* from: Jake2's */

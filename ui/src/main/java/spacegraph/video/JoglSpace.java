@@ -6,10 +6,11 @@ import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLException;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.list.FastCoWList;
 import spacegraph.input.key.KeyXYZ;
+import spacegraph.input.key.WindowKeyControls;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space3d.Spatial;
@@ -34,32 +35,31 @@ import static spacegraph.util.math.v3.v;
 
 abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatial<X>> {
 
-    protected int debug;
-
-
-    final List<Surface> layers = new FastCoWList(Surface[]::new);
-
-    final Queue<Runnable> pending = new ConcurrentLinkedQueue();
-
-
-
-    protected float aspect;
-    private final float cameraSpeed = 5f;
-    private final float cameraRotateSpeed = 5f;
     public final v3 camPos;
     public final v3 camFwd;
     public final v3 camUp;
+    final float[] mat4f = new float[16];
+
+    final List<Surface> layers = new FastCoWList(Surface[]::new);
+    final Queue<Runnable> pending = new ConcurrentLinkedQueue();
+    private final float cameraSpeed = 5f;
+    private final float cameraRotateSpeed = 5f;
     public float top;
     public float bottom;
+    public float zNear = 0.5f;
+    public float zFar = 1200;
+    public int windowX, windowY;
+
+    protected int debug;
+    protected float aspect;
     float tanFovV;
     float left;
     float right;
 
-    public float zNear = 0.5f;
-    public float zFar = 1200;
 
     public JoglSpace() {
         super();
+
         onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
         onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed) {
             @Override
@@ -75,6 +75,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
                 return 0;
             }
         })); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
+
     }
 
     @Override
@@ -84,15 +85,13 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         onUpdate.clear();
     }
 
-
     public JoglSpace add(Surface layer) {
         this.layers.add(layer);
-        pending.add(()->{
-            if (layer instanceof Ortho)
-                ((Ortho) layer).start(this);
-            else
-                layer.start(null);
-        });
+        if (layer instanceof Ortho) {
+            pending.add(() -> ((Ortho) layer).start(this));
+        } else {
+            pending.add(() -> layer.start(null));
+        }
         return this;
     }
 
@@ -108,7 +107,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     protected void init(GL2 gl) {
 
         updateWindowInfo();
-
 
 
         //gl.glEnable(GL_POINT_SPRITE);
@@ -150,8 +148,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         initBlend(gl);
 
 
-
-
         //loadGLTexture(gl);
 
 //        gleem.start(Vec3f.Y_AXIS, window);
@@ -164,7 +160,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         initInput();
 
-        onUpdate((Consumer) ((w)->pending.removeIf((x)->{
+        onUpdate((Consumer) (w -> pending.removeIf((x) -> {
             x.run();
             return true;
         })));
@@ -205,11 +201,11 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     protected void initInput() {
 
+        addKeyListener(new WindowKeyControls(this));
 
         addKeyListener(new KeyXYZ(this));
 
     }
-
 
     public void camera(v3 target, float radius) {
         v3 fwd = v();
@@ -224,7 +220,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     }
 
     @Override
-    protected void render(int dtMS) {
+    protected final void render(int dtMS) {
 
         clear();
 
@@ -244,19 +240,44 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         int facialsSize = layers.size();
         if (facialsSize > 0) {
 
-            ortho();
+            GL2 gl = this.gl;
+
+            // See http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
+            int w = getWidth();
+            int h = getHeight();
+            gl.glViewport(0, 0, w, h);
+            gl.glMatrixMode(GL_PROJECTION);
+            gl.glLoadIdentity();
+
+            //gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -1.5, 1.5);
+            gl.glOrtho(0, w, 0, h, -1.5, 1.5);
+
+            //        // switch to projection mode
+            //        gl.glMatrixMode(gl.GL_PROJECTION);
+            //        // save previous matrix which contains the
+            //        //settings for the perspective projection
+            //        // gl.glPushMatrix();
+            //        // reset matrix
+            //        gl.glLoadIdentity();
+            //        // set a 2D orthographic projection
+            //        glu.gluOrtho2D(0f, screenWidth, 0f, screenHeight);
+            //        // invert the y axis, down is positive
+            //        //gl.glScalef(1f, -1f, 1f);
+            //        // mover the origin from the bottom left corner
+            //        // to the upper left corner
+            //        //gl.glTranslatef(0f, -screenHeight, 0f);
+            gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+            //gl.glLoadIdentity();
+
 
             gl.glDisable(GL2.GL_DEPTH_TEST);
 
-            GL2 gl = this.gl;
-            for (int i = 0; i < facialsSize; i++) {
+            for (int i = 0; i < facialsSize; i++)
                 layers.get(i).render(gl, dtMS);
-            }
 
             gl.glEnable(GL2.GL_DEPTH_TEST);
         }
     }
-
 
     protected void clear() {
         clearMotionBlur(0.5f);
@@ -334,10 +355,25 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         //glu.gluPerspective(45, (float) screenWidth / screenHeight, 4, 2000);
         float aspect = ((float) getWidth()) / getHeight();
 
-        perspective(0, true, 45 * FloatUtil.PI / 180.0f, aspect);
+        this.aspect = aspect;
+
+        tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
+
+        top = tanFovV * zNear; // use tangent of half-fov !
+        right = aspect * top;    // aspect * fovhvTan.top * zNear
+        bottom = -top;
+        left = -right;
+
+//        gl.glMultMatrixf(
+//                makeFrustum(matTmp, m_off, initM, left, right, bottom, top, zNear, zFar),
+//                0
+//        );
+
+        //glu.gluPerspective(45, aspect, zNear, zFar);
+        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
 
-//        final v3 camDir = new v3();
+        //        final v3 camDir = new v3();
 //        camDir.sub(camPosTarget, camPos);
 //        camDir.normalize();
 
@@ -358,36 +394,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 //        stack.quats.pop();
     }
 
-
-    public final float[] mat4f = new float[16];
-
-    void perspective(final int m_off, final boolean initM,
-                     final float fovy_rad, final float aspect) throws GLException {
-
-        this.aspect = aspect;
-
-        tanFovV = (float) Math.tan(fovy_rad / 2f);
-
-        top = tanFovV * zNear; // use tangent of half-fov !
-        right = aspect * top;    // aspect * fovhvTan.top * zNear
-        bottom = -top;
-        left = -right;
-
-//        gl.glMultMatrixf(
-//                makeFrustum(matTmp, m_off, initM, left, right, bottom, top, zNear, zFar),
-//                0
-//        );
-
-        //glu.gluPerspective(45, aspect, zNear, zFar);
-        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
-
-
-    }
-
-    //private final AtomicBoolean gettingScreenPointer = new AtomicBoolean(false);
-    public int windowX, windowY;
-
-//    @Override
+    //    @Override
 //    public void windowGainedFocus(WindowEvent windowEvent) {
 //        updateWindowInfo();
 //    }
@@ -416,9 +423,9 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 //
 //            window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
 //                try {
-                    Point p = rww.getLocationOnScreen(new Point());
-                    windowX = p.getX();
-                    windowY = p.getY();
+        Point p = rww.getLocationOnScreen(new Point());
+        windowX = p.getX();
+        windowY = p.getY();
 //                } finally {
 //                    gettingScreenPointer.set(false);
 //                }
