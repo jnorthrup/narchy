@@ -394,4 +394,23 @@ public class MutableFloat extends Number implements FloatSupplier {
     public float asFloat() {
         return value;
     }
+
+    public float zero() {
+        float v = value;
+        set(0f);
+        return v;
+    }
+
+    /** returns the change, between 0 and x */
+    public float subAtMost(float x) {
+        float v = value;
+        if (v > x) {
+            value -= x;
+            return x;
+        } else {
+            //the remainder
+            set(0f);
+            return v;
+        }
+    }
 }

@@ -16,7 +16,6 @@ import nars.term.Termlike;
 import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
-import nars.term.compound.util.Image;
 import nars.term.subst.Unify;
 import nars.term.var.Variable;
 import org.apache.commons.lang3.ArrayUtils;

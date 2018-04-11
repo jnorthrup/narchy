@@ -80,27 +80,27 @@ public class GPUTextNewtDemo {
             for(int i=0; i<args.length; i++) {
                 if(args[i].equals("-smsaa")) {
                     i++;
-                    SceneMSAASamples = MiscUtils.atoi(args[i], SceneMSAASamples);
+                    SceneMSAASamples = atoi(args[i], SceneMSAASamples);
                 } else  if(args[i].equals("-gmsaa")) {
                     i++;
-                    GraphMSAASamples = MiscUtils.atoi(args[i], GraphMSAASamples);
+                    GraphMSAASamples = atoi(args[i], GraphMSAASamples);
                     GraphVBAASamples = 0;
                 } else if(args[i].equals("-gvbaa")) {
                     i++;
                     GraphMSAASamples = 0;
-                    GraphVBAASamples = MiscUtils.atoi(args[i], GraphVBAASamples);
+                    GraphVBAASamples = atoi(args[i], GraphVBAASamples);
                 } else if(args[i].equals("-width")) {
                     i++;
-                    width = MiscUtils.atoi(args[i], width);
+                    width = atoi(args[i], width);
                 } else if(args[i].equals("-height")) {
                     i++;
-                    height = MiscUtils.atoi(args[i], height);
+                    height = atoi(args[i], height);
                 } else if(args[i].equals("-x")) {
                     i++;
-                    x = MiscUtils.atoi(args[i], x);
+                    x = atoi(args[i], x);
                 } else if(args[i].equals("-y")) {
                     i++;
-                    y = MiscUtils.atoi(args[i], y);
+                    y = atoi(args[i], y);
                 }
             }
         }
@@ -168,6 +168,15 @@ public class GPUTextNewtDemo {
 //            }
 //        });
 
+    }
+
+    public static int atoi(final String str, final int def) {
+        try {
+            return Integer.parseInt(str);
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
+        return def;
     }
 
     public static class GPUTextGLListener0A extends GPUTextRendererListenerBase01 {

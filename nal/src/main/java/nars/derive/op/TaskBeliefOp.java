@@ -4,7 +4,6 @@ import nars.$;
 import nars.Op;
 import nars.derive.PreDerivation;
 import nars.term.pred.AbstractPred;
-import nars.term.pred.PrediTerm;
 
 
 /**

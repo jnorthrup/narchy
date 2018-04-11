@@ -14,7 +14,9 @@ package nars.op.kif;
  * Notes of the IJCAI-2003 Workshop on Ontology and Distributed Systems, August
  * 9, Acapulco, Mexico.
  */
-import java.io.*;
+
+import java.io.File;
+import java.io.Serializable;
 import java.util.*;
 
 /** This is a class that manages a group of knowledge bases.  It should only

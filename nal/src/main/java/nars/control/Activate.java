@@ -62,7 +62,7 @@ public class Activate extends PLink<Concept> implements Termed {
             if (task != null) {
 
                 //if (priApplied > Pri.EPSILON)
-                Tasklinks.linkTaskTemplates(id, task, /*pri *  */ task.priElseZero(), nar);
+                Tasklinks.linkTaskTemplates(id, tasklink,  nar);
 
                 termlinks.sample(rng, _termlinksPerTasklink, (termlink) -> {
                     if (!each.test(task, termlink)) {

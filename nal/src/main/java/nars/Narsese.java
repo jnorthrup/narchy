@@ -24,7 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.term.Term.nullIfNull;
 
 /**

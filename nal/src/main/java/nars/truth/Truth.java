@@ -33,7 +33,8 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.Util.*;
-import static nars.truth.TruthFunctions.*;
+import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 
 /** scalar (1D) truth value "frequency", stored as a floating point value */

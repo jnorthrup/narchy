@@ -342,7 +342,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
     /* from: Jake2's */
-    public class GameAnimatorControl extends AnimatorBase {
+    class GameAnimatorControl extends AnimatorBase {
         //        final FPSCounterImpl fpsCounter;
         public final Loop loop;
         private volatile boolean paused = true;

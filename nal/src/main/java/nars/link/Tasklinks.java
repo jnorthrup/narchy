@@ -40,6 +40,7 @@ public class Tasklinks {
     }
 
 
+    /** create source tasklink */
     public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
 
         /** non-zero for safety */
@@ -60,7 +61,7 @@ public class Tasklinks {
         //activate the task's concept
         nar.activate(src,  nar.activationRate.floatValue() * priEffect);
 
-        //activate the task concept templates
+        //activate the task concept termlink templates
         src.templates().activate(src, priEffect, nar);
 
         {
@@ -81,31 +82,38 @@ public class Tasklinks {
             return link;
     }
 
-    public static void linkTaskTemplates(Concept c, Task t, float priApplied, NAR nar) {
+    /** propagate tasklink to templates */
+    public static void linkTaskTemplates(Concept c, TaskLink tasklink, NAR nar) {
 
         Concept[] cc = c.templates().conceptsShuffled(nar, true);
         int ccs = cc.length;
         if (ccs <= 0)
             return;
 
-        float pEach = Math.max(Pri.EPSILON, priApplied / ccs);
-        //if (pEach > Pri.EPSILON)
+        float taskLinkMomentum = 0.25f;
+        float priTotal = tasklink.priElseZero();
+        float priTransferred = (1f - taskLinkMomentum) * priTotal;
+        tasklink.priSub(priTransferred);
+        float pEach = Math.max(Pri.EPSILON, priTransferred / ccs);
         {
 
-            TaskLink.Tasklike tlSeed = TaskLink.GeneralTaskLink.seed(t, false, nar);
+            TaskLink.Tasklike tlSeed =
+                    ((TaskLink.GeneralTaskLink)tasklink).get();
+                    //TaskLink.GeneralTaskLink.seed(t, false, nar);
 
             final float headRoom = 1f - pEach;
             MutableFloat overflow = new MutableFloat();
             for (int i = 0; i < ccs; i++) {
-                float o = overflow.get();
-
-                //spread overflow of saturated targets to siblings
-                float change;
-                if (o >= Pri.EPSILON) {
-                    overflow.subtract(change = Math.min(o, headRoom));
-                } else {
-                    change = 0;
-                }
+//                float o = overflow.get();
+//
+//                //spread overflow of saturated targets to siblings
+//                float change;
+//                if (o >= Pri.EPSILON) {
+//                    overflow.subtract(change = Math.min(o, headRoom));
+//                } else {
+//                    change = 0;
+//                }
+                float change = overflow.subAtMost(headRoom);
 
                 TaskLink xx =
                         //new TaskLink.DirectTaskLink(t, pEach + change);

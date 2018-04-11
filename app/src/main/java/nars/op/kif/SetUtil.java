@@ -13,11 +13,7 @@ August 9, Acapulco, Mexico.
 
 package nars.op.kif;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /** *************************************************************** 
  * A utility class that defines static methods for working with Sets

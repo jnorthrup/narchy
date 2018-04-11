@@ -189,8 +189,8 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
         if (simulating) {
             // NOTE: SimpleDynamics world doesn't handle fixed-time-stepping
             dyn.update(
-                    dtMS/1000f
-                    //Math.max(dtMS/1000f, 1000000f / renderFPS)
+                    //dtMS/1000f
+                    Math.max(dtMS/1000f, 1000000f / renderFPS)
                             / 1000000.f, maxSubsteps
                     //clock.getTimeThenReset()
             );
