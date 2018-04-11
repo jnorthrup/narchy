@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  */
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
-    final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
+    public final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
 
     private static final String DEFAULT_TIMER_NAME = HashedWheelTimer.class.getSimpleName();
 

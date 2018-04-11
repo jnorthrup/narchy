@@ -8,7 +8,6 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.DurService;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
@@ -30,27 +29,26 @@ import static nars.time.Tense.ETERNAL;
 
 public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
-    static final float baseTaskSize = 0.04f;
-    static final float CROSSHAIR_THICK = 3;
-    static final float angleSpeed = 0.5f;
+    private static final float baseTaskSize = 0.04f;
+    private static final float CROSSHAIR_THICK = 3;
+    private static final float angleSpeed = 0.5f;
     final Term term;
-    final TruthWave beliefs;
-    final TruthWave beliefProj;
-    final TruthWave goals;
-    final TruthWave goalProj;
+    private final TruthWave beliefs;
+    private final TruthWave beliefProj;
+    private final TruthWave goals;
+    private final TruthWave goalProj;
     private final Label label;
     private final boolean showTaskLinks = false;
     @Deprecated
     private final boolean showEternal = true;
-    TaskConcept cc; //cached concept
-    float cp; //cached priority
-    float beliefTheta, goalTheta;
+    private TaskConcept cc; //cached concept
+    private float cp; //cached priority
+    private float beliefTheta, goalTheta;
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
      */
-    int projections = 32;
-    long[] range;
-    private DurService on;
+    private int projections = 32;
+    private long[] range;
     //private int dur; //cached dur
     private long now; //cached time
     private String termString; //cached string
@@ -81,7 +79,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
     }
 
-    public static void drawCrossHair(GL2 gl, float x, float gew, float freq, float conf, double theta) {
+    private static void drawCrossHair(GL2 gl, float x, float gew, float freq, float conf, double theta) {
         gl.glLineWidth(CROSSHAIR_THICK);
 
 
@@ -382,7 +380,8 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 FloatFloatToFloatFunction y =
                         freqOrExp ? (frq, cnf) -> frq : TruthFunctions::expectation;
 
-                gl.glLineWidth((freqOrExp && !beliefOrGoal) ? 2f : 4f); //HACK show goal freq in thinner line
+                //gl.glLineWidth((freqOrExp && !beliefOrGoal) ? 2f : 4f); //HACK show goal freq in thinner line
+                gl.glLineWidth(4f);
 
                 renderWaveLine(nowX, minT, maxT, gl, pwave, y, colorize);
             }

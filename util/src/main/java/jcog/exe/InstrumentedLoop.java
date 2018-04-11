@@ -12,13 +12,16 @@ abstract public class InstrumentedLoop extends Loop {
 
     protected final int windowLength = 4;
 
-
-    //    /**
-//     * in seconds
-//     */
+    /**
+     * in seconds
+     */
     public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); //in millisecond
     public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); //in millisecond
 
+    public long cycleTimeNS = 0;
+    public double cycleTimeS = 0;
+
+    protected volatile long last = System.nanoTime();
 
     @Override
     protected void beforeNext() {
@@ -31,14 +34,13 @@ abstract public class InstrumentedLoop extends Loop {
         long afterIteration = System.nanoTime();
         this.last = afterIteration;
 
-        long dutyTimeNS = afterIteration - beforeIteration;
-        double dutyTimeS = (dutyTimeNS) / 1.0E9;
-
-        double cycleTimeS = (afterIteration - lastIteration) / 1.0E9;
-
-        this.dutyTime.addValue(dutyTimeS);
+        cycleTimeNS = afterIteration - lastIteration;
+        cycleTimeS = cycleTimeNS / 1.0E9;
         this.cycleTime.addValue(cycleTimeS);
 
+        long dutyTimeNS = afterIteration - beforeIteration;
+        double dutyTimeS = (dutyTimeNS) / 1.0E9;
+        this.dutyTime.addValue(dutyTimeS);
     }
 
 

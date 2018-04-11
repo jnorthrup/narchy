@@ -10,6 +10,7 @@ import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
+import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import spacegraph.util.animate.Animated;
 
@@ -20,49 +21,42 @@ import java.util.function.Consumer;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 
-public abstract class JoglWindow extends Loop implements GLEventListener, WindowListener {
+public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
-    public final static float RENDER_FPS_IDEAL = 30f;
-    final static float UPDATE_FPS_IDEAL = 30f;
+    protected float renderFPS = 30f;
+    protected float updateFPS = 30f;
+
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
-
-    static {
-//        GLCapabilitiesImmutable cfg = newDefaultConfig();
-//        sharedDrawable = GLDrawableFactory.getFactory(cfg.getGLProfile()).createDummyAutoDrawable(null, true, cfg, null);
-//        sharedDrawable.display(); // triggers GLContext object creation and native realization.
-//        Draw.init(sharedDrawable.getGL().getGL2());
-
-
-        //TODO other desktop handlers
-//        Desktop.getDesktop().addAppEventListener(new AppHiddenListener() {
-//            @Override
-//            public void appHidden(AppHiddenEvent e) {
-//                System.err.println("i see you hide the app");
-//            }
-//
-//            @Override
-//            public void appUnhidden(AppHiddenEvent e) {
-//                System.err.println("i see you unhide the app");
-//            }
-//        });
-
-
-    }
 
     public final Topic<JoglWindow> onUpdate = new ListTopic<>();
 
     public volatile GLWindow window;
-    //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
-    protected GameAnimatorControl a;
-    protected GL2 gl;
-    protected long dtMS = System.currentTimeMillis();
+
+    /** update loop */
+    final InstrumentedLoop updater;
+
+    /** render loop */
+    protected GameAnimatorControl renderer;
+
+    public GL2 gl;
+
+    /** update time since last cycle (ms) */
+    protected long dtMS = 0;
+
+    /** update time since last cycle (S) */
+    protected float dtS = 0;
+
     private long lastRenderMS = System.currentTimeMillis();
-    private long lastUpdateMS = System.currentTimeMillis();
 
 
     protected JoglWindow() {
-        super(-1);
+        renderer = new GameAnimatorControl();
+        updater = new InstrumentedLoop() {
+            @Override public boolean next() {
+                return JoglWindow.this.next();
+            }
+        };
     }
 
     static GLWindow window() {
@@ -83,9 +77,8 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         GLCapabilities config = new GLCapabilities(
 
                 //GLProfile.getMinimum(true)
-                GLProfile.getDefault()
-                //GLProfile.getMaximum(true)
-
+                //GLProfile.getDefault()
+                GLProfile.getMaximum(true)
 
         );
 
@@ -159,8 +152,8 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     @Override
     public void windowDestroyNotify(WindowEvent windowEvent) {
-        a.stop();
-        stop();
+        renderer.stop();
+        updater.stop();
     }
 
     @Override
@@ -184,8 +177,6 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     }
 
-
-
     /**
      * dtMS - time transpired since last call (millisecons)
      *
@@ -195,10 +186,9 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     public boolean next() {
         if (window.isVisible()) {
-            long then = this.lastUpdateMS;
-            long now = System.currentTimeMillis();
-            this.lastUpdateMS = now;
-            this.dtMS = (now - then);
+            long cycleTimeNS = updater.cycleTimeNS;
+            this.dtMS = cycleTimeNS / 1_000_000;
+            this.dtS = cycleTimeNS / 1E9f;
             onUpdate.emit(this);
         }
         return true;
@@ -227,14 +217,11 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         }
     }
 
-
-
     public GLWindow show(int w, int h) {
         return show("", w, h);
     }
 
     public GLWindow show(String title, int w, int h, int x, int y) {
-
 
 //            if (window != null) {
 //                //TODO apply w,h,x,y to the existing window
@@ -283,23 +270,33 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
-            //gl.setSwapInterval(0); //0=disable vsync
-            gl.setSwapInterval(1);
+            gl.setSwapInterval(0); //0=disable vsync
+            //gl.setSwapInterval(1);
         } else {
             gl.setSwapInterval(4); //reduce CPU strain
         }
 
         //printHardware();
 
-        a = new GameAnimatorControl(RENDER_FPS_IDEAL);
-        a.add(window);
+        renderer.add(window);
 
         Draw.init(gl);
 
         init(gl);
 
-        runFPS(UPDATE_FPS_IDEAL);
+        updater.runFPS(updateFPS);
 
+    }
+
+    public void setFPS(float render, float update) {
+        //synchronized (this) {
+            renderFPS = render;
+            updateFPS = update;
+            if (updater.isRunning()) {
+                renderer.loop.runFPS(renderFPS);
+                updater.runFPS(updateFPS);
+            }
+        //}
     }
 
     public GLWindow show(String title, int w, int h) {
@@ -322,9 +319,9 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
         window.addKeyListener(m);
     }
 
-    public GL2 gl() {
-        return gl;
-    }
+//    public GL2 gl() {
+//        return gl;
+//    }
 
     public On onUpdate(Consumer<JoglWindow> c) {
         return onUpdate.on(c);
@@ -335,7 +332,7 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
      */
     public On onUpdate(Animated c) {
         return onUpdate.on((JoglWindow s) -> {
-            c.animate(s.dtMS() / 1000f);
+            c.animate(dtS);
         });
     }
 
@@ -370,120 +367,29 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
     }
 
-//    private static class MyFPSAnimator extends FPSAnimator {
-//
-//        int idealFPS, minFPS;
-//        float lagTolerancePercentFPS = 0.05f;
-//
-//        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
-//            super(idealFPS);
-//
-//            setIgnoreExceptions(true);
-//            setPrintExceptions(false);
-//
-//            this.idealFPS = idealFPS;
-//            this.minFPS = minFPS;
-//
-//            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
-//
-//                @Override
-//                public void write(int b) {
-//                }
-//
-//                long lastUpdate;
-//
-//                @Override
-//                public void flush() {
-//                    long l = getLastFPSUpdateTime();
-//                    if (lastUpdate == l)
-//                        return;
-//                    updateFPS();
-//                    lastUpdate = l;
-//                }
-//
-//            }, true));
-//
-//        }
-//
-//
-//        protected void updateFPS() {
-//            //logger.info("{}", MyFPSAnimator.this);
-//
-//            int currentFPS = getFPS();
-//            float lastFPS = getLastFPS();
-//            float lag = currentFPS - lastFPS;
-//
-//            float error = lag / currentFPS;
-//
-//            float nextFPS = Float.NaN;
-//
-//            if (error > lagTolerancePercentFPS) {
-//                if (currentFPS > minFPS) {
-//                    //decrease fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
-//                }
-//            } else {
-//                if (currentFPS < idealFPS) {
-//                    //increase fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
-//                }
-//            }
-//
-//            int inextFPS = Math.max(1, Math.round(nextFPS));
-//            if (nextFPS == nextFPS && inextFPS != currentFPS) {
-//                //stop();
-//                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
-//
-//                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
-//                animThread = null;
-//
-//                setFPS(inextFPS);
-//                animThread = x;
-//
-//                //start();
-//            }
-//
-////            if (logger.isDebugEnabled()) {
-////                if (!meters.isEmpty()) {
-////                    meters.forEach((m, x) -> {
-////                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
-////                    });
-////                }
-////            }
-//        }
-//
-//
-//    }
 
     /* from: Jake2's */
-    public static class GameAnimatorControl extends AnimatorBase {
+    public class GameAnimatorControl extends AnimatorBase {
         //        final FPSCounterImpl fpsCounter;
-        private final Loop loop;
+        public final Loop loop;
+        private volatile boolean paused = true;
 
-        //private boolean pauseIssued;
-        //private boolean quitIssued;
-        boolean isAnimating;
-        private boolean paused = false;
-
-        GameAnimatorControl(float initialFPS) {
+        GameAnimatorControl() {
             super();
 
             setIgnoreExceptions(false);
             setPrintExceptions(false);
 
+            //setExclusiveContext(true);
+
 //            fpsCounter = new FPSCounterImpl();
 //            final boolean isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
 //            fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4 * 60, System.err);
-            this.loop = new Loop(-1) {
-
-
-                {
-                    setExclusiveContext(animThread);
-                }
+            this.loop = new Loop() {
 
                 @Override
                 protected void onStart() {
-                    isAnimating = true;
+                    paused = false;
                 }
 
                 @Override
@@ -583,10 +489,9 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 //                        //  display();
 //                        return true;
 
+            loop.runFPS(renderFPS);
 
-            loop.runFPS(initialFPS);
-            setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
-
+            //setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
         }
 
         @Override
@@ -626,13 +531,12 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
         @Override
         public final boolean isStarted() {
-            //return null != window;
-            return true;
+            return loop.isRunning();
         }
 
         @Override
         public final boolean isAnimating() {
-            return isAnimating;
+            return !paused;
         }
 
         @Override
@@ -667,3 +571,87 @@ public abstract class JoglWindow extends Loop implements GLEventListener, Window
 
 
 }
+//    private static class MyFPSAnimator extends FPSAnimator {
+//
+//        int idealFPS, minFPS;
+//        float lagTolerancePercentFPS = 0.05f;
+//
+//        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
+//            super(idealFPS);
+//
+//            setIgnoreExceptions(true);
+//            setPrintExceptions(false);
+//
+//            this.idealFPS = idealFPS;
+//            this.minFPS = minFPS;
+//
+//            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
+//
+//                @Override
+//                public void write(int b) {
+//                }
+//
+//                long lastUpdate;
+//
+//                @Override
+//                public void flush() {
+//                    long l = getLastFPSUpdateTime();
+//                    if (lastUpdate == l)
+//                        return;
+//                    updateFPS();
+//                    lastUpdate = l;
+//                }
+//
+//            }, true));
+//
+//        }
+//
+//
+//        protected void updateFPS() {
+//            //logger.info("{}", MyFPSAnimator.this);
+//
+//            int currentFPS = getFPS();
+//            float lastFPS = getLastFPS();
+//            float lag = currentFPS - lastFPS;
+//
+//            float error = lag / currentFPS;
+//
+//            float nextFPS = Float.NaN;
+//
+//            if (error > lagTolerancePercentFPS) {
+//                if (currentFPS > minFPS) {
+//                    //decrease fps
+//                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
+//                }
+//            } else {
+//                if (currentFPS < idealFPS) {
+//                    //increase fps
+//                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
+//                }
+//            }
+//
+//            int inextFPS = Math.max(1, Math.round(nextFPS));
+//            if (nextFPS == nextFPS && inextFPS != currentFPS) {
+//                //stop();
+//                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
+//
+//                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
+//                animThread = null;
+//
+//                setFPS(inextFPS);
+//                animThread = x;
+//
+//                //start();
+//            }
+//
+////            if (logger.isDebugEnabled()) {
+////                if (!meters.isEmpty()) {
+////                    meters.forEach((m, x) -> {
+////                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
+////                    });
+////                }
+////            }
+//        }
+//
+//
+//    }

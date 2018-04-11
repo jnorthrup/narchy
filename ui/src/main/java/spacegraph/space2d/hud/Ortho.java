@@ -138,7 +138,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
     public GL2 gl() {
-        return window.gl();
+        return window.gl;
     }
 
 

@@ -5,6 +5,7 @@ import com.ifesdjeen.timer.HashedWheelTimer;
 import jcog.Util;
 import org.slf4j.Logger;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,12 +30,14 @@ abstract public class Loop {
 
     static synchronized HashedWheelTimer timer() {
         if (timer == null) {
+            Executor exe = Util.executor();
+            HashedWheelTimer.logger.info("global timer start: executor={}", exe);
             timer = new HashedWheelTimer(Loop.class.getName(),
-                    TimeUnit.MILLISECONDS.toNanos(2),
-                    96,
+                    TimeUnit.MILLISECONDS.toNanos(1),
+                    32,
                     // HashedWheelTimer.WaitStrategy.YieldingWait,
                     HashedWheelTimer.WaitStrategy.SleepWait,
-                    Util.executor());
+                    exe);
         }
         return timer;
     }
@@ -67,21 +70,22 @@ abstract public class Loop {
      * create but do not start
      */
     public Loop() {
-        logger = getLogger(getClass());
+        this(-1);
     }
 
     /**
      * create and auto-start
      */
     public Loop(float fps) {
-        this(fpsToMS(fps));
+        this(fps >= 0 ? fpsToMS(fps) : -1);
     }
 
     /**
      * create and auto-start
      */
     public Loop(int periodMS) {
-        this();
+        super();
+        logger = getLogger(getClass());
         setPeriodMS(periodMS);
         //timer.scheduleWithFixedDelay()
     }
@@ -108,7 +112,7 @@ abstract public class Loop {
 //                    Thread myNewThread = newThread();
 //                    myNewThread.start();
                     onStart();
-                    this.task = timer().scheduleAtFixedRate(this::_next, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                    this.task = timer().scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
                 synchronized (periodMS) {
@@ -223,14 +227,13 @@ abstract public class Loop {
     }
 
 
-    protected final void _next() {
+    protected final void loop() {
 
-        if (!executing.compareAndSet(false, true)) {
-            //already in-progress
-            return;
-        }
         if (periodMS.intValue()<0)
             return; //stopped
+
+        if (!executing.compareAndSet(false, true))
+            return; //already in-progress
 
         try {
 
@@ -256,8 +259,6 @@ abstract public class Loop {
     protected void afterNext() {
 
     }
-
-    volatile long last = System.nanoTime();
 
     abstract public boolean next();
 
