@@ -37,7 +37,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Ortho extends Container implements SurfaceRoot, WindowListener, MouseListener, KeyListener {
 
-    protected final AnimVector2f scale;
+    public final AnimVector2f scale;
     public float scaleMin = 0.25f;
     public float scaleMax = 10000f;
 

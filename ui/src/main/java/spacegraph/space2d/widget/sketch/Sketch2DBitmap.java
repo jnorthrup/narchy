@@ -22,6 +22,7 @@ import java.awt.image.DataBufferInt;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static spacegraph.space2d.container.Gridding.grid;
 
+/** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
 public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
 
     final Tex bmp = new Tex();

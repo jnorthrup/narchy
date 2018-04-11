@@ -1006,69 +1006,69 @@ public enum Draw {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    private static class TriMeshKey {
-        public CollisionShape shape;
-        public int dlist; // OpenGL display list
-    }
+//    private static class TriMeshKey {
+//        public CollisionShape shape;
+//        public int dlist; // OpenGL display list
+//    }
 
-    private static class GlDisplaylistDrawcallback extends TriangleCallback {
-        private final GL gl;
-
-        private final v3 diff1 = new v3();
-        private final v3 diff2 = new v3();
-        private final v3 normal = new v3();
-
-        public GlDisplaylistDrawcallback(GL gl) {
-            this.gl = gl;
-        }
-
-        @Override
-        public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-            diff1.sub(triangle[1], triangle[0]);
-            diff2.sub(triangle[2], triangle[0]);
-            normal.cross(diff1, diff2);
-
-            normal.normalize();
-
-            ImmModeSink vbo = ImmModeSink.createFixed(GL.GL_STATIC_DRAW, 3,
-                    3, GL.GL_FLOAT,  // vertex
-                    4, GL.GL_FLOAT,  // color
-                    3, GL.GL_FLOAT,  // normal
-                    0, GL.GL_FLOAT); // texture
-
-            vbo.glBegin(GL.GL_TRIANGLES);
-            vbo.glColor4f(0, 1f, 0, 1f);
-            vbo.glNormal3f(normal.x, normal.y, normal.z);
-            vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-
-            vbo.glColor4f(0, 1f, 0, 1f);
-            vbo.glNormal3f(normal.x, normal.y, normal.z);
-            vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-
-            vbo.glColor4f(0, 1f, 0, 1f);
-            vbo.glNormal3f(normal.x, normal.y, normal.z);
-            vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
-            vbo.glEnd(gl);
-
-			/*glBegin(gl.GL_LINES);
-            glColor3f(1, 1, 0);
-			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
-			glVertex3d(triangle[0].getX(), triangle[0].getY(), triangle[0].getZ());
-			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
-			glVertex3d(triangle[1].getX(), triangle[1].getY(), triangle[1].getZ());
-			glColor3f(1, 1, 0);
-			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
-			glVertex3d(triangle[2].getX(), triangle[2].getY(), triangle[2].getZ());
-			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
-			glVertex3d(triangle[1].getX(), triangle[1].getY(), triangle[1].getZ());
-			glColor3f(1, 1, 0);
-			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
-			glVertex3d(triangle[2].getX(), triangle[2].getY(), triangle[2].getZ());
-			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
-			glVertex3d(triangle[0].getX(), triangle[0].getY(), triangle[0].getZ());
-			glEnd();*/
-        }
-    }
+//    private static class GlDisplaylistDrawcallback extends TriangleCallback {
+//        private final GL gl;
+//
+//        private final v3 diff1 = new v3();
+//        private final v3 diff2 = new v3();
+//        private final v3 normal = new v3();
+//
+//        public GlDisplaylistDrawcallback(GL gl) {
+//            this.gl = gl;
+//        }
+//
+//        @Override
+//        public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
+//            diff1.sub(triangle[1], triangle[0]);
+//            diff2.sub(triangle[2], triangle[0]);
+//            normal.cross(diff1, diff2);
+//
+//            normal.normalize();
+//
+//            ImmModeSink vbo = ImmModeSink.createFixed(GL.GL_STATIC_DRAW, 3,
+//                    3, GL.GL_FLOAT,  // vertex
+//                    4, GL.GL_FLOAT,  // color
+//                    3, GL.GL_FLOAT,  // normal
+//                    0, GL.GL_FLOAT); // texture
+//
+//            vbo.glBegin(GL.GL_TRIANGLES);
+//            vbo.glColor4f(0, 1f, 0, 1f);
+//            vbo.glNormal3f(normal.x, normal.y, normal.z);
+//            vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
+//
+//            vbo.glColor4f(0, 1f, 0, 1f);
+//            vbo.glNormal3f(normal.x, normal.y, normal.z);
+//            vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
+//
+//            vbo.glColor4f(0, 1f, 0, 1f);
+//            vbo.glNormal3f(normal.x, normal.y, normal.z);
+//            vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
+//            vbo.glEnd(gl);
+//
+//			/*glBegin(gl.GL_LINES);
+//            glColor3f(1, 1, 0);
+//			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
+//			glVertex3d(triangle[0].getX(), triangle[0].getY(), triangle[0].getZ());
+//			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
+//			glVertex3d(triangle[1].getX(), triangle[1].getY(), triangle[1].getZ());
+//			glColor3f(1, 1, 0);
+//			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
+//			glVertex3d(triangle[2].getX(), triangle[2].getY(), triangle[2].getZ());
+//			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
+//			glVertex3d(triangle[1].getX(), triangle[1].getY(), triangle[1].getZ());
+//			glColor3f(1, 1, 0);
+//			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
+//			glVertex3d(triangle[2].getX(), triangle[2].getY(), triangle[2].getZ());
+//			glNormal3d(normal.getX(),normal.getY(),normal.getZ());
+//			glVertex3d(triangle[0].getX(), triangle[0].getY(), triangle[0].getZ());
+//			glEnd();*/
+//        }
+//    }
 
     private static class GlDrawcallback extends TriangleCallback {
         private final GL gl;
@@ -1110,35 +1110,36 @@ public enum Draw {
         }
     }
 
-    private static class TriangleGlDrawcallback extends InternalTriangleIndexCallback {
-        private final GL gl;
-
-        public TriangleGlDrawcallback(GL gl) {
-            this.gl = gl;
-        }
-
-        @Override
-        public void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex) {
-            ImmModeSink vbo = ImmModeSink.createFixed(GL.GL_STATIC_DRAW, 10,
-                    3, GL.GL_FLOAT,  // vertex
-                    4, GL.GL_FLOAT,  // color
-                    0, GL.GL_FLOAT,  // normal
-                    0, GL.GL_FLOAT); // texture
-            vbo.glBegin(GL.GL_TRIANGLES);//LINES);
-            vbo.glColor4f(1, 0, 0, 1);
-            vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-            vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-            vbo.glColor4f(0, 1, 0, 1);
-            vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
-            vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-            vbo.glColor4f(0, 0, 1, 1);
-            vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
-            vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-            vbo.glEnd(gl);
-        }
-    }
+//    private static class TriangleGlDrawcallback extends InternalTriangleIndexCallback {
+//        private final GL gl;
+//
+//        public TriangleGlDrawcallback(GL gl) {
+//            this.gl = gl;
+//        }
+//
+//        @Override
+//        public void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex) {
+//            ImmModeSink vbo = ImmModeSink.createFixed(GL.GL_STATIC_DRAW, 10,
+//                    3, GL.GL_FLOAT,  // vertex
+//                    4, GL.GL_FLOAT,  // color
+//                    0, GL.GL_FLOAT,  // normal
+//                    0, GL.GL_FLOAT); // texture
+//            vbo.glBegin(GL.GL_TRIANGLES);//LINES);
+//            vbo.glColor4f(1, 0, 0, 1);
+//            vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
+//            vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
+//            vbo.glColor4f(0, 1, 0, 1);
+//            vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
+//            vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
+//            vbo.glColor4f(0, 0, 1, 1);
+//            vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
+//            vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
+//            vbo.glEnd(gl);
+//        }
+//    }
 
     /*
+     * http://imajeenyus.com/computer/20150110_single_line_fonts/index.shtml
      * Hershey Fonts
      * http://paulbourke.net/dataformats/hershey/
      *
