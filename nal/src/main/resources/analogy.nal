@@ -5,15 +5,18 @@
 
   (M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Strong)
 
-  //want/notWant X, and X similar Y then want/notWant Y
+  //wantX and X similar Y then want Y
     X, (X<->Y)                          |- Y, (Belief:Analogy, Goal:Strong)
+    Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Z, X, Y, strict), (Belief:Analogy, Goal:Weak)
+
+  //notWantX and notX similar Y then want Y
+    X, (--X<->Y)                        |- Y, (Belief:AnalogyN, Goal:StrongN)
+
   //want/notWant X,  and not X similar Y then not/want Y
     //X, (X<->Y)                          |- --Y, (Goal:WeakPN)
-
-    //X, (--X<->Y)                        |- Y, (Belief:AnalogyN, Goal:StrongN)
     //X, (--X<->Y)                        |- --Y, (Goal:WeakNN)
 
-    Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Weak)
+
     //Z, (X<->Y), inNeg(Z,X)             |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
     //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:Weak)
     //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, --X, Z, strict), (Belief:AnalogyN, Goal:WeakN)

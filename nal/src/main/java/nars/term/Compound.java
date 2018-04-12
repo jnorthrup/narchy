@@ -354,7 +354,11 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean containsRoot(Term x) {
-        return !impossibleSubTerm(x) && root().contains(x.root());
+        if (!impossibleSubTerm(x)) {
+            Term xr = x.root();
+            return (OR(y -> y.root().equals(xr)));
+        }
+        return false;
     }
 
     @Override

@@ -294,13 +294,14 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong)
-    //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-    X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN)
+    X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
+        //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
+        //X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN)
+
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
+    //X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
+    //X, C, eventOf(C,X) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)

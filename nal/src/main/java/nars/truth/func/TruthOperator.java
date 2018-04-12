@@ -23,6 +23,7 @@ public interface TruthOperator {
             table.put(Atomic.the(tm + "NN"), new NegatedTruths(tm));
             table.put(Atomic.the(tm + "NX"), new NegatedTaskTruth(new SwappedTruth(tm)));
             table.put(Atomic.the(tm + "Depolarized"), new DepolarizedTruth(tm));
+            table.put(Atomic.the(tm + "DepolarizedTask"), new DepolarizedTaskTruth(tm));
         }
     }
 
@@ -46,13 +47,28 @@ public interface TruthOperator {
     boolean single();
     boolean beliefProjected();
 
+    abstract class ProxyTruthOperator implements TruthOperator {
+        @NotNull protected final TruthOperator o;
 
-    final class SwappedTruth implements TruthOperator {
+        protected ProxyTruthOperator(TruthOperator o) {
+            this.o = o;
+        }
 
-        private final TruthOperator o;
+        @Override public boolean allowOverlap() {  return o.allowOverlap();         }
+
+        @Override public boolean single() {
+            return o.single();
+        }
+
+        @Override public boolean beliefProjected() {
+            return o.beliefProjected();
+        }
+
+    }
+    final class SwappedTruth extends ProxyTruthOperator {
 
         public SwappedTruth(TruthOperator o) {
-            this.o = o;
+            super(o);
         }
 
         @Override
@@ -68,29 +84,13 @@ public interface TruthOperator {
             return o.toString() + 'X';
         }
 
-        @Override
-        public boolean allowOverlap() {
-            return o.allowOverlap();
-        }
-
-        @Override
-        public boolean single() {
-            return o.single();
-        }
-
-        @Override
-        public boolean beliefProjected() {
-            return o.beliefProjected();
-        }
     }
 
     /** ____N , although more accurately it would be called: 'NP' */
-    final class NegatedTaskTruth implements TruthOperator {
-
-        @NotNull private final TruthOperator o;
+    final class NegatedTaskTruth extends ProxyTruthOperator {
 
         public NegatedTaskTruth(@NotNull TruthOperator o) {
-            this.o = o;
+            super(o);
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m, float minConf) {
@@ -100,25 +100,12 @@ public interface TruthOperator {
         @NotNull @Override public final String toString() {
             return o.toString() + 'N';
         }
-
-        @Override public boolean allowOverlap() { return o.allowOverlap(); }
-
-        @Override public boolean single() {
-            return o.single();
-        }
-
-        @Override
-        public boolean beliefProjected() {
-            return o.beliefProjected();
-        }
     }
 
-    final class NegatedBeliefTruth implements TruthOperator {
-
-        @NotNull private final TruthOperator o;
+    final class NegatedBeliefTruth extends ProxyTruthOperator {
 
         public NegatedBeliefTruth(@NotNull TruthOperator o) {
-            this.o = o;
+            super(o);
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m, float minConf) {
@@ -129,17 +116,9 @@ public interface TruthOperator {
             return o + "PN";
         }
 
-        @Override public boolean allowOverlap() {  return o.allowOverlap();         }
-
-        @Override public boolean single() {
-            return o.single();
-        }
-
-        @Override
-        public boolean beliefProjected() {
-            return o.beliefProjected();
-        }
     }
+
+
     /** for when a conclusion's subterms have already been negated accordingly, so that conclusion confidence is positive and maximum
             //TASK      BELIEF      TRUTH
             //positive  positive    ___PP
@@ -147,12 +126,10 @@ public interface TruthOperator {
             //negative  positive    ___NP
             //negative  negative    ___NN
      */
-    final class DepolarizedTruth implements TruthOperator {
-
-        @NotNull private final TruthOperator o;
+    final class DepolarizedTruth extends ProxyTruthOperator {
 
         public DepolarizedTruth(@NotNull TruthOperator o) {
-            this.o = o;
+            super(o);
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
@@ -173,26 +150,30 @@ public interface TruthOperator {
         @NotNull @Override public final String toString() {
             return o + "Depolarized";
         }
+    }
+    final class DepolarizedTaskTruth extends ProxyTruthOperator {
 
-        @Override public boolean allowOverlap() {  return o.allowOverlap();         }
-
-        @Override public boolean single() {
-            return o.single();
+        public DepolarizedTaskTruth(@NotNull TruthOperator o) {
+            super(o);
         }
 
-        @Override
-        public boolean beliefProjected() {
-            return o.beliefProjected();
+        @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
+            if ((B == null) || (T == null)) return null;
+            else {
+                return o.apply(T.negIf(T.isNegative()), B, m, minConf);
+            }
+        }
+
+        @NotNull @Override public final String toString() {
+            return o + "DepolarizedTask";
         }
     }
 
     /** negates both task and belief frequency */
-    final class NegatedTruths implements TruthOperator {
-
-        @NotNull private final TruthOperator o;
+    final class NegatedTruths extends ProxyTruthOperator {
 
         public NegatedTruths(@NotNull TruthOperator o) {
-            this.o = o;
+            super(o);
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m, float minConf) {
@@ -203,16 +184,6 @@ public interface TruthOperator {
             return o + "NN";
         }
 
-        @Override public boolean allowOverlap() {  return o.allowOverlap();         }
-
-        @Override public boolean single() {
-            return o.single();
-        }
-
-        @Override
-        public boolean beliefProjected() {
-            return o.beliefProjected();
-        }
     }
 
     @Nullable

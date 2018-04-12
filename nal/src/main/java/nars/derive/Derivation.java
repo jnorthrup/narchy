@@ -475,7 +475,7 @@ public class Derivation extends PreDerivation {
                 throw new NullPointerException(_belief + " could not be anonymized");
             beliefTerm = this.beliefTerm = this.belief.term();
         } else {
-            this.belief = null;
+            this.belief = this._belief = null;
             if ((beliefTerm = this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm))==null)
                 throw new NullPointerException(_belief + " could not be anonymized");
         }

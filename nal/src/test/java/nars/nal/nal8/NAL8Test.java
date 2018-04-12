@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 1030;
+    public static final int cycles = 130;
 
 
     @BeforeEach
@@ -495,7 +495,7 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Test
+    @Disabled @Test
     public void testGoalSimilaritySpreadingNeg() {
         test
                 .input("R!")
@@ -511,7 +511,7 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Test
+    @Disabled @Test
     public void testGoalSimilaritySpreadingNegInsideNeg() {
         test
                 .input("--R!")

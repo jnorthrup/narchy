@@ -64,7 +64,8 @@ public class DerivedTask extends NALTask {
 
     static float eternalizability(float taskEternalizability, float beliefEternalizability) {
         //return Math.max(taskEternalizability, beliefEternalizability);
-        return Util.mean(taskEternalizability, beliefEternalizability);
+        //return Util.mean(taskEternalizability, beliefEternalizability);
+        return Util.or(taskEternalizability, beliefEternalizability);
     }
 
 //    @Override

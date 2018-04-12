@@ -101,10 +101,10 @@ public class FZero extends NAgentX {
 //                .resolution(0.05f);
 
 
+        initToggle();
+        //initTankContinuous();
         //actionSwitch();
         //initTankDiscrete();
-        initTankContinuous();
-        //initToggle();
         //initBipolar(true);
         //initBipolar(true);
 
