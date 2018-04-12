@@ -14,6 +14,7 @@ import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
+import nars.task.TaskProxy;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -388,7 +389,7 @@ public class Derivation extends PreDerivation {
 //        }
     }
 
-    public Derivation cycle(NAR nar, Deriver deri, DeriveRules deriverRoot) {
+    public Derivation cycle(NAR nar, Deriver deri) {
         NAR pnar = this.nar;
         if (pnar != nar) {
             init(nar);
@@ -455,65 +456,33 @@ public class Derivation extends PreDerivation {
 
             anon.rollback(taskUniques);
 
+            //keep previous taskTerm
+
         } else {
 
             anon.clear();
+            this.taskTerm = anon.put(_task.term());
+            this.taskUniques = anon.uniques();
         }
 
-        if (this._task==null || !this._task.equals(_task)) {
+        assert(taskTerm!=null): (_task + " could not be anonymized: " + _task.term().anon() + " , " + taskTerm);
+
+
+        if (this._task==null || this._task != _task) {
 
             //TODO handle if 'dur' changed but task hasn't.  anon should be used to get a new task. this would occurr rarely though
 
             this._task = _task;
-            final Task task = this.task = anon.put(_task, dur);
-            if (task == null)
-                throw new NullPointerException(_task + " could not be anonymized: " +
-                        _task.term().anon() + " , " + anon.put(_task, dur));
 
-            this.taskUniques = anon.uniques();
-            final Term taskTerm = this.taskTerm = task.term();
+            this.task = taskProxy(taskTerm, _task); //create new proxy even if task are .equal() because cause and other instance-specific details may differ
+
             this._taskStruct = taskTerm.structure();
             this._taskOp = taskTerm.op().id;
         }
 
-        final Term beliefTerm;
-        if (_belief != null) {
-            if ((this.belief = anon.put(this._belief = _belief, dur)) == null)
-                throw new NullPointerException(_belief + " could not be anonymized");
-            beliefTerm = this.beliefTerm = this.belief.term();
-        } else {
-            this.belief = this._belief = null;
-            if ((beliefTerm = this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm))==null)
-                throw new NullPointerException(_belief + " could not be anonymized");
-        }
-        this._beliefStruct = beliefTerm.structure();
-        this._beliefOp = beliefTerm.op().id;
-
-        if (updateTruth()) {
-            this.forEachMatch = null;
-            this.concTruth = null;
-            this.concPunc = 0;
-            this.truthFunction = null;
-            this.single = false;
-            this.evidenceDouble = evidenceSingle = null;
-            this.dtSingle = this.dtDouble = null;
-            this.concOcc[0] = this.concOcc[1] = ETERNAL;
-
-            this.derivedTerm.clear();
-            return true; //ready
-        }
-        return false;
-    }
-
-
-    /** returns false if there was a critical truth deficit */
-    private boolean updateTruth() {
-
-        this.beliefTruth = this.beliefTruthProjected = this.taskTruth = null;
-
         long tAt;
         //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
-        if (_task.isEternal() && (belief!=null && !belief.isEternal()))
+        if (_task.isEternal() && (_belief!=null && !_belief.isEternal()))
             tAt = time;
         else
             tAt = _task.nearestPointInternal(time);
@@ -522,21 +491,21 @@ public class Derivation extends PreDerivation {
             throw new RuntimeException();
 
         this.taskAt = tAt;
-        switch (this.taskPunc = _task.punc()) {
-            case QUESTION:
-            case QUEST:
-//                this.taskPolarity = 0;
-                assert(this.taskTruth == null);
-                break;
-            default:
-                if ((this.taskTruth = _task.truth(tAt, dur)) == null)
-                    return false;
-                //assert(this.taskTruth!=null);
-//                this.taskPolarity = polarity(taskTruth);
-                break;
+        this.taskPunc = _task.punc();
+
+        if ((taskPunc == BELIEF || taskPunc == GOAL)) {
+            if ((this.taskTruth = _task.truth(tAt, dur)) == null)
+                return false;
+        } else {
+            this.taskTruth = null;
         }
 
-        if (belief != null) {
+
+        if (_belief != null) {
+            beliefTerm = anon.put(this._beliefTerm = _belief.term());
+            this._belief = _belief;
+            this.belief = taskProxy(beliefTerm, _belief);
+
             long bAt = belief.nearestPointExternal(_task.start(), _task.end());
             this.beliefAt =
                     //bAt;
@@ -544,22 +513,41 @@ public class Derivation extends PreDerivation {
 
             this.beliefTruth = belief.truth(beliefAt,dur);
             this.beliefTruthProjected = belief.truth(bAt, dur);
-
-////                this.beliefPolarity = polarity(this.beliefTruth);
-//            } else {
-//                this.belief = null;
-////                this.beliefPolarity = 0;
-//                this.beliefAt = TIMELESS;
-//            }
-
+            if (beliefTruth == null && beliefTruthProjected == null) {
+                this._belief = this.belief = null; //single
+            }
         } else {
-            this.beliefTruth = null;
-//            this.beliefPolarity = 0;
+            this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
+            this.belief = this._belief = null;
             this.beliefAt = TIMELESS;
+            this.beliefTruth = this.beliefTruthProjected = null;
         }
+        assert(beliefTerm!=null): (_beliefTerm + " could not be anonymized");
 
-        return true;
+        this._beliefStruct = beliefTerm.structure();
+        this._beliefOp = beliefTerm.op().id;
+
+
+        this.forEachMatch = null;
+        this.concTruth = null;
+        this.concPunc = 0;
+        this.truthFunction = null;
+        this.single = false;
+        this.evidenceDouble = evidenceSingle = null;
+        this.dtSingle = this.dtDouble = null;
+        this.concOcc[0] = this.concOcc[1] = ETERNAL;
+
+        this.derivedTerm.clear();
+        return true; //ready
     }
+
+    private Task taskProxy(Term y, Task t) {
+        return (t.isBeliefOrGoal() && !t.isEternal()) ?
+                new TaskProxy.WithTermCachedTruth(y, t, dur) :
+                new TaskProxy.WithTerm(y, t);
+    }
+
+
 
 
 

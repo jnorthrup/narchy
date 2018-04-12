@@ -113,22 +113,7 @@ public class Anon {
         }
     }
 
-    public Task put(Task t, int dur) {
-        Term x = t.term();
-        //assert (x.isNormalized()) : t + " has non-normalized Term content";
-        Term y = put(x);
-        if (y == null || y instanceof Bool) {
-            throw new RuntimeException("Anon fail for term: " + t);
-        }
-//        if (y instanceof Compound) {
-//            Subterms yy = y.subterms();
-//            yy.setNormalized();
-//        }
 
-        return (t.isBeliefOrGoal() && !t.isEternal()) ?
-                new TaskProxy.WithTermCachedTruth(y, t, dur) :
-                new TaskProxy.WithTerm(y, t);
-    }
 
 
 }

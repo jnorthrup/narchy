@@ -16,7 +16,8 @@ import nars.exe.Causable;
 import nars.term.Term;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -87,6 +88,13 @@ public class Deriver extends Causable {
         return n.services().filter(Deriver.class::isInstance).map(Deriver.class::cast);
     }
 
+    /** sloppy pre-sort of premises by task/task_term,
+     *  to maximize sequential repeat of derived task term */
+    static final Comparator<? super Premise> sortByTask =
+            Comparator
+                .comparingInt((Premise a) -> a.task.hashCode())
+                .thenComparing((Premise a) -> a.task.term().hashCode());
+
     @Override
     protected int next(NAR n, final int iterations) {
 
@@ -95,57 +103,55 @@ public class Deriver extends Causable {
         int deriveTTL = n.matchTTLmean.intValue();
 
 
-        int totalPremises = 0;
+        int fired = 0;
 
         int iterMult = premisesPerConcept * conceptsPerIteration.intValue();
         int totalPremisesRemain = iterations * iterMult;
 
-        Derivation d = derivation.get().cycle(n, this, rules);
 
         /** temporary buffer for storing unique premises */
-        Set<Premise> premiseBurst =
+        ArrayHashSet<Premise> premiseBurst =
                 //new LinkedHashSet();
                 new ArrayHashSet<>(Math.round(burstMax*1.5f));
 
+        Derivation d = derivation.get().cycle(n, this);
 
-        int fired = 0;
         while (totalPremisesRemain > 0) {
 
             int burstSize = Math.min(burstMax, totalPremisesRemain);
             totalPremisesRemain -= burstSize;
 
-            premiseBurst.clear();
+            assert(premiseBurst.isEmpty());
 
             //SELECT
-
-            fired += selectPremises(n, burstSize, (t, termlink) -> {
+            selectPremises(n, burstSize, (t, termlink) -> {
 
                 Premise premise = new Premise(t, termlink);
-                if (!premiseBurst.add(premise)) {
+                if (!premiseBurst.add(premise))
                     n.emotion.premiseBurstDuplicate.increment();
-                }
 
                 return true;
-
-//                premise.priSet(Param.taskTermLinksToPremise.apply(
-//                        premise.task.priElseZero(),
-//                        termlink.priElseZero()
-//                ) * nar.amp(t));
             });
 
-            //--- FIRE
-            totalPremises += premiseBurst.size();
+
+            int s = premiseBurst.size();
+            if (s == 0)
+                break;
+
+            if (s > 2)
+                Collections.sort(premiseBurst.list, sortByTask);
+
+            fired += s;
 
             long[] focus = n.timeFocus();
 
+
+            //--- FIRE
             premiseBurst.forEach(premise -> {
 
-                if (premise.match(d, focus, matchTTL) != null) {
+                if (premise.match(d, focus, matchTTL)) {
 
                     if (rules.derivable(d)) {
-                        //specific ttl as fraction of the total TTL allocated to the burst, proportional to its priority contribution
-//                        int ttl = Math.round(Util.lerp(
-//                                premise.priElseZero(), Param.TTL_MIN(), deriveTTL));
 
                         d.derive(deriveTTL);
 
@@ -155,11 +161,9 @@ public class Deriver extends Causable {
                         n.emotion.premiseUnderivable.increment();
                     }
 
-                    //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
                 } else {
                     n.emotion.premiseFailMatch.increment();
                 }
-
 
             });
 
@@ -168,13 +172,14 @@ public class Deriver extends Causable {
             d.flush(target);
         }
 
-        if (fired == 0) return 0;
+        if (fired == 0)
+            return 0;
         else
             return (int) Math.ceil(fired / ((float) iterMult)); //adjust for the workload to correspond with the demand units
     }
 
 
-    private int selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each) {
+    private void selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each) {
 
         int premisesRemain[] = new int[]{premisesMax};
         int perConceptRemain[] = new int[1];
@@ -190,18 +195,15 @@ public class Deriver extends Causable {
 
         this.source.accept(a -> {
 
-            //System.out.println(nar.time() + " " + a);
-
             perConceptRemain[0] = premisesPerConcept;
 
-            a.premises(nar, kontinue,
-                    tasklinks,
-                    termLinksPerTaskLink);
+            a.premiseMatrix(
+                    nar, kontinue,
+                    tasklinks, termLinksPerTaskLink);
 
             return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
         });
 
-        return premisesMax - premisesRemain[0];
 
     }
 

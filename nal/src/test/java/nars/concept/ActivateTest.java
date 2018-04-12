@@ -45,7 +45,7 @@ public class ActivateTest {
 //        BatchActivation ba = new BatchActivation();
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
-            cf.premises(n, (task, term) -> {
+            cf.premiseMatrix(n, (task, term) -> {
                 Task ptask = task;
                 Term pterm = term.get();
                 System.out.println("tasklink=" + ptask + " termlink=" + pterm);

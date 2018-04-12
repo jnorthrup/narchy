@@ -26,10 +26,9 @@ public class Activate extends PLink<Concept> implements Termed {
     }
 
     /**
-     * hypothesize premises, up to a max specified #
+     * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    /*@NotNull*/
-    public void premises(NAR nar, BiPredicate<Task, PriReference<Term>> each, int _tasklinks, int _termlinksPerTasklink) {
+    public void premiseMatrix(NAR nar, BiPredicate<Task, PriReference<Term>> each, int _tasklinks, int _termlinksPerTasklink) {
 
         nar.emotion.conceptFire.increment();
 

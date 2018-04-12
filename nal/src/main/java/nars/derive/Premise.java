@@ -68,7 +68,7 @@ public class Premise {
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
     @Nullable
-    public Derivation match(Derivation d, long[] focus, int matchTTL) {
+    public boolean match(Derivation d, long[] focus, int matchTTL) {
 
 
         Term taskTerm = task.term();
@@ -127,7 +127,7 @@ public class Premise {
         }
         assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 
-        return !d.reset(task, belief, beliefTerm) ? null : d;
+        return d.reset(task, belief, beliefTerm);
 
     }
 

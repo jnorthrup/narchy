@@ -146,7 +146,8 @@ public class Focus extends AtomicRoulette<Causable> {
             double jiffy = nar.loop.jiffy.floatValue();
             double throttle = nar.loop.throttle.floatValue();
 
-            double timesliceNS = this.timesliceNS = nar.loop.periodNS() * jiffy * throttle;// / (n / concurrency);
+            //in nS
+            double timePerSlice = this.timesliceNS = nar.loop.periodNS() * jiffy * throttle;// / (n / concurrency);
 
             for (int i = 0; i < n; i++) {
                 Causable c = choice.get(i);
@@ -155,17 +156,20 @@ public class Focus extends AtomicRoulette<Causable> {
 
                 c.can.commit(commiter);
 
+
                 long timeNS = committed[0];
                 if (timeNS > 0) {
 
-                    DescriptiveStatistics t = this.time[i];
-                    t.addValue(timeNS);
-                    double timeMeanNS = this.timeMean[i] = t.getMean();
+                    DescriptiveStatistics time = this.time[i];
+                    time.addValue(timeNS);
 
-                    DescriptiveStatistics d = this.done[i];
-                    d.addValue(committed[1]);
-                    this.doneMean[i] = d.getMean();
-                    this.doneMax[i] = Math.round(d.getMax());
+                    DescriptiveStatistics done = this.done[i];
+                    done.addValue(committed[1]);
+
+                    double timeMeanNS = this.timeMean[i] = time.getMean();
+
+                    this.doneMean[i] = done.getMean();
+                    this.doneMax[i] = Math.round(done.getMax());
 
                     //value per time
                     //value[i] = (float) (c.value() / (Math.max(1E3 /* 1uS in nanos */, timeMeanNS)/1E9));
@@ -196,20 +200,19 @@ public class Focus extends AtomicRoulette<Causable> {
 
                 //the iters per timeslice is determined by past measurements
                 long doneMost = doneMax[i];
-                double timePerIter = timeMean[i];
+                double timePerIter = timeMean[i]/Math.max(0.5f, doneMean[i]);
+                int iterLimit;
                 if (doneMost < 1 || !Double.isFinite(timePerIter)) {
-                    timePerIter = timesliceNS; //assume only one iteration will consume entire timeslice
+                    //assume worst case that one iteration will consume an entire timeslice
+                    iterLimit = 1;
+                } else {
+                    iterLimit = Math.max(1,
+                        (int) Math.ceil(Math.min(doneMost * IterGrowthRate, timePerSlice / timePerIter))
+                    );
                 }
 
-                //the priority determined by the value primarily affects the probability of the choice being selected as a timeslice
                 priGetAndSet(i, pri);
-                sliceIters[i] = (int) Math.max(1, Math.ceil(
-
-                        //modulate growth by the normalized value
-                        ( /*vNormPerTime * */ timesliceNS / timePerIter) * IterGrowthRate
-                                //+IterGrowthIncrement
-                ));
-                //System.out.println(this.choice.get(i) + " "+ vNormPerTime + " " + sliceIters[i]);
+                sliceIters[i] = iterLimit;
             }
             //System.out.println();
         } finally {

@@ -19,7 +19,6 @@ public class FocusingLinearTruthPolation extends TruthPolation {
             0; //<- anything besides what matches the specified interval is ignored
             //1; //<- allows some temporal bleed-through during interpolation when an exact match is present
 
-    /*float eviFactor, float eviMin*/
     public FocusingLinearTruthPolation(long start, long end, int dur) {
         super(start, end, dur);
     }
@@ -28,23 +27,10 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     public void add(Task t) {
         super.add(t);
 
-        long dd =
-                t.minDistanceTo(start, end);
-        //t.meanDistanceTo((start + end)/2L);
+        long dd = t.minDistanceTo(start, end);
 
-        if (dur > 0) {
-            if (dd < dur)
-                dur = Math.max(minDur, (int) dd);
-
-//            if (computeDensity) {
-//                long ts = Util.clamp(t.start(), start, end);
-//                long te = Util.clamp(t.end(), start, end);
-//                spanStart = Math.min(ts, spanStart);
-//                spanEnd = Math.max(te, spanEnd);
-//                rangeSum += Math.max(1, te - ts);
-//            }
-        }
-
+        if (dur > minDur && dd < dur)
+            dur = Math.max(minDur, (int) dd);
     }
 
 
@@ -53,31 +39,44 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     public Truth truth() {
 
         int s = size();
-        if (s > 0) {
+        float e, f;
+        switch (s) {
+            case 0: return null;
+            case 1: {
+                //accelerated single case
+                TaskComponent x = update(0);
+                if (x == null)
+                    return null; //could have been pre-filtered
+                e = x.evi;
+                f = x.freq;
+                break;
+            }
+            default: {
+                float eviSum = 0, wFreqSum = 0;
+                for (int i = 0; i < s; i++) {
+                    TaskComponent x = update(i);
+                    if (x == null)
+                        continue;  //could have been pre-filtered
 
-            //float eviSum = 0, confSum = 0, wFreqSum = 0;
-            float eviSum = 0, wFreqSum = 0;
-            for (int i = 0; i < s; i++) {
-                TaskComponent x = update(i);
-                if (x==null)
-                    continue;  //could have been pre-filtered
+                    float ee = x.evi;
 
-                float ee = x.evi;
-
-                eviSum += ee;
+                    eviSum += ee;
 //                        float ce = w2cSafe(ee);
 //                        confSum += ce;
-                //wFreqSum += ce * x.freq;
-                wFreqSum += ee * x.freq;
-            }
-            assert (Float.isFinite(eviSum) && eviSum > Float.MIN_NORMAL);
+                    //wFreqSum += ce * x.freq;
+                    wFreqSum += ee * x.freq;
+                }
+                e = eviSum;
+                if (e < Float.MIN_NORMAL)
+                    return null;
 
-            //float f = (wFreqSum / confSum);
-            float f = (wFreqSum / eviSum);
-            return new PreciseTruth(f, eviSum, false);
+                //f = (wFreqSum / confSum);
+                f = (wFreqSum / eviSum);
+                break;
+            }
         }
 
-        return null;
+        return new PreciseTruth(f, e, false);
     }
 
 
