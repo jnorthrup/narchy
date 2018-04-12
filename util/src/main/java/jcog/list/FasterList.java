@@ -463,7 +463,7 @@ public class FasterList<X> extends FastList<X> {
 
 
     public final void clearFast() {
-        setSize(0);
+        size = 0;
     }
 
 
@@ -653,6 +653,15 @@ public class FasterList<X> extends FastList<X> {
         this.items = Arrays.copyOfRange(items, 0, this.size = index);
     }
 
+    public boolean removeAbove(int index) {
+        int s = this.size;
+        if (index >= s)
+            return false;
+        Arrays.fill(items, index, s, null);
+        this.size = index;
+        return true;
+    }
+
     public int capacity() {
         return items.length;
     }
@@ -727,14 +736,6 @@ public class FasterList<X> extends FastList<X> {
             Util.reverse(items, 0, s - 1);
         }
     }
-
-    /**
-     * forcibly sets the size
-     */
-    public void setSize(int s) {
-        this.size = s;
-    }
-
 
     public X addThen(X x) {
         add(x);

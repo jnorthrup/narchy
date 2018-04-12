@@ -21,8 +21,8 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
 
     private final static int minDur =
-            //0; //<- anything besides what matches the specified interval is ignored
-            1; //<- allows some temporal bleed-through during interpolation when an exact match is present
+            0; //<- anything besides what matches the specified interval is ignored
+            //1; //<- allows some temporal bleed-through during interpolation when an exact match is present
 
     static class TaskComponent {
         public final Task task;

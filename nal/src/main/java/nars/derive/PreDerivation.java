@@ -42,16 +42,14 @@ public abstract class PreDerivation extends Unify {
 //        return (t.isPositive() ? +1 : -1);
 //    }
 
-    public PreDerivation reset() {
+    protected void reset() {
 
         termutes.clear();
-
-        this.taskTerm = this.beliefTerm = null;
 
         this.size = 0; //HACK instant revert to zero
         this.xy.map.clear(); //must also happen to be consistent
 
-        return this;
+
     }
 
 }

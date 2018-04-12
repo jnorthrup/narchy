@@ -37,18 +37,15 @@ public class SignalTask extends NALTask {
         return false;
     }
 
-//    @Override
-//    public float eternalizability() {
+    @Override
+    public float eternalizability() {
+        return 0;
 //        //return punc == GOAL ? 0 : 1f; //dont eternalize goal
 //        return 1f;
 //        //return 0.5f;
 //        //return 0.1f;
-//    }
+    }
 
-//    @Override
-//    public boolean isInput() {
-//        return false;
-//    }
 
 
 }

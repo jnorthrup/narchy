@@ -40,6 +40,20 @@ public class Anon {
         this.GET = newGet();
     }
 
+    public int uniques() {
+        return rev.size();
+    }
+    /** returns true if anything changed */
+    public boolean rollback(int uniques) {
+        int max;
+        if (uniques < (max = uniques())) {
+            for (int i = uniques; i < max; i++)
+                fwd.removeKey(rev.get(i));
+            rev.removeAbove(uniques);
+            return true;
+        }
+        return false;
+    }
 
     final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
         int s = rev.addAndGetSize(next);

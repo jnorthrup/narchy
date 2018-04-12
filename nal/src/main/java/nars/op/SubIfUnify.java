@@ -7,6 +7,7 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.compound.util.Image;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
 
@@ -112,10 +113,10 @@ public class SubIfUnify extends Functor {
         //if (input instanceof Bool)return Null;
         //if (input == Null) return Null;
 
-        Term x = a.sub(1);
+        Term x = Image.imageNormalize( a.sub(1) );
         //if (x == Null) return Null;
 
-        Term y = a.sub(2);
+        Term y = Image.imageNormalize( a.sub(2) );
         //if (y == Null) return Null;
 
         if (x.equalsRoot(y)) {

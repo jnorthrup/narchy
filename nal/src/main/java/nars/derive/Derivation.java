@@ -154,6 +154,7 @@ public class Derivation extends PreDerivation {
 
     /** precise time that the task and belief truth are sampled */
     public long taskAt, beliefAt;
+    private int taskUniques;
 
 
 ////    public final TopNUniquePremises premises = new TopNUniquePremises();
@@ -435,44 +436,68 @@ public class Derivation extends PreDerivation {
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
-    @Override public Derivation reset() {
-        super.reset();
+    /** setup for a new derivation; returns false if the premise is invalid to derive */
+    public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
 
-        anon.clear();
+        reset();
 
-        this.task = this.belief = null;
-        this._task = this._belief = null;
-        this._beliefTerm = null;
+        if (this._task!=null && this._task.equals(_task)) {
 
-        this.beliefTruth = this.beliefTruthProjected = this.taskTruth = null;
+            //same task; just rollback anon to the point where a belief's uniques can be added
 
-        this.forEachMatch = null;
-        this.concTruth = null;
-        this.concPunc = 0;
-        this.truthFunction = null;
-        this.single = false;
-        this.evidenceDouble = evidenceSingle = null;
-        this.dtSingle = this.dtDouble = null;
-        this.concOcc[0] = this.concOcc[1] = ETERNAL;
+            anon.rollback(taskUniques);
 
-        this.derivedTerm.clear();
+            //TODO handle if 'dur' changed but task hasn't.  anon should be used to get a new task. this would occurr rarely though
 
+        } else {
 
-        //        if (revert(0)) {
-        //remove common variable entries because they will just consume memory if retained as empty
-//            xy.map.keySet().removeIf(k -> {
-//                return !(k instanceof AbstractVariable) || k instanceof CommonVariable;
-//            });
-//            xy.map.clear();
-//        }
+            anon.clear();
 
-        return this;
+            this._task = _task;
+            final Task task = this.task = anon.put(_task, dur);
+            this.taskUniques = anon.uniques();
+            if (task == null)
+                throw new NullPointerException(_task + " could not be anonymized: " +
+                        _task.term().anon() + " , " + anon.put(this._task = _task, dur));
+            final Term taskTerm = this.taskTerm = task.term();
+            this._taskStruct = taskTerm.structure();
+            this._taskOp = taskTerm.op().id;
+        }
+
+        final Term beliefTerm;
+        if (_belief != null) {
+            if ((this.belief = anon.put(this._belief = _belief, dur)) == null)
+                throw new NullPointerException(_belief + " could not be anonymized");
+            beliefTerm = this.beliefTerm = this.belief.term();
+        } else {
+            this.belief = null;
+            if ((beliefTerm = this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm))==null)
+                throw new NullPointerException(_belief + " could not be anonymized");
+        }
+        this._beliefStruct = beliefTerm.structure();
+        this._beliefOp = beliefTerm.op().id;
+
+        if (updateTruth()) {
+            this.forEachMatch = null;
+            this.concTruth = null;
+            this.concPunc = 0;
+            this.truthFunction = null;
+            this.single = false;
+            this.evidenceDouble = evidenceSingle = null;
+            this.dtSingle = this.dtDouble = null;
+            this.concOcc[0] = this.concOcc[1] = ETERNAL;
+
+            this.derivedTerm.clear();
+            return true; //ready
+        }
+        return false;
     }
 
 
     /** returns false if there was a critical truth deficit */
-    protected boolean setTruth() {
+    private boolean updateTruth() {
 
+        this.beliefTruth = this.beliefTruthProjected = this.taskTruth = null;
 
         long tAt;
         //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
@@ -494,7 +519,7 @@ public class Derivation extends PreDerivation {
             default:
                 if ((this.taskTruth = _task.truth(tAt, dur)) == null)
                     return false;
-                assert(this.taskTruth!=null);
+                //assert(this.taskTruth!=null);
 //                this.taskPolarity = polarity(taskTruth);
                 break;
         }
@@ -524,41 +549,7 @@ public class Derivation extends PreDerivation {
         return true;
     }
 
-    /**
-     * setup the derivation for the ProtoDerivation stage
-     *
-     * must call reset() immediately before or after calling this.
-     *
-     * TODO move some of these to a superclass method which sets the variables in its scope
-     */
-    public boolean proto(Task _task, final Task _belief, Term _beliefTerm) {
 
-
-        final Task task = this.task = anon.put(this._task = _task, dur);
-        if (task == null)
-            throw new NullPointerException(_task + " could not be anonymized: " +
-                    _task.term().anon() + " , " + anon.put(this._task = _task, dur));
-        final Term taskTerm = this.taskTerm = task.term();
-        final Term beliefTerm;
-        if (_belief != null) {
-            if ((this.belief = anon.put(this._belief = _belief, dur)) == null)
-                throw new NullPointerException(_belief + " could not be anonymized");
-            beliefTerm = this.beliefTerm = this.belief.term();
-        } else {
-            this.belief = null;
-            if ((beliefTerm = this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm))==null)
-                throw new NullPointerException(_belief + " could not be anonymized");
-        }
-
-
-
-        this._taskStruct = taskTerm.structure();
-        this._taskOp = taskTerm.op().id;
-        this._beliefStruct = beliefTerm.structure();
-        this._beliefOp = beliefTerm.op().id;
-
-        return setTruth();
-    }
 
     /** called after protoderivation has returned some possible Try's */
     public void derive(int ttl) {

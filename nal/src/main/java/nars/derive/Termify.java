@@ -50,9 +50,9 @@ public final class Termify extends AbstractPred<Derivation> {
 
         if (!Taskify.valid(c1)) {
             Term c1e = c1;
-            d.nar.emotion.deriveFailEval.increment(()->{
-                return rule + " |\n\t" + d.xy + "\n\t -> " + c1e;
-            });
+            d.nar.emotion.deriveFailEval.increment(()->
+                rule + " |\n\t" + d.xy + "\n\t -> " + c1e
+            );
             return false;
         }
 
@@ -96,9 +96,9 @@ public final class Termify extends AbstractPred<Derivation> {
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
             if ((c1!=c2 && !Taskify.valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
                 Term c1e = c1;
-                d.nar.emotion.deriveFailTemporal.increment(()->{
-                    return rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2;
-                });
+                d.nar.emotion.deriveFailTemporal.increment(()->
+                    rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
+                );
                 return false;
             }
 

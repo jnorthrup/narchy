@@ -70,38 +70,15 @@ public class Premise {
     @Nullable
     public Derivation match(Derivation d, long[] focus, int matchTTL) {
 
-        NAR n = d.nar;
-
-        //nar.emotion.count("Premise_run");
-
-
-        if (task == null || task.isDeleted()) {
-//            Task fwd = task.meta("@");
-//            if (fwd!=null)
-//                task = fwd; //TODO multihop dereference like what happens in tasklink bag
-//            else {
-//                delete();
-//                return;
-//            }
-            return null;
-        }
-
-
-        //n.conceptualize(task.term(), (c)->{});
-
-
-        int dur = d.dur;
-
-        Term beliefTerm = term();
-
 
         Term taskTerm = task.term();
         Term taskConcept = task.term().concept();
+        Op to = taskTerm.op();
 
         final boolean[] beliefConceptCanAnswerTaskConcept = {false};
         boolean unifiedBelief = false;
 
-        Op to = taskTerm.op();
+        Term beliefTerm = term();
         Op bo = beliefTerm.op();
         if (to == bo) {
             if (taskConcept.equals(beliefTerm.concept())) {
@@ -112,7 +89,7 @@ public class Premise {
 
                     Term _beliefTerm = beliefTerm;
                     final Term[] unifiedBeliefTerm = new Term[]{null};
-                    UnifySubst u = new UnifySubst(/*null*/VAR_QUERY, n, (y) -> {
+                    UnifySubst u = new UnifySubst(/*null*/VAR_QUERY, d.nar, (y) -> {
                         if (y.op().conceptualizable) {
                             y = y.normalize();
 
@@ -139,11 +116,29 @@ public class Premise {
         beliefTerm = beliefTerm.unneg(); //HACK ?? assert(beliefTerm.op()!=NEG);
 
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
-        Task belief = null;
+        Task belief = match(d, focus, beliefTerm, taskConcept, beliefConceptCanAnswerTaskConcept[0], unifiedBelief);
 
-//        float timeFocus = n.timeFocus.floatValue();
+
+        if (belief != null) {
+            beliefTerm = belief.term(); //use the belief's actual possibly-temporalized term
+            if (belief.equals(task)) { //do not repeat the same task for belief
+                belief = null; //force structural transform; also prevents potential inductive feedback loop
+            }
+        }
+        assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
+
+        return !d.reset(task, belief, beliefTerm) ? null : d;
+
+    }
+
+    @Nullable Task match(Derivation d, long[] focus, Term beliefTerm, Term taskConcept, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
+        //        float timeFocus = n.timeFocus.floatValue();
 //        int fRad = Math.round(Math.max(1,dur * timeFocus));
 
+        NAR n = d.nar;
+        int dur = d.dur;
+
+        Task belief = null;
 
         final Concept beliefConcept = beliefTerm.op().conceptualizable ?
                 n.conceptualize(beliefTerm) //conceptualize in case of dynamic concepts
@@ -155,7 +150,7 @@ public class Premise {
 
                 final BeliefTable bb = beliefConcept.beliefs();
                 if (task.isQuestOrQuestion()) {
-                    if (beliefConceptCanAnswerTaskConcept[0]) {
+                    if (beliefConceptCanAnswerTaskConcept) {
                         final BeliefTable answerTable =
                                 (task.isGoal() || task.isQuest()) ?
                                         beliefConcept.goals() :
@@ -205,28 +200,7 @@ public class Premise {
             }
 
         }
-
-
-        if (belief != null) {
-            beliefTerm = belief.term().unneg(); //use the belief's actual possibly-temporalized term
-
-//            if (belief.equals(task)) { //do not repeat the same task for belief
-//                belief = null; //force structural transform; also prevents potential inductive feedback loop
-//            }
-        }
-
-        if (beliefTerm instanceof Bool) {
-            //logger.warn("{} produced Bool beliefTerm", this);
-            return null;
-        }
-
-
-        //assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
-
-        if (!d.reset().proto(task, belief, beliefTerm))
-            return null;
-
-        return d;
+        return belief;
     }
 
 
