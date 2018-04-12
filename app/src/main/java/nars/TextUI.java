@@ -380,7 +380,7 @@ public class TextUI {
                     } else if (t.isGoal()) {
                         g = c;
                         r = b = 5;
-                    } else if (t.isQuestOrQuestion()) {
+                    } else if (t.isQuestionOrQuest()) {
                         b = c;
                         r = g = 5;
                     } else {

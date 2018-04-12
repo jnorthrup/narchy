@@ -294,17 +294,18 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                             nar,
 
                             //happiness (raw value)
-                            pair($.inh($.p("happy", "raw"), id),
+                            pair($.inh(id, "happy"),
+                                //$.func("happy", id),
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
                             //long-term happiness: chronic / satisfaction
-                            pair($.inh($.p("happy", "chronic"), id), compose(
+                            pair($.func("happy", id, $.the("chronic")), compose(
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
                                 new FloatExpMovingAverage(0.02f)
                             )),
 
                             //short-term happiness: acute / joy
-                            pair($.inh($.p("happy", "acute"), id), compose(
+                            pair($.func("happy", id, $.the("acute")), compose(
                                 new FloatExpMovingAverage(0.1f, false),
                                 new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
                             ))

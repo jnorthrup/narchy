@@ -35,6 +35,9 @@ import static spacegraph.util.math.v3.v;
 
 abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatial<X>> {
 
+    /** JOGL default is 10ms */
+    private static final long EDT_POLL_PERIOD_MS = 20;
+
     public final v3 camPos;
     public final v3 camFwd;
     public final v3 camUp;
@@ -86,11 +89,16 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     }
 
     public JoglSpace add(Surface layer) {
-        this.layers.add(layer);
         if (layer instanceof Ortho) {
-            pending.add(() -> ((Ortho) layer).start(this));
+            pending.add(() -> {
+                ((Ortho) layer).start(this);
+                this.layers.add(layer);
+            });
         } else {
-            pending.add(() -> layer.start(null));
+            pending.add(() -> {
+                layer.start(null);
+                this.layers.add(layer);
+            });
         }
         return this;
     }
@@ -106,7 +114,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     @Override
     protected void init(GL2 gl) {
 
-        updateWindowInfo();
+
 
 
         //gl.glEnable(GL_POINT_SPRITE);
@@ -158,7 +166,10 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         initLighting();
 
+        updateWindowInfo();
         initInput();
+
+        window.getScreen().getDisplay().getEDTUtil().setPollPeriod(EDT_POLL_PERIOD_MS);
 
         onUpdate((Consumer) (w -> pending.removeIf((x) -> {
             x.run();
@@ -394,16 +405,11 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 //        stack.quats.pop();
     }
 
-    //    @Override
-//    public void windowGainedFocus(WindowEvent windowEvent) {
-//        updateWindowInfo();
-//    }
 
     @Override
     public void windowResized(WindowEvent windowEvent) {
         updateWindowInfo();
     }
-
 
     @Override
     public void windowMoved(WindowEvent windowEvent) {

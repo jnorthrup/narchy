@@ -45,7 +45,6 @@ public final class Termify extends AbstractPred<Derivation> {
 
         nar.emotion.deriveEval.increment();
 
-//        d.xyDyn.clear();
         Term c1 = pattern.eval(d);
 
         if (!Taskify.valid(c1)) {

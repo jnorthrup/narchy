@@ -703,7 +703,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        }
 //    }
 
-    default boolean isQuestOrQuestion() {
+    default boolean isQuestionOrQuest() {
         byte c = punc();
         return c == Op.QUESTION || c == Op.QUEST;
     }
@@ -1001,6 +1001,16 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return Truthed.super.expectation();
     }
 
+    default float expectation(long when, int dur) {
+        return expectation(when, when, dur);
+    }
+
+    default float expectation(long start, long end, int dur) {
+        Truth t = truth(start, end, dur, 0);
+        if (t == null) return Float.NaN;
+        return t.expectation();
+    }
+
     default ITask run(NAR n) {
 
         Term x = term();
@@ -1032,7 +1042,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             Task result;
             if (y instanceof Bool) {
-                if (isQuestOrQuestion()) {
+                if (isQuestionOrQuest()) {
                     //convert to final implicit answer
                     byte p = isQuestion() ? BELIEF : GOAL;
 

@@ -140,7 +140,7 @@ public class Taskify extends AbstractPred<Derivation> {
             //test for same punc, term, start/end, freq, but different conf
             if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() && parent.start() == derived.start() && parent.end() == derived.end()) {
                 /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
-                if (parent.isQuestOrQuestion() ||
+                if (parent.isQuestionOrQuest() ||
                         (Util.equals(parent.freq(), derived.freq(), truthResolution) &&
                                 parent.evi() >= derived.evi())
                         ) {

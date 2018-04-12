@@ -149,7 +149,7 @@ public class Premise {
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
                 final BeliefTable bb = beliefConcept.beliefs();
-                if (task.isQuestOrQuestion()) {
+                if (task.isQuestionOrQuest()) {
                     if (beliefConceptCanAnswerTaskConcept) {
                         final BeliefTable answerTable =
                                 (task.isGoal() || task.isQuest()) ?

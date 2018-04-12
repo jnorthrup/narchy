@@ -52,36 +52,46 @@ public enum Image { ;
         return Null;
     }
 
-    @Deprecated public static Term imageNormalize(Term t) {
-        return t instanceof Compound ? imageNormalize((Compound)t) : t;
-    }
+    public static Term imageNormalize(Term _t) {
+        if (!(_t instanceof Compound))
+            return _t;
 
-    public static Term imageNormalize(Compound t) {
+        boolean negated;
+        Term t;
+        if (_t.op()==NEG) {
+            t = _t.unneg();
+            negated = true;
+        } else {
+            t = _t;
+            negated = false;
+        }
+
         if (t.hasAll(imageBits) && t.op()==INH) {
             Term s = t.sub(0);
+            Op sOp;
             Subterms ss = null;
-            boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.imInt);
+            boolean isInt = (sOp = s.op())==PROD && (ss = s.subterms()).contains(Op.imInt);
             Term p = t.sub(1);
+            Op pOp;
             Subterms pp = null;
-            boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.imExt);
+            boolean isExt = (pOp = p.op())==PROD && (pp = p.subterms()).contains(Op.imExt);
 
             if (isInt && !isExt) {
                 //(neutralization --> (acid,base))
                 //((neutralization,\\,base) --> acid)
                 Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.toArraySubRange(1, ss.subs()), Op.imInt, p)));
                 if (!(u instanceof Bool))
-                    return u;
+                    return u.negIf(negated);
             } else if (isExt && !isInt) {
                 //((acid,base)-->reaction)
                 //(acid --> (reaction,/,base))
                 Term u = INH.the(PROD.the(Util.replaceDirect(pp.toArraySubRange(1, pp.subs()), Op.imExt, s)), pp.sub(0));
                 if (!(u instanceof Bool))
-                    return u;
+                    return u.negIf(negated);
             }
-
-
         }
-        return t;
+
+        return _t;
     }
 
 }

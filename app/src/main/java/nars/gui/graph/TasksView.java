@@ -68,7 +68,7 @@ public class TasksView extends MutableContainer {
 
             float minH = 30;
             float maxH = 200;
-            float h = t.isQuestOrQuestion() ?
+            float h = t.isQuestionOrQuest() ?
                     Util.lerp(t.originality()/2f, minH, maxH) :
                     Util.lerp( t.originality() * t.conf(), minH, maxH);
 

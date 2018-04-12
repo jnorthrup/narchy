@@ -6,10 +6,11 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.bag.leak.LeakBack;
-import nars.task.NALTask;
+import nars.task.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.compound.util.Image;
 import nars.term.transform.Retemporalize;
 import nars.term.transform.TermTransform;
 import nars.truth.Truth;
@@ -34,37 +35,32 @@ import static nars.time.Tense.ETERNAL;
 public class Inperience extends LeakBack {
 
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
-
-
-    /**
-     * minimum conf necessary to create a concept. factor of the NAR's current default confidence
-     * original value: 0.66
-     */
-    @NotNull
-    public final FloatRange confMin = new FloatRange(0.5f, 0f, 1f);
-
+    public static final Atomic believe = the("believe");
+    public static final Atomic want = the("want");
+    public static final Atomic happy = the("happy");
+    public static final Atomic sad = the("sad");
+    public static final Atomic wonder = the("wonder");
+    public static final Atomic evaluate = the("evaluate");
+    public static final Atomic reflect = the("reflect");
+    public static final ImmutableSet<Atomic> operators = Sets.immutable.of(
+            believe, want, wonder, evaluate, reflect);
+//    /**
+//     * minimum conf necessary to create a concept. factor of the NAR's current default confidence
+//     * original value: 0.66
+//     */
+//    @NotNull
+//    public final FloatRange confMin = new FloatRange(0.5f, 0f, 1f);
     /**
      * max frequency difference from either 0.0 or 1.0 to be polarized enough.
      * use the < 0.5 value here, ex: 0.1 means that 0..0.1 and 0.9..1.0 will be accepted
      */
     @NotNull
     public final FloatRange freqMax = new FloatRange(0.1f, 0f, 1f);
-
-
     /**
      * multiplier for he sensory task priority to determine inperienced task priority
      * should be < 1.0 to avoid feedback overload
      */
     private final float priFactor = 0.5f;
-
-    public static final Atomic believe = the("believe");
-    public static final Atomic want = the("want");
-    public static final Atomic wonder = the("wonder");
-    public static final Atomic evaluate = the("evaluate");
-    public static final Atomic reflect = the("reflect");
-
-    public static final ImmutableSet<Atomic> operators = Sets.immutable.of(
-            believe, want, wonder, evaluate, reflect);
 
 //    final StableBloomFilter<Task> bloomFilter;
 
@@ -111,6 +107,51 @@ public class Inperience extends LeakBack {
 //        });
     }
 
+    @Nullable
+    static Term reify(Task s, NAR nar) {
+
+        Truth tr = s.truth();
+
+        Term x = s.term().negIf(tr != null && tr.isNegative());
+        Term xx = x instanceof Compound && x.hasAny(VAR_QUERY) ? x
+                .transform(TermTransform.queryToDepVar) : x;
+        if (!xx.op().conceptualizable)
+            return null;
+
+        Term self = nar.self();
+        switch (s.punc()) {
+            case BELIEF:
+                return $.func(believe, self, xx);
+            case GOAL: {
+                long start = s.start();
+                long end = s.end();
+                float ge = s.expectation(start, end, nar.dur());
+                if (ge == ge) {
+                    Truth bt = nar.beliefTruth(s.term(), start, end);
+                    if (bt != null) {
+                        float be = bt.expectation();
+                        Term feeling;
+                        float expRange = 2*Math.max(Math.abs(be-0.5f), Math.abs(ge-0.5f));
+                        float expDiff = Math.abs(be - ge)/expRange;
+                        if (expDiff <= 0.5f) {
+                            feeling = happy; //satisfied
+                        } else {
+                            feeling = sad; //frustrated
+                        }
+                        return $.func(want, self, xx, feeling);
+                    }
+                }
+                return $.func(want, self, xx); //generic WANT
+            }
+            case QUESTION:
+                return $.func(wonder, self, xx);
+            case QUEST:
+                return $.func(evaluate, self, xx);
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
     @Override
     protected float pri(Task t) {
         float p = super.pri(t);
@@ -133,8 +174,12 @@ public class Inperience extends LeakBack {
 //        if (!bloomFilter.addIfMissing(next))
 //            return false; //repeated
 
-        if (next.op() == INH && next.subIs(1, ATOM) && operators.contains(next.sub(1)))
-            return false; //prevent directly re-experiencing an inperience
+        Term nextTerm = Image.imageNormalize(next.term());
+        if (nextTerm.op() == INH) {
+            Term pred = nextTerm.sub(1);
+            if (pred.op()==ATOM && operators.contains(pred))
+                return false; //prevent directly re-experiencing an inperience
+        }
 
         if (next.isBeliefOrGoal()) {
             //check for sufficient truth polarization
@@ -143,9 +188,10 @@ public class Inperience extends LeakBack {
             float fm = freqMax.floatValue();
             return f <= fm || f >= (1f - fm);
         } else {
-            return !next.term().hasXternal();
+            //return !next.term().hasXternal();
 
             //belief = false;
+            return true;
         }
 
         // if(OLD_BELIEVE_WANT_EVALUATE_WONDER_STRATEGY ||
@@ -182,13 +228,14 @@ public class Inperience extends LeakBack {
 
         float xPri = x.priElseZero();
 
-        Term c = reify(x, nar.self());
+        Term c = reify(x, nar);
         if (c == null || !c.op().conceptualizable)
             return 0;
 
-        Term r = c.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).normalize();
-        if (r == null || !r.op().conceptualizable)
+        c = (x.isBeliefOrGoal() ? c : c.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL)).normalize();
+        if (c == null || !c.op().conceptualizable)
             return 0;
+
 
         long now = nar.time();
 
@@ -202,7 +249,7 @@ public class Inperience extends LeakBack {
 
         //TODO Task.tryContent
 
-        NALTask y = new NALTask(r, BELIEF,
+        SignalTask y = new SignalTask(c, BELIEF,
                 $.t(1, nar.confDefault(Op.BELIEF)),
                 now, start, end, x.stamp()
         );
@@ -211,43 +258,6 @@ public class Inperience extends LeakBack {
         feedback(y.log("Inperience").pri(xPri * priFactor));
 
         return 1;
-    }
-
-
-    @NotNull
-    public static Atomic reify(byte punc) {
-        Atomic opTerm;
-        switch (punc) {
-            case BELIEF:
-                opTerm = believe;
-                break;
-            case GOAL:
-                opTerm = want;
-                break;
-            case QUESTION:
-                opTerm = wonder;
-                break;
-            case QUEST:
-                opTerm = evaluate;
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
-        return opTerm;
-    }
-
-    @Nullable
-    public static Term reify(Task s, Term self) {
-
-        Truth tr = s.truth();
-
-        Term x = s.term().negIf(tr != null && tr.isNegative());
-        Term xx = x instanceof Compound && x.hasAny(VAR_QUERY) ? x
-                .transform(TermTransform.queryToDepVar) : x;
-        if (!xx.op().conceptualizable)
-            return null;
-
-        return $.func(reify(s.punc()), self, xx);
     }
 
 

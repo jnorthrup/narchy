@@ -404,7 +404,7 @@ public class DeriveTime extends TimeGraph {
 
     private int knowIfSameTruth(Task t, Term tt, Truth tr, long w, LongHashSet sampled) {
         if (sampled.add(w)) {
-            if (t.isQuestOrQuestion() || tr.equals(t.truth(w, d.dur), d.nar)) {
+            if (t.isQuestionOrQuest() || tr.equals(t.truth(w, d.dur), d.nar)) {
                 event(tt, w, true);
                 return 1;
             }
@@ -888,7 +888,7 @@ public class DeriveTime extends TimeGraph {
                     //                    }
                     //                }
                 } else {
-                    if (!task.isQuestOrQuestion() && !belief.isQuestOrQuestion()) {
+                    if (!task.isQuestionOrQuest() && !belief.isQuestionOrQuest()) {
                         EviDensity density = new EviDensity(task, belief);
                         s = density.unionStart;
                         e = density.unionEnd;

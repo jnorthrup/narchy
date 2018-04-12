@@ -266,7 +266,7 @@ public interface BeliefTable extends TaskTable {
             }
         }
 
-        if (novel && question != null && question.isQuestOrQuestion()) {
+        if (novel && question != null && question.isQuestionOrQuest()) {
             withNovel.accept(answer);
         }
 

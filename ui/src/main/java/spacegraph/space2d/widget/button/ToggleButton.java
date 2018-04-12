@@ -56,6 +56,10 @@ public abstract class ToggleButton extends AbstractButton {
 
     @Override
     protected void onClick() {
+        toggle();
+    }
+
+    public void toggle() {
         set(!on.get());
     }
 }

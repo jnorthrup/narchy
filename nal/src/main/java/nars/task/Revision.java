@@ -663,7 +663,7 @@ public class Revision {
         assert (a.punc() == b.punc());
 
 
-        float aProp = a.isQuestOrQuestion() ? 0.5f : an.evi() / (an.evi() + bn.evi());
+        float aProp = a.isQuestionOrQuest() ? 0.5f : an.evi() / (an.evi() + bn.evi());
 
 
         Term at = a.term();

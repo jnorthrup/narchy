@@ -351,7 +351,7 @@ abstract public class NAgentX extends NAgent {
 
 
         ///needs tryContent before its safe
-        Inperience inp = new Inperience(n, 12);
+        Inperience inp = new Inperience(n, 64);
 //
 
 //        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);

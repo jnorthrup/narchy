@@ -436,7 +436,12 @@ public class Derivation extends PreDerivation {
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
-    /** setup for a new derivation; returns false if the premise is invalid to derive */
+    /**
+     * setup for a new derivation.
+     * returns false if the premise is invalid to derive
+     *
+     * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
+     */
     public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
 
         reset();

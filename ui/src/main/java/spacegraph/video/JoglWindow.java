@@ -163,7 +163,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public void windowDestroyed(WindowEvent windowEvent) {
         windows.remove(this);
-        window = null;
+        //window = null;
     }
 
     @Override

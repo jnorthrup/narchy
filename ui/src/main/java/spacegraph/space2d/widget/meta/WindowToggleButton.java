@@ -3,12 +3,9 @@ package spacegraph.space2d.widget.meta;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
 import com.jogamp.newt.event.WindowUpdateEvent;
-import com.jogamp.newt.opengl.GLWindow;
-import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.video.JoglSpace;
 
 import java.util.function.Supplier;
@@ -17,13 +14,13 @@ import java.util.function.Supplier;
  * toggle button, which when actived, creates a window, and when inactivated destroys it
  * TODO window width, height parameters
  */
-public class WindowToggleButton extends CheckBox implements WindowListener, ObjectBooleanProcedure<ToggleButton> {
+public class WindowToggleButton extends CheckBox implements WindowListener {
 
     private final Supplier spacer;
 
     int width = 600, height = 300;
 
-    JoglSpace space;
+    private volatile JoglSpace space;
 
     public WindowToggleButton(String text, Object o) {
         this(text, () -> o);
@@ -32,7 +29,6 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
     public WindowToggleButton(String text, Supplier spacer) {
         super(text);
         this.spacer = spacer;
-        on(this);
     }
 
     public WindowToggleButton(String text, Supplier spacer, int w, int h) {
@@ -41,40 +37,37 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
         this.height = h;
     }
 
+
     @Override
-    public void value(ToggleButton t, boolean enabled) {
-        synchronized (this) {
-            if (enabled) {
-                JoglSpace space;
+    public void toggle() {
 
-                space = this.space;
-                if (space == null) {
-                    space = this.space = SpaceGraph.window(spacer.get(), width, height);
-                    space.addWindowListener(this);
-                }
+        if (this.space == null) {
 
+            this.space = SpaceGraph.window(spacer.get(), width, height);
+            space.addWindowListener(this);
+
+            space.window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
                 int sx = Finger.pointer.getX();
                 int sy = Finger.pointer.getY();
                 int nx = sx - width / 2;
                 int ny = sy - height / 2;
                 space.window.setPosition(nx, ny);
 
-                //space.show(this.toString(), width,height, nx, ny);
-                //space.window.setTitle(label.value());
+                set(true);
+            });
+
+            //space.show(this.toString(), width,height, nx, ny);
+            //space.window.setTitle(label.value());
 
 
-            } else {
-
-
-                if (space != null) {
-                    GLWindow win = this.space.window;
-                    this.space = null;
-                    if (win.getWindowHandle() != 0)
-                        win.destroy();
-                }
-
-            }
+        } else if (space != null) {
+            space.window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
+                this.space.off();
+                this.space = null;
+                set(false);
+            });
         }
+
     }
 
     @Override

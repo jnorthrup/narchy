@@ -12,7 +12,6 @@ import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.concept.scalar.SwitchAction;
 import nars.gui.Vis;
-import nars.task.NALTask;
 import nars.time.Tense;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
@@ -25,10 +24,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static nars.$.$$;
-import static nars.Op.BELIEF;
 import static nars.Op.INH;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Created by me on 3/21/17.
@@ -107,8 +103,8 @@ public class FZero extends NAgentX {
 
         //actionSwitch();
         //initTankDiscrete();
-        //initTankContinuous();
-        initToggle();
+        initTankContinuous();
+        //initToggle();
         //initBipolar(true);
         //initBipolar(true);
 
@@ -141,22 +137,22 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        Scalar dAngVel = senseNumberDifference($.the("angVel"), () -> (float) fz.playerAngle).resolution(0.02f);
-        Scalar dAccel = senseNumberDifference($.the("accel"), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        DemultiplexedScalar ang = senseNumber(level -> $.func(id.toString(), $.the("ang"), $.the(level)), () ->
+        Scalar dAccel = senseNumberDifference($.inh("accel",id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
+        Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle).resolution(0.02f);
+        DemultiplexedScalar ang = senseNumber(level -> $.func("ang", id, $.the(level)), () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                5,
+                9,
                 DigitizedScalar.FuzzyNeedle
                 //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(0.04f);
+        ).resolution(0.1f);
 
         //new RLBooster(this, HaiQae::new, 1);
 
-        always.add(new NALTask($$("({fz(ang,#a),angVel,accel,fz(#x,#y)}-->fz)"),
-                BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
-        always.add(new NALTask($$("(({#x}-->fz) ==>+- happy(fz,#y))"),
-                BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
+//        always.add(new NALTask($$("({fz(ang,#a),angVel,accel,fz(#x,#y)}-->fz)"),
+//                BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
+//        always.add(new NALTask($$("(({#x}-->fz) ==>+- happy(fz,#y))"),
+//                BELIEF, $.t(1f, 0.9f), nar.time(), ETERNAL, ETERNAL, nar.time.nextStampArray()));
 
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
@@ -394,15 +390,16 @@ public class FZero extends NAgentX {
     }
     private void initTankContinuous() {
 
-        float res = 0.05f;
+        float res = 0.01f;
+        float powerScale = 0.4f;
 
         final float[] left = new float[1];
         final float[] right = new float[1];
         //actionUnipolar($.the("left"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
-        actionUnipolar($.the("left"), (x) -> {
-            float power = (x - 0.5f)*2f;
+        actionUnipolar($.inh("left", id), (x) -> {
+            float power = (x - 0.5f)*2f * powerScale;
             left[0] = power;
-            fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed;
+            fz.playerAngle += /*Math.max(0,*/(power - right[0]) * rotSpeed/2;
             fz.vehicleMetrics[0][6] +=
                     //Util.mean(left[0], right[0])
                     left[0]
@@ -411,10 +408,10 @@ public class FZero extends NAgentX {
             return x;
         }).resolution.set(res);
         //actionUnipolar($.the("right"), false, (x)->Util.lerp(0.25f, x, 0.5f), (x) -> {
-        actionUnipolar($.the("right"), (x) -> {
-            float power = (x - 0.5f)*2f;
+        actionUnipolar($.inh("right",id), (x) -> {
+            float power = (x - 0.5f)*2f * powerScale;
             right[0] = power;
-            fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed;
+            fz.playerAngle += /*Math.max(0,*/-(power - left[0]) * rotSpeed/2;
             fz.vehicleMetrics[0][6] +=
                     //Util.mean(left[0], right[0])
                     right[0]
@@ -488,7 +485,7 @@ public class FZero extends NAgentX {
     }
 
     protected boolean polarized(@NotNull Task task) {
-        if (task.isQuestOrQuestion())
+        if (task.isQuestionOrQuest())
             return true;
         float f = task.freq();
         return f <= 0.2f || f >= 0.8f;
