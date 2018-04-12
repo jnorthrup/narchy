@@ -1212,6 +1212,18 @@ public enum Util {
         }
         return new float[]{min, max/*, sum */};
     }
+    public static float[] minmaxsum(float[] x) {
+        float sum = 0;
+        float min = Float.POSITIVE_INFINITY;
+        float max = Float.NEGATIVE_INFINITY;
+        for (float y : x) {
+            sum += y;
+            if (y < min) min = y;
+            if (y > max) max = y;
+        }
+        return new float[]{min, max, sum };
+    }
+
     public static double[] minmax(double[] x) {
         //double sum = 0;
         double min = Double.POSITIVE_INFINITY;

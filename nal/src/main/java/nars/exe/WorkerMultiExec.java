@@ -214,7 +214,7 @@ public class WorkerMultiExec extends AbstractExec {
         public void run() {
 
             final long[] now = {nar.time()};
-            focus.decide(rng, (x) -> {
+            focus.decide(rng, x -> {
 
 
                 long next = nar.time();
@@ -229,7 +229,7 @@ public class WorkerMultiExec extends AbstractExec {
 
                 }
 
-                if (x > 0 && focus.tryRun(x))
+                if (focus.tryRun(x))
                     idles = 0;
 
                 idle();

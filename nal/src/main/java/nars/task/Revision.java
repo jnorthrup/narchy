@@ -19,6 +19,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.truth.util.EviDensity;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -919,7 +920,7 @@ public class Revision {
         int dur = nar.dur();
 
 
-        Truth truth = new TruthPolation(start, end, dur, tt).truth(true);
+        Truth truth = Param.truth(start, end, dur).add(tt).preFilter().truth();
         if (truth == null) return first;
 
         float factor = overlapFactor * differenceFactor * densityFactor;

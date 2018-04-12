@@ -1,12 +1,16 @@
-package nars.task;
+package nars.truth.polation;
 
+import jcog.Paper;
+import jcog.Skill;
 import jcog.list.FasterList;
 import nars.Task;
-import nars.task.util.TaskRegion;
-import nars.truth.PreciseTruth;
+import nars.task.Revision;
+import nars.task.Tasked;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 import static java.lang.Float.NaN;
 
@@ -16,13 +20,9 @@ import static java.lang.Float.NaN;
  * https://en.wikipedia.org/wiki/Category:Intertemporal_economics
  * https://en.wikipedia.org/wiki/Discounted_utility
  */
-public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
-
-
-
-    private final static int minDur =
-            0; //<- anything besides what matches the specified interval is ignored
-            //1; //<- allows some temporal bleed-through during interpolation when an exact match is present
+@Paper
+@Skill({"Interpolation", "Extrapolation"})
+abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
     static class TaskComponent {
         public final Task task;
@@ -41,35 +41,37 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         public String toString() {
             return evi + "," + freq + "=" + task;
         }
-    }
 
-    private final long start, end;
-    private int dur;
+        public boolean isComputed() {
+            float f = freq;
+            return f == f;
+        }
 
-    //long spanStart = Long.MAX_VALUE, spanEnd = Long.MIN_VALUE, rangeSum = 0;
+        @Nullable public final TaskComponent update(TruthPolation p) {
+            if (!isComputed()) {
+                Truth tt = p.truth(task);
+                if (tt != null) {
+                    this.freq = tt.freq(); //not necessarily the task's reported "average" freq in case of Truthlets
+                    this.evi = tt.evi();
+                    return this;
+                } else {
+                    this.evi = -1;
+                    return null; //removed
+                }
+            } else {
+                return this.evi > 0 ? this : null;
+            }
 
-//    public TruthPolation(long start, long end, int dur, Task... tasks) {
-//        this(start, end, dur);
-//        for (Task t : tasks)
-//            add(t);
-//    }
 
-    public TruthPolation(long start, long end, int dur, TaskRegion... tasks) {
-        this(start, end, dur);
-        ensureCapacity(tasks.length);
-        for (TaskRegion t : tasks) {
-            if (t != null)
-                add(t);
         }
     }
 
-    public TruthPolation(long start, long end, int dur, Iterable<? extends Tasked> tasks) {
-        this(start, end, dur);
-        tasks.forEach(this::add);
-    }
+    public final long start;
+    public final long end;
+    public int dur;
 
 
-    public TruthPolation(long start, long end, int dur) {
+    protected TruthPolation(long start, long end, int dur) {
         this.start = start;
         this.end = end;
 
@@ -77,129 +79,82 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         this.dur = dur;
     }
 
-    public TruthPolation add(Tasked tt) {
 
-        Task t = tt.task();
+    public void add(Task t) {
+        super.add(new TaskComponent(t));
+    }
 
-        add(new TaskComponent(t));
 
-        long dd =
-                t.minDistanceTo(start, end);
-                //t.meanDistanceTo((start + end)/2L);
 
-        if (dur > 0) {
-            if (dd < dur)
-                dur = Math.max(minDur, (int) dd);
+    /** computes the truth value of a component */
+    protected Truth truth(Task t) {
+        return t.truth(start, end, dur, 0);
+    }
 
-//            if (computeDensity) {
-//                long ts = Util.clamp(t.start(), start, end);
-//                long te = Util.clamp(t.end(), start, end);
-//                spanStart = Math.min(ts, spanStart);
-//                spanEnd = Math.max(te, spanEnd);
-//                rangeSum += Math.max(1, te - ts);
-//            }
-        }
-
+    /** remove components contributing no evidence */
+    public final TruthPolation preFilter() {
+        removeIf(x -> update(x)==null);
         return this;
     }
 
-    public Truth truth(boolean filterCyclic/*float eviFactor, float eviMin*/) {
+    @Nullable protected final TaskComponent update(int i) {
+        return update(get(i));
+    }
 
-        if (isEmpty()) return null;
+    @Nullable protected final TaskComponent update(TaskComponent tc) {
+        return tc.update(this);
+    }
 
-        //project temporally, removing if no evidence provided
-        {
+    /** removes the weakest components sharing overlapping evidence with stronger ones.
+     *  should be called after all entries are added */
+    public final TruthPolation filterCyclic() {
+        preFilter();
+
+        int s = size();
+        if (s > 1) {
+            sortThisByFloat(tc -> -tc.evi); //descending by strength
+            //TODO maybe factor in originality to reduce overlap so evidence can be combined better
+
+            //remove the weaker holder of any overlapping evidence
+            LongHashSet e = new LongHashSet(s * 2);
             removeIf(tc -> {
-                Task t = tc.task;
-                Truth tt = t.truth(start, end, dur, 0);
-                if (tt != null) {
-                    tc.freq = tt.freq(); //not necessarily the task's reported "average" freq in case of Truthlets
-                    tc.evi = tt.evi();
-                    return false;
-                } else {
-                    return true; //removed
+                long[] stamp = tc.task.stamp();
+
+                for (long ss : stamp) {
+                    if (!e.add(ss))
+                        return true; //overlap
                 }
+
+
+                return false;
             });
         }
+        return this;
+    }
 
-        //remove overlapping evidence, preferring the strongest contributors of each
-        if (filterCyclic) {
-            int s = size();
-            if (s == 0)
-                return null;
-            else if (s > 1) {
-                sortThisByFloat(tc -> -tc.evi); //descending by strength
-                //TODO maybe factor in originality to reduce overlap so evidence can be combined better
+    /** computes the final truth value */
+    abstract public Truth truth();
 
-                //remove the weaker holder of any overlapping evidence
-                LongHashSet e = new LongHashSet(s * 2);
-                removeIf(tc -> {
-                    long[] stamp = tc.task.stamp();
-
-                    for (long ss : stamp) {
-                        if (!e.add(ss))
-                            return true; //overlap
-                    }
-
-
-                    return false;
-                });
-            }
-        }
-
-
-        {
-            int s = size();
-            switch (s) {
-                case 0:
-                    return null;
-                case 1: {
-                    TaskComponent only = get(0);
-                    if (only.evi < Float.MIN_NORMAL)
-                        return null;
-                    return new PreciseTruth(only.freq, only.evi, false);
-                }
-                default: {
-                    //interpolate
-                    //float eviSum = 0, confSum = 0, wFreqSum = 0;
-                    float eviSum = 0, wFreqSum = 0;
-                    for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-                        TaskComponent x = this.get(i);
-                        float ee = x.evi;
-                        eviSum += ee;
-//                        float ce = w2cSafe(ee);
-//                        confSum += ce;
-                        //wFreqSum += ce * x.freq;
-                        wFreqSum += ee * x.freq;
-                    }
-                    assert(Float.isFinite(eviSum));
-                    if (eviSum < Float.MIN_NORMAL)
-                        return null;
-                    else {
-                        //float f = (wFreqSum / confSum);
-                        float f = (wFreqSum / eviSum);
-                        return new PreciseTruth(f, eviSum, false);
-                    }
-                }
-            }
-
-        }
-
+    /** revise a temporal with a 'background' eternal truth */
+    public Truth truthWithEternal(Truth temporal, Truth eternal) {
+        return Revision.revise(temporal, eternal);
     }
 
     /**
-     * blends any result with an eternal "background" contribution
+     * blends any result with an optional eternal "background" contribution
      */
-    public Truth truth(@Nullable Task eternalTask) {
+    public final Truth truthWithEternal(@Nullable Task eternalTask) {
 
-        Truth temporal = truth(true);
+        Truth temporal = truth();
+
         Truth eternal = eternalTask != null ? eternalTask.truth() : null;
+
         if (eternal == null)
             return temporal;
         else if (temporal == null)
             return eternal;
         else {
-            return Revision.revise(temporal, eternal);
+            return truthWithEternal(temporal, eternal);
 
 
 //        float tempEvi = t.eviSum;
@@ -225,6 +180,31 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
 
     }
+
+    public final TruthPolation add(Tasked... tasks) {
+        ensureCapacity(tasks.length);
+        for (Tasked t : tasks) {
+            if (t != null)
+                add(t);
+        }
+        return this;
+    }
+
+    public final TruthPolation add(Iterable<? extends Tasked> tasks) {
+        tasks.forEach(this::add);
+        return this;
+    }
+
+    public final TruthPolation add(Collection<? extends Tasked> tasks) {
+        ensureCapacity(tasks.size());
+        return add((Iterable)tasks);
+    }
+
+    public final TruthPolation add(Tasked tt) {
+        add(tt.task());
+        return this;
+    }
+
 
 //    /**
 //     * computes truth at a given time from iterative task samples

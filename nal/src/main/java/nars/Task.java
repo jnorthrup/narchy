@@ -568,8 +568,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     default float eternalizability() {
-        return originality();
-        //return 1f; //always
+        //return originality();
+        return 1f; //always
         //return 0.5f; //some
         //return punc()==BELIEF ? 1f: 0f; //always if belief
         //return 0f; //never

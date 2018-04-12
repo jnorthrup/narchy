@@ -16,7 +16,7 @@ import spacegraph.space2d.widget.windo.Widget;
 public class LoopPanel extends Widget {
 
     private final IntSpinner fpsLabel;
-    private final Loop loop;
+    protected final Loop loop;
     private final Plot2D cycleTimePlot;
     MutableInteger fps;
 
@@ -25,7 +25,7 @@ public class LoopPanel extends Widget {
     public LoopPanel(Loop loop) {
         this.loop = loop;
         fps = new MutableInteger(Math.round(loop.getFPS()));
-        fpsLabel = new IntSpinner(fps, (f)-> f + "fps", 0, 100);
+        fpsLabel = new IntSpinner(fps, f-> f + "fps", 0, 100);
 
         if (loop instanceof InstrumentedLoop) {
             InstrumentedLoop iloop = (InstrumentedLoop) loop;

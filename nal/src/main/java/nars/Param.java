@@ -11,6 +11,8 @@ import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.term.atom.Atom;
 import nars.time.Tense;
+import nars.truth.polation.FocusingLinearTruthPolation;
+import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -178,6 +180,11 @@ public abstract class Param {
 
     /** temporal radius (in durations) around the present moment to scan for truth */
     public final FloatRange timeFocus = new FloatRange(0.5f, 0, 10);
+
+    /** creates instance of the default truthpolation implementation */
+    public static TruthPolation truth(long start, long end, int dur) {
+        return new FocusingLinearTruthPolation(start, end, dur);
+    }
 
     /** provides a start,end pair of time points for the current focus given the current time and duration */
     public final long[] timeFocus() {

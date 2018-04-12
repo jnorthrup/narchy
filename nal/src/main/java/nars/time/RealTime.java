@@ -1,6 +1,7 @@
 package nars.time;
 
 import jcog.Texts;
+import jcog.exe.Loop;
 import nars.NAR;
 import org.jetbrains.annotations.NotNull;
 
@@ -111,6 +112,24 @@ public abstract class RealTime extends Time {
     @Override
     protected String durationString(long time) {
         return Texts.timeStr(unitsToSeconds(time) * 1.0E9);
+    }
+
+    /** ratio of duration to fps */
+    public float durSeconds() {
+        return (float) unitsToSeconds(dur());
+    }
+
+    /** get real-time frames per duration */
+    public float durRatio(Loop l) {
+        float fps = l.getFPS();
+        if (fps > Float.MIN_NORMAL)
+            return durSeconds() * fps;
+        else
+            return 1; //?
+    }
+    /** set real-time frames per duration */
+    public void durRatio(Loop l, float ratio) {
+        durSeconds(ratio / l.getFPS());
     }
 
     /** decisecond (0.1) accuracy */

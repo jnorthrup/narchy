@@ -352,11 +352,12 @@ public interface NAct {
     }
     default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
         float thresh =
-                nar().freqResolution.get();
-                //0f;
+                //0.6f;
+                0.5f + nar().freqResolution.get();
+                //0.5f;
 
         GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
-            boolean positive = f >= 0.5f + thresh;
+            boolean positive = f >= thresh;
             on.value(positive);
             return positive ? 1f : 0f;
         });
@@ -508,7 +509,7 @@ public interface NAct {
                 //$.p(s,$.the("\"-\""));
 
         final float g[] = new float[2];
-        final float c[] = new float[2];
+        final float e[] = new float[2];
         final long[] lastUpdate = {ETERNAL};
 
         final float[] lastX = {0};
@@ -542,14 +543,14 @@ public interface NAct {
             int ip = p ? 0 : 1;
             CC[ip] = action;
             g[ip] = gg != null ?
-                    //gg.freq()
-                    gg.expectation()
+                    gg.freq()
+                    //gg.expectation()
                     :
                     0f;
                     //0.5f;
-            c[ip] = gg != null ?
-                    //gg.evi()
-                    gg.conf()
+            e[ip] = gg != null ?
+                    gg.evi()
+                    //gg.conf()
                     :
                     0f;
 
@@ -559,8 +560,8 @@ public interface NAct {
             boolean curious;
             if (CC[0]!=null && CC[1]!=null /* both ready */) {
 
-                float cMax = Math.max(c[0], c[1]);
-                float cMin = Math.min(c[0], c[1]);
+                float cMax = Math.max(e[0], e[1]);
+                float cMin = Math.min(e[0], e[1]);
                 float coherence = cMin / cMax;
 
                 Random rng = n.random();
@@ -572,7 +573,7 @@ public interface NAct {
 //                            //eviMin*2;
 //                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Util.mean(c[0], c[1])); //match desire conf, min=2*minConf
 
-                    c[0] = c[1] = feedbackConf;
+                    e[0] = e[1] = feedbackConf;
                     coherence = 1f;
                     curious = true;
                 } else {

@@ -12,7 +12,6 @@ import nars.link.TaskLink;
 import nars.link.Tasklinks;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
-import nars.task.TruthPolation;
 import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
@@ -20,6 +19,7 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -330,8 +330,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         if (d == null)
             return null;
 
-        TruthPolation p = new TruthPolation(start, end, dur, d);
-        Truth pp = p.truth(false);
+        Truth pp = Param.truth(start, end, dur).add((Collection)d).preFilter().truth();
         if (pp == null)
             return null;
 

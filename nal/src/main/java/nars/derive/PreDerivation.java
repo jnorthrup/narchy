@@ -44,6 +44,7 @@ public abstract class PreDerivation extends Unify {
 
     protected void reset() {
 
+
         termutes.clear();
 
         this.size = 0; //HACK instant revert to zero

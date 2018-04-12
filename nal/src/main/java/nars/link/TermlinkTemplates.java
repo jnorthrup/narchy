@@ -4,6 +4,7 @@ import jcog.bag.Bag;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
+import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Op;
@@ -298,8 +299,8 @@ public class TermlinkTemplates extends FasterList<Term> {
             if (conceptualizable) {
                 @Nullable Concept tgt = nar.conceptualize(tgtTerm);
 
-                float budgetedForward = budgetedToEach * (1f - balance);
-                float budgetedReverse = budgetedToEach * balance;
+                float budgetedForward = Math.max(Pri.EPSILON, budgetedToEach * (1f - balance));
+                float budgetedReverse = Math.max(Pri.EPSILON, budgetedToEach * balance);
 
                 if (tgt != null) {
 
@@ -322,7 +323,7 @@ public class TermlinkTemplates extends FasterList<Term> {
                     refund.add(budgetedForward);
 
 
-                ((Bag) srcTermLinks).put(new PLink(tgtTerm, budgetedReverse), refund);
+                ((Bag) srcTermLinks).put(new PLink<>(tgtTerm, budgetedReverse), refund);
 
             }
 

@@ -369,10 +369,10 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 } else {
                     colorize = beliefOrGoal ?
                             (ggl, frq, cnf) -> {
-                                ggl.glColor4f(cnf, cnf / 2f, 0.25f, 0.85f);
+                                ggl.glColor4f(cnf, cnf / 2f, 0, 0.85f);
                             } :
                             (ggl, frq, cnf) -> {
-                                ggl.glColor4f(cnf / 2f, cnf, 0.25f, 0.85f);
+                                ggl.glColor4f(cnf / 2f, cnf, 0, 0.85f);
                             };
                 }
 

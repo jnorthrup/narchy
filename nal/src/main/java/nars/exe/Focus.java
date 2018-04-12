@@ -31,40 +31,28 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Focus extends AtomicRoulette<Causable> {
 
+    /** note: more granularity increases the 'compression' ratio of high to low prioritization. */
+    protected static final int PRI_GRANULARITY = 32;
+
     /**
      * how quickly the iteration demand can grow from previous (max) values
      */
-    static final double IterGrowthIncrement = 1;
-    static final double IterGrowthRateMin = 1.25f;
-    static final double IterGrowthRateMax = 1.5f;
+    //static final double IterGrowthIncrement = 1;
+    static final double IterGrowthRate = 1.5f;
 
 
     private final Exec.Revaluator revaluator;
 
 
-    final Causable work = new Causable((NAR) null) {
-
-        @Override
-        protected int next(NAR n, int iterations) {
-            throw new UnsupportedOperationException("dont call this");
-            //callee should instead execute: "while (pollNext()) ;"
-        }
-
-        @Override
-        public float value() {
-            return 0; //TODO adjust this proportionally to size of the queue?
-        }
-    };
     private final NAR nar;
 
-    public double timesliceNS = 1;
+    double timesliceNS = 1;
 
 
     public Focus(NAR n, Exec.Revaluator r) {
         super(32, Causable[]::new);
 
         this.nar = n;
-        this.add(work);
 
         this.revaluator = r;
 
@@ -150,36 +138,15 @@ public class Focus extends AtomicRoulette<Causable> {
             if (n == 0)
                 return;
 
-
-            if (sliceIters.length != n) {
-
-                //weight = new float[n];
-
-                time = new DescriptiveStatistics[n];
-                timeMean = new double[n];
-                done = new DescriptiveStatistics[n];
-
-
-                for (int i = 0; i < n; i++) {
-                    time[i] = new DescriptiveStatistics(WINDOW);
-                    done[i] = new DescriptiveStatistics(WINDOW);
-                }
-
-                //            assert (n < 32) : "TODO make atomic n>32 bitset";
-                value = new float[n];
-
-
-                doneMean = new double[n];
-                doneMax = new long[n];
-                sliceIters = new int[n]; //last
-            }
+            if (sliceIters.length != n)
+                realloc(n);
 
             revaluator.update(nar);
 
             double jiffy = nar.loop.jiffy.floatValue();
             double throttle = nar.loop.throttle.floatValue();
 
-            timesliceNS = nar.loop.periodNS() * jiffy * throttle;// / (n / concurrency);
+            double timesliceNS = this.timesliceNS = nar.loop.periodNS() * jiffy * throttle;// / (n / concurrency);
 
             for (int i = 0; i < n; i++) {
                 Causable c = choice.get(i);
@@ -201,7 +168,10 @@ public class Focus extends AtomicRoulette<Causable> {
                     this.doneMax[i] = Math.round(d.getMax());
 
                     //value per time
-                    value[i] = (float) (c.value() / (Math.max(1E3 /* 1uS in nanos */, timeMeanNS)/1E9));
+                    //value[i] = (float) (c.value() / (Math.max(1E3 /* 1uS in nanos */, timeMeanNS)/1E9));
+
+                    //value
+                    value[i] = c.value();
 
                 } else {
                     //value[i] = unchanged
@@ -210,28 +180,19 @@ public class Focus extends AtomicRoulette<Causable> {
 
             }
 
-            //        double[] tRange = Util.minmax(timeMean);
-            //        double tMin = tRange[0];
-            //        double tMax = tRange[1];
-            //        for (int i = 0; i < n; i++) {
-            //            double tNorm = normalize(timeMean[i], tMin, tMax);
-            //            value[i] /= ((float)tNorm);
-            //        }
 
-            //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
-            float[] vRange = Util.minmax(value);
+            float[] vRange = Util.minmaxsum(value);
             float vMin = vRange[0];
             float vMax = vRange[1];
+            float vSum = vRange[2];
+            if (vSum < Float.MIN_NORMAL) vSum = 1; //dont divide by zero
 
-
-            //float lowMargin = (minmax[1] - minmax[0]) / n;
             for (int i = 0; i < n; i++) {
-                double vNormPerTime = normalize(value[i], vMin, vMax);
-                //;
-                int pri = (int) Util.clampI((PRI_GRANULARITY * vNormPerTime), 1, AtomicRoulette.PRI_GRANULARITY);
+                double vNorm = normalize(value[i], vMin, vMax)/vSum;
 
-                //the priority determined by the value primarily affects the probability of the choice being selected as a timeslice
-                priGetAndSet(i, pri);
+                int pri = (int) Util.clampI((PRI_GRANULARITY * vNorm), 1, PRI_GRANULARITY);
+
+
 
                 //the iters per timeslice is determined by past measurements
                 long doneMost = doneMax[i];
@@ -240,12 +201,13 @@ public class Focus extends AtomicRoulette<Causable> {
                     timePerIter = timesliceNS; //assume only one iteration will consume entire timeslice
                 }
 
+                //the priority determined by the value primarily affects the probability of the choice being selected as a timeslice
+                priGetAndSet(i, pri);
                 sliceIters[i] = (int) Math.max(1, Math.ceil(
 
                         //modulate growth by the normalized value
-                        ( /*vNormPerTime * */ timesliceNS / timePerIter) * Util.lerp(vNormPerTime, IterGrowthRateMin, IterGrowthRateMax)
-                                +
-                                IterGrowthIncrement
+                        ( /*vNormPerTime * */ timesliceNS / timePerIter) * IterGrowthRate
+                                //+IterGrowthIncrement
                 ));
                 //System.out.println(this.choice.get(i) + " "+ vNormPerTime + " " + sliceIters[i]);
             }
@@ -255,6 +217,27 @@ public class Focus extends AtomicRoulette<Causable> {
         }
     }
 
+    private void realloc(int n) {
+        //weight = new float[n];
+
+        time = new DescriptiveStatistics[n];
+        timeMean = new double[n];
+        done = new DescriptiveStatistics[n];
+
+
+        for (int i = 0; i < n; i++) {
+            time[i] = new DescriptiveStatistics(WINDOW);
+            done[i] = new DescriptiveStatistics(WINDOW);
+        }
+
+        //            assert (n < 32) : "TODO make atomic n>32 bitset";
+        value = new float[n];
+
+
+        doneMean = new double[n];
+        doneMax = new long[n];
+        sliceIters = new int[n]; //last
+    }
 
 
     public boolean tryRun(int x) {

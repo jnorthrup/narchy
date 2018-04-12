@@ -16,7 +16,6 @@ import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.task.Tasked;
-import nars.task.TruthPolation;
 import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeConfRange;
@@ -150,13 +149,17 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     maxTries);
 
             ScanFilter tt = new ScanFilter(maxTruths, maxTruths, task(
-                    //taskRelevance(start, end)
                     taskStrength(start, end, dur)
             ), maxTries)
-                    .scan(this, start - dur, end + dur);
+                    .scan(this, start - dur/2, end + dur/2);
 
             if (!tt.isEmpty()) {
-                return new TruthPolation(start, end, dur, tt).truth(ete);
+                return Param.truth(start, end, dur)
+                        .add(tt)
+                        .preFilter()
+                        .filterCyclic()
+                        .truthWithEternal(ete);
+
 //                PreciseTruth pt = Param.truth(null, start, end, dur, tt);
 //                if (pt!=null && (ete == null || (pt.evi() >= ete.evi())))
 //                    return pt;
@@ -870,11 +873,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             //table.read((Space<TaskRegion> tree) -> {
             table.readOptimistic((Space<TaskRegion> tree) -> {
 
+                ScanFilter.this.clear(); //in case of optimisticRead, if tried twice
+
                 int s = tree.size();
                 if (s == 0)
                     return;
-
-                ScanFilter.this.clear(); //in case of optimisticRead, if tried twice
 
                 if (s <= COMPLETE_SCAN_SIZE_THRESHOLD) {
                     tree.forEach(this::add);

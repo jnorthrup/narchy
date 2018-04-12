@@ -9,7 +9,7 @@ import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.match.EllipsisMatch;
-import nars.task.EviDensity;
+import nars.truth.util.EviDensity;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;

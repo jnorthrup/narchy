@@ -7,12 +7,14 @@ import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.$;
 import nars.NAR;
+import nars.NARLoop;
 import nars.NAgent;
 import nars.control.Cause;
 import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
 import nars.exe.Causable;
+import nars.time.RealTime;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
@@ -206,16 +208,45 @@ public class ExeCharts {
         };
     }
 
+    /** adds duration control */
+    static class NARLoopPanel extends LoopPanel {
+
+        private final NAR nar;
+        final FloatRange dur = new FloatRange(1f, 0f, 8f);
+        private final RealTime time;
+
+        public NARLoopPanel(NARLoop loop) {
+            super(loop);
+            this.nar = loop.nar;
+            if (nar.time instanceof RealTime) {
+                time = ((RealTime)nar.time);
+                ((Gridding) content()[0]).add(
+                        new FloatSlider("Dur *", dur)
+                );
+                dur.set(time.durRatio(loop));
+            } else {
+                //TODO: IntSpinner dur set
+                time = null;
+            }
+        }
+
+        @Override
+        public synchronized void update() {
+            super.update();
+            if (time!=null) {
+                time.durRatio(loop, dur.floatValue());
+            }
+        }
+    }
+
     public static Surface runPanel(NAR n) {
         Label nameLabel;
-        LoopPanel control = new LoopPanel(n.loop);
+        LoopPanel control = new NARLoopPanel(n.loop);
         Surface p = new Gridding(
                 nameLabel = new Label(n.self().toString()),
                 control
         );
-        return DurSurface.get(p, n, () -> {
-            control.update();
-        });
+        return DurSurface.get(p, n, control::update);
     }
 
     private static class CauseVis extends TreeChart.ItemVis<Cause> {

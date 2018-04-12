@@ -1,4 +1,4 @@
-package nars.task;
+package nars.truth.util;
 
 import jcog.math.Longerval;
 import nars.Task;
@@ -94,7 +94,7 @@ public final class EviDensity {
         add(start, end, xt.evi(), xt.eviInteg());
     }
 
-    void add(long xStart, long xEnd, float evi) {
+    public void add(long xStart, long xEnd, float evi) {
         add(xStart, xEnd, evi, evi * (1 + (xEnd - xStart)));
     }
 

@@ -10,7 +10,7 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
-import nars.task.EviDensity;
+import nars.truth.util.EviDensity;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;

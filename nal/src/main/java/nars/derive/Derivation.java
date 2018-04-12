@@ -446,24 +446,31 @@ public class Derivation extends PreDerivation {
 
         reset();
 
-        if (this._task!=null && this._task.equals(_task)) {
+
+        if (this._task!=null && this._task.term().equals(_task.term())) {
 
             //same task; just rollback anon to the point where a belief's uniques can be added
 
-            anon.rollback(taskUniques);
+            //TODO test if beliefTerm is the same also in which case rollback isnt even necessary
 
-            //TODO handle if 'dur' changed but task hasn't.  anon should be used to get a new task. this would occurr rarely though
+            anon.rollback(taskUniques);
 
         } else {
 
             anon.clear();
+        }
+
+        if (this._task==null || !this._task.equals(_task)) {
+
+            //TODO handle if 'dur' changed but task hasn't.  anon should be used to get a new task. this would occurr rarely though
 
             this._task = _task;
             final Task task = this.task = anon.put(_task, dur);
-            this.taskUniques = anon.uniques();
             if (task == null)
                 throw new NullPointerException(_task + " could not be anonymized: " +
-                        _task.term().anon() + " , " + anon.put(this._task = _task, dur));
+                        _task.term().anon() + " , " + anon.put(_task, dur));
+
+            this.taskUniques = anon.uniques();
             final Term taskTerm = this.taskTerm = task.term();
             this._taskStruct = taskTerm.structure();
             this._taskOp = taskTerm.op().id;
