@@ -488,7 +488,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int eventCount() {
-        return op() == CONJ && this.dt() != DTERNAL ? subterms().sum(Term::eventCount) : 1;
+        return this.dt() != DTERNAL && op() == CONJ ? subterms().sum(Term::eventCount) : 1;
     }
 
     /**

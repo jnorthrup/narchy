@@ -4,13 +4,13 @@ package nars;
 import com.google.common.primitives.Longs;
 import jcog.Service;
 import jcog.Services;
+import jcog.Texts;
 import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
 import jcog.exe.Cycler;
 import jcog.list.FasterList;
-import jcog.math.FloatRange;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
@@ -257,10 +257,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         x.put("belief count", ((double) beliefs.getSum()));
         x.put("goal count", ((double) goals.getSum()));
 
-        Util.decode(tasklinkCount, "tasklink count", 4, x::put);
+        Texts.histogramDecode(tasklinkCount, "tasklink count", 4, x::put);
         //x.put("tasklink usage", ((double) tasklinkCount.getTotalCount()) / tasklinksCap.getSum());
         x.put("tasklink total", ((double) tasklinkCount.getTotalCount()));
-        Util.decode(termlinkCount, "termlink count", 4, x::put);
+        Texts.histogramDecode(termlinkCount, "termlink count", 4, x::put);
         //x.put("termlink usage", ((double) termlinkCount.getTotalCount()) / termlinksCap.getSum());
         x.put("termlink total", ((double) termlinkCount.getTotalCount()));
 
@@ -287,7 +287,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         Util.toMap(rootOp, "concept op", x::put);
 
-        Util.decode(volume, "concept volume", 4, x::put);
+        Texts.histogramDecode(volume, "concept volume", 4, x::put);
 
         Util.toMap( clazz, "concept class", x::put);
 

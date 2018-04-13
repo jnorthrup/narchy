@@ -14,13 +14,13 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,16 +33,15 @@ public class DeriveRuleSet extends HashSet<DeriveRuleProto> {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
 
-    private static final Logger logger = LoggerFactory.getLogger(DeriveRuleSet.class);
+//    private static final Logger logger = LoggerFactory.getLogger(DeriveRuleSet.class);
 
-    public static DeriveRuleSet rules(NAR nar, Collection<String> filename) {
+    public static DeriveRuleSet load(NAR nar, Collection<String> filename) {
         PatternIndex p = new PatternIndex();
         p.nar = nar;
         return new DeriveRuleSet(filename.stream().flatMap(n -> ruleCache.apply(n).stream()), p, nar);
     }
 
-    final static Memoize<String, List<DeriveRuleSource>> ruleCache =
-            new SoftMemoize<>((String n) -> {
+    private final static Memoize<String, List<DeriveRuleSource>> ruleCache = new SoftMemoize<>((String n) -> {
         InputStream nn = null;
         try {
             nn = ClassLoader.getSystemResource(n).openStream();
@@ -60,7 +59,7 @@ public class DeriveRuleSet extends HashSet<DeriveRuleProto> {
             e.printStackTrace();
             bb = ArrayUtils.EMPTY_BYTE_ARRAY;
         }
-        return parse(load(bb)).distinct().collect(Collectors.toList());
+        return DeriveRuleSource.parse(load(bb)).distinct().collect(Collectors.toList());
 
 
     }, 32, true);
@@ -70,11 +69,11 @@ public class DeriveRuleSet extends HashSet<DeriveRuleProto> {
         this(new PatternIndex(), nar, rules);
     }
 
-    public DeriveRuleSet(PatternIndex index, NAR nar, String... rules) {
-        this(parse(Stream.of(rules)), index, nar);
+    DeriveRuleSet(PatternIndex index, NAR nar, String... rules) {
+        this(DeriveRuleSource.parse(rules), index, nar);
     }
 
-    public DeriveRuleSet(Stream<DeriveRuleSource> parsed, PatternIndex patterns, NAR nar) {
+    private DeriveRuleSet(Stream<DeriveRuleSource> parsed, PatternIndex patterns, NAR nar) {
         //HACK
         if (patterns.nar == null)
             patterns.nar = nar;
@@ -177,7 +176,7 @@ public class DeriveRuleSet extends HashSet<DeriveRuleProto> {
     }
 
 
-    final static Map<String, DeriveRuleSource> lines = new ConcurrentHashMap<>(1024);
+
 //    static {
 //        Map<String, Compound> m;
 //        try {
@@ -195,18 +194,6 @@ public class DeriveRuleSet extends HashSet<DeriveRuleProto> {
 //            .builder();
 
 
-    public static Stream<DeriveRuleSource> parse(Stream<String> rawRules) {
-
-        return rawRules.map(src -> lines.computeIfAbsent(src, s -> {
-            try {
-                return DeriveRuleSet.parse(s);
-            } catch (Narsese.NarseseException e) {
-                logger.error("rule parse: {}:\t{}", e, src);
-                return null;
-            }
-        })).filter(Objects::nonNull);
-
-    }
 
 
 //    public static PremiseRule[] parse(@NotNull TermIndex index, @NotNull String... src) {
@@ -220,13 +207,10 @@ public class DeriveRuleSet extends HashSet<DeriveRuleProto> {
 //        }), new PremiseRule[src.length], src);
 //    }
 
-    @NotNull
-    public static DeriveRuleSource parse(String src) throws Narsese.NarseseException {
-        return new DeriveRuleSource(parseRuleComponents(src), src);
-    }
+
 
     @NotNull
-    public static Subterms parseRuleComponents(@NotNull String src) throws Narsese.NarseseException {
+    static Subterms parseRuleComponents(@NotNull String src) throws Narsese.NarseseException {
 
         //(Compound) index.parseRaw(src)
         String[] ab = ruleImpl.split(src);

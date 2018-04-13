@@ -4,7 +4,6 @@ import nars.NAR;
 import nars.derive.rule.DeriveRuleSet;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -67,16 +66,17 @@ public class Derivers {
 
         return (nar)->new Deriver(rules(minLevel, maxLevel, nar, extraFiles), nar);
     }
-    public static Function<NAR, Deriver> deriver(String... extraFiles) {
-        return nar -> new Deriver(DeriveRuleSet.rules(nar,
-                List.of(extraFiles)
-        ), nar)
-        ;
-    }
+
+//    public static Function<NAR, Deriver> deriver(String... extraFiles) {
+//        return nar -> new Deriver(DeriveRuleSet.load(nar,
+//                List.of(extraFiles)
+//        ), nar)
+//        ;
+//    }
 
     /** standard ruleset */
     public static DeriveRuleSet rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
-        return DeriveRuleSet.rules(nar,
+        return DeriveRuleSet.load(nar,
                 standard(minLevel, maxLevel, extraFiles)
         );
     }

@@ -405,10 +405,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             if (aPri != aPri) //already deleted
                 return true;
 
-            Task c =
-                    (this instanceof Simple || (at.term().equals(bt.term()))) ?  //HACK
-                        Revision.mergeTemporal(nar, at, bt) :
-                        Revision.merge(at, bt, nar.time(), c2wSafe(nar.confMin.floatValue()), nar); //TODO remove this when the mergeTemporal fully supports CONJ and Temporal
+            Task c = Revision.mergeTemporal(nar, at, bt);
 
             if (c != null && !c.equals(a) && !c.equals(b)) {
 

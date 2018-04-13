@@ -14,6 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TruthTest {
 
+    @Test public void testEternalize() {
+        assertEquals(0.47f, $.t(1f, 0.9f).confEternalized(), 0.01f);
+        assertEquals(0.31f, $.t(1f, 0.45f).confEternalized(), 0.01f);
+        assertEquals(0.09f, $.t(1f, 0.10f).confEternalized(), 0.01f);
+    }
     @Test
     public void testFreqEquality() {
         Truth a = new DiscreteTruth(1.0f, 0.9f);

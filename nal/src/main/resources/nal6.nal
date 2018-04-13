@@ -220,8 +220,8 @@
     ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
     ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
 
-    (X ==> C), (B==>M), eventOf(X,B) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
-        (X ==> C), (B==>M), eventOfNeg(X,B) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
+    (X ==> C), (B==>M), eventOfPosOrNeg(X,B) |- ((conjWithoutPosOrNeg(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
+        //(X ==> C), (B==>M), eventOfNeg(X,B) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //((&&,B,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,M,A..+) ==>+- C), (Belief:AbductionPB)
 
 
@@ -233,9 +233,9 @@
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
 //SUSPECT
-    S, C, task("."), eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositiveNegativeNegative)
+    S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositiveNegativeNegative)
         //S, (||,S,A..+) |- (||,A..+), (Belief:DecomposeNegativePositivePositive)
-    S, C, task("."), eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposePositiveNegativeNegativeN)
+    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposePositiveNegativeNegativeN)
         //S, (||,(--,%S),A..+) |- (||,A..+), (Belief:DecomposePositivePositivePositive)
 
 

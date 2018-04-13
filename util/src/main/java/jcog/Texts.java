@@ -1,5 +1,9 @@
 package jcog;
 
+import org.HdrHistogram.AbstractHistogram;
+import org.HdrHistogram.DoubleHistogram;
+
+import java.io.PrintStream;
 import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -7,6 +11,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.function.BiConsumer;
 
 /**
  * Utilities for process Text & String input/output, ex: encoding/escaping and decoding/unescaping Terms
@@ -732,5 +737,36 @@ public enum Texts {
         return n2(100f * rate) + '%';
     }
 
+    public static void histogramDecode(AbstractHistogram h, String header, int linearStep, BiConsumer<String, Object> x) {
+        int digits = (int) (1 + Math.log10(h.getMaxValue())); //pad leading number for lexicographic / ordinal coherence
+        h.linearBucketValues(linearStep).iterator().forEachRemaining((p) -> {
+            x.accept(header + " [" +
+                            iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
+                    p.getCountAddedInThisIterationStep());
+        });
+    }
+
+    public static void histogramDecode(DoubleHistogram h, String header, double linearStep, BiConsumer<String, Object> x) {
+        final char[] order = {'a'};
+        h.linearBucketValues(linearStep).iterator().forEachRemaining((p) -> {
+            x.accept(header + " " + (order[0]++) +
+                            "[" + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
+                    p.getCountAddedInThisIterationStep());
+        });
+    }
+
+    public static void histogramDecode(AbstractHistogram h, String header, BiConsumer<String, Object> x) {
+        h.percentiles(1).iterator().forEachRemaining(p -> {
+            x.accept(header + " [" +
+                            p.getValueIteratedFrom() + ".." + p.getValueIteratedTo() + ']',
+                    p.getCountAddedInThisIterationStep());
+        });
+    }
+
+    public static void histogramPrint(AbstractHistogram h, PrintStream out) {
+        histogramDecode(h, "", (label, value)->{
+           out.println(label + " " + value);
+        });
+    }
 }
 

@@ -37,8 +37,7 @@ public interface TemporalBeliefTable extends TaskTable {
 //        //float range = t.range();
 
         float ee =
-                t.confInteg()/dur;
-                //t.eviInteg()/dur;
+                t.eviInteg()/dur;
 
         long dt = t.minDistanceTo(start, end);
 

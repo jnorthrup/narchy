@@ -568,6 +568,10 @@ public final class TruthFunctions {
     public static float expectation(float frequency, float confidence) {
         return (confidence * (frequency - 0.5f) + 0.5f);
     }
+
+    public static float eternalize(float evi) {
+        return w2cSafe(evi); //evi as if conf
+    }
 }
 
 //    public static float projection(long sourceTime, long targetTime, long currentTime) {

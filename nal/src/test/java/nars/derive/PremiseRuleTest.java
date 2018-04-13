@@ -8,7 +8,6 @@ import nars.derive.rule.DeriveRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,11 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 public class PremiseRuleTest {
 
-
-    @NotNull
-    public static DeriveRuleSource parse(@NotNull String src) throws Narsese.NarseseException {
-        return DeriveRuleSet.parse(src);
-    }
 
     @Test
     public void testNoNormalization() throws Exception {
@@ -67,7 +61,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            DeriveRuleSource x = parse("A, A |- A, (Belief:Revision, Goal:Weak)");
+            DeriveRuleSource x = DeriveRuleSource.parse("A, A |- A, (Belief:Revision, Goal:Weak)");
             assertNotNull(x);
             //assertEquals("((A,A),(A,((Revision-->Belief),(Weak-->Desire))))", x.toString());
             // assertEquals(12, x.getVolume());
@@ -80,7 +74,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            DeriveRuleSource x = parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Revision, Goal:Weak)");
+            DeriveRuleSource x = DeriveRuleSource.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
             assertEquals(vv, x.term().volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Revision-->Belief),(Weak-->Desire))))", x.toString());
@@ -91,7 +85,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            DeriveRuleSource x = parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Revision, Goal:Weak)");
+            DeriveRuleSource x = DeriveRuleSource.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
             assertEquals(vv, x.term().volume()); //same volume as previous block
             //assertEquals("(((%1-->%2),(%2-->%1)),((nonvar<->%1),((Revision-->Belief),(Weak-->Desire))))", x.toString());
@@ -101,7 +95,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-            DeriveRuleSource x = parse(" <A --> B>, <B --> A> |- <A <-> B>,  (Belief:Conversion, Punctuation:Belief)");
+            DeriveRuleSource x = DeriveRuleSource.parse(" <A --> B>, <B --> A> |- <A <-> B>,  (Belief:Conversion, Punctuation:Belief)");
             //x = PremiseRule.rule(x);
             assertEquals(vv, x.term().volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Conversion-->Belief),(Judgment-->Punctuation))))", x.toString());
@@ -119,7 +113,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-        DeriveRuleSource x = parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Strong)");
+        DeriveRuleSource x = DeriveRuleSource.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Strong)");
         //x = PremiseRule.rule(x);
         //assertEquals("(((%1-->%2),(%3-->%2)),((%1<->%3),((Comparison-->Belief),(Strong-->Desire))))", x.toString());
         assertEquals(vv, x.term().volume());
@@ -199,7 +193,7 @@ TODO - share unification state for different truth/conclusions
 //        return rule(
 //                r
 //        );
-        Compound y = (Compound) parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").term();
+        Compound y = (Compound) DeriveRuleSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").term();
         Terms.printRecursive(System.out, y);
     }
 

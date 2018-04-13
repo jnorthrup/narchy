@@ -88,8 +88,8 @@ public class AnonTest {
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2).neg()};
 
         AnonVector av = new AnonVector(x);
-        assertEquals(new ArrayTermVector(x).toString(), av.toString());
-        assertEqual(new ArrayTermVector(x), av);
+        ArrayTermVector bv = new ArrayTermVector(x);
+        assertEqual(bv, av);
 
         Term twoNeg = x[2];
         assertTrue(av.contains(twoNeg));
@@ -139,7 +139,10 @@ public class AnonTest {
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
         assertEquals(CachedCompound.the(PROD, v), CachedCompound.the(PROD, a));
-        assertArrayEquals(IO.termToBytes($.pFast(v)), IO.termToBytes($.pFast(a)));
+
+        byte[] bytesExpected = IO.termToBytes($.pFast(v));
+        byte[] bytesActual = IO.termToBytes($.pFast(a));
+        assertArrayEquals(bytesExpected, bytesActual);
     }
 
 }

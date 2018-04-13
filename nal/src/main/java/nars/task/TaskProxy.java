@@ -8,7 +8,6 @@ import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static nars.Op.NEG;
 
@@ -18,6 +17,15 @@ public class TaskProxy implements Task {
 
     public TaskProxy(Task task) {
         this.task = task;
+    }
+
+    public static TaskProxy.WithTruthAndTime eternalized(Task tx) {
+        return new TaskProxy.WithTruthAndTime(
+                tx,
+                ETERNAL, ETERNAL,
+                false,
+                ttx -> ttx.truth().eternalized()
+        );
     }
 
     @Override
@@ -246,7 +254,7 @@ public class TaskProxy implements Task {
         /** either Truth, Supplier<Truth>, or null */
         Object truth;
 
-        public WithTruthAndTime(Task task, long start, long end, boolean negated, Supplier<Truth> truth) {
+        public WithTruthAndTime(Task task, long start, long end, boolean negated, Function<Task,Truth> truth) {
             super(task);
             this.start = start;
             this.end = end;
@@ -270,6 +278,15 @@ public class TaskProxy implements Task {
             throw new UnsupportedOperationException();
         }
 
+        @Override
+        public long start() {
+            return start;
+        }
+
+        @Override
+        public long end() {
+            return end;
+        }
 
         @Override
         public @Nullable Truth truth(long when, long dur, float minConf) {
@@ -288,8 +305,8 @@ public class TaskProxy implements Task {
         public @Nullable Truth truth() {
             Object tt = this.truth;
 
-            if (tt instanceof Supplier) {
-                Truth computed = ((Supplier<Truth>) tt).get();
+            if (tt instanceof Function) {
+                Truth computed = ((Function<Task,Truth>) tt).apply(task);
                 if (computed != null) {
                     if (negated) {
                         computed = computed.neg();

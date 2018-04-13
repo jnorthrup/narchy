@@ -200,7 +200,10 @@ public abstract class Param {
             return Tense.ETERNAL_ETERNAL;
 
         int f = Math.round(dur * timeFocus.floatValue());
-        return new long[] { when - f, when + f };
+        int ditherCycles = dtDitherCycles();
+        long from = Tense.dither(when - f, ditherCycles);
+        long to = Tense.dither(when + f, ditherCycles);;
+        return new long[] {from, to};
     }
 
     public static final int TTL_MIN() {

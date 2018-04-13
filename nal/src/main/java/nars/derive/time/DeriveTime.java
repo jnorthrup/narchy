@@ -9,13 +9,14 @@ import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.match.EllipsisMatch;
-import nars.truth.util.EviDensity;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import nars.term.compound.util.Conj;
 import nars.term.var.VarPattern;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.util.EviDensity;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongLongPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -28,8 +29,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static nars.Op.CONJ;
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -473,6 +473,37 @@ public class DeriveTime extends TimeGraph {
     Function<long[], Term> solveMerged(ArrayHashSet<Event> solutions, int dur) {
         int ss = solutions.size();
         if (ss <= 1) return null; //callee will use the only solution by default
+
+        boolean hasConjSeq = solutions.OR(x -> x.id.op()==CONJ && x.id.eventCount() > 0);
+        if (hasConjSeq) {
+            Conj c = new Conj();
+            List<Event> list = solutions.list;
+            for (int i = 0, listSize = list.size(); i < listSize; i++) {
+                Event e = list.get(i);
+                long w = e.when();
+                if (w!=TIMELESS) {
+                    if (!c.add(e.id, w)) {
+                        c = null;
+                        break;
+                    }
+                }
+            }
+            if (c!=null) {
+                //valid result
+                Term t = c.term();
+                assert(!(t instanceof Bool));
+                if (t.volume() <= d.termVolMax) {
+                    long start = c.shift();
+                    return (se)->{
+                        se[0] = se[1] = start;
+                        return t;
+                    };
+                }
+            }
+        }
+
+        //fallback method:
+
         SortedSetMultimap<Term, LongLongPair> m = MultimapBuilder.hashKeys(ss).treeSetValues().build();
         solutions.forEach(x -> {
             long w = x.when();
@@ -844,60 +875,72 @@ public class DeriveTime extends TimeGraph {
             s = task.start();
             e = task.end();
         } else*/
-        {
-            boolean taskEvent =
-                    //!task.term().op().temporal;
-                    !(task.term().op() == CONJ);
+        boolean taskEvent =
+                //!task.term().op().temporal;
+                !(task.term().op() == CONJ);
 
-            if (task.isEternal()) {
-                if (belief == null || belief.isEternal()) {
-                    //entirely eternal
-                    s = e = ETERNAL;
-                } else {
-                    if (taskEvent) {
-                        s = belief.start();
-                        e = belief.end();
-                    } else {
-                        //transformed task term, should have been solved
-                        return null;
-                    }
-                }
+        if (task.isEternal()) {
+            if (belief == null || belief.isEternal()) {
+                //entirely eternal
+                s = e = ETERNAL;
             } else {
-                if (belief == null) {
+                if (taskEvent) {
+                    s = belief.start();
+                    e = belief.end();
+                } else {
+                    //transformed task term, should have been solved
+                    return null;
+                }
+            }
+        } else {
+            if (belief == null) {
+                //inherit task time
+                s = task.start();
+                e = task.end();
+
+            } else if (belief.isEternal()) {
+                if (!task.isEternal()) {
                     //inherit task time
                     s = task.start();
                     e = task.end();
-
-                } else if (belief.isEternal()) {
-                    if (!task.isEternal()) {
-                        //inherit task time
-                        s = task.start();
-                        e = task.end();
-                    } else {
-                        s = e = ETERNAL;
-                    }
-                    //                    //event: inherit task time
-                    //                    boolean beliefEvent = belief == null || (
-                    //                            !belief.term().op().temporal
-                    //                    );
-                    //                    if (beliefEvent) {
-                    //                        s = task.start();
-                    //                        e = task.end();
-                    //                    } else {
-                    //                        return null; //should have calculated solution normally
-                    //                    }
-                    //                }
                 } else {
-                    if (!task.isQuestionOrQuest() && !belief.isQuestionOrQuest()) {
+                    s = e = ETERNAL;
+                }
+                //                    //event: inherit task time
+                //                    boolean beliefEvent = belief == null || (
+                //                            !belief.term().op().temporal
+                //                    );
+                //                    if (beliefEvent) {
+                //                        s = task.start();
+                //                        e = task.end();
+                //                    } else {
+                //                        return null; //should have calculated solution normally
+                //                    }
+                //                }
+            } else {
+                byte p = d.concPunc;
+                if ((p==BELIEF || p == GOAL)) {
+                    boolean taskEvi = !task.isQuestionOrQuest();
+                    boolean beliefEvi = !belief.isQuestionOrQuest();
+                    if (taskEvi && beliefEvi) {
                         EviDensity density = new EviDensity(task, belief);
                         s = density.unionStart;
                         e = density.unionEnd;
-                        d.concEviFactor *= density.factor();
+                        d.concEviFactor *= density.factor(); //TODO eternalization margin?
+                    } else if (taskEvi) {
+                        s = task.start();
+                        e = task.end();
+                    } else if (beliefEvi) {
+                        s = belief.start();
+                        e = belief.end();
                     } else {
-                        Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
-                        s = u.start();
-                        e = u.end();
+                        throw new UnsupportedOperationException("evidence from nowhere?");
                     }
+                } else {
+                    //question: use the interval union
+                    Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
+                    s = u.start();
+                    e = u.end();
                 }
             }
         }

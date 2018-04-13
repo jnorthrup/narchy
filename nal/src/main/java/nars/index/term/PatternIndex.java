@@ -28,6 +28,7 @@ public class PatternIndex extends MapConceptIndex {
         super(new HashMap<>(512));
     }
 
+
 //    /**
 //     * installs static and NAR-specific functors
 //     */

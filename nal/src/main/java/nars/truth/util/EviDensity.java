@@ -3,6 +3,7 @@ package nars.truth.util;
 import jcog.math.Longerval;
 import nars.Task;
 import nars.task.util.TaskRegion;
+import nars.truth.TruthFunctions;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -91,7 +92,11 @@ public final class EviDensity {
     }
 
     void add(Task xt, long start, long end) {
-        add(start, end, xt.evi(), xt.eviInteg());
+        if (start!=ETERNAL) {
+            add(start, end, xt.evi(), xt.eviInteg(start, end));
+        } else {
+            //?
+        }
     }
 
     public void add(long xStart, long xEnd, float evi) {
@@ -135,6 +140,17 @@ public final class EviDensity {
 
         long unionRange = 1 + (unionEnd - unionStart);
         return sumEviIntegrals / (unionRange * sumEviAvg);
+    }
+
+    /** the density affecting only the evidence component beyond eternalized towards complete evidence */
+    public float factor(float evi) {
+        float f = factor();
+        if (f >= 1f-Float.MIN_NORMAL) return evi; //full result
+        if (f <= Float.MIN_NORMAL) return 0; //nothing
+
+        float eviEte = TruthFunctions.eternalize(evi); //eternalized part
+        return eviEte +
+                (evi - eviEte) * f;
     }
 
 //    @Nullable

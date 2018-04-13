@@ -48,7 +48,10 @@ public class Premise {
         return termLink.get();
     }
 
-    final static int var = Op.VAR_QUERY.bit;// | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+    /** variable types unifiable in premise formation */
+    final static int var =
+            //Op.VAR_QUERY.bit;
+            Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
 
     /**
      * resolve the most relevant belief of a given term/concept
@@ -68,7 +71,8 @@ public class Premise {
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
     @Nullable
-    public boolean match(Derivation d, long[] focus, int matchTTL) {
+    public boolean match(Derivation d, int matchTTL) {
+
 
 
         Term taskTerm = task.term();
@@ -89,7 +93,7 @@ public class Premise {
 
                     Term _beliefTerm = beliefTerm;
                     final Term[] unifiedBeliefTerm = new Term[]{null};
-                    UnifySubst u = new UnifySubst(/*null*/VAR_QUERY, d.nar, (y) -> {
+                    UnifySubst u = new UnifySubst(var==VAR_QUERY.bit ? VAR_QUERY : null /* all */, d.nar, (y) -> {
                         if (y.op().conceptualizable) {
                             y = y.normalize();
 
@@ -116,7 +120,7 @@ public class Premise {
         beliefTerm = beliefTerm.unneg(); //HACK ?? assert(beliefTerm.op()!=NEG);
 
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
-        Task belief = match(d, focus, beliefTerm, taskConcept, beliefConceptCanAnswerTaskConcept[0], unifiedBelief);
+        Task belief = match(d, beliefTerm, taskConcept, beliefConceptCanAnswerTaskConcept[0], unifiedBelief);
 
 
         if (belief != null) {
@@ -131,7 +135,7 @@ public class Premise {
 
     }
 
-    @Nullable Task match(Derivation d, long[] focus, Term beliefTerm, Term taskConcept, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
+    @Nullable Task match(Derivation d, Term beliefTerm, Term taskConcept, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
         //        float timeFocus = n.timeFocus.floatValue();
 //        int fRad = Math.round(Math.max(1,dur * timeFocus));
 
@@ -182,13 +186,22 @@ public class Premise {
 
                 if ((belief == null) && !bb.isEmpty()) {
 
+                    long[] focus = n.timeFocus(task.nearestPointInternal(n.time()));
+                    long focusStart = focus[0];
+                    long focusEnd = focus[1];
 
+                    boolean sameConcepts = taskConcept.equals(beliefConcept.term());
                     belief = bb.match(
-                            focus[0], focus[1],
-                            beliefTerm,
-                            n,
-                            taskConcept.equals(beliefConcept.term()) ? x ->
-                                !x.equals(task) : null);
+                                focusStart, focusEnd,
+                                beliefTerm,
+                                n,
+                            !sameConcepts ? null : m->!m.equals(task)
+//                            m->
+//                                (!sameConcepts || !m.equals(task))
+//                                &&
+//                                m.intersects(focusStart, focusEnd) //select only from the focus region
+                    );
+
                 }
             }
 

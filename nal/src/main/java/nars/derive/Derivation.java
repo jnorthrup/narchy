@@ -446,6 +446,7 @@ public class Derivation extends PreDerivation {
     public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
 
         reset();
+        this.derivedTerm.clear();
 
 
         if (this._task!=null && this._task.term().equals(_task.term())) {
@@ -462,6 +463,8 @@ public class Derivation extends PreDerivation {
 
             anon.clear();
             this.taskTerm = anon.put(_task.term());
+
+            //store the unique index after initializing the Anon with the task term's components for quick rollback to this position on a subsequent derivation with the same task
             this.taskUniques = anon.uniques();
         }
 
@@ -514,19 +517,22 @@ public class Derivation extends PreDerivation {
             this.beliefTruth = belief.truth(beliefAt,dur);
             this.beliefTruthProjected = belief.truth(bAt, dur);
             if (beliefTruth == null && beliefTruthProjected == null) {
-                this._belief = this.belief = null; //single
+                this._belief = null; //force single premise
             }
         } else {
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
-            this.belief = this._belief = null;
-            this.beliefAt = TIMELESS;
-            this.beliefTruth = this.beliefTruthProjected = null;
+            this._belief = null;
         }
-        assert(beliefTerm!=null): (_beliefTerm + " could not be anonymized");
 
+        assert(beliefTerm!=null): (_beliefTerm + " could not be anonymized");
         this._beliefStruct = beliefTerm.structure();
         this._beliefOp = beliefTerm.op().id;
 
+        if (_belief == null) {
+            this.belief = null;
+            this.beliefAt = TIMELESS;
+            this.beliefTruth = this.beliefTruthProjected = null;
+        }
 
         this.forEachMatch = null;
         this.concTruth = null;
@@ -537,7 +543,6 @@ public class Derivation extends PreDerivation {
         this.dtSingle = this.dtDouble = null;
         this.concOcc[0] = this.concOcc[1] = ETERNAL;
 
-        this.derivedTerm.clear();
         return true; //ready
     }
 

@@ -1,13 +1,12 @@
-package nars.nal;
+package nars.derive.rule;
 
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.DeriveRules;
+import nars.derive.Deriver;
 import nars.derive.TrieDeriver;
-import nars.derive.rule.DeriveRuleSet;
-import nars.derive.rule.DeriveRuleSource;
 import nars.index.term.PatternIndex;
 import nars.term.Term;
 import nars.term.Termed;
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static nars.Op.QUEST;
 import static nars.derive.Deriver.derivers;
@@ -99,25 +97,20 @@ public class TrieDeriverTest {
     }
 
     static DeriveRules the(DeriveRuleSet r) {
-        return TrieDeriver.the(r, (x) -> x);
+        return TrieDeriver.the(r, null);
     }
 
 
-    public static DeriveRuleSet testCompile(String... rules) {
+    static DeriveRuleSet testCompile(String... rules) {
         return testCompile(false, rules);
     }
 
-    public static DeriveRuleSet testCompile(boolean debug, String... rules) {
+    static DeriveRuleSet testCompile(boolean debug, String... rules) {
 
         assertNotEquals(0, rules.length);
 
-        PatternIndex pi = new PatternIndex();
 
-        Stream<DeriveRuleSource> parsed = DeriveRuleSet.parse(Stream.of(rules));
-
-
-        DeriveRuleSet src =
-                new DeriveRuleSet(parsed, pi, NARS.shell());
+        DeriveRuleSet src = new DeriveRuleSet(NARS.shell(), rules);
         assertNotEquals(0, src.size());
         DeriveRules d = the(src);
 
@@ -175,7 +168,7 @@ public class TrieDeriverTest {
     @Test
     public void testConclusionFold() throws Narsese.NarseseException {
 
-        TestNAR t = test(64,
+        TestNAR t = test(
                 "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
                 "(A --> B), C, task(\"?\") |- (A ==> C), (Punctuation:Question)"
         );
@@ -189,7 +182,7 @@ public class TrieDeriverTest {
     @Test
     public void testDeriveQuest() throws Narsese.NarseseException {
 
-        @NotNull TestNAR t = test(64, "(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
+        @NotNull TestNAR t = test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
                 .log()
                 .ask("b:a")
                 .believe("a:b")
@@ -209,21 +202,21 @@ public class TrieDeriverTest {
 
     private final List<TestNAR> tests = $.newArrayList();
 
+    protected TestNAR test(String... rules) {
+        new NARS().deriverAdd(
+                n1 -> new Deriver(new DeriveRuleSet(n1, rules), n1)
+        );
+        NAR n = new NARS().get();
+        TestNAR t = new TestNAR(n);
+        tests.add(t);
+        return t;
+    }
+
     @AfterEach
     public void runTests() {
         tests.forEach(TestNAR::test);
     }
 
-    public TestNAR test(int tlMax, String... rules) {
-        return test(tlMax, false, rules);
-    }
-
-    public TestNAR test(int tlMax, boolean debug, String... rules) {
-        NAR n = new NARS().deriverAddRules(rules).get();
-        TestNAR t = new TestNAR(n);
-        tests.add(t);
-        return t;
-    }
 
 //    public static Set<Task> testDerivation(String[] rules, String task, String belief, int ttlMax, boolean debug) throws Narsese.NarseseException {
 //        NAR n = NARS.tmp();

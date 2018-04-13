@@ -10,7 +10,6 @@ import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.rule.DeriveRuleSet;
 import nars.exe.AbstractExec;
 import nars.exe.Exec;
 import nars.exe.UniExec;
@@ -115,13 +114,6 @@ public class NARS {
         );
         return this;
     }
-    public NARS deriverAddRules(String... rules) {
-        deriverAdd(
-                n -> new Deriver(new DeriveRuleSet(n, rules), n)
-        );
-        return this;
-    }
-
 
 
     public NARS deriverAdd(Function<NAR, Deriver> dBuilder) {

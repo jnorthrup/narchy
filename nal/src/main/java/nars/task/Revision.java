@@ -22,7 +22,6 @@ import nars.truth.Truthed;
 import nars.truth.util.EviDensity;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.IntIterator;
@@ -35,7 +34,9 @@ import java.util.TreeSet;
 
 import static jcog.Util.lerp;
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -526,231 +527,6 @@ public class Revision {
     }
 
 
-    @Nullable
-    @Deprecated public static Task merge(/*@NotNull*/ Task a, /*@NotNull*/ Task b, long now, float minEvi, NAR nar) {
-        assert (!a.isEternal() && !b.isEternal()) : "can not merge eternal tasks";
-
-//        if (a.op() == CONJ) {
-//            //avoid intermpolation of 2 conjunctions with opposite polarities
-//            if (!a.term().equals(b.term())
-//                    && (a.isPositive() ^ b.isPositive()) && (a.term().dtRange() != 0 || b.term().dtRange() != 0))
-//                return null;
-//        }
-
-        //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
-        float overlap = Stamp.overlapFraction(a.stamp(), b.stamp());
-        float overlapFactor = Param.overlapFactor(overlap);
-        if (overlapFactor < Float.MIN_NORMAL)
-            return null;
-
-
-        long as, bs;
-        if ((as = a.start()) > (bs = b.start())) {
-            //swap so that 'a' is left aligned
-            Task x = a;
-            a = b;
-            b = x;
-            long xs = as;
-            as = bs;
-            bs = xs;
-        }
-        assert (bs != ETERNAL);
-        assert (as != ETERNAL);
-
-
-        //            float ae = a.evi();
-//            float aa = ae * (1 + ai.length());
-//            float be = b.evi();
-        //float bb = be * (1 + bi.length());
-        //float p = aa / (aa + bb);
-
-
-        //relate high frequency difference with low confidence
-//        float freqDiscount =
-//                0.5f + 0.5f * (1f - Math.abs(a.freq() - b.freq()));
-//        factor *= freqDiscount;
-//        if (factor < Prioritized.EPSILON) return null;
-
-
-//            float temporalOverlap = timeOverlap==null || timeOverlap.length()==0 ? 0 : timeOverlap.length()/((float)Math.min(ai.length(), bi.length()));
-//            float confMax = Util.lerp(temporalOverlap, Math.max(w2c(ae),w2c(be)),  1f);
-//
-//
-//            float timeDiscount = 1f;
-//            if (timeOverlap == null) {
-//                long separation = Math.max(a.timeDistance(b.start()), a.timeDistance(b.end()));
-//                if (separation > 0) {
-//                    long totalLength = ai.length() + bi.length();
-//                    timeDiscount =
-//                            (totalLength) /
-//                                    (separation + totalLength)
-//                    ;
-//                }
-//            }
-
-
-        //width will be the average width
-//        long width = (ai.length() + bi.length()) / 2; //TODO weight
-//        long mid = (ai.mid() + bi.mid()) / 2;  //TODO weight
-
-//            Truth expected = table.truth(mid, now, dur);
-//            if (expected == null)
-//                return null;
-
-
-        int dur = nar.dur();
-//        float intermvalDistance = dtDiff(a.term(), b.term()) /
-//                ((1 + Math.max(a.term().dtRange(), b.term().dtRange())) * dur);
-//        factor *= (1f / (1f + intermvalDistance));
-//        if (factor < Prioritized.EPSILON) return null;
-
-        EviDensity density = new EviDensity(a, b);
-        long start = density.unionStart;
-        long end = density.unionEnd;
-
-
-        Truth an = a.truth(start, end, dur, 0);
-        if (an == null)
-            return null;
-        Truth bn = b.truth(start, end, dur, 0);
-        if (bn == null)
-            return null;
-
-        Truth rawTruth = revise(an, bn,
-                //joint.factor(Math.abs( an.freq() - bn.freq() ))
-                density.factor()
-                , Float.MIN_NORMAL /*Truth.EVI_MIN*/);
-        if (rawTruth == null)
-            return null;
-
-
-        float e2 = rawTruth.evi() * overlapFactor;
-        if (e2 < minEvi)
-            return null;
-        rawTruth = rawTruth.withEvi(e2);
-
-        Truth cTruth = rawTruth.dither(nar);
-        if (cTruth == null)
-            return null;
-        Term cc = null;
-
-////        float maxEviAB = Math.max(an.evi(), bn.evi());
-//        float evi = rawTruth.evi();
-//        if (maxEviAB < evi) {
-//            //more evidence overlap indicates redundant information, so reduce the increase in confWeight (measure of evidence) by this amount
-//            //TODO weight the contributed overlap amount by the relative confidence provided by each task
-//            //        factor *= overlapDiscount;
-//            //        if (factor < Prioritized.EPSILON) return null;
-//
-//            float eviDiscount = (evi - maxEviAB) * overlapDiscount;
-//            float newEvi = evi - eviDiscount;
-//            if (!Util.equals(evi, newEvi, Pri.EPSILON)) {
-//                rawTruth = rawTruth.withEvi(newEvi);
-//            }
-//
-//        }
-//
-
-
-        //TODO maybe delay dithering until after the negation has been determined below
-
-//            float conf = w2c(expected.evi() * factor);
-//            if (conf >= Param.TRUTH_EPSILON)
-//                newTruth = new PreciseTruth(expected.freq(), conf);
-//            else
-//                newTruth = null;
-
-
-        assert (a.punc() == b.punc());
-
-
-        float aProp = a.isQuestionOrQuest() ? 0.5f : an.evi() / (an.evi() + bn.evi());
-
-
-        Term at = a.term();
-        Term bt = b.term();
-        if (!at.equals(bt)) {
-
-            //Term atConceptual = at.conceptual();
-            //if (Param.DEBUG) assert(bt.conceptual().equals(atConceptual)): at + " and " + bt + " may not belong in the same concept";
-
-            for (int i = 0; i < Param.MAX_TERMPOLATE_RETRIES; i++) {
-                Term t;
-                if (at.equals(bt)) {
-                    t = at;
-                    i = Param.MAX_TERMPOLATE_RETRIES; //no need to retry
-                } else {
-                    long dt = bs - as;
-                    t = intermpolate(at, dt, bt, aProp, nar);
-                    if (t == null || !t.unneg().op().conceptualizable)
-                        continue;
-                }
-
-
-                ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), Param.DEBUG_EXTRA);
-                /*if (ccp != null) */{
-
-                    cc = ccp.getOne();
-                    //assert (cc.isNormalized());
-
-                    if (ccp.getTwo())
-                        cTruth = cTruth.neg();
-                    break;
-                }
-            }
-
-            if (cc == null)
-                return null;
-
-
-            //        if (cc.op() == CONJ) {
-            //            long mid = Util.lerp(aProp, b.mid(), a.mid());
-            //            long range = cc.op() == CONJ ?
-            //                    cc.dtRange() :
-            //                    (Util.lerp(aProp, b.range(), a.range()));
-            //            start = mid - range / 2;
-            //            end = start + range;
-            //        } else {
-            //            if (u > s) {
-            //                start = end = Util.lerp(aProp, b.mid(), a.mid());
-            //            } else {
-
-            //            }
-            //        }
-        } else {
-            cc = at;
-        }
-
-
-        if (equalOrWeaker(a, cTruth, start, end, cc, nar))
-            return a;
-        if (equalOrWeaker(b, cTruth, start, end, cc, nar))
-            return b;
-
-        NALTask t = new NALTask(cc, a.punc(),
-                cTruth,
-                now, start, end,
-                Stamp.zip(a.stamp(), b.stamp(), aProp) //get a stamp collecting all evidence from the table, since it all contributes to the result
-        );
-//        if (overlap > 0 || a.isCyclic() || b.isCyclic())
-//            t.setCyclic(true);
-
-        t.priSet(Util.lerp(aProp, b.priElseZero(), a.priElseZero()));
-
-        //t.setPri(a.priElseZero() + b.priElseZero());
-
-        t.cause = Cause.sample(Param.causeCapacity.intValue(), a, b);
-
-        if (Param.DEBUG)
-            t.log("Revection Merge");
-
-
-
-        a.meta("@", (k)->t); //forward to the revision
-        b.meta("@", (k)->t); //forward to the revision
-
-        return t;
-    }
 
     @Nullable public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
         return mergeTemporal(nar, tt, tt.length);
@@ -807,6 +583,7 @@ public class Revision {
 
         Task first = tt[0].task();
 
+        //assumes the tasks are ordered in decreasing strength, so any detected overlap cancels the weaker tasks
         //TODO calculate the temporal density at the same time as this first part to avoid naively generating a sparse result afterward
         //TODO combine evidensity with the stamp calculation
         //TODO allow evidensity to skip a task in the array and proceed to the next without recurse
@@ -853,7 +630,7 @@ public class Revision {
                             } else {
                                 //skip this term, it would conflict with the other 2+ terms which are already known to be the same
                                 tt[i] = null;
-                                continue; //skip this one
+                                continue; //skip this task
                             }
                         }
                     }
@@ -864,8 +641,8 @@ public class Revision {
 
             evidence.addAll(ts);
 
-            if (tasks > 1)
-                evidence.compact(); //because it may be compared against frequently
+            //if (tasks > 1)
+            //    evidence.compact(); //because it may be compared against frequently
 
             overlap += overlapsToAdd;
             tasks++;
@@ -876,20 +653,22 @@ public class Revision {
             return first; //return the top one, nothing could be merged
         }
 
-        eviMinInteg = Math.max(first.eviInteg(), eviMinInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
+        long start = density.unionStart;
+        long end = density.unionEnd;
+
+        eviMinInteg = Math.max(start==ETERNAL ? first.evi() : first.eviInteg(start, end), eviMinInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
 
         float overlapFactor = Param.overlapFactor(((float)overlap)/totalEv);
         if (overlapFactor < Float.MIN_NORMAL)
             return first;
 
 
-        float densityFactor = density.factor();
+
 
         if (tasks!=tt.length)
             tt = ArrayUtils.removeNulls(tt, Task[]::new);
 
-        long start = density.unionStart;
-        long end = density.unionEnd;
+
         long range = 1 + (end - start);
 
         Term content;
@@ -903,8 +682,8 @@ public class Revision {
             if (diff > 0)
                 differenceFactor = (float) Param.evi(1f, diff, Math.max(1,range)); //proport
 
-            float e1 = first.eviInteg();
-            float e2 = second.eviInteg();
+            float e1 = first.evi();
+            float e2 = second.evi();
             float firstProp = e1/(e1+e2);
             content = intermpolate(first.term(), second.term(), firstProp, nar);
 
@@ -923,15 +702,22 @@ public class Revision {
         Truth truth = Param.truth(start, end, dur).add(tt).preFilter().truth();
         if (truth == null) return first;
 
-        float factor = overlapFactor * differenceFactor * densityFactor;
-        float eAdjusted = truth.evi() * factor;
+
+
+        float factor = overlapFactor * differenceFactor;
+        float truthEvi = density.factor(truth.evi());
+        float eAdjusted = truthEvi
+                    * differenceFactor //affects overall result
+                    * overlapFactor; //affects overall result
+
 
 //        if (densityFactor < 1f) {
 //            //apply densityFactor as a LERP of evidence from eternalized to full
 //            eAdjusted = Util.lerp(densityFactor, truth.eviEternalized(), truth.evi());
 //        }
 
-        if ((eAdjusted * range) < eviMinInteg)
+        if ((eAdjusted * range) < eviMinInteg) //accepts weaker diluted range
+        //if (eAdjusted < eviMinInteg) //rejects a weaker diluted range, comparing the absolute evidence not including any range integration effect
             return first;
 
         Task t = Task.tryTask(content, first.punc(), truth, (c, tr)->{
@@ -1405,3 +1191,228 @@ public class Revision {
 //        } /* else: can not be compared anyway */
 //    }
 //
+//    @Nullable
+//    @Deprecated public static Task merge(/*@NotNull*/ Task a, /*@NotNull*/ Task b, long now, float minEvi, NAR nar) {
+//        assert (!a.isEternal() && !b.isEternal()) : "can not merge eternal tasks";
+//
+////        if (a.op() == CONJ) {
+////            //avoid intermpolation of 2 conjunctions with opposite polarities
+////            if (!a.term().equals(b.term())
+////                    && (a.isPositive() ^ b.isPositive()) && (a.term().dtRange() != 0 || b.term().dtRange() != 0))
+////                return null;
+////        }
+//
+//        //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
+//        float overlap = Stamp.overlapFraction(a.stamp(), b.stamp());
+//        float overlapFactor = Param.overlapFactor(overlap);
+//        if (overlapFactor < Float.MIN_NORMAL)
+//            return null;
+//
+//
+//        long as, bs;
+//        if ((as = a.start()) > (bs = b.start())) {
+//            //swap so that 'a' is left aligned
+//            Task x = a;
+//            a = b;
+//            b = x;
+//            long xs = as;
+//            as = bs;
+//            bs = xs;
+//        }
+//        assert (bs != ETERNAL);
+//        assert (as != ETERNAL);
+//
+//
+//        //            float ae = a.evi();
+////            float aa = ae * (1 + ai.length());
+////            float be = b.evi();
+//        //float bb = be * (1 + bi.length());
+//        //float p = aa / (aa + bb);
+//
+//
+//        //relate high frequency difference with low confidence
+////        float freqDiscount =
+////                0.5f + 0.5f * (1f - Math.abs(a.freq() - b.freq()));
+////        factor *= freqDiscount;
+////        if (factor < Prioritized.EPSILON) return null;
+//
+//
+////            float temporalOverlap = timeOverlap==null || timeOverlap.length()==0 ? 0 : timeOverlap.length()/((float)Math.min(ai.length(), bi.length()));
+////            float confMax = Util.lerp(temporalOverlap, Math.max(w2c(ae),w2c(be)),  1f);
+////
+////
+////            float timeDiscount = 1f;
+////            if (timeOverlap == null) {
+////                long separation = Math.max(a.timeDistance(b.start()), a.timeDistance(b.end()));
+////                if (separation > 0) {
+////                    long totalLength = ai.length() + bi.length();
+////                    timeDiscount =
+////                            (totalLength) /
+////                                    (separation + totalLength)
+////                    ;
+////                }
+////            }
+//
+//
+//        //width will be the average width
+////        long width = (ai.length() + bi.length()) / 2; //TODO weight
+////        long mid = (ai.mid() + bi.mid()) / 2;  //TODO weight
+//
+////            Truth expected = table.truth(mid, now, dur);
+////            if (expected == null)
+////                return null;
+//
+//
+//        int dur = nar.dur();
+////        float intermvalDistance = dtDiff(a.term(), b.term()) /
+////                ((1 + Math.max(a.term().dtRange(), b.term().dtRange())) * dur);
+////        factor *= (1f / (1f + intermvalDistance));
+////        if (factor < Prioritized.EPSILON) return null;
+//
+//        EviDensity density = new EviDensity(a, b);
+//        long start = density.unionStart;
+//        long end = density.unionEnd;
+//
+//
+//        Truth an = a.truth(start, end, dur, 0);
+//        if (an == null)
+//            return null;
+//        Truth bn = b.truth(start, end, dur, 0);
+//        if (bn == null)
+//            return null;
+//
+//        Truth rawTruth = revise(an, bn,
+//                //joint.factor(Math.abs( an.freq() - bn.freq() ))
+//                density.factor()
+//                , Float.MIN_NORMAL /*Truth.EVI_MIN*/);
+//        if (rawTruth == null)
+//            return null;
+//
+//
+//        float e2 = rawTruth.evi() * overlapFactor;
+//        if (e2 < minEvi)
+//            return null;
+//        rawTruth = rawTruth.withEvi(e2);
+//
+//        Truth cTruth = rawTruth.dither(nar);
+//        if (cTruth == null)
+//            return null;
+//        Term cc = null;
+//
+//////        float maxEviAB = Math.max(an.evi(), bn.evi());
+////        float evi = rawTruth.evi();
+////        if (maxEviAB < evi) {
+////            //more evidence overlap indicates redundant information, so reduce the increase in confWeight (measure of evidence) by this amount
+////            //TODO weight the contributed overlap amount by the relative confidence provided by each task
+////            //        factor *= overlapDiscount;
+////            //        if (factor < Prioritized.EPSILON) return null;
+////
+////            float eviDiscount = (evi - maxEviAB) * overlapDiscount;
+////            float newEvi = evi - eviDiscount;
+////            if (!Util.equals(evi, newEvi, Pri.EPSILON)) {
+////                rawTruth = rawTruth.withEvi(newEvi);
+////            }
+////
+////        }
+////
+//
+//
+//        //TODO maybe delay dithering until after the negation has been determined below
+//
+////            float conf = w2c(expected.evi() * factor);
+////            if (conf >= Param.TRUTH_EPSILON)
+////                newTruth = new PreciseTruth(expected.freq(), conf);
+////            else
+////                newTruth = null;
+//
+//
+//        assert (a.punc() == b.punc());
+//
+//
+//        float aProp = a.isQuestionOrQuest() ? 0.5f : an.evi() / (an.evi() + bn.evi());
+//
+//
+//        Term at = a.term();
+//        Term bt = b.term();
+//        if (!at.equals(bt)) {
+//
+//            //Term atConceptual = at.conceptual();
+//            //if (Param.DEBUG) assert(bt.conceptual().equals(atConceptual)): at + " and " + bt + " may not belong in the same concept";
+//
+//            for (int i = 0; i < Param.MAX_TERMPOLATE_RETRIES; i++) {
+//                Term t;
+//                if (at.equals(bt)) {
+//                    t = at;
+//                    i = Param.MAX_TERMPOLATE_RETRIES; //no need to retry
+//                } else {
+//                    long dt = bs - as;
+//                    t = intermpolate(at, dt, bt, aProp, nar);
+//                    if (t == null || !t.unneg().op().conceptualizable)
+//                        continue;
+//                }
+//
+//
+//                ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), Param.DEBUG_EXTRA);
+//                /*if (ccp != null) */{
+//
+//                    cc = ccp.getOne();
+//                    //assert (cc.isNormalized());
+//
+//                    if (ccp.getTwo())
+//                        cTruth = cTruth.neg();
+//                    break;
+//                }
+//            }
+//
+//            if (cc == null)
+//                return null;
+//
+//
+//            //        if (cc.op() == CONJ) {
+//            //            long mid = Util.lerp(aProp, b.mid(), a.mid());
+//            //            long range = cc.op() == CONJ ?
+//            //                    cc.dtRange() :
+//            //                    (Util.lerp(aProp, b.range(), a.range()));
+//            //            start = mid - range / 2;
+//            //            end = start + range;
+//            //        } else {
+//            //            if (u > s) {
+//            //                start = end = Util.lerp(aProp, b.mid(), a.mid());
+//            //            } else {
+//
+//            //            }
+//            //        }
+//        } else {
+//            cc = at;
+//        }
+//
+//
+//        if (equalOrWeaker(a, cTruth, start, end, cc, nar))
+//            return a;
+//        if (equalOrWeaker(b, cTruth, start, end, cc, nar))
+//            return b;
+//
+//        NALTask t = new NALTask(cc, a.punc(),
+//                cTruth,
+//                now, start, end,
+//                Stamp.zip(a.stamp(), b.stamp(), aProp) //get a stamp collecting all evidence from the table, since it all contributes to the result
+//        );
+////        if (overlap > 0 || a.isCyclic() || b.isCyclic())
+////            t.setCyclic(true);
+//
+//        t.priSet(Util.lerp(aProp, b.priElseZero(), a.priElseZero()));
+//
+//        //t.setPri(a.priElseZero() + b.priElseZero());
+//
+//        t.cause = Cause.sample(Param.causeCapacity.intValue(), a, b);
+//
+//        if (Param.DEBUG)
+//            t.log("Revection Merge");
+//
+//
+//
+//        a.meta("@", (k)->t); //forward to the revision
+//        b.meta("@", (k)->t); //forward to the revision
+//
+//        return t;
+//    }

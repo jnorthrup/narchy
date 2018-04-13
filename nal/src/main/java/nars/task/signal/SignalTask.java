@@ -21,10 +21,6 @@ public class SignalTask extends NALTask {
         this(t, punct, truth, start, start, end, stamp);
     }
 
-//    @Override
-//    public float eternalizability() {
-//        return 0;
-//    }
 
     @Override
     public final boolean isInput() {
@@ -41,15 +37,13 @@ public class SignalTask extends NALTask {
         return false;
     }
 
-    @Override
-    public float eternalizability() {
-        return 0;
-//        //return punc == GOAL ? 0 : 1f; //dont eternalize goal
-//        return 1f;
-//        //return 0.5f;
-//        //return 0.1f;
-    }
-
-
+//    @Override
+//    public float eternalizability() {
+//        return 0;
+////        //return punc == GOAL ? 0 : 1f; //dont eternalize goal
+////        return 1f;
+////        //return 0.5f;
+////        //return 0.1f;
+//    }
 
 }

@@ -82,23 +82,7 @@ public class NAL4MultistepTest extends NALTest {
 
     }
 
-    @Test
-    public void testImagePatternMatching()  {
 
-        Deriver.derivers(test.nar).forEach(d->d.conceptsPerIteration.set(200));
-        test
-            //.log()
-            .inputAt(0, "x(0,0,0,0). :|:")
-            .inputAt(2, "x(0,1,0,1). :|:")
-            .inputAt(4, "x(0,0,0,0). :|:")
-            .inputAt(6, "x(0,1,0,1). :|:")
-            .inputAt(8, "$1.0 (?1-->x)? :|:")
-            .inputAt(10, "$1.0 (?1-->x)? :|:")
-            .mustBelieve(8, "x(0,0,0,0)", 1f, 0.5f)
-            .mustBelieve(10, "x(0,1,0,1)", 1f, 0.5f)
-        ;
-
-    }
 
 //    //like seen when changing the expected confidence in mustBelief, or also in the similar list here we have such a ghost task where I expect better budget:
 //

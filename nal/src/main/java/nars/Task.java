@@ -484,9 +484,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         int dur = n.dur();
 
-
-        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () ->
-                t.truth(subStart, subEnd, dur, 0)
+        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, tt ->
+                tt.truth(subStart, subEnd, dur, 0)
         );
     }
 
@@ -569,10 +568,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     default float eternalizability() {
         //return originality();
-        return 1f; //always
+        //return 1f; //always
         //return 0.5f; //some
         //return punc()==BELIEF ? 1f: 0f; //always if belief
-        //return 0f; //never
+        return 0f; //never
 
 //        Term t = term();
 //        return t.op().temporal || t.vars() > 0 ? 1f : 0f;
@@ -1146,12 +1145,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     short[] cause();
 
-    default float eviInteg() {
-        return isEternal() ? Float.POSITIVE_INFINITY : range() * evi();
+    @Override default float eviInteg() {
+        return eviInteg(start(), end());
     }
 
-    default float confInteg() {
-        return isEternal() ? Float.POSITIVE_INFINITY : range() * conf();
+    default float eviInteg(long start, long end) {
+        if (start == ETERNAL)
+            throw new UnsupportedOperationException("infinite integral");
+
+        //TODO actually integrate if evidence is non-uniform, see TruthletTask
+        assert(start!=ETERNAL && end >= start);
+        long range = (end - start) + 1;
+        return range * evi();
     }
 
     byte punc();

@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -2152,32 +2153,6 @@ public enum Util {
         });
     }
 
-
-    public static void decode(AbstractHistogram h, String header, int linearStep, BiConsumer<String, Object> x) {
-        int digits = (int) (1 + Math.log10(h.getMaxValue())); //pad leading number for lexicographic / ordinal coherence
-        h.linearBucketValues(linearStep).iterator().forEachRemaining((p) -> {
-            x.accept(header + " [" +
-                            iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
-                    p.getCountAddedInThisIterationStep());
-        });
-    }
-
-    public static void decode(DoubleHistogram h, String header, double linearStep, BiConsumer<String, Object> x) {
-        final char[] order = {'a'};
-        h.linearBucketValues(linearStep).iterator().forEachRemaining((p) -> {
-            x.accept(header + " " + (order[0]++) +
-                            "[" + n4(p.getValueIteratedFrom()) + ".." + n4(p.getValueIteratedTo()) + ']',
-                    p.getCountAddedInThisIterationStep());
-        });
-    }
-
-    public static void decodePercentile(AbstractHistogram h, String header, BiConsumer<String, Object> x) {
-        h.percentiles(1).iterator().forEachRemaining(p -> {
-            x.accept(header + " [" +
-                            p.getValueIteratedFrom() + ".." + p.getValueIteratedTo() + ']',
-                    p.getCountAddedInThisIterationStep());
-        });
-    }
 
     /**
      * pretty close

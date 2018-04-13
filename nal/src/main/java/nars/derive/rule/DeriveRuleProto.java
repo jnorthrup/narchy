@@ -15,12 +15,9 @@ import nars.index.term.PatternIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.Terms;
-import nars.term.atom.Atom;
 import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
-import nars.term.transform.TermTransform;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.GoalFunction;
 import nars.truth.func.TruthOperator;
@@ -32,7 +29,8 @@ import java.util.*;
 import static java.util.Collections.addAll;
 import static nars.$.newArrayList;
 import static nars.$.newHashSet;
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.PROD;
 import static nars.subterm.util.Contains.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -59,11 +57,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
 
 
     public DeriveRuleProto(DeriveRuleSource raw, PatternIndex index) {
-        this(raw.term(), raw.source, index);
-    }
-
-    DeriveRuleProto(Term rule, String src, PatternIndex index) {
-        super(((Compound)index.pattern(rule.transform(UppercaseAtomsToPatternVariables))), src);
+        super(raw, index);
 
         NAR nar = index.nar;
 
@@ -81,7 +75,7 @@ public class DeriveRuleProto extends DeriveRuleSource {
         Term[] postcons = ((Subterms) term().sub(1)).arrayShared();
 
 
-        Set<PrediTerm<PreDerivation>> pres = new HashSet();
+        Set<PrediTerm<PreDerivation>> pres = new HashSet(8);
 
 
         Term taskPattern = getTask();
@@ -606,23 +600,6 @@ public class DeriveRuleProto extends DeriveRuleSource {
         constraints.add(new NotEqualConstraint(x, y));
         constraints.add(new NotEqualConstraint(y, x));
     }
-
-    private static final TermTransform UppercaseAtomsToPatternVariables = new TermTransform() {
-        @Override
-        public Termed transformAtomic(Term atomic) {
-            if (atomic instanceof Atom) {
-                if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
-                    String name = atomic.toString();
-                    if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return $.v(VAR_PATTERN, atomic.toString());
-                    }
-                }
-            }
-            return atomic;
-        }
-
-
-    };
 
     /**
      * compiles the conditions which are necessary to activate this rule

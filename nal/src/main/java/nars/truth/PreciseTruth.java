@@ -85,9 +85,4 @@ public class PreciseTruth implements Truth {
     @Override
     public final float evi() { return e;    }
 
-    @Override
-    public final float conf() {
-        return w2cSafe(e);
-    }
-
 }

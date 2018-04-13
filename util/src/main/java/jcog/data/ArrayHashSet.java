@@ -41,6 +41,7 @@ import jcog.list.FasterList;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Analogous to {@link java.util.LinkedHashSet}, but with an {@link java.util.ArrayList} instead of a {@link java.util.LinkedList},
@@ -131,6 +132,22 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	@Override
 	public ListIterator<X> listIterator(int index) {
 		return new ArrayHashSetIterator(index);
+	}
+
+	public boolean OR(Predicate<X> test) {
+		for (int i = 0, listSize = list.size(); i < listSize; i++) {
+			if (test.test(list.get(i)))
+				return true;
+		}
+		return false;
+	}
+
+	public boolean OR(org.eclipse.collections.api.block.predicate.Predicate<X> test) {
+		return ((FasterList)list).anySatisfy(test);
+	}
+
+	public boolean AND(org.eclipse.collections.api.block.predicate.Predicate<X> test) {
+		return ((FasterList)list).allSatisfy(test);
 	}
 
 	@Override

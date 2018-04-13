@@ -52,9 +52,6 @@ abstract public class Truthlet implements Truth {
         //fallback:
         return evi(mid());
     }
-    @Deprecated @Override public final float conf() {
-        return w2cSafe(evi());
-    }
 
     @Deprecated public float freq(long when) {
         return truth(when)[0];

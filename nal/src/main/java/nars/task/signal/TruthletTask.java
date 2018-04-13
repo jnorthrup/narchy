@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.time.Tense.XTERNAL;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * TODO implement Task directly avoiding redudant fields that this overrides
@@ -74,10 +73,8 @@ public class TruthletTask extends SignalTask {
     }
 
 
-    public float eviInteg() {
-        long s = start();
-        long e = end();
 
+    @Override public float eviInteg(long s, long e) {
         long dt = Math.max(1, e - s);
         float es = evi(s, 1);
         if (e!=s) {
@@ -151,11 +148,6 @@ public class TruthletTask extends SignalTask {
     @Override
     public float freq() {
         return truthlet.freq();
-    }
-
-    @Override
-    public float conf() {
-        return w2cSafe(evi());
     }
 
     @Override

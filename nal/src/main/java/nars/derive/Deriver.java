@@ -62,6 +62,10 @@ public class Deriver extends Causable {
     @Range(min = 1, max = 1024)
     public int burstMax = 64;
 
+    public Deriver(NAR nar, String... rules) {
+        this(new DeriveRuleSet(nar, rules), nar);
+    }
+
     public Deriver(DeriveRuleSet rules, NAR nar) {
         this(rules.compile(), nar);
         if (rules.isEmpty())
@@ -143,15 +147,15 @@ public class Deriver extends Causable {
 
             fired += s;
 
-            long[] focus = n.timeFocus();
+
 
 
             //--- FIRE
             premiseBurst.forEach(premise -> {
 
-                if (premise.match(d, focus, matchTTL)) {
+                if (premise.match(d, matchTTL)) {
 
-                    if (rules.derivable(d)) {
+                    if (derivable(d)) {
 
                         d.derive(deriveTTL);
 
@@ -178,6 +182,9 @@ public class Deriver extends Causable {
             return (int) Math.ceil(fired / ((float) iterMult)); //adjust for the workload to correspond with the demand units
     }
 
+    protected boolean derivable(Derivation d) {
+        return rules.derivable(d);
+    }
 
     private void selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each) {
 

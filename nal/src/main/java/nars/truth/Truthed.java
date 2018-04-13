@@ -61,43 +61,15 @@ public interface Truthed  {
 //        return (freq() - 0.5f) * evi(dur) * 2f;
 //    }
 
-    default float conf() {
-        Truth t = truth();
-        //return t == null ? Float.NaN : t.conf();
-        return t.conf(); //throw NPE if not a belief/goal
-    }
     default float freq() {
         Truth t = truth();
         //return t == null ? Float.NaN : t.freq();
         return t.freq(); //throw NPE if not a belief/goal
     }
-
-//    static float confSum(@NotNull Iterable<? extends Truthed> beliefs) {
-//        float t = 0;
-//        for (Truthed s : beliefs)
-//            t += s.truth().conf();
-//        return t;
-//    }
-
-//    static float confWeightSum(@NotNull Iterable<? extends Truthed> beliefs) {
-//        float t = 0;
-//        for (Truthed s : beliefs)
-//            t += s.truth().evi(dur);
-//        return t;
-//    }
-
-//    static float freqMean(@NotNull Iterable<? extends Truthed> beliefs) {
-//
-//        float t = 0;
-//        int count = 0;
-//        for (Truthed s : beliefs) {
-//            t += s.freq();
-//            count++;
-//        }
-//
-//        return count == 0 ? 0.5f : t / count;
-//    }
-
+    default float conf() {
+        //return t == null ? Float.NaN : t.conf();
+        return w2cSafe(evi()); //throw NPE if not a belief/goal
+    }
     /** weight of evidence ( confidence converted to weight, 'c2w()' )  */
     default float evi() {
         return truth().evi(); //throws NPE if not a belief/goal
@@ -105,13 +77,14 @@ public interface Truthed  {
 
 
     default float eviEternalized() {
-//        float c = eternalizedConf();
-//        return c2w(c);
-        return conf(); //c2w(w2c(conf)) = conf
+        return TruthFunctions.eternalize(evi());
     }
+
+    default float confEternalized() {
+        return w2cSafe(eviEternalized());
+    }
+
     default float eviEternalized(float horizon) {
-//        float c = eternalizedConf();
-//        return c2w(c);
         return w2cSafe(conf(), horizon);
     }
 

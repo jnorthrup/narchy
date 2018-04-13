@@ -33,7 +33,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.Util.*;
-import static nars.truth.TruthFunctions.w2c;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 
@@ -47,11 +46,8 @@ public interface Truth extends Truthed {
     float freq();
 
     @Override
-    float conf();
+    float evi();
 
-    static float eternalize(float conf) {
-        return w2c(conf);
-    }
 
 //    Term Truth_TRUE = $.the("TRUE");
 //    Term Truth_FALSE = $.the("FALSE");
@@ -296,6 +292,10 @@ public interface Truth extends Truthed {
         float f = in.readFloat();
         float c = in.readFloat();
         return new PreciseTruth(f, c);
+    }
+
+    default Truth eternalized() {
+        return new PreciseTruth(freq(), eviEternalized(), false);
     }
 
 

@@ -10,6 +10,7 @@ import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.Eternalizer;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -63,11 +64,8 @@ abstract public class NAgentX extends NAgent {
     public NAgentX(String id, NAR nar) {
         super(id, nar);
 
-
-        if (Param.DEBUG) {
 //            nar.onTask(x -> {
-//                if (x.isBeliefOrGoal() && x.isEternal()) {
-//                    //if (x.isInput())
+//                if (x.isBeliefOrGoal() && x.isEternal() && !x.isInput()) {
 //                    if (!always.contains(x)) {
 //                        System.err.println(x.proof());
 //                        System.err.println();
@@ -75,13 +73,15 @@ abstract public class NAgentX extends NAgent {
 //                }
 //            });
 
-            nar.onTask(t -> {
-                if (t.isGoal() && t.isNegative() && t.term().equals(happy.term())) {
-                    System.err.println("MASOCHISM DETECTED:\n" + t.proof());
-                }
-            });
-
-        }
+//        if (Param.DEBUG) {
+//
+//            nar.onTask(t -> {
+//                if (t.isGoal() && t.isNegative() && t.term().equals(happy.term())) {
+//                    System.err.println("MASOCHISM DETECTED:\n" + t.proof());
+//                }
+//            });
+//
+//        }
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
@@ -386,6 +386,8 @@ abstract public class NAgentX extends NAgent {
 
 
         //new Anoncepts(8, n);
+
+        new Eternalizer(n);
 
 //        new Implier(2f, a,
 //                1

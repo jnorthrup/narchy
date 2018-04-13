@@ -58,7 +58,6 @@ public class AnonVector extends TermVector {
 
                 //wrap (prepend) with a virtual NEG
                 out.writeByte(Op.NEG.id);
-                out.writeByte(1);
                 AnonID.idToTerm(s).append(out);
             }
         }
