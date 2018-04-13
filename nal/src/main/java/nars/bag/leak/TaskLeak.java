@@ -60,7 +60,7 @@ public abstract class TaskLeak extends Causable {
 
     @Override
     protected void starting(NAR nar) {
-        ons.add(nar.onTask((t) -> accept(nar, t)));
+        ons.add(nar.onTask((t) -> accept(t)));
     }
 
 
@@ -77,11 +77,11 @@ public abstract class TaskLeak extends Causable {
         if (in.isEmpty())
             return -1; //done for the cycle
 
-        float done = in.commit(nar.time(),  nar.dur(), work);
-        return Math.round(done);
+        float done = in.commit(nar.time(),  nar.dur(), nar.forgetRate.floatValue(), work);
+        return (int) Math.ceil(done);
     }
 
-    public final void accept(NAR nar, Task t) {
+    public final void accept(Task t) {
         if (preFilter(t))
             in.put(new PLink<>(t, pri(t)));
     }

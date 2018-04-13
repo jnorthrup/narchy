@@ -207,23 +207,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        };
     }
 
-    default /*@NotNull*/ Set<Term> toSet(Predicate<Term> ifTrue) {
+    default @Nullable MutableSet<Term> toSet(Predicate<Term> ifTrue) {
         int s = subs();
         if (s > 0) {
-            UnifiedSet u = new UnifiedSet(s);
+            UnifiedSet<Term> u = null;
             for (int i = 0; i < s; i++) {
                 /*@NotNull*/
                 Term x = sub(i);
-                if (ifTrue.test(x))
+                if (ifTrue.test(x)) {
+                    if (u == null)
+                        u = new UnifiedSet<>(s-i);
                     u.add(x);
+                }
             }
-            if (u.size() > 0) {
-                u.trimToSize();
+            if (u!=null) {
+                //u.trimToSize();
                 return u;
             }
         }
 
-        return Collections.emptySet();
+        return null;
 
 //        return new DirectArrayUnenforcedSet<Term>(Terms.sorted(toArray())) {
 //            @Override
@@ -248,25 +251,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
-     * returns sorted ready for commutive
+     * returns sorted ready for commutive; null if nothing in common
      */
-    static @Nullable Term[] intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
-        if ((a.structure() & b.structure()) == 0)
-            return null; //nothing in common
-        else {
+    static @Nullable MutableSet<Term> intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+        if ((a.structure() & b.structure()) > 0) {
             //TODO sort a and b so that less comparisons are made (ie. if b is smaller than a, compute a.toSet() first
             Set<Term> as = a.toSet();
-            Set<Term> si = b.toSet(as::contains); //(MutableSet<Term>) as Sets.intersect(a.toSet(), b.toSet());
-            int ssi = si.size();
-            if (ssi == 0)
-                return null;
-
-            Term[] c = si.toArray(new Term[ssi]);
-            if (ssi > 1)
-                Arrays.sort(c);
-
-            return c;
+            MutableSet<Term> ab = b.toSet(as::contains); //(MutableSet<Term>) as Sets.intersect(a.toSet(), b.toSet());
+            if (ab!=null)
+                return ab;
         }
+        return null;
     }
 
 //    Predicate2<Object, SetIterable> subtermIsCommon = (Object yy, SetIterable xx) -> {

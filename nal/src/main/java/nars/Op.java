@@ -30,6 +30,7 @@ import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
 import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -1261,8 +1262,7 @@ public enum Op {
         //return $.p(differ())
         //}
 
-        //corresponding set type for reduction:
-        Op set = op == DIFFe ? SETe : SETi;
+
 
         switch (t.length) {
             case 1:
@@ -1302,10 +1302,13 @@ public enum Op {
                         return simplified;
                 }
 
-                if ((et0.op() == set && et1.op() == set))
-                    return difference(set, et0, et1);
-                else
-                    return Op.instance(op, t);
+                //corresponding set type for reduction:
+                Op set = op == DIFFe ? SETe : SETi;
+                if ((et0.op() == set && et1.op() == set)) {
+                    return differenceSet(set, et0, et1);
+                } else {
+                    return differenceSect(op, et0, et1);
+                }
 
 
         }
@@ -1314,18 +1317,42 @@ public enum Op {
 
     }
 
+    private static Term differenceSect(Op diffOp, Term a, Term b) {
+        //intersection
+        // (c --> ((a & x)-(b & x)))  ===>  (c --> ((a-b)&x))
+        // (((a | x)~(b | x)) --> c)  ===>  (((a~b)|x) --> c)
+        Op ao = a.op();
+        if (((diffOp == DIFFi && ao == SECTe) || (diffOp==DIFFe && ao==SECTi)) && (b.op()==ao)) {
+            MutableSet<Term> common = Subterms.intersect(a.subterms(), b.subterms());
+            if (common!=null)
+                return ao.the(common.with(
+                        diffOp.the(ao.the(a.subterms().termsExcept(common)), ao.the(b.subterms().termsExcept(common)))
+                ));
+        }
+
+        //union
+        // (c --> ((a | x)-(b | x)))  ===>  (c --> ((a-b)|(--,x)))
+        // (((a & x)~(b & x)) --> c)  ===>  (((a~b)&(--,x)) --> c)
+        // TODO
+        if (((diffOp == DIFFi && ao == SECTi) || (diffOp==DIFFe && ao==SECTe)) && (b.op()==ao)) {
+            MutableSet<Term> common = Subterms.intersect(a.subterms(), b.subterms());
+            if (common!=null)
+                return ao.the(common.collect(Term::neg).with(
+                    diffOp.the(ao.the(a.subterms().termsExcept(common)), ao.the(b.subterms().termsExcept(common)))
+                ));
+        }
+
+        return Op.instance(diffOp, a, b);
+    }
+
 
 //        else
 //            return compound(new NewCompound(op, subterms), dt);
 
-    public static Term difference(/*@NotNull*/ Term a, Term b) {
-        Op o = a.op();
-        assert (b.op() == o);
-        return difference(o, a, b);
-    }
+
 
     /*@NotNull*/
-    public static Term difference(/*@NotNull*/ Op o, Term a, Term b) {
+    public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
         //assert (!o.temporal) : "this impl currently assumes any constructed term will have dt=DTERNAL";
 
         if (a.equals(b))
@@ -2211,6 +2238,10 @@ public enum Op {
 
     public final boolean commute(int dt, int size) {
         return commutative && size > 1 && Op.concurrent(dt);
+    }
+
+    public final Term the(/*@NotNull*/ Collection<Term> sub) {
+        return the(DTERNAL, sub);
     }
 
     public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {

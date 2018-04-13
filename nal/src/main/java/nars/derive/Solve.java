@@ -31,8 +31,6 @@ abstract public class Solve extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
-        d.truthFunction = null;
-
         byte punc = punc(d);
         boolean single;
         Truth t;
@@ -40,21 +38,23 @@ abstract public class Solve extends AbstractPred<Derivation> {
             case BELIEF:
             case GOAL:
                 TruthOperator f = (punc == BELIEF) ? belief : goal;
-                d.truthFunction = f;
 
                 if (f == null)
                     return false; //there isnt a truth function for this punctuation
 
-                single = f.single();
+                Truth beliefTruth;
+                if (single = f.single()) {
+                    beliefTruth = null;
+                } else {
 
-                Truth beliefTruth = f.beliefProjected() ? d.beliefTruthProjected : d.beliefTruth;
-
-                if (!single && beliefTruth == null)
-                    return false; //double premise requiring a belief, but belief is null
+                    beliefTruth = f.beliefProjected() ? d.beliefTruthProjected : d.beliefTruth;
+                    if (beliefTruth == null)
+                        return false; //double premise requiring a belief, but belief is null
+                }
 
                 if ((t = f.apply(
                         d.taskTruth, //task truth is not involved in the outcome of this; set task truth to be null to prevent any negations below:
-                        single ? null : beliefTruth,
+                        beliefTruth,
                         d.nar, d.confMin
                 )) == null)
                     return false;
@@ -78,6 +78,7 @@ abstract public class Solve extends AbstractPred<Derivation> {
 //                        return false;
                 }
 
+                d.truthFunction = f;
 
                 break;
 
@@ -91,6 +92,7 @@ abstract public class Solve extends AbstractPred<Derivation> {
 //                if ((tp == QUEST) || (tp == GOAL))
 //                    punc = QUEST; //use QUEST in relation to GOAL or QUEST task
 
+                d.truthFunction = null;
                 single = true;
                 t = null;
                 break;

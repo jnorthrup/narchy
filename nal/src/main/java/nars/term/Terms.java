@@ -700,8 +700,17 @@ public enum Terms {
             return (Term) a;
 
 
-        Term[] c = Subterms.intersect(a, b);
-        return (c == null || c.length == 0) ? Null : (Compound) (o.the(c));
+        Set<Term> cc = Subterms.intersect(a, b);
+        if (cc == null) return Null;
+
+        int ssi = cc.size();
+        if (ssi == 0) return Null;
+
+        Term[] c = cc.toArray(new Term[ssi]);
+        if (ssi > 1)
+            Arrays.sort(c);
+
+        return o.the(c);
     }
 
     @NotNull

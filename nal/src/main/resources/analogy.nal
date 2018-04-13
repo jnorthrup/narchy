@@ -3,14 +3,18 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
-  (M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Strong)
+  X, (X<->Y)                      |- Y, (Belief:Analogy, Goal:Strong)
+  X, (--X<->Y)                    |- Y, (Belief:AnalogyN, Goal:StrongN)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y) |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:Strong)
+
+  //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Strong)
+  //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Strong)
 
   //wantX and X similar Y then want Y
-    X, (X<->Y)                          |- Y, (Belief:Analogy, Goal:Strong)
-    Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Z, X, Y, strict), (Belief:Analogy, Goal:Weak)
+    //X, (X<->Y)                          |- Y, (Belief:Analogy, Goal:Strong)
+    //Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Z, X, Y, strict), (Belief:Analogy, Goal:Weak)
 
   //notWantX and notX similar Y then want Y
-    X, (--X<->Y)                        |- Y, (Belief:AnalogyN, Goal:StrongN)
 
   //want/notWant X,  and not X similar Y then not/want Y
     //X, (X<->Y)                          |- --Y, (Goal:WeakPN)

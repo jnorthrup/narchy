@@ -1,9 +1,9 @@
 package nars.term;
 
-import nars.$;
 import nars.Op;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.term.TermReductionsTest.assertReduction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -116,6 +116,29 @@ public class BoolTest {
 
         }
     }
+    @Test
+    public void testDiffOfIntersectionsWithCommonSubterms() {
+        //diff of intersection, approx:
+        // a*x - b*x
+        //    = x * (a-b)
+        // ex: (c --> (a & b)), (Belief:Intersection)
+        //     (c --> ((a & x)-(b & x)))
+        //        = (c --> ((a-b)&x))
+
+        assertReduction("(c-->((a-b)&x))", $$("(c --> ((a & x)-(b & x)))"));
+        assertReduction("(((a~b)|x)-->c)", $$("(((a | x)~(b | x)) --> c)"));
+    }
+
+    @Test
+    public void testDiffOfUnionsWithCommonSubterms() {
+
+        //diff of union, approx:
+            // (1-(1-a)*(1-x)) - (1-(1-b)*(1-x))
+            //    = (1 - x) * (a - b)
+
+        assertReduction("(c-->((a-b)|(--,x)))", $$("(c --> ((a | x)-(b | x)))"));
+        assertReduction("(((a~b)&(--,x))-->c)", $$("(((a & x)~(b & x)) --> c)"));
+    }
 
     @Test
     public void testIntersectionTautologies() {
@@ -138,7 +161,7 @@ public class BoolTest {
         //TODO
     }
 
-    static final Term x = $.$$("x");
-    static final Term y = $.$$("y");
+    static final Term x = $$("x");
+    static final Term y = $$("y");
 
 }

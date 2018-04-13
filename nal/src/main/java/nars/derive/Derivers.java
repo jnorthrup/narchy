@@ -44,9 +44,9 @@ public class Derivers {
                     files.add("nal3.guess.nal");
                     files.add("nal2.nal");
                     files.add("nal2.guess.nal");
-                    files.add("analogy.nal");
                     break;
                 case 1:
+                    files.add("analogy.nal");
                     files.add("nal1.nal");
                     files.add("nal1.guess.nal");
                     break;

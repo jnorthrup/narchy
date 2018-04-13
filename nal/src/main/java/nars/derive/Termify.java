@@ -47,16 +47,16 @@ public final class Termify extends AbstractPred<Derivation> {
 
         Term c1 = pattern.eval(d);
 
+        if (c1.volume() > d.termVolMax) {
+            d.nar.emotion.deriveFailVolLimit.increment();
+            return false;
+        }
+
         if (!Taskify.valid(c1)) {
             Term c1e = c1;
             d.nar.emotion.deriveFailEval.increment(()->
                 rule + " |\n\t" + d.xy + "\n\t -> " + c1e
             );
-            return false;
-        }
-
-        if (c1.volume() > d.termVolMax) {
-            d.nar.emotion.deriveFailVolLimit.increment();
             return false;
         }
 

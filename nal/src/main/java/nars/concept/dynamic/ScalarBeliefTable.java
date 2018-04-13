@@ -72,7 +72,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 return new FasterList(0);
 
             FasterList<Task> l = new FasterList<>(Math.min(size, limit));
-            forEach(start, end, limit, l::addWithoutResizeCheck);
+            forEach(start, end, limit, l::add);
             l.compact();
             return l;
         }

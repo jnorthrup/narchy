@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import static nars.Op.INH;
+import static nars.Op.SETe;
 
 /**
  * Created by me on 3/21/17.
@@ -139,13 +140,13 @@ public class FZero extends NAgentX {
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
         Scalar dAccel = senseNumberDifference($.inh("accel",id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
         Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle).resolution(0.02f);
-        DemultiplexedScalar ang = senseNumber(level -> $.func("ang", id, $.the(level)), () ->
+        DemultiplexedScalar ang = senseNumber(angle -> $.func("ang", id, SETe.the($.the(angle))), () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                9,
+                8,
                 DigitizedScalar.FuzzyNeedle
                 //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(0.1f);
+        ).resolution(0.25f);
 
         //new RLBooster(this, HaiQae::new, 1);
 

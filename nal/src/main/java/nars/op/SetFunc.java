@@ -38,12 +38,7 @@ public class SetFunc {
 
         @Override
         public Term apply(Term a, Term b) {
-
-            Term y = Op.difference(a.op(), a, b);
-    //        if (y.equals(a))
-    //            return Null; //prevent identical fall-through
-            return y;
-
+            return Op.differenceSet(a.op(), a, b);
         }
     };
 

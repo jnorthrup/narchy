@@ -36,14 +36,14 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
-    public float commit(long now, int dur, float work) {
+    public float commit(long now, int dur, float forgetRate, float work) {
 
         if (!busy.compareAndSet(false, true))
             return 0;
 
         try {
 
-            if (!bag.commit().isEmpty()) {
+            if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
 
                 long last = this.lastLeak;
                 if (last == ETERNAL) {

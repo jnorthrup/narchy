@@ -2,12 +2,13 @@ package nars.nal.nal1;
 
 import nars.NAR;
 import nars.NARS;
+import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    final int CYCLES = 100;
+    final int cycles = 100;
 
     static {
         //Param.DEBUG = true;
@@ -28,7 +29,7 @@ public class NAL1Test extends NALTest {
                 .de("bird ist eine art des animal.");*/
                 .believe("<robin --> bird>")
                         //.en("robin is a type of bird.");
-                .mustBelieve(CYCLES, "<robin --> animal>", 0.81f);
+                .mustBelieve(cycles, "<robin --> animal>", 0.81f);
     }
 
 
@@ -59,8 +60,8 @@ public class NAL1Test extends NALTest {
         test
                 .believe("<sport --> competition>", 1f, 0.9f)
                 .believe("<chess --> competition>", 0.90f, 0.9f)
-                .mustBelieve(CYCLES, "<chess --> sport>", 0.9f, 0.45f)
-                .mustBelieve(CYCLES, "<sport --> chess>", 1f, 0.42f);
+                .mustBelieve(cycles, "<chess --> sport>", 0.9f, 0.45f)
+                .mustBelieve(cycles, "<sport --> chess>", 1f, 0.42f);
 
                 //.en("I guess chess is a type of sport");
     }
@@ -77,9 +78,9 @@ public class NAL1Test extends NALTest {
         test
             .believe("<swan --> swimmer>", 0.90f, 0.9f) //.en("Swan is a type of swimmer.");
             .believe("<swan --> bird>") //.en("Swan is a type of bird.");
-            .mustBelieve(CYCLES, "<bird --> swimmer>", 1f, 0.42f) //.en("I guess bird is a type of swimmer.");
+            .mustBelieve(cycles, "<bird --> swimmer>", 1f, 0.42f) //.en("I guess bird is a type of swimmer.");
             //.mustNotOutput(CYCLES, "<bird --> swimmer>", BELIEF, 1f, 1f, 0.41f, 0.43f, ETERNAL) //test for correct ordering of the premise wrt truth value function
-            .mustBelieve(CYCLES, "<swimmer --> bird>", 0.9f, 0.45f)
+            .mustBelieve(cycles, "<swimmer --> bird>", 0.9f, 0.45f)
             //.mustNotOutput(CYCLES, "<swimmer --> bird>", BELIEF, 0.9f, 0.9f, 0.44f, 0.46f, ETERNAL) //test for correct ordering of the premise wrt truth value function
             ;
     }
@@ -97,8 +98,8 @@ public class NAL1Test extends NALTest {
         test
                 .believe("<parakeet --> bird>", 0.90f, 0.9f) //.en("Swan is a type of swimmer.");
                 .believe("<pteradactyl --> bird>") //.en("Swan is a type of bird.");
-                .mustBelieve(CYCLES, "<pteradactyl --> parakeet>", 1, 0.42f)
-                .mustBelieve(CYCLES, "<parakeet --> pteradactyl>", 0.9f, 0.45f)
+                .mustBelieve(cycles, "<pteradactyl --> parakeet>", 1, 0.42f)
+                .mustBelieve(cycles, "<parakeet --> pteradactyl>", 0.9f, 0.45f)
         ;
     }
 
@@ -110,14 +111,14 @@ public class NAL1Test extends NALTest {
 
             .believe("<robin --> bird>")
             .believe("<bird --> animal>")
-            .mustOutput(CYCLES, "<animal --> robin>. %1.00;0.4475%");
+            .mustOutput(cycles, "<animal --> robin>. %1.00;0.4475%");
     }
 
     @Test
     public void conversion() throws nars.Narsese.NarseseException {
         test.believe("<bird --> swimmer>")
             .ask("<swimmer --> bird>") //.en("Is swimmer a type of bird?");
-            .mustOutput(CYCLES, "<swimmer --> bird>. %1.00;0.47%");
+            .mustOutput(cycles, "<swimmer --> bird>. %1.00;0.47%");
     }
 
 //    @Test
@@ -135,11 +136,130 @@ public class NAL1Test extends NALTest {
         test
                 .believe("<bird --> swimmer>", 1.0f, 0.8f) //Bird is a type of swimmer
                 .ask(    "<?1 --> swimmer>") //What is a type of swimmer?
-                .mustOutput(CYCLES, "<?1 --> bird>?") //.en("What is a type of bird?");
-                .mustOutput(CYCLES, "<bird --> ?1>?") //.en("What is the type of bird?");
+                .mustOutput(cycles, "<?1 --> bird>?") //.en("What is a type of bird?");
+                .mustOutput(cycles, "<bird --> ?1>?") //.en("What is the type of bird?");
         ;
     }
 
 
+    @Test
+    public void structureTransformation_InhQuestion_SimBelief() throws nars.Narsese.NarseseException {
+
+        TestNAR tester = test;
+        tester.believe("<bright <-> smart>", 0.9f, 0.9f);
+        tester.ask("<bright --> smart>");
+        tester.mustBelieve(cycles, "<bright --> smart>", 0.9f, 0.9f);
+
+    }
+    @Test
+    public void revisionSim() {
+
+        TestNAR tester = test;
+        tester.mustBelieve(cycles, "<robin <-> swan>", 0.87f, 0.91f);//;//Robin is probably similar to swan.");
+        tester.believe("<robin <-> swan>");//;//Robin is similar to swan.");
+        tester.believe("<robin <-> swan>", 0.1f, 0.6f);
+    }
+
+    @Test
+    public void comparison() {
+
+        TestNAR tester = test;
+        tester.believe("<swan --> swimmer>", 0.9f, 0.9f);//Swan is a type of swimmer.");
+        tester.believe("<swan --> bird>");//Swan is a type of bird.");
+        tester.mustBelieve(cycles, "<bird <-> swimmer>", 0.9f, 0.45f);//I guess that bird is similar to swimmer.");
+
+    }
+
+    @Test
+    public void comparison2() {
+
+        TestNAR tester = test;
+        tester.believe("<sport --> competition>"); //Sport is a type of competition.");
+        tester.believe("<chess --> competition>", 0.9f, 0.9f);//Chess is a type of competition.");
+        tester.mustBelieve(cycles, "<chess <-> sport>", 0.9f, 0.45f);//I guess chess is similar to sport.");
+
+    }
+
+//    @Test public void inductionNegation() {
+//        //(A --> C), (B --> C), neq(A,B) |- (B --> A), (Belief:Induction, Desire:Weak, Derive:AllowBackward)
+//        test().log()
+//                .believe("<worm --> bird>", 0.1f, 0.9f)
+//                .believe("<tweety --> bird>", 0.9f, 0.9f)
+//                .mustBelieve(cycles, "<worm --> tweety>", 0.10f, 0.42f)
+//                .mustBelieve(cycles, "<tweety --> worm>", 0.90f, 0.07f)
+//                .mustBelieve(cycles, "<tweety <-> worm>", 0.10f, 0.42f)
+//        ;
+//    }
+
+    @Test
+    public void analogy() {
+
+        TestNAR tester = test;
+        tester.believe("<swan --> swimmer>");//Swan is a type of swimmer.");
+        tester.believe("<gull <-> swan>");//Gull is similar to swan.");
+        tester.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.81f);//I think gull is a type of swimmer.");
+
+    }
+
+    @Test
+    public void analogy2() {
+
+        TestNAR tester = test;
+        tester.believe("<gull --> swimmer>");//Gull is a type of swimmer.");
+        tester.believe("<gull <-> swan>");//Gull is similar to swan.");
+        tester.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.81f);//I believe a swan is a type of swimmer.");
+    }
+
+
+
+    @Test
+    public void resemblance() {
+
+        TestNAR tester = test;
+        tester.believe("<robin <-> swan>");//Robin is similar to swan.");
+        tester.believe("<gull <-> swan>");//Gull is similar to swan.");
+        tester.mustBelieve(cycles, "<gull <-> robin>", 1.0f, 0.81f);//Gull is similar to robin.");
+
+    }
+
+    @Test
+    public void inheritanceToSimilarity() {
+
+        TestNAR tester = test;
+        tester.believe("<swan --> bird>");//Swan is a type of bird. ");
+        tester.believe("<bird --> swan>", 0.1f, 0.9f);//Bird is not a type of swan.");
+        tester.mustBelieve(cycles, "<bird <-> swan>", 0.1f, 0.81f);//Bird is different from swan.");
+
+    }
+
+    @Test
+    public void inheritanceToSimilarity2() {
+
+        TestNAR tester = test;
+        tester.believe("<swan --> bird>");//Swan is a type of bird.");
+        tester.believe("<bird <-> swan>", 0.1f, 0.9f);//Bird is different from swan.");
+        tester.mustBelieve(cycles * 4, "<bird --> swan>",
+                0.1f, 0.73f);//Bird is probably not a type of swan.");
+    }
+
+    @Test
+    public void inheritanceToSimilarity3() throws nars.Narsese.NarseseException {
+
+        TestNAR tester = test;
+        tester.believe("<swan --> bird>", 0.9f, 0.9f);//Swan is a type of bird.");
+        tester.ask("<bird <-> swan>");//Is bird similar to swan?");
+        tester.mustBelieve(cycles, "<bird <-> swan>", 0.9f, 0.45f);//I guess that bird is similar to swan.");
+
+    }
+
+    @Test
+    public void inheritanceToSimilarity4() throws nars.Narsese.NarseseException {
+
+        TestNAR tester = test;
+        tester.believe("<bird <-> swan>", 0.9f, 0.9f);//a bird is similar to a swan.");
+        tester.ask("<swan --> bird>");//Is swan a type of bird?");
+        tester.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.73f);//A swan is a type of bird.");
+
+    }
 
 }

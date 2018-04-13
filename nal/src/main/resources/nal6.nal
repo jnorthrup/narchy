@@ -298,6 +298,8 @@
         //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
         //X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN)
 
+    X, C, eventOfPosOrNeg(C,X) |- (--,conjWithout(C,(--,polarize(X,task)))), (Goal:WeakDepolarizedTask)
+
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
     //X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing

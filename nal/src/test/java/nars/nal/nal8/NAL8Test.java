@@ -715,6 +715,23 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
+    public void testConjDecomposeSequenceEmbedsAntiGoalNeg() {
+
+        test
+                .input("(a &&+1 (x &&+1 y)).")
+                .input("--x!")
+                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f);
+    }
+    @Test
+    public void testConjDecomposeSequenceEmbedsAntiGoalPos() {
+
+        test
+                .input("(a &&+1 (--x &&+1 y)).")
+                .input("x!")
+                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f);
+    }
+
+    @Test
     public void testPredictiveImplicationTemporalTemporalNeg() {
 
         test

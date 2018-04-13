@@ -108,7 +108,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
 
     @Override
     public void accept(NAR nar, Task t) {
-        buffer.accept(nar, t);
+        buffer.accept(t);
     }
 
 

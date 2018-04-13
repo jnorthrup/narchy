@@ -193,12 +193,6 @@ public class DeriveRuleProto extends DeriveRuleSource {
                     constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, -1));
                     break;
 
-                case "inPosOrNeg": //recursive
-                    //X inPosOrNeg Y : X or --X is recursive subterm of Y
-                    neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Recursive, 0));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, 0));
-                    break;
 
 
                 case "eventOf":

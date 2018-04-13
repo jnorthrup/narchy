@@ -587,7 +587,7 @@ public class TermReductionsTest extends NarseseTest {
         //check consistency with differenceSorted
         assertArrayEquals(
                 new Term[]{r, s},
-                ((Compound) Op.difference(Op.SETe, SETe.the(r, p, q, s), SETe.the(p, q))).arrayClone()
+                ((Compound) Op.differenceSet(Op.SETe, SETe.the(r, p, q, s), SETe.the(p, q))).arrayClone()
         );
     }
 
@@ -600,7 +600,7 @@ public class TermReductionsTest extends NarseseTest {
         //check consistency with differenceSorted
         assertEquals(
                 Null,
-                Op.difference(Op.SETe, SETe.the(p, q), SETe.the(p, q))
+                Op.differenceSet(Op.SETe, SETe.the(p, q), SETe.the(p, q))
         );
     }
 
@@ -614,11 +614,11 @@ public class TermReductionsTest extends NarseseTest {
 
         assertEquals(
                 $("{Mars,Venus}"),
-                Op.difference(Op.SETe, $("{Mars,Pluto,Venus}"), $.<Compound>$("{Pluto,Saturn}"))
+                Op.differenceSet(Op.SETe, $("{Mars,Pluto,Venus}"), $.<Compound>$("{Pluto,Saturn}"))
         );
         assertEquals(
                 $("{Saturn}"),
-                Op.difference(Op.SETe, $("{Pluto,Saturn}"), $.<Compound>$("{Mars,Pluto,Venus}"))
+                Op.differenceSet(Op.SETe, $("{Pluto,Saturn}"), $.<Compound>$("{Mars,Pluto,Venus}"))
         );
 
 

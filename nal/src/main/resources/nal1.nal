@@ -51,20 +51,23 @@
     (M --> P), (M --> S), neqRCom(S,P) |- (P <-> S), (Belief:Comparison)
 
 
-    (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Weak)
+    //this is basically a duplicate of the generalized analogy
+    //(M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Weak)
             //TODO write test case for this
 
 
 //// inheritance from similarty <- todo check why this one was missing ////////////////////////////////////////////////////////////////////////////////////
-
+    (S <-> P), P         |- (S --> P), (Belief:Identity)
     (S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Goal:Weak)
+    (P --> S), (S <-> P), task("?") |- (P --> S), (Belief:BeliefIdentity, Punctuation:Belief)
+
 
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
     (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Weak)
 
-    (X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
+    //(X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
     //(X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)
     //(X <-> Y), X, task("?") |- Y,   (Punctuation:Question)
     //(X <-> Y), X, task("@") |- Y,   (Punctuation:Quest)

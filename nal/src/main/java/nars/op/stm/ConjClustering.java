@@ -127,7 +127,7 @@ public class ConjClustering extends Causable {
         if (!bag.bag.isEmpty()) {
             FasterList gen = new FasterList(generatedExpectation);
 
-            bag.commitGroups(1, Tuples.pair(nar, gen), this::conjoinCentroid);
+            bag.commitGroups(1, Tuples.pair(nar, gen), nar.forgetRate.floatValue(), this::conjoinCentroid);
 
             int gs = gen.size();
 

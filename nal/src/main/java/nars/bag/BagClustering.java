@@ -113,8 +113,8 @@ public class BagClustering<X> {
         return bag.size();
     }
 
-    public <Y> void commitGroups(int iter, Y y, BiConsumer<Stream<VLink<X>>, Y> each) {
-        commit(iter, (sorted) -> {
+    public <Y> void commitGroups(int iter, Y y, float forgetRate, BiConsumer<Stream<VLink<X>>, Y> each) {
+        commit(iter, forgetRate, (sorted) -> {
             int current = -1;
             int n = sorted.size();
             int bs = -1;
@@ -156,7 +156,7 @@ public class BagClustering<X> {
     }
 
 
-    public boolean commit(int iterations, Consumer<List<VLink<X>>> takeSortedClusters) {
+    public boolean commit(int iterations, float forgetRate, Consumer<List<VLink<X>>> takeSortedClusters) {
 
         FasterList<VLink<X>> x;
 
@@ -166,7 +166,7 @@ public class BagClustering<X> {
             if (s == 0)
                 return false;
 
-            bag.commit(); //first, apply bag forgetting
+            bag.commit(bag.forget(forgetRate)); //first, apply bag forgetting
 
             //                net.compact();
             //int cc = bag.capacity();

@@ -74,7 +74,7 @@ public class SubtermsTest {
     public void testDifferReusesInstance() throws Narsese.NarseseException {
         Compound x = $("{x}");
         Compound y = $("{y}");
-        assertSame(Op.difference(x.op(), x, y), x);
+        assertSame(Op.differenceSet(x.op(), x, y), x);
     }
     @Test
     public void testIntersectReusesInstance() throws Narsese.NarseseException {
@@ -89,7 +89,7 @@ public class SubtermsTest {
         Compound y = $("{e,d}");
 
         System.out.println(Terms.intersect(x.op(), x, y));
-        System.out.println(Op.difference(x.op(), x, y));
+        System.out.println(Op.differenceSet(x.op(), x, y));
         System.out.println(Terms.union(x.op(), x, y));
 
     }

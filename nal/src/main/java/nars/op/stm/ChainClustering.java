@@ -143,7 +143,7 @@ public abstract class ChainClustering extends DurService {
         //int maxVol = nar.termVolumeMax.intValue() - 2;
 
         //bag.commit(1, this::linkClusters);
-        bag.commitGroups(1, nar, this::linkClustersChain);
+        bag.commitGroups(1, nar, nar.forgetRate.floatValue(), this::linkClustersChain);
 
 
     }

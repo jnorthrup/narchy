@@ -111,14 +111,20 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth analogy(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
+    public static Truth analogyOld(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
         float c = and(a.conf(), bc, bf);
         return c >= minConf ? t(and(a.freq(), bf), c) : null;
     }
 
     @Nullable
+    public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
+        float c = and(a.conf(), bc, bf);
+        return c >= minConf ? t(a.freq(), c) : null;
+    }
+
+    @Nullable
     public static Truth analogy(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        return analogy(a, b.freq(), b.conf(), minConf);
+        return analogyNew(a, b.freq(), b.conf(), minConf);
     }
 
     /**
@@ -480,7 +486,7 @@ public final class TruthFunctions {
     public static Truth anonymousAnalogy(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float v0c = w2c(a.conf());
         //since in analogy it will be and() with it, if it's already below then stop
-        return v0c < minConf ? null : analogy(b, a.freq(), v0c, minConf);
+        return v0c < minConf ? null : analogyNew(b, a.freq(), v0c, minConf);
     }
 
     /**

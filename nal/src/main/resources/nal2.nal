@@ -1,7 +1,3 @@
-//Set Definition Similarity to Inheritance
-    ({S} <-> {P}), {S} |- ({S} --> {P}), (Belief:Identity)
-    ([S] <-> [P]), [S] |- ([S] --> [P]), (Belief:Identity)
-
 //Set Definition Unwrap
     ({S} <-> {P}), {S} |- (S <-> P), (Belief:Identity)
     ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity)
