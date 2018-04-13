@@ -625,6 +625,7 @@ public enum Op {
         }
     };
 
+
     final static class ImDep extends VarDep {
 
         private final String str;
@@ -671,6 +672,7 @@ public enum Op {
     public static final VarDep imExt = new ImDep((byte)127, (byte)'/');
 
 
+    public static final int DiffBits = Op.DIFFe.bit | Op.DIFFi.bit;
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
@@ -1280,9 +1282,16 @@ public enum Op {
                 if (et0.equals(et1))
                     return False;
 
-//                //true tautology - the difference of something with its negation will always be everything, ie. freq==1 : True
-                if (et1.neg().equals(et0))
-                    return True;
+                if (et0 == Null || et1 == Null)
+                    return Null;
+
+                //the difference of something with its negation; depends if the first argument is positive or not
+                if (et1.neg().equals(et0)) {
+                    if (et0.op()==NEG || et0 == False)
+                        return False;
+                    else
+                        return True;
+                }
 
 //                if (et0 == True && et1 == False) //TRUE - FALSE
 //                    return True;
@@ -1323,11 +1332,17 @@ public enum Op {
         // (((a | x)~(b | x)) --> c)  ===>  (((a~b)|x) --> c)
         Op ao = a.op();
         if (((diffOp == DIFFi && ao == SECTe) || (diffOp==DIFFe && ao==SECTi)) && (b.op()==ao)) {
-            MutableSet<Term> common = Subterms.intersect(a.subterms(), b.subterms());
-            if (common!=null)
+            Subterms aa = a.subterms();
+            Subterms bb = b.subterms();
+            MutableSet<Term> common = Subterms.intersect(aa, bb);
+            if (common!=null) {
+                int cs = common.size();
+                if (aa.subs()==cs || bb.subs()==cs)
+                    return Null; //completely contained by the other
                 return ao.the(common.with(
-                        diffOp.the(ao.the(a.subterms().termsExcept(common)), ao.the(b.subterms().termsExcept(common)))
+                        diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
                 ));
+            }
         }
 
         //union
@@ -1335,11 +1350,17 @@ public enum Op {
         // (((a & x)~(b & x)) --> c)  ===>  (((a~b)&(--,x)) --> c)
         // TODO
         if (((diffOp == DIFFi && ao == SECTi) || (diffOp==DIFFe && ao==SECTe)) && (b.op()==ao)) {
-            MutableSet<Term> common = Subterms.intersect(a.subterms(), b.subterms());
-            if (common!=null)
+            Subterms aa = a.subterms();
+            Subterms bb = b.subterms();
+            MutableSet<Term> common = Subterms.intersect(aa, bb);
+            if (common!=null) {
+                int cs = common.size();
+                if (aa.subs()==cs || bb.subs()==cs)
+                    return Null; //completely contained by the other
                 return ao.the(common.collect(Term::neg).with(
-                    diffOp.the(ao.the(a.subterms().termsExcept(common)), ao.the(b.subterms().termsExcept(common)))
+                        diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
                 ));
+            }
         }
 
         return Op.instance(diffOp, a, b);
@@ -1948,6 +1969,9 @@ public enum Op {
         }
 
         switch (t.length) {
+
+            case 0:
+                throw new RuntimeException();
 
             case 1:
 

@@ -61,7 +61,10 @@
 
 
 //NAL3 difference
-    A, B, neqRCom(A,B), notImplConj(A), notImplConj(B) |- (A ~ B), (Belief:Difference)
+    A, B, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B), notImplConj(A), notImplConj(B) |- (A ~ B), (Belief:Difference)
+        //the hasNoDiffs constraint is not entirely necessary;
+        //for now it is just meant to prevent derivations like:
+        //  (tetris(5,13)~(((5,13)~(3,13))-->tetris)).
 
 
 

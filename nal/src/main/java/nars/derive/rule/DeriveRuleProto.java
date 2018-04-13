@@ -1,6 +1,7 @@
 package nars.derive.rule;
 
 import com.google.common.collect.Sets;
+import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
@@ -261,7 +262,6 @@ public class DeriveRuleProto extends DeriveRuleSource {
 
                 case "isNot": {
                     Op o = Op.the($.unquote(Y));
-                    assert (o != null);
                     termIsNot(pres, taskPattern, beliefPattern, constraints, X, o.bit);
                     break;
                 }
@@ -269,10 +269,19 @@ public class DeriveRuleProto extends DeriveRuleSource {
                 case "is": {
                     //TODO make var arg version of this
                     Op o = Op.the($.unquote(Y));
-                    assert (o != null);
                     termIs(pres, taskPattern, beliefPattern, constraints, X, o);
                     break;
                 }
+
+                case "hasNo":
+                    //TODO make var arg version of this
+                    termHasNot(taskPattern, beliefPattern, pres, constraints, X, Op.the($.unquote(Y)).bit);
+                    break;
+                case "hasNoDiffed":
+                    //HACK temporary
+                    termHasNot(taskPattern, beliefPattern, pres, constraints, X, Op.DiffBits);
+                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.INH.bit);
+                    break;
 
 //                case "has":
 //                    //TODO make var arg version of this
@@ -581,9 +590,17 @@ public class DeriveRuleProto extends DeriveRuleSource {
 //        includesOp(pres, task, belief, x, o);
 //    }
 //
-//    private static void termHasNot(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term t, int structure) {
-//        constraints.add(new StructureHasNone(t, structure));
-//    }
+    private static void termHasNot(Term task, Term belief, @NotNull Set<PrediTerm<PreDerivation>> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term t, int structure) {
+        boolean inTask = (task.equals(t) || task.containsRecursively(t));
+        boolean inBelief = (belief.equals(t) || belief.containsRecursively(t));
+        if (inTask || inBelief) {
+            pres.add(new TaskBeliefHasOrHasnt(structure, inTask, inBelief, false));
+        } else {
+            //constraints.add(new StructureHasNone(t, structure));
+            throw new TODO();
+        }
+
+    }
 
     private static void neq(SortedSet<MatchConstraint> constraints, Term x, Term y) {
         constraints.add(new NotEqualConstraint(x, y));

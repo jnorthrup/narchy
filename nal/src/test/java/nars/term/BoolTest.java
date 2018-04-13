@@ -1,6 +1,10 @@
 package nars.term;
 
+import nars.$;
 import nars.Op;
+import nars.truth.Truth;
+import nars.truth.TruthFunctions;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -87,6 +91,19 @@ public class BoolTest {
 
     @Test
     public void testDiffTautologies() {
+
+        @Nullable Truth selfDiff = TruthFunctions.difference($.t(1, 0.9f), $.t(1f, 0.9f), 0);
+        assertEquals($.t(0, 0.81f), selfDiff);
+
+        @Nullable Truth negDiff = TruthFunctions.difference($.t(0, 0.9f), $.t(1f, 0.9f), 0);
+        assertEquals($.t(0, 0.81f), negDiff);
+
+        @Nullable Truth posDiff = TruthFunctions.difference($.t(1, 0.9f), $.t(0f, 0.9f), 0);
+        assertEquals($.t(1, 0.81f), posDiff);
+
+        //@Nullable Truth semiDiff = TruthFunctions.difference($.t(0.75f, 0.9f), $.t(0.25f, 0.9f), 0);
+
+
         for (Op o : new Op[] { DIFFe, DIFFi } ) {
 
             String diff = o.str;
@@ -97,6 +114,10 @@ public class BoolTest {
                     //"(x" + diff + "(--,x))",
                     True,
                     "(x" + diff + "(--,x))");  //unchanged
+            assertReduction(
+                    //"(x" + diff + "(--,x))",
+                    False,
+                    "((--,x)" + diff + "x)");  //unchanged
 
             //subj
             assertReduction(Null, "((x" + diff + "x)-->y)");
@@ -111,12 +132,26 @@ public class BoolTest {
 //            assertReduction("(y-->((--,x)" + diff + "x))", "(y-->((--,x)" + diff + "x))"); //unchanged
 
 
+
             assertEquals(False, o.the(x,x));
+            assertEquals(True, o.the(x,x.neg()));
+            assertEquals(False, o.the(x.neg(),x));
+
             assertEquals(Null, o.the(x,False));
             assertEquals(Null, o.the(x,True));
 
+
+            assertEquals(False, o.the(True,True));
+            assertEquals(False, o.the(False,False));
+            assertEquals(Null, o.the(Null,Null));
+
+            assertEquals(True, o.the(True,False));
+            assertEquals(False, o.the(False,True));
+
+
         }
     }
+
     @Test
     public void testDiffOfIntersectionsWithCommonSubterms() {
         //diff of intersection, approx:
@@ -128,6 +163,11 @@ public class BoolTest {
 
         assertReduction("(c-->((a-b)&x))", $$("(c --> ((a & x)-(b & x)))"));
         assertReduction("(((a~b)|x)-->c)", $$("(((a | x)~(b | x)) --> c)"));
+
+        //completely contained by the other
+        assertEquals(Null, $$("((&,x,a)-(&,x,a,b))"));
+        assertEquals(Null, $$("((&,x,a,b)-(&,x,a))"));
+        assertEquals(Null, $$("((&,x,a)-(&,x,a,b))"));
     }
 
     @Test
