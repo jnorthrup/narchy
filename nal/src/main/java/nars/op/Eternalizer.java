@@ -4,6 +4,7 @@ import jcog.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.control.Activate;
 import nars.control.CauseChannel;
 import nars.exe.AbstractExec;
 import nars.exe.Causable;
@@ -35,7 +36,7 @@ public class Eternalizer extends Causable {
 
     @Override
     protected int next(NAR n, int iterations) {
-        int eternalizations = 0;
+
         Random rng = n.random();
 
         int dur = n.dur();
@@ -48,9 +49,13 @@ public class Eternalizer extends Causable {
                 return new TaskRegion[newCapacity];
             }
         };
+        FasterList<Task> built = new FasterList(iterations);
 
         for (int i = 0; i < iterations; i++) {
-            Concept next = ((AbstractExec)n.exe).active.sample(rng).get();
+            Activate nextLink = ((AbstractExec) n.exe).active.sample(rng);
+            if (nextLink == null)
+                break;
+            Concept next = nextLink.get();
             if (next==null)
                 break;
             int beliefs = next.beliefs().size();
@@ -73,16 +78,25 @@ public class Eternalizer extends Causable {
             double[] stdev = stats.getStandardDeviation();
             if (stdev[0] < maxFreqStdev && stdev[1] < maxDtDurStdev) {
 
-                tt.replaceAll(x -> TaskProxy.eternalized((Task) x));
+                //strength reduction: effectively takes the average
+                float factor = 1f / tt.size();
+
+                tt.replaceAll(x -> TaskProxy.eternalized((Task) x, factor));
                 ((FasterList) tt).sortThisByFloat(t -> -((Task)t).evi());
 
                 Task r = Revision.mergeTemporal(nar, ETERNAL, ETERNAL, tt);
 
                 if (r!=null) {
-                    in.accept(r); //TODO buffer all generated, make a wrapper for in and use this in other classes like ConjClustering
-                    eternalizations++;
+                    built.add(r); //TODO buffer all generated, make a wrapper for in and use this in other classes like ConjClustering
                 }
+            } else {
+                //too much variance
+                //System.out.println(tt);
             }
+        }
+        int eternalizations = built.size();
+        if (eternalizations > 0) {
+            in.input(built);
         }
         return eternalizations;
     }

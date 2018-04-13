@@ -294,8 +294,11 @@ public interface Truth extends Truthed {
         return new PreciseTruth(f, c);
     }
 
+    default Truth eternalized(float factor) {
+        return new PreciseTruth(freq(), factor * eviEternalized(), false);
+    }
     default Truth eternalized() {
-        return new PreciseTruth(freq(), eviEternalized(), false);
+        return eternalized(1f);
     }
 
 

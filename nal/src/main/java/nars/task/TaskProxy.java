@@ -20,11 +20,15 @@ public class TaskProxy implements Task {
     }
 
     public static TaskProxy.WithTruthAndTime eternalized(Task tx) {
+        return eternalized(tx, 1);
+    }
+
+    public static TaskProxy.WithTruthAndTime eternalized(Task tx, float eviFactor) {
         return new TaskProxy.WithTruthAndTime(
                 tx,
                 ETERNAL, ETERNAL,
                 false,
-                ttx -> ttx.truth().eternalized()
+                ttx -> ttx.truth().eternalized(eviFactor)
         );
     }
 
@@ -251,7 +255,7 @@ public class TaskProxy implements Task {
 
         private final boolean negated;
 
-        /** either Truth, Supplier<Truth>, or null */
+        /** either Truth, Function<Task,Truth>, or null */
         Object truth;
 
         public WithTruthAndTime(Task task, long start, long end, boolean negated, Function<Task,Truth> truth) {
@@ -269,16 +273,6 @@ public class TaskProxy implements Task {
         }
 
         @Override
-        public boolean equals(Object obj) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int hashCode() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public long start() {
             return start;
         }
@@ -293,11 +287,6 @@ public class TaskProxy implements Task {
             if (when < start) return null;
             if (when > end) return null;
             return truth();
-        }
-
-        @Override
-        public float evi(long targetStart, long targetEnd, long dur) {
-            throw new UnsupportedOperationException();
         }
 
 

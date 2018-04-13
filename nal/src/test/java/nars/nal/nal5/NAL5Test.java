@@ -281,6 +281,24 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
+    public void testConjStructuralDeduction() {
+        test
+                .believe("(&&, a, b)")
+                .mustBelieve(cycles, "a", 1f, 0.81f)
+                .mustBelieve(cycles, "b", 1f, 0.81f)
+        ;
+    }
+
+    @Test
+    public void testDisjStructuralDeduction() {
+        test
+                .believe("(||, a, b)")
+                .mustBelieve(cycles, "a", 1f, 0.40f)
+                .mustBelieve(cycles, "b", 1f, 0.40f)
+        ;
+    }
+
+    @Test @Disabled
     public void compound_decomposition_one_premise_neg() {
         //freq 0 conjunction would not be decomposed
 

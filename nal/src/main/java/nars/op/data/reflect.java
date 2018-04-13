@@ -6,9 +6,7 @@ package nars.op.data;
 
 import jcog.Util;
 import jcog.bloom.StableBloomFilter;
-import jcog.bloom.hash.BytesHashProvider;
 import nars.$;
-import nars.IO;
 import nars.NAR;
 import nars.Task;
 import nars.bag.leak.LeakBack;
@@ -16,6 +14,7 @@ import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -176,9 +175,7 @@ public class reflect {
 
         public ReflectSimilarToTaskTerm(int cap, NAR n) {
             super(cap, n);
-            this.filter = new StableBloomFilter<>(
-                    1024, 1, 0.0005f, n.random(),
-                    new BytesHashProvider<>(IO::termToBytes));
+            this.filter = Terms.newTermBloomFilter(n.random(), 1024);
             this.n = n;
         }
 

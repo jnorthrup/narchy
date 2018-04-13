@@ -405,6 +405,8 @@ public class GPUTextNewtDemo {
         }
 
         public void render(GL2 gl, float x, float y, float sx, float sy) {
+            
+            //Draw.rect(gl, x, y, sx, sy);
 
             if (!renderer.isInitialized())
                 return;

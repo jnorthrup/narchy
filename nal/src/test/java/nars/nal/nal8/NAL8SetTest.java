@@ -54,7 +54,7 @@ public class NAL8SetTest extends NALTest {
     }
 
     @Test
-    public void testDiffGoal1Pos2nd() {
+    public void testMutexDiffGoal1Pos2nd() {
         test
                 .log()
                 .input("((a~b)-->g)!")
@@ -62,12 +62,18 @@ public class NAL8SetTest extends NALTest {
                 .mustGoal(cycles,"(a-->g)", 1f, 0.81f);
     }
     @Test
-    public void testDiffGoal1Neg() {
+    public void testMutexDiffGoal1Neg() {
         test
-                .log()
                 .input("--((a~b)-->g)!")
                 .input("(a-->g).")
                 .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
     }
-
+    @Test
+    public void testMutexNegConj() {
+        test
+                .log()
+                .input("(||, --(a&|b), a, b,(--a &| --b))!")
+                .input("a.")
+                .mustGoal(cycles,"--b", 1f, 0.81f);
+    }
 }

@@ -227,7 +227,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     void removeTask(/*@NotNull*/ Task t, @Nullable String reason) {
 //        if (reason!=null && Param.DEBUG && t instanceof MutableTask)
 //            ((MutableTask)t).log(reason);
-        ((NALTask) t).delete(strongest());
+
+//        if (t instanceof NALTask) //HACK
+//            ((NALTask) t).delete(/*strongest()*/);
+//        else
+            t.delete();
     }
 
     /**
@@ -453,8 +457,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     activated = revised;
                     input.delete();
 
-
-                    ((NALTask) revised).causeMerge(input);
+                    if (revised instanceof NALTask) //HACK
+                        ((NALTask) revised).causeMerge(input);
 
                 } else {
                     //a novel revision

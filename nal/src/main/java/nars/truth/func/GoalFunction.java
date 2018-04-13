@@ -130,7 +130,13 @@ public enum GoalFunction implements TruthOperator {
     StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return deduction1(T, defaultConf(m), minConf);
+            return deduction1(T, confDefault(m), minConf);
+        }
+    },
+    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
+            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
         }
     },
 
@@ -138,7 +144,7 @@ public enum GoalFunction implements TruthOperator {
     BeliefStructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return deduction1(B, defaultConf(m), minConf);
+            return deduction1(B, confDefault(m), minConf);
         }
     },
 
@@ -242,7 +248,7 @@ public enum GoalFunction implements TruthOperator {
         return beliefProjected;
     }
 
-    private static float defaultConf(NAR m) {
+    private static float confDefault(NAR m) {
         return m.confDefault(Op.GOAL);
     }
 }

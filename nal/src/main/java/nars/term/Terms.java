@@ -1,8 +1,11 @@
 package nars.term;
 
 import jcog.Util;
+import jcog.bloom.StableBloomFilter;
+import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.sort.SortedList;
+import nars.IO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
@@ -747,6 +750,12 @@ public enum Terms {
             }
         }
         return y;
+    }
+
+    public static StableBloomFilter<Term> newTermBloomFilter(Random rng, int cells) {
+        return new StableBloomFilter<>(
+                cells, 2, 1f/cells, rng,
+                new BytesHashProvider<>(IO::termToBytes));
     }
 }
 

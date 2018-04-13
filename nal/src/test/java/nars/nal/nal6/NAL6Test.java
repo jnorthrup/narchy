@@ -692,6 +692,8 @@ public class NAL6Test extends NALTest {
         ;
     }
 
+
+
     @Test
     public void testDecomposeImplSubjDisjBelief() {
         test
@@ -700,6 +702,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
         ;
     }
+
     @Test
     public void testDecomposeImplSubjConjQuestion() throws Narsese.NarseseException {
         test

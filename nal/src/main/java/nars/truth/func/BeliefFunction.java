@@ -43,7 +43,13 @@ public enum BeliefFunction implements TruthOperator {
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-            return T != null ? TruthFunctions.deduction1(T, defaultConfidence(m), minConf) : null;
+            return T != null ? TruthFunctions.deduction1(T, confDefault(m), minConf) : null;
+        }
+    },
+    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
+            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
         }
     },
 
@@ -53,7 +59,7 @@ public enum BeliefFunction implements TruthOperator {
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, /*@NotNull*/ NAR m, float minConf) {
-            float c = T.conf() * BeliefFunction.defaultConfidence(m);
+            float c = T.conf() * BeliefFunction.confDefault(m);
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
@@ -420,7 +426,7 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
             if (B == null) return null;
-            return TruthFunctions.deduction1(B, defaultConfidence(m), minConf);
+            return TruthFunctions.deduction1(B, confDefault(m), minConf);
         }
     },
 
@@ -429,7 +435,7 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
             //if (B == null) return null;
-            return Abduction.apply($.t(1f, defaultConfidence(m)), B, m, minConf);
+            return Abduction.apply($.t(1f, confDefault(m)), B, m, minConf);
         }
     },
 
@@ -454,7 +460,7 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
             if (B == null) return null;
-            Truth res = TruthFunctions.deduction1(B, defaultConfidence(m), minConf);
+            Truth res = TruthFunctions.deduction1(B, confDefault(m), minConf);
             return (res != null) ? t(1.0f - res.freq(), res.conf()) : null;
         }
     },
@@ -469,7 +475,7 @@ public enum BeliefFunction implements TruthOperator {
     ;
 
 
-    private static float defaultConfidence(/*@NotNull*/ NAR m) {
+    private static float confDefault(/*@NotNull*/ NAR m) {
         return m.confDefault(BELIEF);
     }
 
