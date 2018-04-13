@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.Util;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
 import nars.$;
@@ -131,7 +132,7 @@ public class Derivation extends PreDerivation {
     public short[] parentCause;
 
     public boolean single;
-    public float parentComplexityMax;
+    public float parentComplexitySum;
 
 
     public float premiseEviSingle;
@@ -562,9 +563,9 @@ public class Derivation extends PreDerivation {
 //        if (ttv > 0 && bt.vars() > 0) {
 //            bt = bt.normalize(ttv); //shift variables up to be unique compared to taskTerm's
 //        }
-        this.parentComplexityMax =
-                //Util.sum(
-                Math.max(
+        this.parentComplexitySum =
+                Util.sum(
+                //Math.max(
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 

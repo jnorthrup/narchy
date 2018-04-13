@@ -10,7 +10,6 @@ import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.Eternalizer;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -172,7 +171,7 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //800 * 1024,
-                                2000 * 1024,
+                                1500 * 1024,
                                 //1200 * 1024,
                                 //50 * 1024
                                 //20 * 1024,
@@ -387,7 +386,7 @@ abstract public class NAgentX extends NAgent {
 
         //new Anoncepts(8, n);
 
-        new Eternalizer(n);
+        //new Eternalizer(n);
 
 //        new Implier(2f, a,
 //                1

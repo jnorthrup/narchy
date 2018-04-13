@@ -238,19 +238,22 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         window.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DISPOSE_ON_CLOSE);
         window.preserveGLStateAtDestroy(false);
+        window.runOnEDTIfAvail(false, ()->{
+            //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
+            W.setTitle(title);
+            W.setSize(w, h);
+            if (x != Integer.MIN_VALUE) {
+                W.setPosition(x, y);
+            }
 
-        window.addGLEventListener(this);
-        window.addWindowListener(this);
+
+            window.addGLEventListener(this);
+            window.addWindowListener(this);
+
+            W.setVisible(true);
+        });
 
 
-        //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
-        W.setTitle(title);
-        W.setSize(w, h);
-        if (x != Integer.MIN_VALUE) {
-            W.setPosition(x, y);
-        }
-
-        W.setVisible(true);
 
         //});
 

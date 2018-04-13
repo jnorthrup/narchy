@@ -5,6 +5,7 @@ import nars.Task;
 import nars.truth.Truth;
 
 import static jcog.Util.unitize;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /** stateless, storing any state information in the Derivation instance */
 interface PrioritizeDerivation {
@@ -34,14 +35,14 @@ interface PrioritizeDerivation {
 
             //t.volume();
 
-            {
+
                 //relative growth compared to parent complexity
-                float pCompl = d.parentComplexityMax;
+                float pCompl = d.parentComplexitySum;
                 float dCompl = t.voluplexity();
-                float relGrowth =
+                float relGrowthCost =
                         unitize(pCompl / (pCompl + dCompl));
-                discount *= (relGrowth);
-            }
+                discount *= relGrowthCost;
+
 
             {
                 //absolute size relative to limit
@@ -49,7 +50,6 @@ interface PrioritizeDerivation {
             }
 
             //float simplicity = 1 - d.nar.deep.floatValue();
-            float truthFactor = 0.5f;
 
             Truth derivedTruth = t.truth();
 //        {
@@ -107,20 +107,30 @@ interface PrioritizeDerivation {
 //        }
 
 
-            if (/* belief or goal */ derivedTruth != null) {
+            if (/*BELIEF OR GOAL*/derivedTruth != null) {
 
-                //loss of relative confidence: prefer confidence, relative to the premise which formed it
-                float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
-                if (parentEvi > 0) {
-                    discount *= Util.lerp(1f - truthFactor, unitize(
-                            derivedTruth.evi() / parentEvi
-                            //derivedTruth.conf() / w2cSafe(parentEvi)
-                    ), 1f);
+                //loss of relative evidence: prefer stronger evidence results, relative to the premise which formed it
+                boolean single = d.single;
+                float pEvi = single ? d.premiseEviSingle : d.premiseEviDouble;
+                if (pEvi > 0) {
+                    float pConf = w2cSafe(pEvi);
+
+                    float dEvi = derivedTruth.evi();
+                    float dConf = w2cSafe(dEvi);
+                    if (!single)
+                        dConf*=2; //count the derived confidence twice to be fair to comparison against the combined evidence of 2 parents
+
+                    float eviFactor = dConf / (dConf + pConf);
+                    discount *= Util.unitize(eviFactor);
                 }
 
                 //opinionation: preference for polarized beliefs/goals
 //            float polarizationPreference = 0.5f;
 //            discount *= Util.lerp(polarizationPreference, 1, (2 * Math.abs(derivedTruth.freq() - 0.5f)));
+            } else {
+                //QUESTIONS and QUESTS: apply the rel growth cost factor again
+                //since there is no truth to heuristically discount
+                discount *= relGrowthCost;
             }
 
             return discount * d.pri;

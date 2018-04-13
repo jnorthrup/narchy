@@ -121,8 +121,8 @@ public abstract class Param {
             PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
 
     //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
@@ -261,7 +261,7 @@ public abstract class Param {
 //     */
     public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
-    public final FloatRange taskLinkMomentum = new FloatRange(0.25f, 0, 1f);
+    //public final FloatRange taskLinkMomentum = new FloatRange(0.25f, 0, 1f);
 
     public final FloatRange activationRate = new FloatRange(1f, 0, 1f);
 
