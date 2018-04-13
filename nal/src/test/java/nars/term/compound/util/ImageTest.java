@@ -1,5 +1,6 @@
 package nars.term.compound.util;
 
+import nars.$;
 import nars.term.Term;
 import nars.term.atom.Int;
 import org.junit.jupiter.api.Test;
@@ -60,4 +61,10 @@ class ImageTest {
 
     }
 
+    @Test public void testImagizeDepVar() {
+        Term x = $$("reaction(acid,#1)");
+        Term y = Image.imageExt(x, $.varDep(1));
+        assertEquals("(#1-->(reaction,acid,/))", y.toString());
+        assertEquals(x, Image.imageNormalize(y));
+    }
 }

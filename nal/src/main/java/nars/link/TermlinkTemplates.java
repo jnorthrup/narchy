@@ -113,11 +113,11 @@ public class TermlinkTemplates extends FasterList<Term> {
             return;
 
         Subterms bb = x.subterms();
-        int bs = bb.subs();
-        if (bs > 0) {
+//        int bs = bb.subs();
+//        if (bs > 0) {
             int nextDepth = depth;
             bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
-        }
+//        }
     }
 
     /** whether to recurse templates past a certain subterm.
@@ -289,6 +289,8 @@ public class TermlinkTemplates extends FasterList<Term> {
         Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
         float balance = nar.termlinkBalance.floatValue();
 
+        float budgetedForward = Math.max(Pri.EPSILON, budgetedToEach * (1f - balance));
+        float budgetedReverse = Math.max(Pri.EPSILON, budgetedToEach * balance);
 
         for (int i = 0; i < n; i++) {
 
@@ -297,10 +299,8 @@ public class TermlinkTemplates extends FasterList<Term> {
 
             boolean conceptualizable = i < concepts;
             if (conceptualizable) {
-                @Nullable Concept tgt = nar.conceptualize(tgtTerm);
 
-                float budgetedForward = Math.max(Pri.EPSILON, budgetedToEach * (1f - balance));
-                float budgetedReverse = Math.max(Pri.EPSILON, budgetedToEach * balance);
+                @Nullable Concept tgt = nar.conceptualize(tgtTerm);
 
                 if (tgt != null) {
 
@@ -318,14 +318,14 @@ public class TermlinkTemplates extends FasterList<Term> {
                     tgtTerm = tgt.term(); //use the concept's id
                 }
 
-
-                if (!reverseLinked)
-                    refund.add(budgetedForward);
-
-
-                ((Bag) srcTermLinks).put(new PLink<>(tgtTerm, budgetedReverse), refund);
-
             }
+
+            if (!reverseLinked)
+                refund.add(budgetedForward);
+
+
+            ((Bag) srcTermLinks).put(new PLink<>(tgtTerm, budgetedReverse), refund);
+
 
 //        float r = refund.floatValue();
 //        float cost = budgeted - r;

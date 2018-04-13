@@ -70,6 +70,20 @@ public class NAL4Test extends NALTest {
                 .mustBelieve(CYCLES, "(neutralization --> (acid,base))", 1.0f, 0.9f)
         ;
     }
+
+    @Test
+    public void structural_transformation_DepVar1()  {
+        test.believe("reaction(#1,base)",1.0f,0.9f); //en("An acid and a base can have a reaction.");
+        test.mustBelieve(CYCLES, "(base --> (reaction,#1,/))", 1.0f, 0.9f); //en("Acid can react with base.");
+        test.mustBelieve(CYCLES, "(#1 --> (reaction,/,base))", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
+    }
+    @Test
+     public void structural_transformation_DepVar2()  {
+        test.believe("reaction(acid,#1)",1.0f,0.9f); //en("An acid and a base can have a reaction.");
+        test.mustBelieve(CYCLES, "(acid --> (reaction,/,#1))", 1.0f, 0.9f); //en("Acid can react with base.");
+        test.mustBelieve(CYCLES, "(#1 --> (reaction,acid,/))", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
+    }
+
     @Test
     public void concludeImageIntInheritImageExt() {
         test
@@ -183,13 +197,7 @@ public class NAL4Test extends NALTest {
 //        t.mustBelieve(CYCLES, "<acid --> (/,reaction,_,base)>", 1.0f, 0.9f); //en("Acid can react with base.");
 //        t.mustBelieve(CYCLES, "<base --> (/,reaction,acid,_)>", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
 //    }
-//    @Test
-//     public void structural_transformation1_DepVar()  {
-//        TestNAR t = test();
-//        t.believe("reaction(acid,#1)",1.0f,0.9f); //en("An acid and a base can have a reaction.");
-//        t.mustBelieve(CYCLES, "<acid --> (/,reaction,_,#1)>", 1.0f, 0.9f); //en("Acid can react with base.");
-//        t.mustBelieve(CYCLES, "<#1 --> (/,reaction,acid,_)>", 1.0f, 0.9f); //en("A base is something that has a reaction with an acid.");
-//    }
+
 //
 //
 //    @Test

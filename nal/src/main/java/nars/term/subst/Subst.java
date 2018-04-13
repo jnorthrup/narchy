@@ -11,8 +11,10 @@ public interface Subst extends TermTransform {
 
     @Override @Nullable
     default Termed transformAtomic(Term atomic) {
+//        return xy(atomic);
         Term y = xy(atomic);
         return y != null ? y : atomic;
+
     }
 
     @Override @Nullable

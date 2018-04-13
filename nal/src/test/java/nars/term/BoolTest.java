@@ -1,6 +1,7 @@
 package nars.term;
 
 import nars.Op;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -138,6 +139,24 @@ public class BoolTest {
 
         assertReduction("(c-->((a-b)|(--,x)))", $$("(c --> ((a | x)-(b | x)))"));
         assertReduction("(((a~b)&(--,x))-->c)", $$("(((a & x)~(b & x)) --> c)"));
+    }
+
+
+    @Disabled
+    @Test
+    public void testIntersectionOfDiffsWithCommonSubterms() {
+
+        //these dont seem to reduce any better
+
+        //intersection
+        // (a-x)*(c-x) =
+        // (x-a)*(x-c) =
+        // (a-x)*(x-c) =
+        // (x-a)*(c-x) =
+
+        //union
+        // 1-(1-(a-x))*(1-(c-x)) =
+        //...
     }
 
     @Test
