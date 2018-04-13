@@ -19,10 +19,14 @@ public class AudioSource implements WaveSource {
     public final DataLine.Info dataLineInfo;
     public final AudioFormat audioFormat;
 
-    private byte[] audioBytes;
-    private short[] samples;
     private final int bytesPerSample;
     public final FloatRange gain = new FloatRange(1f, 0, 32f);
+
+
+    volatile private short[] samples;
+    volatile private int sampleNum;
+    volatile public byte[] audioBytes;
+    volatile public int audioBytesRead;
 
 //    private short sampleMin, sampleMax;
 
@@ -94,6 +98,11 @@ public class AudioSource implements WaveSource {
 
     }
 
+
+    public int bufferSamples() {
+        return samples.length;
+    }
+
     @Override
     public void stop() {
 
@@ -119,7 +128,7 @@ public class AudioSource implements WaveSource {
 
 
         int bytesToTake = Math.min(bufferSamples * bytesPerSample, avail);
-        int nBytesRead = line.read(audioBytes, avail-bytesToTake /* take the end of the buffer */,
+        audioBytesRead = line.read(audioBytes, avail-bytesToTake /* take the end of the buffer */,
                 //bufferSamples*2
                 bytesToTake
         );
@@ -134,7 +143,7 @@ public class AudioSource implements WaveSource {
         // pass it to recordSamples
         ByteBuffer.wrap(audioBytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(samples);
 
-        int nSamplesRead = nBytesRead / 2;
+        int nSamplesRead = audioBytesRead / 2;
         int start = Math.max(0, nSamplesRead - bufferSamples);
         int end = nSamplesRead;
         int j = 0;
@@ -146,6 +155,7 @@ public class AudioSource implements WaveSource {
             if (s > max) max = s;
             buffer[j++] = s * gain;
         }
+        sampleNum += j;
         Arrays.fill(buffer, end, buffer.length, 0);
 //        this.sampleMin = min;
 //        this.sampleMax = max;
@@ -158,4 +168,8 @@ public class AudioSource implements WaveSource {
     }
 
     static final float shortRange = ((float)Short.MAX_VALUE);//-((float)Short.MIN_VALUE)-1f)/2f;
+
+    public long sampleNum() {
+        return sampleNum;
+    }
 }

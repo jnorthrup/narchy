@@ -10,6 +10,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.meter.audio.WaveAnalyzer;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.video.Draw;
 
@@ -197,7 +198,8 @@ public class WaveCapture extends Loop {
 
                 System.arraycopy(data, 0, data, freqSamplesPerFrame, lastFrameIdx);
 
-                float[] h = WaveCapture.this.data;
+                //TODO double-buffer these buffers
+                float[] data = WaveCapture.this.data;
 
 //                int f = freqOffset;
 //                int freqSkip = 1;
@@ -218,13 +220,13 @@ public class WaveCapture extends Loop {
                     if (s < min)
                         min = s;
 
-                    h[i] = s;
+                    data[i] = s;
                 }
 
                 if (max != min) { //TODO epsilon check
                     float range = max - min;
                     for (int i = 0; i < freqSamplesPerFrame; i++)
-                        dataNorm[i] = (data[i] - min) / range;
+                        dataNorm[i] = (WaveCapture.this.data[i] - min) / range;
                 }
 
                 //System.arraycopy(freqSamples, 0, history, 0, freqSamplesPerFrame);
@@ -250,11 +252,16 @@ public class WaveCapture extends Loop {
             return Draw.rgbInt(kw >= 0 ? kw : 0, kw < 0 ? -kw : 0, 0);
         });
 
+        WaveAnalyzer waveAnalyzer = new WaveAnalyzer(this);
+
 
         Gridding v = new Gridding(
-                audioPlot,
-                audioPlot2,
-                freqHistory
+                new Gridding(
+                    audioPlot,
+                    audioPlot2
+                ),
+                freqHistory,
+                waveAnalyzer.view()
         );
 
         if (source instanceof AudioSource)
