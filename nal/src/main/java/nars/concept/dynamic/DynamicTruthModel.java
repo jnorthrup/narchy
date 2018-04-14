@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -20,9 +19,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
+import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Created by me on 12/4/16.
@@ -132,7 +131,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
             float confMin =
                     //nar.confMin.floatValue();
-                    Param.TRUTH_EPSILON; //use epsilon here because we only want to check nar.confMin of the result which this may contribute to
+                    //Param.TRUTH_EPSILON; //use epsilon here because we only want to check nar.confMin of the result which this may contribute to
+                    w2cSafe(Float.MIN_NORMAL);
 
             float freqRes = nar.freqResolution.floatValue();
 
@@ -319,14 +319,19 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         public Truth apply(DynTruth d, NAR n) {
             assert (d.size() == 2);
             Truth a = ((Task)d.get(0)).truth();
+            if (a == null)
+                return null;
             Truth b = ((Task)d.get(1)).truth();
+            if (b == null)
+                return null;
 
             float conf = a.conf() * b.conf();
-            if (conf < Param.TRUTH_EPSILON)
+            float evi = c2wSafe(conf);
+            if (evi < Float.MIN_NORMAL)
                 return null;
 
             float freq = a.freq() * (1f - b.freq());
-            return new PreciseTruth(freq, conf);
+            return new PreciseTruth(freq, evi, false);
         }
     }
 
