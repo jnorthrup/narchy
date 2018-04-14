@@ -186,7 +186,7 @@ public interface Truth extends Truthed {
 //    }
 
     @Nullable
-    static Truth maxConf(@Nullable Truth a, @Nullable Truth b) {
+    static Truth stronger(@Nullable Truth a, @Nullable Truth b) {
         if (b == null)
             return a;
         if (a == null)

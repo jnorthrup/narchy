@@ -41,8 +41,8 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         if (d == null)
             return e;
 
-        return Revision.revise(d, e); //<- this is optimistic that the truths dont overlap
-        //return Truth.maxConf(d, e); //<- this is conservative disallowing any overlap
+        //return Revision.revise(d, e); //<- this is optimistic that the truths dont overlap
+        return Truth.stronger(d, e); //<- this is conservative disallowing any overlap
     }
 
     /**

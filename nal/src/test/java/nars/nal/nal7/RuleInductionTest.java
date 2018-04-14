@@ -4,7 +4,6 @@ import com.google.common.math.PairedStatsAccumulator;
 import jcog.Texts;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
@@ -27,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class RuleInductionTest {
     @Test
-    public void test1() throws Narsese.NarseseException {
+    public void test1() {
         int dur = 1;
         int loops = 10;
         int period = 5;

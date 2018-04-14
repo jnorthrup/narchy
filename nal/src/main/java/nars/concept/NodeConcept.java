@@ -43,7 +43,7 @@ public class NodeConcept implements Concept {
     }
 
     public NodeConcept(Term term, Bag[] bags) {
-        assert (term.op().conceptualizable);
+        assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
         this.termLinks = bags[0];
         this.taskLinks = bags[1];

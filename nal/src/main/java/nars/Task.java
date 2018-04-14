@@ -486,6 +486,31 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         );
     }
 
+    static Task eternalize(Task tx) {
+        return eternalize(tx, 1);
+    }
+
+    static Task eternalize(Task x, float eviFactor) {
+        if (x == null)
+            return null;
+
+        //  non-proxy immutable impl
+        return Task.clone(x, x.term(),
+                x.truth().eternalized(eviFactor),
+                x.punc(),
+                /* TODO current time, from NAR */ x.creation(),
+                ETERNAL, ETERNAL
+        );
+
+//        return new TaskProxy.WithTruthAndTime(
+//                tx,
+//                ETERNAL, ETERNAL,
+//                false,
+//                ttx -> ttx.truth().eternalized(eviFactor)
+//        );
+
+    }
+
     @Override
     default float freqMin() {
         return freq();

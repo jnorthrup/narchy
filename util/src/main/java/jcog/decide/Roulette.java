@@ -7,6 +7,7 @@ import jcog.pri.Prioritized;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.IntPredicate;
 
@@ -140,7 +141,14 @@ public enum Roulette {
 
         RouletteUnique(float[] w, Random rng) {
             this.w = w;
-            this.weightSum = Util.sum(w); assert(weightSum > Float.MIN_VALUE);
+
+            this.weightSum = Util.sum(w);
+
+            if (weightSum > Float.MIN_VALUE){
+                //weightSum + " is non-positive";
+                Arrays.fill(w, 1);
+            }
+
             this.remaining = w.length;
             this.i = rng.nextInt(w.length); //random start location
             this.rng = rng;

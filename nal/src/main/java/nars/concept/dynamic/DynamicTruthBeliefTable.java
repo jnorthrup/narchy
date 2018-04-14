@@ -68,6 +68,10 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 
     @Override
     protected @Nullable Truth truthDynamic(long start, long end, NAR nar) {
+
+        if (term.hasXternal())
+            return null; //cant be evaluated without a template
+
         DynTruth d = model.eval(term, beliefOrGoal, start, end, nar);
         if (d!=null)
             return d.truth(term, model, beliefOrGoal, nar);

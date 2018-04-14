@@ -691,7 +691,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     .scan(this, start, end);
 
             int n = tt.size();
-            return n > 0 ? Revision.mergeTemporal(nar, start, end, tt.list, n) : null;
+            return n > 0 ? Revision.mergeTemporal(nar, start, end, tt.list) : null;
         }
     }
 
@@ -755,7 +755,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
 
 
-            return Revision.mergeTemporal(nar, ttt, n);
+            return Revision.mergeTemporal(nar, start, end, ttt);
         }
 
 

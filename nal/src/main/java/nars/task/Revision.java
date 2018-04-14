@@ -545,36 +545,34 @@ public class Revision {
 //        return mergeTemporal(nar, tt);
 //    }
 
-    @Nullable public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
-        return mergeTemporal(nar, tt, tt.length);
-    }
-    @Nullable public static Task mergeTemporal(NAR nar, FasterList<TaskRegion> tt) {
-        return mergeTemporal(nar, tt.array(), tt.size());
-    }
 
+    @Nullable public static Task mergeTemporal(NAR nar, FasterList<TaskRegion> tt) {
+        return mergeTemporal(nar, tt.array());
+    }
 
     /** preprocesses the tasks with respect to the specified time bounds being truthpolated */
-    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, TaskRegion[] tt, int n) {
+    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, TaskRegion[] tt) {
 
         if (start == ETERNAL) {
             //replace the array with eternalized proxy tasks
             //tt = tt.clone();
             float factor =
                     1f;
-                    //1/n
+            //1/n
 
-            tt = Util.replaceDirect(tt, 0, n,
-                    x -> TaskProxy.eternalized((Task) x, factor));
+            tt = Util.replaceDirect(tt, 0, tt.length,
+                    x -> Task.eternalize((Task) x, factor));
         } else {
 
             //   TODO clip tasks to the specified ranges?
         }
 
-        return mergeTemporal(nar, tt, n);
+        return mergeTemporal(nar, tt);
     }
 
-    @Nullable public static Task mergeTemporal(NAR nar, TaskRegion[] tt, int results) {
-        switch (results) {
+    @Nullable public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
+
+        switch (tt.length) {
             case 0:
                 return null;
 
@@ -585,7 +583,7 @@ public class Revision {
                 return Revision.mergeTemporal(
                         Float.MIN_NORMAL /*Truth.EVI_MIN*/,
                         //c2wSafe(nar.confMin.floatValue()),
-                        nar, results, tt
+                        nar, tt
                 );
 
         }
@@ -598,8 +596,10 @@ public class Revision {
      * the input minEvi corresponds to the absolute minimum accepted
      * evidence integral (evidence * time) for a point-like result (dtRange == 0)
      * */
-    @Nullable static Task mergeTemporal(float eviMinInteg, NAR nar, int results, TaskRegion... tt) {
+    @Nullable static Task mergeTemporal(float eviMinInteg, NAR nar, TaskRegion... tt) {
         assert(tt.length > 1);
+
+        tt = ArrayUtils.removeNulls(tt, Task[]::new); //HACK
 
         Task first = tt[0].task();
 
@@ -613,7 +613,8 @@ public class Revision {
         boolean termSame = true;
         EviDensity density = new EviDensity();
 
-        for (int i = 0; i < results; i++) {
+        boolean exit = false;
+        for (int i = 0; i < tt.length && !exit; i++) {
             TaskRegion ri = tt[i];
             if (ri == null)
                 continue;
@@ -639,13 +640,15 @@ public class Revision {
 
                     if (termSame) {
                         Term termI = ti.term();
+
+                        //limit to 2 tasks if the terms differ
                         if ((i > 0) && !termI.equals(first.term())) {
-                            if (tasks == 1 && termI.op() != CONJ /* dont do CONJ now because it might produce an occurrence shift which isnt tracked yet */) {
+                            if (tasks == 1) {
                                 //limit termpolation to max 2 tasks for now
                                 termSame = false; //difference in terms
                                 //TODO loop dont recurse, just buffer the accumulated evidence changes to the end of the loop
                                 tt = new TaskRegion[]{first, ri};
-                                i = results; //cause the for-loop to end after this iteration
+                                exit = true;
                                 //continue
                             } else {
                                 //skip this term, it would conflict with the other 2+ terms which are already known to be the same
@@ -696,16 +699,34 @@ public class Revision {
         if (!termSame) {
             Task second = tt[1].task();
 
-            float diff = dtDiff(first.term(),second.term());
-            if (!Float.isFinite(diff))
-                return null; //impossible
-            if (diff > 0)
-                differenceFactor = (float) Param.evi(1f, diff, Math.max(1,range)); //proport
+            Term a = first.term();
+            Term b = second.term();
+            if (a.op()!=CONJ) {
 
-            float e1 = first.evi();
-            float e2 = second.evi();
-            float firstProp = e1/(e1+e2);
-            content = intermpolate(first.term(), second.term(), firstProp, nar);
+
+                float diff = dtDiff(a, b);
+                if (!Float.isFinite(diff))
+                    return null; //impossible
+                if (diff > 0)
+                    differenceFactor = (float) Param.evi(1f, diff, Math.max(1, range)); //proport
+
+                float e1 = first.evi();
+                float e2 = second.evi();
+                float firstProp = e1 / (e1 + e2);
+                content = intermpolate(first.term(), second.term(), firstProp, nar);
+            } else {
+                //CONJ merge, with any offset shift computed
+                Conj c = new Conj();
+                if (!(c.add(a, first.start()) && c.add(b, second.start()))) {
+                    return first; //failed
+                }
+                content = c.term();
+                if (start!=ETERNAL) {
+                    long shift = c.shift();
+                    start += shift;
+                    end = start + Math.min(first.range(), second.range())-1;
+                }
+            }
 
             //TODO apply a discount factor for the relative difference of the two intermpolated terms
 
@@ -744,10 +765,12 @@ public class Revision {
         if (cTruth == null)
             return null;
 
+        long _start = start;
+        long _end = end;
         Task t = Task.tryTask(content, first.punc(), cTruth, (c, tr)->
             new NALTask(c, first.punc(),
                     tr,
-                    nar.time(), start, end,
+                    nar.time(), _start, _end,
                     Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
             )
         );

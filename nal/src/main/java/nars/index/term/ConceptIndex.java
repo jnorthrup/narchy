@@ -8,6 +8,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import nars.term.var.Variable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -96,8 +97,13 @@ public abstract class ConceptIndex {
      */
     @Nullable
     public final Concept concept(Term x, boolean createIfMissing) {
+        if (x instanceof Bool || x instanceof Variable)
+            return null; //quick filter
+
         Term xx = x.concept();
-        return (xx instanceof Bool) ? null : (Concept) get(xx, createIfMissing);
+        if (!(x.op().conceptualizable))
+            return null;
+        return (Concept) get(xx, createIfMissing);
     }
 
     public final void conceptAsync(Term x, boolean createIfMissing, Consumer<Concept> with) {

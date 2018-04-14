@@ -90,7 +90,10 @@ public class Tasklinks {
         if (ccs <= 0)
             return;
 
-        float pEach = Math.max(Pri.EPSILON, priTransferred / ccs);
+        float pEach = Math.max(Pri.EPSILON,
+                priTransferred / ccs  //divided
+                //priTransferred //keep original priority
+        );
         {
 
             TaskLink.Tasklike tlSeed =

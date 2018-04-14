@@ -12,7 +12,6 @@ import nars.table.DefaultBeliefTable;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.Revision;
-import nars.task.TaskProxy;
 import nars.task.util.TaskRegion;
 import org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatistics;
 
@@ -80,7 +79,7 @@ public class Eternalizer extends Causable {
                 //strength reduction: effectively takes the average
                 float factor = 1f / tt.size();
 
-                tt.replaceAll(x -> TaskProxy.eternalized((Task) x, factor));
+                tt.replaceAll(x -> Task.eternalize((Task) x, factor));
                 ((FasterList) tt).sortThisByFloat(t -> -((Task)t).evi());
 
                 Task r = Revision.mergeTemporal(nar, tt);

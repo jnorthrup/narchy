@@ -16,27 +16,9 @@ public class TaskProxy implements Task {
     public final Task task;
 
     public TaskProxy(Task task) {
+        if (task==null)
+            throw new NullPointerException();
         this.task = task;
-    }
-
-    public static TaskProxy.WithTruthAndTime eternalized(Task tx) {
-        return eternalized(tx, 1);
-    }
-
-    public static TaskProxy.WithTruthAndTime eternalized(Task tx, float eviFactor) {
-        assert(tx!=null);
-        return new TaskProxy.WithTruthAndTime(
-                tx,
-                ETERNAL, ETERNAL,
-                false,
-                ttx -> ttx.truth().eternalized(eviFactor)
-        );
-
-        //  non-proxy impl
-        //        Task eternalized = Task.clone(x, x.term(),
-        //                Truth.theDithered(x.freq(), e, nar),
-        //                x.punc(), x.creation(), ETERNAL, ETERNAL
-        //        );
     }
 
     @Override
