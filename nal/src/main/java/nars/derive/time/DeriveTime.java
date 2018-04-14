@@ -447,7 +447,11 @@ public class DeriveTime extends TimeGraph {
 
 //        long[] occ = d.concOcc;
 
-        return (cache != null ? solveCached(pattern) : solveAll(pattern)).get();
+        Supplier<Term> solution = cache != null ? solveCached(pattern) : solveAll(pattern);
+        if (solution == null)
+            return null;
+        else
+            return solution.get();
 
 
     }

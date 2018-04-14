@@ -243,13 +243,26 @@ public class QuestionTest {
     }
 
     @Test public void testExplicitEternalizationViaQuestion() {
-        new TestNAR(NARS.tmp()) //requires NAL3 single premise
-                .log()
+        new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "x. :|: %0.50;0.90%")
                 .inputAt(7, "x. :|: %0.00;0.90%")
                 .inputAt(8, "x?") //eternal question that triggers eternalization (the answer)
                 .mustBelieve(16, "x", 0.5f, 0.73f /*ETERNAL*/)
+                .test();
+    }
+
+    @Test public void testExplicitEternalizationViaQuestionDynamic() {
+        new TestNAR(NARS.tmp())
+                .log()
+                .inputAt(1, "x. :|: %1.00;0.90%")
+                .inputAt(4, "y. :|: %1.00;0.90%")
+                .inputAt(1, "(x &&+3 y)? :|:") //temporal
+                .inputAt(1, "(x &&+3 y)?") //eternal
+                //should produce 2 different answers, one temporal and one eternal. both calculated via the dynamic conjunction model
+                //.mustBelieve(16, "(x &&+3 y)", 1f, 0.45f, t -> t == ETERNAL)
+                .mustBelieve(16, "(x && y)", 1f, 0.22f, t -> t == ETERNAL)
+                .mustBelieve(16, "(x &&+3 y)", 1f, 0.81f, t -> t == 1)
                 .test();
     }
 

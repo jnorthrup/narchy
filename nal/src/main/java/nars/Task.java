@@ -479,9 +479,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * creates lazily computing proxy task which facades the task to the target time range
      */
     static Task project(@Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
-        if (!negated && t.contains(subStart, subEnd))
-            return t;
-
         int dur = n.dur();
 
         return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, tt ->

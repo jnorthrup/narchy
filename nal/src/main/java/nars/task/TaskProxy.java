@@ -31,6 +31,12 @@ public class TaskProxy implements Task {
                 false,
                 ttx -> ttx.truth().eternalized(eviFactor)
         );
+
+        //  non-proxy impl
+        //        Task eternalized = Task.clone(x, x.term(),
+        //                Truth.theDithered(x.freq(), e, nar),
+        //                x.punc(), x.creation(), ETERNAL, ETERNAL
+        //        );
     }
 
     @Override

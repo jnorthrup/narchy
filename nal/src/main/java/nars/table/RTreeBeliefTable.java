@@ -1,7 +1,6 @@
 package nars.table;
 
 import jcog.list.FasterList;
-import jcog.math.LongInterval;
 import jcog.pri.Deleteable;
 import jcog.sort.CachedTopN;
 import jcog.sort.Top;
@@ -23,6 +22,7 @@ import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -50,16 +50,16 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * max allowed truths to be truthpolated in one test
      * must be less than or equal to Stamp.CAPACITY otherwise stamp overflow
      */
-    private static final int TRUTHPOLATION_LIMIT = 8;
+    private static final int TRUTHPOLATION_LIMIT = Param.STAMP_CAPACITY / 2;
 
     /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
-    private static final int SIMPLE_EVENT_MATCH_LIMIT = 6;
+    private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
     private static final int COMPLEX_EVENT_MATCH_LIMIT = Math.max(1, SIMPLE_EVENT_MATCH_LIMIT/2);
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
             //1.5f;
-            3f;
+            2f;
 
 
     private static final int SCAN_CONF_DIVISIONS_MAX = 1; //2;
@@ -132,26 +132,16 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         x:
         if (s > 0) {
 
-            if (start == ETERNAL) {
-                LongInterval r = ((LongInterval) root().bounds());
-                if (r == null)
-                    break x;
-                //return ete != null ? ete.truth() : null;
-
-                start = r.start();
-                end = r.end();
-            }
-
             int maxTruths = TRUTHPOLATION_LIMIT;
 
             int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
             maxTries = Math.min(s * 2 /* in case the same task is encountered twice HACK*/,
                     maxTries);
 
-            ScanFilter tt = new ScanFilter(maxTruths, maxTruths, task(
-                    taskStrength(start, end, dur)
-            ), maxTries)
-                    .scan(this, start - dur/2, end + dur/2);
+            ScanFilter tt = new ScanFilter(maxTruths, maxTruths,
+                    task(taskStrength(start, end, dur)),
+                    maxTries)
+                .scan(this, start, end);
 
             if (!tt.isEmpty()) {
                 return Param.truth(start, end, dur)
@@ -568,11 +558,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //    }
 
     private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
-        if (start != ETERNAL) {
-            return (Task x) -> value(x, start, end, dur);
+        if (start == ETERNAL) {
+            return RTreeBeliefTable::valueEternal;
         } else {
-            return (Task x) -> x.eviEternalized() * x.range();
+            return x -> value(x, start, end, dur);
         }
+    }
+
+    private static float valueEternal(Task x) {
+        return x.eviEternalized() * x.range();
     }
 
     private double tableDur() {
@@ -599,21 +593,19 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * simple version, ignores term content
      */
     private static FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
-        //return taskStrength(start, end, dur); //<-- ignores template
-        return taskStrengthWithTemplateTermComparison(template, start, end, dur);
-    }
-
-    /**
-     * dtDiff needs work
-     */
-    static FloatFunction<Task> taskStrengthWithTemplateTermComparison(@Nullable Term template, long start, long end, int dur) {
         if (template == null) { // || !template.isTemporal() || template.equals(template.root())) {
             return taskStrength(start, end, dur);
         } else {
-            //int tableDur = 1 + (int) (tableDur());
-            return (Task x) ->
-                    value(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()) / (dur*dur) );
+            if (start == ETERNAL) {
+                return x -> valueEternal(x) / costDtDiff(template, x, dur);
+            } else {
+                return x -> value(x, start, end, dur) / costDtDiff(template, x, dur);
+            }
         }
+    }
+
+    private static float costDtDiff(@NotNull Term template, Task x, int dur) {
+        return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
     }
 
     @Override
@@ -692,15 +684,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         @Override
         protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
 
-            FloatFunction<Task> taskStrength = taskStrength(start, end, dur);
-
             ScanFilter tt = new ScanFilter(SIMPLE_EVENT_MATCH_LIMIT, SIMPLE_EVENT_MATCH_LIMIT,
-                    task(taskStrength),
+                    task(taskStrength(start, end, dur)),
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
                     filter)
                     .scan(this, start, end);
 
-            return Revision.mergeTemporal(nar, start, end, tt.list, tt.size());
+            int n = tt.size();
+            return n > 0 ? Revision.mergeTemporal(nar, start, end, tt.list, n) : null;
         }
     }
 

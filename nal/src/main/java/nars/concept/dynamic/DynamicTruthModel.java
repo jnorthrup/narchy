@@ -21,6 +21,7 @@ import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
 /**
@@ -257,7 +258,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         @Override
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            long range = end-start;
+            long range = start!=ETERNAL ? end-start : 0;
             return superterm.eventsWhile((when, event)->
                     each.accept(event, when, when + range),
             start, true, true, false, 0);
