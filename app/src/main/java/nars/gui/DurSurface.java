@@ -30,22 +30,23 @@ abstract public class DurSurface extends Widget {
     abstract protected void update();
 
     @Override
-    public void start(SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
+    public boolean start(SurfaceBase parent) {
+        if (super.start(parent)) {
             assert(on == null);
             on = DurService.on(nar, this::update);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             on.off();
             on = null;
-
-            super.stop();
+            return true;
         }
+        return false;
     }
 
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {

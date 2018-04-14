@@ -15,20 +15,22 @@ public abstract class UnitContainer extends Container {
     }
 
     @Override
-    public void start(SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
+    public boolean start(SurfaceBase parent) {
+        if (super.start(parent)) {
             the.start(this);
+            layout();
+            return true;
         }
-        layout();
+        return false;
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             the.stop();
-            super.stop();
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -38,9 +40,10 @@ public abstract class UnitContainer extends Container {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        if (the.parent!=null) //if ready
+        if (the.parent != null) //if ready
             o.accept(the);
     }
+
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         return the.parent == null || o.test(the);

@@ -170,11 +170,12 @@ abstract public class Container extends Surface {
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             forEach(Surface::stop);
-            super.stop();
+            return true;
         }
+        return false;
     }
 
     abstract public void forEach(Consumer<Surface> o);

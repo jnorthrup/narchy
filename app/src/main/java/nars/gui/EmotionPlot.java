@@ -69,14 +69,15 @@ public class EmotionPlot extends Gridding {
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             if (on != null) {
                 on.off();
                 on = null;
             }
-            super.stop();
+            return true;
         }
+        return false;
     }
 
 }

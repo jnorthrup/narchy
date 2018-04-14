@@ -46,20 +46,18 @@ public class AutoSurface<X> extends Gridding {
     }
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
+    public boolean start(@Nullable SurfaceBase parent) {
 
-
-        synchronized (this) {
-
+        if (super.start(parent)) {
             seen.clear();
             ons = new Ons();
             List<Surface> l = new FasterList();
             collect(obj, l, 0);
 
-            super.start(parent);
-
             set(l);
+            return true;
         }
+        return false;
     }
 
     private void collect(Object y, List<Surface> l, int depth) {
@@ -138,14 +136,15 @@ public class AutoSurface<X> extends Gridding {
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             if (ons != null) {
                 ons.off();
                 ons = null;
             }
-            super.stop();
+            return true;
         }
+        return false;
     }
 
     void collectFields(Object x, List<Surface> target, int depth) {

@@ -1,6 +1,5 @@
 package spacegraph;
 
-import com.jogamp.newt.opengl.GLWindow;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.space2d.SpaceGraphFlat;
@@ -88,7 +87,7 @@ public enum SpaceGraph { ;
 ////                0.1f
 ////        ));
 
-        GLWindow win = new SpaceGraphFlat(
+        new SpaceGraphFlat(
                 new ZoomOrtho(s) {
 
 

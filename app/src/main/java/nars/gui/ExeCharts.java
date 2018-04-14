@@ -61,10 +61,13 @@ public class ExeCharts {
             }
 
             @Override
-            public void stop() {
-                on.off();
-                on = null;
-                super.stop();
+            public boolean stop() {
+                if (super.stop()) {
+                    on.off();
+                    on = null;
+                    return true;
+                }
+                return false;
             }
 
         };
@@ -141,7 +144,7 @@ public class ExeCharts {
     private static Surface metaGoalChart(NAgent a) {
 
         return new TreeChart<Cause>() {
-            final DurService on;
+            DurService on;
 
             final FasterList<ItemVis<Cause>> cache = new FasterList();
 
@@ -201,9 +204,13 @@ public class ExeCharts {
             }
 
             @Override
-            public void stop() {
-                super.stop();
-                on.off();
+            public boolean stop() {
+                if (super.stop()) {
+                    on.off();
+                    on = null;
+                    return true;
+                }
+                return false;
             }
         };
     }
@@ -221,7 +228,7 @@ public class ExeCharts {
             if (nar.time instanceof RealTime) {
                 time = ((RealTime)nar.time);
                 ((Gridding) content()[0]).add(
-                        new FloatSlider("Dur *", dur)
+                        new FloatSlider("Dur*", dur)
                 );
                 dur.set(time.durRatio(loop));
             } else {

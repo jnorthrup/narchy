@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.tab;
 
+import jcog.exe.Loop;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -23,10 +24,9 @@ import java.util.function.Supplier;
 public class TabPane extends Splitting {
 
 
+    private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
     private final ButtonSet tabs;
     private final MutableContainer content;
-
-    private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
 
 
     public TabPane(Map<String, Supplier<Surface>> builder) {
@@ -37,7 +37,7 @@ public class TabPane extends Splitting {
         this(mode, builder, CheckBox::new);
     }
 
-    public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder, Function<String,ToggleButton> buttonBuilder) {
+    public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder, Function<String, ToggleButton> buttonBuilder) {
         super();
 
         content = new Gridding();
@@ -47,7 +47,7 @@ public class TabPane extends Splitting {
             Supplier<Surface> creator = x.getValue();
             String label = x.getKey();
             ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
-                {
+                Loop.invokeLater(() -> {
                     if (a) {
                         Surface cx;
                         try {
@@ -59,22 +59,22 @@ public class TabPane extends Splitting {
                             cx = new Label(msg);
                         }
 
-                        synchronized (content) {
-                            content.add(created[0] = cx);
-                            split(CONTENT_VISIBLE_SPLIT); //hide empty content area
-                        }
+
+                        content.add(created[0] = cx);
+                        split(CONTENT_VISIBLE_SPLIT); //hide empty content area
+
                     } else {
-                        synchronized (content) {
-                            if (created[0] != null) {
-                                content.remove(created[0]);
-                                created[0] = null;
-                            }
-                            if (content.isEmpty()) {
-                                split(0f); //hide empty content area
-                            }
+
+                        if (created[0] != null) {
+                            content.remove(created[0]);
+                            created[0] = null;
                         }
+                        if (content.isEmpty()) {
+                            split(0f); //hide empty content area
+                        }
+
                     }
-                }
+                });
             };
 
             ToggleButton bb = buttonBuilder.apply(label);
@@ -84,18 +84,19 @@ public class TabPane extends Splitting {
 
     }
 
-    @Override
-    public void start(SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
-            split(0).set(tabs, content);
-        }
-    }
-
     public static void main(String[] args) {
         SpaceGraph.window(new TabPane(Map.of(
                 "a", () -> new Sketch2DBitmap(40, 40),
                 "b", () -> new PushButton("x"))), 800, 800);
+    }
+
+    @Override
+    public boolean start(SurfaceBase parent) {
+        if (super.start(parent)) {
+            split(0).set(tabs, content);
+            return true;
+        }
+        return false;
     }
 
 }

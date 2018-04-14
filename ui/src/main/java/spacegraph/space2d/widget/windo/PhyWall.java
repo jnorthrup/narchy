@@ -89,11 +89,12 @@ public class PhyWall extends Wall implements Animated {
     }
 
     @Override
-    public void start(SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
+    public boolean start(SurfaceBase parent) {
+        if (super.start(parent)) {
             on = ((Ortho) root()).onUpdate(this);
+            return true;
         }
+        return false;
     }
 
 
@@ -232,12 +233,13 @@ public class PhyWall extends Wall implements Animated {
 
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             on.off();
             on = null;
-            super.stop();
+            return true;
         }
+        return false;
     }
 
 

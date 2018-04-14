@@ -1,6 +1,5 @@
 package spacegraph.video;
 
-import com.jogamp.nativewindow.WindowClosingProtocol;
 import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
@@ -23,41 +22,41 @@ import java.util.function.Consumer;
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
+    private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
+    public final Topic<JoglWindow> onUpdate = new ListTopic<>();
+    public final Logger logger;
+    final AtomicBoolean rendering = new AtomicBoolean(false);
+    /**
+     * update loop
+     */
+    final InstrumentedLoop updater;
     public float renderFPS = 30f;
     protected float updateFPS = 30f;
 
-    final AtomicBoolean rendering = new AtomicBoolean(false);
-
-    private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
-
-    public final Topic<JoglWindow> onUpdate = new ListTopic<>();
-
     public volatile GLWindow window;
-
-    /** update loop */
-    final InstrumentedLoop updater;
-
-    /** render loop */
-    protected GameAnimatorControl renderer;
-
     public GL2 gl;
-
-    /** update time since last cycle (ms) */
-    protected long dtMS = 0;
-
-    /** update time since last cycle (S) */
+    /**
+     * update time since last cycle (S)
+     */
     public float dtS = 0;
 
+    /**
+     * render loop
+     */
+    protected GameAnimatorControl renderer;
+    /**
+     * update time since last cycle (ms)
+     */
+    protected long dtMS = 0;
     private long lastRenderMS = System.currentTimeMillis();
-
-    public final Logger logger;
 
     protected JoglWindow() {
         logger = LoggerFactory.getLogger(toString());
 
         renderer = new GameAnimatorControl();
         updater = new InstrumentedLoop() {
-            @Override public boolean next() {
+            @Override
+            public boolean next() {
                 return JoglWindow.this.next();
             }
         };
@@ -112,9 +111,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     public void off() {
         GLWindow w = this.window;
-        if (w != null) {
-            w.destroy();
-        }
+        if (w != null)
+            Loop.invokeLater(w::destroy);
     }
 
 
@@ -219,53 +217,42 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
     }
 
-    public GLWindow show(int w, int h) {
-        return show("", w, h);
+    public void show(int w, int h) {
+        show("", w, h);
     }
 
-    public GLWindow show(String title, int w, int h, int x, int y) {
+    public void show(String title, int w, int h, int x, int y) {
 
-//            if (window != null) {
-//                //TODO apply w,h,x,y to the existing window
-//                return window;
-//            }
+        Loop.timer().execute(() -> {
 
-        GLWindow W = window();
-
-
-        this.window = W;
-        windows.add(this);
-
-        window.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DISPOSE_ON_CLOSE);
-        window.preserveGLStateAtDestroy(false);
-        window.runOnEDTIfAvail(false, ()->{
-            //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
-            W.setTitle(title);
-            W.setSize(w, h);
-            if (x != Integer.MIN_VALUE) {
-                W.setPosition(x, y);
+            if (window != null) {
+                //TODO apply w,h,x,y to the existing window
+                return;
             }
 
+            GLWindow W = window();
+            this.window = W;
 
-            window.addGLEventListener(this);
-            window.addWindowListener(this);
+            window.runOnEDTIfAvail(false, () -> {
 
-            W.setVisible(true);
+                windows.add(this);
+
+                window.addGLEventListener(this);
+                window.addWindowListener(this);
+
+
+                //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
+                W.setTitle(title);
+                W.setSize(w, h);
+                if (x != Integer.MIN_VALUE) {
+                    W.setPosition(x, y);
+                }
+                W.setVisible(true);
+
+
+            });
+
         });
-
-
-
-        //});
-
-        //        if (!windows.isEmpty()) {
-//        } else {
-//            //a.start();
-//
-//        }
-
-
-        return W;
-
 
     }
 
@@ -275,8 +262,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
-            gl.setSwapInterval(0); //0=disable vsync
-            //gl.setSwapInterval(1);
+            //gl.setSwapInterval(0); //0=disable vsync
+            gl.setSwapInterval(1); //enabled vsync
         } else {
             gl.setSwapInterval(4); //reduce CPU strain
         }
@@ -296,17 +283,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public void setFPS(float render, float update) {
         //synchronized (this) {
         logger.info("fps render={} update={}", render, update);
-            renderFPS = render;
-            updateFPS = update;
-            if (updater.isRunning()) {
-                renderer.loop.runFPS(renderFPS);
-                updater.runFPS(updateFPS);
-            }
+        renderFPS = render;
+        updateFPS = update;
+        if (updater.isRunning()) {
+            renderer.loop.runFPS(renderFPS);
+            updater.runFPS(updateFPS);
+        }
         //}
     }
 
-    public GLWindow show(String title, int w, int h) {
-        return show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
+    public void show(String title, int w, int h) {
+        show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
 
     public void addMouseListenerPost(MouseListener m) {
@@ -341,7 +328,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             c.animate(dtS);
         });
     }
-
 
 
     /* from: Jake2's */

@@ -57,19 +57,23 @@ public class ConceptView extends Gridding {
     }
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        super.start(parent);
-        on = DurService.on(nar, this::update);
+    public boolean start(@Nullable SurfaceBase parent) {
+        if (super.start(parent)) {
+            on = DurService.on(nar, this::update);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             if (on != null) {
                 on.off();
                 on = null;
             }
-            super.stop();
+            return true;
         }
+        return false;
     }
 }

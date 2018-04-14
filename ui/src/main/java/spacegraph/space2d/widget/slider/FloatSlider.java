@@ -67,11 +67,12 @@ public class FloatSlider extends Widget {
     }
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
+    public boolean start(@Nullable SurfaceBase parent) {
+        if (super.start(parent)) {
             updateText();
+            return true;
         }
+        return false;
     }
 
     private void updateText() {

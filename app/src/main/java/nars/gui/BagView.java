@@ -33,13 +33,14 @@ public class BagView extends TabPane {
                         DurService on;
 
                         @Override
-                        public void start(SurfaceBase parent) {
-                            synchronized (this) {
-                                super.start(parent);
+                        public boolean start(SurfaceBase parent) {
+                            if (super.start(parent)) {
                                 on = DurService.on(nar, ()->{
                                     update();
                                 });
+                                return true;
                             }
+                            return false;
                         }
 
                         @Override
@@ -61,12 +62,13 @@ public class BagView extends TabPane {
                         }
 
                         @Override
-                        public void stop() {
-                            synchronized (this) {
+                        public boolean stop() {
+                            if (super.stop()) {
                                 on.off();
                                 on = null;
-                                super.stop();
+                                return true;
                             }
+                            return false;
                         }
                     };
                     return b;

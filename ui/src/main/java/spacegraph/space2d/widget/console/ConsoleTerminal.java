@@ -150,9 +150,8 @@ public class ConsoleTerminal extends Widget {
 
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
+    public boolean start(@Nullable SurfaceBase parent) {
+        if (super.start(parent)) {
 
             term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
 
@@ -180,7 +179,9 @@ public class ConsoleTerminal extends Widget {
             text.setUpdateNecessary();
 
 
+            return true;
         }
+        return false;
     }
     @Override
     public boolean onKey(KeyEvent e, boolean pressed) {
@@ -267,13 +268,14 @@ public class ConsoleTerminal extends Widget {
 
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             term.close();
             term.removeVirtualTerminalListener(listener);
             listener = null;
-            super.stop();
+            return true;
         }
+        return false;
     }
 
 

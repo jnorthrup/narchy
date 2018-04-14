@@ -163,15 +163,16 @@ public class JogAmpGraphAPITextDemo {
         }
 
         @Override
-        public void stop() {
-            synchronized (this) {
-                super.stop();
+        public boolean stop() {
+            if (super.stop()) {
                 //stop the animator thread when user close the window
                 // it is important to free memory allocated no the GPU!
                 // this memory cant be garbage collected by the JVM
                 renderState.destroy(gl);
                 gl = null;
+                return true;
             }
+            return false;
         }
 
         @Override

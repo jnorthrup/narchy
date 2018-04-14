@@ -55,9 +55,8 @@ public class ConsoleGUI extends ConsoleTerminal {
             new TextColor.RGB(15,15,15));
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
+    public boolean start(@Nullable SurfaceBase parent) {
+        if (super.start(parent)) {
 //                thr = new Thread(this);
 //                thr.setDaemon(true);
 //                thr.start();
@@ -109,13 +108,16 @@ public class ConsoleGUI extends ConsoleTerminal {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return true;
         }
+        return false;
     }
 
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
+
             if (gui!=null) {
                 gui.removeWindow(window);
                 gui = null;
@@ -135,8 +137,10 @@ public class ConsoleGUI extends ConsoleTerminal {
                 updates = null;
             }
 
-            super.stop();
+            return true;
         }
+
+        return false;
     }
 
     /** TODO throttle the different update processes if necessary */

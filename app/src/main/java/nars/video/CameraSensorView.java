@@ -97,20 +97,29 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
 
-    public void onTouch(Scalar touchConcept) {
+    void onTouch(Scalar touchConcept) {
         touchMode.accept(touchConcept);
     }
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        super.start(parent);
-        on = DurService.on(nar, this::accept);
+    public boolean start(@Nullable SurfaceBase parent) {
+        if (super.start(parent)) {
+            on = DurService.on(nar, this::accept);
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void stop() {
-        super.stop();
-        if (on!=null) { on.off(); this.on = null; }
+    public boolean stop() {
+        if (super.stop()) {
+            if (on != null) {
+                on.off();
+                this.on = null;
+            }
+            return true;
+        }
+        return false;
     }
 
 
@@ -173,21 +182,23 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         private final AtomicReference<Runnable> next = new AtomicReference<>();
 
         @Override
-        public void start(SurfaceBase parent) {
-            synchronized (this) {
-                super.start(parent);
+        public boolean start(SurfaceBase parent) {
+            if (super.start(parent)) {
                 on = DurService.on(view.nar, this::commit);
+                return true;
             }
+            return false;
         }
 
         @Override
-        public void stop() {
+        public boolean stop() {
 
-            synchronized (this) {
+            if (super.stop()) {
                 on.off();
                 on = null;
-                super.stop();
+                return true;
             }
+            return false;
 
         }
 

@@ -252,9 +252,8 @@ public class WebCam {
         }
 
         @Override
-        public void start(SurfaceBase parent) {
-            synchronized(this) {
-                super.start(parent);
+        public boolean start(SurfaceBase parent) {
+            if (super.start(parent)) {
                 on = eventChange.on(x -> {
                     if (x.getType()==WebcamEventType.CLOSED || x.getType()==WebcamEventType.DISPOSED) {
                         this.stop();
@@ -262,16 +261,19 @@ public class WebCam {
                         ts.update(image);
                     }
                 });
+                return true;
             }
+            return false;
         }
 
         @Override
-        public void stop() {
-            synchronized(this) {
+        public boolean stop() {
+            if (super.stop()) {
                 on.off();
                 on = null;
-                super.stop();
+                return true;
             }
+            return false;
         }
 
     }

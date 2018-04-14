@@ -1,7 +1,6 @@
 package nars.nal.nal4;
 
 import nars.Narsese;
-import nars.derive.Deriver;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;

@@ -308,10 +308,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
-            surface.stop();
-        }
+    public boolean stop() {
+        return surface.stop();
     }
 
     @Override
@@ -455,7 +453,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
     }
 
-    /** called each frame regardless of mouse activity */
+    /** called each frame regardless of mouse activity
+     * TODO split this into 2 methods.  one picks the current touchable
+     * and the other method invokes button changes on the result of the first.
+     * this will allow rapid button changes to propagate directly to
+     * the picked surface even in-between pick updates which are invoked
+     * during the update loop.
+     * */
     Surface updateMouse(float sx, float sy, short[] buttonsDown) {
 
         /*if (e == null) {

@@ -239,23 +239,28 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        synchronized(this) {
-            super.start(parent);
+    public boolean start(@Nullable SurfaceBase parent) {
+
+        if (super.start(parent)) {
             this.node = parent(PhyWall.class).links.addNode(this);
             IntObjectProcedure<Port> u = this.updater;
             if (u !=null)
                 u.value(0, this);
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
-            parent(PhyWall.class).links.removeNode(this);
+    public boolean stop() {
+        PhyWall p = parent(PhyWall.class);
+        if (super.stop()) {
+            if (p!=null)
+                p.links.removeNode(this);
             node = null;
-            super.stop();
+            return true;
         }
+        return false;
     }
 
     protected final void out(Port sender, Object x) {

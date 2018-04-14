@@ -36,7 +36,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
     private Context mContext;
     private Normalizer mNormalizer;
     private Synchronizer mSynchronizer;
-    private final ArrayList<BaseMusic_DigitalSignalProcessorInterface> mRegistered_DigitalSignalProcessors = new ArrayList<BaseMusic_DigitalSignalProcessorInterface>();
+    private final ArrayList<BaseMusic_DigitalSignalProcessorInterface> dsp = new ArrayList<BaseMusic_DigitalSignalProcessorInterface>();
     //private final boolean	sourceDataLineWrite = true;
 
     public BaseMusic_DigitalSignalSynchronizer(int inFramesPerSecond) {
@@ -56,7 +56,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         if (mSynchronizer!=null) {
             inSignalProcessor.initialize(mSampleSize, src.audioFormat);
         }
-        mRegistered_DigitalSignalProcessors.add(inSignalProcessor);
+        dsp.add(inSignalProcessor);
     }
 
     public Normalizer getNormalizer() {
@@ -69,7 +69,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
     }
 
     public void remove( BaseMusic_DigitalSignalProcessorInterface pSignalProcessor ) {
-        mRegistered_DigitalSignalProcessors.remove( pSignalProcessor );
+        dsp.remove( pSignalProcessor );
     }
 
     //start monitoring the specified SourceDataLine ...
@@ -83,7 +83,7 @@ public class BaseMusic_DigitalSignalSynchronizer {
         mAudioDataBuffer = new byte[src.bufferSamples()+DEFAULT_OVERRUN_PROTECTION];
         mPosition = 0;
         mNormalizer = null;
-        for (BaseMusic_DigitalSignalProcessorInterface wDsp : mRegistered_DigitalSignalProcessors) {
+        for (BaseMusic_DigitalSignalProcessorInterface wDsp : dsp) {
             wDsp.initialize(mSampleSize, src.audioFormat);
         }
         mSynchronizer = new Synchronizer(mFramesPerSecond,mFrameRateRatioHintCalibration);
@@ -107,10 +107,10 @@ public class BaseMusic_DigitalSignalSynchronizer {
         }
     }
 
-    //writes the entire specified buffer to the monitored source data line an any registered DSPs.
-    public void writeAudioData(byte[] pAudioData) {
-        writeAudioData(pAudioData, 0, pAudioData.length);
-    }
+//    //writes the entire specified buffer to the monitored source data line an any registered DSPs.
+//    public void writeAudioData(byte[] pAudioData) {
+//        writeAudioData(pAudioData, 0, pAudioData.length);
+//    }
 
     //writes part of specified buffer to the monitored source data line an any registered DSPs.
     public void writeAudioData(byte[] pAudioData, int pOffset, int pLength) {
@@ -254,8 +254,8 @@ public class BaseMusic_DigitalSignalSynchronizer {
             //inconsistencies with the frame rate.
             mContext.mFrameRatioHint = mCurrentFramesPerSecondInNanoSeconds / (float) mFrameRateRatioHintCalibrationInNanoSeconds;
             //dispatch sample data to digtal signal processors.
-            for (int a = 0; a < mRegistered_DigitalSignalProcessors.size(); a++) {
-                mRegistered_DigitalSignalProcessors.get(a).process(mContext);
+            for (int a = 0; a < dsp.size(); a++) {
+                dsp.get(a).process(mContext);
             }
         }
 

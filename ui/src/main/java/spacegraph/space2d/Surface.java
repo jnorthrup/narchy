@@ -10,6 +10,7 @@ import spacegraph.util.math.v2;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Predicate;
 
 /**
@@ -25,16 +26,18 @@ abstract public class Surface implements SurfaceBase {
 
     private final static AtomicInteger serial = new AtomicInteger();
 
-    /** serial id unique to each instanced surface */
+    /**
+     * serial id unique to each instanced surface
+     */
     public final int id = serial.incrementAndGet();
 
     /**
      * scale can remain the unit 1 vector, normally
      */
 //    public v2 scale = new v2(1, 1); //v2.ONE;
-    public RectFloat2D bounds;
-    public SurfaceBase parent;
-    protected boolean visible = true;
+    public volatile RectFloat2D bounds;
+    public volatile SurfaceBase parent;
+    protected volatile boolean visible = true;
 
     public Surface() {
         bounds = RectFloat2D.Unit;
@@ -93,6 +96,7 @@ abstract public class Surface implements SurfaceBase {
         posChanged(r);
         return this;
     }
+
     protected final boolean posChanged(RectFloat2D r) {
         RectFloat2D b = this.bounds;
         if (!b.equals(r, Surface.EPSILON)) {
@@ -115,12 +119,16 @@ abstract public class Surface implements SurfaceBase {
         return parent == null ? null : parent.root();
     }
 
-    /** finds the most immediate parent matching the class */
+    /**
+     * finds the most immediate parent matching the class
+     */
     public <S extends Surface> S parent(Class<S> s) {
         return (S) parent(s::isInstance);
     }
 
-    /** finds the most immediate parent matching the predicate */
+    /**
+     * finds the most immediate parent matching the predicate
+     */
     public SurfaceBase parent(Predicate<SurfaceBase> test) {
 
         SurfaceBase p = this.parent;
@@ -135,20 +143,22 @@ abstract public class Surface implements SurfaceBase {
         return null;
     }
 
-
-    /**
-     * null parent means it is the root surface
-     */
-    public /*synchronized*/ void start(SurfaceBase parent) {
-        synchronized (this) {
-            this.parent = parent;
+    public boolean start(SurfaceBase parent) {
+        if (_parent.getAndSet(this, parent)==null) { //if this atomic update changed from non-null to null, the callee has got it
+            return true;
         }
+        return false;
     }
 
-    public /*synchronized*/ void stop() {
-        synchronized (this) {
-            parent = null;
+
+    final static AtomicReferenceFieldUpdater<Surface,SurfaceBase> _parent =
+            AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
+
+    public boolean stop() {
+        if (_parent.getAndSet(this, null)!=null) { //if this atomic update changed from non-null to null, the callee has got it
+            return true;
         }
+        return false;
     }
 
     public void layout() {
@@ -220,7 +230,9 @@ abstract public class Surface implements SurfaceBase {
         return b ? show() : hide();
     }
 
-    public boolean visible() { return visible; }
+    public boolean visible() {
+        return visible;
+    }
 
     public float radius() {
         return bounds.radius();

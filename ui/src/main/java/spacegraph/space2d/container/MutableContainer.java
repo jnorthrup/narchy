@@ -16,9 +16,12 @@ import java.util.function.Predicate;
 public class MutableContainer extends Container {
 
 
+    final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
+    static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> {
+        return i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
+    };
     private final FastCoWList<Surface> children = new FastCoWList(1,
             NEW_SURFACE_ARRAY);
-
 
     public MutableContainer(Surface... children) {
         super();
@@ -40,23 +43,30 @@ public class MutableContainer extends Container {
     }
 
     @Override
-    public void start(SurfaceBase parent) {
-        synchronized (children) {
-            super.start(parent);
-            children.forEach(c -> {
-                assert(c.parent==null || c.parent == this);
-                c.start(this);
-            });
+    public boolean start(SurfaceBase parent) {
+        if (super.start(parent)) {
+            synchronized (children) {
+
+                children.forEach(c -> {
+                    assert (c.parent == null || c.parent == this);
+                    c.start(this);
+                });
+            }
+            layout();
+            return true;
         }
-        layout();
+        return false;
     }
 
     @Override
-    public void stop() {
-        synchronized (children) {
-            children.forEach(Surface::stop);
-            super.stop();
+    public boolean stop() {
+        if (super.stop()) {
+            synchronized (children) {
+                children.forEach(Surface::stop);
+            }
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -83,13 +93,15 @@ public class MutableContainer extends Container {
 
                 children.set(index, next);
 
-                if (this.parent!=null)
+                if (this.parent != null)
                     next.start(this);
             }
         }
         layout();
         return existing;
     }
+
+    //TODO: addIfNotPresent(x) that tests for existence first
 
     public void addAll(Surface... s) {
         for (Surface x : s)
@@ -107,8 +119,6 @@ public class MutableContainer extends Container {
 
         layout();
     }
-
-    //TODO: addIfNotPresent(x) that tests for existence first
 
     public boolean remove(Surface s) {
         synchronized (children) {
@@ -177,11 +187,10 @@ public class MutableContainer extends Container {
         return this;
     }
 
-
     @Override
     public void forEach(Consumer<Surface> o) {
         for (Surface x : children.copy) {
-            if (x.parent!=null) //if ready
+            if (x.parent != null) //if ready
                 o.accept(x);
         }
     }
@@ -189,16 +198,17 @@ public class MutableContainer extends Container {
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         for (Surface x : children.copy) {
-            if (x.parent!=null) //if ready
+            if (x.parent != null) //if ready
                 if (!o.test(x))
                     return false;
         }
         return true;
     }
+
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
         @Nullable Surface[] copy = children.copy;
-        for (int i = copy.length-1; i >= 0; i--) {
+        for (int i = copy.length - 1; i >= 0; i--) {
             Surface x = copy[i];
             if (x.parent != null) //if ready
                 if (!o.test(x))
@@ -207,22 +217,17 @@ public class MutableContainer extends Container {
         return true;
     }
 
-    final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
-
-    static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> {
-        return i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
-    };
-
     public int size() {
         return children.size();
     }
+
     public boolean isEmpty() {
         return children.isEmpty();
     }
 
     public void clear() {
         synchronized (children) {
-            if (size()> 0) {
+            if (size() > 0) {
                 children.forEach(Surface::stop);
                 children.clear();
                 layout();
@@ -230,7 +235,9 @@ public class MutableContainer extends Container {
         }
     }
 
-    /** this can be accelerated by storing children as a Map */
+    /**
+     * this can be accelerated by storing children as a Map
+     */
     public void replace(Surface child, Surface replacement) {
         synchronized (children) {
             if (!children.remove(child))

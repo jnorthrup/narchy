@@ -16,8 +16,6 @@ import com.google.common.primitives.Longs;
 import jcog.io.BinTxt;
 import jcog.math.NumberException;
 import jcog.math.OneDHaar;
-import org.HdrHistogram.AbstractHistogram;
-import org.HdrHistogram.DoubleHistogram;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.Frequency;
 import org.eclipse.collections.api.block.function.primitive.DoubleToFloatFunction;
@@ -42,7 +40,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
@@ -60,8 +57,6 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
-import static jcog.Texts.iPad;
-import static jcog.Texts.n4;
 
 /**
  *

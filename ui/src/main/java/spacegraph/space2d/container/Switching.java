@@ -1,5 +1,6 @@
 package spacegraph.space2d.container;
 
+import jcog.exe.Loop;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
@@ -9,12 +10,14 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 
-/** TODO extend UnitContainer */
+/**
+ * TODO extend UnitContainer
+ */
 public class Switching extends Container {
 
+    protected volatile int switched = -1;
     private Surface current;
     private Supplier<Surface>[] states;
-    protected volatile int switched = -1;
 
     public Switching(Supplier<Surface>... states) {
         super();
@@ -26,23 +29,26 @@ public class Switching extends Container {
         }
     }
 
-    /** sets the available states */
+    /**
+     * sets the available states
+     */
     public Switching states(Supplier<Surface>... states) {
-        synchronized(this) {
-            switched = -1;
-            this.states = states;
-            state(0);
-            return this;
-        }
+
+        switched = -1;
+        this.states = states;
+        state(0);
+
+        return this;
     }
 
 
-
-    /** selects the active state */
+    /**
+     * selects the active state
+     */
     public Switching state(int next) {
-        synchronized(this) {
+        Loop.invokeLater(() -> {
             if (switched == next)
-                return this;
+                return;
 
             Surface prevSurface = this.current;
 
@@ -51,32 +57,33 @@ public class Switching extends Container {
             if (prevSurface != null)
                 prevSurface.stop();
 
-            if (parent!=null) {
+            if (parent != null) {
                 nextSurface.start(this);
             }
-        }
 
-        layout();
+            layout();
+        });
         return this;
     }
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
-            assert(current.parent==null);
+    public boolean start(@Nullable SurfaceBase parent) {
+        if (super.start(parent)) {
+            assert (current.parent == null);
             current.start(this);
+            layout();
+            return true;
         }
-        layout();
+        return false;
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             current.stop();
-            //current = new EmptySurface();
-            super.stop();
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -91,12 +98,13 @@ public class Switching extends Container {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        if (current.parent!=null) //if ready
+        if (current.parent != null) //if ready
             o.accept(current);
     }
+
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        if (current.parent!=null)
+        if (current.parent != null)
             return o.test(current);
         else
             return true;

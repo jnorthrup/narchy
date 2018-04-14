@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Float.floatToIntBits;
 import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * represents a freq,evi pair precisely but does not

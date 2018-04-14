@@ -28,13 +28,13 @@ abstract public class Loop {
     /** global timer */
     private static HashedWheelTimer timer = null;
 
-    static synchronized HashedWheelTimer timer() {
+    public static synchronized HashedWheelTimer timer() {
         if (timer == null) {
             Executor exe = Util.executor();
             HashedWheelTimer.logger.info("global timer start: executor={}", exe);
             timer = new HashedWheelTimer(Loop.class.getName(),
                     TimeUnit.MILLISECONDS.toNanos(1),
-                    32,
+                    64,
                     // HashedWheelTimer.WaitStrategy.YieldingWait,
                     HashedWheelTimer.WaitStrategy.SleepWait,
                     exe);
@@ -58,6 +58,10 @@ abstract public class Loop {
      * > 0: delay in milliseconds
      */
     public final AtomicInteger periodMS = new AtomicInteger(-1);
+
+    public static void invokeLater(Runnable r) {
+        timer().execute(r);
+    }
 
 
     @Override

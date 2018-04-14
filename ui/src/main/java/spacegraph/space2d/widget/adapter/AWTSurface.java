@@ -61,8 +61,9 @@ public class AWTSurface extends Widget {
 
 
     @Override
-    public void start(@Nullable SurfaceBase parent) {
-        synchronized (this) {
+    public boolean start(@Nullable SurfaceBase parent) {
+        if (super.start(parent)) {
+
 
             if (component instanceof JFrame) {
                 component.setVisible(false);
@@ -92,7 +93,6 @@ public class AWTSurface extends Widget {
 
             component.validate();
 
-            super.start(parent);
 
             content(tex.view());
 
@@ -115,16 +115,20 @@ public class AWTSurface extends Widget {
 
             });
 
+            return true;
         }
+
+        return false;
     }
 
     @Override
-    public void stop() {
-        synchronized (this) {
+    public boolean stop() {
+        if (super.stop()) {
             ons.off();
             ons = null;
-            super.stop();
+            return true;
         }
+        return false;
     }
 
     @Override

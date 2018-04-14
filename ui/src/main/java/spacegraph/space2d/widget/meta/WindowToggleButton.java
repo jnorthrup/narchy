@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
 import com.jogamp.newt.event.WindowUpdateEvent;
+import com.jogamp.newt.opengl.GLWindow;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -51,21 +52,22 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
                 int sy = Finger.pointer.getY();
                 int nx = sx - width / 2;
                 int ny = sy - height / 2;
-                space.window.setPosition(nx, ny);
+                GLWindow w = space.window;
+                if (w!=null)
+                    w.setPosition(nx, ny);
 
-                set(true);
             });
 
             //space.show(this.toString(), width,height, nx, ny);
             //space.window.setTitle(label.value());
 
-
+            set(true);
         } else if (space != null) {
-            space.window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
-                this.space.off();
-                this.space = null;
-                set(false);
-            });
+
+            this.space.off();
+            this.space = null;
+
+            set(false);
         }
 
     }

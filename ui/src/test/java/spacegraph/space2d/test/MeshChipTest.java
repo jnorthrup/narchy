@@ -60,11 +60,12 @@ public class MeshChipTest {
         }
 
         @Override
-        public void start(SurfaceBase parent) {
-            synchronized (this) {
-                super.start(parent);
+        public boolean start(SurfaceBase parent) {
+            if (super.start(parent)){
                 recv = peer.onReceive.on(this::receive);
+                return true;
             }
+            return false;
         }
 
         protected void receive(Pair<UDPeer.UDProfile,UDPeer.Msg> x) {
@@ -76,12 +77,13 @@ public class MeshChipTest {
         }
 
         @Override
-        public void stop() {
-            synchronized(this) {
-                super.stop();
+        public boolean stop() {
+            if (super.stop()) {
                 recv.off();
                 recv = null;
+                return true;
             }
+            return false;
         }
 
         @Override

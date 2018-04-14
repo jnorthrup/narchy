@@ -31,16 +31,15 @@ public class SpaceLogConsole extends Gridding implements SpaceLogger {
     }
 
     @Override
-    public void start(SurfaceBase parent) {
-        synchronized(this) {
-            super.start(parent);
+    public boolean start(SurfaceBase parent) {
+        if (super.start(parent)) {
 
             textGUI = text.surface();
 
-
-
             set(textGUI);
+            return true;
         }
+        return false;
     }
 
     @Override

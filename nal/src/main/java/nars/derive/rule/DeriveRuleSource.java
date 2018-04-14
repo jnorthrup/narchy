@@ -4,8 +4,6 @@ import nars.$;
 import nars.Narsese;
 import nars.derive.PostCondition;
 import nars.index.term.PatternIndex;
-import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.Termed;
@@ -17,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static nars.Op.VAR_PATTERN;
-import static nars.derive.rule.DeriveRuleProto.UppercaseAtomsToPatternVariables;
 import static nars.derive.rule.DeriveRuleSet.parseRuleComponents;
 
 /**

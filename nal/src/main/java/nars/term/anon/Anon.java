@@ -1,13 +1,10 @@
 package nars.term.anon;
 
 import jcog.list.FasterList;
-import nars.Task;
-import nars.task.TaskProxy;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.transform.DirectTermTransform;
 import nars.term.transform.TermTransform;
