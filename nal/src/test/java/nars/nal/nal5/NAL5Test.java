@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
+import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 
 //@RunWith(Parameterized.class)
@@ -289,12 +290,20 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test
+    @Test @Disabled
     public void testDisjStructuralDeduction() {
         test
                 .believe("(||, a, b)")
                 .mustBelieve(cycles, "a", 1f, 0.40f)
                 .mustBelieve(cycles, "b", 1f, 0.40f)
+        ;
+    }
+
+    @Test public void testDisjStructuralDeductionQuestion() {
+        test
+                .input("a?")
+                .believe("(||, a, b)")
+                .mustOutput(cycles,"b", QUESTION)
         ;
     }
 

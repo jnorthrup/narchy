@@ -317,7 +317,11 @@
     C, X, eventOfPosOrNeg(C,X)   |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
-    D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+    //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+
+    //Conj and Disj Question Decomposition
+    X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
+    X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
 
     //C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 

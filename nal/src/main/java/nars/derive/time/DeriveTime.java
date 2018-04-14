@@ -480,12 +480,15 @@ public class DeriveTime extends TimeGraph {
 
         boolean hasConjSeq = solutions.OR(x -> x.id.op()==CONJ && x.id.eventCount() > 0);
         if (hasConjSeq) {
-            Conj c = new Conj();
+            Conj c = null;
             List<Event> list = solutions.list;
             for (int i = 0, listSize = list.size(); i < listSize; i++) {
                 Event e = list.get(i);
                 long w = e.when();
                 if (w!=TIMELESS) {
+                    if (c == null)
+                        c = new Conj(); //lazy
+
                     if (!c.add(e.id, w)) {
                         c = null;
                         break;
@@ -848,7 +851,7 @@ public class DeriveTime extends TimeGraph {
                     long[] when = new long[]{TIMELESS, TIMELESS};
                     Term ttt = tt.apply(when);
                     if (ttt == null || when[0] == TIMELESS)
-                        return null;
+                        return null; //should not happen
                     return () -> {
                         d.concOcc[0] = when[0];
                         d.concOcc[1] = when[1];
