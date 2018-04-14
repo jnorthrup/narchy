@@ -24,6 +24,7 @@ public class TaskProxy implements Task {
     }
 
     public static TaskProxy.WithTruthAndTime eternalized(Task tx, float eviFactor) {
+        assert(tx!=null);
         return new TaskProxy.WithTruthAndTime(
                 tx,
                 ETERNAL, ETERNAL,
@@ -182,11 +183,6 @@ public class TaskProxy implements Task {
     @Override
     public byte punc() {
         return task.punc();
-    }
-
-    @Override
-    public float eternalizability() {
-        return task.eternalizability();
     }
 
 

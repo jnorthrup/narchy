@@ -1,13 +1,9 @@
 package nars.table;
 
-import jcog.Util;
 import jcog.pri.Prioritized;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.control.Cause;
-import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -17,8 +13,6 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static nars.time.Tense.ETERNAL;
 
 /**
  * A model storing, ranking, and projecting beliefs or goals (tasks with TruthValue).
@@ -211,8 +205,7 @@ public interface BeliefTable extends TaskTable {
 
     @Override
     default Task match(long start, long end, Term template, NAR nar) {
-        return match(start, end, template, nar,
-                t -> true);
+        return match(start, end, template, nar, null);
     }
 
     /**
@@ -229,42 +222,43 @@ public interface BeliefTable extends TaskTable {
         if (answer == null || answer.isDeleted())
             return null;
 
-        boolean novel = false; //(answer instanceof AnswerTask); //includes: answers, revision, or dynamic
+        boolean novel = true;
+
+//        boolean novel = false; //(answer instanceof AnswerTask); //includes: answers, revision, or dynamic
 
         //project if different occurrence
 
-        boolean relevantTime = start==ETERNAL || answer.intersects(start, end);
-
-        if (/*!answer.isEternal() && */!relevantTime) {
-
-            long t = answer.nearestPointExternal(start, end);
-            Truth aProj = answer.truth(t, dur);
-            if (aProj != null) {
-
-                final Task aa = answer;
-                Task a = Task.tryTask(answer.term(), answer.punc(), aProj, (content, truth) -> new NALTask(
-                        content,
-                        aa.punc(),
-                        truth, nar.time(), t, t,
-                        aa.stamp()));
-                        //(question != null) ?
-                          //      Stamp.zip(aa.stamp(), question.stamp(), 0.5f) : aa.stamp()));
-                if (a == null)
-                    return null;
-
-                float confFrac = Util.unitize(aProj.evi() / answer.evi());
-                a.priSet(answer.priElseZero() * confFrac);
-                if (question != null)
-                    ((NALTask)a).cause = Cause.sample(Param.causeCapacity.intValue(), question, answer);
-
-
-                //            if (Param.DEBUG)
-                //                a.log("Answer Projected");
-                novel = true; //because it was projected
-//                relevantTime = true;
-                answer = a;
-            }
-        }
+//        boolean relevantTime = start==ETERNAL || answer.intersects(start, end);
+//        if (/*!answer.isEternal() && */!relevantTime) {
+//
+//            long t = answer.nearestPointExternal(start, end);
+//            Truth aProj = answer.truth(t, dur);
+//            if (aProj != null) {
+//
+//                final Task aa = answer;
+//                Task a = Task.tryTask(answer.term(), answer.punc(), aProj, (content, truth) -> new NALTask(
+//                        content,
+//                        aa.punc(),
+//                        truth, nar.time(), t, t,
+//                        aa.stamp()));
+//                        //(question != null) ?
+//                          //      Stamp.zip(aa.stamp(), question.stamp(), 0.5f) : aa.stamp()));
+//                if (a == null)
+//                    return null;
+//
+//                float confFrac = Util.unitize(aProj.evi() / answer.evi());
+//                a.priSet(answer.priElseZero() * confFrac);
+//                if (question != null)
+//                    ((NALTask)a).cause = Cause.sample(Param.causeCapacity.intValue(), question, answer);
+//
+//
+//                //            if (Param.DEBUG)
+//                //                a.log("Answer Projected");
+//                novel = true; //because it was projected
+////                relevantTime = true;
+//                answer = a;
+//            }
+//        }
 
         if (novel && question != null && question.isQuestionOrQuest()) {
             withNovel.accept(answer);

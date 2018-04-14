@@ -539,7 +539,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if (s == ETERNAL) {
             return evi();
         } else if (when == ETERNAL) {
-            return eternalizability() * eviEternalized();
+            return eviEternalized();
         } else {
 
 
@@ -548,17 +548,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             if (dist == 0) {
                 return evi();
             } else {
-                float ete = eternalizability();
-                float ecw = ete > 0 ? eviEternalized() * ete : 0;
                 if (dur == 0) {
-                    return ecw; //eternalized value only
+                    return 0;
                 } else {
-
-                    return ecw + (float) Param.evi(
-                                    evi() - ecw /* delta to eternalization, >= 0 */,
-                                    dist, dur);
-
-                    //return Math.max(ecw,  (float) Param.evi(evi(), dist, dur));
+                    return (float) Param.evi(evi(), dist, dur);
                 }
             }
 
@@ -566,34 +559,34 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     }
 
-    default float eternalizability() {
-        return 1f; //always
-        //return originality();
-        //return 0.5f; //some
-        //return punc()==BELIEF ? 1f: 0f; //always if belief
-        //return 0f; //never
-
-//        Term t = term();
-//        return t.op().temporal || t.vars() > 0 ? 1f : 0f;
-
-        //return term().vars() > 0 ? 1f : 0f;
-        //return term().vars() > 0 ? 1f : 0.5f;
-        //return term().varIndep() > 0 ? 1f: 0f;
-
-//        Term t = term();
-//        return t.varIndep() > 0 || t.op() == IMPL ?
-//                //0.5f + 0.5f * polarity()
-//                polarity()
-//                    : 0f;
-
-        //return true;
-        //return op().temporal;
-
-
-        //Op op = term.op();
-        //return op ==IMPL || op ==EQUI || term.vars() > 0;
-        //return op.statement || term.vars() > 0;
-    }
+//    default float eternalizability() {
+//        return 1f; //always
+//        //return originality();
+//        //return 0.5f; //some
+//        //return punc()==BELIEF ? 1f: 0f; //always if belief
+//        //return 0f; //never
+//
+////        Term t = term();
+////        return t.op().temporal || t.vars() > 0 ? 1f : 0f;
+//
+//        //return term().vars() > 0 ? 1f : 0f;
+//        //return term().vars() > 0 ? 1f : 0.5f;
+//        //return term().varIndep() > 0 ? 1f: 0f;
+//
+////        Term t = term();
+////        return t.varIndep() > 0 || t.op() == IMPL ?
+////                //0.5f + 0.5f * polarity()
+////                polarity()
+////                    : 0f;
+//
+//        //return true;
+//        //return op().temporal;
+//
+//
+//        //Op op = term.op();
+//        //return op ==IMPL || op ==EQUI || term.vars() > 0;
+//        //return op.statement || term.vars() > 0;
+//    }
 
     @Override
     @NotNull
@@ -743,12 +736,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         }
 
-        Task forward = meta("@");
-        long s, e;
-        int dur = nar.dur();
-        if (forward == null || (forward != answer && forward.conf(s = start(), e = end(), dur) < answer.conf(s, e, dur))) {
-            meta("@", answer); //forward to the top answer if this ever gets deleted
-        }
+//        Task forward = meta("@");
+//        long s, e;
+//        int dur = nar.dur();
+//        if (forward == null || (forward != answer && forward.conf(s = start(), e = end(), dur) < answer.conf(s, e, dur))) {
+//            meta("@", answer); //forward to the top answer if this ever gets deleted
+//        }
 
         return answer;
     }

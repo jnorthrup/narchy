@@ -19,7 +19,6 @@ import org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatistics;
 import java.util.Random;
 
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
 
 public class Eternalizer extends Causable {
 
@@ -84,7 +83,7 @@ public class Eternalizer extends Causable {
                 tt.replaceAll(x -> TaskProxy.eternalized((Task) x, factor));
                 ((FasterList) tt).sortThisByFloat(t -> -((Task)t).evi());
 
-                Task r = Revision.mergeTemporal(nar, ETERNAL, ETERNAL, tt);
+                Task r = Revision.mergeTemporal(nar, tt);
 
                 if (r!=null) {
                     built.add(r); //TODO buffer all generated, make a wrapper for in and use this in other classes like ConjClustering

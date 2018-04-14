@@ -24,8 +24,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.IntIterator;
-import org.roaringbitmap.RoaringBitmap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -526,30 +524,54 @@ public class Revision {
 
 
 
+
+//    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, FasterList<TaskRegion> tt) {
+//        //filter the task set:
+//        // if there are any exact matches to the interval, remove any others
+//        RoaringBitmap oob = new RoaringBitmap();
+//        for (int i = 0, ttSize = tt.size(); i < ttSize; i++) {
+//            TaskRegion x = tt.get(i);
+//            if (x == null || !x.intersects(start, end))
+//                oob.add(i);
+//        }
+//        int numRemoved = oob.getCardinality();
+//        if (numRemoved!=0 && numRemoved!=tt.size()) {
+//            IntIterator ii = oob.getReverseIntIterator();
+//            while (ii.hasNext()) {
+//                tt.remove(ii.next());
+//            }
+//        }
+//
+//        return mergeTemporal(nar, tt);
+//    }
+
     @Nullable public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
         return mergeTemporal(nar, tt, tt.length);
     }
-
-    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, FasterList<TaskRegion> tt) {
-        //filter the task set:
-        // if there are any exact matches to the interval, remove any others
-        RoaringBitmap oob = new RoaringBitmap();
-        for (int i = 0, ttSize = tt.size(); i < ttSize; i++) {
-            TaskRegion x = tt.get(i);
-            if (x == null || !x.intersects(start, end))
-                oob.add(i);
-        }
-        int numRemoved = oob.getCardinality();
-        if (numRemoved!=0 && numRemoved!=tt.size()) {
-            IntIterator ii = oob.getReverseIntIterator();
-            while (ii.hasNext()) {
-                tt.remove(ii.next());
-            }
-        }
-
+    @Nullable public static Task mergeTemporal(NAR nar, FasterList<TaskRegion> tt) {
         return mergeTemporal(nar, tt.array(), tt.size());
     }
 
+
+    /** preprocesses the tasks with respect to the specified time bounds being truthpolated */
+    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, TaskRegion[] tt, int n) {
+
+        if (start == ETERNAL) {
+            //replace the array with eternalized proxy tasks
+            //tt = tt.clone();
+            float factor =
+                    1f;
+                    //1/n
+
+            tt = Util.replaceDirect(tt, 0, n,
+                    x -> TaskProxy.eternalized((Task) x, factor));
+        } else {
+
+            //   TODO clip tasks to the specified ranges?
+        }
+
+        return mergeTemporal(nar, tt, n);
+    }
 
     @Nullable public static Task mergeTemporal(NAR nar, TaskRegion[] tt, int results) {
         switch (results) {
@@ -597,7 +619,7 @@ public class Revision {
                 continue;
 
             Task ti = ri.task();
-            //assert (!t.isEternal());
+
 
             long[] ts = ti.stamp();
             totalEv += ts.length;
@@ -702,7 +724,7 @@ public class Revision {
 
 
 
-        float factor = overlapFactor * differenceFactor;
+
         float truthEvi = density.factor(truth.evi());
         float eAdjusted = truthEvi
                     * differenceFactor //affects overall result
@@ -718,20 +740,20 @@ public class Revision {
         //if (eAdjusted < eviMinInteg) //rejects a weaker diluted range, comparing the absolute evidence not including any range integration effect
             return first;
 
-        Task t = Task.tryTask(content, first.punc(), truth, (c, tr)->{
-            @Nullable PreciseTruth cTruth = tr.dither(nar, factor);
-            if (cTruth == null)
-                return null;
+        PreciseTruth cTruth = truth.withEvi(eAdjusted).dither(nar);
+        if (cTruth == null)
+            return null;
 
-            return new NALTask(c, first.punc(),
-                    cTruth,
+        Task t = Task.tryTask(content, first.punc(), cTruth, (c, tr)->
+            new NALTask(c, first.punc(),
+                    tr,
                     nar.time(), start, end,
                     Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
-            );
-        });
+            )
+        );
+
         if (t == null)
             return first;
-
 
         t.priSet(Priority.fund(Util.max((TaskRegion p)->p.task().priElseZero(),tt),
                 false,
@@ -742,9 +764,9 @@ public class Revision {
         if (Param.DEBUG)
             t.log("Temporal Merge");
 
-        for (TaskRegion x : tt) {
-            x.task().meta("@", (k) -> t); //forward to the revision
-        }
+//        for (TaskRegion x : tt) {
+//            x.task().meta("@", (k) -> t); //forward to the revision
+//        }
 
         return t;
     }

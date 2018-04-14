@@ -171,16 +171,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
     @Override
-    public Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter) {
+    public final Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter) {
         int s = size();
         if (s == 0) return null; //quick exit
 
         int dur = nar.dur();
-        if (start == ETERNAL) {
-            long now = nar.time();
-            start = now - dur/2;
-            end = now + dur/2;
-        }
         assert (end >= start);
 
 
@@ -573,7 +568,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //    }
 
     private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
-        return (Task x) -> value(x, start, end, dur);
+        if (start != ETERNAL) {
+            return (Task x) -> value(x, start, end, dur);
+        } else {
+            return (Task x) -> x.eviEternalized() * x.range();
+        }
     }
 
     private double tableDur() {
@@ -666,11 +665,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     @Override
     public void forEachTask(Consumer<? super Task> each) {
-        forEach(t -> {
-//            Task tt = t.task();
-//            if (tt != null)
-            each.accept((Task) t);
-        });
+        forEach(t -> each.accept((Task) t));
     }
 
     @Override
@@ -705,7 +700,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     filter)
                     .scan(this, start, end);
 
-            return Revision.mergeTemporal(nar, tt.list, tt.size());
+            return Revision.mergeTemporal(nar, start, end, tt.list, tt.size());
         }
     }
 
@@ -876,7 +871,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 if (s == 0)
                     return;
 
-                if (s <= COMPLETE_SCAN_SIZE_THRESHOLD) {
+                /* whether eternal is the time bounds */
+                boolean all = _start == ETERNAL;
+
+                /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
+                    otherwise limit by the Leaf capacity */
+                if ((!all && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (all && s<= TRUTHPOLATION_LIMIT)) {
                     tree.forEach(this::add);
                     return;
                 }
@@ -889,11 +889,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     throw new RuntimeException("wtf");
                 }
 
-                long start = Math.min(boundsEnd, Math.max(boundsStart, _start));
-                long end = Math.max(boundsStart, Math.min(boundsEnd, _end));
+
+
+                long start = all ? boundsStart : Math.min(boundsEnd, Math.max(boundsStart, _start));
+                long end = all ? boundsEnd : Math.max(boundsStart, Math.min(boundsEnd, _end));
 
 
                 int ss = s / COMPLETE_SCAN_SIZE_THRESHOLD;
+
+                //TODO use different CONF divisions strategy for eternal to select highest confidence tasks irrespective of their time
 
                 int confDivisions = Math.max(1, Math.min(SCAN_CONF_DIVISIONS_MAX, ss));
 
@@ -916,7 +920,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 float maxConf = bounds.confMax();
                 float minConf = bounds.confMin();
 
-                int FATAL_LIMIT = 100;
+                int FATAL_LIMIT = s * 2;
                 int count = 0;
                 boolean done = false;
                 do {

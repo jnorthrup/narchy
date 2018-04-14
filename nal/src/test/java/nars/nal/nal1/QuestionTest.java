@@ -236,13 +236,22 @@ public class QuestionTest {
     }
     @Disabled @Test
     public void testDeriveQuestOrdinary() throws Narsese.NarseseException {
-        //this.activeTasks = activeTasks;
         new TestNAR(NARS.tmp()) //requires NAL3 single premise
                 .quest("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuest(256, "(P --> M)").test();
     }
 
+    @Test public void testExplicitEternalizationViaQuestion() {
+        new TestNAR(NARS.tmp()) //requires NAL3 single premise
+                .log()
+                .inputAt(1, "x. :|: %1.00;0.90%")
+                .inputAt(4, "x. :|: %0.50;0.90%")
+                .inputAt(7, "x. :|: %0.00;0.90%")
+                .inputAt(8, "x?") //eternal question that triggers eternalization (the answer)
+                .mustBelieve(16, "x", 0.5f, 0.73f /*ETERNAL*/)
+                .test();
+    }
 
 //    @Test public void testSaneBudgeting() {
 //        Param.DEBUG = true;

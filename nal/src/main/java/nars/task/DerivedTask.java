@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.Util;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.term.Term;
@@ -13,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DerivedTask extends NALTask {
 
-    private final float eternalizability;
-
     //TODO should this also affect the Belief task?
 
     public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
@@ -23,12 +20,6 @@ public class DerivedTask extends NALTask {
 //        if (stamp.length==0) {
 //            throw new RuntimeException();
 //        }
-
-//        eternalizability = 1f;
-
-        eternalizability = !d.single ?
-                eternalizability(d._task.eternalizability(), d._belief.eternalizability()) :
-                d._task.eternalizability();
 
 //        if (!isBeliefOrGoal() || tc.term().dt()!=DTERNAL) {
 //            //if this is a question or temporal relation use default method
@@ -58,29 +49,6 @@ public class DerivedTask extends NALTask {
     }
 
     @Override
-    public float eternalizability() {
-        return eternalizability;
-    }
-
-    static float eternalizability(float taskEternalizability, float beliefEternalizability) {
-        //return Math.max(taskEternalizability, beliefEternalizability);
-        //return Util.mean(taskEternalizability, beliefEternalizability);
-        return Util.or(taskEternalizability, beliefEternalizability);
-    }
-
-//    @Override
-//    public long start() {
-//        return startEnd == null ? super.start() : startEnd[0];
-//    }
-//
-//    @Override
-//    public long end() {
-//        return startEnd == null ? super.end() : startEnd[1];
-//    }
-
-
-
-    @Override
     public final boolean isInput() {
         return false;
     }
@@ -102,17 +70,8 @@ public class DerivedTask extends NALTask {
     }
 
 
-    //    /** next = the child which resulted from this and another task being revised */
-//    @Override public boolean onRevision(@NotNull Task next) {
-//
-//
-//        return true;
-//    }
+}
 
-//    public void multiplyPremise(float factor, boolean alsoDurability) {
-//        multiply(factor, taskLink, alsoDurability);
-//        multiply(factor, termLink, alsoDurability);
-//    }
 
 
 //    public static class DefaultDerivedTask extends DerivedTask {
@@ -246,7 +205,8 @@ public class DerivedTask extends NALTask {
 ////        }
 ////    }
 //
-}
+
+
 //scratch
 //float deathFactor = 1f - 1f / (1f +(conf()/evidence().length));
 //float deathFactor = (1f/(1 + c * c * c * c));

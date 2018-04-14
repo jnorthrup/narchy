@@ -2366,6 +2366,18 @@ public enum Util {
         return xx;
     }
 
+    public static <X> X[] replaceDirect(X[] xx, Function<X,X> f) {
+        return replaceDirect(xx, 0, xx.length, f);
+    }
+
+    public static <X> X[] replaceDirect(X[] xx, int start, int end, Function<X,X> f) {
+        for (int i = start; i < end; i++) {
+            X x = xx[i];
+            xx[i] = f.apply(x);
+        }
+        return xx;
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,
