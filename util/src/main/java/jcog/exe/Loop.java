@@ -34,7 +34,7 @@ abstract public class Loop {
             HashedWheelTimer.logger.info("global timer start: executor={}", exe);
             timer = new HashedWheelTimer(Loop.class.getName(),
                     TimeUnit.MILLISECONDS.toNanos(1),
-                    64,
+                    32,
                     // HashedWheelTimer.WaitStrategy.YieldingWait,
                     HashedWheelTimer.WaitStrategy.SleepWait,
                     exe);
@@ -91,7 +91,6 @@ abstract public class Loop {
         super();
         logger = getLogger(getClass());
         setPeriodMS(periodMS);
-        //timer.scheduleWithFixedDelay()
     }
 
     public boolean isRunning() {
@@ -112,13 +111,19 @@ abstract public class Loop {
         int prevPeriodMS;
         if ((prevPeriodMS = periodMS.getAndSet(nextPeriodMS)) != nextPeriodMS) {
             if (prevPeriodMS < 0 && nextPeriodMS >= 0) {
+                logger.debug("start period={}ms", nextPeriodMS);
+
                 synchronized (periodMS) {
 //                    Thread myNewThread = newThread();
 //                    myNewThread.start();
+                    assert(this.task == null);
                     onStart();
                     this.task = timer().scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
+
+                logger.info("stop");
+
                 synchronized (periodMS) {
                     //Thread prevThread = this.thread;
                     FixedRateTimedFuture prevTask = this.task;
@@ -135,16 +140,17 @@ abstract public class Loop {
 
                     }
 
-                    logger.info("stop {}", this);
                     onStop();
                 }
             } else if (prevPeriodMS >= 0) {
                 //change speed
+
+                logger.debug("period={}ms", nextPeriodMS);
+
                 FixedRateTimedFuture task = this.task;
                 if (task!=null) {
                     task.setPeriodMS(nextPeriodMS);
                 }
-                logger.debug("{} period={}ms", this, nextPeriodMS);
             }
             return true;
         }
@@ -178,53 +184,6 @@ abstract public class Loop {
     protected void onStop() {
 
     }
-
-//    /**
-//     * dont call this directly
-//     */
-//    private void run() {
-//
-//        onStart();
-//
-//        logger.info("start {} each {}ms", this, this.periodMS.intValue());
-//
-//        int periodMS;
-//        while ((periodMS = this.periodMS.intValue()) >= 0) {
-//
-//            long beforeTimeNS = System.nanoTime();
-//
-//            try {
-//                if (!next()) {
-//                    stop(); //will exit after statistics at the end of this loop
-//                }
-//            } catch (Throwable e) {
-//                thrown(e);
-//            }
-//
-//            long dutyTimeNS = System.nanoTime() - beforeTimeNS;
-//            double dutyTimeS = (dutyTimeNS) / 1.0E9;
-//
-//            double cycleTimeS;
-//            long sleepTime = Math.round(periodMS - (dutyTimeNS / 1E6 /* to MS */));
-//            if (sleepTime > 0) {
-//                Util.sleep(sleepTime); //((long) this.dutyTime.getMean()) ));
-//                cycleTimeS = (System.nanoTime() - beforeTimeNS) / 1.0E9;
-//            } else {
-//                cycleTimeS = dutyTimeS; //100% duty cycle
-//            }
-//
-//            this.dutyTime.addValue(dutyTimeS);
-//            this.cycleTime.addValue(cycleTimeS);
-//        }
-//
-//        stop();
-//
-//        logger.info("stop {} each {}ms", this);
-//
-//        onStop();
-//
-////        lag = lagSum = 0;
-//    }
 
     protected void thrown(Throwable e) {
         logger.error(" {}", e);

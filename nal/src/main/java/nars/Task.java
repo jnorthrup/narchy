@@ -2,12 +2,9 @@ package nars;
 
 import com.google.common.collect.Streams;
 import jcog.Util;
-import jcog.bag.impl.PLinkArrayBag;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
-import jcog.pri.PLink;
-import jcog.pri.PriReference;
 import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
@@ -27,7 +24,6 @@ import nars.truth.Truthed;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
@@ -40,7 +36,6 @@ import java.util.stream.Collectors;
 
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.w2cSafe;
-import static org.eclipse.collections.impl.tuple.Tuples.twin;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -738,27 +733,29 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     @Nullable
     default Task onAnswered(/*@NotNull*/Task answer, /*@NotNull*/NAR nar) {
-        if (isInput()) {
+        return answer;
+    }
 
-            Concept concept = concept(nar, true);
-            if (concept != null) {
-                //shared by both questions and quests per concept
-                PLinkArrayBag<Twin<Task>> answers = concept.meta("?", (x) ->
-                        new PLinkArrayBag<Twin<Task>>(Param.taskMerge, Param.ANSWER_BAG_CAPACITY)
-                );
-
-                Twin<Task> qa = twin(this, answer);
-                PLink<Twin<Task>> p = new PLink<>(qa,
-                        (this.priElseZero()) * (answer.conf()));
-                PriReference<Twin<Task>> r = answers.commit().put(p);
-                if (Param.DEBUG_REPORT_ANSWERS && r == p) {
-                    //added
-                    nar.input(Operator.log(nar.time(), qa.getOne() + "  " + qa.getTwo()));
-                }
-
-            }
-
-        }
+//        if (isInput()) {
+//
+//            Concept concept = concept(nar, true);
+//            if (concept != null) {
+//                //shared by both questions and quests per concept
+//                PLinkArrayBag<Twin<Task>> answers = concept.meta("?", (x) ->
+//                        new PLinkArrayBag<Twin<Task>>(Param.taskMerge, Param.ANSWER_BAG_CAPACITY)
+//                );
+//
+//                Twin<Task> qa = twin(this, answer);
+//                PLink<Twin<Task>> p = new PLink<>(qa,
+//                        (this.priElseZero()) * (answer.conf()));
+//                PriReference<Twin<Task>> r = answers.commit().put(p);
+//                if (Param.DEBUG_REPORT_ANSWERS && r == p) {
+//                    //added
+//                    nar.input(Operator.log(nar.time(), qa.getOne() + "  " + qa.getTwo()));
+//                }
+//
+//            }
+//        }
 
 //        Task forward = meta("@");
 //        long s, e;
@@ -767,8 +764,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //            meta("@", answer); //forward to the top answer if this ever gets deleted
 //        }
 
-        return answer;
-    }
+//        return answer;
+//    }
 
     default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb /**@Nullable*/) {
         return appendTo(sb, false);

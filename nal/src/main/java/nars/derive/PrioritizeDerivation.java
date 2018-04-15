@@ -1,10 +1,8 @@
 package nars.derive;
 
-import jcog.Util;
 import nars.Task;
 import nars.truth.Truth;
 
-import static jcog.Util.unitize;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /** stateless, storing any state information in the Derivation instance */
@@ -31,7 +29,7 @@ interface PrioritizeDerivation {
 
         @Override
         public float pri(Task t, Derivation d) {
-            float discount = 1f;
+            float factor = 1f;
 
             //t.volume();
 
@@ -40,8 +38,8 @@ interface PrioritizeDerivation {
                 float pCompl = d.parentComplexitySum;
                 float dCompl = t.voluplexity();
                 float relGrowthCost =
-                        unitize(pCompl / (pCompl + dCompl));
-                discount *= relGrowthCost;
+                        (pCompl / (pCompl + dCompl)); //allow > 1
+                factor *= relGrowthCost;
 
 
             {
@@ -120,8 +118,8 @@ interface PrioritizeDerivation {
                     if (!single)
                         dConf*=2; //count the derived confidence twice to be fair to comparison against the combined evidence of 2 parents
 
-                    float eviFactor = dConf / (dConf + pConf);
-                    discount *= Util.unitize(eviFactor);
+                    float eviFactor = dConf / pConf; //allow > 1
+                    factor *= eviFactor;
                 }
 
                 //opinionation: preference for polarized beliefs/goals
@@ -130,10 +128,10 @@ interface PrioritizeDerivation {
             } else {
                 //QUESTIONS and QUESTS: apply the rel growth cost factor again
                 //since there is no truth to heuristically discount
-                discount *= relGrowthCost;
+                factor *= relGrowthCost;
             }
 
-            return discount * d.pri;
+            return factor * d.pri;
 
             //return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
 

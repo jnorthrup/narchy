@@ -51,10 +51,10 @@ public class AIMATests {
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(22);
         //n.conceptActivation.set(0.5f);
 
-        Deriver.derivers(n).forEach(x->x.conceptsPerIteration.set(8));
+        Deriver.derivers(n).forEach(x->x.conceptsPerIteration.set(16));
         //new QuerySpider(n);
         //new PrologCore(n);
         //n.run(1);
@@ -103,7 +103,7 @@ public class AIMATests {
         });
         //
         //n.log();
-        n.run(1500);
+        n.run(1000);
 //        n.concept($.$("Criminal")).print();
 //        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {

@@ -21,6 +21,7 @@ import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Truth;
+import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,14 +60,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
             //1.5f;
-            2f;
+            //2f;
+            8f;
 
 
-    private static final int SCAN_CONF_DIVISIONS_MAX = 1; //2;
-    private static final int SCAN_TIME_DIVISIONS_MAX = 1; //5;
+    private static final int SCAN_CONF_DIVISIONS_MAX = 1;
+    private static final int SCAN_TIME_DIVISIONS_MAX = 4;
 
-    private static final int MIN_TASKS_PER_LEAF = 3;
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MIN_TASKS_PER_LEAF = 2;
+    private static final int MAX_TASKS_PER_LEAF = 3;
     private static final Split<TaskRegion> SPLIT =
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
@@ -129,7 +131,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         final Task ete = eternal != null ? eternal.strongest() : null;
 
         int s = size();
-        x:
         if (s > 0) {
 
             int maxTruths = TRUTHPOLATION_LIMIT;
@@ -144,15 +145,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 .scan(this, start, end);
 
             if (!tt.isEmpty()) {
-                return Param.truth(start, end, dur)
-                        .add(tt)
-                        .preFilter()
-                        .filterCyclic()
-                        .truthWithEternal(ete);
 
-//                PreciseTruth pt = Param.truth(null, start, end, dur, tt);
-//                if (pt!=null && (ete == null || (pt.evi() >= ete.evi())))
-//                    return pt;
+                TruthPolation t = Param.truth(start, end, dur).add(tt);
+
+                if (ete!=null)
+                    t.add(ete);
+
+                return t.preFilter().filterCyclic().truth();
             }
         }
 
@@ -802,7 +801,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private final static class ScanFilter extends CachedTopN<TaskRegion> implements Predicate<TaskRegion> {
 
         private final Predicate<Task> filter;
-        private final int minResults;
+        private final int minResults, attempts;
         int attemptsRemain;
 
 
@@ -818,7 +817,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         ScanFilter(int minResults, TaskRegion[] taskRegions, FloatFunction<TaskRegion> strongestTask, int maxTries, Predicate<Task> filter) {
             super(taskRegions, strongestTask);
             this.minResults = minResults;
-            this.attemptsRemain = maxTries;
+            this.attempts = maxTries;
             this.filter = filter;
         }
 
@@ -852,18 +851,19 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
          */
         ScanFilter scan(RTreeBeliefTable table, long _start, long _end) {
 
+            /* whether eternal is the time bounds */
+            boolean all = _start == ETERNAL;
 
             //table.read((Space<TaskRegion> tree) -> {
             table.readOptimistic((Space<TaskRegion> tree) -> {
 
                 ScanFilter.this.clear(); //in case of optimisticRead, if tried twice
+                this.attemptsRemain = attempts; //reset attempts count
 
                 int s = tree.size();
                 if (s == 0)
                     return;
 
-                /* whether eternal is the time bounds */
-                boolean all = _start == ETERNAL;
 
                 /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
                     otherwise limit by the Leaf capacity */
@@ -880,28 +880,37 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     throw new RuntimeException("wtf");
                 }
 
-
-
-                long start = all ? boundsStart : Math.min(boundsEnd, Math.max(boundsStart, _start));
-                long end = all ? boundsEnd : Math.max(boundsStart, Math.min(boundsEnd, _end));
-
-
                 int ss = s / COMPLETE_SCAN_SIZE_THRESHOLD;
 
-                //TODO use different CONF divisions strategy for eternal to select highest confidence tasks irrespective of their time
+                long scanStart, scanEnd;
+                int confDivisions, timeDivisions;
+                if (!all) {
 
-                int confDivisions = Math.max(1, Math.min(SCAN_CONF_DIVISIONS_MAX, ss));
+                    scanStart = Math.min(boundsEnd, Math.max(boundsStart, _start));
+                    scanEnd = Math.max(boundsStart, Math.min(boundsEnd, _end));
 
-                int scanTimeDivisions = Math.max(1, Math.min(SCAN_TIME_DIVISIONS_MAX, ss));
+                    //TODO use different CONF divisions strategy for eternal to select highest confidence tasks irrespective of their time
+
+
+                    confDivisions = Math.max(1, Math.min(SCAN_CONF_DIVISIONS_MAX, ss));
+                    timeDivisions = Math.max(1, Math.min(SCAN_TIME_DIVISIONS_MAX, ss));
+                } else {
+                    scanStart = boundsStart;
+                    scanEnd = boundsEnd;
+
+                    confDivisions = Math.max(1, Math.min(SCAN_TIME_DIVISIONS_MAX /* yes TIME here, ie. the axes are switched */, ss));
+                    timeDivisions = 1;
+                }
+
                 long expand = Math.max(1, (
-                        Math.round(((double) (boundsEnd - boundsStart)) / (1 << (1+scanTimeDivisions))))
+                        Math.round(((double) (boundsEnd - boundsStart)) / (1 << (timeDivisions))))
                 );
 
                 //TODO use a polynomial or exponential scan expansion, to start narrow and grow wider faster
 
 
-                long mid = (start + end) / 2;
-                long leftStart = start, leftMid = mid, rightMid = mid, rightEnd = end;
+                long mid = (scanStart + scanEnd) / 2;
+                long leftStart = scanStart, leftMid = mid, rightMid = mid, rightEnd = scanEnd;
                 boolean leftComplete = false, rightComplete = false;
                 //TODO float complete and use this as the metric for limiting with scan quality parameter
 

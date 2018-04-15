@@ -67,9 +67,13 @@ public class LoopPanel extends Widget {
         if (!pause) {
             int f = fps.intValue();
             int g = Math.round(loop.getFPS());
-            if (f != g) {
-                loop.runFPS(f);
-                fpsLabel.set(f);
+            if (f > 0) {
+                if (f != g) {
+                    loop.runFPS(f);
+                    fpsLabel.set(f);
+                }
+            } else {
+                fps.set(g);
             }
             cycleTimePlot.update();
         } else {

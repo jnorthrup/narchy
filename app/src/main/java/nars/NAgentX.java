@@ -250,8 +250,6 @@ abstract public class NAgentX extends NAgent {
 
         n.activationRate.set(0.5f);
 
-        NAgent a = init.apply(n);
-
 //        new RLBooster(a, HaiQAgent::new, 1);
 
 
@@ -404,27 +402,23 @@ abstract public class NAgentX extends NAgent {
         System.gc();
 
 
+        NAgent a = init.apply(n);
+        n.on(a);
+        n.synch();
 
-        n.runLater(() -> {
+        //n.runLater(() -> {
 
             chart(a);
 
-            SpaceGraph.window(Vis.top(a.nar()), 800, 800);
+            SpaceGraph.window(Vis.top(n), 800, 800);
 
 //            window(new ConceptView(a.happy,n), 800, 600);
 
 
-            n.on(a);
             //START AGENT
-            Loop aLoop = a.runFPS(agentFPS);
+            Loop aLoop = a.startFPS(agentFPS);
 
-//            n.runLater(() -> {
-//                new Deriver(a.fire(), Derivers.deriver(6, 8,
-//                        "motivation.nal"
-//                        //, "goal_analogy.nal"
-//                ).apply(n).deriver, n); //{
-//            });
-        });
+        //});
         Loop loop = n.startFPS(narFPS);
 
         return n;

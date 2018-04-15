@@ -2,7 +2,6 @@ package nars;
 
 import com.google.common.collect.Iterables;
 import jcog.TODO;
-import jcog.event.On;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.*;
@@ -61,6 +60,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
 
+    /** list of concepts involved in this agent */
+    private final List<Concept> concepts = new FasterList();
+
 //    /**
 //     * the general reward signal for this agent
 //     */
@@ -105,7 +107,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public final FloatRange motivation = new FloatRange(1f, 0f, 2f);
     protected List<Task> always = $.newArrayList();
 
-
+    /** non-null if an independent loop process has started */
+    private volatile Loop loop = null;
 
     protected NAgent(NAR nar) {
         this("", nar);
@@ -114,6 +117,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     protected NAgent(String id, NAR nar) {
         this(id.isEmpty() ? null : Atomic.the(id), nar);
     }
+
     @Deprecated protected NAgent(Term id, NAR nar) {
         super(id);
         this.nar = nar;
@@ -163,24 +167,22 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         return t;
     }
 
-    @Deprecated
-    public On runDur(int everyDurs) {
-        int dur = nar.dur();
-        int everyCycles = dur * everyDurs;
-        return nar.onCycle(i -> {
-            if (nar.time() % everyCycles == 0)
-                NAgent.this.run();
-        });
-    }
 
-    public Loop runFPS(float fps) {
-        return new Loop(fps) {
-            @Override
-            public boolean next() {
-                NAgent.this.run();
-                return true;
+    /** creates a new loop to run this */
+    public Loop startFPS(float fps) {
+        synchronized (this) {
+            if (this.loop == null) {
+                return this.loop = new Loop(fps) {
+                    @Override
+                    public boolean next() {
+                        NAgent.this.run();
+                        return true;
+                    }
+                };
+            } else {
+                throw new RuntimeException("already started: " + loop);
             }
-        };
+        }
     }
 
     @Override
@@ -324,6 +326,14 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             this.now = nar.time();
             this.last = now - nar.dur(); //head-start
 
+
+            //initialize concepts list
+            concepts.addAll(actions.keySet());
+            concepts.addAll(sensors.keySet());
+            always.forEach(t -> concepts.add(t.concept(nar,true)));
+            Iterables.addAll(concepts, happy);
+
+
             //finally:
             enabled.set(true);
         }
@@ -391,13 +401,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             logger.info(summary());
     }
 
+
+
     /** creates an activator specific to this agent context */
     public Consumer<Predicate<Activate>> fire() {
-        List<Concept> concepts = new FasterList();
-        concepts.addAll(actions.keySet());
-        concepts.addAll(sensors.keySet());
-        always.forEach(t -> concepts.add(t.concept(nar,true)));
-        Iterables.addAll(concepts, happy);
+
         return p -> {
             Activate a;
 

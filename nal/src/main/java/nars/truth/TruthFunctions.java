@@ -268,9 +268,10 @@ public final class TruthFunctions {
     /**
      * frequency determined entirely by the desire component.
      */
-    @Nullable public static Truth desireNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf, boolean weak) {
-        float c = and(a.conf(), b.conf(), b.freq());
-        //float c = and(a.conf(), b.conf());
+    @Nullable public static Truth desireNew(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean weak) {
+
+        float c = and(goal.conf(), belief.conf(), belief.freq());
+        //float c = and(goal.conf(), belief.conf());
         if (weak)
             c *= w2c(1.0f);
 
@@ -281,7 +282,7 @@ public final class TruthFunctions {
             //pulls the frequency toward 0.5 in proportion to (1- bFreq)
             //float f = Util.lerp(b.freq(), 0.5f, a.freq());
 
-            float f = a.freq();
+            float f = goal.freq();
 
             return $.t(f, c);
 

@@ -24,13 +24,18 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     }
 
     @Override
-    public void add(Task t) {
+    public TruthPolation add(Task t) {
         super.add(t);
 
-        long dd = t.minDistanceTo(start, end);
+        if (dur > minDur) {
+            if (!t.isEternal()) {
+                long dd = t.minDistanceTo(start, end);
+                if (dd < dur)
+                    dur = Math.max(minDur, (int) dd);
+            }
+        }
 
-        if (dur > minDur && dd < dur)
-            dur = Math.max(minDur, (int) dd);
+        return this;
     }
 
 

@@ -501,6 +501,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     private <V> void add(int wheel, TimedFuture<V> r) {
+        if (wheel < 0)
+            throw new RuntimeException("wtf");
+
         if (!this.wheel[wheel].offer(r)) {
             throw new TODO("grow wheel capacity");
         }

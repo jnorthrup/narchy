@@ -4,7 +4,6 @@ import jcog.Paper;
 import jcog.Skill;
 import jcog.list.FasterList;
 import nars.Task;
-import nars.task.Revision;
 import nars.task.Tasked;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -80,8 +79,9 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     }
 
 
-    public void add(Task t) {
+    public TruthPolation add(Task t) {
         super.add(new TaskComponent(t));
+        return this;
     }
 
 
@@ -134,52 +134,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     /** computes the final truth value */
     abstract public Truth truth();
-
-    /** revise a temporal with a 'background' eternal truth */
-    public Truth truthWithEternal(Truth temporal, Truth eternal) {
-        return Revision.revise(temporal, eternal);
-    }
-
-    /**
-     * blends any result with an optional eternal "background" contribution
-     */
-    public final Truth truthWithEternal(@Nullable Task eternalTask) {
-
-        Truth temporal = truth();
-
-        Truth eternal = eternalTask != null ? eternalTask.truth() : null;
-
-        if (eternal == null)
-            return temporal;
-        else if (temporal == null)
-            return eternal;
-        else {
-            return truthWithEternal(temporal, eternal);
-
-
-//        float tempEvi = t.eviSum;
-//        boolean someEvi = tempEvi > 0f;
-//        if (topEternal != null) {
-//            if (!someEvi) {
-//                return new PreciseTruth(topEternal.truth()); //eternal the only authority
-//            } else {
-//
-//                //long totalSpan = Math.max(1, t.spanEnd - t.spanStart);
-//                long totalCovered = Math.max(1, t.rangeSum); //estimate
-//                float temporalDensity = ((float) totalCovered) / Math.max(1, end - start);
-//                float eviDecay = 1 / ((1 + tempEvi * temporalDensity));
-//
-//                float eteEvi = topEternal.evi();
-//
-//                t.accept(topEternal.freq(), eteEvi * eviDecay);
-//            }
-//        }
-//
-//        return !someEvi ? null : t.truth();
-        }
-
-
-    }
 
     public final TruthPolation add(Tasked... tasks) {
         ensureCapacity(tasks.length);

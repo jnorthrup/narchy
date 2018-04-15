@@ -187,7 +187,7 @@ public class Line1D {
 
             n.time.dur(32);
             exp.agent.curiosity.set(0.1f);
-            exp.agent.runDur(2);
+            //exp.agent.runDur(2);
 
             //n.truthResolution.setValue(0.25f);
 

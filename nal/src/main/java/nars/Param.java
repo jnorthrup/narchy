@@ -124,24 +124,13 @@ public abstract class Param {
             PriMerge.max;
             //PriMerge.plus;
 
-    //    /**
-//     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
-//     */
-//    public static final FloatFloatToFloatFunction taskTermLinksToPremise =
-//            //Util::or;
-//    Util::and;
-////            //UtilityFunctions::aveGeo;
-////            //UtilityFunctions::aveAri;
-////            //Math::min;
-////            //Math::max;
-
-
     /**
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             //Util::and;
-            Util::or;
+            //Util::or;
+            (t,b)->(t+b); //sum
             //Util::mean;
             //Math::max;
 
