@@ -436,7 +436,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         @Override
-        public ITask run(NAR n) {
+        public ITask next(NAR n) {
             float pri = this.pri();
             if (pri!=pri)
                 return null; //deleted before it could be processed

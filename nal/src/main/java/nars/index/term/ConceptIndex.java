@@ -100,10 +100,26 @@ public abstract class ConceptIndex {
         if (x instanceof Bool || x instanceof Variable)
             return null; //quick filter
 
+        if (x instanceof Concept && elideConceptGets() && !(((Concept) x).isDeleted()))
+            return ((Concept)x);
+
         Term xx = x.concept();
-        if (!(x.op().conceptualizable))
-            return null;
+        if (!(xx.op().conceptualizable))
+            return null; //this could mean a bad .concept() case
+
         return (Concept) get(xx, createIfMissing);
+    }
+
+    /**
+     * for performance, if lookup of a Concept instance is performed using
+     * a supplied non-deleted Concept instance, return that Concept directly.
+     * ie. it assumes that the known Concept is the active one.
+     *
+     * this can be undesirable if the concept index has an eviction mechanism
+     * which counts lookup frequency, which would be skewed if elision is enabled.
+     */
+    protected boolean elideConceptGets() {
+        return true;
     }
 
     public final void conceptAsync(Term x, boolean createIfMissing, Consumer<Concept> with) {
@@ -147,6 +163,7 @@ public abstract class ConceptIndex {
                 Concept c = (Concept) value;
                 if (c instanceof TaskConcept)
                     forget((TaskConcept) c);
+
                 c.delete(nar);
             }
         }

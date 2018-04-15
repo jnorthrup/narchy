@@ -65,6 +65,11 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     }
 
 
+    /** caffeine may measure accesses for eviction */
+    @Override protected final boolean elideConceptGets() {
+        return false;
+    }
+
     @Override
     public void remove(Term x) {
         concepts.invalidate(x);

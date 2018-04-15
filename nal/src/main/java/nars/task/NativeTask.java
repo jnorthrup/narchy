@@ -46,7 +46,7 @@ public abstract class NativeTask implements ITask, Priority {
         throw new UnsupportedOperationException();
     }
 
-    public abstract ITask run(NAR n);
+    public abstract ITask next(NAR n);
 
     public final boolean isInput() {
         return false;
@@ -77,7 +77,7 @@ public abstract class NativeTask implements ITask, Priority {
         }
 
         @Override
-        public ITask run(NAR n) {
+        public ITask next(NAR n) {
             run.run();
             return null;
         }
@@ -106,7 +106,7 @@ public abstract class NativeTask implements ITask, Priority {
         }
 
         @Override
-        public final ITask run(NAR n) {
+        public final ITask next(NAR n) {
             if (what instanceof Consumer)
                 ((Consumer) what).accept(n);
             else if (what instanceof Runnable)

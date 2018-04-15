@@ -3,7 +3,6 @@ package nars.exe;
 import jcog.event.On;
 import jcog.list.FasterList;
 import nars.NAR;
-import nars.Param;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.Cause;
@@ -49,12 +48,9 @@ abstract public class Exec implements Executor {
 
     /** inline, synchronous */
     final void executeNow(Object t) {
-        try {
-            if (t instanceof ITask) {
-                ITask x = (ITask) t;
-                NAR nar = this.nar;
-                while ((x = x.run(nar)) != null) ;
-            }
+//        try {
+            if (t instanceof ITask)
+                ((ITask) t).run(nar);
             else if (t instanceof Runnable)
                 ((Runnable) t).run();
             else //if (t instanceof Consumer)
@@ -62,9 +58,9 @@ abstract public class Exec implements Executor {
 //            else {
 //                throw new UnsupportedOperationException(t + " unexecutable");
 //            }
-        } catch (Throwable e) {
-            logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
-        }
+//        } catch (Throwable e) {
+//            logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
+//        }
 
     }
 

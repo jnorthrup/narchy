@@ -176,16 +176,16 @@ public interface LongInterval {
      *  returned distance is zero, regardless of how far it may extend before or after it */
     default long minDistanceTo(long a, long b) {
 
-        assert (b >= a);
-
-        long s = start();
-        if (s == ETERNAL)
-            return 0;
+        assert (b >= a): a + " > " + b;
 
         if (a == ETERNAL) {
             //throw new TODO();
             return 0;
         }
+
+        long s = start();
+        if (s == ETERNAL)
+            return 0;
 
         long e = end();
         if (intersects(a, b)) {

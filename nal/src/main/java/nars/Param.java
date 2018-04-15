@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.MAX_CONF;
 
 /**
@@ -45,20 +46,6 @@ public abstract class Param {
     /** softmax roulette parameter in trie deriver fork decisions */
     public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
 
-    /**
-     * for performance, if lookup of a Concept instance is performed using
-     * a supplied non-deleted Concept instance, return that Concept directly.
-     * ie. it assumes that the known Concept is the active one.
-     */
-    public static final boolean ELIDE_CONCEPT_LOOKUPS = false;
-
-//    /**
-//     * proportion of a total activation necessary for emitting task activation events
-//     */
-//    @Range(min=0, max=0.5f)
-//    public static float TASK_ACTIVATION_THRESHOLD =
-//            //0;
-//            0.5f;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
@@ -187,6 +174,8 @@ public abstract class Param {
     public final long[] timeFocus(long when, float dur) {
         if (when == ETERNAL)
             return Tense.ETERNAL_ETERNAL;
+
+        assert(when!=XTERNAL);
 
         int f = Math.round(dur * timeFocus.floatValue());
         int ditherCycles = dtDitherCycles();

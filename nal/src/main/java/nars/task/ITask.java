@@ -23,7 +23,16 @@ import nars.NAR;
  * @param X identifier key
  */
 public interface ITask extends Priority {
-    ITask run(NAR n);
+
+    /** process the next stage; returns null if finished */
+    ITask next(NAR n);
 
     byte punc();
+
+    /** continues executing the chain of returned tasks until the end */
+    default void run(NAR nar) {
+        ITask x = this;
+        while ((x = x.next(nar)) != null) ;
+    }
+
 }

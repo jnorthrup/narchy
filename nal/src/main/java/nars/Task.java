@@ -1024,7 +1024,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return t.expectation();
     }
 
-    default ITask run(NAR n) {
+    default ITask next(NAR n) {
 
         Term x = term();
 
@@ -1041,7 +1041,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             case 1: return yy.iterator().next();
             default:
                 return new NativeTask.RunTask(()->
-                   yy.forEach(z -> z.run(n))
+                   yy.forEach(z -> z.next(n))
                 );
         }
 

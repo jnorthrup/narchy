@@ -46,6 +46,7 @@ public interface TaskMatch {
         private final FloatFunction<Task> value;
 
         public Best(long start, long end) {
+            assert(start <= end);
             this.start = start;
             this.end = end;
 

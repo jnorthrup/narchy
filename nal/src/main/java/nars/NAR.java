@@ -1035,9 +1035,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     @Nullable
     public final Concept concept(/*@NotNull */Termed x, boolean createIfMissing) {
-        if (x instanceof Concept && Param.ELIDE_CONCEPT_LOOKUPS && !(((Concept) x).isDeleted())) {
-            return ((Concept)x);
-        }
         return concepts.concept(x.term(), createIfMissing);
     }
 
@@ -1111,6 +1108,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this;
     }
 
+    /** if this is an Iterable<Task> , it can be more efficient to use the inputTasks method to bypass certain non-NALTask conditions */
     public void input(Iterable<? extends ITask> tasks) {
         if (tasks == null) return;
         exe.execute(tasks);

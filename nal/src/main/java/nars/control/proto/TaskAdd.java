@@ -26,7 +26,7 @@ public class TaskAdd extends NativeTask {
     }
 
     @Override
-    public final ITask run(NAR n) {
+    public final ITask next(NAR n) {
 
         n.emotion.onInput(task, n);
 

@@ -78,23 +78,14 @@ public class WorkerMultiExec extends AbstractExec {
 
     }
 
-    private void executeLater(ITask x) {
-        if (x instanceof Task)
-            executeNow(x);
-        else
-            exe.accept(x);
-    }
-
     @Override
     public void execute(Stream<? extends ITask> input) {
-        input.forEach(isWorker() ?
-                this::executeNow : this::executeLater);
+        input.forEach( x -> x.run(nar) );
     }
 
     @Override
     public void execute(Iterator<? extends ITask> input) {
-        input.forEachRemaining(isWorker() ?
-                this::executeNow : this::executeLater);
+        input.forEachRemaining( x -> x.run(nar) );
     }
 
     private boolean isWorker() {

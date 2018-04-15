@@ -64,8 +64,8 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     }
 
     @Override
-    public ITask run(NAR nar) {
-        ITask next = super.run(nar);
+    public ITask next(NAR nar) {
+        ITask next = super.next(nar);
         this.random = nar.random();
         this.ttl = nar.matchTTLmean.intValue();
         this.onTask = nar.onTask(this);
