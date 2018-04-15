@@ -1,12 +1,13 @@
 package nars.truth;
 
+import jcog.Util;
 import jcog.math.random.XorShift128PlusRandom;
-import nars.$;
 import nars.Param;
 import nars.task.Revision;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.t;
 import static nars.Param.TRUTH_EPSILON;
 import static nars.truth.TruthFunctions.w2c;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,18 +16,44 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TruthTest {
 
     @Test public void testEternalize() {
-        assertEquals(0.47f, $.t(1f, 0.9f).confEternalized(), 0.01f);
-        assertEquals(0.31f, $.t(1f, 0.45f).confEternalized(), 0.01f);
-        assertEquals(0.09f, $.t(1f, 0.10f).confEternalized(), 0.01f);
+        assertEquals(0.47f, t(1f, 0.9f).confEternalized(), 0.01f);
+        assertEquals(0.31f, t(1f, 0.45f).confEternalized(), 0.01f);
+        assertEquals(0.09f, t(1f, 0.10f).confEternalized(), 0.01f);
     }
+
     @Test
-    public void testFreqEquality() {
+    public void testPreciseTruthEquality() {
+
+        float insignificant = Param.TRUTH_EPSILON / 5f;
+        float significant = Param.TRUTH_EPSILON;
+
+        assertEquals(t(0.5f, 0.5f),
+                t(0.5f, 0.5f));
+        assertEquals(t(0.5f, 0.5f),
+                t(0.5f + insignificant, 0.50f));
+        assertNotEquals(t(0.5f, 0.5f),
+                t(0.5f + significant, 0.50f));
+
+        assertEquals(t(0.5f, 0.5f),
+                t(0.5f, 0.5f));
+        assertEquals(t(0.5f, 0.5f),
+                t(0.5f, 0.50f + insignificant));
+        assertNotEquals(t(0.5f, 0.5f),
+                t(0.5f, 0.50f + significant));
+
+    }
+
+    @Test
+    public void testDiscreteTruth_FreqEquality() {
         Truth a = new DiscreteTruth(1.0f, 0.9f);
         Truth aCopy = new DiscreteTruth(1.0f, 0.9f);
         assertEquals(a, aCopy);
 
+        float ff = 1.0f - Param.TRUTH_EPSILON / 2.5f;
+        assertTrue(1 == Util.round(ff, TRUTH_EPSILON));
         Truth aEqualWithinThresh = new DiscreteTruth(
-                1.0f - Param.TRUTH_EPSILON / 2.1f /* slightly less than half */, 0.9f);
+                ff /* slightly less than half */,
+                0.9f);
         assertEquals(a, aEqualWithinThresh);
         assertEquals(a.hashCode(), aEqualWithinThresh.hashCode());
 
@@ -92,7 +119,7 @@ public class TruthTest {
         Truth t = new DiscreteTruth(f, c);
         if (t == null)
             return;
-        Truth u = DiscreteTruth.intToTruth(t.hashCode());
+        Truth u = Truth.intToTruth(t.hashCode());
         assertNotNull( u, t +  " unhased to null via hashCode " + t.hashCode());
         assertEquals(t, u);
     }
@@ -187,17 +214,17 @@ public class TruthTest {
     }
 
     @Test public void testTruthPolarity() {
-        assertEquals(0f, $.t(0.5f, 0.9f).polarity(), 0.01f);
-        assertEquals(1f, $.t(0f, 0.9f).polarity(), 0.01f);
-        assertEquals(1f, $.t(1f, 0.9f).polarity(), 0.01f);
-        assertEquals(1f, $.t(1f, 0.5f).polarity(), 0.01f);
+        assertEquals(0f, t(0.5f, 0.9f).polarity(), 0.01f);
+        assertEquals(1f, t(0f, 0.9f).polarity(), 0.01f);
+        assertEquals(1f, t(1f, 0.9f).polarity(), 0.01f);
+        assertEquals(1f, t(1f, 0.5f).polarity(), 0.01f);
     }
 
     @Disabled
     @Test public void testEvidenceHorizonDistortion() {
-        Truth a = $.t(1f, 0.9f);
+        Truth a = t(1f, 0.9f);
         float eviA = a.evi();
-        Truth b = $.t(1f, 0.9f);
+        Truth b = t(1f, 0.9f);
         float eviB = b.evi();
         float eviABintersect = TruthFunctions.c2w(0.81f);
         float eviABintersectRaw = eviA * eviB;

@@ -1,6 +1,9 @@
 package nars.nal.nal8;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 

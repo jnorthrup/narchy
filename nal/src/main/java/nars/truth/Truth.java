@@ -38,7 +38,51 @@ import static nars.truth.TruthFunctions.w2cSafe;
 
 /** scalar (1D) truth value "frequency", stored as a floating point value */
 public interface Truth extends Truthed {
+    /**
+     * truth component resolution of a 16-bit encoding
+     * this maximally uses the positive half of short (16-bit)'s range of precision
+     */
+    short hashDiscreteness16 = Short.MAX_VALUE - 1;
 
+    /**
+     * truth component resolution corresponding to Param.TRUTH_EPSILON
+     */
+    short hashDiscretenessEpsilon = (short)
+            (Math.round(1f/(Param.TRUTH_EPSILON)));
+
+    /**
+     * The hash code of a TruthValue, perfectly condensed,
+     * into the two 16-bit words of a 32-bit integer.
+     * <p>
+     * Since the same epsilon used in other truth
+     * resolution here (Truth components do not necessarily utilize the full
+     * resolution of a floating point value, and also do not necessarily
+     * need the full resolution of a 16bit number when discretized)
+     * the hash value can be used for equality comparisons
+     * as well as non-naturally ordered / non-lexicographic
+     * but deterministic compareTo() ordering.
+     * correct behavior of this requires epsilon
+     * large enough such that: 0 <= h < 2^15:
+     */
+    static int truthToInt(float freq, float conf, short discreteness) {
+
+        int freqHash = floatToInt(freq, discreteness);// & 0x0000ffff;
+        int confHash = floatToInt(conf, discreteness);// & 0x0000ffff;
+
+        return (freqHash << 16) | confHash;
+    }
+
+    static Truth intToTruth(int h) {
+        return new DiscreteTruth(h);
+    }
+
+    static float freq(int h) {
+        return intToFloat((h >> 16) /* & 0xffff*/, hashDiscretenessEpsilon);
+    }
+
+    static float conf(int h) {
+        return intToFloat(h & 0xffff, hashDiscretenessEpsilon);
+    }
 
 //    float EVI_MIN = c2w(Param.TRUTH_EPSILON);
 
@@ -158,19 +202,19 @@ public interface Truth extends Truthed {
         return new PreciseTruth(1f - freq(), conf());
     }
 
-    default boolean equals(@Nullable  Truth x, float tolerance) {
-        return x!=null
-                && Util.equals(conf(), x.conf(), tolerance)
-                && Util.equals(freq(), x.freq(), tolerance)
-                ;
+    default boolean equalsIn(@Nullable Truth x, float fTol, float cTol) {
+        return x == this || (x!=null
+                && Util.equals(conf(), x.conf(), cTol)
+                && Util.equals(freq(), x.freq(), fTol)
+        );
     }
 
-    default boolean equals(@Nullable Truth x, NAR nar) {
-        return this == x ||
-                //(x!=null &&
-                (
-                Util.equals(freq(), x.freq(), nar.freqResolution.floatValue()) &&
-                Util.equals(conf(), x.conf(), nar.confResolution.floatValue()));
+    default boolean equalsIn(@Nullable Truth x, float tolerance) {
+        return equalsIn(x, tolerance, tolerance);
+    }
+
+    default boolean equalsIn(@Nullable Truth x, NAR nar) {
+        return equalsIn(x, nar.freqResolution.floatValue(), nar.confResolution.floatValue());
     }
 
     default Truth negIf(boolean negate) {

@@ -10,7 +10,6 @@ import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.Cause;
-import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.term.Term;
@@ -128,7 +127,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             return Stream.empty();
         else {
             //TODO may not be null filtered properly for certain multithread cases of removal
-            return ArrayIterator.stream((Task[])list, size);
+            return ArrayIterator.stream((Task[]) list, size);
         }
     }
 
@@ -231,7 +230,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 //        if (t instanceof NALTask) //HACK
 //            ((NALTask) t).delete(/*strongest()*/);
 //        else
-            t.delete();
+        t.delete();
     }
 
     /**
@@ -311,7 +310,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     continue;
 
                 yt = yt.dither(nar);
-                if (yt == null || yt.equals(xt, nar) || yt.equals(newBeliefTruth, nar)) ////avoid a weak or duplicate truth
+                if (yt == null || yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar)) ////avoid a weak or duplicate truth
                     continue;
 
                 conclusion = yt;
@@ -428,8 +427,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             return false;
         }
 
-        float iPri = input.priElseZero();
-
         if ((input.conf() >= 1f) && (cap != 1) && (isEmpty() || (first().conf() < 1f))) {
             //AXIOMATIC/CONSTANT BELIEF/GOAL
             synchronized (this) {
@@ -440,37 +437,32 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
             Task revised = tryRevision(input, nar);
             if (revised != null) {
-                if (revised.equals(input)) { //HACK todo avoid this duplcate equals which is already known from tryRevision
-
-//                    float maxActivation = 1f - revised.priElseZero();
-//                    activation = Math.min(maxActivation, input.priElseZero()); //absorb up to 1.0 max
-                    revised.priMax(input.priElseZero());
-                    input.delete();
-
-                    if (revised instanceof Task) //HACK
-                        ((NALTask) revised).causeMerge(input);
-
-                    return true; //already contained
-
+                //generated a revision
+                if (insert(revised)) {
+//                    //link the revision
+//                    Tasklinks.linkTask(revised, iPri, c, nar);
                 } else {
-                    //generated a revision
-                    if (insert(revised)) {
-                        //link the revision
-                        Tasklinks.linkTask(revised, iPri, c, nar);
-                    } else {
-                        revised.delete(); //rejected revision
-                    }
+                    revised.delete(); //rejected revision
+                }
 
+                if (!revised.equals(input)) {
+
+                    nar.eventTask.emit(revised); //separately
+
+                    //try to insert the original input also
                     boolean inputIns = insert(input);
                     if (inputIns) {
-                        return true; //accepted input
+                        return true; //accepted revision and accepted input
                     } else {
                         input.delete();
-                        return false; //rejected input
+                        return true; //accepted revision and rejected input
                     }
+                } else {
+                    return !revised.isDeleted();
                 }
+
             } else {
-                if (!input.isDeleted() && insert(input)) {
+                if (insert(input)) {
                     return true; //accepted input
                 } else {
                     input.delete();

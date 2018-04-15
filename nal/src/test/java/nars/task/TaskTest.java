@@ -2,7 +2,6 @@ package nars.task;
 
 import nars.*;
 import nars.concept.Concept;
-import nars.truth.DiscreteTruth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -64,13 +63,7 @@ public class TaskTest {
 //    }
 
 
-    @Test public void testTruthHash16Plus16Bit() {
-        //for TRUTH EPSILON 0.01:
 
-        assertEquals(3276, new DiscreteTruth(0, 0.1f).hashCode());
-
-        assertEquals(2147385178, new DiscreteTruth(1, 1.0f).hashCode());
-    }
 
 //    /** tests the ordering of tasks that differ by truth values,
 //     * which is determined by directly comparing their int hashcode

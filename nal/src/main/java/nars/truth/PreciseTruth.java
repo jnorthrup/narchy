@@ -1,18 +1,23 @@
 package nars.truth;
 
-import jcog.Util;
-import nars.NAR;
-import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
-import static java.lang.Float.floatToIntBits;
 import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2c;
 
 /**
- * represents a freq,evi pair precisely but does not
- * allow hashcode usage
+ * extends DiscreteTruth's raw hash representation with
+ * a freq and evidence float pairs.
+ *
+ * this allows it to store, internally, more precision than the
+ * discrete representation, yet is comparable with DiscreteTruth
+ * (according to system TRUTH_EPSILON tolerance).
+ *
+ * the additional precision is useful for intermediate calculations
+ * where premature rounding could snowball into significant error.
+ *
  */
-public class PreciseTruth implements Truth {
+public class PreciseTruth extends DiscreteTruth {
 
     final float f, e;
 
@@ -21,8 +26,11 @@ public class PreciseTruth implements Truth {
     }
 
     public PreciseTruth(float freq, float ce, boolean xIsConfOrEvidence) {
+        super(freq, xIsConfOrEvidence ? w2c(ce) : ce);
+
         assert ((Float.isFinite(freq ) ) && (freq >= 0) && (freq <= 1)):
                 "invalid freq: " + freq;
+
         this.f = freq;
 
         if (xIsConfOrEvidence) {
@@ -32,6 +40,7 @@ public class PreciseTruth implements Truth {
             assert(Float.isFinite(ce) && ce > Float.MIN_NORMAL);
             this.e = ce;
         }
+
     }
 
     public PreciseTruth(@Nullable Truth truth) {
@@ -45,43 +54,20 @@ public class PreciseTruth implements Truth {
     }
 
     @Override
-    public boolean equals(@Nullable Object that) {
-        if (this == that) return true;
-        if (!(that instanceof Truth)) return false;
-
-        Truth y = (Truth)that;
-        return Util.equals(e, y.evi(), Param.TRUTH_EPSILON)
-                &&
-               Util.equals(f, y.freq(), Param.TRUTH_EPSILON);
-        
-//        return
-//            floatToIntBits(f) == floatToIntBits(y.freq())
-//            &&
-//            floatToIntBits(e) == floatToIntBits(y.evi());
-    }
-
-    /** equality test within a NAR's configured tolerances */
-    public boolean equals(@Nullable Object that, NAR nar) {
-        return this == that || (that!=null && equals((Truth)that, nar));
-        //throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int hashCode() {
-        return floatToIntBits(f) & floatToIntBits(e);
-    }
-
-    @Override
-    public String toString() {
-        return _toString();
-    }
-
-    @Override
     public final float freq() {
         return f;
     }
 
     @Override
-    public final float evi() { return e;    }
+    public final float evi() { return e; }
 
+    @Override
+    public float conf() {
+        return w2c(e);
+    }
+
+    /** create a DiscreteTruth instance, shedding the freq,evi floats stored here */
+    public DiscreteTruth raw() {
+        return new DiscreteTruth(this);
+    }
 }

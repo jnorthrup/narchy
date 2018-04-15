@@ -77,7 +77,7 @@ import java.util.function.LongSupplier;
 
                 if (last == null ||
                         last.isDeleted() ||
-                        ((!tt.equals(last.truth(last.end()), nar) || (now - last.end() > gapFillTolerance /* fill gap up to n*dur tolerance */)) ||
+                        ((!tt.equalsIn(last.truth(last.end()), nar) || (now - last.end() > gapFillTolerance /* fill gap up to n*dur tolerance */)) ||
                                 (Param.SIGNAL_LATCH_TIME_MAX != Integer.MAX_VALUE && now - last.start() >= dur * Param.SIGNAL_LATCH_TIME_MAX)
                         )) {
 

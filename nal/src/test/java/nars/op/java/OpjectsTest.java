@@ -4,7 +4,6 @@ import jcog.list.FasterList;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Param;
 import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

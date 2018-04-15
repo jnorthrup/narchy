@@ -404,7 +404,7 @@ public class DeriveTime extends TimeGraph {
 
     private int knowIfSameTruth(Task t, Term tt, Truth tr, long w, LongHashSet sampled) {
         if (sampled.add(w)) {
-            if (t.isQuestionOrQuest() || tr.equals(t.truth(w, d.dur), d.nar)) {
+            if (t.isQuestionOrQuest() || tr.equalsIn(t.truth(w, d.dur), d.nar)) {
                 event(tt, w, true);
                 return 1;
             }

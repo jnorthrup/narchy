@@ -11,8 +11,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
-import static nars.truth.TruthFunctions.c2wSafe;
-
 /** 3d cuboid region:
  *      time            start..end              64-bit signed long
  *      frequency:      min..max in [0..1]      32-bit float

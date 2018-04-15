@@ -758,7 +758,7 @@ public class Revision {
         if ((eAdjusted * range) < eviMinInteg)
             return first;
 
-        PreciseTruth cTruth = truth.withEvi(eAdjusted).dither(nar);
+        PreciseTruth cTruth = Truth.theDithered(truth.freq(), eAdjusted, nar);
         if (cTruth == null)
             return null;
 

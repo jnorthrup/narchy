@@ -11,7 +11,6 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.task.Tasked;
@@ -359,23 +358,23 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         });
 
 
-        for (int i = 0, addedSize = revisions.size(); i < addedSize; i++) {
-            Task revision = revisions.get(i).task();
-            if (revision != null) {
-                //completely activate a temporal task being stored in this table
-                float pri = revision.pri();
-                if (pri == pri) {
-                    Tasklinks.linkTask(revision, pri, c, n);
-                }
-            } else {
-                //eternal task input already done by calling the .task() method. it willl have returned null
-            }
-        }
+//        for (int i = 0, addedSize = revisions.size(); i < addedSize; i++) {
+//            Task revision = revisions.get(i).task();
+//            if (revision != null) {
+//                //completely activate a temporal task being stored in this table
+//                float pri = revision.pri();
+//                if (pri == pri) {
+//                    Tasklinks.linkTask(revision, pri, c, n);
+//                }
+//            } else {
+//                //eternal task input already done by calling the .task() method. it willl have returned null
+//            }
+//        }
 
         if (x.isDeleted()) {
             Task xisting = x.meta("merge");
             if (xisting != null) {
-                return true; //already contained
+                return true; //already contained or revised
             } else {
                 return false; //rejected
             }

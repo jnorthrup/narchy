@@ -3,7 +3,6 @@ package nars.op.logic;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Param;
 import org.junit.jupiter.api.Test;
 
 /**

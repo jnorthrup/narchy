@@ -3,7 +3,6 @@ package nars.nal.nal7;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;

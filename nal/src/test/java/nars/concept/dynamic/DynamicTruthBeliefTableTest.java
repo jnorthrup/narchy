@@ -54,13 +54,13 @@ public class DynamicTruthBeliefTableTest {
         n.concept("(a:x && a:y)").beliefs().print();
 
         Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
-        assertTrue($.t(0.32f, 0.93f).equals(tNow, n));
+        assertTrue($.t(0.32f, 0.93f).equalsIn(tNow, n));
 
         Truth tAfter = n.beliefTruth($("(a:x && a:y)"), now+2);
-        assertTrue($.t(0.11f, 0.91f).equals(tAfter, n));
+        assertTrue($.t(0.11f, 0.91f).equalsIn(tAfter, n));
 
         Truth tLater = n.beliefTruth($("(a:x && a:y)"), now+5);
-        assertTrue($.t(0.05f, 0.9f).equals(tLater, n)); //more certainly negative because the eternal will override
+        assertTrue($.t(0.05f, 0.9f).equalsIn(tLater, n)); //more certainly negative because the eternal will override
     }
 
     @Test
@@ -77,7 +77,7 @@ public class DynamicTruthBeliefTableTest {
 
         //n.concept("(a:x && a:y)").beliefs().print();
         Truth tt = n.beliefTruth($("(a:x && a:y)"), now);
-        assertTrue($.t(0.32f, 0.93f).equals(tt, n));
+        assertTrue($.t(0.32f, 0.93f).equalsIn(tt, n));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class DynamicTruthBeliefTableTest {
         TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)"));
         Truth now = n.beliefTruth(cc, n.time());
         assertNotNull(now);
-        assertTrue($.t(1f, 0.73f).equals(now, 0.1f), now + " truth at " + n.time());
+        assertTrue($.t(1f, 0.73f).equalsIn(now, 0.1f), now + " truth at " + n.time());
         //the truth values were provided despite the belief tables being empty:
 
         //test unknown:

@@ -1,6 +1,5 @@
 package nars.truth;
 
-import jcog.Util;
 import nars.Param;
 
 import static nars.truth.TruthFunctions.c2wSafe;
@@ -9,89 +8,49 @@ import static nars.truth.TruthFunctions.c2wSafe;
 /**
  * truth rounded to a fixed size precision
  * to support hashing and equality testing
+ * internally stores representation as one 32-bit integer
  */
-@Deprecated public final class DiscreteTruth implements Truth {
+public class DiscreteTruth implements Truth {
 
-    /**
-     * truth component resolution of a 16-bit encoding
-     */
-    static final int hashDiscreteness16 = Short.MAX_VALUE - 1;
-
-    public static DiscreteTruth Null = new DiscreteTruth(0xffffffff);
-
-//    public final float freq, conf;
     public final int hash;
 
     public DiscreteTruth(Truth t) {
-        this(t.freq(), t.conf(), Param.TRUTH_EPSILON);
+        this(t.freq(), t.conf());
     }
 
     public DiscreteTruth(float f, float c) {
-        this(f, c, Param.TRUTH_EPSILON);
+        this(Truth.truthToInt(f, c, hashDiscretenessEpsilon));
     }
 
-    public DiscreteTruth(float f, float c, float epsilon) {
-        this.hash = truthToInt(
-                Truth.freq(f, epsilon),
-                Truth.conf(c, epsilon)
+    public DiscreteTruth(float f, float c, float res) {
+        this(f, c, res, res);
+    }
+
+    public DiscreteTruth(float f, float c, float freqRes, float confRes) {
+        this(
+            Truth.freq(f, freqRes),
+            Truth.conf(c, confRes)
         );
     }
-    private DiscreteTruth(int hash) {
-//        this.freq = Float.NaN;
-//        this.conf = Float.NaN;
+
+    protected DiscreteTruth(int hash) {
         this.hash = hash;
     }
 
-    /**
-     * The hash code of a TruthValue, perfectly condensed,
-     * into the two 16-bit words of a 32-bit integer.
-     * <p>
-     * Since the same epsilon used in other truth
-     * resolution here (Truth components do not necessarily utilize the full
-     * resolution of a floating point value, and also do not necessarily
-     * need the full resolution of a 16bit number when discretized)
-     * the hash value can be used for equality comparisons
-     * as well as non-naturally ordered / non-lexicographic
-     * but deterministic compareTo() ordering.
-     * correct behavior of this requires epsilon
-     * large enough such that: 0 <= h < 2^15:
-     */
-    public static int truthToInt(float freq, float conf) {
-
-        int freqHash = Util.floatToInt(freq, hashDiscreteness16) & 0x0000ffff;
-        int confHash = Util.floatToInt(conf, hashDiscreteness16) & 0x0000ffff;
-
-        return (freqHash << 16) | confHash;
-    }
-
     @Override
-    public PreciseTruth neg() {
+    public Truth neg() {
         return new PreciseTruth(
                 1f - freq(), conf());
     }
 
-    public static Truth intToTruth(int h) {
-        return new DiscreteTruth(
-                freq(h),
-                conf(h)
-        );
-    }
-
-    static float freq(int h) {
-        return Util.intToFloat((h >> 16) /* & 0xffff*/, hashDiscreteness16);
-    }
-    static float conf(int h) {
-        return Util.intToFloat(h & 0xffff, hashDiscreteness16);
+    @Override
+    public float freq() {
+        return Truth.freq(hash);
     }
 
     @Override
-    public final float freq() {
-        return freq(hash);
-    }
-
-    @Override
-    public final float conf() {
-        return conf(hash);
+    public float conf() {
+        return Truth.conf(hash);
     }
 
     @Override
@@ -105,12 +64,13 @@ import static nars.truth.TruthFunctions.c2wSafe;
     }
 
     @Override
-    public final boolean equals(Object that) {
+    public boolean equals(Object that) {
         return
             (this == that)
                     ||
-            ((that instanceof DiscreteTruth) ? (hash == ((DiscreteTruth)that).hash) :
-                    equals((Truth) that, Param.TRUTH_EPSILON));
+            ((that instanceof DiscreteTruth) ?
+                    (hash == ((DiscreteTruth)that).hash) :
+                    equalsIn((Truth) that, Param.TRUTH_EPSILON));
     }
 
     @Override

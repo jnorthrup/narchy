@@ -755,7 +755,7 @@ public enum Util {
 //    }
 
     public static int floatToInt(float f, int discretness) {
-        return (int) (f * discretness);
+        return Math.round(f * discretness);
     }
 
     public static float intToFloat(int i, int discretness) {

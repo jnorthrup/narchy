@@ -112,6 +112,10 @@ public class AIMATests {
 //        }
 
         Task y = n.belief($.$("Criminal(West)"));
+        if (y == null) {
+            //why
+            n.belief($.$("Criminal(West)"));
+        }
         assertNotNull(y);
 
     }
@@ -123,28 +127,31 @@ public class AIMATests {
 
         PairedStatsAccumulator timeVsConf = new PairedStatsAccumulator();
 
-        float symConf = 0;
-        Task y = null;
+
         List<Float> evis = new FasterList();
         for (int i = 0; i < time; i += metricPeriod) {
             n.run(metricPeriod);
 
-            y = n.belief($.the(x));
-            if (y != null) {
-                symConf = y.conf();
-            }
+            float symConf = 0;
+
+            Task y = n.belief($.the(x), i);
+            if (y == null)
+                continue;
+
+            symConf = y.conf();
+            assertTrue(y.isPositive() == expcted && y.polarity() > 0.5f);
 
             evis.add(c2wSafe(symConf, 1));
-            timeVsConf.add(n.time(), symConf);
+            timeVsConf.add(i, symConf);
         }
 
 
-        assertNotNull(y);
-        assertTrue(y.isPositive() == expcted && y.polarity() > 0.5f);
+
+
 
         for (char c : "ABLMPQ".toCharArray()) {
             Term t = $.the(String.valueOf(c));
-            Task cc = n.belief($.the(c));
+            Task cc = n.belief(t);
             System.out.println(cc);
         }
         System.out.println(timeVsConf.yStats());

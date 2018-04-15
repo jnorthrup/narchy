@@ -354,7 +354,8 @@ public abstract class Param {
     /**
      * internal granularity which truth components are rounded to
      */
-    public static final float TRUTH_EPSILON = 0.01f/2f;
+    public static final float TRUTH_EPSILON = 0.01f;
+
 
     /**
      * how precise unit test results must match expected values to pass

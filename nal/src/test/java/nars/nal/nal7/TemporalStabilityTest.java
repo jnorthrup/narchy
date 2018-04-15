@@ -1,7 +1,6 @@
 package nars.nal.nal7;
 
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import org.jetbrains.annotations.NotNull;
 
