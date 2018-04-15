@@ -194,26 +194,23 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         if (capacity() == 0)
             return false;
 
-        float incoming = x.priElseZero();
-
-        List<Tasked> added = new FasterList<>(2);
+        List<Tasked> revisions = new FasterList<>(2);
         write(treeRW -> {
             if (treeRW.add(x)) {
                 if (!x.isDeleted()) {
-                    added.add(x);
-                    ensureCapacity(treeRW, x, added::add, n);
+                    ensureCapacity(treeRW, x, revisions::add, n);
                 }
             }
         });
 
 
-        for (int i = 0, addedSize = added.size(); i < addedSize; i++) {
-            Task y = added.get(i).task();
-            if (y != null) {
+        for (int i = 0, addedSize = revisions.size(); i < addedSize; i++) {
+            Task revision = revisions.get(i).task();
+            if (revision != null) {
                 //completely activate a temporal task being stored in this table
-                float pri = y.pri();
+                float pri = revision.pri();
                 if (pri == pri) {
-                    Tasklinks.linkTask(y, pri, c, n);
+                    Tasklinks.linkTask(revision, pri, c, n);
                 }
             } else {
                 //eternal task input already done by calling the .task() method. it willl have returned null
@@ -223,11 +220,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         if (x.isDeleted()) {
             Task xisting = x.meta("merge");
             if (xisting != null) {
-                Tasklinks.linkTask(xisting, incoming, c, n); //use incoming priority but the existing task instance
+                return true; //already contained
+            } else {
+                return false; //rejected
             }
-            return false;
         } else {
-            return true;
+            return true; //accepted new
         }
 
     }

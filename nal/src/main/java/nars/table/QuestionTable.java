@@ -1,11 +1,9 @@
 package nars.table;
 
 import jcog.data.map.MRUCache;
-import jcog.pri.Pri;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.term.Term;
 
@@ -121,7 +119,7 @@ public interface QuestionTable extends TaskTable {
         @Override
         public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
             Task u;
-            float tPri = t.pri();
+            final float tPri = t.pri();
             if (tPri != tPri)
                 return false;
 
@@ -134,15 +132,10 @@ public interface QuestionTable extends TaskTable {
 
             if (u != t) {
                 //absorbed
-                tPri = t.priElseZero();
                 t.delete();
-                if (u.priElseZero() - tPri < Pri.EPSILON)
-                    return false; //dont re-link
             }
 
-            Tasklinks.linkTask(u, tPri, c, n);
-
-            return u == t;
+            return true;
         }
 
         @Override

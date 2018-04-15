@@ -8,7 +8,7 @@ import jcog.list.FasterList;
 import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.control.proto.TaskAdd;
+import nars.control.proto.TaskAddTask;
 import nars.task.*;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
@@ -1064,7 +1064,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     delete();
 
                     if (finalResult != null) {
-                        return new TaskAdd(finalResult);
+                        return new TaskAddTask(finalResult);
                     } else {
                         //TODO maybe print error, at least in debug mode
                         return null;
@@ -1122,7 +1122,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
         if (!cmd) {
-            return new TaskAdd(this);
+            return new TaskAddTask(this);
         } else {
             //default: Echo
             n.out(term());

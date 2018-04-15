@@ -20,9 +20,23 @@ public class DefaultBeliefTable implements BeliefTable {
 
     public final TemporalBeliefTable temporal;
 
-    public DefaultBeliefTable(TemporalBeliefTable t) {
-        eternal = new EternalTable(0);
+    public DefaultBeliefTable(EternalTable e, TemporalBeliefTable t) {
+        eternal = e;
         temporal = t;
+    }
+
+    public DefaultBeliefTable(TemporalBeliefTable t) {
+        this(new EternalTable(0), t);
+    }
+
+    @Override
+    public boolean add(Task x, TaskConcept concept, NAR nar) {
+        return table(x).add(x, concept, nar);
+    }
+
+    protected final boolean add(Task x, NAR nar) {
+        TaskConcept concept = (TaskConcept) x.concept(nar, true);
+        return concept!=null && table(x).add(x, concept, nar);
     }
 
     @Override
@@ -120,16 +134,13 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
 
-    @Override
-    public boolean add(Task input, TaskConcept concept, NAR nar) {
-        return (input.isEternal() ? eternal : temporal).add(input, concept, nar);
+
+    public final TaskTable table(Task x) {
+        return table(x.isEternal());
     }
 
-    protected boolean add(Task input, NAR nar) {
-        TaskConcept concept = (TaskConcept) input.concept(nar, true);
-        if (concept == null)
-            return false;
-        return (input.isEternal() ? eternal : temporal).add(input, concept, nar);
+    public final TaskTable table(boolean eternalOrTemporal) {
+         return eternalOrTemporal ? eternal : temporal;
     }
 
 }

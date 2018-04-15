@@ -39,6 +39,10 @@ public class Tasklinks {
     }
 
 
+    public static TaskLink.GeneralTaskLink linkTask(Task t,  /*Task*/Concept src, @Nullable NAR nar) {
+        return linkTask(t, t.priElseZero(), src, nar);
+    }
+
     /** create source tasklink */
     public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
 
@@ -46,7 +50,6 @@ public class Tasklinks {
         final float priCause = Math.max(_pri, Pri.EPSILON);
 
 
-        //MutableFloat overflow = new MutableFloat();
         TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, priCause);
 
         linkTask(link, src.tasklinks(), null);

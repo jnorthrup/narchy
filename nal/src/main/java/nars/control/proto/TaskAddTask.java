@@ -12,11 +12,11 @@ import org.jetbrains.annotations.Nullable;
 /**
  * conceptualize and insert/merge a task to belief table
  */
-public class TaskAdd extends NativeTask {
+public class TaskAddTask extends NativeTask {
 
     private final Task task;
 
-    public TaskAdd(Task task) {
+    public TaskAddTask(Task task) {
         this.task = task;
     }
 
@@ -40,8 +40,13 @@ public class TaskAdd extends NativeTask {
                 return null;
         }
 
-        ((TaskConcept) c).add(task, n);
+        /* the tasks pri may change after starting insertion, so cache here */
+        float pri = task.pri();
 
-        return null;
+        if (pri == pri && ((TaskConcept) c).add(task, n)) {
+            return new TaskLinkTask(task, pri, c);
+        } else {
+            return null;
+        }
     }
 }

@@ -428,75 +428,57 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             return false;
         }
 
-        Task activated;
         float iPri = input.priElseZero();
 
         if ((input.conf() >= 1f) && (cap != 1) && (isEmpty() || (first().conf() < 1f))) {
             //AXIOMATIC/CONSTANT BELIEF/GOAL
             synchronized (this) {
                 addEternalAxiom(input, this, nar);
-                activated = input;
+                return true;
             }
         } else {
 
-
             Task revised = tryRevision(input, nar);
             if (revised != null) {
-                if (revised == input) {
-                    //already present duplicate
-                    if (input.isInput()) {
-                        activated = input;
-                    } else {
-                        return false; //so ignore if derived
-                    }
-                } else if (revised.equals(input)) { //HACK todo avoid this duplcate equals which is already known from tryRevision
+                if (revised.equals(input)) { //HACK todo avoid this duplcate equals which is already known from tryRevision
 
 //                    float maxActivation = 1f - revised.priElseZero();
 //                    activation = Math.min(maxActivation, input.priElseZero()); //absorb up to 1.0 max
                     revised.priMax(input.priElseZero());
-                    activated = revised;
                     input.delete();
 
                     if (revised instanceof NALTask) //HACK
                         ((NALTask) revised).causeMerge(input);
 
+                    return true; //already contained
+
                 } else {
-                    //a novel revision
+                    //generated a revision
                     if (insert(revised)) {
-                        activated = revised;
+                        //link the revision
+                        Tasklinks.linkTask(revised, iPri, c, nar);
                     } else {
-                        activated = null;
-                        revised.delete();
+                        revised.delete(); //rejected revision
                     }
 
                     boolean inputIns = insert(input);
                     if (inputIns) {
-                        if (activated == null) {
-                            activated = input;
-                        }
-
-                        //revised will be activated, but at least emit a taskProcess for the input task
-                        nar.eventTask.emit(activated);
-
+                        return true; //accepted input
                     } else {
-                        activated = null;
                         input.delete();
+                        return false; //rejected input
                     }
                 }
             } else {
                 if (!input.isDeleted() && insert(input)) {
-                    activated = input;
+                    return true; //accepted input
                 } else {
-                    activated = null;
                     input.delete();
+                    return false; //rejected
                 }
             }
         }
 
-
-        if (activated != null)
-            Tasklinks.linkTask(activated, iPri, c, nar);
-        return true;
     }
 
 

@@ -94,8 +94,8 @@ public class MIDITaskifier {
             nar.on(c);
 
             //c.beliefs().capacity(1, c.beliefs().capacity());
-            c.add(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()), nar);
-            c.add(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()), nar);
+            nar.input(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()));
+            nar.input(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()));
             nar.onCycle(n -> {
 
                 float v = volume[finalI];
