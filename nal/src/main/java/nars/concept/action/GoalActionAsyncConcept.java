@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.NAct;
 import nars.Task;
 import nars.concept.dynamic.ScalarBeliefTable;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;

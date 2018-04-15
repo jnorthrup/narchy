@@ -6,8 +6,6 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 import spacegraph.video.JoglSpace;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class FingerResizeWindow extends FingerResize {
 
     final static int MIN_WIDTH = 32;
@@ -25,7 +23,7 @@ public class FingerResizeWindow extends FingerResize {
         int sw = w.getWidth();
         int sy = w.getY();
         int sx = w.getX();
-        originalSize = new RectFloat2D(sx, sy, sw +sx, sh +sy);
+        originalSize = new RectFloat2D(sx, sy, sw + sx, sh + sy);
     }
 
     @Override
@@ -38,25 +36,21 @@ public class FingerResizeWindow extends FingerResize {
         return originalSize;
     }
 
-    final AtomicBoolean busy = new AtomicBoolean(false);
     @Override
     protected void resize(float _x1, float _y1, float _x2, float _y2) {
 
 
-        x1 = _x1; y1 = _y1; x2 = _x2; y2 = _y2;
+        x1 = _x1;
+        y1 = _y1;
+        x2 = _x2;
+        y2 = _y2;
 
-        if (busy.compareAndSet(false, true)) {
 
-            window.window.runOnEDTIfAvail(false, () -> {
-                try {
-                    int w = Math.max(MIN_WIDTH, Math.round(x2 - x1));
-                    int h = Math.max(MIN_HEIGHT, Math.round(y2 - y1)); //y2-y1);
-                    window.window.setPosition(Math.round(x1), Math.round(y1));
-                    window.window.setSize(w, h);
-                } finally {
-                    busy.set(false);
-                }
-            });
-        }
+        int w = Math.max(MIN_WIDTH, Math.round(x2 - x1));
+        int h = Math.max(MIN_HEIGHT, Math.round(y2 - y1)); //y2-y1);
+        window.setPosition(Math.round(x1), Math.round(y1));
+        window.setSize(w, h);
+
     }
+
 }

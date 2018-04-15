@@ -13,7 +13,7 @@ import jcog.memoize.SoftMemoize;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.Operator;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.DurService;
 import nars.subterm.Subterms;
 import nars.task.ITask;
@@ -210,7 +210,7 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
 
     public Opjects(NAR n) {
         nar = n;
-        in = n.newCauseChannel(this);
+        in = n.newChannel(this);
         DurService.on(n, this::update);
     }
 

@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public abstract class TaskLeak extends Causable {
 
-    protected final DtLeak<Task, PLink<Task>> in;
+    protected final DtLeak<Task, PLink<Task>> queue;
 
     protected TaskLeak(int capacity, float ratePerDuration, NAR n) {
         //noinspection Convert2Diamond
@@ -41,7 +41,7 @@ public abstract class TaskLeak extends Causable {
 
     TaskLeak(Bag<Task, PLink<Task>> bag, MutableFloat rate, NAR n) {
         super(n);
-        this.in = new DtLeak<>(bag, rate) {
+        this.queue = new DtLeak<>(bag, rate) {
             @Override
             protected Random random() {
                 return n.random();
@@ -66,7 +66,7 @@ public abstract class TaskLeak extends Causable {
 
     @Override
     public void clear() {
-        in.clear();
+        queue.clear();
     }
 
     @Override
@@ -74,16 +74,16 @@ public abstract class TaskLeak extends Causable {
 //        return in.commit(nar.time(), dt, nar.dur(),
 //                work/((float)in.bag.capacity()));
 
-        if (in.isEmpty())
+        if (queue.isEmpty())
             return -1; //done for the cycle
 
-        float done = in.commit(nar.time(),  nar.dur(), nar.forgetRate.floatValue(), work);
+        float done = queue.commit(nar, work);
         return (int) Math.ceil(done);
     }
 
     public final void accept(Task t) {
         if (preFilter(t))
-            in.put(new PLink<>(t, pri(t)));
+            queue.put(new PLink<>(t, pri(t)));
     }
 
     /** an adjusted priority of the task for its insertion to the leak bag */

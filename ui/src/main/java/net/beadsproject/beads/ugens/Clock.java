@@ -173,7 +173,7 @@ public class Clock extends UGen implements IntegerBead {
      * Gets the interval envelope.
      *
      * @return the interval envelope.
-     * @deprecated
+     * //@deprecated
      */
     public UGen getIntervalEnvelope() {
         return intervalEnvelope;

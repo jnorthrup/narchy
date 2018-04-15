@@ -87,6 +87,16 @@ abstract public class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
+    public boolean isNormalized() {
+        return sub().isNormalized();
+    }
+
+    @Override
+    public void setNormalized() {
+        sub().subterms().setNormalized();
+    }
+
+    @Override
     public final void forEach(Consumer<? super Term> c) {
         c.accept(sub());
     }

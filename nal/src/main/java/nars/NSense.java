@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.math.*;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
 import nars.term.Term;
@@ -65,7 +65,7 @@ public interface NSense {
     }
 
     default void addSensor(Scalar c) {
-        CauseChannel<ITask> cause = nar().newCauseChannel(c);
+        CauseChannel<ITask> cause = nar().newChannel(c);
         addSensor(c, cause);
     }
 

@@ -5,36 +5,59 @@ import jcog.bag.impl.ArrayBag;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.list.FasterList;
+import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+
 
 /**
  * clusterjunctioning
  * TODO abstract into general purpose "Cluster of Bags" class
  */
 public class BagClustering<X> {
+    /**
+     * how to interpret the bag items as vector space data
+     */
+    abstract public static class Dimensionalize<X> {
+
+        final int dims;
+
+        protected Dimensionalize(int dims) {
+            this.dims = dims;
+        }
+
+        abstract public void coord(X t, double[] d);
+
+        /**
+         * default impl, feel free to override
+         */
+        public double distanceSq(double[] a, double[] b) {
+            return Centroid.distanceCartesianSq(a, b);
+        }
+
+    }
 
     public final Bag<X, VLink<X>> bag;
-
-    final Dimensionalize<X> model;
-
     public final NeuralGasNet net;
-
-
+    final Dimensionalize<X> model;
     /**
      * TODO allow dynamic change
      */
     protected /*Flip<*/ FasterList<VLink<X>> sorted =
             new FasterList<>();
     //new Flip(FasterList::new);
+    AtomicBoolean bagBusy = new AtomicBoolean(false);
+
 
     public BagClustering(Dimensionalize<X> model, int centroids, int initialCap) {
 
@@ -72,7 +95,6 @@ public class BagClustering<X> {
 //        };
     }
 
-
     public void print() {
         print(System.out);
     }
@@ -89,12 +111,6 @@ public class BagClustering<X> {
         out.println(net.edges);
     }
 
-    public void forEachCluster(Consumer<Centroid> c) {
-        for (Centroid b : net.centroids) {
-            c.accept(b);
-        }
-    }
-
 
 //    protected class MyForget extends PriForget<VLink<X>> {
 //
@@ -108,6 +124,12 @@ public class BagClustering<X> {
 //            learn(b);
 //        }
 //    }
+
+    public void forEachCluster(Consumer<Centroid> c) {
+        for (Centroid b : net.centroids) {
+            c.accept(b);
+        }
+    }
 
     public int size() {
         return bag.size();
@@ -132,64 +154,50 @@ public class BagClustering<X> {
         });
     }
 
-
-    /**
-     * how to interpret the bag items as vector space data
-     */
-    abstract public static class Dimensionalize<X> {
-
-        final int dims;
-
-        protected Dimensionalize(int dims) {
-            this.dims = dims;
-        }
-
-        abstract public void coord(X t, double[] d);
-
-        /**
-         * default impl, feel free to override
-         */
-        public double distanceSq(double[] a, double[] b) {
-            return Centroid.distanceCartesianSq(a, b);
-        }
-
-    }
-
-
-    public boolean commit(int iterations, float forgetRate, Consumer<List<VLink<X>>> takeSortedClusters) {
+    public void commit(int iterations, float forgetRate, Consumer<List<VLink<X>>> takeSortedClusters) {
 
         FasterList<VLink<X>> x;
 
-        synchronized (bag) {
+        int s = bag.size();
+        if (s == 0)
+            return;
 
-            int s = bag.size();
-            if (s == 0)
-                return false;
+        if (bagBusy.compareAndSet(false, true)) {
 
-            bag.commit(bag.forget(forgetRate)); //first, apply bag forgetting
+            //only one thread at a time can update the bag or learn clusters
 
-            //                net.compact();
-            //int cc = bag.capacity();
+            try {
 
-            for (int i = 0; i < iterations; i++)
-                bag.forEach(this::learn);
+                //int generatedExpectation = work * bag.net.centroids.length;
+                //float forgetRate = 1f - Util.unitize(((float)generatedExpectation)/bag.bag.capacity());
+                bag.commit(t -> {
+                    X tt = t.get();
+                    if ((tt instanceof Prioritized) && ((Prioritized)tt).isDeleted())
+                        t.delete();
+                    //else
+                    //t.priMult(forgetRate);
+                });
+                bag.commit(bag.forget(forgetRate)); //first, apply bag forgetting
 
-            x = new FasterList<>(bag.size());
-            bag.forEach(x::add);
+                //                net.compact();
+                //int cc = bag.capacity();
 
-            //Collections.sort(x, Comparator.comparingInt(v->v.centroid));
-            x.sortThisByInt(xx -> xx.centroid);
-            //x.sortThis(Comparator.comparingInt(v->v.centroid));
-            //Arrays.sort(x.array(), )
-            takeSortedClusters.accept(x);
+                for (int i = 0; i < iterations; i++)
+                    bag.forEach(this::learn);
 
+            } finally {
+                bagBusy.set(false);
+            }
         }
 
+        x = new FasterList<>(bag.size());
+        bag.forEach(x::add);
 
-
-
-        return true;
-
+        //Collections.sort(x, Comparator.comparingInt(v->v.centroid));
+        x.sortThisByInt(xx -> xx.centroid);
+        //x.sortThis(Comparator.comparingInt(v->v.centroid));
+        //Arrays.sort(x.array(), )
+        takeSortedClusters.accept(x);
 
     }
 

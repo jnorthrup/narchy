@@ -1,8 +1,9 @@
 package jcog.exe;
 
+import jcog.Util;
+import jcog.exe.realtime.AdmissionQueueWheelModel;
 import jcog.exe.realtime.FixedRateTimedFuture;
 import jcog.exe.realtime.HashedWheelTimer;
-import jcog.Util;
 import org.slf4j.Logger;
 
 import java.util.concurrent.Executor;
@@ -34,7 +35,7 @@ abstract public class Loop {
             HashedWheelTimer.logger.info("global timer start: executor={}", exe);
             timer = new HashedWheelTimer(Loop.class.getName(),
                     TimeUnit.MILLISECONDS.toNanos(1),
-                    128,
+                    new AdmissionQueueWheelModel(32),
                      //HashedWheelTimer.WaitStrategy.YieldingWait,
                     HashedWheelTimer.WaitStrategy.SleepWait,
                     exe);
@@ -60,7 +61,9 @@ abstract public class Loop {
     public final AtomicInteger periodMS = new AtomicInteger(-1);
 
     public static void invokeLater(Runnable r) {
-        timer().execute(r);
+
+        //timer().execute(r);
+        timer().submit(r);
     }
 
 

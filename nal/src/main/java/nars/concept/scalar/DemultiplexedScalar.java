@@ -6,7 +6,7 @@ import jcog.math.FloatSupplier;
 import jcog.util.AtomicFloat;
 import nars.$;
 import nars.NAR;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.NARService;
 import nars.task.ITask;
 import nars.term.Term;
@@ -45,7 +45,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
 
         this.last = nar.time();
         this.input = input; //input==null ? ((FloatSupplier)this) : input;
-        this.in = nar.newCauseChannel(id);
+        this.in = nar.newChannel(id);
         this.truther = (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null;
     }
 

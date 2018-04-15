@@ -18,7 +18,7 @@ import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.NARService;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -142,7 +142,7 @@ public class ShapeSensor extends NARService {
 //
 //        }
 
-        in = a.nar().newCauseChannel(this);
+        in = a.nar().newChannel(this);
 
         a.onFrame(this::update);
 

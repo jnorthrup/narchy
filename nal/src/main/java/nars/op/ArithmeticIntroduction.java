@@ -175,7 +175,7 @@ public class ArithmeticIntroduction extends LeakBack {
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
             if (yy!=null) {
-                out.input(yy);
+                input(yy);
                 return 1;
             }
         } else {

@@ -1,6 +1,7 @@
 package nars;
 
 
+import com.google.common.collect.Iterators;
 import com.google.common.primitives.Longs;
 import jcog.Service;
 import jcog.Services;
@@ -22,7 +23,11 @@ import nars.concept.Operator;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
-import nars.control.*;
+import nars.control.Activate;
+import nars.control.Cause;
+import nars.control.MetaGoal;
+import nars.control.NARService;
+import nars.control.channel.CauseChannel;
 import nars.exe.Exec;
 import nars.index.term.ConceptIndex;
 import nars.subterm.Subterms;
@@ -136,7 +141,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
 
 
-        newCauseChannel("input"); //generic non-self source of input
+        newChannel("input"); //generic non-self source of input
 
         //if (concepts.nar == null) { //HACK dont reinitialize if already initialized, for sharing
             concepts.init(this);
@@ -1510,37 +1515,80 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 ////
 ////    }
 
+    private class TaskChannel extends CauseChannel<ITask> {
+
+        private final short ci;
+
+        TaskChannel(Cause cause) {
+            super(cause);
+            this.ci = cause.id;
+        }
+
+        @Override
+        public void input(ITask x) {
+            if (process(x))
+                NAR.this.input(x);
+        }
+
+        @Override
+        public void input(ITask[] x) {
+            switch (x.length) {
+                case 0:
+                    return;
+                case 1:
+                    input(x[0]);
+                    break;
+                default:
+                    NAR.this.input(() -> Iterators.filter(ArrayIterator.get(x), this::process));
+                    break;
+            }
+        }
+
+        @Override
+        public void input(Iterator<? extends ITask> xx) {
+            //noinspection RedundantCast
+            NAR.this.input((Iterable)(()->Iterators.filter(xx, this::process)));
+        }
+
+        protected boolean process(ITask x) {
+            if (x instanceof NALTask) {
+                NALTask t = (NALTask) x;
+                int tcl = t.cause.length;
+                if (tcl == 0) {
+//                        assert (sharedOneElement[0] == ci);
+                    t.cause = new short[]{ci}; //sharedOneElement;
+                } else {
+                    if (tcl == 1 && t.cause[0] == ci) {
+                        //already equivalent
+                    } else {
+                        //concat
+                        t.cause = Arrays.copyOf(t.cause, tcl + 1);
+                        t.cause[tcl] = ci;
+                    }
+                }
+            }
+            else if (x == null)
+                return false; //filter nulls
+
+            return true;
+        }
+
+        @Override
+        public void input(Stream<? extends ITask> x) {
+            NAR.this.input(x.filter(this::process));
+        }
+    }
+
+    public Cause newCause(Object name) {
+        return newCause((id)->new Cause(id, name));
+    }
 
     /**
      * automatically adds the cause id to each input
      */
-    public CauseChannel<ITask> newCauseChannel(Object id) {
-
-        synchronized (causes) {
-
-//            final short[] sharedOneElement = {ci};
-            final short ci = (short) (causes.size());
-            CauseChannel c = new CauseChannel.TaskChannel(this, ci, id, (x) -> {
-                if (x instanceof NALTask) {
-                    NALTask t = (NALTask) x;
-                    int tcl = t.cause.length;
-                    if (tcl == 0) {
-//                        assert (sharedOneElement[0] == ci);
-                        t.cause = new short[]{ci}; //sharedOneElement;
-                    } else {
-                        if (tcl == 1 && t.cause[0] == ci)
-                            return; //already equivalent
-                        else {
-                            //concat
-                            t.cause = Arrays.copyOf(t.cause, tcl + 1);
-                            t.cause[tcl] = ci;
-                        }
-                    }
-                }
-            });
-            causes.add(c);
-            return c;
-        }
+    public CauseChannel<ITask> newChannel(Object id) {
+        Cause c = newCause(id);
+        return new TaskChannel(c);
     }
 
 //    public CauseChannel<Task> newChannel(Object x, Consumer<ITask> target) {

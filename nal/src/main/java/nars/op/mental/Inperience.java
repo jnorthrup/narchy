@@ -250,7 +250,7 @@ public class Inperience extends LeakBack {
         );
         y.causeMerge(x);
 
-        feedback(y.log("Inperience").pri(xPri * priFactor));
+        input(y.log("Inperience").pri(xPri * priFactor));
 
         return 1;
     }

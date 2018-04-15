@@ -137,22 +137,16 @@ public abstract class BusyPool extends AbstractExecutorService {
             ((Runnable) next).run();
         }
 
+//        public void runSafe(Object next) {
+//            try {
+//                run(next);
+//            } catch (Throwable t) {
+//                logger.error("{} {}", next, t);
+//            }
+//        }
 
-        private void runSafe(Object next) {
-            try {
-                run(next);
-            } catch (Throwable t) {
-                logger.error("{} {}", next, t);
-            }
-        }
-
-        protected boolean pollNext() {
-            Object next;
-            if (null != (next = q.poll())) {
-                runSafe(next);
-                return true;
-            }
-            return false;
+        protected Object pollNext() {
+            return q.poll();
         }
 
 

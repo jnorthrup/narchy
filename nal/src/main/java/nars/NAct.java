@@ -7,7 +7,7 @@ import nars.concept.action.ActionConcept;
 import nars.concept.action.BeliefActionConcept;
 import nars.concept.action.GoalActionAsyncConcept;
 import nars.concept.action.GoalActionConcept;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
@@ -207,7 +207,7 @@ public interface NAct {
     }
 
     default <A extends ActionConcept> A addAction(A c) {
-        CauseChannel existing = actions().put(c, nar().newCauseChannel(c));
+        CauseChannel existing = actions().put(c, nar().newChannel(c));
         assert (existing == null);
         nar().on(c);
         return c;
@@ -727,7 +727,7 @@ public interface NAct {
             }
         };
 
-        CauseChannel<ITask> cause = nar().newCauseChannel(s);
+        CauseChannel<ITask> cause = nar().newChannel(s);
         GoalActionAsyncConcept p = new GoalActionAsyncConcept(pt, this, cause, u);
         GoalActionAsyncConcept n = new GoalActionAsyncConcept(nt, this, cause, u);
 

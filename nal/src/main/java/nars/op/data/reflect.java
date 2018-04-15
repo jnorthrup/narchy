@@ -155,7 +155,7 @@ public class reflect {
                     if (y != null) {
                         y.pri(next.priElseZero() * Util.unitize(x.term().volume() / ((float)yvol)));
                         logger.info("+ {}", y);
-                        feedback(y);
+                        input(y);
                         return 1;
                     }
                 }
@@ -211,7 +211,7 @@ public class reflect {
 
                     NALTask t = new NALTask(reflectionSim, BELIEF, $.t(1f, c), n.time(), ETERNAL, ETERNAL, n.time.nextStampArray());
                     t.pri(next.priElseZero() * Util.unitize(x.term().volume() / ((float)rvol)));
-                    feedback(t);
+                    input(t);
                     logger.info("+ {}", reflectionSim);
                     return 1;
                 }

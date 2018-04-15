@@ -1,6 +1,5 @@
 package nars.op.stm;
 
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.Priority;
 import jcog.pri.VLink;
@@ -9,7 +8,7 @@ import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.Cause;
-import nars.control.CauseChannel;
+import nars.control.channel.ThreadBufferedCauseChannel;
 import nars.exe.Causable;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -19,17 +18,15 @@ import nars.term.compound.util.Conj;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -38,7 +35,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
 
-    private final CauseChannel<ITask> in;
+    private final ThreadBufferedCauseChannel<ITask> in;
 
     final BagClustering.Dimensionalize<Task> ConjClusterModel;
     protected final BagClustering<Task> bag;
@@ -82,7 +79,7 @@ public class ConjClustering extends Causable {
         this.bag = new BagClustering<>(ConjClusterModel, centroids, capacity);
 
         this.punc = punc;
-        this.in = nar.newCauseChannel(this);
+        this.in = nar.newChannel(this).threadBuffered();
 
         nar.onTask(t -> {
             if (!t.isEternal()
@@ -114,30 +111,16 @@ public class ConjClustering extends Causable {
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
         this.taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
 
-        int generatedExpectation = work * bag.net.centroids.length;
 
-        float forgetRate = 1f - Util.unitize(((float)generatedExpectation)/bag.bag.capacity());
-        bag.bag.commit(t -> {
-            if (t.get().isDeleted())
-                t.delete();
-            else
-                t.priMult(forgetRate);
-        });
 
-        if (!bag.bag.isEmpty()) {
-            FasterList gen = new FasterList(generatedExpectation);
+        if (bag.bag.isEmpty())
+            return 0;
 
-            bag.commitGroups(1, Tuples.pair(nar, gen), nar.forgetRate.floatValue(), this::conjoinCentroid);
+        bag.commitGroups(1, nar, nar.forgetRate.floatValue(), this::conjoinCentroid);
 
-            int gs = gen.size();
+        int gs = in.get().commit();
+        return (int) Math.ceil(((float) gs) / bag.net.centroids.length);
 
-            if (gs > 0) {
-                in.input(gen);
-                return (int) Math.ceil(((float) gs) / bag.net.centroids.length);
-            }
-        }
-
-        return 0;
     }
 
 //    /**
@@ -181,9 +164,9 @@ public class ConjClustering extends Causable {
 //    static final BiFunction<Task, Task, Task> termPointMerger = (prevZ, newZ) -> ((prevZ == null) || (newZ.conf() >= prevZ.conf())) ?
 //            newZ : prevZ;
 
-    private List<Task> conjoinCentroid(Stream<VLink<Task>> group, Pair<NAR,List<Task>> narAndTarget) {
+    private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
-        NAR nar = narAndTarget.getOne();
+        //NAR nar = narAndTarget.getOne();
         //get only the maximum confidence task for each term at its given starting time
 
         //in.input(
@@ -202,7 +185,7 @@ public class ConjClustering extends Causable {
 
         int centroidGen = 0;
 
-        List<Task> gen = narAndTarget.getTwo();
+        Consumer<Task> gen = in.get();
 
         main:
         while (gg.hasNext() && centroidGen < taskLimitPerCentroid) {
@@ -336,7 +319,7 @@ public class ConjClustering extends Causable {
                                         ((float) v) / (v + maxVolume);
 
                                 m.priSet(Priority.fund(p * cmplFactor, true, uu));
-                                gen.add(m);
+                                gen.accept(m);
                                 centroidGen++;
                             }
                         } else {
@@ -350,8 +333,6 @@ public class ConjClustering extends Causable {
 
         }
 
-
-        return gen.isEmpty() ? null : gen;
     }
 
     @Override

@@ -11,7 +11,7 @@ import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.FilteredScalar;
 import nars.concept.scalar.Scalar;
 import nars.control.Activate;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.DurService;
 import nars.control.NARService;
 import nars.task.ITask;
@@ -322,7 +322,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     alwaysQuestion(Op.IMPL.the(happy.term, 0 /*XTERNAL*/, a.term))
             );
 
-            this.in = nar.newCauseChannel(this);
+            this.in = nar.newChannel(this);
             this.now = nar.time();
             this.last = now - nar.dur(); //head-start
 
@@ -455,7 +455,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         public AgentPredictions(NAgent a) {
             super(a.nar);
 
-            this.predict = nar.newCauseChannel(a.id + " predict");
+            this.predict = nar.newChannel(a.id + " predict");
 
 
             //            final Task[] prevHappy = new Task[1];
@@ -683,7 +683,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         @Override
         protected void run(NAR n, long dt) {
-            predict.input(predictions(nar.time(), predict.amp()));
+            predict.input(predictions(nar.time(), 1));
         }
 
         protected Stream<ITask> predictions(long now, float prob) {

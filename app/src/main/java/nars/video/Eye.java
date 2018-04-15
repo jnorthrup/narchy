@@ -4,7 +4,7 @@ import jcog.pri.Prioritized;
 import jcog.signal.Bitmap2D;
 import jcog.sort.CachedTopN;
 import nars.*;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.exe.UniExec;
 import nars.index.term.HijackConceptIndex;
 import nars.op.stm.ConjClustering;
@@ -51,7 +51,7 @@ public class Eye extends SubNAR {
             });
 
             final Term ID = $.the("eye");
-            CauseChannel<ITask> superIn = superNAR.newCauseChannel(sub);
+            CauseChannel<ITask> superIn = superNAR.newChannel(sub);
             final short[] cause = new short[] { superIn.id };
 
 

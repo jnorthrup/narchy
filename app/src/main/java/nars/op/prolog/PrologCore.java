@@ -5,7 +5,7 @@ import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.math.Range;
 import nars.*;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.index.term.ConceptIndex;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -117,7 +117,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         if (Param.DEBUG)
             setSpy(true);
 
-        this.in = n.newCauseChannel(this);
+        this.in = n.newChannel(this);
         this.nar = n;
 
 

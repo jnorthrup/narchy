@@ -8,7 +8,6 @@ import nars.concept.Concept;
 import nars.control.Cause;
 import nars.control.TaskService;
 import nars.link.CauseLink;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -27,7 +26,7 @@ public final class STMLinkage extends TaskService {
     private final Cause cause;
 
 
-    public STMLinkage(@NotNull NAR nar, int capacity, boolean allowNonInput) {
+    public STMLinkage(NAR nar, int capacity, boolean allowNonInput) {
         super(nar);
 
         this.allowNonInput = allowNonInput;
@@ -37,7 +36,7 @@ public final class STMLinkage extends TaskService {
 //        for (int i = 0; i < capacity+1; i++)
 //            stm.add(null); //fill with nulls initially
 
-        cause = nar.newCause(Cause::new);
+        cause = nar.newCause(this);
     }
 
     protected static void link(Task ta, float pri, Task tb, short cid, NAR nar) {

@@ -11,7 +11,7 @@ import nars.NAgent;
 import nars.Task;
 import nars.concept.action.ActionConcept;
 import nars.concept.scalar.Scalar;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.truth.Truth;
@@ -88,7 +88,7 @@ public class RLBooster implements Consumer<NAR> {
 //            output[i++] = () -> {            };
 //        }
 
-        in = env.nar().newCauseChannel(this);
+        in = env.nar().newChannel(this);
 
         this.rl = rl.apply(inD, outD);
 

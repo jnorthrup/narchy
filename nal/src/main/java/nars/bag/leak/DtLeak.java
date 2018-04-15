@@ -1,11 +1,11 @@
 package nars.bag.leak;
 
 import jcog.bag.Bag;
+import nars.NAR;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -33,17 +33,14 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
         this.rate = rate;
     }
 
+    public float commit(NAR nar, float work) {
 
-    private final AtomicBoolean busy = new AtomicBoolean(false);
-
-    public float commit(long now, int dur, float forgetRate, float work) {
-
-        if (!busy.compareAndSet(false, true))
-            return 0;
-
-        try {
+            float forgetRate = nar.forgetRate.floatValue();
 
             if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
+
+                long now = nar.time();
+                int dur = nar.dur();
 
                 long last = this.lastLeak;
                 if (last == ETERNAL) {
@@ -53,14 +50,12 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
                 return commit(now, last, dur, work);
 
             }
-        } finally {
-            busy.set(false);
-        }
+
 
         return 0;
     }
 
-    public float commit(long now, long last, int dur, float work) {
+    protected float commit(long now, long last, int dur, float work) {
 
         //durations delta
         float durDT = Math.max(0, (now - last) / ((float) dur));

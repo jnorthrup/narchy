@@ -6,7 +6,7 @@ import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import nars.*;
 import nars.concept.Concept;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.NALTask;
@@ -105,7 +105,7 @@ public class Implier extends DurService {
         Arrays.sort(relativeTargetDurs);
         this.relativeTargetDurs = relativeTargetDurs;
         this.seeds = seeds;
-        this.in = n.newCauseChannel(this);
+        this.in = n.newChannel(this);
 //        this.tg = new TermGraph.ImplGraph() {
 //            @Override
 //            protected boolean acceptTerm(Term p) {

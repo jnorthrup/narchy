@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import spacegraph.util.animate.Animated;
 
 import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -22,10 +23,15 @@ import java.util.function.Consumer;
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
+    /** JOGL default is 10ms; we dont need/want it that often */
+    private static final long EDT_POLL_PERIOD_MS = 20;
+
+
     private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
     public final Topic<JoglWindow> onUpdate = new ListTopic<>();
     public final Logger logger;
     final AtomicBoolean rendering = new AtomicBoolean(false);
+
     /**
      * update loop
      */
@@ -39,6 +45,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * update time since last cycle (S)
      */
     public float dtS = 0;
+
+    final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
 
     /**
      * render loop
@@ -116,6 +124,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
 
+    public final void pre(Consumer<JoglWindow> beforeNextRender) {
+        preRenderTasks.add(beforeNextRender);
+    }
+
     abstract protected void init(GL2 gl);
 
     public void printHardware() {
@@ -144,12 +156,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowResized(WindowEvent windowEvent) {
-
     }
 
     @Override
     public void windowMoved(WindowEvent windowEvent) {
-
     }
 
     @Override
@@ -233,7 +243,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             GLWindow W = window();
             this.window = W;
 
-            window.runOnEDTIfAvail(false, () -> {
+            window.getScreen().getDisplay().getEDTUtil().setPollPeriod(EDT_POLL_PERIOD_MS);
+
+
+
 
                 windows.add(this);
 
@@ -243,17 +256,38 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                 //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
                 W.setTitle(title);
-                W.setSize(w, h);
+                setSize(w, h);
                 if (x != Integer.MIN_VALUE) {
-                    W.setPosition(x, y);
+                    setPosition(x, y);
                 }
-                W.setVisible(true);
+                setVisible(true);
 
-
-            });
 
         });
 
+    }
+
+    private void setVisible(boolean b) {
+        if (window == null || window.isVisible()!=b)
+            pre((s)->s.window.setVisible(b));
+    }
+
+    public void setPosition(int x, int y) {
+
+        //TODO buffer subsequent setPositions only applying the final one on the EDT before frame render
+            pre((s) -> {
+                if (s.window.getX()!=x || s.window.getY()!=y) {
+                    s.window.setPosition(x, y);
+                }
+            });
+
+    }
+    public void setSize(int w, int h) {
+
+        //TODO buffer subsequent setSize only applying the final one on the EDT before frame render
+        if (window == null || window.getWidth()!=w || window.getHeight()!=h) {
+            pre((s) -> s.window.setSize(w, h));
+        }
     }
 
     @Override
@@ -357,10 +391,25 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 @Override
                 public boolean next() {
 
+                    preRenderTasks.removeIf(r -> {
+                        r.accept(JoglWindow.this);
+                        return true;
+                    });
+
                     if (!drawablesEmpty && !paused) { // RUN
+
                         try {
-                            //display();
-                            impl.display(drawables, ignoreExceptions, printExceptions);
+//                            //for debug
+//                            if (window.isSurfaceLockedByOtherThread()) {
+//                                Thread surfaceLockOwner = window.getSurfaceLockOwner();
+//                                System.err.println(
+//                                   "surface locked by: " + surfaceLockOwner + "\n" +
+//                                   Joiner.on('\n').join(surfaceLockOwner.getStackTrace())
+//                                );
+//                            }
+
+                            //if (!window.isSurfaceLockedByOtherThread())
+                                impl.display(drawables, ignoreExceptions, printExceptions);
                         } catch (final UncaughtAnimatorException dre) {
                             //quitIssued = true;
                             dre.printStackTrace();

@@ -146,7 +146,6 @@ public class WorkerMultiExec extends AbstractExec {
 
                 @Override
                 protected void queueOverflow(Object x) {
-                    Thread.yield();
                     //emergency defer to ForkJoin commonPool
                     ForkJoinPool.commonPool().execute(x instanceof Runnable ? ((Runnable)x) : ()->executeNow(x));
                 }
@@ -183,12 +182,15 @@ public class WorkerMultiExec extends AbstractExec {
          */
         final Random rng;
         private final NAR nar;
+        int idles = 0;
+        long now;
 
         public MyWorkLoop(ConcurrentQueue q, NAR nar) {
             super(q);
             this.nar = nar;
 
             rng = new XoRoShiRo128PlusRandom(System.nanoTime());
+            now = nar.time();
         }
 
         @Override
@@ -196,42 +198,40 @@ public class WorkerMultiExec extends AbstractExec {
             executeNow(next);
         }
 
-        int idles = 0;
 
         protected void idle() {
             int done = 0;
-            while (pollNext()) {
+            Object next;
+            while ((next = pollNext())!=null) {
+                executeNow(next);
                 done++;
                 this.idles = 0;
             }
 
-            if (done == 0)
-                Util.pauseNext(idles++);
+            if (done == 0 && idles++ > 0)
+                Util.pauseNext(idles);
+
+            //TODO throttling
+//            long next = nar.time();
+//            if (next != now) {
+//                now = next;
+//                long throttleNS = nar.loop.throttleNS();
+//                if (throttleNS > 0) {
+//                    Util.sleepNS(throttleNS);
+//                }
+//            }
+
         }
 
         @Override
         public void run() {
 
-            final long[] now = {nar.time()};
             focus.decide(rng, x -> {
 
-
-                long next = nar.time();
-                if (next != now[0]) {
-                    now[0] = next;
-
-                    long throttleNS = nar.loop.throttleNS();
-                    if (throttleNS > 0) {
-                        Util.sleepNS(throttleNS);
-                        return true; //re-loop
-                    }
-
-                }
+                idle();
 
                 if (focus.tryRun(x))
                     idles = 0;
-
-                idle();
 
                 return true;
             });

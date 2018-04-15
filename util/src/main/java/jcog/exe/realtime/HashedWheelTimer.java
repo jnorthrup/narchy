@@ -1,8 +1,5 @@
 package jcog.exe.realtime;
 
-import com.conversantmedia.util.concurrent.ConcurrentQueue;
-import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
-import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
 import org.slf4j.Logger;
@@ -31,21 +28,42 @@ import java.util.function.Consumer;
  */
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
+
+
+
+    abstract static class WheelModel {
+        public final int numWheels;
+
+        protected WheelModel(int numWheels) {
+            this.numWheels = numWheels;
+        }
+
+        public final int idx(int cursor) {
+            return cursor % numWheels;
+        }
+
+        abstract public void run(int wheel, HashedWheelTimer timer);
+
+        abstract public void schedule(TimedFuture<?> r);
+
+        abstract public void reschedule(int wheel, TimedFuture r);
+
+        public final void schedule(TimedFuture<?> r, int c) {
+            reschedule(idx(c + r.getOffset() + 1), r);
+        }
+
+    }
+
+    private final WheelModel model;
+
     public final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
 
 //    private static final String DEFAULT_TIMER_NAME = HashedWheelTimer.class.getSimpleName();
 
-    /**
-     * used for fast test for incoming items
-     */
-    final AtomicInteger incomingCount = new AtomicInteger();
 
-    private final ConcurrentQueue<TimedFuture<?>> incoming = new DisruptorBlockingQueue<>(1024);
-
-
-    private final Queue<TimedFuture<?>>[] wheel;
-    private final int numWheels;
     private final long resolution;
+    private final int numWheels;
+
     private final Thread loop;
     private final Executor executor;
     private final WaitStrategy waitStrategy;
@@ -61,8 +79,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      *                     for sparse timeouts. Sane default is 512.
      * @param waitStrategy strategy for waiting for the next tick
      */
-    public HashedWheelTimer(long res, int numWheels, WaitStrategy waitStrategy) {
-        this(null, res, numWheels, waitStrategy, Executors.newFixedThreadPool(1));
+    public HashedWheelTimer(long res, WheelModel model, WaitStrategy waitStrategy) {
+        this(null, res, model, waitStrategy, Executors.newFixedThreadPool(1));
     }
 
 
@@ -76,24 +94,28 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * @param strategy  strategy for waiting for the next tick
      * @param exec      Executor instance to submit tasks to
      */
-    public HashedWheelTimer(String name, long res, int numWheels, WaitStrategy strategy, Executor exec) {
+    public HashedWheelTimer(String name, long res, WheelModel model, WaitStrategy strategy, Executor exec) {
         this.waitStrategy = strategy;
-
-        this.wheel = new Queue[numWheels];
-
-        for (int i = 0; i < numWheels; i++) {
-            wheel[i] = new ArrayDeque();
-        }
-
-        this.numWheels = numWheels;
 
         this.resolution = res;
 
         this.executor = exec;
 
+        this.model = model;
+        this.numWheels = model.numWheels;
+
         this.loop = name != null ? new Thread(this, name) : new Thread(this);
         this.loop.start();
 
+    }
+    /**
+     * Rechedule a {@link TimedFuture} for the next fire
+     */
+    protected void _schedule(TimedFuture<?> r) {
+        int c = cursor.get();
+        if (c >= 0) {
+            model.schedule(r, c);
+        }
     }
 
     private static void isTrue(boolean expression, String message) {
@@ -112,82 +134,50 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @Override
     public void run() {
 
-        long toleranceNS = resolution / 2;
 
         long deadline = System.nanoTime();
 
-        TimedFuture[] buffer = new TimedFuture[4096];
+
 
         long epochTime = numWheels * resolution;
-        long lastEpoch = deadline - epochTime;
+        long nextEpoch = deadline;
+
+        long tolerableLagPerEpochNS =
+                //resolution;
+                epochTime / 2;
 
         int c;
         while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE)) >= 0) {
-
-            if (incomingCount.get() > 0) {
-                int count = incoming.remove(buffer);
-                incomingCount.addAndGet(-count);
-                for (int i = 0; i < count; i++) {
-                    TimedFuture b = buffer[i];
-                    buffer[i] = null;
-                    _schedule(b, c);
-                }
-            }
 
             if (c == 0) {
                 //synch deadline
                 long now = System.nanoTime();
 
-                long lag = now - lastEpoch;
-                if (Math.abs(lag) > toleranceNS) {
-                    double lagResolutions = ((double)lag)/resolution;
+                long lag = now - nextEpoch;
+                if (Math.abs(lag) > tolerableLagPerEpochNS) {
+                    double lagResolutions = ((double)lag)/epochTime;
                     if (lagResolutions > 5) {
                         logger.info("lag {} ({}%)", Texts.timeStr(lag), Texts.n2(100 * lagResolutions));
                     }
                     deadline = now;
-                    lastEpoch = now + epochTime;
-                } else {
-                    lastEpoch += epochTime;
                 }
-
+                nextEpoch = deadline + epochTime;
             }
 
-            // TODO: consider extracting processing until deadline for test purposes
-            Queue<TimedFuture<?>> q = wheel[c];
-
-            Iterator<TimedFuture<?>> i = q.iterator();
-
-            while (i.hasNext()) {
-
-                TimedFuture<?> r = i.next();
-
-                switch (r.state()) {
-                    case CANCELLED:
-                        i.remove();
-                        break;
-                    case READY:
-                        i.remove();
-                        r.execute(this);
-                        break;
-                    case PENDING:
-                        //keep
-                        break;
-
-                }
-            }
-
+            model.run(c, this);
 
             deadline += resolution;
 
-            try {
-                waitStrategy.waitUntil(deadline);
-            } catch (InterruptedException e) {
-                logger.error("interrupted: {}", e);
-                shutdownNow();
-                break;
-            }
+            await(deadline);
+        }
+    }
 
-
+    private void await(long deadline) {
+        try {
+            waitStrategy.waitUntil(deadline);
+        } catch (InterruptedException e) {
+            logger.error("interrupted: {}", e);
+            shutdownNow();
         }
     }
 
@@ -438,7 +428,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         //    |          now          |
         // res start               next tick
         // The earliest time we can tick is aligned to the right. Think of it a bit as a `ceil` function.
-        schedule(r);
+        model.schedule(r);
         return r;
     }
 
@@ -455,11 +445,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         if (firstDelay > 0) {
             scheduleOneShot(firstDelay, () -> {
-                schedule(r);
+                model.schedule(r);
                 return null;
             });
         } else {
-            schedule(r);
+            model.schedule(r);
         }
 
         return r;
@@ -478,55 +468,20 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(0,
                 callable,
                 recurringTimeout, resolution, numWheels,
-                this::schedule);
+                model::schedule);
 
         if (firstDelay > 0) {
             scheduleOneShot(firstDelay, () -> {
-                schedule(r);
+                model.schedule(r);
                 return null;
             });
         } else {
-            schedule(r);
+            model.schedule(r);
         }
 
         return r;
     }
 
-    protected void schedule(TimedFuture<?> r) {
-        boolean added = incoming.offer(r);
-        if (!added) {
-            throw new RuntimeException("incoming queue overloaded");
-        }
-
-        incomingCount.incrementAndGet();
-    }
-
-    /**
-     * Rechedule a {@link TimedFuture} for the next fire
-     */
-    protected void _schedule(TimedFuture<?> r) {
-        int c = cursor.get();
-        if (c >= 0) {
-            _schedule(r, c);
-        }
-    }
-
-    private void _schedule(TimedFuture<?> r, int c) {
-        add(idx(c + r.getOffset() + 1), r);
-    }
-
-    private <V> void add(int wheel, TimedFuture<V> r) {
-        if (wheel < 0)
-            throw new RuntimeException("wtf");
-
-        if (!this.wheel[wheel].offer(r)) {
-            throw new TODO("grow wheel capacity");
-        }
-    }
-
-    private int idx(int cursor) {
-        return cursor % numWheels;
-    }
 
     private void assertRunning() {
         if (cursor.get() < 0) {
@@ -538,6 +493,16 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @FunctionalInterface
     public interface WaitStrategy {
 
+//        WaitStrategy AdaptiveWait = (deadline) -> {
+//            int spins = 0;
+//            Thread t = null;
+//            while (deadline >= System.nanoTime()) {
+//                Util.pauseNext(spins++);
+//                if ((t == null ? (t = Thread.currentThread()) : t).isInterrupted())
+//                    throw new InterruptedException();
+//            }
+//        };
+
         /**
          * Yielding wait strategy.
          * <p>
@@ -546,11 +511,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
          * one, but is more scheduler-friendly.
          */
         WaitStrategy YieldingWait = (deadline) -> {
+            Thread t = null;
             while (deadline >= System.nanoTime()) {
                 Thread.yield();
-                if (Thread.currentThread().isInterrupted()) {
+                if ((t == null ? (t = Thread.currentThread()) : t).isInterrupted())
                     throw new InterruptedException();
-                }
             }
         };
         /**
@@ -561,10 +526,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
          * consumes more resources.
          */
         WaitStrategy BusySpinWait = (long deadline) -> {
+            Thread t = null;
             while (deadline >= System.nanoTime()) {
-                if (Thread.currentThread().isInterrupted()) {
+                if ((t == null ? (t = Thread.currentThread()) : t).isInterrupted())
                     throw new InterruptedException();
-                }
             }
         };
         /**

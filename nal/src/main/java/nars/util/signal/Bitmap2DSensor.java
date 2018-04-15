@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.scalar.Scalar;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.DurService;
 import nars.exe.Causable;
 import nars.task.ITask;
@@ -199,7 +199,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
             this.n = n;
             lastUpdate = n.time();
             pixelsRemainPerUpdate = area;
-            in = n.newCauseChannel(Bitmap2DSensor.this);
+            in = n.newChannel(Bitmap2DSensor.this);
             pixelsProcessed = new DescriptiveStatistics(8);
             conf = n.confDefault(BELIEF);
             mode = (p, v) -> Scalar.SET.apply(() -> conf).value(p, v);

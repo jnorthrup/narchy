@@ -55,6 +55,7 @@ import java.util.function.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
+import static java.lang.Thread.onSpinWait;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
 
@@ -1643,25 +1644,33 @@ public enum Util {
 
     /**
      * adaptive spinlock behavior
+     * see: https://github.com/conversant/disruptor/blob/master/src/main/java/com/conversantmedia/util/concurrent/Condition.java#L51
      */
     public static void pauseNext(int previousContiguousPauses) {
-        if (previousContiguousPauses < 1024) {
-            Thread.onSpinWait();
+        if (previousContiguousPauses < 512) {
+            onSpinWait();
+        } else if (previousContiguousPauses < 1024) {
+
+            // "randomly" yield 1:8
+            if((previousContiguousPauses & 0x7) == 0) {
+                //long PARK_TIMEOUT = 50L; //50ns
+                 //LockSupport.parkNanos(PARK_TIMEOUT);
+                Thread.yield();
+
+            } else {
+                onSpinWait();
+            }
         } else if (previousContiguousPauses < 2048) {
+            // "randomly" yield 1:4
+            if((previousContiguousPauses & 0x3) == 0) {
+                Thread.yield();
+            } else {
+                onSpinWait();
+            }
+        } else {
+            //Util.sleep(0);
             Thread.yield();
-        } else if (previousContiguousPauses < 4096) {
-            Util.sleep(0);
-        } else {
-            Util.sleep(1);
-        } /*else if (previousContiguousPauses < 128) {
-            Util.sleep(2);
-        } else if (previousContiguousPauses < 256) {
-            Util.sleep(4);
-        } else if (previousContiguousPauses < 512) {
-            Util.sleep(16);
-        } else {
-            Util.sleep(32);
-        }*/
+        }
     }
 
 //* http://www.qat.com/using-waitnotify-instead-thread-sleep-java/
@@ -1712,10 +1721,21 @@ public enum Util {
     }
 
     public static boolean sleepNS(long periodNS) {
-        if (periodNS <= 100000 /** 100uS = 0.1ms */ ) {
-            Thread.yield();
-        } else {
+        if (periodNS <= 0) return false;
+//        if (periodNS <= 10000 /** 10uS = 0.01ms */ ) {
 //            long start = System.nanoTime();
+//            long end = start + periodNS;
+//            do {
+//                Thread.onSpinWait();
+//            } while (System.nanoTime() < end);
+//        } else if (periodNS <= 500000 /** 100uS = 0.5ms */ ) {
+//            long start = System.nanoTime();
+//            long end = start + periodNS;
+//            do {
+//                Thread.yield();
+//            } while (System.nanoTime() < end);
+//        } else {
+
 
             LockSupport.parkNanos(periodNS);
 
@@ -1724,12 +1744,7 @@ public enum Util {
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-
-//            long end = System.nanoTime();
-//            if (end - start < periodMS * 1000000) {
-//                System.out.println("too short sleep");
-//            }
-        }
+//        }
         return true;
     }
 
@@ -2345,7 +2360,11 @@ public enum Util {
     }
 
     public static int defaultConcurrency() {
-        return Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+        return defaultConcurrency(1);
+    }
+
+    public static int defaultConcurrency(int reserveForOtherThreads) {
+        return Math.max(1, Runtime.getRuntime().availableProcessors() - reserveForOtherThreads);
     }
 
     private static volatile Executor executor = ForkJoinPool.commonPool();

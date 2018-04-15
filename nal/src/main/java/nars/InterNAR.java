@@ -4,8 +4,8 @@ import jcog.Util;
 import jcog.net.UDPeer;
 import jcog.util.TriConsumer;
 import nars.bag.leak.TaskLeak;
-import nars.control.CauseChannel;
 import nars.control.TaskService;
+import nars.control.channel.CauseChannel;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;
@@ -27,8 +27,9 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
 
     public final TaskLeak buffer;
-    final CauseChannel<ITask> recv;
+
     final MyUDPeer peer;
+    private final CauseChannel<ITask> recv;
 
 
     /**
@@ -59,7 +60,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
             throw new RuntimeException(e);
         }
 
-        recv = nar.newCauseChannel(this);
+        recv = nar.newChannel(this);
 
         buffer = new TaskLeak(256, outRate, nar) {
 
@@ -117,10 +118,10 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         peer.stop();
     }
 
-    InterNAR pri(float priFactor) {
-        recv.preAmp = priFactor;
-        return InterNAR.this;
-    }
+//    InterNAR pri(float priFactor) {
+//        recv.preAmp = priFactor;
+//        return InterNAR.this;
+//    }
 
     public void ping(InetSocketAddress x) {
         peer.ping(x);

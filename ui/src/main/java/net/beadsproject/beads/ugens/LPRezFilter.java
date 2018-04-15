@@ -402,53 +402,12 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
         return isFreqStatic ? null : freqUGen;
     }
 
-    /**
-     * Gets the current cut-off frequency.
-     *
-     * @return The cut-off frequency.
-     * @deprecated Use {@link #getFrequency()}.
-     */
-    @Deprecated
-    public float getFreq() {
-        return getFrequency();
-    }
 
-    /**
-     * Sets the cut-off frequency to a float. Removes the frequency UGen, if
-     * there is one.
-     *
-     * @param freq The cut-off frequency.
-     * @return This filter instance.
-     * @deprecated Use {@link #setFrequency(float)}.
-     */
-    @Deprecated
-    public LPRezFilter setFreq(float freq) {
-        return setFrequency(freq);
-    }
 
-    /**
-     * Sets a UGen to specify the cut-off frequency. Passing a null value
-     * freezes the parameter.
-     *
-     * @param freqUGen The frequency UGen.
-     * @return This filter instance.
-     * @deprecated Use {@link #setFrequency(UGen)}.
-     */
-    @Deprecated
-    public LPRezFilter setFreq(UGen freqUGen) {
-        return setFrequency(freqUGen);
-    }
 
-    /**
-     * Gets the frequency UGen, if it exists.
-     *
-     * @return The frequency UGen.
-     * @deprecated Use {@link #getFrequencyUGen()}.
-     */
-    @Deprecated
-    public UGen getFreqUGen() {
-        return getFrequencyUGen();
-    }
+
+
+
 
     /**
      * Gets the current resonance value.

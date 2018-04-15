@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatSupplier;
 import nars.NAR;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -46,7 +46,7 @@ public class BeliefPredict {
             map(c -> freqSupplier(c, 0, nar), FloatSupplier[]::new, outConcepts)
         ));
 
-        this.predict = nar.newCauseChannel(this);
+        this.predict = nar.newChannel(this);
 
         this.on = DurService.on(nar, () -> {
             double[] predFreq = p.next();

@@ -164,7 +164,7 @@ public class ZoomOrtho extends Ortho {
 
                             if (hud.potentialDragMode == Windo.DragEdit.MOVE) {
                                 //if (windowMoving.compareAndSet(false, true)) {
-                                window.window.setPosition(windowStart[0] + dx, windowStart[1] + dy);
+                                window.setPosition(windowStart[0] + dx, windowStart[1] + dy);
 
                                 //}
                             }

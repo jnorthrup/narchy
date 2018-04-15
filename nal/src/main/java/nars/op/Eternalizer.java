@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.exe.AbstractExec;
 import nars.exe.Causable;
 import nars.table.DefaultBeliefTable;
@@ -27,7 +27,7 @@ public class Eternalizer extends Causable {
 
     public Eternalizer(NAR nar) {
         super(nar);
-        in = nar.newCauseChannel(this);
+        in = nar.newChannel(this);
     }
 
     final int minBeliefs = 4;

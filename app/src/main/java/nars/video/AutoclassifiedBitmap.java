@@ -3,7 +3,7 @@ package nars.video;
 import jcog.Util;
 import jcog.learn.Autoencoder;
 import nars.*;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
 import spacegraph.space2d.Surface;
@@ -96,7 +96,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
         //this.conceptOut = new SensorConcept[nw][nh][states];
 
         Term r = $.the(root);
-        CauseChannel<ITask> c = nar.newCauseChannel(this);
+        CauseChannel<ITask> c = nar.newChannel(this);
         for (int i = 0; i< nw; i++) {
             for (int j = 0; j < nh; j++) {
                 Term coord = coord(r, i, j);

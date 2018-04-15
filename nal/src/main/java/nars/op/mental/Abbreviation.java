@@ -106,7 +106,7 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
     }
 
     protected void update(NAR nar) {
-        bag.commit(nar.time(), nar.dur(), nar.forgetRate.floatValue(), 1f);
+        bag.commit(nar, 1f);
     }
 
 

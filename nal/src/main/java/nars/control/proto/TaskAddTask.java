@@ -28,6 +28,11 @@ public class TaskAddTask extends NativeTask {
     @Override
     public final ITask next(NAR n) {
 
+        /* the tasks pri may change after starting insertion, so cache here */
+        float pri = task.pri();
+        if (pri!=pri)
+            return null; //deleted
+
         n.emotion.onInput(task, n);
 
         @Nullable Concept c = task.concept(n, true);
@@ -35,15 +40,15 @@ public class TaskAddTask extends NativeTask {
             return null; //may not have capacity in the concept index
         } else if (!(c instanceof TaskConcept)) {
             if (task.isBeliefOrGoal() || Param.DEBUG_EXTRA) {
+                task.delete();
                 throw new RuntimeException(task + " does not resolve a TaskConcept");
             } else
                 return null;
         }
 
-        /* the tasks pri may change after starting insertion, so cache here */
-        float pri = task.pri();
 
-        if (pri == pri && ((TaskConcept) c).add(task, n)) {
+
+        if (((TaskConcept) c).add(task, n)) {
             return new TaskLinkTask(task, pri, c);
         } else {
             return null;

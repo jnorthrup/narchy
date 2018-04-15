@@ -47,15 +47,15 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
             this.space = SpaceGraph.window(spacer.get(), width, height);
             space.addWindowListener(this);
 
-            space.window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
-                int sx = Finger.pointer.getX();
-                int sy = Finger.pointer.getY();
-                int nx = sx - width / 2;
-                int ny = sy - height / 2;
-                GLWindow w = space.window;
-                if (w!=null)
-                    w.setPosition(nx, ny);
-
+            space.pre( s-> {
+                GLWindow w = s.window;
+                if (w!=null) {
+                    int sx = Finger.pointer.getX();
+                    int sy = Finger.pointer.getY();
+                    int nx = sx - width / 2;
+                    int ny = sy - height / 2;
+                    s.setPosition(nx, ny);
+                }
             });
 
             //space.show(this.toString(), width,height, nx, ny);

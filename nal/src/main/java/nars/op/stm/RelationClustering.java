@@ -3,7 +3,7 @@ package nars.op.stm;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -22,7 +22,7 @@ public class RelationClustering extends ChainClustering {
 
     public RelationClustering(@NotNull NAR nar, FloatFunction<Task> accept, int centroids, int capacity) {
         super(nar, accept, centroids, capacity);
-        in = nar.newCauseChannel(this);
+        in = nar.newChannel(this);
     }
 
     @Override

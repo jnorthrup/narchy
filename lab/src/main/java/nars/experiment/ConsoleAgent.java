@@ -8,7 +8,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
-import nars.control.CauseChannel;
+import nars.control.channel.CauseChannel;
 import nars.gui.Vis;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -92,7 +92,7 @@ public abstract class ConsoleAgent extends NAgentX {
 
         //senseNumberDifference($.func((Atomic) id, Atomic.the("joy")), reward);
 
-        CauseChannel<ITask> s = nar.newCauseChannel(this + "_HumanKeys");
+        CauseChannel<ITask> s = nar.newChannel(this + "_HumanKeys");
         onFrame(() -> {
             //batch collected keyboard inputs since last frame
             List<Task> q = $.newArrayList(queue.size());

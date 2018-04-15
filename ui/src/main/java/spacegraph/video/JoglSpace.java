@@ -35,9 +35,6 @@ import static spacegraph.util.math.v3.v;
 
 abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatial<X>> {
 
-    /** JOGL default is 10ms */
-    private static final long EDT_POLL_PERIOD_MS = 20;
-
     public final v3 camPos;
     public final v3 camFwd;
     public final v3 camUp;
@@ -168,8 +165,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         updateWindowInfo();
         initInput();
-
-        window.getScreen().getDisplay().getEDTUtil().setPollPeriod(EDT_POLL_PERIOD_MS);
 
         onUpdate((Consumer) (w -> pending.removeIf((x) -> {
             x.run();
