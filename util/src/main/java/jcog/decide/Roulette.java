@@ -84,7 +84,7 @@ public enum Roulette {
 
     public static class RouletteUnique {
         /** weights of each choice */
-        final float[] w;
+        private final float[] w;
         private final Random rng;
 
         /** current weight sum */
@@ -94,65 +94,77 @@ public enum Roulette {
         int i;
 
         public static void run(float[] weights, IntPredicate select, Random rng) {
-            assert(weights.length > 0);
-            if (weights.length == 1) {
-                select.test(0);
-            } else {
-                RouletteUnique r = new RouletteUnique(weights, rng);
-                float[] rw = r.w;
-                do {
-                    int next = r.choose();
-                    if (!select.test(next))
-                        break; //done
-
-                    r.weightSum-= rw[next];
-                    rw[next] = 0; //clear
-                } while (--r.remaining > 0);
+            switch (weights.length) {
+                case 0: throw new UnsupportedOperationException();
+                case 1: select.test(0); return;
+                //TODO simple 2 case, with % probability of the ordering then try the order in sequence
+                default: {
+                    RouletteUnique r = new RouletteUnique(weights, rng);
+                    while (r.next(select)) { }
+                }
             }
-
         }
 
-        private int choose() {
+        public boolean next(IntPredicate select) {
+            return select.test(next()) && --remaining > 0;
+        }
+
+        private int next() {
+
+            assert(remaining > 0);
+
+            float[] w = this.w;
 
             int count = w.length;
 
             if (remaining == 1) {
                 //special case:
                 //there is only one with non-zero weight remaining
+
                 for (int x = 0; x < count; x++)
                     if (w[x] > 0)
                         return x;
-            }
 
-            float distance = rng.nextFloat() * weightSum;
-            //boolean dir = rng.nextBoolean(); //randomize the direction
+                throw new RuntimeException();
+            } else {
 
-            while ((distance = distance - w[i]) > 0) {
-                //if (dir) {
+                float distance = rng.nextFloat() * weightSum;
+                //boolean dir = rng.nextBoolean(); //randomize the direction
+
+                int i = this.i;
+
+                while ((distance = distance - w[i]) > Float.MIN_NORMAL) {
+                    //if (dir) {
                     if (++i == count) i = 0;
-                //} else {
-                  //  if (--i == -1) i = count - 1;
-                //}
-            }
+                    //} else {
+                    //  if (--i == -1) i = count - 1;
+                    //}
+                }
 
-            return i;
+
+                weightSum -= w[i];
+                w[i] = 0; //clear
+
+                this.i = i;
+
+                return i;
+            }
 
         }
 
         RouletteUnique(float[] w, Random rng) {
             this.w = w;
+            this.remaining = w.length;
 
             this.weightSum = Util.sum(w);
 
             if (weightSum > Float.MIN_VALUE){
                 //weightSum + " is non-positive";
                 Arrays.fill(w, 1);
+                weightSum = w.length;
             }
 
-            this.remaining = w.length;
-            this.i = rng.nextInt(w.length); //random start location
-            this.rng = rng;
-
+            this.i = (this.rng = rng).nextInt(w.length); //random start position
         }
 
     }

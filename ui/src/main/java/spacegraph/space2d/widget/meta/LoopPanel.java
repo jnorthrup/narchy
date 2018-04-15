@@ -63,23 +63,27 @@ public class LoopPanel extends Widget {
         update();
     }
 
-    public synchronized void update() {
-        if (!pause) {
-            int f = fps.intValue();
-            int g = Math.round(loop.getFPS());
-            if (f > 0) {
-                if (f != g) {
-                    loop.runFPS(f);
-                    fpsLabel.set(f);
+    public void update() {
+        synchronized (this) {
+            if (!pause) {
+                int f = fps.intValue();
+                int g = Math.round(loop.getFPS());
+                if (f > 0) {
+                    if (f != g) {
+                        loop.runFPS(f);
+                        fpsLabel.set(f);
+                    }
+                } else {
+                    fps.set(g);
                 }
+                cycleTimePlot.update();
             } else {
-                fps.set(g);
+                if (loop.isRunning()) {
+                    loop.stop();
+                    fps.set(0); //allow to be reset by the loop after it starts again
+                }
+                //TODO fpsLabel.disable(); // but don't: set(0)
             }
-            cycleTimePlot.update();
-        } else {
-            if (loop.isRunning())
-                loop.stop();
-            //TODO fpsLabel.disable(); // but don't: set(0)
         }
 
     }

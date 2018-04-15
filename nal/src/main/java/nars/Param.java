@@ -50,7 +50,7 @@ public abstract class Param {
      * a supplied non-deleted Concept instance, return that Concept directly.
      * ie. it assumes that the known Concept is the active one.
      */
-    public static final boolean ELIDE_CONCEPT_LOOKUPS = true;
+    public static final boolean ELIDE_CONCEPT_LOOKUPS = false;
 
 //    /**
 //     * proportion of a total activation necessary for emitting task activation events
