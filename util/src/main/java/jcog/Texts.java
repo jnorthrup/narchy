@@ -273,7 +273,9 @@ public enum Texts {
         return fourDecimal.get().format(x);
     }
 
-    static final Format twoDecimal = new DecimalFormat("0.00");
+
+    @Deprecated
+    static final ThreadLocal<DecimalFormat> twoDecimal = ThreadLocal.withInitial(()->new DecimalFormat("0.00"));
 
 //    public static final String n2Slow(final float x) {
 //        return twoDecimal.format(x);
@@ -296,7 +298,7 @@ public enum Texts {
             return "NaN"; //NaN
 
         if ((x < 0) || (x > 1.0f))
-            return twoDecimal.format(x);
+            return twoDecimal.get().format(x);//HACK
 
         int hundredths = (int) hundredths(x);
         switch (hundredths) {
@@ -678,13 +680,11 @@ public enum Texts {
      */
     public static String timeStr(double ns) {
         if (ns < 1000) return n4(ns) + "ns";
-        ns /= 1E3;
-        if (ns < 1000) return n4(ns) + "us";
-        ns /= 1E3;
-        if (ns < 1000) return n4(ns) + "ms";
-        if (ns < 3000) return String.format("%.2f", ns / 1000d);
-        if (ns < 60 * 1000) return (ns / 1000) + "s";
-        long sec = Math.round(ns / 1000);
+        if (ns < 1_000_000) return n4(ns/1_000d) + "us";
+        if (ns < 1_000_000_000) return n4(ns/1_000_000d) + "ms";
+        //if (ns < 3_000_000_000_000d) return String.format("%.2f", ns / 1_000_000_000d);
+        if (ns < 1_000_000_000_000d) return n2(ns / 1_000_000_000d) + "s";
+        long sec = Math.round(ns / 1_000_000_000d);
         if (sec < 5 * 60) return (sec / 60) + "m" + (sec % 60) + 's';
         long min = sec / 60;
         if (min < 60) return min + "m";

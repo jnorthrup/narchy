@@ -150,7 +150,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new WorkerMultiExec(
                         //new Focus.DefaultRevaluator(),
                         new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        256, 512) {
+                        512, 2048) {
                         {
                             Util.setExecutor(this);
                         }

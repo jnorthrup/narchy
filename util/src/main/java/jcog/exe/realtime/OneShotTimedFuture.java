@@ -1,14 +1,10 @@
-package com.ifesdjeen.timer;
+package jcog.exe.realtime;
 
 import jcog.Util;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.ifesdjeen.timer.TimedFuture.Status.CANCELLED;
-import static com.ifesdjeen.timer.TimedFuture.Status.PENDING;
-import static com.ifesdjeen.timer.TimedFuture.Status.READY;
 
 public class OneShotTimedFuture<T> implements TimedFuture<T> {
 
@@ -27,7 +23,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
     public OneShotTimedFuture(int firstFireOffset, int rounds, Callable<T> callable, long initialDelay) {
         this.firstFireOffset = firstFireOffset;
         this.rounds = new AtomicInteger(rounds);
-        this.status = PENDING;
+        this.status = Status.PENDING;
         this.callable = callable;
         this.initialDelay = initialDelay;
     }
@@ -36,15 +32,15 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
     @Override
     public final Status state() {
         Status s = status;
-        if (s == PENDING && rounds.getAndDecrement()<=0) {
-            return READY;
+        if (s == Status.PENDING && rounds.getAndDecrement()<=0) {
+            return Status.READY;
         }
         return s;
     }
 
     @Override
     public boolean isCancelled() {
-        return status == CANCELLED;
+        return status == Status.CANCELLED;
     }
     @Override
     public boolean isDone() {
@@ -63,7 +59,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning /* ignored */) {
-        this.status = CANCELLED;
+        this.status = Status.CANCELLED;
         return true;
     }
 

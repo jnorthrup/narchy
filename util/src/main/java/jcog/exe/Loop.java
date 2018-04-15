@@ -1,7 +1,7 @@
 package jcog.exe;
 
-import com.ifesdjeen.timer.FixedRateTimedFuture;
-import com.ifesdjeen.timer.HashedWheelTimer;
+import jcog.exe.realtime.FixedRateTimedFuture;
+import jcog.exe.realtime.HashedWheelTimer;
 import jcog.Util;
 import org.slf4j.Logger;
 
@@ -33,10 +33,10 @@ abstract public class Loop {
             Executor exe = Util.executor();
             HashedWheelTimer.logger.info("global timer start: executor={}", exe);
             timer = new HashedWheelTimer(Loop.class.getName(),
-                    TimeUnit.MILLISECONDS.toNanos(2),
-                    64,
-                     HashedWheelTimer.WaitStrategy.YieldingWait,
-                    //HashedWheelTimer.WaitStrategy.SleepWait,
+                    TimeUnit.MILLISECONDS.toNanos(1),
+                    128,
+                     //HashedWheelTimer.WaitStrategy.YieldingWait,
+                    HashedWheelTimer.WaitStrategy.SleepWait,
                     exe);
         }
         return timer;
@@ -122,7 +122,7 @@ abstract public class Loop {
                         .scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                         //.scheduleWithFixedDelay(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
-            } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
+            } else if (prevPeriodMS >= 0 && nextPeriodMS <= 0) {
 
                 logger.info("stop");
 

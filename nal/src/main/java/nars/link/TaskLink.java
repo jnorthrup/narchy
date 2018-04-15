@@ -12,6 +12,7 @@ import nars.term.Termed;
 import nars.time.Tense;
 
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public interface TaskLink extends Priority, Termed {
 
@@ -36,7 +37,10 @@ public interface TaskLink extends Priority, Termed {
 
         public Tasklike(Term term, byte punc, long when) {
             this.punc = punc;
+
+            assert(when!=XTERNAL);
             this.when = when;
+
             this.term = term;
             //this.term = IO.termToBytes(term);
             this.hash = Util.hashCombine(term.hashCode(), punc, Long.hashCode(when));

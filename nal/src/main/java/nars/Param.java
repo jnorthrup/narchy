@@ -175,7 +175,9 @@ public abstract class Param {
         if (when == ETERNAL)
             return Tense.ETERNAL_ETERNAL;
 
-        assert(when!=XTERNAL);
+        if (when == XTERNAL) {
+            throw new RuntimeException();
+        }
 
         int f = Math.round(dur * timeFocus.floatValue());
         int ditherCycles = dtDitherCycles();

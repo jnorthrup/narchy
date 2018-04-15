@@ -1,4 +1,4 @@
-package com.ifesdjeen.timer;
+package jcog.exe.realtime;
 
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
@@ -118,6 +118,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         TimedFuture[] buffer = new TimedFuture[4096];
 
+        long epochTime = numWheels * resolution;
+        long lastEpoch = deadline - epochTime;
+
         int c;
         while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE)) >= 0) {
 
@@ -135,11 +138,18 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 //synch deadline
                 long now = System.nanoTime();
 
-                if (deadline > now + toleranceNS) {
-                    //System.out.println(deadline - nextDeadline + " ahead"); ?
-                    logger.info("{} lag", Texts.timeStr(now - deadline));
+                long lag = now - lastEpoch;
+                if (Math.abs(lag) > toleranceNS) {
+                    double lagResolutions = ((double)lag)/resolution;
+                    if (lagResolutions > 5) {
+                        logger.info("lag {} ({}%)", Texts.timeStr(lag), Texts.n2(100 * lagResolutions));
+                    }
                     deadline = now;
+                    lastEpoch = now + epochTime;
+                } else {
+                    lastEpoch += epochTime;
                 }
+
             }
 
             // TODO: consider extracting processing until deadline for test purposes

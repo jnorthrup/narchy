@@ -48,7 +48,12 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
         }
     }
 
-//    @Override
+    @Override
+    protected int sampleNext(Random rng, int size, int i) {
+        return sampleStart(rng, size);
+    }
+
+    //    @Override
 //    public Bag<X, X> sample(Random rng, BagCursor<? super X> each) {
 //        return sample(rng, each, this::pri);
 //    }

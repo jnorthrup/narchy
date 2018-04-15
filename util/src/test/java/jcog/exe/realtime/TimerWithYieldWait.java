@@ -1,4 +1,4 @@
-package com.ifesdjeen.timer;
+package jcog.exe.realtime;
 
 public class TimerWithYieldWait extends AbstractTimerTest {
   @Override

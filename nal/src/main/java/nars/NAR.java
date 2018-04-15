@@ -9,7 +9,7 @@ import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
-import jcog.exe.Cycler;
+import jcog.exe.Cycled;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
@@ -80,7 +80,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * * step mode - controlled by an outside system, such as during debugging or testing
  * * thread mode - runs in a pausable closed-loop at a specific maximum framerate.
  */
-public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR>, Cycler {
+public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR>, Cycled {
 
 
 

@@ -353,16 +353,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //    }
 
 
-    /**
-     * size > 0
-     */
-    protected int sampleStart(@Nullable Random rng, int size) {
-        if (size > 1) {
-            if (rng != null)
-                return rng.nextInt(size);
-        }
-        return 0;
-    }
 
     /**
      * chooses a starting index randomly then iterates descending the list
@@ -378,9 +368,14 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         while (true) {
             Object[] ii;
             int s;
+            int i = -1;
             while ((s = Math.min((ii = items.array()).length, size())) > 0) {
 
-                int i = sampleStart(rng, s);
+                if (i < 0) {
+                    i = sampleStart(rng, s);
+                } else {
+                    i = sampleNext(rng, s, i);
+                }
 
                 Object x = ii[i];
 
@@ -406,6 +401,25 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             return this;
         }
 
+    }
+
+    /**
+     * size > 0
+     */
+    protected int sampleStart(@Nullable Random rng, int size) {
+//        if (size > 1) {
+//            if (rng != null)
+//                return rng.nextInt(size);
+//        }
+        return 0; //ArrayBag sampling always starts at the top
+    }
+
+    protected int sampleNext(Random rng, int size, int i) {
+        i++;
+        if (i >= size)
+            i = 0; //wrap-around
+
+        return i;
     }
 
     @Nullable

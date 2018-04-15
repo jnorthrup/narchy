@@ -15,8 +15,8 @@ import spacegraph.space2d.widget.windo.Widget;
  */
 public class LoopPanel extends Widget {
 
-    private final IntSpinner fpsLabel;
     protected final Loop loop;
+    private final IntSpinner fpsLabel;
     private final Plot2D cycleTimePlot;
     MutableInteger fps;
 
@@ -25,7 +25,7 @@ public class LoopPanel extends Widget {
     public LoopPanel(Loop loop) {
         this.loop = loop;
         fps = new MutableInteger(Math.round(loop.getFPS()));
-        fpsLabel = new IntSpinner(fps, f-> f + "fps", 0, 100);
+        fpsLabel = new IntSpinner(fps, f -> f + "fps", 0, 100);
 
         if (loop instanceof InstrumentedLoop) {
             InstrumentedLoop iloop = (InstrumentedLoop) loop;
@@ -37,29 +37,29 @@ public class LoopPanel extends Widget {
         }
 
         content(
-            new Gridding(
-                new ButtonSet(ButtonSet.Mode.One,
-                    IconToggleButton.awesome("play").on((b) -> {
-                        if (b) {
-                            if (pause) {
-                                pause = false;
-                                update();
-                            }
+                new Gridding(
+                        new ButtonSet(ButtonSet.Mode.One,
+                                IconToggleButton.awesome("play").on((b) -> {
+                                    if (b) {
+                                        if (pause) {
+                                            pause = false;
+                                            update();
+                                        }
 
-                        }
-                    }), IconToggleButton.awesome("pause").on((b) -> {
-                        if (b) {
+                                    }
+                                }), IconToggleButton.awesome("pause").on((b) -> {
+                            if (b) {
 
-                            if (!pause) {
-                                pause = true;
-                                update(); //update because this view wont be updated while paused
+                                if (!pause) {
+                                    pause = true;
+                                    update(); //update because this view wont be updated while paused
+                                }
                             }
-                        }
-                    })
-                ),
-                fpsLabel, //TODO number spin control
-                cycleTimePlot
-        ));
+                        })
+                        ),
+                        fpsLabel, //TODO number spin control
+                        cycleTimePlot
+                ));
         update();
     }
 
@@ -75,12 +75,14 @@ public class LoopPanel extends Widget {
                     }
                 } else {
                     fps.set(g);
+                    fpsLabel.set(g);
                 }
                 cycleTimePlot.update();
             } else {
                 if (loop.isRunning()) {
+                    //TODO save the FPS in a variable, current method is not working
                     loop.stop();
-                    fps.set(0); //allow to be reset by the loop after it starts again
+                    fpsLabel.set(0);
                 }
                 //TODO fpsLabel.disable(); // but don't: set(0)
             }

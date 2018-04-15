@@ -238,10 +238,14 @@ public class ExeCharts {
         }
 
         @Override
-        public synchronized void update() {
-            super.update();
-            if (time!=null) {
-                time.durRatio(loop, dur.floatValue());
+        public void update() {
+            synchronized (this) {
+                super.update();
+                if (loop.isRunning()) {
+                    if (time != null) {
+                        time.durRatio(loop, dur.floatValue());
+                    }
+                }
             }
         }
     }

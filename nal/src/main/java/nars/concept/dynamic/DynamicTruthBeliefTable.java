@@ -6,15 +6,12 @@ import nars.Op;
 import nars.Task;
 import nars.table.TemporalBeliefTable;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.truth.Truth;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -125,34 +122,36 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
                     next = template.dt(artificialDT);
 
                     if (next.subs() < templateSubs || next.dt() == XTERNAL) {
-                        next = template;
-                        if (next.subs() == 2) {
+                        return null; //give up
 
-                            //possibly pulled an internal XTERNAL to the outside, so try artificializing this as well
-                            int limit = 2;
-                            int nextDT = XTERNAL;
-                            do {
-                                next = next.dt(artificialDT);
-                                if (next instanceof Bool)
-                                    return null;
-                            } while (limit-- > 0 && (nextDT = next.dt()) == XTERNAL);
-
-                            if (nextDT == XTERNAL)
-                                return null; //give up
-
-                        } else {
-                            //create a random sequence of the terms, separated by artificial DT's
-                            assert (templateOp == CONJ);
-                            Term[] subs = template.subterms().arrayClone();
-                            ArrayUtils.shuffle(subs, nar.random());
-                            int dur = nar.dur();
-                            next = subs[0];
-                            for (int k = 1; k < subs.length; k++) {
-                                next = Op.conjMerge(next, 0, subs[k], dur);
-                                if (next instanceof Bool)
-                                    return null; //it is probably possible to find another solution with a different shuffle
-                            }
-                        }
+//                        next = template;
+//                        if (next.subs() == 2) {
+//
+//                            //possibly pulled an internal XTERNAL to the outside, so try artificializing this as well
+//                            int limit = 2;
+//                            int nextDT = XTERNAL;
+//                            do {
+//                                next = next.dt(artificialDT);
+//                                if (next instanceof Bool)
+//                                    return null;
+//                            } while (limit-- > 0 && (nextDT = next.dt()) == XTERNAL);
+//
+//                            if (nextDT == XTERNAL)
+//                                return null; //give up
+//
+//                        } else {
+//                            //create a random sequence of the terms, separated by artificial DT's
+//                            assert (templateOp == CONJ);
+//                            Term[] subs = template.subterms().arrayClone();
+//                            ArrayUtils.shuffle(subs, nar.random());
+//                            int dur = nar.dur();
+//                            next = subs[0];
+//                            for (int k = 1; k < subs.length; k++) {
+//                                next = Op.conjMerge(next, 0, subs[k], dur);
+//                                if (next instanceof Bool)
+//                                    return null; //it is probably possible to find another solution with a different shuffle
+//                            }
+//                        }
                     }
                 }
 

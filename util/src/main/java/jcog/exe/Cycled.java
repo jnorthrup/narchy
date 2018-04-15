@@ -11,7 +11,7 @@ import java.util.function.BooleanSupplier;
  *
  * calls the Runnable.run() method each cycle/iteration.
  */
-public interface Cycler extends Runnable {
+public interface Cycled extends Runnable {
 
     /**
      * run asynchronously with specified delay (milliseconds)
