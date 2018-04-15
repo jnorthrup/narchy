@@ -611,7 +611,7 @@ public class Revision {
         int overlap = 0, totalEv = 0;
         int tasks = 0;
         boolean termSame = true;
-        EviDensity density = new EviDensity();
+        EviDensity density = new EviDensity(nar.dur());
 
         boolean exit = false;
         for (int i = 0; i < tt.length && !exit; i++) {
@@ -679,20 +679,23 @@ public class Revision {
         long start = density.unionStart;
         long end = density.unionEnd;
 
-        eviMinInteg = Math.max(start==ETERNAL ? first.evi() : first.eviInteg(start, end), eviMinInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
+        int dur = nar.dur();
+
+        //dont settle for anything worse than the first (strongest) task by un-revised
+        eviMinInteg = Math.max(
+                eviInteg(first, start, end, dur),
+                eviMinInteg
+        );
 
         float overlapFactor = Param.overlapFactor(((float)overlap)/totalEv);
         if (overlapFactor < Float.MIN_NORMAL)
             return first;
 
 
-
-
         if (tasks!=tt.length)
             tt = ArrayUtils.removeNulls(tt, Task[]::new);
 
-
-        long range = 1 + (end - start);
+        long range = start != ETERNAL ? 1 + (end - start) : XTERNAL /* "Long.POSITIVE_INFINITY" */;
 
         Term content;
         float differenceFactor = 1f;
@@ -708,7 +711,7 @@ public class Revision {
                 if (!Float.isFinite(diff))
                     return null; //impossible
                 if (diff > 0)
-                    differenceFactor = (float) Param.evi(1f, diff, Math.max(1, range)); //proport
+                    differenceFactor = (float) Param.evi(1f, diff, dur); //proport
 
                 float e1 = first.evi();
                 float e2 = second.evi();
@@ -737,14 +740,8 @@ public class Revision {
             content = first.term();
         }
 
-        int dur = nar.dur();
-
-
         Truth truth = Param.truth(start, end, dur).add(tt).preFilter().truth();
         if (truth == null) return first;
-
-
-
 
         float truthEvi = density.factor(truth.evi());
         float eAdjusted = truthEvi
@@ -757,8 +754,8 @@ public class Revision {
 //            eAdjusted = Util.lerp(densityFactor, truth.eviEternalized(), truth.evi());
 //        }
 
-        if ((eAdjusted * range) < eviMinInteg) //accepts weaker diluted range
-        //if (eAdjusted < eviMinInteg) //rejects a weaker diluted range, comparing the absolute evidence not including any range integration effect
+        //if eAdjusted were to stretch fully through the entire range, and it still is lower than the minimum, give up
+        if ((eAdjusted * range) < eviMinInteg)
             return first;
 
         PreciseTruth cTruth = truth.withEvi(eAdjusted).dither(nar);
@@ -776,13 +773,17 @@ public class Revision {
         );
 
         if (t == null)
+            return first; //failed to create task
+
+        //check final eviInteg of a temporal result
+        if (start!=ETERNAL && (eviInteg(t, start, end, dur) < eviMinInteg))
             return first;
 
         t.priSet(Priority.fund(Util.max((TaskRegion p)->p.task().priElseZero(),tt),
                 false,
                 Tasked::task, tt));
 
-        ((NALTask)t).cause = Cause.sample(Param.causeCapacity.intValue(), tt);
+        ((NALTask)t).cause(Cause.sample(Param.causeCapacity.intValue(), tt));
 
         if (Param.DEBUG)
             t.log("Temporal Merge");
@@ -792,6 +793,25 @@ public class Revision {
 //        }
 
         return t;
+    }
+
+
+    /** convenience method for selecting evidence integration strategy */
+    public static float eviInteg(Task x, long start, long end, int dur) {
+        if (start == end) {
+            return x.evi(start, dur); //point-like
+        } else {
+            if (end - start <= dur) {
+                return x.eviInteg(dur,
+                        start,
+                        end);
+            } else {
+                return x.eviInteg(dur,
+                        start,
+                        (start+end)/2L, //midpoint
+                        end);
+            }
+        }
     }
 
     static boolean equalOrWeaker(Task input, Truth output, long start, long end, Term cc, NAR nar) {

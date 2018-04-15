@@ -47,6 +47,9 @@ public class BagClustering<X> {
 
     }
 
+    /** HACK */
+    @Deprecated final static int maxSortRetries = 4;
+
     public final Bag<X, VLink<X>> bag;
     public final NeuralGasNet net;
     final Dimensionalize<X> model;
@@ -193,8 +196,21 @@ public class BagClustering<X> {
         x = new FasterList<>(bag.size());
         bag.forEach(x::add);
 
-        //Collections.sort(x, Comparator.comparingInt(v->v.centroid));
-        x.sortThisByInt(xx -> xx.centroid);
+
+        for (int sortRetry = 0; sortRetry < maxSortRetries; sortRetry++) {
+
+            //Collections.sort(x, Comparator.comparingInt(v->v.centroid));
+            try {
+                x.sortThisByInt(xx -> xx.centroid);
+                break;
+            } catch (IllegalArgumentException e) {
+                //sort fail, this will happen unless centroid are copied
+                // because they could be modified in another thread
+
+                //but ultimately, its still somewhat acceptable if it doesnt get 100% consistent sort
+            }
+        }
+
         //x.sortThis(Comparator.comparingInt(v->v.centroid));
         //Arrays.sort(x.array(), )
         takeSortedClusters.accept(x);

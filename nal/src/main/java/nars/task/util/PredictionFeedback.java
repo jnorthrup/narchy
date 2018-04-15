@@ -7,7 +7,6 @@ import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
-import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 
 import java.util.List;
@@ -157,7 +156,7 @@ public class PredictionFeedback {
         }
 
         if (delete) {
-            ((NALTask) y).delete(x); //forward to the actual sensor reading
+            y.delete(/*fwd: x*/); //forward to the actual sensor reading
             return true;
         } else {
             return false; //keep if correct and stronger

@@ -425,7 +425,7 @@ public class RevectionTest {
     }
 
     static void assertTimeFusion(long start, long end, float factor, Longerval... ii) {
-        EviDensity a = new EviDensity();
+        EviDensity a = new EviDensity(1);
         for (Longerval i : ii) {
             a.add(i.a, i.b, 1);
         }

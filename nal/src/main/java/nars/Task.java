@@ -35,6 +35,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static nars.Op.*;
+import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -356,28 +357,28 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     @Nullable
-    static NALTask clone(Task x, Term newContent) {
+    static Task clone(Task x, Term newContent) {
         return clone(x, newContent, x.truth(), x.punc());
     }
 
     @Nullable
-    static NALTask clone(Task x, byte newPunc) {
+    static Task clone(Task x, byte newPunc) {
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
     @Nullable
-    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
+    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
         return clone(x, newContent, newTruth, newPunc, x.creation(), x.start(), x.end());
     }
 
     @Nullable
-    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long creation, long start, long end) {
+    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, long creation, long start, long end) {
 
-        NALTask y = (NALTask) Task.tryTask(newContent, newPunc, newTruth, (c, t) ->
-                new NALTask(c, newPunc,
-                        t,
+        Task y = Task.tryTask(newContent, newPunc, newTruth, (c, t) ->
+                new NALTask(c, newPunc, t,
                         creation, start, end,
-                        x.stamp()));
+                        x.stamp())
+                        .cause(x.cause().clone()));
         if (y == null)
             return null;
 
@@ -385,11 +386,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if (xp == xp)
             y.priSet(xp); //otherwise leave zero
 
-        short[] xc = x.cause();
-        if (xc.length > 0)
-            y.cause = xc.clone(); //clone necessary?
-
-        //y.meta.putAll(x.meta());
         return y;
     }
 
@@ -490,7 +486,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return null;
 
         //  non-proxy immutable impl
-        @Nullable NALTask ete = Task.clone(x, x.term(),
+        @Nullable Task ete = Task.clone(x, x.term(),
                 x.truth().eternalized(eviFactor),
                 x.punc(),
                 /* TODO current time, from NAR */ x.creation(),
@@ -560,7 +556,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         } else if (when == ETERNAL) {
             return eviEternalized();
         } else {
-
 
 
             long dist = minDistanceTo(when);
@@ -1037,11 +1032,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
         switch (yy.size()) {
-            case 0: return null;
-            case 1: return yy.iterator().next();
+            case 0:
+                return null;
+            case 1:
+                return yy.iterator().next();
             default:
-                return new NativeTask.RunTask(()->
-                   yy.forEach(z -> z.next(n))
+                return new NativeTask.RunTask(() ->
+                        yy.forEach(z -> z.next(n))
                 );
         }
 
@@ -1059,7 +1056,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     //convert to final implicit answer
                     byte p = isQuestion() ? BELIEF : GOAL;
 
-                    @Nullable NALTask finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
+                    @Nullable Task finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
 
                     delete();
 
@@ -1159,18 +1156,36 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     short[] cause();
 
-    @Override default float eviInteg() {
-        return eviInteg(start(), end());
-    }
 
-    default float eviInteg(long start, long end) {
-        if (start == ETERNAL)
-            throw new UnsupportedOperationException("infinite integral");
+    /**
+     * https://www.intmath.com/integration/5-trapezoidal-rule.php
+     * long[] points needs to be sorted, unique, and not contain any ETERNALs
+     */
+    default float eviInteg(int dur, long... times) {
+        assert (times.length > 1);
 
-        //TODO actually integrate if evidence is non-uniform, see TruthletTask
-        assert(start!=ETERNAL && end >= start);
-        long range = (end - start) + 1;
-        return range * evi();
+        int n = times.length;
+        long last = times[n - 1];
+        long first = times[0];
+
+        assert (first < last
+                && first != ETERNAL && first != XTERNAL
+                && last != ETERNAL && last != XTERNAL);
+
+        float X = 1 + (last - first);
+        float dx = X / n;
+
+        //area = dx * (y0/2 + y1 + y2 ... + yn/2)
+        float area = 0; //evidence sum
+        area += evi(first, dur) / 2;
+        area += evi(last, dur) / 2;
+        for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
+            long ti = times[i];
+            assert (ti!=ETERNAL && ti!=XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
+            area += evi(ti, dur);
+        }
+
+        return dx * area;
     }
 
     byte punc();

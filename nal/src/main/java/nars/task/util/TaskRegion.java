@@ -347,9 +347,5 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         return coordF(true, 2);
     }
 
-    default float eviInteg() {
-        return range() * (c2wSafe(confMin()) + c2wSafe(confMax())) / 2f;
-    }
-
 
 }

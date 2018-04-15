@@ -81,50 +81,6 @@ public class ValueFork extends ForkDerivation<Derivation> {
         throw new UnsupportedOperationException();
     }
 
-//    /**
-//     * The number of distinct byte values.
-//     */
-//    private static final int NUM_BYTE_VALUES = 1 << 8;
-//
-//    /**
-//     * modified from jdk9 source:
-//     * Sorts the specified range of the array.
-//     *
-//     * @param a     the array to be sorted
-//     * @param left  the index of the first element, inclusive, to be sorted
-//     * @param right the index of the last element, inclusive, to be sorted
-//     */
-//    static void sort(byte[] a, int left, int right, ByteToFloatFunction v) {
-////        // Use counting sort on large arrays
-////        if (right - left > COUNTING_SORT_THRESHOLD_FOR_BYTE) {
-////            int[] count = new int[NUM_BYTE_VALUES];
-////
-////            for (int i = left - 1; ++i <= right;
-////                 count[a[i] - Byte.MIN_VALUE]++
-////                    )
-////                ;
-////            for (int i = NUM_BYTE_VALUES, k = right + 1; k > left; ) {
-////                while (count[--i] == 0) ;
-////                byte value = (byte) (i + Byte.MIN_VALUE);
-////                int s = count[i];
-////
-////                do {
-////                    a[--k] = value;
-////                } while (--s > 0);
-////            }
-////        } else { // Use insertion sort on small arrays
-//        for (int i = left, j = i; i < right; j = ++i) {
-//            byte ai = a[i + 1];
-//            while (v.valueOf(ai) < v.valueOf(a[j])) {
-//                a[j + 1] = a[j];
-//                if (j-- == left) {
-//                    break;
-//                }
-//            }
-//            a[j + 1] = ai;
-//        }
-////        }
-//    }
 
 
 

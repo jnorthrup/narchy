@@ -1519,9 +1519,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         private final short ci;
 
+        /** dont change this array's element */
+        private final short[] sharedOneElement;
+
         TaskChannel(Cause cause) {
             super(cause);
             this.ci = cause.id;
+            this.sharedOneElement = new short[ ci ];
         }
 
         @Override
@@ -1555,19 +1559,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
                 NALTask t = (NALTask) x;
                 int tcl = t.cause.length;
                 if (tcl == 0) {
-//                        assert (sharedOneElement[0] == ci);
-                    t.cause = new short[]{ci}; //sharedOneElement;
+                    //assert (sharedOneElement[0] == ci);
+                    //t.cause(sharedOneElement);
+                    t.cause(new short[] { ci });
                 } else {
                     if (tcl == 1 && t.cause[0] == ci) {
                         //already equivalent
                     } else {
                         //concat
-                        t.cause = Arrays.copyOf(t.cause, tcl + 1);
-                        t.cause[tcl] = ci;
+                        short[] tc = Arrays.copyOf(t.cause, tcl + 1);
+                        tc[tcl] = ci;
+                        t.cause(tc);
                     }
                 }
-            }
-            else if (x == null)
+            } else if (x == null)
                 return false; //filter nulls
 
             return true;

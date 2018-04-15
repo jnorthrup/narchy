@@ -2,9 +2,9 @@ package nars.table;
 
 import jcog.Skill;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
+import nars.task.Revision;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -36,24 +36,27 @@ public interface TemporalBeliefTable extends TaskTable {
 //        //float fdur = dur;
 //        //float range = t.range();
 
-        float ee =
-                t.eviInteg(start, end)/dur;
-
-        long dt = t.minDistanceTo(start, end);
-
-        if (dt == 0)
-            return ee; //full integral
-        else {
-            //reduce the full integration by a factor relating to the distance (ex: isoceles triangle below)
-            /*
-            -----------+
-                       |   .      .
-                       |                 .     .
-                       ^  - - - -  - - - - - - -
-                      end                      ? <- time point being sampled
-             */
-            return (float) Param.evi(ee, dt, dur);
+        float ee = Revision.eviInteg(t, start, end, dur);
+        if (ee > Float.MIN_NORMAL) {
+            return ee;
+        } else {
+            //rank out-of-range by distance
+            return -t.minDistanceTo(start, end);
         }
+
+//        if (dt == 0)
+//            return ee; //full integral
+//        else {
+//            //reduce the full integration by a factor relating to the distance (ex: isoceles triangle below)
+//            /*
+//            -----------+
+//                       |   .      .
+//                       |                 .     .
+//                       ^  - - - -  - - - - - - -
+//                      end                      ? <- time point being sampled
+//             */
+//            return (float) Param.evi(ee, dt, dur);
+//        }
 
                 //t.evi() * (1/(1+t.minDistanceTo(start, end)/dur))
                 //t.evi() * (1+Interval.intersectLength(start, end, t.start(), t.end()))

@@ -447,7 +447,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     revised.priMax(input.priElseZero());
                     input.delete();
 
-                    if (revised instanceof NALTask) //HACK
+                    if (revised instanceof Task) //HACK
                         ((NALTask) revised).causeMerge(input);
 
                     return true; //already contained

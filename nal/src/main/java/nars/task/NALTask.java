@@ -18,7 +18,8 @@ import java.util.function.Function;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
-
+/** generic immutable Task implementation,
+ *  with mutable cause[] and initially empty meta table */
 public class NALTask extends Pri implements Task {
 
     public final Term term;
@@ -106,18 +107,17 @@ public class NALTask extends Pri implements Task {
     /**
      * combine cause: should be called in all Task bags and belief tables on merge
      */
-    public void causeMerge(Task incoming) {
-        if (incoming == this) return;
+    public NALTask causeMerge(Task incoming) {
+        if (incoming == this) return this;
 
-        float remain = Param.taskMerge.merge(this, incoming);
-        incoming.priSet(remain);
+        Param.taskMerge.merge(this, incoming);
 
-        if (Arrays.equals(cause(), incoming.cause())) {
-            return; //dont merge if they are duplicates, it's pointless here
+        //dont merge if they are duplicates, it's pointless here
+        if (!Arrays.equals(cause(), incoming.cause())) {
+            int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); //TODO use NAR's?
+            this.cause = Cause.sample(causeCap, this, incoming);
         }
-
-        int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); //TODO use NAR's?
-        this.cause = Cause.sample(causeCap, this, incoming);
+        return this;
     }
 
     @Nullable
@@ -163,6 +163,13 @@ public class NALTask extends Pri implements Task {
         return cause;
     }
 
+    /** set the cause[] */
+    public Task cause(short[] cause) {
+        if (!Arrays.equals(this.cause, cause))
+            this.cause = cause;
+        return this;
+    }
+
     @Override
     public boolean delete() {
         if (super.delete()) {
@@ -177,23 +184,23 @@ public class NALTask extends Pri implements Task {
         return false;
     }
 
-    public boolean delete(Task forwardTo) {
-        return delete();
-
-        //return delete(forwardTo.term().concept(), forwardTo.punc(), forwardTo.mid());
-
-//        if (super.delete()) {
-//            if (meta!=null) {
-//                if (Param.DEBUG)
-//                    meta.put("@", forwardTo);
-//                else
-//                    meta.clearPut("@", forwardTo);
-//            }
+//    public boolean delete(Task forwardTo) {
+//        return delete();
 //
-//            return true;
-//        }
-//        return false;
-    }
+//        //return delete(forwardTo.term().concept(), forwardTo.punc(), forwardTo.mid());
+//
+////        if (super.delete()) {
+////            if (meta!=null) {
+////                if (Param.DEBUG)
+////                    meta.put("@", forwardTo);
+////                else
+////                    meta.clearPut("@", forwardTo);
+////            }
+////
+////            return true;
+////        }
+////        return false;
+//    }
 
 //    public boolean delete(Term forwardTo, byte punc, long when) {
 //        return delete(new TaskLink.GeneralTaskLink(forwardTo, punc, when, 0));

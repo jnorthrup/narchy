@@ -228,7 +228,7 @@ import static nars.time.Tense.ETERNAL;
             tFinal = null;
         }
 
-        NALTask i = new NALTask(term, punc, tFinal, creation, start, end, evidence);
+        Task i = new NALTask(term, punc, tFinal, creation, start, end, evidence);
         i.priSet(this);
         //        if (srcCopy == null) {
 //            delete();

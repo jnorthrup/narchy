@@ -6,7 +6,6 @@ import nars.Param;
 import nars.Task;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
-import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.time.Tense;
@@ -138,7 +137,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
         if (FILTER_SIMILAR_DERIVATIONS) {
             //test for same punc, term, start/end, freq, but different conf
-            if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() && parent.start() == derived.start() && parent.end() == derived.end()) {
+            if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() &&
+                    parent.start() == derived.start() && parent.end() == derived.end()) {
                 /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
                 if (parent.isQuestionOrQuest() ||
                         (Util.equals(parent.freq(), derived.freq(), truthResolution) &&
@@ -148,13 +148,12 @@ public class Taskify extends AbstractPred<Derivation> {
                         logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
 
 
-                    if (parent.isCyclic() && !derived.isCyclic())
-                        parent.setCyclic(false);
-
-                    if (parent instanceof DerivedTask) {
-                        parent.priMax(derived.priElseZero());
-                        ((NALTask) parent).causeMerge(derived); //merge cause
-                    }
+//                    if (parent.isCyclic() && !derived.isCyclic())
+//                        parent.setCyclic(false);
+//                    if (parent instanceof DerivedTask) {
+//                        parent.priMax(derived.priElseZero());
+//                        //((NALTask) parent).causeMerge(derived); //merge cause
+//                    }
                     return true;
                 }
             }

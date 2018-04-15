@@ -140,8 +140,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         x.forEach(xx -> alwaysWant(xx, conf));
     }
 
-    @Deprecated public NALTask alwaysWant(Termed x, float conf) {
-        NALTask t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
+    @Deprecated public Task alwaysWant(Termed x, float conf) {
+        Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
                 Stamp.UNSTAMPED
                 //nar().time.nextStampArray()
@@ -151,8 +151,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         return t;
     }
 
-    @Deprecated public NALTask alwaysQuestion(Termed x) {
-        NALTask t = new NALTask(x.term(), QUESTION, null, now,
+    @Deprecated public Task alwaysQuestion(Termed x) {
+        Task t = new NALTask(x.term(), QUESTION, null, now,
                 ETERNAL, ETERNAL,
                 //Stamp.UNSTAMPED
                 nar().time.nextStampArray()
@@ -660,7 +660,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             long start = ETERNAL, end = ETERNAL;
 
-            NALTask t = new NALTask(term, punct, truth, now,
+            Task t = new NALTask(term, punct, truth, now,
                     start, end,
                     new long[]{nar.time.nextStamp()});
 

@@ -932,7 +932,7 @@ public class DeriveTime extends TimeGraph {
                     boolean taskEvi = !task.isQuestionOrQuest();
                     boolean beliefEvi = !belief.isQuestionOrQuest();
                     if (taskEvi && beliefEvi) {
-                        EviDensity density = new EviDensity(task, belief);
+                        EviDensity density = new EviDensity(d.dur, task, belief);
                         s = density.unionStart;
                         e = density.unionEnd;
                         d.concEviFactor *= density.factor(); //TODO eternalization margin?

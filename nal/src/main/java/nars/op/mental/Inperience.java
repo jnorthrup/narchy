@@ -12,6 +12,7 @@ import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
 import nars.term.transform.Retemporalize;
 import nars.term.transform.TermTransform;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -232,21 +233,22 @@ public class Inperience extends LeakBack {
         if (!c.op().conceptualizable)
             return 0;
 
-        long now = nar.time();
-
         long start = x.start();
         long end;
-        if (start == ETERNAL)
-            end = start = now;
-        else {
-            end = x.end();
+        if (start == ETERNAL) {
+            long[] focus = nar.timeFocus();
+            start = focus[0];
+            end = focus[1];
+        } else {
+            start = Tense.dither(start, nar);
+            end = Tense.dither(x.end(), nar);
         }
 
         //TODO Task.tryContent
 
         SignalTask y = new SignalTask(c, BELIEF,
                 $.t(1, nar.confDefault(Op.BELIEF)),
-                now, start, end, x.stamp()
+                nar.time(), start, end, x.stamp()
         );
         y.causeMerge(x);
 

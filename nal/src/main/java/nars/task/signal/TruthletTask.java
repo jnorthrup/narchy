@@ -74,17 +74,6 @@ public class TruthletTask extends SignalTask {
 
 
 
-    @Override public float eviInteg(long s, long e) {
-        long dt = Math.max(1, e - s);
-        float es = evi(s, 1);
-        if (e!=s) {
-            float ee = evi(e, 1);
-            return dt * (es + ee)/2f /* linear trapezoid */;
-        } else {
-            return dt * es /* point sample */;
-        }
-    }
-
     @Override
     public boolean intersects(long start, long end) {
         return truthlet.intersects(start, end);

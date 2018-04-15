@@ -2,8 +2,8 @@ package nars.truth.util;
 
 import jcog.math.Longerval;
 import nars.Task;
+import nars.task.Revision;
 import nars.task.util.TaskRegion;
-import nars.truth.TruthFunctions;
 
 import static nars.time.Tense.ETERNAL;
 
@@ -13,18 +13,20 @@ import static nars.time.Tense.ETERNAL;
  */
 public final class EviDensity {
 
+    private final int dur;
     public long unionStart = ETERNAL;
     public long unionEnd = ETERNAL;
 
     float sumEviIntegrals = Float.NaN, sumEviAvg = Float.NaN;
 
 
-    public EviDensity() {
+    public EviDensity(int dur) {
+        this.dur = dur;
     }
 
 
-    public EviDensity(TaskRegion... x) {
-        this();
+    public EviDensity(int dur, TaskRegion... x) {
+        this(dur);
         assert (x.length > 1);
         for (TaskRegion xx : x) {
             if (xx != null)
@@ -35,8 +37,8 @@ public final class EviDensity {
     /**
      * has special handling for eternals
      */
-    public EviDensity(Iterable<TaskRegion> x) {
-        this();
+    public EviDensity(int dur, Iterable<TaskRegion> x) {
+        this(dur);
         boolean hasEternals = false;
         for (TaskRegion xx : x) {
             if (xx != null) {
@@ -73,7 +75,7 @@ public final class EviDensity {
     }
 
     public EviDensity clone() {
-        EviDensity clone = new EviDensity();
+        EviDensity clone = new EviDensity(dur);
         clone.unionStart = unionStart;
         clone.unionEnd = unionEnd;
         clone.sumEviAvg = sumEviAvg;
@@ -93,7 +95,7 @@ public final class EviDensity {
 
     void add(Task xt, long start, long end) {
         if (start!=ETERNAL) {
-            add(start, end, xt.evi(), xt.eviInteg(start, end));
+            add(start, end, xt.evi(), Revision.eviInteg(xt, start, end, dur));
         } else {
             //?
         }
@@ -148,9 +150,11 @@ public final class EviDensity {
         if (f >= 1f-Float.MIN_NORMAL) return evi; //full result
         if (f <= Float.MIN_NORMAL) return 0; //nothing
 
-        float eviEte = TruthFunctions.eternalize(evi); //eternalized part
-        return eviEte +
-                (evi - eviEte) * f;
+        return evi * f;
+
+//        float eviEte = TruthFunctions.eternalize(evi); //eternalized part
+//        return eviEte +
+//                (evi - eviEte) * f;
     }
 
 //    @Nullable

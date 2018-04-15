@@ -88,7 +88,7 @@ public class IO {
 
 
     @NotNull
-    public static NALTask readTask(DataInput in) throws IOException {
+    public static Task readTask(DataInput in) throws IOException {
 
 
         Term preterm = readTerm(in);
@@ -110,7 +110,7 @@ public class IO {
 
         long cre = in.readLong();
 
-        NALTask mm = new NALTask(term, punc, truth, cre, start, end, evi);
+        Task mm = new NALTask(term, punc, truth, cre, start, end, evi);
         mm.priSet(pri);
         return mm;
     }

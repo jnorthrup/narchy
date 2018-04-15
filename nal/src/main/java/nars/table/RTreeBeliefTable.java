@@ -20,9 +20,12 @@ import nars.task.util.TaskRegion;
 import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
 import nars.term.Term;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +47,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      */
     private static final float SCAN_QUALITY =
             1f;
-            //0.5f;
+    //0.5f;
 
 
     /**
@@ -53,9 +56,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      */
     private static final int TRUTHPOLATION_LIMIT = Param.STAMP_CAPACITY / 2;
 
-    /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
+    /**
+     * max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task
+     */
     private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
-    private static final int COMPLEX_EVENT_MATCH_LIMIT = Math.max(1, SIMPLE_EVENT_MATCH_LIMIT/2);
+    private static final int COMPLEX_EVENT_MATCH_LIMIT = Math.max(1, SIMPLE_EVENT_MATCH_LIMIT / 2);
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
@@ -72,31 +77,25 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final Split<TaskRegion> SPLIT =
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
-    /** if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps) */
+    /**
+     * if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps)
+     */
     private static final int COMPLETE_SCAN_SIZE_THRESHOLD = MAX_TASKS_PER_LEAF;
+
+
+    private static final int RejectInput = 0, EvictWeakest = 1, MergeWeakest = 2, MergeLeaf = 3;
 
     protected int capacity;
 
 
-
-    @Override
-    public void update(SignalTask task, Runnable change) {
-        write(treeRW -> {
-
-            boolean removed = treeRW.remove(task);
-            /*if (!removed)
-                return;*/
-
-            change.run();
-
-            if (!task.isDeleted()) {
-                boolean added = treeRW.add(task);
-            }
-        });
-    }
-
     private RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
+    }
+
+    @Deprecated
+    private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
+        //return new CachedFloatFunction<>(size(), t -> +ts.floatValueOf((Task) t));
+        return t -> ts.floatValueOf((Task) t);
     }
 
 //    private static final class TopDeleteVictims extends TopN<TaskRegion> {
@@ -116,6 +115,164 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //        }
 //    }
 
+    static FloatFunction<TaskRegion> mergabilityWith(Task x) {
+        ImmutableLongSet xStamp = Stamp.toSet(x);
+        return (TaskRegion _y) -> {
+            Task y = (Task) _y;
+            if (Stamp.overlapsAny(xStamp, y.stamp()))
+                return Float.NaN;
+            return (1f + Math.abs(x.freq() - y.freq())) * (1f / (1f + Math.abs(y.start() - x.start()) + Math.abs(y.end() - x.end())));
+        };
+    }
+
+    /**
+     * immediately returns false if space removed at least one as a result of the scan, ie. by removing
+     * an encountered deleted task.
+     */
+    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion, ?> next, @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Top2<Leaf<TaskRegion>> weakLeaf) {
+        if (next instanceof Leaf) {
+
+            Leaf l = (Leaf) next;
+            for (Object _x : l.data) {
+                if (_x == null)
+                    break; //end of list
+
+                TaskRegion x = (TaskRegion) _x;
+                if (((Deleteable) x).isDeleted()) {
+                    //found a deleted task in the leaf, we need look no further
+                    boolean removed = tree.remove(x);
+//                    if (!removed) {
+//                        tree.remove(x);
+//                    }
+                    assert (removed);
+                    return false;
+                }
+
+                weakest.accept(x);
+
+                if (closest!=null)
+                    closest.accept(x);
+            }
+
+            weakLeaf.accept(l);
+
+        } else { //if (next instanceof Branch)
+
+            Branch b = (Branch) next;
+
+            for (Node ww : b.data) {
+                if (ww == null)
+                    break; //end of list
+                else if (!findEvictable(tree, ww, closest, weakest, weakLeaf))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * TODO use the same heuristics as task strength
+     */
+    private static FloatFunction<TaskRegion> regionWeakness(long when, long tableDur, long perceptDur) {
+
+        return (TaskRegion r) -> {
+
+            long regionTime =
+                    //r.furthestTimeTo(when);
+                    r.nearestPointInternal(when);
+
+            float timeDist = (Math.abs(when - regionTime)) / ((float) perceptDur);
+
+
+            float evi =
+                    c2wSafe((float) r.coord(true, 2)); //max
+//            float dt =
+//                    (float) r.range(1);
+            //(float)r.coord(false, 2); //min
+            //(float) (r.coord(true, 2) + r.coord(false, 2)) / 2f; //avg
+
+            //float antiConf = 1f - conf;
+            float antivalue = 1f / (1f + evi);
+
+            if (r.start() >= when - perceptDur)
+                antivalue /= PRESENT_AND_FUTURE_BOOST;
+
+            //float span = (float)(1 + r.range(0)/dur); //span becomes less important the further away, more fair to short near-term tasks
+
+            return (float) ((antivalue) * (1 + timeDist));
+        };
+    }
+
+    private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
+        if (start == ETERNAL) {
+            return RTreeBeliefTable::valueEternal;
+        } else {
+            return x -> value(x, start, end, dur);
+        }
+    }
+
+    private static float valueEternal(Task x) {
+        return x.eviEternalized() * x.range();
+    }
+
+    /**
+     * simple version, ignores term content
+     */
+    private static FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
+        if (template == null) { // || !template.isTemporal() || template.equals(template.root())) {
+            return taskStrength(start, end, dur);
+        } else {
+            if (start == ETERNAL) {
+                return x -> valueEternal(x) / costDtDiff(template, x, dur);
+            } else {
+                return x -> value(x, start, end, dur) / costDtDiff(template, x, dur);
+            }
+        }
+    }
+
+    private static float costDtDiff(@NotNull Term template, Task x, int dur) {
+        return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
+    }
+
+    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
+        //Set<TaskRegion> seen = new HashSet(size());
+        return (t) -> {
+            //if (seen.add(t)) {
+            Task tt = t.task();
+            if (!tt.isDeleted())
+                return each.test(tt);
+//            }
+//            else {
+//                System.out.println("aha");
+//            }
+            return true;
+        };
+    }
+
+    public static RTreeBeliefTable build(Term concept) {
+        if (!concept.hasAny(Op.Temporal)) {
+            return new RTreeBeliefTable.Simple();
+        } else {
+            return new RTreeBeliefTable.Complex();
+        }
+    }
+
+    @Override
+    public void update(SignalTask task, Runnable change) {
+        write(treeRW -> {
+
+            boolean removed = treeRW.remove(task);
+            /*if (!removed)
+                return;*/
+
+            change.run();
+
+            if (!task.isDeleted()) {
+                boolean added = treeRW.add(task);
+            }
+        });
+    }
 
     @Override
     public boolean isEmpty() {
@@ -142,13 +299,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             ScanFilter tt = new ScanFilter(maxTruths, maxTruths,
                     task(taskStrength(start, end, dur)),
                     maxTries)
-                .scan(this, start, end);
+                    .scan(this, start, end);
 
             if (!tt.isEmpty()) {
 
                 TruthPolation t = Param.truth(start, end, dur).add(tt);
 
-                if (ete!=null)
+                if (ete != null)
                     t.add(ete);
 
                 return t.preFilter().filterCyclic().truth();
@@ -173,15 +330,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
-
-
-
-
-    @Deprecated private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
-        //return new CachedFloatFunction<>(size(), t -> +ts.floatValueOf((Task) t));
-        return t -> ts.floatValueOf((Task)t);
-    }
-
+//    /**
+//     * measures only temporal proximity to the given range
+//     */
+//    private FloatFunction<Task> taskRelevance(long start, long end) {
+//        double dur = 1 + tableDur();
+//        return (Task x) -> (float) (dur / (1 + x.minDistanceTo(start, end))); // * .range() ?
+//    }
 
     @Override
     public void setCapacity(int capacity) {
@@ -230,6 +385,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     }
 
+
     private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, Consumer<Tasked> added, NAR nar) {
         int cap = this.capacity;
         int s = treeRW.size();
@@ -242,10 +398,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         int perceptDur = nar.dur();
         FloatFunction<Task> taskStrength =
                 //new CachedFloatFunction<>(
-                        //s,
-                        //taskStrength(now-dur/2, now+dur/2, dur);
-                        taskStrengthWithFutureBoost(now, PRESENT_AND_FUTURE_BOOST, now, perceptDur);
-                //);
+                //s,
+                //taskStrength(now-dur/2, now+dur/2, dur);
+                taskStrengthWithFutureBoost(now, PRESENT_AND_FUTURE_BOOST, now, perceptDur);
+        //);
 
         int e = 0;
         while (treeRW.size() > cap) {
@@ -261,173 +417,190 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
     /**
-     * results in at least 1 less task being present in the table
-     * assumes called with writeLock
-     * returns false if the input was rejected as too weak
+     * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task inputRegion, FloatFunction<Task> taskStrength, Consumer<Tasked> added, int cap, long now, long tableDur, int perceptDur, NAR nar) {
+    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, Consumer<Tasked> added, int cap, long now, long tableDur, int perceptDur, NAR nar) {
 
 
-
-        float inputStrength = inputRegion != null ? taskStrength.floatValueOf(inputRegion) : Float.POSITIVE_INFINITY;
+        float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
 
         FloatFunction<TaskRegion> leafRegionWeakness =
                 /*new CachedFloatFunction*/(regionWeakness(now, tableDur, perceptDur));
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
+        Top2<Leaf<TaskRegion>> weakLeaf = new Top2(leafWeakness);
 
         FloatFunction<TaskRegion> weakestTask =
-                (t -> 1f/(1f+taskStrength.floatValueOf((Task) t)));
+                (t -> 1f / (1f + taskStrength.floatValueOf((Task) t)));
 
-        Top2<Leaf<TaskRegion>> mergeVictim = new Top2(leafWeakness);
+        Top<TaskRegion> closest = input!=null ? new Top<>(
+                mergabilityWith(input)
+        ) : null;
+        Top<TaskRegion> weakest = new Top<>(
+                weakestTask
+        );
 
-        //0.
-        //int startSize = tree.size();
-        //if (startSize <= cap) return true; //compressed thanks to another thread
-
-
-        //1.
-        findEvictable(tree, tree.root(), mergeVictim);
-        if (tree.size() <= cap)
-            return true; //done, due to a removal of deleted items while finding eviction candiates
-
-        //2.
-
-        if (mergeVictim.size() > 0) {
-            if (mergeOrDelete(tree, mergeVictim, taskStrength, inputStrength, weakestTask, added, nar)) {
-                return tree.size() <= cap;
-            }
+        //evaluate the table
+        if (!findEvictable(tree, tree.root(), closest, weakest, weakLeaf)) {
+            //removed at least one, due to encountering deleted items while searching eviction candidates
+            return true;
         }
 
-        //3.
-        /*
-                    Object[] ld = l.data;
+        //otherwise, still necessary to remove or evict:
+        assert (tree.size() >= cap);
 
-            // remove any deleted tasks while scanning for victims
-            for (int i = 0; i < size; i++) {
-                TaskRegion t = (TaskRegion) ld[i];
-//                if (t.task().isDeleted()) {
-//                    //TODO this may disrupt the iteration being conducted, it may need to be deferred until after
-//                    //boolean deleted = tree.remove(t); //already has write lock so just use non-async methods
-//
-//                } else {
-                deleteVictims.accept(t);
-//                }
-            }
-         */
-//        for (TaskRegion d : deleteVictim.list) {
-//            if (d != null) {
-//                if (tree.remove(d)) {
-//                    //TODO forward to a neighbor?
-//                    Task dt = d.task();
-//                    dt.delete();
-//                    changes.put(dt, false);
-//                    if (tree.size() <= cap)
-//                        return true;
-//                }
-//            } else {
-//                break;
-//            }
-//        }
+        //decide what to do and do it
+        if (mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, added, nar)) {
+            return true;
+        }
+
 
         return false; //?? could be a problem if it reaches here
     }
 
 
-    private boolean mergeOrDelete(Space<TaskRegion> treeRW, Top2<Leaf<TaskRegion>> l, FloatFunction<Task> taskStrength, float inputStrength, FloatFunction<TaskRegion> weakestTasks, Consumer<Tasked> added, NAR nar) {
-        TaskRegion a, b;
+    private boolean mergeOrDelete(Space<TaskRegion> treeRW,
+                                  @Nullable Task I /* input */,
+                                  @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Top2<Leaf<TaskRegion>> weakLeaf, FloatFunction<Task> taskStrength, float inputStrength,
+                                  FloatFunction<TaskRegion> weakness,
+                                  Consumer<Tasked> added, NAR nar) {
 
-        Leaf<TaskRegion> la = l.a;
-        short sa = la.size;
-        if (sa > 2) {
-            Top2<TaskRegion> w = new Top2<>(weakestTasks);
-            la.forEach(w::add);
-            a = w.a;
-            b = w.b;
-        } else if (sa == 2) {
-            a = la.get(0);
-            b = la.get(1);
+        //TODO compare the value of revising with input task against its cost of removing the input,
+        // and also the cost of removing tasks from the weakest leaf below
+
+
+        Task A, B, W, AB, IW;
+
+        if (closest!=null && closest.the != null) {
+            Task theClosest = (Task) closest.the;
+            IW = Revision.mergeTemporal(nar, I, theClosest);
         } else {
-            a = la.get(0);
-            Leaf<TaskRegion> lb = l.b;
-            if (lb != null) {
-                int sb = lb.size();
-                if (sb > 1) {
-                    Top<TaskRegion> w = new Top<>(weakestTasks);
-                    lb.forEach(w);
-                    b = w.the;
-                } else if (sb == 1) {
-                    b = lb.get(0);
-                } else {
-                    b = null;  //??
-                }
+            IW = null;
+        }
+
+
+        if (!weakLeaf.isEmpty()) {
+            TaskRegion a, b;
+
+            Leaf<TaskRegion> la = weakLeaf.a;
+            short sa = la.size;
+            if (sa > 2) {
+                Top2<TaskRegion> w = new Top2<>(weakness);
+                la.forEach(w::add);
+                a = w.a;
+                b = w.b;
+            } else if (sa == 2) {
+                a = la.get(0);
+                b = la.get(1);
             } else {
-                b = null;
+                a = la.get(0);
+                Leaf<TaskRegion> lb = weakLeaf.b;
+                if (lb != null) {
+                    int sb = lb.size();
+                    if (sb > 1) {
+                        Top<TaskRegion> w = new Top<>(weakness);
+                        lb.forEach(w);
+                        b = w.the;
+                    } else if (sb == 1) {
+                        b = lb.get(0);
+                    } else {
+                        b = null;  //??
+                    }
+                } else {
+                    b = null;
+                }
+            }
+            A = (Task)a;
+            B = (Task)b;
+        } else {
+            A = null;
+            B = null;
+        }
+
+
+
+        W = (weakest!=null && weakest.the!=null) ? (Task) weakest.the : A;
+        if (W == null)
+            return false;  //??
+
+        float value[] = new float[4];
+        value[RejectInput] =
+                I!=null ? -taskStrength.floatValueOf(I) : Float.NEGATIVE_INFINITY;
+        value[EvictWeakest] =
+                (I!=null ? taskStrength.floatValueOf(I) : 0) - taskStrength.floatValueOf(W);
+        value[MergeWeakest] =
+                IW!=null ? (+taskStrength.floatValueOf(IW) - taskStrength.floatValueOf(W)) : Float.NEGATIVE_INFINITY;
+
+        if (B == null) {
+            AB = null;
+            value[MergeLeaf] = Float.NEGATIVE_INFINITY; //impossible
+        } else {
+            AB = Revision.mergeTemporal(nar, A, B);
+            if (AB == null || (AB.equals(A) || AB.equals(B))) {
+                value[MergeLeaf] = Float.NEGATIVE_INFINITY; //impossible
+            } else {
+                value[MergeLeaf] =
+                        (I!=null ? taskStrength.floatValueOf(I) : 0)
+                        + taskStrength.floatValueOf(AB)
+                        - taskStrength.floatValueOf(A)
+                        - taskStrength.floatValueOf(B)
+                        ;
             }
         }
 
-        assert (a != null);
-        Task at = a.task();
-        float aPri = at.pri();
+        byte[] vi = new byte[] { 0, 1, 2, 3 };
+        ArrayUtils.sort(vi, 0, 3, i -> -value[i]);
 
-        treeRW.remove(at);
+        byte best = vi[0];
 
+        if (value[best] == Float.NEGATIVE_INFINITY) {
+            //no options
+            return false;
+        }
 
-        if (b != null) {
-            Task bt = b.task();
+        switch (best) {
 
-            if (bt.isDeleted()) {
-                treeRW.remove(bt);
+            case EvictWeakest: {
+                treeRW.remove(W);
+                W.delete();
                 return true;
-            } else {
-                at.meta("@", bt);
             }
 
-            if (aPri != aPri) //already deleted
+            case RejectInput: {
+                I.delete();
+                return false;
+            }
+
+            case MergeWeakest: {
+                I.delete();
+                if (treeRW.add(IW))
+                    added.accept(IW);
                 return true;
+            }
 
-            Task c = Revision.mergeTemporal(nar, at, bt);
-
-            if (c != null && !c.equals(a) && !c.equals(b)) {
-
-                boolean allowMerge;
-
-                if (inputStrength != inputStrength) {
-                    allowMerge = true;
-                } else {
-                    float strengthRemoved = taskStrength.floatValueOf(at) + taskStrength.floatValueOf(bt);
-                    float strengthAdded = taskStrength.floatValueOf(c) + inputStrength;
-                    allowMerge = strengthAdded >= strengthRemoved;
-                }
-
-                if (allowMerge) {
+            case MergeLeaf: {
 
 
-                    treeRW.remove(bt);
+                if (treeRW.add(AB)) {
+                    treeRW.remove(A);
+                    A.delete(/*fwd: c*/);
+                    treeRW.remove(B);
+                    B.delete(/*fwd: c*/);
 
-                    ((NALTask) at).delete(c); //forward
-                    ((NALTask) bt).delete(c); //forward
-
-                    if (treeRW.add(c))
-                        added.accept(c);
-
+                    added.accept(AB);
                     return true;
                 } else {
-                    //merge result is not strong enough
-                    c.delete();
+                    if (I!=null)
+                        I.delete();
+                    return false; //?? not sure why this might happen but in case it does, reject the input
                 }
-
             }
+
+            default:
+                throw new UnsupportedOperationException();
         }
 
-        //TODO do this outside of the locked section
-        if (Param.ETERNALIZE_EVICTED_TEMPORAL_TASKS)
-            eternalize(at, added, nar);
-
-        at.delete();
-
-        return true;
     }
 
     private void eternalize(Task x, Consumer<Tasked> added, NAR nar) {
@@ -465,105 +638,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     nar.input(eternalized);
 
                     if (!(eternalized.isDeleted()))
-                        ((NALTask) x).delete(eternalized);
+                        x.delete(/*fwd: eternalized*/);
                 }
 
                 return null;
             });
         }
 
-    }
-
-
-    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion, ?> next, Top2<Leaf<TaskRegion>> mergeVictims) {
-        if (next instanceof Leaf) {
-
-            Leaf l = (Leaf) next;
-            for (Object _x : l.data) {
-                if (_x == null)
-                    break; //end of list
-
-                TaskRegion x = (TaskRegion) _x;
-                if (((Deleteable) x).isDeleted()) {
-                    //found a deleted task in the leaf, we need look no further
-                    boolean removed = tree.remove(x);
-//                    if (!removed) {
-//                        tree.remove(x);
-//                    }
-                    assert (removed);
-                    return false;
-                }
-            }
-
-            mergeVictims.accept(l);
-
-        } else { //if (next instanceof Branch)
-
-            Branch b = (Branch) next;
-
-            for (Node ww : b.data) {
-                if (ww == null)
-                    break; //end of list
-                else if (!findEvictable(tree, ww, mergeVictims))
-                    return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    /**
-     * TODO use the same heuristics as task strength
-     */
-    private static FloatFunction<TaskRegion> regionWeakness(long when, long tableDur, long perceptDur) {
-
-        return (TaskRegion r) -> {
-
-            long regionTime =
-                    //r.furthestTimeTo(when);
-                    r.nearestPointInternal(when);
-
-            float timeDist = (Math.abs(when - regionTime)) / ((float) perceptDur);
-
-
-            float evi =
-                    c2wSafe((float) r.coord(true, 2)); //max
-//            float dt =
-//                    (float) r.range(1);
-            //(float)r.coord(false, 2); //min
-            //(float) (r.coord(true, 2) + r.coord(false, 2)) / 2f; //avg
-
-            //float antiConf = 1f - conf;
-            float antivalue = 1f / (1f + evi);
-
-            if (r.start() >= when - perceptDur)
-                antivalue /= PRESENT_AND_FUTURE_BOOST;
-
-            //float span = (float)(1 + r.range(0)/dur); //span becomes less important the further away, more fair to short near-term tasks
-
-            return (float) ((antivalue) * (1 + timeDist));
-        };
-    }
-
-//    /**
-//     * measures only temporal proximity to the given range
-//     */
-//    private FloatFunction<Task> taskRelevance(long start, long end) {
-//        double dur = 1 + tableDur();
-//        return (Task x) -> (float) (dur / (1 + x.minDistanceTo(start, end))); // * .range() ?
-//    }
-
-    private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
-        if (start == ETERNAL) {
-            return RTreeBeliefTable::valueEternal;
-        } else {
-            return x -> value(x, start, end, dur);
-        }
-    }
-
-    private static float valueEternal(Task x) {
-        return x.eviEternalized() * x.range();
     }
 
     private double tableDur() {
@@ -584,25 +665,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) *
                     value(x, when, when, tableDur);
         };
-    }
-
-    /**
-     * simple version, ignores term content
-     */
-    private static FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
-        if (template == null) { // || !template.isTemporal() || template.equals(template.root())) {
-            return taskStrength(start, end, dur);
-        } else {
-            if (start == ETERNAL) {
-                return x -> valueEternal(x) / costDtDiff(template, x, dur);
-            } else {
-                return x -> value(x, start, end, dur) / costDtDiff(template, x, dur);
-            }
-        }
-    }
-
-    private static float costDtDiff(@NotNull Term template, Task x, int dur) {
-        return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
     }
 
     @Override
@@ -627,21 +689,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
     }
 
-    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
-        //Set<TaskRegion> seen = new HashSet(size());
-        return (t) -> {
-            //if (seen.add(t)) {
-                Task tt = t.task();
-                if (!tt.isDeleted())
-                    return each.test(tt);
-//            }
-//            else {
-//                System.out.println("aha");
-//            }
-            return true;
-        };
-    }
-
     @Override
     public void whileEach(Predicate<? super Task> each) {
         whileEachIntersecting(root().bounds(), scanWhile(each));
@@ -662,18 +709,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return remove(x);
     }
 
-
     public void print(PrintStream out) {
         forEachTask(t -> out.println(t.toString(true)));
         stats().print(out);
-    }
-
-    public static RTreeBeliefTable build(Term concept) {
-        if (!concept.hasAny(Op.Temporal)) {
-            return new RTreeBeliefTable.Simple();
-        } else {
-            return new RTreeBeliefTable.Complex();
-        }
     }
 
     private static class Simple extends RTreeBeliefTable {
@@ -707,7 +745,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     task(taskStrength(template, start, end, dur)),
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
                     filter)
-                .scan(this, start, end);
+                    .scan(this, start, end);
 
 
             int n = tt.size();
@@ -726,24 +764,24 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     if (x == null)
                         break;//end of list
                     int dt = (((Task) x).term()).dt();
-                    if (dt!=0 && dt!=DTERNAL) {
-                        if (dt < -dur/2) neg++;
-                        else if (dt > +dur/2) pos++;
+                    if (dt != 0 && dt != DTERNAL) {
+                        if (dt < -dur / 2) neg++;
+                        else if (dt > +dur / 2) pos++;
                     }
                 }
                 if (pos > 0 && neg > 0) {
                     boolean polarity =
                             (pos == neg) ?
-                                ((template.dt()!=DTERNAL && template.dt()!=0 && template.dt()!=XTERNAL)) ? (template.dt() > 0) : nar.random().nextBoolean() //if equal, choose on polarity at random
+                                    ((template.dt() != DTERNAL && template.dt() != 0 && template.dt() != XTERNAL)) ? (template.dt() > 0) : nar.random().nextBoolean() //if equal, choose on polarity at random
                                     :
                                     (pos > neg);
 
                     FasterList<TaskRegion> xx = new FasterList<>(0, new TaskRegion[n - (polarity ? neg : pos)]);
-                    for (TaskRegion x: ttt) {
+                    for (TaskRegion x : ttt) {
                         if (x == null)
                             break;//end of list
                         int dt = (((Task) x).term()).dt();
-                        if (dt == 0 || dt == DTERNAL || (polarity && dt > +dur/2) || (!polarity && dt < -dur/2))
+                        if (dt == 0 || dt == DTERNAL || (polarity && dt > +dur / 2) || (!polarity && dt < -dur / 2))
                             xx.addWithoutResizeCheck(x);
                     }
                     ttt = xx.array();
@@ -791,7 +829,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             Task e = existing.task();
             ((NALTask) e).causeMerge(i);
             i.delete();
-            i.meta("merge", e);
+            i.meta("merge", e); //signals success to activate what was input
         }
 
     }
@@ -828,7 +866,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         @Override
         protected boolean addUnique(TaskRegion x) {
             --attemptsRemain;
-            return  (filter == null || (!(x instanceof Task)) || validTask((Task)x))
+            return (filter == null || (!(x instanceof Task)) || validTask((Task) x))
                     &&
                     super.addUnique(x);
         }
@@ -865,7 +903,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
                     otherwise limit by the Leaf capacity */
-                if ((!all && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (all && s<= TRUTHPOLATION_LIMIT)) {
+                if ((!all && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (all && s <= TRUTHPOLATION_LIMIT)) {
                     tree.forEach(this::add);
                     return;
                 }

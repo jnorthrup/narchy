@@ -3,7 +3,6 @@ package jcog.pri.op;
 import jcog.Util;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiConsumer;
 
@@ -25,9 +24,6 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
      * */
     float merge(Priority existing, Prioritized incoming);
 
-
-
-    @Nullable
     @Override
     default void accept(Priority existing, Prioritized incoming) {
         merge(existing, incoming);
