@@ -57,8 +57,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
                 BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
 
-                bt = table.match(subStart, subEnd, concept, n, (x)->
-                    x.intersects(subStart, subEnd) && d.doesntOverlap(x)
+                bt = table.match(subStart, subEnd, concept, (x)->
+                    x.intersects(subStart, subEnd) && d.doesntOverlap(x), n
                 );
                 if (bt != null) {
                     bt = Task.project(bt, subStart, subEnd, n, negated);

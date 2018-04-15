@@ -336,7 +336,7 @@ public abstract class ConsoleAgent extends NAgentX {
         }
 
         @Override
-        public boolean onKey(KeyEvent e, boolean pressed) {
+        public boolean tryKey(KeyEvent e, boolean pressed) {
             if (write) return false; //ignore own
 
             if (pressed) {

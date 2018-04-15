@@ -3,6 +3,7 @@ package nars.concept;
 import jcog.pri.PLink;
 import nars.*;
 import nars.control.Activate;
+import nars.derive.Deriver;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
@@ -42,10 +43,11 @@ public class ActivateTest {
 
         Term A = $.the("a");
 
-//        BatchActivation ba = new BatchActivation();
+        Deriver dummy = new Deriver(n, "(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:Weak)");
+
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
-            cf.premiseMatrix(n, (task, term) -> {
+            dummy.premiseMatrix(cf, n, (task, term) -> {
                 Task ptask = task;
                 Term pterm = term.get();
                 System.out.println("tasklink=" + ptask + " termlink=" + pterm);

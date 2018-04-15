@@ -838,9 +838,9 @@ public class PhyWall extends Wall implements Animated {
     final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
 
-        Surface s = super.onTouch(finger, buttons);
+        Surface s = super.tryTouch(finger);
         if (s != null && s != this && !(s instanceof PhyWindow))
             return s; //some other content, like an inner elmeent of a window but not a window itself
 

@@ -206,7 +206,7 @@ public class TermIOTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-//        Param.DEBUG = true;
+//
 
         NAR a = NARS.tmp()
 //                .log()

@@ -1,7 +1,7 @@
 package jcog.pri.op;
 
+import jcog.Util;
 import jcog.bag.Bag;
-import jcog.pri.Pri;
 import jcog.pri.Priority;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -16,10 +16,11 @@ public class PriForget<P extends Priority> implements Consumer<P> {
 
     public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
 
-    public final float priRemoved;
+    //public final float priRemoved;
+    public final float priMult;
 
-    public PriForget(float priRemoved) {
-        this.priRemoved = priRemoved;
+    public PriForget(float priRemovedPct) {
+        this.priMult = Util.unitize(1f - priRemovedPct);
     }
 
 
@@ -40,13 +41,20 @@ public class PriForget<P extends Priority> implements Consumer<P> {
 
         if ((s > 0) && (pressure > 0) && (c > 0) && (mass > 0) && temperature > 0) {
 
-            float eachForget = (temperature * pressure)/(mass) / c;
-                    //* ((float)s)/c;
-                    //* (mass/c) /* absolute density factor */
+            float eachMustForgetPct =
+                    temperature * //global rate
+                    pressure / (pressure + mass) //total fraction, by mass, to depressurize
+                    // * (((float)s) / c); //emptiness deduction
+                    * (((float)s) / c)*(1f-(mass/s)); //emptiness deduction corrected in proportion to average pri
 
+//            float eachMustForgetPct =
+//                      (temperature * pressure)
+//                    / (pressure + mass)
+//                    * (((float)s) / c);
 
-            if (eachForget > priEpsilon)
-                return f.valueOf(eachForget);
+            if (eachMustForgetPct > (1f/(c*c))) {
+                return f.valueOf(eachMustForgetPct);
+            }
 
         }
         return null;
@@ -57,8 +65,8 @@ public class PriForget<P extends Priority> implements Consumer<P> {
         if (size > 0) {
             return forget(size,
                     b.capacity(),
-                    Math.max(Pri.EPSILON, b.depressurize()),
-                    Math.max(Pri.EPSILON * size, b.mass()),
+                    b.depressurize(),
+                    b.mass(),
                     temperature, priEpsilon, f);
         } else {
             return null;
@@ -69,7 +77,9 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     public void accept(P b) {
 
         //average constant removed, not fair to low priority items
-        b.priSub(priRemoved);
+        //b.priSub(priRemoved);
+
+        b.priMult(priMult);
 
         //proportional removal, tax rate proportional to priority
 //        float p = b.pri();

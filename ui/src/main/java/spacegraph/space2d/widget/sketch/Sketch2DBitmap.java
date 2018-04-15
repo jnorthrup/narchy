@@ -55,11 +55,11 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
 //    FastBlur fb;
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
 
         if (finger!=null) {
             v2 hitPoint = finger.relativePos(content);
-            if (hitPoint.inUnit() && buttons != null && buttons.length > 0 && buttons[0] == 1) {
+            if (hitPoint.inUnit() && finger.buttonDown[0]) {
 
 //            if (fb == null)
 //                fb = new FastBlur(pw, ph);
@@ -96,7 +96,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
             }
         }
 
-        return super.onTouch(finger, buttons);
+        return super.tryTouch(finger);
     }
 
     private void mix(int[] pix, int i) {

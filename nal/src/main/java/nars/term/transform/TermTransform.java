@@ -163,14 +163,14 @@ public interface TermTransform extends TermContext {
 
 
     /**
-     * change all query variables to dep vars
+     * change all query variables to dep vars by use of Op.imdex
      */
     TermTransform queryToDepVar = new TermTransform() {
-        @Override
-        public Term transformAtomic(Term atomic) {
-            return (atomic.op() == VAR_QUERY) ?
-                    $.varDep((((NormalizedVariable) atomic).anonNum())) :
-                    atomic;
+        @Override public Term transformAtomic(Term atomic) {
+            return atomic.op() != VAR_QUERY ?
+                    atomic
+                    :
+                    Op.Imdex;
         }
     };
 

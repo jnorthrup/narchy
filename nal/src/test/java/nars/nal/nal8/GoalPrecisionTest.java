@@ -43,7 +43,7 @@
 //
 //    protected void run(@NotNull NAR n, int end) {
 //
-//        Param.DEBUG = true;
+//
 //        n.onExecution($.the("x"), (OperationConcept c) -> {
 //
 //            c.goals().forEach((a)-> {

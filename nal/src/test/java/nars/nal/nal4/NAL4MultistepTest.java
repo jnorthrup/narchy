@@ -62,7 +62,7 @@ public class NAL4MultistepTest extends NALTest {
     public void nal4_everyday_reasoning_easier() throws Narsese.NarseseException {
         int time = 2550;
 
-        //Param.DEBUG = true;
+        //
 
         TestNAR tester = test;
         //tester.nar.log();

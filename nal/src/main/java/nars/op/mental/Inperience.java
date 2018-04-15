@@ -7,7 +7,6 @@ import nars.Op;
 import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.task.signal.SignalTask;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
@@ -17,7 +16,6 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,27 +105,28 @@ public class Inperience extends LeakBack {
 //        });
     }
 
-    @Nullable
-    static Term reify(Task s, NAR nar) {
+    static Term reify(Task x, NAR nar) {
 
-        Truth tr = s.truth();
+        Truth tr = x.truth();
 
-        Term x = s.term().negIf(tr != null && tr.isNegative());
-        Term xx = x instanceof Compound && x.hasAny(VAR_QUERY) ? x
-                .transform(TermTransform.queryToDepVar) : x;
-        if (!xx.op().conceptualizable)
-            return null;
+        Term xx = x.term().negIf(tr != null && tr.isNegative());
+
+        xx = !x.isBeliefOrGoal() ? xx.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).conceptualizableOrNull() : xx;
+        if (xx == Null) return Null;
+
+        xx = xx.hasAny(VAR_QUERY) ? xx.transform(TermTransform.queryToDepVar).conceptualizableOrNull() : xx;
+        if (xx == Null) return Null;
 
         Term self = nar.self();
-        switch (s.punc()) {
+        switch (x.punc()) {
             case BELIEF:
                 return $.func(believe, self, xx);
             case GOAL: {
-                long start = s.start();
-                long end = s.end();
-                float ge = s.expectation(start, end, nar.dur());
+                long start = x.start();
+                long end = x.end();
+                float ge = x.expectation(start, end, nar.dur());
                 if (ge == ge) {
-                    Truth bt = nar.beliefTruth(s.term(), start, end);
+                    Truth bt = nar.beliefTruth(x.term(), start, end);
                     if (bt != null) {
                         float be = bt.expectation();
                         Term feeling;
@@ -174,9 +173,10 @@ public class Inperience extends LeakBack {
 //        if (!bloomFilter.addIfMissing(next))
 //            return false; //repeated
 
-        Term nextTerm = Image.imageNormalize(next.term());
+        Term nextTerm = next.term();
         if (nextTerm.op() == INH) {
-            Term pred = nextTerm.sub(1);
+            Term nextTermInh = Image.imageNormalize(nextTerm);
+            Term pred = nextTermInh.sub(1);
             if (pred.op()==ATOM && operators.contains(pred))
                 return false; //prevent directly re-experiencing an inperience
         }
@@ -228,14 +228,9 @@ public class Inperience extends LeakBack {
 
         float xPri = x.priElseZero();
 
-        Term c = reify(x, nar);
-        if (c == null || !c.op().conceptualizable)
+        Term c = reify(x, nar).normalize();
+        if (!c.op().conceptualizable)
             return 0;
-
-        c = (x.isBeliefOrGoal() ? c : c.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL)).normalize();
-        if (c == null || !c.op().conceptualizable)
-            return 0;
-
 
         long now = nar.time();
 

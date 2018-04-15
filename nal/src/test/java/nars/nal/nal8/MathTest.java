@@ -18,7 +18,7 @@ public class MathTest {
 //    }
     @Test
     public void testImplVarAdd1() throws Narsese.NarseseException {
-        Param.DEBUG = true;
+
         NAR t = new NARS().get();
         //t.log();
         //t.input("i:{0,1,2,3,4}.");

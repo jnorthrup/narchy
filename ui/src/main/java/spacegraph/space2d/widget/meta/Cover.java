@@ -34,11 +34,11 @@ public class Cover extends Widget {
     }
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
         if (!uncovered) {
             onClick.accept(finger);
         }
-        return super.onTouch(finger, buttons);
+        return super.tryTouch(finger);
 //        Surface s = super.onTouch(finger, hitPoint, buttons);
 //        if (s != null) {
 //            return s;

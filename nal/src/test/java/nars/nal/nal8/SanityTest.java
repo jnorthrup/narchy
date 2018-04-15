@@ -27,7 +27,7 @@
 //
 //    @Test
 //    public void testTape1() throws Narsese.NarseseException {
-//        Param.DEBUG = true;
+//
 //        NAR n = NARS.tmp();
 //
 //        n.want[MetaGoal.Perceive.ordinal()] = -1f; //reduce spam
@@ -78,7 +78,7 @@
 //
 //    @Test
 //    public void testSanity0() {
-//        Param.DEBUG = true;
+//
 //
 //        Term happy = $.the("happy");
 //        Term up = $.the("up");
@@ -127,7 +127,7 @@
 //    @Test
 //    public void testSanity1() {
 //
-//        Param.DEBUG = true;
+//
 //        NAR n = NARS.tmp();
 //
 //        final int[] togglesPos = {0};

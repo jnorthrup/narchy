@@ -30,9 +30,11 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.map.ImmutableMap;
+import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +51,9 @@ import static nars.truth.TruthFunctions.c2wSafe;
  * evaluates a premise (task, belief, termlink, taskLink, ...) to derive 0 or more new tasks
  */
 public class Derivation extends PreDerivation {
+
+
+
 
 
     /** initial capacity, it will grow as needed */
@@ -118,7 +123,7 @@ public class Derivation extends PreDerivation {
     /**
      * evidential overlap
      */
-    public float overlapDouble, overlapSingle;
+    public boolean overlapDouble, overlapSingle;
 
     /** the base priority determined by the task and/or belief (tasks) of the premise.
      * note: this is not the same as the premise priority, which is determined by the links
@@ -157,6 +162,8 @@ public class Derivation extends PreDerivation {
     /** precise time that the task and belief truth are sampled */
     public long taskAt, beliefAt;
     private int taskUniques;
+
+    public ImmutableLongSet taskStamp;
 
 
 ////    public final TopNUniquePremises premises = new TopNUniquePremises();
@@ -472,6 +479,10 @@ public class Derivation extends PreDerivation {
         assert(taskTerm!=null): (_task + " could not be anonymized: " + _task.term().anon() + " , " + taskTerm);
 
 
+        if (this._task == null || !Arrays.equals(this._task.stamp(), _task.stamp())) {
+            this.taskStamp = Stamp.toSet(_task);
+        }
+
         if (this._task==null || this._task != _task) {
 
             //TODO handle if 'dur' changed but task hasn't.  anon should be used to get a new task. this would occurr rarely though
@@ -572,7 +583,7 @@ public class Derivation extends PreDerivation {
 
 
         long[] taskStamp = task.stamp();
-        this.overlapSingle = task.isCyclic() ? 1 : 0; //Stamp.cyclicity(taskStamp);
+        this.overlapSingle = task.isCyclic(); //Stamp.cyclicity(taskStamp);
 
         if (_belief != null) {
 
@@ -590,7 +601,7 @@ public class Derivation extends PreDerivation {
 //            }
 
             long[] beliefStamp = _belief.stamp();
-            this.overlapDouble =
+            this.overlapDouble = Stamp.overlapsAny(this.taskStamp, beliefStamp);
 
                     //Math.min(1, Util.sum(
 //                    Util.or(
@@ -602,10 +613,10 @@ public class Derivation extends PreDerivation {
 
 //                    (task.isCyclic() /* || belief.isCyclic()*/) ?
 //                            1 :
-                            Stamp.overlapFraction(taskStamp, beliefStamp);
+//                            Stamp.overlapFraction(taskStamp, beliefStamp);
 
         } else {
-            this.overlapDouble = 0;
+            this.overlapDouble = false;
         }
 
 

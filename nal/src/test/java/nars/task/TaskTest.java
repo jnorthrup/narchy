@@ -127,7 +127,7 @@ public class TaskTest {
 
     public void inputTwoUniqueTasks(@NotNull NAR n) throws Narsese.NarseseException {
 
-        //Param.DEBUG = true;
+        //
 
         Task x = n.inputTask("<a --> b>.");
         assertArrayEquals(new long[]{1}, x.stamp());
@@ -152,7 +152,7 @@ public class TaskTest {
     @Test
     public void testDoublePremiseMultiEvidence() throws Narsese.NarseseException {
 
-        //Param.DEBUG = true;
+        //
         //this.activeTasks = activeTasks;
         NAR d = new NARS().get();
         //d.log();

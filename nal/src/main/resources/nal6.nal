@@ -1,5 +1,4 @@
-    //strong unification
-    //      should these be restricted to "$" var subst
+//strong unification
     (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:Deduction)
     //(Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionN)
     (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
@@ -21,14 +20,18 @@
 
     B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
     B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN)
-        B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:Deduction, Goal:Induction)
-        B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:DeductionN, Goal:InductionN)
-            B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:Deduction)
-            B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:DeductionN)
-        B, (X ==> (&&,C,A..+)), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:Abduction, Goal:Deduction)
-        B, (X ==> (&&,--C,A..+)), notImpl(B) |- subIfUnifiesAny((X &&+- A..+),C,B), (Belief:AbductionN, Goal:DeductionN)
+        B, (X ==> (&&,C,A..+)), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Abduction, Goal:Deduction)
+        B, (X ==> (&&,--C,A..+)), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:AbductionN, Goal:DeductionN)
             B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:Abduction)
             B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:AbductionN)
+        B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:Induction)
+        B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:DeductionN, Goal:InductionN)
+                B, (--(&&,C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:Deduction, Goal:Induction)
+                B, (--(&&,--C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:DeductionN, Goal:InductionN)
+            B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:Deduction)
+            B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:DeductionN)
+                B, (--(&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==>+- X),C,B)), (Belief:Deduction)
+                B, (--(&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==>+- X),C,B)), (Belief:DeductionN)
 
             //(Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
               //  (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
@@ -59,19 +62,18 @@
 
     //If after S M happens, and after M then P happens, so S then P happens
     (S ==> M), (M ==> P) |- (S ==>+- P), (Belief:Deduction)
-
-        //if after S --M happens, and after --M then P happens, so S then P happens
-            (S ==> M), (--M ==> P) |- (S ==>+- P), (Belief:DeductionN)
-
-        //deduction with unification
-        (S ==> M), (N ==> P), neq(M,N) |- subIfUnifiesAny((S ==>+- P), M, N), (Belief:Deduction)
-            (S ==> M), (--N ==> P), neq(M,N) |- subIfUnifiesAny((S ==>+- P), M, N), (Belief:DeductionN)
-
-        //(--S ==> M), (M ==> P) , neqRCom(S,P), task(".") |- (S ==>+- P), (Punctuation:Question)
         (S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
         (S ==> M), (M ==> P), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-        //(S ==> M), (M ==> P) |- (S ==>+- P), (Belief:Deduction)
+        //if after S --M happens, and after --M then P happens, so S then P happens
+        (S ==> M), (--M ==> P) |- (S ==>+- P), (Belief:DeductionN)
+            (S ==> M), (--M ==> P), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
+            (S ==> M), (--M ==> P), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
+
+        //deduction with unification
+        //(S ==> M), (N ==> P), neq(M,N) |- subIfUnifiesAny((S ==>+- P), M, N), (Belief:Deduction)
+            //(S ==> M), (--N ==> P), neq(M,N) |- subIfUnifiesAny((S ==>+- P), M, N), (Belief:DeductionN)
+
 
 
 
@@ -80,20 +82,12 @@
       (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
       (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-    (S ==> M), (P ==> M) |- (S ==>+- P), (Belief:Induction)
+    (S ==> M), (P ==> M) |- (S ==>+- P), (Belief:InductionPB)
 
-      (P ==> M), (S ==> M), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
-      (P ==> M), (S ==> M), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
+      (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
+      (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
     (S ==> M), (M ==> P) |- (P ==>+- S), (Belief:Exemplification)
-
-      //(P ==> M), (--M ==> S), neqRCom(S,P), task(".") |- (S ==>+- P), (Punctuation:Question)
-      (P ==> M), (M ==> S), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
-      (P ==> M), (M ==> S), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
-
-        //(M ==> S), (P ==> M) |- (S ==>+- P), (Belief:Exemplification)
-        //experimental:
-            //(P ==> M), (--M ==> S) |- (S ==>+- P), (Belief:ExemplificationN)
 
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
@@ -105,6 +99,10 @@
 
 
 // Contraposition (structural)
+// (A ==> B) |-   (--B ==> --A)
+//              --(--B ==> A)
+// (A ==> B) |- <--B ==> --A>
+
 // "If not smoking causes health, being not healthy may be the result of smoking"
 // "If smoking causes not health, being healthy may be the result of not smoking"
 
@@ -204,21 +202,27 @@
 
     (X ==> C), M, eventOf(X,M) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
     (X ==> C), M, eventOfNeg(X,M) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
-
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), eventOf(X,M) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), eventOfNeg(X,M) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
+
+    (X ==> C), (B ==> M), eventOf(X,M) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
+    (X ==> C), (B ==> M), eventOfNeg(X,M) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
 
     (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (X ==>+- Y), (Belief:Abduction)
     (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (Y ==>+- X), (Belief:Abduction)
-        ((&&,M,A..+) ==> C), ((&&,A..+) ==> C)   |- M, (Belief:AbductionPB)
-        ((&&,M,A) ==> C),    (A ==> C)           |- M, (Belief:AbductionPB)
+        ((&&,M,A..+) ==> C), ((&&,A..+) ==> C)          |- M, (Belief:AbductionPB)
+            (--(&&,M,A..+) ==> C), (--(&&,A..+) ==> C)  |- M, (Belief:AbductionPB)
+        ((&&,M,A) ==> C),    (A ==> C)                  |- M, (Belief:AbductionPB)
+            (--(&&,M,A) ==> C),    (--A ==> C)          |- M, (Belief:AbductionPB)
 
 
     ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
+        (--(&&,X,A..+) ==> C), (--(&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
+        //(--(&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)  ???
     ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
+        (--(&&,X,A..+) ==> C), (--(&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
+        //(--(&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)  ???
 
     (X ==> C), (B==>M), eventOfPosOrNeg(X,B) |- ((conjWithoutPosOrNeg(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //(X ==> C), (B==>M), eventOfNeg(X,B) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
@@ -251,9 +255,10 @@
     ((&&,B,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
     //(X ==> C), Y,  notImpl(M) |- ((X &&+- Y) ==>+- C), (Belief:Induction)
 
-    //ConjunctionContradictionInduction
-    ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==>+- C), (Belief:Induction)
-
+    //Conjunction Anti-Contradiction: ((X&&A)==>C) and ((--X&&A)==>C)  |-  (A==>C), since X or --X doesnt make a difference
+    ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==>+- C), (Belief:InductionPB)
+        (--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- (--(&&,A..+) ==>+- C), (Belief:InductionPB)
+    (C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB)
 
 //precondition combiner inference rule (variable_unification6):
 

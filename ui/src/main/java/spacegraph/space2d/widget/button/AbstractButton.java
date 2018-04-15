@@ -25,8 +25,8 @@ public abstract class AbstractButton extends Widget {
     });
 
     @Override
-    public void touch(@Nullable Finger finger) {
-        super.touch(finger);
+    public void onFinger(@Nullable Finger finger) {
+        super.onFinger(finger);
         pressable.accept(finger);
     }
 

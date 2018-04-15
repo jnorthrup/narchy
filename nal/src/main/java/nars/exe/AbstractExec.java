@@ -23,7 +23,7 @@ abstract public class AbstractExec extends Exec {
 
     private final int CAPACITY;
 
-    public Bag<Activate, Activate> active;
+    public Bag<?, Activate> active;
     private On onCycle;
     //protected Baggie<Concept> active;
 
@@ -57,8 +57,7 @@ abstract public class AbstractExec extends Exec {
 
     @Override
     public void activate(Concept c, float activationApplied) {
-        active.putAsync(new Activate(c, activationApplied * nar.activationRate.floatValue()));
-        //active.put(c, activationApplied);
+        active.putAsync(new Activate(c, activationApplied));
     }
 
 
@@ -88,12 +87,11 @@ abstract public class AbstractExec extends Exec {
             active =
                     concurrent() ?
 
-                            //                        new ConcurrentCurveBag<>(
-                            //                                Param.activateMerge, new HashMap<>(CAPACITY*2),
-                            //                                nar.random(), CAPACITY)
+//                                new CurveBag<>(
+//                                        Param.activateMerge, new HashMap<>(CAPACITY*2),
+//                                        CAPACITY) {
 
                             new PriorityHijackBag<>(Math.round(CAPACITY * 1.5f), 4) {
-
                                 @Override
                                 public Activate key(Activate value) {
                                     return value;
@@ -113,7 +111,7 @@ abstract public class AbstractExec extends Exec {
                             :
 
                             new CurveBag<>(
-                                    Param.activateMerge, new HashMap<>(CAPACITY),
+                                    Param.activateMerge, new HashMap<>(CAPACITY*2),
                                     CAPACITY) {
 
                                 @Override

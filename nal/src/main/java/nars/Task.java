@@ -495,12 +495,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return null;
 
         //  non-proxy immutable impl
-        return Task.clone(x, x.term(),
+        @Nullable NALTask ete = Task.clone(x, x.term(),
                 x.truth().eternalized(eviFactor),
                 x.punc(),
                 /* TODO current time, from NAR */ x.creation(),
                 ETERNAL, ETERNAL
         );
+
+        return ete;
 
 //        return new TaskProxy.WithTruthAndTime(
 //                tx,

@@ -16,7 +16,7 @@ public class TemporalStabilityTests {
     static final int CYCLES = 3500;
 
 //    static {
-//        Param.DEBUG = true;
+//
 //    }
 
     static class T1 extends TemporalStabilityTest {
@@ -158,7 +158,7 @@ public class TemporalStabilityTests {
     }
     @Test public void testTemporalStabilityLinkedImplExt2() {
 
-        //Param.DEBUG = true;
+        //
 
         @NotNull NAR n = NARS.tmp();
         int time = CYCLES;

@@ -2,6 +2,7 @@ package nars.nal.nal7;
 
 import nars.$;
 import nars.Narsese;
+import nars.Param;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
@@ -766,13 +767,13 @@ public class NAL7Test extends NALTest {
 
     @Test
     public void testEternalImplicationDecompositionIsntEternal() {
-
         test
-
-                .inputAt(0, "(a). :|:")
-                .inputAt(0, "((a) ==>+1 (b)).") //ETERNAL impl
-                .mustNotOutput(cycles, "(b)", BELIEF, ETERNAL)
-                .mustBelieve(cycles, "(b)", 1f, 0.81f, 1 /* occ */);
+            .confTolerance(0.01f)
+            .inputAt(0, "a. :|:")
+            .inputAt(0, "(a ==>+1 b).") //ETERNAL impl
+            //.mustNotOutput(cycles, "b", BELIEF, ETERNAL)
+                .mustBelieve(cycles, "b", 1f, 0.43f, ETERNAL /* occ */)
+            .mustBelieve(cycles, "b", 1f, 0.81f, 1 /* occ */);
     }
 
     @Test

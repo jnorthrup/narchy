@@ -36,7 +36,7 @@ public class BitmapMatrixView extends Surface {
     protected Point2i touchPixel;
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
         if (finger!=null) {
             updateTouch(finger);
         } else {

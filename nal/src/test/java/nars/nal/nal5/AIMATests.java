@@ -45,16 +45,16 @@ public class AIMATests {
     public void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.02f);
+        n.freqResolution.set(0.05f);
         n.confResolution.set(0.01f);
 //        n.activationRate.set(0.1f);
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
-        n.termVolumeMax.set(44);
+        n.termVolumeMax.set(36);
         //n.conceptActivation.set(0.5f);
 
-        Deriver.derivers(n).forEach(x->x.conceptsPerIteration.set(4));
+        Deriver.derivers(n).forEach(x->x.conceptsPerIteration.set(8));
         //new QuerySpider(n);
         //new PrologCore(n);
         //n.run(1);
@@ -101,7 +101,7 @@ public class AIMATests {
         ), ETERNAL, (q,a)->{
             System.out.println(a);
         });
-        Param.DEBUG = true;
+        //
         //n.log();
         n.run(1500);
 //        n.concept($.$("Criminal")).print();

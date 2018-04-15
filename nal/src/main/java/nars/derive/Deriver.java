@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.bag.Bag;
 import jcog.data.ArrayHashSet;
 import jcog.math.IntRange;
 import jcog.math.Range;
@@ -9,15 +10,19 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.Cause;
 import nars.derive.rule.DeriveRuleSet;
 import nars.exe.Causable;
+import nars.link.TaskLink;
+import nars.link.Tasklinks;
 import nars.term.Term;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -194,7 +199,7 @@ public class Deriver extends Causable {
         int tasklinks = (int) Math.ceil(premisesMax / ((float) termLinksPerTaskLink));
 
         //return false to stop the current concept but not the entire chain
-        BiPredicate<Task, PriReference<Term>> kontinue = (tasklink, termlink) ->
+        BiPredicate<Task, PriReference<Term>> continueHypothesizing = (tasklink, termlink) ->
                 (perConceptRemain[0]-- > 0) && each.test(tasklink, termlink) && (--premisesRemain[0] > 0);
 
         //for safety in case nothing is generated, this will limit the max # of concepts tried
@@ -204,8 +209,8 @@ public class Deriver extends Causable {
 
             perConceptRemain[0] = premisesPerConcept;
 
-            a.premiseMatrix(
-                    nar, kontinue,
+            premiseMatrix(a,
+                    nar, continueHypothesizing,
                     tasklinks, termLinksPerTaskLink);
 
             return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
@@ -213,6 +218,132 @@ public class Deriver extends Causable {
 
 
     }
+
+    /**
+     * hypothesize a matrix of premises, M tasklinks x N termlinks
+     */
+    public void premiseMatrix(Activate conceptActivation, NAR nar, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink) {
+
+        Concept concept = conceptActivation.id;
+
+        nar.emotion.conceptFire.increment();
+
+        Bag<?, TaskLink> tasklinks = concept.tasklinks();
+
+        float linkForgetting = nar.forgetRate.floatValue();
+        tasklinks.commit(tasklinks.forget(linkForgetting));
+        int ntasklinks = tasklinks.size();
+        if (ntasklinks == 0)
+            return;
+
+        final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
+        termlinks.commit(termlinks.forget(linkForgetting));
+        int ntermlinks = termlinks.size();
+        if (ntermlinks == 0)
+            return; //TODO when can this happen
+
+        int[] conceptTTL = { _tasklinks *  _termlinksPerTasklink };
+
+        Random rng = nar.random();
+
+        //((TaskLinkCurveBag)tasklinks).compress(nar);
+
+        tasklinks.sample(rng, _tasklinks, tasklink -> {
+
+            Task task = tasklink.get(nar);
+            if (task != null) {
+
+////                float taskLinkMomentum = nar.taskLinkMomentum.floatValue();
+//                float tPri = tasklink.priElseZero();
+////                float priTransferred = (1f - taskLinkMomentum) * tPri;
+////                tasklink.priSub(priTransferred);
+////                tasklinks.pressurize(-priTransferred); //HACK depressurize to compensate for the tasklink drain
+//
+//                float priTransferred = tPri;
+
+                Tasklinks.linkTaskTemplates(concept, tasklink, tasklink.priElseZero(), nar);
+
+                termlinks.sample(rng, _termlinksPerTasklink, termlink -> {
+                    if (!continueHypothesizing.test(task, termlink)) {
+                        conceptTTL[0] = 0;
+                        return false;
+                    } else {
+                        return (--conceptTTL[0] > 0);
+                    }
+                });
+            } else {
+                tasklink.delete();
+                --conceptTTL[0]; //safety misfire decrement
+            }
+
+            return (conceptTTL[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
+        });
+
+    }
+
+
+//    public static List<Concept> randomTemplateConcepts(List<Concept> tt, Random rng, int count) {
+//
+////            {
+////                //this allows the tasklink, if activated to be inserted to termlinks of this concept
+////                //this is messy, it propagates the tasklink further than if the 'callback' were to local templates
+////                List<Concept> tlConcepts = terml.stream().map(t ->
+////                        //TODO exclude self link to same concept, ie. task.concept().term
+////                        nar.concept(t.get())
+////                ).filter(Objects::nonNull).collect(toList());
+////            }
+//        //Util.selectRoulette(templateConcepts.length, )
+//
+//
+//        int tts = tt.size();
+//        if (tts == 0) {
+//            return Collections.emptyList();
+//        } else if (tts < count) {
+//            return tt; //all of them
+//        } else {
+//
+//            List<Concept> uu = $.newArrayList(count);
+//            Roulette.selectRouletteUnique(tts, (w) -> {
+//                return tt.get(w).volume(); //biased toward larger template components so the activation trickles down to atoms with less probabilty
+//                //return 1f; //flat
+//            }, (z) -> {
+//                uu.add(tt.get(z));
+//                return (uu.size() < count);
+//            }, rng);
+//            return uu;
+//        }
+//    }
+
+
+    //    public void activateTaskExperiment1(NAR nar, float pri, Term thisTerm, BaseConcept cc) {
+//        Termed[] taskTemplates = templates(cc, nar);
+//
+//        //if (templateConceptsCount > 0) {
+//
+//        //float momentum = 0.5f;
+//        float taskTemplateActivation = pri / taskTemplates.length;
+//        for (Termed ct : taskTemplates) {
+//
+//            Concept c = nar.conceptualize(ct);
+//            //this concept activates task templates and termlinks to them
+//            if (c instanceof Concept) {
+//                c.termlinks().putAsync(
+//                        new PLink(thisTerm, taskTemplateActivation)
+//                );
+//                nar.input(new Activate(c, taskTemplateActivation));
+//
+////                        //reverse termlink from task template to this concept
+////                        //maybe this should be allowed for non-concept subterms
+////                        id.termlinks().putAsync(new PLink(c, taskTemplateActivation / 2)
+////                                //(concept ? (1f - momentum) : 1))
+////                        );
+//
+//            }
+//
+//
+//        }
+//    }
+
 
 //    protected long[] matchTime(Task task) {
 //        assert (now != ETERNAL);

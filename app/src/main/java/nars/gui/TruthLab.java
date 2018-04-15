@@ -156,7 +156,7 @@ public class TruthLab extends Gridding {
                 if (truthOrProjectedTaskTruth) {
                     return b.truth(w, w, nar);
                 } else {
-                    Task x = b.answer(w, w, null, nar);
+                    Task x = b.match(w, w, null, nar);
                     return x != null ? x.truth(w, dur, Param.TRUTH_EPSILON) : null;
 
                 }

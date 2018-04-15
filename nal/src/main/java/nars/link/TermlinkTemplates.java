@@ -273,29 +273,24 @@ public class TermlinkTemplates extends FasterList<Term> {
         return x.op().conceptualizable;
     }
 
-    public void activate(Concept src, float budgeted, NAR nar) {
+    /** link and activate the templates */
+    public void linkAndActivate(Concept src, float budgeted, NAR nar) {
         int n = this.size();
         if (n == 0)
             return;
 
-        float budgetedToEach = budgeted / n;
-//        if (budgetedToEach < Pri.EPSILON)
-//            return;
-
         MutableFloat refund = new MutableFloat(0);
 
-//        int nextTarget = nar.random().nextInt(n);
         Term srcTerm = src.term();
         Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
-        float balance = nar.termlinkBalance.floatValue();
 
-        float budgetedForward = Math.max(Pri.EPSILON, budgetedToEach * (1f - balance));
-        float budgetedReverse = Math.max(Pri.EPSILON, budgetedToEach * balance);
+        float balance = nar.termlinkBalance.floatValue();
+        float budgetedForward = concepts == 0 ? 0 :
+                Math.max(Pri.EPSILON, budgeted * (1f - balance) / concepts); //concept targets (subset of all targets)
+        float budgetedReverse = Math.max(Pri.EPSILON, budgeted * balance / n); //all targets
 
         for (int i = 0; i < n; i++) {
-
             Term tgtTerm = get(i);
-            boolean reverseLinked = false;
 
             boolean conceptualizable = i < concepts;
             if (conceptualizable) {
@@ -309,27 +304,16 @@ public class TermlinkTemplates extends FasterList<Term> {
                             new PLink<>(srcTerm, budgetedForward), refund
                     );
 
-                    nar.activate(tgt,
-                            //budgetedToEach
-                            budgetedForward
-                    );
+                    nar.activate(tgt, budgetedForward);
 
-                    reverseLinked = true;
                     tgtTerm = tgt.term(); //use the concept's id
                 }
 
+            } else {
+                refund.add(budgetedForward);
             }
 
-            if (!reverseLinked)
-                refund.add(budgetedForward);
-
-
             ((Bag) srcTermLinks).put(new PLink<>(tgtTerm, budgetedReverse), refund);
-
-
-//        float r = refund.floatValue();
-//        float cost = budgeted - r;
-//        return cost;
 
         }
     }

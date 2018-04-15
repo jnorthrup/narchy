@@ -52,16 +52,15 @@ public final class TruthFunctions {
 
 
     /**
-     * {<A ==> B>} |- <(--, B) ==> (--, A)>
+     * {<A ==> B>} |- <--B ==> --A>
      *
      * @param t Truth value of the premise
      * @return Truth value of the conclusion
      */
     public static Truth contraposition(/*@NotNull*/ Truth t, float minConf) {
-        float c = w2cSafe(t.freqNegTimesConf());
+        float c = w2cSafe((1 - t.freq()) * t.conf());
         return c >= minConf ? t(0, c) : null;
     }
-
     //    public static float temporalIntersection(long now, long at, long bt) {
 //        //return BeliefTable.relevance(Math.abs(now-at) + Math.abs(now-bt), Math.abs(at-bt));
 //        return temporalIntersection(now, at, bt, 1f);
@@ -269,9 +268,26 @@ public final class TruthFunctions {
     /**
      * frequency determined entirely by the desire component.
      */
-    @Nullable public static Truth desireStrongNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+    @Nullable public static Truth desireNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf, boolean weak) {
         float c = and(a.conf(), b.conf(), b.freq());
-        return c < minConf ? null : $.t(a.freq(), c);
+        //float c = and(a.conf(), b.conf());
+        if (weak)
+            c *= w2c(1.0f);
+
+        if (c >= minConf) {
+
+            //instead of the original's f = and(aFreq,bFreq),
+            //this does not discriminate against negative goals but instead
+            //pulls the frequency toward 0.5 in proportion to (1- bFreq)
+            //float f = Util.lerp(b.freq(), 0.5f, a.freq());
+
+            float f = a.freq();
+
+            return $.t(f, c);
+
+        } else {
+            return null;
+        }
         //return c < minConf ? null : $.t(Util.lerp(b.freq(), 0.5f, a.freq()), c);
 
 
@@ -287,21 +303,6 @@ public final class TruthFunctions {
 
         //return c < minConf ? null : $.t(a.freq(), c);
 
-    }
-    public static Truth desireWeakNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float c = and(a.conf(), b.conf(), b.freq(), w2c(1.0f));
-        return c < minConf ? null : $.t(a.freq(), c);
-        //return c < minConf ? null : $.t(Util.lerp(b.freq(), 0.5f, a.freq()), c);
-
-//        float c = and(a.conf(), b.freq(), w2c(1.0f));
-//        return c < minConf ? null : $.t(a.freq(), c);
-
-        //float c = and(a.conf(), b.conf(), b.freq(), w2c(1.0f));
-//        return c < minConf ? null : $.t(a.freq(), c);
-        //float c = and(b.conf(), w2c(1.0f));
-        //return c < minConf ? null : $.t(a.expectation(b.freq()), c);
-        //return c < minConf ? null : $.t(TruthFunctions.expectation(a.freq(), b.freq()) /* b.freq used in conf param */, c);
-        //return c < minConf ? null : $.t(a.freq(), c);
     }
 
     /**

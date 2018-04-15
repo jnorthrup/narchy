@@ -154,7 +154,7 @@ public class RevectionTest {
     @Test
     public void testTemporalProjectionInterpolation() throws Narsese.NarseseException {
 
-        Param.DEBUG = true;
+
 
         int maxBeliefs = 12;
         NAR n = newNAR(maxBeliefs);
@@ -268,7 +268,7 @@ public class RevectionTest {
     @Test
     public void testTemporalRevection() throws Narsese.NarseseException {
 
-        Param.DEBUG = true;
+
 
         int maxBeliefs = 4; //includes 3 eternal beliefs we arent using:
         NAR n = newNAR(maxBeliefs);

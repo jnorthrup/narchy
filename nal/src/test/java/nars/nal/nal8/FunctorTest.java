@@ -54,7 +54,7 @@ public class FunctorTest {
 
     /** tests correct TRUE fall-through behavior, also backward question triggered execution */
     @Test public void testFunctor1() throws Narsese.NarseseException {
-        Param.DEBUG = true;
+
 
         TestNAR t = new TestNAR(NARS.tmp());
         t.log();
@@ -73,12 +73,12 @@ public class FunctorTest {
 
     @Test
     public void testFunctor2() throws Narsese.NarseseException {
-        //Param.DEBUG = true;
+        //
 
         int TIME = 512;
         TestNAR t = new TestNAR(NARS.tmp());
 
-        //Param.DEBUG = true;
+        //
         //t.log();
         t.believe("(equal(complexity($1),complexity($2)) ==> c({$1,$2}))");
         t.ask("c({x, y})");

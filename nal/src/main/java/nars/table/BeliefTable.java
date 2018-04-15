@@ -69,11 +69,6 @@ public interface BeliefTable extends TaskTable {
 
 
         @Override
-        public @Nullable Task answer(long start, long end, int dur, @Nullable Task question, Term template, NAR nar, Consumer<Task> withNovel) {
-            return null;
-        }
-
-        @Override
         public int size() {
             return 0;
         }
@@ -85,7 +80,7 @@ public interface BeliefTable extends TaskTable {
         }
 
         @Override
-        public Task match(long start, long end, Term template, NAR nar, Predicate<Task> accept) {
+        public Task match(long start, long end, Term template, Predicate<Task> accept, NAR nar) {
             return null;
         }
 
@@ -196,73 +191,26 @@ public interface BeliefTable extends TaskTable {
         return truth(focus[0], focus[1], nar);
     }
 
-    Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> accept);
-
-
-    @Nullable default Task answer(long start, long end, @Nullable Term template, NAR nar) {
-        return answer(start, end, nar.dur(), null, template, nar, nar::input);
-    }
+    Task match(long start, long end, @Nullable Term template, Predicate<Task> accept, NAR nar);
 
     @Override
     default Task match(long start, long end, Term template, NAR nar) {
-        return match(start, end, template, nar, null);
+        return match(start, end, template, null, nar);
     }
 
     /**
-     * projects a match
+     * if match returns something, then supply it to the consumer
      */
-    @Nullable default Task answer(long start, long end, int dur, @Nullable Task question, Term template, NAR nar, Consumer<Task> withNovel) {
+    default Task answer(long start, long end, Term template, Consumer<Task> withNovel, @Nullable Predicate<Task> filter, NAR nar) {
 
         if (isEmpty())
             return null;
 
-        Task answer = match(start, end, template, nar/*, start!=ETERNAL ? (x)->{
-          return x.intersects(start, end); //HACK only use tasks associated with this time interval
-        } : null*/);
+        Task answer = match(start, end, template, filter, nar);
         if (answer == null || answer.isDeleted())
             return null;
 
-        boolean novel = true;
-
-//        boolean novel = false; //(answer instanceof AnswerTask); //includes: answers, revision, or dynamic
-
-        //project if different occurrence
-
-//        boolean relevantTime = start==ETERNAL || answer.intersects(start, end);
-//        if (/*!answer.isEternal() && */!relevantTime) {
-//
-//            long t = answer.nearestPointExternal(start, end);
-//            Truth aProj = answer.truth(t, dur);
-//            if (aProj != null) {
-//
-//                final Task aa = answer;
-//                Task a = Task.tryTask(answer.term(), answer.punc(), aProj, (content, truth) -> new NALTask(
-//                        content,
-//                        aa.punc(),
-//                        truth, nar.time(), t, t,
-//                        aa.stamp()));
-//                        //(question != null) ?
-//                          //      Stamp.zip(aa.stamp(), question.stamp(), 0.5f) : aa.stamp()));
-//                if (a == null)
-//                    return null;
-//
-//                float confFrac = Util.unitize(aProj.evi() / answer.evi());
-//                a.priSet(answer.priElseZero() * confFrac);
-//                if (question != null)
-//                    ((NALTask)a).cause = Cause.sample(Param.causeCapacity.intValue(), question, answer);
-//
-//
-//                //            if (Param.DEBUG)
-//                //                a.log("Answer Projected");
-//                novel = true; //because it was projected
-////                relevantTime = true;
-//                answer = a;
-//            }
-//        }
-
-        if (novel && question != null && question.isQuestionOrQuest()) {
-            withNovel.accept(answer);
-        }
+        withNovel.accept(answer);
 
         return answer;
     }

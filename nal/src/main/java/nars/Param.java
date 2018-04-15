@@ -80,7 +80,7 @@ public abstract class Param {
 
 
     /** default bag forget rate */
-    public final FloatRange forgetRate = new FloatRange(0.5f, 0f, 2f);
+    public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
 
 //    /**
 //     * hard limit to prevent infinite looping
@@ -121,8 +121,8 @@ public abstract class Param {
             PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
+            //PriMerge.plus;
 
     //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
@@ -308,11 +308,6 @@ public abstract class Param {
      * how many answers to record per input question task (per each concept's answer bag)
      */
     public static final int ANSWER_BAG_CAPACITY = 8;
-
-    /**
-     * max retries for termpolation to produce a valid task content result during revision
-     */
-    public static final int MAX_TERMPOLATE_RETRIES = 1;
 
     public static final boolean DEBUG_REPORT_ANSWERS = false;
 

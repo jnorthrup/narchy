@@ -919,11 +919,11 @@ public enum Op {
         this.atomic = var || ATOMICS.contains(str);
 
 
-        conceptualizable = !(var ||
-                str.equals("B") /* Bool */
+        conceptualizable = !var &&
+                !str.equals("B") /* Bool */
 
                 //str.equals("+") /* INT */ ||
-        );
+        ;
 
         goalable = conceptualizable && !isImpl;
 

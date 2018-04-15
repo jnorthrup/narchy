@@ -48,7 +48,7 @@ public class BeliefTableTest {
     @Test
     public void testEternalBeliefRanking() {
 
-        Param.DEBUG = true;
+
 
         int cap = 10;
 

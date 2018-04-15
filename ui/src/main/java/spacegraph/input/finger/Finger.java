@@ -55,51 +55,56 @@ public class Finger {
 
     }
 
-    public Surface on(Surface root, float lx, float ly, short[] nextButtonDown) {
+    /**
+     * async, thread-safe call at any time
+     */
+    public void updateButtons(short[] nextButtonDown) {
+        arraycopy(this.buttonDown, 0, prevButtonDown, 0, buttonDown.length);
+
+        fill(this.buttonDown, false);
+
+        if (nextButtonDown != null) {
+            for (short s : nextButtonDown) {
+                if (s > 0) //ignore -1 values
+                    this.buttonDown[s - 1 /* start at zero=left button */] = true;
+            }
+
+            for (int j = 0, jj = hitOnDown.length; j < jj; j++) {
+                if (!prevButtonDown[j] && buttonDown[j]) {
+                    hitOnDown[j] = new v2(pos);
+                    hitOnDownGlobal[j] = new v2(posGlobal);
+                }
+            }
+
+        } else {
+            Arrays.fill(hitOnDown, null);
+        }
+
+        Widget t = this.touching;
+        if (t != null) {
+            t.onFinger(this);
+        }
+    }
+
+    public Surface on(Surface root) {
 
         Fingering ff = this.fingering.get();
         Fingering f0 = ff;
         Surface touchedNext;
 
         try {
-            this.pos.set(lx, ly);
-
-            arraycopy(this.buttonDown, 0, prevButtonDown, 0, buttonDown.length);
-
-            fill(this.buttonDown, false);
-            if (nextButtonDown != null) {
-                for (short s : nextButtonDown) {
-                    if (s > 0) //ignore -1 values
-                        this.buttonDown[s - 1 /* start at zero=left button */] = true;
-                }
-
-                for (int j = 0, jj = hitOnDown.length; j < jj; j++) {
-                    if (!prevButtonDown[j] && buttonDown[j]) {
-                        hitOnDown[j] = new v2(pos);
-                        hitOnDownGlobal[j] = new v2(posGlobal);
-                    }
-                }
-
-            } else {
-                Arrays.fill(hitOnDown, null);
-            }
-
 
             //START DESCENT:
 
             if (ff == null || ff.escapes()) {
 
-                touchedNext = root.onTouch(this, nextButtonDown);
-                if (touchedNext instanceof Widget) {
-                    if (!on((Widget) touchedNext))
-                        touchedNext = null;
-                } else {
-                    touchedNext = null;
-                }
+                touchedNext = root.tryTouch(this);
+
             } else {
-                touchedNext = null;
+                touchedNext = touching;
             }
 
+            //System.out.println(pos + " " + posGlobal + " " + ff + " " + touchedNext);
 
             if (ff != null) {
 
@@ -117,10 +122,6 @@ public class Finger {
                 }
             }
 
-            if (touching != touchedNext && touching != null) {
-                touching.untouch();
-                touching = null;
-            }
 
         } finally {
 
@@ -128,6 +129,8 @@ public class Finger {
                 fingering.compareAndSet(f0, null);
 
         }
+
+        on(touchedNext instanceof Widget ? (Widget) touchedNext : null);
 
         return touchedNext;
     }
@@ -140,11 +143,11 @@ public class Finger {
     private boolean on(@Nullable Widget touched) {
 
         if (touched != touching && touching != null) {
-            touching.touch(null);
+            touching.onFinger(null);
         }
 
         if ((touching = touched) != null) {
-            touching.touch(this);
+            touching.onFinger(this);
             return true;
         } else {
             return false;
@@ -154,8 +157,7 @@ public class Finger {
 
     public boolean off() {
         if (touching != null) {
-            touching.touch(null);
-            touching = null;
+            on(null);
             return true;
         }
         return false;
@@ -200,7 +202,7 @@ public class Finger {
     public boolean tryFingering(Fingering f) {
 
 
-        if (f!=null && fingering.compareAndSet(null, STARTING)) {
+        if (f != null && fingering.compareAndSet(null, STARTING)) {
             if (f.start(this)) {
                 fingering.set(f);
                 //root.surface.onTouch(this, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces

@@ -184,7 +184,7 @@ public class ConsoleTerminal extends Widget {
         return false;
     }
     @Override
-    public boolean onKey(KeyEvent e, boolean pressed) {
+    public boolean tryKey(KeyEvent e, boolean pressed) {
 
         int cc = e.getKeyCode();
         if (pressed && cc == 13) {
@@ -281,7 +281,7 @@ public class ConsoleTerminal extends Widget {
 
     public class MyBitmapConsoleSurface extends BitmapConsoleSurface {
         @Override
-        public Surface onTouch(Finger finger, short[] buttons) {
+        public Surface tryTouch(Finger finger) {
             return ConsoleTerminal.this;
         }
 

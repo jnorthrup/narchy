@@ -1,9 +1,8 @@
 package nars.link;
 
 import jcog.bag.Bag;
+import jcog.list.FasterList;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
-import jcog.pri.op.PriForget;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -59,10 +58,10 @@ public class Tasklinks {
         assert(priEffect >= 0);
 
         //activate the task's concept
-        nar.activate(src,  nar.activationRate.floatValue() * priEffect);
+        nar.activate(src,  priEffect);
 
         //activate the task concept termlink templates
-        src.templates().activate(src, priEffect, nar);
+        src.templates().linkAndActivate(src, priEffect, nar);
 
         {
             //adjust the cause values according to the input's actual demand
@@ -84,9 +83,17 @@ public class Tasklinks {
 
     /** propagate tasklink to templates */
     public static void linkTaskTemplates(Concept c, TaskLink tasklink, float priTransferred, NAR nar) {
+        linkTask(tasklink, priTransferred,
+                c.templates().conceptsShuffled(nar, true)
+        );
+    }
 
-        Concept[] cc = c.templates().conceptsShuffled(nar, true);
-        int ccs = cc.length;
+    public static void linkTask(TaskLink tasklink, float priTransferred, FasterList<Concept> targets) {
+        linkTask(tasklink, priTransferred, targets.toArrayRecycled(Concept[]::new));
+    }
+
+    public static void linkTask(TaskLink tasklink, float priTransferred, Concept... targets) {
+        int ccs = targets.length;
         if (ccs <= 0)
             return;
 
@@ -98,7 +105,6 @@ public class Tasklinks {
 
             TaskLink.Tasklike tlSeed =
                     ((TaskLink.GeneralTaskLink)tasklink).get();
-                    //TaskLink.GeneralTaskLink.seed(t, false, nar);
 
             final float headRoom = 1f - pEach;
             MutableFloat overflow = new MutableFloat();
@@ -118,10 +124,9 @@ public class Tasklinks {
                         //new TaskLink.DirectTaskLink(t, pEach + change);
                         new TaskLink.GeneralTaskLink(tlSeed, pEach + change);
 
-                linkTask(xx, cc[i].tasklinks(), overflow);
+                linkTask(xx, targets[i].tasklinks(), overflow);
             }
         }
-
     }
 
 //    public static void linkTask(Task t, Concept cc, NAR nar) {
@@ -150,31 +155,31 @@ public class Tasklinks {
 //        }
 //    }
 
-    public static class ForgetNonPresentTasklinks extends PriForget<PriReference<Task>> {
-        private final long now;
-        private final int dur;
-
-        public ForgetNonPresentTasklinks(float r, long now, int dur) {
-            super(r);
-            this.now = now;
-            this.dur = dur;
-        }
-
-        @Override
-        public void accept(PriReference<Task> b) {
-            Task t = b.get();
-            float rate;
-            if (t.isBeliefOrGoal()) {
-                //decrease rate in proximity to now or the future
-                if (t.isEternal() || !t.isBefore(now - dur))
-                    rate = 0.5f; //slower forget
-                else {
-                    rate = 1f; //full forget
-                }
-            } else {
-                rate = 1f; //full forget
-            }
-            b.priSub(priRemoved * rate);
-        }
-    }
+//    public static class ForgetNonPresentTasklinks extends PriForget<PriReference<Task>> {
+//        private final long now;
+//        private final int dur;
+//
+//        public ForgetNonPresentTasklinks(float r, long now, int dur) {
+//            super(r);
+//            this.now = now;
+//            this.dur = dur;
+//        }
+//
+//        @Override
+//        public void accept(PriReference<Task> b) {
+//            Task t = b.get();
+//            float rate;
+//            if (t.isBeliefOrGoal()) {
+//                //decrease rate in proximity to now or the future
+//                if (t.isEternal() || !t.isBefore(now - dur))
+//                    rate = 0.5f; //slower forget
+//                else {
+//                    rate = 1f; //full forget
+//                }
+//            } else {
+//                rate = 1f; //full forget
+//            }
+//            b.priSub(priRemoved * rate);
+//        }
+//    }
 }

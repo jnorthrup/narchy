@@ -27,7 +27,7 @@ public class NAL7ImplProjectionTest {
 
                 Term y = $.the("y");
 
-                Param.DEBUG = true;
+
                 NAR n = NARS.tmp();
                 //n.log();
                 n.time.dur(dur);

@@ -36,11 +36,11 @@
 //        B, A, belief(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B),   notImpl(A) |- varIntro((--A ==>+- B)), (Belief:InductionPN)
 
 //&&
-    B, A, notImpl(A)                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionUnprojectedDepolarized)
+    B, A, notImpl(A),notImpl(B)                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionUnprojectedDepolarized)
         //B, A, task("."), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionUnprojectedDepolarized)
 
         //B, A, task("."), time(dtEvents), notImpl(A),notImpl(B)                            |- (B &&+- A), (Belief:Intersection)
-    B, A, neqAndCom(A,B),notImpl(A)   |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionUnprojectedDepolarized)
+    B, A, neqAndCom(A,B),notImpl(A),notImpl(B)   |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionUnprojectedDepolarized)
         //B, A, task("."), neqAndCom(A,B),  notImpl(A),notImpl(B)  |- varIntro((--,((--,polarize(B,task)) &&+- (--,polarize(A,belief))))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B), notImpl(A),notImpl(B)  |- varIntro((B &&+- A)), (Belief:Intersection)
@@ -61,7 +61,7 @@
 
 
 //NAL3 difference
-    A, B, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B), notImplConj(A), notImplConj(B) |- (A ~ B), (Belief:Difference)
+    A, B, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B), notImpl(A), notImpl(B) |- (A ~ B), (Belief:Difference)
         //the hasNoDiffs constraint is not entirely necessary;
         //for now it is just meant to prevent derivations like:
         //  (tetris(5,13)~(((5,13)~(3,13))-->tetris)).

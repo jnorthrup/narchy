@@ -268,10 +268,6 @@ public interface Truth extends Truthed {
         return freq() * conf();
     }
 
-    default float freqNegTimesConf() {
-        return (1 - freq()) * conf();
-    }
-
     default PreciseTruth withConf(float c) {
         return new PreciseTruth(freq(), c);
     }

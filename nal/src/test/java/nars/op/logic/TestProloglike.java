@@ -24,7 +24,7 @@ public class TestProloglike {
      */
     @Test
     public void testProloglike1() throws Narsese.NarseseException {
-        Param.DEBUG = true;
+
         NAR n = NARS.tmp();
         /*
         fun(X) :- red(X), car(X).
@@ -58,7 +58,7 @@ public class TestProloglike {
 
     @Test
     public void testRiddle1() throws Exception {
-        //Param.DEBUG = true;
+        //
         NAR n = NARS.tmp();
 
         n.termVolumeMax.set(1024);

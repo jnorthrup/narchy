@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -43,15 +42,14 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     public final Finger finger;
 
-    //temporary: world mouse coord
-    protected float wmy, wmx;
+
 
 
     public Surface surface;
     public JoglSpace window;
     protected final v3 cam;
 
-    private short[] buttonsDown;
+
 
     private final Animated fingerUpdate;
 
@@ -60,7 +58,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
 
-    private final AtomicBoolean fingerUpdated = new AtomicBoolean(true);
+    //private final AtomicBoolean fingerMoved = new AtomicBoolean(true);
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
 
     public Ortho() {
@@ -94,10 +92,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         this.surface = content;
 
         this.fingerUpdate = dt -> {
-            if (/*hasFocus() ||*/
-                    fingerUpdated.compareAndSet(true, false)) {
-                updateMouse(wmx, wmy, buttonsDown);
-            }
+//            if (/*hasFocus() ||*/
+//                    fingerMoved.compareAndSet(true, false)) {
+                finger();
+//            }
             return true;
         };
     }
@@ -130,7 +128,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         if (autoresize())
             surface.pos(bounds);
 
-        fingerUpdated.set(true);
+        //fingerMoved.set(true);
     }
 
     public boolean autoresize() {
@@ -330,15 +328,15 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     public void windowGainedFocus(WindowEvent e) {
         focused = true;
-        updateMouse(null);
-        fingerUpdated.set(true);
+        update(false, null);
+//        fingerMoved.set(true);
         
     }
 
     @Override
     public void windowLostFocus(WindowEvent e) {
-        updateMouse(null);
-        fingerUpdated.set(true);
+        update(false, null);
+//        fingerMoved.set(true);
         focused = false;
     }
 
@@ -364,7 +362,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         Widget t = finger.touching;
         if (t !=null) {
-            if (!t.onKey(e, pressOrRelease))
+            if (!t.tryKey(e, pressOrRelease))
                 e.setConsumed(true);
         }
 
@@ -378,51 +376,68 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     @Override
     public void mouseEntered(MouseEvent e) {
         focused = true;
-        updateMouse(e);
-        fingerUpdated.set(true);
+        update(true, e);
+//        fingerMoved.set(true);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        updateMouse(null);
-        fingerUpdated.set(true);
+        update(false, null);
         focused = false;
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.isConsumed())
-            return;
-        if (updateMouse(e)) {
-            if (finger.touching!=null) e.setConsumed(true);
+//        if (e.isConsumed())
+//            return;
+        if (update(false, e)) {
+            if (finger.touching!=null)
+                e.setConsumed(true);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (e.isConsumed())
-            return;
+//        if (e.isConsumed())
+//            return;
         short[] bd = e.getButtonsDown();
         int ii = ArrayUtils.indexOf(bd, e.getButton());
         bd[ii] = -1;
-        updateMouse(e, bd);
+        update(false, e, bd);
 
         if (finger.touching!=null) e.setConsumed(true);
 
     }
 
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+//        if (e.isConsumed())
+//            return;
+        if (update(true, e))
+            if (finger.touching!=null)
+                e.setConsumed(true);
+    }
+
     @Override
     public void mouseMoved(MouseEvent e) {
-        updateMouse(e);
+
+        update(true, e);
+
+
     }
 
-    protected boolean updateMouse(MouseEvent e) {
-        return updateMouse(e, e != null ? e.getButtonsDown() : null);
+    protected boolean update(boolean moved, MouseEvent e) {
+        return update(moved, e, e != null ? e.getButtonsDown() : null);
     }
 
-    private boolean updateMouse(MouseEvent e, short[] buttonsDown) {
+    private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
 
-        if (e != null) {
+        if (moved) {
+            //        int windowWidth = window.getWidth();
+            int windowHeight = window.getHeight();
+            int pmx = e.getX();
+            int pmy = windowHeight - e.getY();
 
             //screen coordinates
             float sx = e.getX();
@@ -431,26 +446,24 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             float H = h();
             float sy = window.getHeight() - e.getY();
 
-            wmx = +cam.x + (-0.5f * W + sx) / scale.x;
-            wmy = +cam.y + (-0.5f * H + sy) / scale.x;
+            float wmx = +cam.x + (-0.5f * W + sx) / scale.x;
+            float wmy = +cam.y + (-0.5f * H + sy) / scale.x;
+
+            finger.pos.set(wmx, wmy);
+            finger.posGlobal.set(pmx, pmy);
 
             if (window.window != null) {
                 Finger.pointer.set(window.windowX + e.getX(), window.windowY + e.getY());
             }
-
-            this.buttonsDown = buttonsDown;
-            fingerUpdated.set(true);
-            //updateMouse(sx, sy, buttonsDown);
-            return true;
-
-        } else {
-
-            this.buttonsDown = null;
-            fingerUpdated.set(true);
-            //updateMouse(wmx, wmy, null);
-
-            return false;
         }
+
+        finger.updateButtons(buttonsDown);
+
+//        if (moved) {
+//            fingerMoved.set(true);
+//        }
+
+        return e!=null;
     }
 
     /** called each frame regardless of mouse activity
@@ -460,14 +473,14 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * the picked surface even in-between pick updates which are invoked
      * during the update loop.
      * */
-    Surface updateMouse(float sx, float sy, short[] buttonsDown) {
+    Surface finger() {
 
         /*if (e == null) {
             off();
         } else {*/
 
         Surface touching = finger.touching;
-        Surface touchedNext = finger.on(surface, sx, sy, buttonsDown);
+        Surface touchedNext = finger.on(surface);
         if (touchedNext!=null && touchedNext!=touching) {
             debug(this, 1f, ()->"touch(" + touchedNext + ')');
         }
@@ -510,13 +523,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        if (e.isConsumed())
-            return;
-        if (updateMouse(e))
-            if (finger.touching!=null) e.setConsumed(true);
-    }
 
 
     @Override

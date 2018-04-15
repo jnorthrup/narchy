@@ -20,7 +20,7 @@ public class NLPTest {
 
     @Test @Disabled
     public void testNLP0() throws Narsese.NarseseException {
-        //Param.DEBUG = true;
+        //
 
         NAR n = new NARS().get();
         //n.DEFAULT_QUEST_PRIORITY = 0.1f;

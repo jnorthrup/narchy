@@ -111,9 +111,9 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
 
     @Override
-    public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
+    public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
-        Task x = super.match(start, end, template, nar, filter);
+        Task x = super.match(start, end, template, filter, nar);
 
         Task y = taskDynamic(start, end, template, nar);
 

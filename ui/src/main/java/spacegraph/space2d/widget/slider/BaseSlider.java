@@ -58,9 +58,9 @@ public class BaseSlider extends Widget {
     }
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
 
-        Surface s = super.onTouch(finger, buttons);
+        Surface s = super.tryTouch(finger);
         if (s == this && finger!=null) {
             finger.tryFingering(new FingerDragging(0) {
                 @Override protected boolean drag(Finger f) {

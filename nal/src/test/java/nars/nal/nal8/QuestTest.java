@@ -42,7 +42,7 @@ public class QuestTest {
 
 
     public void testQuest(boolean goalFirst, int timeBetween, int timeAfter) throws Narsese.NarseseException {
-        //Param.DEBUG = true;
+        //
         final NAR nar = NARS.tmpEternal();
         //nar.log();
 

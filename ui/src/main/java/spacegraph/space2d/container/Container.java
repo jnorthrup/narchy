@@ -89,7 +89,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
 
         if (!visible())
             return null;
@@ -98,12 +98,13 @@ abstract public class Container extends Surface {
 
             // Draw forward, propagate touch events backwards
             if (finger == null) {
-                forEach(c -> c.onTouch(null, null));
+                forEach(c -> c.tryTouch(null));
                 return null;
             } else {
 
+                Surface[] found = new Surface[1];
+
                 //HACK
-                final Surface[] found = {null};
                 float fx = finger.pos.x;
                 float fy = finger.pos.y;
 
@@ -128,14 +129,16 @@ abstract public class Container extends Surface {
                             fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
 
 
-                        Surface s = c.onTouch(finger, buttons);
+                        Surface s = c.tryTouch(finger);
                         if (s != null) {
-                            if (found[0] == null || found[0].bounds.cost() > s.bounds.cost())
-                                found[0] = s; //FIFO
+//                            if (found[0] == null || found[0].bounds.cost() > s.bounds.cost())
+//                                found[0] = s; //FIFO
+                            found[0] = s;
+                            return false; //done
                         }
                     }
 
-                    return found[0] == null; //while null
+                    return true;
 
                 });
 
@@ -154,17 +157,17 @@ abstract public class Container extends Surface {
     }
 
     @Override
-    public boolean onKey(KeyEvent e, boolean pressed) {
-        if (visible() && !super.onKey(e, pressed)) {
-            return whileEach(c -> c.onKey(e, pressed));
+    public boolean tryKey(KeyEvent e, boolean pressed) {
+        if (visible() && !super.tryKey(e, pressed)) {
+            return whileEach(c -> c.tryKey(e, pressed));
         }
         return false;
     }
 
     @Override
-    public boolean onKey(v2 hitPoint, char charCode, boolean pressed) {
-        if (visible() && !super.onKey(hitPoint, charCode, pressed)) {
-            return whileEach(c -> c.onKey(hitPoint, charCode, pressed));
+    public boolean tryKey(v2 hitPoint, char charCode, boolean pressed) {
+        if (visible() && !super.tryKey(hitPoint, charCode, pressed)) {
+            return whileEach(c -> c.tryKey(hitPoint, charCode, pressed));
         }
         return false;
     }

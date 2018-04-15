@@ -38,7 +38,7 @@ public class Label extends AspectAlign {
     }
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
         return null;
     }
 

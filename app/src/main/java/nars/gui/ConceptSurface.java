@@ -35,7 +35,7 @@ public class ConceptSurface extends TabPane {
                     Plot2D p = new Plot2D(64, Plot2D.Line)
                             .add("pri", () -> {
 
-                                Bag<Activate, Activate> bag = ((AbstractExec) n.exe).active;
+                                Bag<?, Activate> bag = ((AbstractExec) n.exe).active;
                                 if (bag != null) {
                                     Concept ni = n.conceptualize(id);
                                     if (ni!=null) {

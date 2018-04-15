@@ -60,23 +60,9 @@ abstract public class Solve extends AbstractPred<Derivation> {
                     return false;
 
 
-                float overlap = f.allowOverlap() ?
-                        0 : single ? d.overlapSingle : d.overlapDouble;
-
-                if (overlap > 0) {
+                if (!f.allowOverlap() && (single ? d.overlapSingle : d.overlapDouble))
                     return false;
 
-//                    float e = t.evi() * (1f-overlap);
-//                    if (e < Pri.EPSILON) //yes Pri epsilon
-//                        return false;
-//
-//                    t = t.withEvi(e);
-//                    if (t.conf() < confMin)
-//                        return false;
-
-//                    if (d.random.nextFloat() <= overlap)
-//                        return false;
-                }
 
                 d.truthFunction = f;
 
@@ -84,9 +70,10 @@ abstract public class Solve extends AbstractPred<Derivation> {
 
             case QUEST:
             case QUESTION:
-                float o = d.overlapSingle;
-                if (o > 0 && d.random.nextFloat() <= o)
+                if (d.overlapSingle)
                     return false;
+                //if (o > 0 && d.random.nextFloat() <= o)
+                    //return false;
 
 //                byte tp = d.taskPunct;
 //                if ((tp == QUEST) || (tp == GOAL))
@@ -180,3 +167,14 @@ abstract public class Solve extends AbstractPred<Derivation> {
 //    };
 }
 
+
+//                    float e = t.evi() * (1f-overlap);
+//                    if (e < Pri.EPSILON) //yes Pri epsilon
+//                        return false;
+//
+//                    t = t.withEvi(e);
+//                    if (t.conf() < confMin)
+//                        return false;
+
+//                    if (d.random.nextFloat() <= overlap)
+//                        return false;

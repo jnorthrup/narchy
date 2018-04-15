@@ -28,7 +28,7 @@ public class UnifyTest {
     }
 
 //        static {
-//        Param.DEBUG = true;
+//
 //    }
 
 //
@@ -51,7 +51,7 @@ public class UnifyTest {
     
     Unify test(/**/ Op type,  String s1,  String s2, boolean shouldSub) {
 
-        //Param.DEBUG = true;
+        //
 
         //NAR nar = NARS.shell();
         try {

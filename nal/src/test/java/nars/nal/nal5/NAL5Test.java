@@ -399,25 +399,35 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void contraposition1() throws nars.Narsese.NarseseException {
+    public void contraposition() {
 
         TestNAR tester = test;
 
-        /*
-        IN:   <(--,<robin --> bird>) ==> <robin --> [flying]>>. %0.1%
-                      // It is unlikely that if robin is not a type of bird then robin can fly.
-        IN:   <(--,<robin --> [flying]>) ==> <robin --> bird>>?
-                      // If robin cannot fly then is robin a type of bird?
+        tester.believe("(--(robin --> bird) ==> (robin --> [flying]))", 0.1f, 0.9f); //.en("It is unlikely that if robin is not a type of bird then robin can fly.");
 
-         OUT: <(--,<robin --> [flying]>) ==> <robin --> bird>>. %0.00;0.45%
-                      // I guess it is unlikely that if robin cannot fly then robin is a type of bird.
-         */
-        tester.believe("<(--,<robin --> bird>) ==> <robin --> [flying]>>", 0.1f, 0.9f); //.en("It is unlikely that if robin is not a type of bird then robin can fly.");
-        tester.ask("<(--,<robin --> [flying]>) ==> <robin --> bird>>"); //.en("If robin cannot fly then is robin a type of bird ? ");
-        tester.mustBelieve(cycles, " <(--,<robin --> [flying]>) ==> <robin --> bird>>", 0f, 0.45f); //.en("I guess it is unlikely that if robin cannot fly then robin is a type of bird.");
+        //question isnt necessary for contraposition rule
+        //tester.ask("(--(robin --> [flying]) ==> (robin --> bird))"); //.en("If robin cannot fly then is robin a type of bird ? ");
+
+        tester.mustBelieve(cycles, " (--(robin --> [flying]) ==> (robin --> bird))",
+                0f, 0.45f); //.en("I guess it is unlikely that if robin cannot fly then robin is a type of bird.");
+
 
     }
 
+    @Test
+    public void contrapositionPos() {
+        //// (A ==> B) |-   (--B ==> --A)
+        test
+        .believe("(--B ==> A)", 0.9f, 0.9f)
+        .mustBelieve(cycles, " (--A ==> B)", 0f, 0.08f);
+    }
+
+    @Test
+    public void contrapositionNeg() {
+        test
+        .believe("(--B ==> A)", 0.1f, 0.9f)
+        .mustBelieve(cycles, " (--A ==> B)", 0f, 0.45f);
+    }
 
     @Test
     public void conditional_deduction() {
@@ -728,6 +738,7 @@ public class NAL5Test extends NALTest {
     public void testImplNegNeg() {
 
         test
+                .log()
                 .input("--x.")
                 .input("(--x ==> --y).")
                 .mustBelieve(cycles, "y", 0.0f, 0.81f)

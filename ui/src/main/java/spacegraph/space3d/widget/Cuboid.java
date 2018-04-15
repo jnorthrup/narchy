@@ -33,7 +33,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     static final float zOffset = 0.1f; //relative to scale
 
     @Nullable
-    public Finger fingered;
+    public Finger finger;
     private v3 mousePick;
     //private float padding;
 
@@ -66,7 +66,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     public void setFront(Surface front) {
         synchronized (this) {
             this.front = front;
-            this.fingered = null; //new Finger(this);
+            this.finger = null; //new Finger(this);
             if (front != null) {
                 front.start(this);
             }
@@ -77,7 +77,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     public boolean onKey(Collidable body, v3 hitPoint, char charCode, boolean pressed) {
         if (!super.onKey(body, hitPoint, charCode, pressed)) {
 
-            return front != null && front.onKey(null, charCode, pressed);
+            return front != null && front.tryKey(null, charCode, pressed);
         }
         return true;
     }
@@ -133,16 +133,21 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
                     this.mousePick = r.hitPointWorld;
 
-                    fingered = finger;
+                    this.finger = finger;
                     //System.out.println(localPoint + " " + thick);
 
-                    return fingered.on(front, localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f, buttons);
+                    finger.pos.set(
+                        localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
+                    );
+                    Surface f = this.finger.on(front);
+                    finger.updateButtons(buttons);
+                    return f;
                     //return mouseFront.update(null, localPoint.x, localPoint.y, buttons);
                 }
             } else {
 
-                if (fingered != null && fingered.off()) {
-                    fingered = null;
+                if (this.finger != null && this.finger.off()) {
+                    this.finger = null;
                 }
             }
         }

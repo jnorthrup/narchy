@@ -6,6 +6,8 @@ import nars.term.atom.Atomic;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.Null;
+
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
  * varible type, as well as serving as something like the "marker interfaces" of Atomic, Compound, ..
@@ -23,6 +25,11 @@ public interface Variable extends Atomic {
 
     @Override
     Variable normalize(byte offset);
+
+    @Override
+    default Term conceptualizableOrNull() {
+        return Null;
+    }
 
     /**
      * The syntactic complexity of a variable is 0, because it does not refer to

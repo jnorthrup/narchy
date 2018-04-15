@@ -132,7 +132,7 @@ public class AWTSurface extends Widget {
     }
 
     @Override
-    public boolean onKey(KeyEvent e, boolean pressed) {
+    public boolean tryKey(KeyEvent e, boolean pressed) {
         int code = Keyboard.newtKeyCode2AWTKeyCode(e.getKeyCode());
 
         /*
@@ -199,7 +199,7 @@ public class AWTSurface extends Widget {
 
 
     @Override
-    public void touch(@Nullable Finger finger) {
+    public void onFinger(@Nullable Finger finger) {
         boolean wasTouching = isTouched();
 
 

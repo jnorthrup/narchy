@@ -46,7 +46,7 @@ public class Windo extends Stacking {
     }
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
 
         if (dragMode!=null && dragMode.isStopped()) {
             //System.out.println(this + " dragMode " + dragMode + " stopped");
@@ -55,7 +55,7 @@ public class Windo extends Stacking {
 
         Surface other = null;
         if (/*dragMode==null && */finger!=null) {
-            Surface c = super.onTouch(finger, buttons);
+            Surface c = super.tryTouch(finger);
             other = c;
 //            if (!fingerable() || fingeringWindow(c)) {
 //                //            this.dragMode = null;
@@ -141,7 +141,7 @@ public class Windo extends Stacking {
             //System.out.println(this + " POTENTIAL " + potentialDragMode);
             this.potentialDragMode = potentialDragMode;
 
-            if (buttons != null && buttons.length > 0 && buttons[ZoomOrtho.PAN_BUTTON] == 1) {
+            if (finger.buttonDown[ZoomOrtho.PAN_BUTTON]) {
                 //actual drag mode enabled
                 FingerDragging d = potentialDragMode!=null ? (FingerDragging) fingering(potentialDragMode) : null;
                 if (d != null && finger.tryFingering(d)) {

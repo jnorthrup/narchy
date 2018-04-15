@@ -40,7 +40,7 @@ public class BooleanTest {
     void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
 
         final float confThresh = 0.7f;
-        Param.DEBUG = true;
+
 
 //        for (int i = 0; i < 2; i++) {
 //            for (int j = 0; j < 2; j++) {
@@ -125,7 +125,7 @@ public class BooleanTest {
 
     @Test
     public void testEternalcept() throws Narsese.NarseseException {
-        Param.DEBUG = true;
+
         NAR n = NARS.tmp().log();
         n.believe("((&&,(0,x),(1,x),(2,x),(3,x))==>a)");
         n.believe("((&&,(0,y),(1,y),(2,y),(3,y))==>b)");
@@ -176,7 +176,7 @@ public class BooleanTest {
 //    public void testSAT2Combined() throws Narsese.NarseseException {
 //
 //        final float confThresh = 0.7f;
-//        Param.DEBUG = true;
+//
 //
 //        NAR d = new NARS().get();
 //        d.nal(6);

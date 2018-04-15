@@ -199,7 +199,7 @@ public class TestProgol {
                 "animal(boy).\n" +
                 "has_milk(cat).\n" +
                 "homeothermic(cat).\n");
-        Param.DEBUG = true;
+
         n.freqResolution.set(0.25f);
         n.stats(System.out);
         //n.log();

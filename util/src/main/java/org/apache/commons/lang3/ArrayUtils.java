@@ -18,7 +18,6 @@ package org.apache.commons.lang3;
 
 
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -7696,7 +7695,7 @@ public enum ArrayUtils { ;
         return removeAll(array, Arrays.copyOf(indices, count));
     }
 
-    @Nullable
+    //@Nullable
     public static <T> T[] removeNulls(final T[] array, IntFunction<T[]> builder) {
         int nulls = 0;
         for (Object x : array)
@@ -7706,14 +7705,18 @@ public enum ArrayUtils { ;
         else {
             int s = array.length - nulls;
             if (s == 0)
-                return null;
-            T[] a = builder.apply(s);
-            int j = 0;
-            for (T x : array) {
-                if (x!=null)
-                    a[j++] = x;
+                return builder.apply(0);
+                //return null;
+            else {
+
+                T[] a = builder.apply(s);
+                int j = 0;
+                for (T x : array) {
+                    if (x != null)
+                        a[j++] = x;
+                }
+                return a;
             }
-            return a;
         }
     }
 

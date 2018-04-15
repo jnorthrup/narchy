@@ -24,7 +24,7 @@
 //    @Test
 //    public void testAndConcept() {
 //
-//        Param.DEBUG = true;
+//
 //
 //        NAR n = new Default(1024, 8, 2, 2).log();
 //

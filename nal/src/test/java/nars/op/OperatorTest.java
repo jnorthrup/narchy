@@ -131,7 +131,7 @@ public class OperatorTest {
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
         //_.slice(array, [start=0], [end=array.length])
 
-        Param.DEBUG = true;
+
 
         NAR n = NARS.tmp();
         n.log();

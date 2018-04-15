@@ -828,7 +828,7 @@ public class TemporalTermTest {
 
     @Test
     public void testNonCommutivityImplConcept() throws Narsese.NarseseException {
-        Param.DEBUG = true;
+
         NAR n = NARS.shell();
         n.input("((x) ==>+5 (y)).", "((y) ==>-5 (x)).");
         n.run(5);

@@ -26,7 +26,7 @@ public class ThermostatTest {
 //    @Test
 //    @Disabled
     public static void main (String[] args) {// void test1() {
-        //Param.DEBUG = true;
+        //
         final int DUR = 1;
 
         final int subTrainings = 2;

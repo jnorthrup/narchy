@@ -27,7 +27,7 @@ public class ImplicationNetworkTest {
 
         NAR n = NARS.tmp();
 
-        Param.DEBUG = true;
+
 
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
@@ -68,7 +68,7 @@ public class ImplicationNetworkTest {
 
         NAR n = NARS.tmp();
 
-        Param.DEBUG = true;
+
 
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
@@ -111,7 +111,7 @@ public class ImplicationNetworkTest {
 
         NAR n = NARS.tmp();
 
-        Param.DEBUG = true;
+
 
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
@@ -134,7 +134,7 @@ public class ImplicationNetworkTest {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(16);
 
-        Param.DEBUG = true;
+
 
         n.believe(IMPL.the(a.neg(), b));
         n.believe(a.neg());
@@ -158,7 +158,7 @@ public class ImplicationNetworkTest {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(16);
 
-        Param.DEBUG = true;
+
 
         n.believe(IMPL.the(a.neg(), b));
         n.believe(IMPL.the(b, c));
@@ -188,7 +188,7 @@ public class ImplicationNetworkTest {
         NAR n = NARS.tmp();
 
         n.log();
-        Param.DEBUG = true;
+
 
         n.believe(IMPL.the(a.neg(), b).neg());
         n.believe(IMPL.the(b.neg(), c));

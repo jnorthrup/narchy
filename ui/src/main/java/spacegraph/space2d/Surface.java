@@ -173,14 +173,6 @@ abstract public class Surface implements SurfaceBase {
         return bounds.h;
     }
 
-    /**
-     * returns non-null if the event has been absorbed by a speciifc sub-surface
-     * or null if nothing absorbed the gesture
-     */
-    public Surface onTouch(Finger finger, @Deprecated short[] buttons) {
-        return null;
-    }
-
     public Surface move(float dx, float dy) {
         pos(bounds.move(dx, dy, EPSILON));
         return this;
@@ -205,15 +197,24 @@ abstract public class Surface implements SurfaceBase {
 
     }
 
-    public boolean onKey(KeyEvent e, boolean pressed) {
+    public boolean tryKey(KeyEvent e, boolean pressed) {
         return false;
     }
 
     /**
      * returns true if the event has been absorbed, false if it should continue propagating
      */
-    public boolean onKey(v2 hitPoint, char charCode, boolean pressed) {
+    public boolean tryKey(v2 hitPoint, char charCode, boolean pressed) {
         return false;
+    }
+
+
+    /**
+     * returns non-null if the event has been absorbed by a speciifc sub-surface
+     * or null if nothing absorbed the gesture
+     */
+    public Surface tryTouch(Finger finger) {
+        return null;
     }
 
     public Surface hide() {

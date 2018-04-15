@@ -40,7 +40,7 @@ public class OpjectsTest {
         n.timeFocus.set(focus);
         n.time.dur(dur);
 
-        Param.DEBUG = true;
+
 
         List<Term> evokes = new FasterList();
         final Opjects objs = new Opjects(n) {
@@ -79,7 +79,7 @@ public class OpjectsTest {
     public void testObjectMethods() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
 
-        Param.DEBUG = true;
+
 
         n.log();
         final Opjects objs = new Opjects(n);
@@ -125,7 +125,7 @@ public class OpjectsTest {
     public void learnMethodGoal() throws Narsese.NarseseException {
 //         StringBuilder sb = new StringBuilder();
 //        n.onTask(sb::append);
-        Param.DEBUG = true;
+
         final NAR n = NARS.tmp();
 
 

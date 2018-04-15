@@ -25,7 +25,9 @@ import jcog.Util;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
+import nars.Task;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
@@ -137,6 +139,10 @@ public interface Stamp {
         }
 
         return toSetArray(c, maxLen);
+    }
+
+    static ImmutableLongSet toSet(Task task) {
+        return new LongHashSet(task.stamp()).toImmutable();
     }
 
 //    /** computes an estimate of self-overlap of a stamp
@@ -366,12 +372,19 @@ public interface Stamp {
 
 
 
+    static boolean overlapsAny(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
+        for (long x : b) {
+            if (aa.contains(x))
+                return true;
+        }
+        return false;
+    }
+
     static int overlaps(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
         int common = 0;
         for (long x : b) {
-            if (aa.contains(x)) {
+            if (aa.contains(x))
                 common++;
-            }
         }
         return common;
     }

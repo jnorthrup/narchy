@@ -41,7 +41,7 @@ public class NAgentTest {
 
         //n.freqResolution.set(0.1f);
 
-//        Param.DEBUG = true;
+//
 //        if (Param.DEBUG) {
 //            n.onTask(t -> {
 //                if (t instanceof DerivedTask && t.isGoal()) {
@@ -66,7 +66,7 @@ public class NAgentTest {
                 posOrNeg);
 
 //        a.curiosity.set(0.5f);
-//        Param.DEBUG = true;
+//
 //        //a.nar.log();
 //        a.nar.onTask(t -> {
 //            if (!t.isInput() & t.isGoal()) {
@@ -231,7 +231,7 @@ public class NAgentTest {
 
     @Test public void testSameCheat() {
 
-        Param.DEBUG = true;
+
 
         NAR n = new NARS().get();
 

@@ -42,8 +42,8 @@ public class XYSlider extends Widget {
     }
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
-        Surface s = super.onTouch(finger, buttons);
+    public Surface tryTouch(Finger finger) {
+        Surface s = super.tryTouch(finger);
         if (s == this && finger!=null) {
             finger.tryFingering(new FingerDragging(0) {
 

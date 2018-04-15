@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static nars.Op.Null;
+
 /**
  * has, or is associated with a specific term
  */
@@ -114,5 +116,10 @@ public interface Termed extends Termlike {
     }
 
 
+    default Term conceptualizableOrNull() {
+        if (!op().conceptualizable)
+            return Null;
+        return term();
+    }
 
 }

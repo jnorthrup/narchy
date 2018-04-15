@@ -199,7 +199,7 @@ public class QuestionTest {
         NAR n = NARS.tmp();
         n.log();
 
-        Param.DEBUG = true;
+
 
         n.on("odd", a->{
             if (a.subs() == 1 && a.sub(0).op()== Op.ATOM) {
@@ -268,7 +268,7 @@ public class QuestionTest {
     }
 
 //    @Test public void testSaneBudgeting() {
-//        Param.DEBUG = true;
+//
 //        String c = "((parent($X,$Y) && parent($Y,$Z)) ==> grandparent($X,$Z))";
 //        new Default(1000, 8, 1, 3)
 //            .logSummaryGT(System.out, 0.1f)
@@ -284,7 +284,7 @@ public class QuestionTest {
 //    }
 
 //    @Test public void testPrologLike1() {
-//        Param.DEBUG = true;
+//
 //        new Default(1000, 8, 1, 3)
 //            .logSummaryGT(System.out, 0.1f)
 //            .input(

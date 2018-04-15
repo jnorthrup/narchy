@@ -498,13 +498,15 @@ public class DeriveTime extends TimeGraph {
             if (c!=null) {
                 //valid result
                 Term t = c.term();
-                assert(!(t instanceof Bool));
-                if (t.volume() <= d.termVolMax) {
-                    long start = c.shift();
-                    return (se)->{
-                        se[0] = se[1] = start;
-                        return t;
-                    };
+                if (t.op().conceptualizable) {
+                    //assert(!(t instanceof Bool));
+                    if (t.volume() <= d.termVolMax) {
+                        long start = c.shift();
+                        return (se) -> {
+                            se[0] = se[1] = start;
+                            return t;
+                        };
+                    }
                 }
             }
         }

@@ -129,8 +129,8 @@ abstract public class Widget extends Switching {
         }
 
         @Override
-        public Surface onTouch(Finger finger, short[] buttons) {
-            Surface x = super.onTouch(finger, buttons);
+        public Surface tryTouch(Finger finger) {
+            Surface x = super.tryTouch(finger);
             if (x == this)
                 return Widget.this;
             return x;
@@ -213,7 +213,7 @@ abstract public class Widget extends Switching {
         return true;
     }
 
-    public void touch(@Nullable Finger finger) {
+    public void onFinger(@Nullable Finger finger) {
 
         touchedBy = finger;
         if (finger != null) {
@@ -257,8 +257,6 @@ abstract public class Widget extends Switching {
 
             }
 
-        } else {
-            onTouch(null, null);
         }
     }
 
@@ -273,7 +271,4 @@ abstract public class Widget extends Switching {
         }
     }
 
-    public void untouch() {
-        touch(null); //HACK
-    }
 }

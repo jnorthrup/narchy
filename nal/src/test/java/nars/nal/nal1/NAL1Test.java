@@ -11,7 +11,7 @@ public class NAL1Test extends NALTest {
     final int cycles = 100;
 
     static {
-        //Param.DEBUG = true;
+        //
         //Param.TRACE = true;
     }
 

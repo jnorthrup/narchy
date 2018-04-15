@@ -317,7 +317,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             actions.keySet().forEach(a ->
                     //alwaysQuest(a)
-                    alwaysQuestion(Op.IMPL.the(happy.term, 1 /*XTERNAL*/, a.term))
+                    alwaysQuestion(Op.IMPL.the(happy.term, 0 /*XTERNAL*/, a.term))
             );
 
             this.in = nar.newCauseChannel(this);

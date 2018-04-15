@@ -3,7 +3,6 @@ package nars.nal.nal6;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Param;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Disabled;
@@ -48,7 +47,7 @@ public class NAL6Test extends NALTest {
     public void variable_unification3() {
 
         TestNAR tester = test;
-        Param.DEBUG = true;
+
         tester.log();
         tester.believe("<<$x --> swan> ==> <$x --> bird>>", 1.00f, 0.80f); //en("If something is a swan, then it is a bird.");
         tester.believe("<<$y --> swan> ==> <$y --> swimmer>>", 0.80f, 0.9f); //en("If something is a swan, then it is a swimmer.");
@@ -433,7 +432,7 @@ public class NAL6Test extends NALTest {
     }
 
     @Test public void testConjunctionContradictionInduction() {
-        Param.DEBUG = true;
+
         test
                 .log()
                 .believe("((x && y) ==> z)")

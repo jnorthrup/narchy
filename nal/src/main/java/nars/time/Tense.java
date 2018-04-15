@@ -82,13 +82,13 @@ public enum Tense {
         }
     }
 
-    public static long dither(long dt, int dither) {
+    public static long dither(long t, int dither) {
         if (dither > 1) {
-            if (dt == ETERNAL) return ETERNAL;
-            else if (dt == TIMELESS) return TIMELESS;
-            else return Math.abs(dt) < dither ? 0 : Util.round(dt, dither); //collapse to simultaneous if less than the dither
+            if (t == ETERNAL) return ETERNAL;
+            else if (t == TIMELESS) return TIMELESS;
+            else return Util.round(t, dither); //collapse to simultaneous if less than the dither
         } else {
-            return dt;
+            return t;
         }
     }
 
@@ -101,20 +101,20 @@ public enum Tense {
     }
 
     public static int dither(int dt, int dither) {
-        switch (dt) {
-            case DTERNAL:
-                return DTERNAL;
-            case XTERNAL:
-                return XTERNAL;
-            case 0:
-                return 0;
-            default:
-                if (dither > 1)
+        if (dither > 1)
+            switch (dt) {
+                case DTERNAL:
+                    return DTERNAL;
+                case XTERNAL:
+                    return XTERNAL;
+                case 0:
+                    return 0;
+                default:
                     //collapse to simultaneous if less than the dither
-                    return Math.abs(dt) < dither ? 0 : Util.round(dt, dither);
-                else
-                    return dt; //unaffected
+                    return Util.round(dt, dither);
         }
+
+        return dt; //unaffected
     }
 
 

@@ -29,6 +29,11 @@ abstract public class Bool extends AtomicConst implements The {
     }
 
     @Override
+    public final Term conceptualizableOrNull() {
+        return Null;
+    }
+
+    @Override
     public /*@NotNull*/ Op op() {
         return BOOL;
     }

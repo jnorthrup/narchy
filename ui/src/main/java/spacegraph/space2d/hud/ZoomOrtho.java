@@ -34,7 +34,7 @@ public class ZoomOrtho extends Ortho {
 //    private InsetsImmutable windowInsets;
 
     final HUD hud = new HUD();
-    private int pmx, pmy;
+
 
 
 
@@ -86,19 +86,7 @@ public class ZoomOrtho extends Ortho {
         return true;
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
 
-        super.mouseMoved(e);
-
-
-//        int windowWidth = window.getWidth();
-        int windowHeight = window.getHeight();
-        pmx = e.getX();
-        pmy = windowHeight - e.getY();
-        finger.posGlobal.set(pmx, pmy);
-
-    }
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -109,10 +97,9 @@ public class ZoomOrtho extends Ortho {
 
 
     @Override
-    Surface updateMouse(float sx, float sy, short[] buttonsDown) {
+    Surface finger() {
 
-        Surface s =
-                super.updateMouse(sx, sy, buttonsDown);
+        Surface s = super.finger();
 
         if (s == null || (zoomingOut || panStart!=null))
             updatePan();
@@ -358,7 +345,7 @@ public class ZoomOrtho extends Ortho {
 
 
         @Override
-        public Surface onTouch(Finger finger, short[] buttons) {
+        public Surface tryTouch(Finger finger) {
 
 
             //System.out.println(hitPoint);
@@ -373,7 +360,7 @@ public class ZoomOrtho extends Ortho {
 
             }
 
-            Surface x = super.onTouch(finger, buttons);
+            Surface x = super.tryTouch(finger);
             return x;
         }
 

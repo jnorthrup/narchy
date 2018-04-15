@@ -237,13 +237,12 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
-    Resemblance() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.resemblance(T, B, minConf);
-        }
-    },
+//    Resemblance() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            return TruthFunctions.resemblance(T, B, minConf);
+//        }
+//    },
 
     Intersection() {
         @Override

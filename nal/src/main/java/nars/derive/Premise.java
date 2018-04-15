@@ -15,7 +15,12 @@ import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.subst.UnifySubst;
+import nars.time.Tense;
+import nars.truth.Stamp;
+import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.VAR_QUERY;
@@ -73,10 +78,8 @@ public class Premise {
     @Nullable
     public boolean match(Derivation d, int matchTTL) {
 
-
-
         Term taskTerm = task.term();
-        Term taskConcept = task.term().concept();
+        Term taskConcept = taskTerm.concept();
         Op to = taskTerm.op();
 
         final boolean[] beliefConceptCanAnswerTaskConcept = {false};
@@ -117,30 +120,28 @@ public class Premise {
                 }
             }
         }
-        beliefTerm = beliefTerm.unneg(); //HACK ?? assert(beliefTerm.op()!=NEG);
 
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
-        Task belief = match(d, beliefTerm, taskConcept, beliefConceptCanAnswerTaskConcept[0], unifiedBelief);
-
+        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept[0], unifiedBelief);
 
         if (belief != null) {
-            beliefTerm = belief.term(); //use the belief's actual possibly-temporalized term
-            if (belief.equals(task)) { //do not repeat the same task for belief
-                belief = null; //force structural transform; also prevents potential inductive feedback loop
-            }
+            beliefTerm = belief.term(); //use the belief's actual, possibly-temporalized term
+        } else {
+
+            beliefTerm = beliefTerm.unneg();
+
+            if (beliefTerm instanceof Bool)
+                throw new RuntimeException("beliefTerm boolean; termLink=" + termLink + ", belief=" + belief);
         }
-        assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 
         return d.reset(task, belief, beliefTerm);
-
     }
 
-    @Nullable Task match(Derivation d, Term beliefTerm, Term taskConcept, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
+    @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
         //        float timeFocus = n.timeFocus.floatValue();
 //        int fRad = Math.round(Math.max(1,dur * timeFocus));
 
         NAR n = d.nar;
-        int dur = d.dur;
 
         Task belief = null;
 
@@ -149,6 +150,12 @@ public class Premise {
                 :
                 null;
         if (beliefConcept != null) {
+
+//            long[] focus = n.timeFocus(task.nearestPointInternal(n.time()));
+//            long focusStart = focus[0];
+//            long focusEnd = focus[1];
+            long focusStart = Tense.dither(task.start(), n);
+            long focusEnd = Tense.dither(task.end(), n);
 
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
@@ -160,24 +167,23 @@ public class Premise {
                                         beliefConcept.goals() :
                                         bb;
 
-//                            //see if belief unifies with task (in reverse of previous unify)
-//                            if (questionTerm.varQuery() == 0 || (unify((Compound)beliefConcept.term(), questionTerm, nar) == null)) {
-//
-//                            } else {
-//
-//                            }
+                        Task match = answerTable.answer(focusStart, focusEnd, beliefTerm, d::add, stampFilter(d), n);
+                        if (match == null) {
+                            match = bb.answer(focusStart, focusEnd, beliefTerm, d::add,null, n); //retry without stamp filter
+                            if (!validMatch(match))
+                                match = null;
+                        }
 
-                        Task match = answerTable.answer(task.start(), task.end(), dur, task, beliefTerm, n, d::add);
                         if (match != null) {
                             assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+
+                            if (match.isBelief()) {
+                                belief = match;
+                            }
 
                             @Nullable Task answered = task.onAnswered(match, n);
                             if (answered != null) {
                                 n.emotion.onAnswer(task, answered);
-                            }
-
-                            if (match.isBelief()) {
-                                belief = match;
                             }
 
                         }
@@ -185,23 +191,12 @@ public class Premise {
                 }
 
                 if ((belief == null) && !bb.isEmpty()) {
-
-                    long[] focus = n.timeFocus(task.nearestPointInternal(n.time()));
-                    long focusStart = focus[0];
-                    long focusEnd = focus[1];
-
-                    boolean sameConcepts = taskConcept.equals(beliefConcept.term());
-                    belief = bb.match(
-                                focusStart, focusEnd,
-                                beliefTerm,
-                                n,
-                            !sameConcepts ? null : m->!m.equals(task)
-//                            m->
-//                                (!sameConcepts || !m.equals(task))
-//                                &&
-//                                m.intersects(focusStart, focusEnd) //select only from the focus region
-                    );
-
+                    belief = bb.match(focusStart, focusEnd, beliefTerm, stampFilter(d), n);
+                    if (belief == null) {
+                        belief = bb.match(focusStart, focusEnd, beliefTerm, null, n); //retry without stamp filter
+                        if (!validMatch(belief))
+                            belief = null; //force single
+                    }
                 }
             }
 
@@ -214,6 +209,15 @@ public class Premise {
 
         }
         return belief;
+    }
+
+    private boolean validMatch(@Nullable Task x) {
+        return x!=null && !x.equals(task);
+    }
+
+    private Predicate<Task> stampFilter(Derivation d) {
+        ImmutableLongSet taskStamp = (d._task !=null && d._task.equals(task)) ? d.taskStamp : Stamp.toSet(task);
+        return (t) -> !Stamp.overlapsAny(taskStamp, t.stamp());
     }
 
 

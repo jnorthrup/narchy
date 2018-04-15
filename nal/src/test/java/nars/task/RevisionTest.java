@@ -74,7 +74,7 @@ public class RevisionTest {
     public final static Term x = $.the("x");
 
     void testRevision(int delay1, boolean beliefOrGoal) {
-        Param.DEBUG = true;
+
 
         NAR n = newNAR(6);
 
@@ -106,8 +106,6 @@ public class RevisionTest {
 
         NAR n = NARS.shell(); //newNAR(8);
 
-
-        Param.DEBUG = true;
         n.log();
 
         int offCycles = 2;
@@ -150,7 +148,7 @@ public class RevisionTest {
     @Test
     public void testTruthOscillation2() {
 
-        Param.DEBUG = true;
+
 
         int maxBeliefs = 16;
         NAR n = newNAR(maxBeliefs);

@@ -171,12 +171,12 @@ public class Port extends Widget implements Wiring.Wireable {
 
 
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
+    public Surface tryTouch(Finger finger) {
 
 
 
-        if (finger!=null && buttons!=null) {
-            Surface x = super.onTouch(finger, buttons);
+        if (finger!=null /*&& buttons!=null*/) {
+            Surface x = super.tryTouch(finger);
             if (x==null || x==this) {
                 if (finger.tryFingering(new LinkingWiring(this)))
                     return this;
@@ -185,7 +185,7 @@ public class Port extends Widget implements Wiring.Wireable {
             return x;
         }
 
-        return super.onTouch(finger, buttons);
+        return super.tryTouch(finger);
 
 
 //                Surface c = super.onTouch(finger, buttons);

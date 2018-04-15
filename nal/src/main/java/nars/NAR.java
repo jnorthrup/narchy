@@ -1371,7 +1371,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         if (!(concept instanceof TaskConcept))
             return null;
 
-        return ((BeliefTable) concept.table(punc)).answer(start, end, c.term(), this);
+        return ((BeliefTable) concept.table(punc)).answer(start, end,
+                c.term(), this::input, null,this);
     }
 
     public SortedMap<String, Object> stats(Appendable out) {
@@ -1563,7 +1564,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public Concept activate(Termed t, float activationApplied) {
         Concept c = concept(t, true /*false */ /* true */);
         if (c != null)
-            exe.activate(c, activationApplied);
+            exe.activate(c, activationApplied * activationRate.floatValue());
         return c;
     }
 

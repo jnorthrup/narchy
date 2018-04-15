@@ -397,7 +397,10 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public boolean add(Task input, TaskConcept concept, NAR nar) {
 
         if (Param.FILTER_DYNAMIC_MATCHES) {
-            if (!(input instanceof SignalTask) && input.punc() == punc() && !input.isInput()) {
+            if (!(input instanceof SignalTask) &&
+                !input.isEternal() &&
+                //input.punc() == punc() &&
+                !input.isInput()) {
 
                 PredictionFeedback.feedbackNonSignal(input, this, nar);
                 if (input.isDeleted())
