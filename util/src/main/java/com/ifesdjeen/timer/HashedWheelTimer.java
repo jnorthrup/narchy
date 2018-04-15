@@ -8,10 +8,7 @@ import jcog.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,9 +33,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     public final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
 
-    private static final String DEFAULT_TIMER_NAME = HashedWheelTimer.class.getSimpleName();
+//    private static final String DEFAULT_TIMER_NAME = HashedWheelTimer.class.getSimpleName();
 
-    /** used for fast test for incoming items */
+    /**
+     * used for fast test for incoming items
+     */
     final AtomicInteger incomingCount = new AtomicInteger();
 
     private final ConcurrentQueue<TimedFuture<?>> incoming = new DisruptorBlockingQueue<>(1024);
@@ -92,7 +91,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         this.executor = exec;
 
-        this.loop = name!=null ? new Thread(this, name) : new Thread(this);
+        this.loop = name != null ? new Thread(this, name) : new Thread(this);
         this.loop.start();
 
     }
@@ -117,10 +116,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         long deadline = System.nanoTime();
 
-        TimedFuture[] buffer = new TimedFuture[1024];
+        TimedFuture[] buffer = new TimedFuture[4096];
 
         int c;
-        while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE))>=0) {
+        while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE)) >= 0) {
 
             if (incomingCount.get() > 0) {
                 int count = incoming.remove(buffer);
@@ -144,26 +143,29 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             }
 
             // TODO: consider extracting processing until deadline for test purposes
-            Queue<TimedFuture<?>> w = wheel[c];
-            int limit = !w.isEmpty() ? w.size() : 0;
-            if (limit > 0) {
-                TimedFuture<?> r;
-                while (limit-- > 0 && ((r = w.peek()) != null)) {
+            Queue<TimedFuture<?>> q = wheel[c];
 
-                    switch (r.state()) {
-                        case CANCELLED:
-                            w.poll();
-                            break;
-                        case READY:
-                            w.poll();
-                            r.execute(this);
-                            break;
-                        case PENDING:
-                            break;
+            Iterator<TimedFuture<?>> i = q.iterator();
 
-                    }
+            while (i.hasNext()) {
+
+                TimedFuture<?> r = i.next();
+
+                switch (r.state()) {
+                    case CANCELLED:
+                        i.remove();
+                        break;
+                    case READY:
+                        i.remove();
+                        r.execute(this);
+                        break;
+                    case PENDING:
+                        //keep
+                        break;
+
                 }
             }
+
 
             deadline += resolution;
 
@@ -206,7 +208,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     @Override
-    public TimedFuture<?> scheduleWithFixedDelay(Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
+    public FixedDelayTimedFuture<?> scheduleWithFixedDelay(Runnable runnable, long initialDelay, long delay, TimeUnit unit) {
         return scheduleFixedDelay(TimeUnit.NANOSECONDS.convert(delay, unit),
                 TimeUnit.NANOSECONDS.convert(initialDelay, unit),
                 constantlyNull(runnable));
@@ -232,14 +234,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     public void shutdown() {
         cursor.set(Integer.MIN_VALUE);
         if (executor instanceof ExecutorService)
-            ((ExecutorService)this.executor).shutdown();
+            ((ExecutorService) this.executor).shutdown();
     }
 
     @Override
     public List<Runnable> shutdownNow() {
         cursor.set(Integer.MIN_VALUE);
         if (executor instanceof ExecutorService)
-            return ((ExecutorService)this.executor).shutdownNow();
+            return ((ExecutorService) this.executor).shutdownNow();
         else
             return List.of();
     }
@@ -247,51 +249,51 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @Override
     public boolean isShutdown() {
         return cursor.get() >= 0 &&
-                (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).isShutdown());
+                (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).isShutdown());
     }
 
     @Override
     public boolean isTerminated() {
         return cursor.get() >= 0 &&
-                (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).isTerminated());
+                (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).isTerminated());
     }
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
         return //this.loop.awaitTermination(timeout, unit) &&
-                (!(executor instanceof ExecutorService) || ((ExecutorService)this.executor).awaitTermination(timeout, unit));
+                (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).awaitTermination(timeout, unit));
     }
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
-        return ((ExecutorService)this.executor).submit(task);
+        return ((ExecutorService) this.executor).submit(task);
     }
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
-        return ((ExecutorService)this.executor).submit(task, result);
+        return ((ExecutorService) this.executor).submit(task, result);
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return ((ExecutorService)this.executor).invokeAll(tasks);
+        return ((ExecutorService) this.executor).invokeAll(tasks);
     }
 
     @Override
     public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout,
                                          TimeUnit unit) throws InterruptedException {
-        return ((ExecutorService)this.executor).invokeAll(tasks, timeout, unit);
+        return ((ExecutorService) this.executor).invokeAll(tasks, timeout, unit);
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        return ((ExecutorService)this.executor).invokeAny(tasks);
+        return ((ExecutorService) this.executor).invokeAny(tasks);
     }
 
     @Override
     public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout,
                            TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return ((ExecutorService)this.executor).invokeAny(tasks, timeout, unit);
+        return ((ExecutorService) this.executor).invokeAny(tasks, timeout, unit);
     }
 
     /**
@@ -446,7 +448,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 schedule(r);
                 return null;
             });
-        }  else {
+        } else {
             schedule(r);
         }
 
@@ -460,11 +462,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         isTrue(recurringTimeout >= resolution,
                 "Cannot schedule tasks for amount of time less than timer precision.");
 
-        int offset = (int) (recurringTimeout / resolution);
-        int rounds = offset / numWheels;
+//        int offset = (int) (recurringTimeout / resolution);
+//        int rounds = offset / numWheels;
 
-        FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(0, callable, recurringTimeout, rounds, offset,
+        FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(0,
+                callable,
+                recurringTimeout, resolution, numWheels,
                 this::schedule);
+
         if (firstDelay > 0) {
             scheduleOneShot(firstDelay, () -> {
                 schedule(r);

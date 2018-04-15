@@ -160,7 +160,7 @@ public abstract class AbstractTimerTest {
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
         // time difference between the beginning of second tick and end of first one
         assertTrue(r.get(2) - r.get(1) >= 100);
     }
@@ -176,7 +176,7 @@ public abstract class AbstractTimerTest {
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(10, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
         long end = System.currentTimeMillis();
         assertTrue(end - start >= 1000);
     }
@@ -244,30 +244,32 @@ public abstract class AbstractTimerTest {
 
     @Test
     public void testExecutionOnTime() throws InterruptedException {
-        int dutyTime = 200;
-        int initialDelayTime = 130;
-        int tolerance = 100;
-        int maxTimeout = (dutyTime + initialDelayTime) + tolerance;
+
+        int delayTime = 250;
+        int tolerance = 25;
+        int maxTimeout = (delayTime) + tolerance;
 
         int scheduledTasks =
                 //100000;
                 //8 * 1024;
-                100;
+                500;
 
         final BlockingQueue<Long> queue = new LinkedBlockingQueue<>();
 
         for (int i = 0; i < scheduledTasks; i++) {
             final long start = System.nanoTime();
+
             timer.schedule(() -> {
-                queue.add(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
-            }, initialDelayTime, TimeUnit.MILLISECONDS);
+                long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+                queue.add(ms);
+            }, delayTime, TimeUnit.MILLISECONDS);
         }
 
         for (int i = 0; i < scheduledTasks; i++) {
             long delay = queue.take();
             System.out.println(i + " " + delay);
-            assertTrue(delay >= initialDelayTime && delay < maxTimeout,
-                    () -> "Timeout + " + scheduledTasks + " delay must be " + initialDelayTime + " < " + delay + " < " + maxTimeout);
+            assertTrue(delay >= delayTime - tolerance && delay <= delayTime + tolerance,
+                    () -> "Timeout + " + scheduledTasks + " delay must be " + delayTime + " < " + delay + " < " + maxTimeout);
         }
     }
 

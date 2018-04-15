@@ -3,22 +3,26 @@ package com.ifesdjeen.timer;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-class FixedDelayTimedFuture<T> extends OneShotTimedFuture<T> {
+public class FixedDelayTimedFuture<T> extends OneShotTimedFuture<T> {
 
-    private final int rescheduleRounds;
-    private final int scheduleOffset;
+
     private final Consumer<TimedFuture<?>> rescheduleCallback;
+    private final long periodNS;
+    private final long resolution;
+    private final int wheels;
 
     public FixedDelayTimedFuture(int rounds,
                                  Callable<T> callable,
-                                 long delay,
-                                 int scheduleRounds,
-                                 int scheduleOffset,
+                                 long periodNS,
+                                 long resolution,
+                                 int wheels,
                                  Consumer<TimedFuture<?>> rescheduleCallback) {
-        super(rounds, callable, delay);
-        this.rescheduleRounds = scheduleRounds;
-        this.scheduleOffset = scheduleOffset;
+        super(rounds, callable, periodNS);
+        this.periodNS = periodNS;
+        this.resolution = resolution;
+        this.wheels = wheels;
         this.rescheduleCallback = rescheduleCallback;
+        reset();
     }
 
     @Override
@@ -26,12 +30,17 @@ class FixedDelayTimedFuture<T> extends OneShotTimedFuture<T> {
         return true;
     }
 
+    @Override
+    public int rounds() {
+        return getOffset() / wheels;
+    }
+
     public int getOffset() {
-        return this.scheduleOffset;
+        return (int) (periodNS / resolution);
     }
 
     public void reset() {
-        this.rounds.set(rescheduleRounds);
+        this.rounds.set(rounds());
     }
 
     @Override

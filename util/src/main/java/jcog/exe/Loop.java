@@ -20,7 +20,7 @@ abstract public class Loop {
     protected final Logger logger;
 
     //make Loop extend FixedRateFuture...
-    @Deprecated private volatile FixedRateTimedFuture task = null;
+    @Deprecated private volatile FixedRateTimedFuture<?> task = null;
 
     /** busy lock */
     private final AtomicBoolean executing = new AtomicBoolean(false);
@@ -33,10 +33,10 @@ abstract public class Loop {
             Executor exe = Util.executor();
             HashedWheelTimer.logger.info("global timer start: executor={}", exe);
             timer = new HashedWheelTimer(Loop.class.getName(),
-                    TimeUnit.MILLISECONDS.toNanos(1),
-                    32,
-                    // HashedWheelTimer.WaitStrategy.YieldingWait,
-                    HashedWheelTimer.WaitStrategy.SleepWait,
+                    TimeUnit.MILLISECONDS.toNanos(2),
+                    64,
+                     HashedWheelTimer.WaitStrategy.YieldingWait,
+                    //HashedWheelTimer.WaitStrategy.SleepWait,
                     exe);
         }
         return timer;
@@ -118,7 +118,9 @@ abstract public class Loop {
 //                    myNewThread.start();
                     assert(this.task == null);
                     onStart();
-                    this.task = timer().scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                    this.task = timer()
+                        .scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                        //.scheduleWithFixedDelay(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
 
@@ -147,7 +149,7 @@ abstract public class Loop {
 
                 logger.debug("period={}ms", nextPeriodMS);
 
-                FixedRateTimedFuture task = this.task;
+                FixedRateTimedFuture<?> task = this.task;
                 if (task!=null) {
                     task.setPeriodMS(nextPeriodMS);
                 }

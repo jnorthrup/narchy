@@ -109,8 +109,8 @@ public abstract class BusyPool extends AbstractExecutorService {
                     logger.error("interrupted {}", e);
                 }
             } else {
-                logger.error("{} queue overflow {}", Thread.currentThread(), x);
-                //drop
+                logger.warn("{} queue overflow {}", Thread.currentThread(), x);
+                queueOverflow(x);
             }
         }
 
@@ -118,6 +118,10 @@ public abstract class BusyPool extends AbstractExecutorService {
 //            logger.error("lag"); //TODO statistics
 //            anonymous.pollNext();
 //        }
+    }
+
+    protected void queueOverflow(Object x) {
+        throw new RuntimeException("queue overflow: " + x);
     }
 
     public abstract static class WorkLoop implements Runnable {

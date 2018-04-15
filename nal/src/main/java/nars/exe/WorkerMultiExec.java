@@ -17,6 +17,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
@@ -141,6 +142,13 @@ public class WorkerMultiExec extends AbstractExec {
                 @Override
                 protected WorkLoop newWorkLoop(ConcurrentQueue<Runnable> q) {
                     return new MyWorkLoop(q, nar);
+                }
+
+                @Override
+                protected void queueOverflow(Object x) {
+                    Thread.yield();
+                    //emergency defer to ForkJoin commonPool
+                    ForkJoinPool.commonPool().execute(x instanceof Runnable ? ((Runnable)x) : ()->executeNow(x));
                 }
             };
             pool.workers.forEach(this::register);

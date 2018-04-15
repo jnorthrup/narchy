@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.ifesdjeen.timer.TimedFuture.Status.CANCELLED;
 import static com.ifesdjeen.timer.TimedFuture.Status.PENDING;
 import static com.ifesdjeen.timer.TimedFuture.Status.READY;
 
@@ -43,7 +44,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
 
     @Override
     public boolean isCancelled() {
-        return status == Status.CANCELLED;
+        return status == CANCELLED;
     }
     @Override
     public boolean isDone() {
@@ -62,7 +63,7 @@ public class OneShotTimedFuture<T> implements TimedFuture<T> {
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning /* ignored */) {
-        this.status = Status.CANCELLED;
+        this.status = CANCELLED;
         return true;
     }
 
