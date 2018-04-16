@@ -2,9 +2,9 @@ package nars.subterm;
 
 import nars.Narsese;
 import nars.Op;
+import nars.op.SetFunc;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -65,9 +65,9 @@ public class SubtermsTest {
     public void testUnionReusesInstance() throws Narsese.NarseseException {
         Compound container = $("{a,b}");
         Compound contained = $("{a}");
-        assertSame(Terms.union(container.op(), container, contained), container);
-        assertSame(Terms.union(contained.op(), contained, container), container);
-        assertSame(Terms.union(container.op(), container, container), container);
+        assertSame(SetFunc.union(container.op(), container, contained), container);
+        assertSame(SetFunc.union(contained.op(), contained, container), container);
+        assertSame(SetFunc.union(container.op(), container, container), container);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class SubtermsTest {
     public void testIntersectReusesInstance() throws Narsese.NarseseException {
         Compound x = $("{x,y}");
         Compound y = $("{x,y}");
-        assertSame(Terms.intersect(x.op(), x, y), x);
+        assertSame(SetFunc.intersect(x.op(), x, y), x);
     }
 
     @Test
@@ -88,9 +88,9 @@ public class SubtermsTest {
         Compound x = $("{e,f}");
         Compound y = $("{e,d}");
 
-        System.out.println(Terms.intersect(x.op(), x, y));
+        System.out.println(SetFunc.intersect(x.op(), x, y));
         System.out.println(Op.differenceSet(x.op(), x, y));
-        System.out.println(Terms.union(x.op(), x, y));
+        System.out.println(SetFunc.union(x.op(), x, y));
 
     }
 

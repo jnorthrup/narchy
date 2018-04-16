@@ -4,7 +4,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.subterm.Subterms;
-import nars.term.transform.Retemporalize;
+import nars.util.term.transform.Retemporalize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -14,8 +14,8 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import static nars.$.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 

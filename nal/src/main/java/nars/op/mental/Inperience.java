@@ -10,9 +10,9 @@ import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
-import nars.term.transform.Retemporalize;
-import nars.term.transform.TermTransform;
-import nars.time.Tense;
+import nars.util.term.transform.Retemporalize;
+import nars.util.term.transform.TermTransform;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import static nars.Op.*;
 import static nars.term.atom.Atomic.the;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 /**
  * Internal Experience (NAL9)

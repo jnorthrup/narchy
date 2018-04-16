@@ -7,17 +7,17 @@ import nars.NARS;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
-import nars.derive.rule.DeriveRuleSet;
+import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -38,7 +38,7 @@ public class RuleInductionTest {
             8
         );
 
-        Deriver d = new Deriver(new DeriveRuleSet(n,
+        Deriver d = new Deriver(new PremiseDeriverRuleSet(n,
             //CONJ induction
         "B, A, notImpl(A) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionUnprojectedDepolarized)"
             //CONJ decompose

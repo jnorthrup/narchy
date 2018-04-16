@@ -10,7 +10,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.term.Term;
-import nars.term.subst.Unify;
+import nars.unify.Unify;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -13,7 +13,7 @@ import java.util.Random;
 
 import static nars.$.$$;
 import static nars.Op.False;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
 

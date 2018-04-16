@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.XTERNAL;
 
 /**
  * TODO implement Task directly avoiding redudant fields that this overrides

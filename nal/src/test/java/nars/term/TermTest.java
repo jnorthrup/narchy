@@ -18,7 +18,7 @@ package nars.term;
 
 import nars.*;
 import nars.concept.Concept;
-import nars.derive.match.EllipsisMatch;
+import nars.unify.match.EllipsisMatch;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
@@ -35,7 +35,7 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.task.RevisionTest.x;
-import static nars.time.Tense.DTERNAL;
+import static nars.util.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

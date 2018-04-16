@@ -15,7 +15,7 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.term.compound.util.Conj;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;

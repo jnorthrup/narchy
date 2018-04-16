@@ -9,11 +9,11 @@ import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    public static final int cycles = 100;
+    public static final int cycles = 300;
     
     @Override protected NAR nar() { return NARS.tmp(3); }
 

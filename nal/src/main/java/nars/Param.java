@@ -10,7 +10,7 @@ import jcog.util.FloatFloatToFloatFunction;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.term.atom.Atom;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -18,8 +18,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.ETERNAL;
+import static nars.util.time.Tense.XTERNAL;
 
 /**
  * NAR Parameters
@@ -184,7 +184,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(128, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(64, 0, 1024);
 
 
     /** estimate */
@@ -269,11 +269,11 @@ public abstract class Param {
 
     /**
      * abs(term.dt()) safety limit for non-dternal/non-xternal temporal compounds
+     * exists for debugging
      */
     @Deprecated
     public static int DT_ABS_LIMIT =
-            Integer.MAX_VALUE / 1024;
-    //Integer.MAX_VALUE / 16384;
+            Integer.MAX_VALUE / 16384;
 
 
 

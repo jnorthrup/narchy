@@ -7,7 +7,7 @@ import nars.concept.TaskConcept;
 import nars.concept.scalar.Scalar;
 import nars.control.DurService;
 import nars.gui.Vis;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import org.jetbrains.annotations.NotNull;

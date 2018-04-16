@@ -4,7 +4,7 @@ import jcog.Skill;
 import nars.NAR;
 import nars.Param;
 
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 /** fades evidence before the beginning and after the end of a defined RangeTruthlet
  *

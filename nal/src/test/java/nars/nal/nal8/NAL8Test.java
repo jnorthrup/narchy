@@ -7,7 +7,7 @@ import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.test.TestNAR;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.util.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -16,17 +16,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 130;
+    public static final int cycles = 430;
 
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
+        test.nar.termVolumeMax.set(18);
     }
 
     @Test

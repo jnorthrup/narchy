@@ -3,7 +3,6 @@ package nars.term.compound;
 import jcog.Util;
 import nars.Op;
 import nars.Param;
-import nars.derive.PatternCompound;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -12,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.XTERNAL;
 
 /**
  * flyweight Compound implementation for non-DTERNAL dt values.
@@ -34,7 +33,7 @@ public class LightCompoundDT implements Compound {
 
         Op op = base.op();
 
-        assert(base.dt()==DTERNAL && ((op.temporal && dt!=DTERNAL) || this instanceof PatternCompound));
+        //assert(base.dt()==DTERNAL && ((op.temporal && dt!=DTERNAL) || this instanceof PremisePatternIndex.PremisePatternCompound));
 
         Subterms s = base.subterms();
 
@@ -68,9 +67,7 @@ public class LightCompoundDT implements Compound {
                 dt = -dt; //Math.abs(dt);
         }
 
-
-
-        assert dt != DTERNAL || this instanceof PatternCompound : "use GenericCompound if dt==DTERNAL";
+        //assert dt != DTERNAL || this instanceof PremisePatternIndex.PremisePatternCompound : "use GenericCompound if dt==DTERNAL";
 
         assert dt == DTERNAL || dt == XTERNAL || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
 

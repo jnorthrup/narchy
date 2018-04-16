@@ -4,7 +4,7 @@ import nars.$;
 import nars.Narsese;
 import nars.term.Term;
 import nars.test.TestNAR;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.util.NALTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,7 @@ import java.util.List;
 
 import static nars.$.$;
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -29,6 +29,7 @@ public class NAL7Test extends NALTest {
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
+        test.nar.termVolumeMax.set(24);
     }
 
 //    private static final Path tmpDir;

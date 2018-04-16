@@ -1,7 +1,7 @@
 package nars.op;
 
 import nars.term.Functor;
-import nars.term.Solution;
+import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.atom.Int;
 
@@ -52,7 +52,7 @@ public enum MathFunc { ;
                         if (Y == 0) return xy;
 
                         int X = XY - Y;
-                        return Solution.solve(s->
+                        return Evaluation.solve(s->
                             s.replace(x, Int.the(X))
                         );
                     }

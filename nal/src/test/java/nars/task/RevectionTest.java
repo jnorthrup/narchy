@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import nars.*;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.FocusingLinearTruthPolation;
 import org.jetbrains.annotations.NotNull;

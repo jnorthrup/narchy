@@ -10,7 +10,7 @@ import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.subst.Unify;
+import nars.unify.Unify;
 import org.jetbrains.annotations.NotNull;
 
 /**

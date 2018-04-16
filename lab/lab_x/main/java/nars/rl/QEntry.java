@@ -8,7 +8,7 @@ import nars.task.TaskSeed;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.data.ConceptMatrix;
+import nars.util.concept.ConceptMatrix;
 import org.apache.commons.math3.util.FastMath;
 
 /**

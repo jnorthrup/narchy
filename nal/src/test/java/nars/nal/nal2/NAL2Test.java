@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 550;
+    static final int cycles = 850;
 
 
     @Override

@@ -10,7 +10,7 @@ import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.TruthWave;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

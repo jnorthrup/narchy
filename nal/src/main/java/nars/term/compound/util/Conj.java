@@ -19,7 +19,7 @@ import java.util.function.IntPredicate;
 
 import static nars.Op.*;
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.*;
+import static nars.util.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**

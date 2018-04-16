@@ -13,8 +13,8 @@ import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.XTERNAL;
 
 
 /** computes dynamic truth according to implicit truth functions

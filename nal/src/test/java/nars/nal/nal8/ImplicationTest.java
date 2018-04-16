@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import static jcog.Texts.n2;
 import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** exhaustive parametric implication deduction/induction belief/goal tests */

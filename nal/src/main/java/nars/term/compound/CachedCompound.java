@@ -9,7 +9,7 @@ import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
-import static nars.time.Tense.DTERNAL;
+import static nars.util.time.Tense.DTERNAL;
 
 
 /**

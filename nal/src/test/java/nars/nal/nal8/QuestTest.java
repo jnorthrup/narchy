@@ -4,14 +4,14 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.$.$;
 import static nars.Op.QUEST;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**

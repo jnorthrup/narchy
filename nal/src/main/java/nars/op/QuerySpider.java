@@ -9,7 +9,7 @@ import nars.concept.Concept;
 import nars.control.NARService;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.subst.UnifySubst;
+import nars.unify.UnifySubst;
 import nars.util.graph.TermGraph;
 
 /** TODO not finished */

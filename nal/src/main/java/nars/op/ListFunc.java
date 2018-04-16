@@ -6,7 +6,7 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Functor;
-import nars.term.Solution;
+import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Int;
@@ -36,13 +36,13 @@ public enum ListFunc { ;
 
             int l = xy.subs();
             if (l == 0) {
-                return Solution.solve(s ->
+                return Evaluation.solve(s ->
                         s.replace(
                                 x, Op.EmptyProduct,
                                 y, Op.EmptyProduct)
                 );
             } else if (l == 1) {
-                return Solution.solve(s ->
+                return Evaluation.solve(s ->
                         s.replace(
                                 s.subst(
                                         x, Op.EmptyProduct,
@@ -54,7 +54,7 @@ public enum ListFunc { ;
                 );
             } else {
                 Subterms xys = xy.subterms();
-                return Solution.solve(s ->
+                return Evaluation.solve(s ->
                         s.replace(
                                 Util.map(-1, l, finalI ->
                                                 s.subst(
@@ -84,9 +84,9 @@ public enum ListFunc { ;
                 if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
                     //the suffix matches
                     if (remainderLength == 0)
-                        return Solution.solve(s -> s.replace(x, Op.EmptyProduct));
+                        return Evaluation.solve(s -> s.replace(x, Op.EmptyProduct));
                     else
-                        return Solution.solve(s ->
+                        return Evaluation.solve(s ->
                                 s.replace(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys)))
                         );
                 }
@@ -109,9 +109,9 @@ public enum ListFunc { ;
                 if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
                     //the prefix matches
                     if (remainderLength == 0)
-                        return Solution.solve(s -> s.replace(y, Op.EmptyProduct));
+                        return Evaluation.solve(s -> s.replace(y, Op.EmptyProduct));
                     else
-                        return Solution.solve(s ->
+                        return Evaluation.solve(s ->
                                 s.replace(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs)))
                         );
                 }

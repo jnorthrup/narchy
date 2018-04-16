@@ -5,7 +5,7 @@ import jcog.Skill;
 import jcog.Util;
 import nars.truth.Truth;
 
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /** wavelet-like freq/evidence function */

@@ -5,7 +5,7 @@ import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.TruthFunctions;
 import org.apache.commons.lang3.ArrayUtils;
 

@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static nars.time.Tense.DTERNAL;
+import static nars.util.time.Tense.DTERNAL;
 
 /**
  * Annotates a GenericCompound with cached data to accelerate pattern matching

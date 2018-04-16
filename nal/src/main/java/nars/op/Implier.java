@@ -13,7 +13,7 @@ import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import nars.truth.TruthAccumulator;
 import nars.truth.func.BeliefFunction;
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.TIMELESS;
+import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.TIMELESS;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 

@@ -1,7 +1,8 @@
 package nars.derive;
 
 import nars.NAR;
-import nars.derive.rule.DeriveRuleSet;
+import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.premise.PremiseDeriverProto;
 
 import java.util.Collections;
 import java.util.Set;
@@ -75,9 +76,9 @@ public class Derivers {
 //    }
 
     /** standard ruleset */
-    public static DeriveRuleSet rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
-        return DeriveRuleSet.load(nar,
-                standard(minLevel, maxLevel, extraFiles)
+    public static Set<PremiseDeriverProto> rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
+        return PremiseDeriverRuleSet.load(nar,
+            standard(minLevel, maxLevel, extraFiles)
         );
     }
 }

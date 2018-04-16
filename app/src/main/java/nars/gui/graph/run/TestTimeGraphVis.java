@@ -2,14 +2,14 @@ package nars.gui.graph.run;
 
 import jcog.data.graph.MapNodeGraph;
 import nars.$;
-import nars.derive.time.TimeGraph;
+import nars.util.time.TimeGraph;
 import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.widget.SimpleGraph;
 import spacegraph.space3d.widget.SpaceWidget;
 
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static spacegraph.space2d.container.Gridding.grid;
 
 public class TestTimeGraphVis extends SimpleGraph<TimeGraph.Event> {

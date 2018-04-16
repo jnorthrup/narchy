@@ -4,7 +4,7 @@ import nars.$;
 import nars.Narsese;
 import nars.nal.nal7.NAL7Test;
 import nars.test.TestNAR;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.util.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 /**
  * NAL8 tests specifically involving one or more eternal input tasks
@@ -25,6 +25,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
+        test.nar.termVolumeMax.set(20);
     }
 
     @Test

@@ -86,14 +86,18 @@ public class NARTest {
 
         NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
-                .stopIf( () -> false )
-                .eachCycle(n -> cycCount.incrementAndGet() )
+                .stopIf( () -> false ).onCycle(n1 -> cycCount.incrementAndGet());
+        NARS.tmp()
+                .input("<a --> b>.", "<b --> c>.")
+                .stopIf(() -> false)
                 .trace(sw).run(frames);
 
         NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
+                .stopIf(() -> false).onCycle(n -> cycCount.incrementAndGet());
+        NARS.tmp()
+                .input("<a --> b>.", "<b --> c>.")
                 .stopIf(() -> false)
-                .eachCycle(n -> cycCount.incrementAndGet())
                 .trace(sw)
                 //.tasks().forEach(System.out::println )
         ;

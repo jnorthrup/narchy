@@ -9,9 +9,10 @@ import jcog.data.byt.HashCachedBytes;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
 import jcog.pri.AbstractPLink;
-import nars.derive.match.Ellipsis;
-import nars.derive.match.EllipsisMatch;
-import nars.derive.match.Ellipsislike;
+import nars.op.SetFunc;
+import nars.unify.match.Ellipsis;
+import nars.unify.match.EllipsisMatch;
+import nars.unify.match.Ellipsislike;
 import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -24,11 +25,11 @@ import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.compound.util.Conj;
-import nars.term.subst.Unify;
+import nars.unify.Unify;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -51,7 +52,7 @@ import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.*;
+import static nars.util.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -2010,13 +2011,13 @@ public enum Op {
 
         if ((o1 == setUnion) && (o2 == setUnion)) {
             //the set type that is united
-            return Terms.union(setUnion, term1.subterms(), term2.subterms());
+            return SetFunc.union(setUnion, term1.subterms(), term2.subterms());
         }
 
 
         if ((o1 == setIntersection) && (o2 == setIntersection)) {
             //the set type which is intersected
-            return Terms.intersect(setIntersection, term1.subterms(), term2.subterms());
+            return SetFunc.intersect(setIntersection, term1.subterms(), term2.subterms());
         }
 
         if (o2 == intersection && o1 != intersection) {

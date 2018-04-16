@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static nars.time.Tense.DTERNAL;
+import static nars.util.time.Tense.DTERNAL;
 
 public abstract class UnitCompound implements Compound {
 

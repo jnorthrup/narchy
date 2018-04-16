@@ -9,12 +9,11 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.index.term.TermContext;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.pred.AbstractPred;
+import nars.term.control.AbstractPred;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -319,7 +318,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         public abstract Term apply(Term a, Term b);
     }
 
-    public abstract static class FunctorResolver implements TermContext {
+    public abstract static class FunctorResolver implements Evaluation.TermContext {
 
         @Override
         public Term applyTermIfPossible(Term x, Op supertermOp, int subterm) {
@@ -383,7 +382,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else {
                     Term XY = compute(x, y);
                     if (XY!=null) {
-                        return Solution.solve(s ->
+                        return Evaluation.solve(s ->
                                 s.replace(xy, XY)
                         );
                     } else {

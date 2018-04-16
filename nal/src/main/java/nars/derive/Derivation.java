@@ -9,7 +9,8 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
-import nars.derive.time.DeriveTime;
+import nars.derive.premise.PreDerivation;
+import nars.derive.step.DeriveTime;
 import nars.op.ListFunc;
 import nars.op.SetFunc;
 import nars.op.SubIfUnify;
@@ -26,7 +27,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
-import nars.term.pred.PrediTerm;
+import nars.term.control.PrediTerm;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
@@ -43,8 +44,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
+import static nars.util.time.Tense.ETERNAL;
+import static nars.util.time.Tense.TIMELESS;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 

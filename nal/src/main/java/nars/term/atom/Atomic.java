@@ -6,7 +6,7 @@ import nars.$;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.term.transform.Retemporalize;
+import nars.util.term.transform.Retemporalize;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;

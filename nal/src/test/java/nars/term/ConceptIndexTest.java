@@ -1,11 +1,9 @@
 package nars.term;
 
-import jcog.math.random.XorShift128PlusRandom;
 import nars.*;
-import nars.concept.util.DefaultConceptBuilder;
-import nars.index.term.ConceptIndex;
-import nars.index.term.map.MapConceptIndex;
-import nars.index.term.map.MaplikeConceptIndex;
+import nars.index.concept.ConceptIndex;
+import nars.index.concept.MapConceptIndex;
+import nars.index.concept.MaplikeConceptIndex;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -20,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ConceptIndexTest {
 
-    public static final XorShift128PlusRandom rng = new XorShift128PlusRandom(2);
-    public static final DefaultConceptBuilder defaultConceptBuilder = new DefaultConceptBuilder(
-    );
+//    public static final XorShift128PlusRandom rng = new XorShift128PlusRandom(2);
+//    public static final DefaultConceptBuilder defaultConceptBuilder = new DefaultConceptBuilder(
+//    );
 
     @Test
     public void testTaskTermSharing1() throws Narsese.NarseseException {

@@ -6,7 +6,7 @@ import jcog.event.Topic;
 import nars.*;
 import nars.op.java.Opjects;
 import nars.term.Term;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 /** TODO make extend NARService and support start/re-start */

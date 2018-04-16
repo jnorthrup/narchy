@@ -4,7 +4,7 @@ package nars.rover.robot;
 import nars.rover.physics.gl.JoglAbstractDraw;
 import nars.rover.util.Bodies;
 import nars.rover.util.Explosion;
-import nars.util.data.random.XORShiftRandom;
+import nars.util.concept.random.XORShiftRandom;
 import spacegraph.space2d.phys.common.Color3f;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.space2d.phys.dynamics.Body;

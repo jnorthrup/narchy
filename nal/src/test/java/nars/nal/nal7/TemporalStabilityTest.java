@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.Task;
 import org.jetbrains.annotations.NotNull;
 
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 
 abstract class TemporalStabilityTest {

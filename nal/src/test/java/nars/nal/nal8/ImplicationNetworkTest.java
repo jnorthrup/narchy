@@ -9,7 +9,7 @@ import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.IMPL;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** test propagation of belief and goal truth among nodes in

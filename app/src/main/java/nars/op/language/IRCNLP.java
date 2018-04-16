@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import static nars.Op.INH;
 import static nars.Op.PROD;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 /**
  * http://englishlearning.webgarden.es/menu/1st-and-2nd-eso-year/easy-reading-texts

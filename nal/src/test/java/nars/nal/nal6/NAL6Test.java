@@ -10,15 +10,16 @@ import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-
-    public final int cycles = 2000;
+    public final int cycles = 1000;
 
     @Override protected NAR nar() {
-        return NARS.tmp(6);
+        NAR n = NARS.tmp(6);
+        n.termVolumeMax.set(20);
+        return n;
     }
 
     @Test

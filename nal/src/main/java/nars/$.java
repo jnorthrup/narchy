@@ -10,7 +10,7 @@ import com.google.common.escape.Escapers;
 import jcog.Util;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
-import nars.derive.LambdaPred;
+import nars.term.control.LambdaPred;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.task.TaskBuilder;
@@ -22,7 +22,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.compound.CompoundLight;
 import nars.term.obj.JsonTerm;
-import nars.term.pred.PrediTerm;
+import nars.term.control.PrediTerm;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
@@ -44,7 +44,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
+import static nars.util.time.Tense.DTERNAL;
 
 /***
  *     oooo       oo       .o.       ooooooooo.

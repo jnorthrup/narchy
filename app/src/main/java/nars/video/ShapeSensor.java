@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL2.GL_POLYGON;
 import static nars.Op.BELIEF;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 //import boofcv.gui.feature.VisualizeShapes;
 //import boofcv.gui.image.ImagePanel;

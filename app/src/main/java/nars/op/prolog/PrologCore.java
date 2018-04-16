@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.math.Range;
 import nars.*;
 import nars.control.channel.CauseChannel;
-import nars.index.term.ConceptIndex;
+import nars.index.concept.ConceptIndex;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 /**
  * Prolog mental coprocessor for accelerating reasoning

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {

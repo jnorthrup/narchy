@@ -17,7 +17,7 @@ import georegression.geometry.UtilPolygons2D_F64;
 import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Quadrilateral_F64;
 import georegression.struct.shapes.Rectangle2D_F64;
-import nars.util.data.random.XORShiftRandom;
+import nars.util.concept.random.XORShiftRandom;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

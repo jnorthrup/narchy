@@ -11,7 +11,7 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.UniExec;
 import nars.gui.Vis;
-import nars.index.term.map.CaffeineIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;

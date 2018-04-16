@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,7 +45,7 @@ public class AIMATests {
     public void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.05f);
+        n.freqResolution.set(0.02f);
         n.confResolution.set(0.01f);
 //        n.activationRate.set(0.1f);
 //        n.confMin.set(0.02f);
@@ -103,7 +103,7 @@ public class AIMATests {
         });
         //
         //n.log();
-        n.run(2000);
+        n.run(3000);
 //        n.concept($.$("Criminal")).print();
 //        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {

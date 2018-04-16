@@ -28,7 +28,6 @@ import nars.$;
 import nars.Op;
 import nars.Param;
 import nars.The;
-import nars.index.term.TermContext;
 import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -37,14 +36,14 @@ import nars.subterm.util.TermMetadata;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.subst.MapSubst;
-import nars.term.subst.Subst;
-import nars.term.subst.Unify;
-import nars.term.transform.Retemporalize;
-import nars.term.transform.TermTransform;
+import nars.util.term.transform.MapSubst;
+import nars.util.term.transform.Subst;
+import nars.unify.Unify;
+import nars.util.term.transform.Retemporalize;
+import nars.util.term.transform.TermTransform;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.Variable;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.util.SoftException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -69,8 +68,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.XTERNAL;
 
 
 public interface Term extends Termed, Comparable<Termed> {
@@ -620,7 +619,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * for safety, dont override this method. override evalSafe
      */
     /*@NotNull*/
-    default Term eval(TermContext context) {
+    default Term eval(Evaluation.TermContext context) {
         return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
     }
 
@@ -633,7 +632,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * @param remain recursion limit (valid until decreases to zero)
      * @return
      */
-    default Term evalSafe(TermContext context, Op supertermOp, int whichSubterm, int remain) {
+    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int whichSubterm, int remain) {
         return /*remain <= 0 ? Null : */
                 context.applyTermIfPossible(this, supertermOp, whichSubterm);
     }

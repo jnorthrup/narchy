@@ -9,7 +9,7 @@ import nars.concept.TaskConcept;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.transform.Retemporalize;
+import nars.util.term.transform.Retemporalize;
 
 import java.util.HashSet;
 import java.util.Iterator;

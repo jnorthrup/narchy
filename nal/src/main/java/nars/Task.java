@@ -12,7 +12,7 @@ import nars.control.proto.TaskAddTask;
 import nars.task.*;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
-import nars.term.Solution;
+import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
@@ -35,7 +35,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static nars.Op.*;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -999,7 +999,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         //Term y = x.eval(n.concepts.functors);
 
         //this might be overkill
-        Set<ITask> yy = Streams.stream(Solution.solve(x, n.concepts.functors))
+        Set<ITask> yy = Streams.stream(Evaluation.solve(x, n.concepts.functors))
                 .map(y -> preProcess(n, x, y))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());

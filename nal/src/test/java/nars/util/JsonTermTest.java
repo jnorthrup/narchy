@@ -7,7 +7,7 @@ import nars.Narsese;
 import nars.task.util.TaskRule;
 import nars.term.atom.Atomic;
 import nars.term.obj.JsonTerm;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.junit.jupiter.api.Test;
 
 public class JsonTermTest {

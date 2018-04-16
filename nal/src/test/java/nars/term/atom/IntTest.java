@@ -5,7 +5,7 @@ import com.google.common.collect.Iterators;
 import nars.*;
 import nars.term.Term;
 import nars.test.TestNAR;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

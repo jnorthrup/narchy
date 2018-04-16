@@ -2,9 +2,9 @@ package nars.term.anon;
 
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.transform.CachedTermTransform;
-import nars.term.transform.DirectTermTransform;
-import nars.term.transform.TermTransform;
+import nars.util.term.transform.CachedTermTransform;
+import nars.util.term.transform.DirectTermTransform;
+import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 

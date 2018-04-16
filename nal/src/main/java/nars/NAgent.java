@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 import static jcog.Texts.n2;
 import static jcog.Util.compose;
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**

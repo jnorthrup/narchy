@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.ETERNAL;
+import static nars.util.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

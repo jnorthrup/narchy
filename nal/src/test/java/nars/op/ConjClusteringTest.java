@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.op.stm.ConjClustering;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;

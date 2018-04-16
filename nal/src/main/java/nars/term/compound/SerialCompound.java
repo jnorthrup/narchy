@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-import static nars.time.Tense.DTERNAL;
+import static nars.util.time.Tense.DTERNAL;
 
 /**
  * TODO

@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public interface Stamp {

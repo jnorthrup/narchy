@@ -5,7 +5,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 

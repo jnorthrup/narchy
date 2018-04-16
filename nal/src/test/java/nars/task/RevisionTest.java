@@ -9,7 +9,7 @@ import nars.link.TaskLink;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static nars.Op.BELIEF;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

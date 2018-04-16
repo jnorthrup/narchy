@@ -2,9 +2,9 @@ package nars.term.atom;
 
 import nars.Op;
 import nars.The;
-import nars.index.term.TermContext;
+import nars.term.Evaluation;
 import nars.term.Term;
-import nars.term.subst.Unify;
+import nars.unify.Unify;
 import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.BOOL;
@@ -61,12 +61,12 @@ abstract public class Bool extends AtomicConst implements The {
     }
 
     @Override
-    public final Term eval(TermContext context) {
+    public final Term eval(Evaluation.TermContext context) {
         return this;
     }
 
     @Override
-    public final Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
+    public final Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
         return this;
     }
 

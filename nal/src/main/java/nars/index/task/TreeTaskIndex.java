@@ -3,7 +3,7 @@ package nars.index.task;
 import jcog.data.byt.AbstractBytes;
 import jcog.tree.radix.MyConcurrentRadixTree;
 import nars.Task;
-import nars.index.term.TermKey;
+import nars.util.term.TermBytes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +46,7 @@ public class TreeTaskIndex implements TaskIndex {
 
     @NotNull
     static AbstractBytes key(@NotNull Task x) {
-        return new TermKey(x);
+        return new TermBytes(x);
     }
 
 

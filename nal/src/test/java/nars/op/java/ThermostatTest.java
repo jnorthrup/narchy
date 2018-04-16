@@ -7,7 +7,7 @@ import nars.Task;
 import nars.control.DurService;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 

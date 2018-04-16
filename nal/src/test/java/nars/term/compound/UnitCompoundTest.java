@@ -4,7 +4,7 @@ import nars.$;
 import nars.IO;
 import nars.Narsese;
 import nars.Op;
-import nars.index.term.TermKey;
+import nars.util.term.TermBytes;
 import nars.subterm.UnitSubterm;
 import nars.term.Compound;
 import nars.term.Term;
@@ -42,7 +42,7 @@ public class UnitCompoundTest {
         assertEquals(0, u.compareTo(g));
         assertEquals(0, g.compareTo(u));
         assertEquals(g.toString(), u.toString());
-        assertTrue(Arrays.equals(TermKey.termByVolume(g).array(), TermKey.termByVolume(u).array()));
+        assertTrue(Arrays.equals(TermBytes.termByVolume(g).array(), TermBytes.termByVolume(u).array()));
         assertTrue(Arrays.equals(IO.termToBytes(g), IO.termToBytes(u)));
     }
 

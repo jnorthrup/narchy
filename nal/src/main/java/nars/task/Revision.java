@@ -15,7 +15,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -33,7 +33,7 @@ import java.util.TreeSet;
 
 import static jcog.Util.lerp;
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.util.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**

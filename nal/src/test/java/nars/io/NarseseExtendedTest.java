@@ -4,12 +4,12 @@ import nars.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Int;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.time.Tense.*;
+import static nars.util.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

@@ -11,7 +11,7 @@ import nars.concept.TaskConcept;
 import nars.gui.BeliefTableChart;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;

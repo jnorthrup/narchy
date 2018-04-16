@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.or;
 import static nars.$.t;
-import static nars.util.UtilityFunctions.and;
+import static jcog.Util.and;
 
 /**
  * All truth-value (and desire-value) functions used in logic rules

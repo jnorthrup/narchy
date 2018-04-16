@@ -2,7 +2,7 @@ package nars.task.signal;
 
 import jcog.Util;
 
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 /**
  * linear (1st order) interpolated between two endpoints, ie. trapezoidal.

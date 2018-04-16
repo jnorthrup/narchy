@@ -1,6 +1,5 @@
 package nars.term;
 
-import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
@@ -23,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
+import static nars.util.time.Tense.DTERNAL;
 
 /**
  * Static utility class for static methods related to Terms
@@ -50,12 +49,12 @@ public enum Terms {
 //        return result;
 //    }
 
-    public static int hashSubterms(Term[] term) {
-        int h = 1;
-        for (int i = 0; i < term.length; i++)
-            h = Util.hashCombine(h, term[i].hashCode());
-        return h;
-    }
+//    public static int hashSubterms(Term[] term) {
+//        int h = 1;
+//        for (int i = 0; i < term.length; i++)
+//            h = Util.hashCombine(h, term[i].hashCode());
+//        return h;
+//    }
 
 
     //    @Deprecated
@@ -695,47 +694,6 @@ public enum Terms {
             }
         }
         return true;
-    }
-
-    @NotNull
-    public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {
-        if (a instanceof Term && a.equals(b))
-            return (Term) a;
-
-
-        Set<Term> cc = Subterms.intersect(a, b);
-        if (cc == null) return Null;
-
-        int ssi = cc.size();
-        if (ssi == 0) return Null;
-
-        Term[] c = cc.toArray(new Term[ssi]);
-        if (ssi > 1)
-            Arrays.sort(c);
-
-        return o.the(c);
-    }
-
-    @NotNull
-    public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
-        boolean bothTerms = a instanceof Term && b instanceof Term;
-        if (bothTerms && a.equals(b))
-            return (Term) a;
-
-        TreeSet<Term> t = new TreeSet<>();
-        a.copyInto(t);
-        b.copyInto(t);
-        if (bothTerms) {
-            int as = a.subs();
-            int bs = b.subs();
-            int maxSize = Math.max(as, bs);
-            if (t.size() == maxSize) {
-                //the smaller is contained by the larger other
-                //so return an input value rather than constructing a duplicate
-                return (Term) (as > bs ? a : b);
-            }
-        }
-        return o.the(DTERNAL, t);
     }
 
 

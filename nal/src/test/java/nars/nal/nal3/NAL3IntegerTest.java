@@ -2,7 +2,7 @@ package nars.nal.nal3;
 
 import nars.$;
 import nars.term.atom.Int;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 

@@ -10,7 +10,7 @@ import nars.nar.experimental.Equalized;
 import nars.narsese.InvalidInputException;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.util.data.random.XORShiftRandom;
+import nars.util.concept.random.XORShiftRandom;
 import nars.util.event.Reaction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 

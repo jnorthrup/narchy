@@ -10,7 +10,7 @@ import nars.rover.physics.gl.JoglAbstractDraw;
 import nars.rover.physics.j2d.SwingDraw;
 import nars.rover.physics.j2d.SwingDraw.LayerDraw;
 import nars.testchamber.map.Maze;
-import nars.util.data.random.XorShift1024StarRandom;
+import nars.util.concept.random.XorShift1024StarRandom;
 import spacegraph.space2d.phys.dynamics.Body;
 import spacegraph.space2d.phys.dynamics.World;
 

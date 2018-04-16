@@ -5,7 +5,7 @@ import nars.task.Sentence;
 import nars.task.stamp.Stamp;
 import nars.term.Compound;
 import nars.truth.Truth;
-import nars.util.data.Util;
+import nars.util.concept.Util;
 
 import java.lang.ref.Reference;
 import java.util.List;

@@ -7,7 +7,7 @@ package nars.cfg.method;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import nars.util.data.PackageUtility;
+import nars.util.concept.PackageUtility;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;

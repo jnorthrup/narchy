@@ -2,10 +2,9 @@ package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
-import nars.index.term.TermContext;
 import nars.subterm.Subterms;
-import nars.term.subst.Unify;
-import nars.term.transform.Retemporalize;
+import nars.unify.Unify;
+import nars.util.term.transform.Retemporalize;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.jetbrains.annotations.Nullable;
@@ -168,7 +167,7 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
     }
 
     @Override
-    public Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
+    public Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
         return ref.evalSafe(context, supertermOp, subterm, remain);
     }
 

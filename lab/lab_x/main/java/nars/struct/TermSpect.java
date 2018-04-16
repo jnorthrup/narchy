@@ -10,7 +10,7 @@ import nars.control.premise.Premise;
 import nars.control.premise.PremiseGenerator;
 import nars.task.Sentence;
 import nars.term.Term;
-import nars.term.transform.TermVisitor;
+import nars.util.term.transform.TermVisitor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

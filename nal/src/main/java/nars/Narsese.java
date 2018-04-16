@@ -13,7 +13,7 @@ import nars.task.TaskBuilder;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Truth;
 import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;

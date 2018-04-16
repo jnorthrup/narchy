@@ -3,7 +3,7 @@ package nars.truth;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

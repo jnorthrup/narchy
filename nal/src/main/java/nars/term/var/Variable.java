@@ -3,7 +3,7 @@ package nars.term.var;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.subst.Unify;
+import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.Null;

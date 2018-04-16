@@ -13,16 +13,16 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.Cause;
-import nars.derive.rule.DeriveRuleSet;
+import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.premise.PremiseDeriver;
+import nars.derive.premise.PremiseDeriverCompiler;
+import nars.derive.premise.PremiseDeriverProto;
 import nars.exe.Causable;
 import nars.link.TaskLink;
 import nars.link.Tasklinks;
 import nars.term.Term;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -41,7 +41,7 @@ public class Deriver extends Causable {
 
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
-    public final DeriveRules rules;
+    public final PremiseDeriver rules;
 
     /**
      * source of concepts supplied to this for this deriver
@@ -50,7 +50,7 @@ public class Deriver extends Causable {
 
     private final Consumer<Collection<Task>> target;
 
-    protected PrioritizeDerivation prioritize = new PrioritizeDerivation.DefaultPrioritizeDerivation();
+    public DeriverBudgeting prioritize = new DeriverBudgeting.DefaultDeriverBudgeting();
 
     public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
 
@@ -70,20 +70,20 @@ public class Deriver extends Causable {
     public int burstMax = 32;
 
     public Deriver(NAR nar, String... rules) {
-        this(new DeriveRuleSet(nar, rules), nar);
+        this(new PremiseDeriverRuleSet(nar, rules), nar);
     }
 
-    public Deriver(DeriveRuleSet rules, NAR nar) {
-        this(rules.compile(), nar);
-        if (rules.isEmpty())
-            throw new RuntimeException("rules missing");
-    }
-
-    public Deriver(DeriveRules rules, NAR nar) {
+    public Deriver(Set<PremiseDeriverProto> rules, NAR nar) {
         this(nar.exe::fire, nar::input, rules, nar);
     }
 
-    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, DeriveRules rules, NAR nar) {
+    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
+        this(source, target, PremiseDeriverCompiler.the(rules, null), nar);
+        if (rules.isEmpty())
+            throw new RuntimeException("rules empty");
+    }
+
+    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriver rules, NAR nar) {
         super(
                 $.func("deriver", $.the(serial.getAndIncrement())) //HACK
         );

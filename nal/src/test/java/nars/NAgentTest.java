@@ -5,10 +5,11 @@ import jcog.learn.ql.HaiQae;
 import nars.control.MetaGoal;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.derive.premise.PremiseDeriverCompiler;
 import nars.op.RLBooster;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.junit.jupiter.api.Test;
@@ -252,7 +253,7 @@ public class NAgentTest {
             }
             n.input(filtered);
 
-        }, Derivers.rules(1, 8, n).compile(), n);
+        }, PremiseDeriverCompiler.the(Derivers.rules(1, 8, n), null), n);
 
         new STMLinkage(n, 1, false);
         d.conceptsPerIteration.set(2);

@@ -1,11 +1,11 @@
 package nars.util;
 
 import nars.*;
-import nars.index.term.PatternIndex;
+import nars.derive.premise.PremisePatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.subst.Unify;
-import nars.time.Tense;
+import nars.unify.Unify;
+import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import static nars.Op.VAR_PATTERN;
 public class NLPGen {
 
     final NAR terminal = NARS.shell();
-    final PatternIndex index = new PatternIndex();
+    final PremisePatternIndex index = new PremisePatternIndex();
 
     public interface Rule {
         @NotNull String get(Term t, float freq, float conf, Tense tense);

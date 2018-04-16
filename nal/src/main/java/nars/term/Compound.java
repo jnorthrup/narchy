@@ -26,15 +26,14 @@ import jcog.data.sexpression.Pair;
 import nars.$;
 import nars.IO;
 import nars.Op;
-import nars.derive.match.EllipsisMatch;
-import nars.index.term.TermContext;
+import nars.unify.match.EllipsisMatch;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.compound.UnitCompound;
-import nars.term.pred.AbstractPred;
-import nars.term.subst.Unify;
-import nars.term.transform.Retemporalize;
-import nars.term.transform.TermTransform;
+import nars.term.control.AbstractPred;
+import nars.unify.Unify;
+import nars.util.term.transform.Retemporalize;
+import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -48,7 +47,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.util.time.Tense.*;
 
 /**
  * a compound term
@@ -744,7 +743,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     /*@NotNull*/
     @Override
-    default Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
+    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
 
         /*if (hasAll(opBits))*/
 
@@ -839,7 +838,7 @@ public interface Compound extends Term, IPair, Subterms {
 //                    :
 
         Term y = transform(
-                new nars.term.transform.CompoundNormalization(this, varOffset)
+                new nars.util.term.transform.CompoundNormalization(this, varOffset)
         );
 
         if (varOffset == 0 && y instanceof Compound) {

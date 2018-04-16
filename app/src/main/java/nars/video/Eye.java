@@ -6,7 +6,7 @@ import jcog.sort.CachedTopN;
 import nars.*;
 import nars.control.channel.CauseChannel;
 import nars.exe.UniExec;
-import nars.index.term.HijackConceptIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.stm.ConjClustering;
 import nars.task.ITask;
 import nars.task.TaskProxy;

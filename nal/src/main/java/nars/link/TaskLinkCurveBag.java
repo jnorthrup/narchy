@@ -8,7 +8,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.compound.util.Conj;
-import nars.time.Tense;
+import nars.util.time.Tense;
 
 import java.util.Map;
 

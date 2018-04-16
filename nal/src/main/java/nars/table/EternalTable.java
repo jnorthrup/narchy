@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.table.BeliefTable.*;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 
 
 /**
@@ -479,7 +479,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
                     nar.eventTask.emit(revised);
 
-                    return true; //accepted revision
+                    return true; //accepted at least the revision
                 }
 
 //                if (revised!=input && revised instanceof NALTask) {

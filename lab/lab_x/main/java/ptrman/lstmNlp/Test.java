@@ -3,7 +3,7 @@ package ptrman.lstmNlp;
 
 import nars.rl.lstm.opencl.LSTMCL;
 import nars.rl.lstm.util;
-import nars.util.data.random.XORShiftRandom;
+import nars.util.concept.random.XORShiftRandom;
 
 import java.util.List;
 import java.util.Random;

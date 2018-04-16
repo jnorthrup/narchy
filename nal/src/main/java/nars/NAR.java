@@ -29,7 +29,7 @@ import nars.control.MetaGoal;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Exec;
-import nars.index.term.ConceptIndex;
+import nars.index.concept.ConceptIndex;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
@@ -40,11 +40,10 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import nars.util.Cycles;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.ShortCountsHistogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
@@ -70,7 +69,7 @@ import java.util.zip.GZIPOutputStream;
 import static nars.$.$;
 import static nars.Op.*;
 import static nars.term.Functor.f;
-import static nars.time.Tense.ETERNAL;
+import static nars.util.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2w;
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -85,13 +84,10 @@ import static org.fusesource.jansi.Ansi.ansi;
  * * step mode - controlled by an outside system, such as during debugging or testing
  * * thread mode - runs in a pausable closed-loop at a specific maximum framerate.
  */
-public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR>, Cycled {
+public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled {
 
 
 
-    protected volatile Logger logger;
-
-    static final Set<String> logEvents = Set.of("eventTask");
     static final String VERSION = "NARchy v?.?";
 
     public final Exec exe;
@@ -101,11 +97,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public final Services<Term, NAR> services;
 
     public final Time time;
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     public final ConceptIndex concepts;
     public final NARLoop loop = new NARLoop(this);
 
     public final Emotion emotion;
+
+    protected volatile Logger logger;
+
+    private static final Set<String> loggedEvents = Set.of("eventTask");
 
 
     /**
@@ -808,7 +809,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this;
     }
 
-    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     /**
      * steps 1 frame forward. cyclesPerFrame determines how many cycles this frame consists of
@@ -880,7 +880,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public NAR log(Appendable out, Predicate includeValue) {
-        return trace(out, NAR.logEvents::contains, includeValue);
+        return trace(out, NAR.loggedEvents::contains, includeValue);
     }
 
 
@@ -1068,7 +1068,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * warning: the condition will be tested each cycle so it may affect performance
      */
-    @NotNull
     public NAR stopIf(@NotNull BooleanSupplier stopCondition) {
         onCycle(n -> {
             if (stopCondition.getAsBoolean())
@@ -1081,30 +1080,23 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * a frame batches a burst of multiple cycles, for coordinating with external systems in which multiple cycles
      * must be run per control frame.
      */
-    @Override
-    @NotNull
     public final On onCycle(@NotNull Consumer<NAR> each) {
         return eventCycle.on(each);
+    }
+
+    public final On onCycle(@NotNull Runnable each) {
+        return onCycle((ignored) -> each.run());
     }
 
     /**
      * avoid using lambdas with this, instead use an interface implementation of the class that is expected to be garbage collected
      */
-    @NotNull
     public final On onCycleWeak(@NotNull Consumer<NAR> each) {
         return eventCycle.onWeak(each);
     }
 
-    @NotNull
-    public final On onCycle(@NotNull Runnable each) {
-        return onCycle((ignored) -> each.run());
-    }
-
-    @NotNull
-    @Deprecated
-    public NAR eachCycle(@NotNull Consumer<NAR> each) {
-        onCycle(each);
-        return this;
+    public On onTask(@NotNull Consumer<Task> o) {
+        return eventTask.on(o);
     }
 
     @NotNull
@@ -1130,12 +1122,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this == obj;
     }
 
-    @NotNull
-    public On onTask(@NotNull Consumer<Task> o) {
-        return eventTask.on(o);
-    }
-
-    public @NotNull NAR believe(@NotNull Term c, @NotNull Tense tense) {
+    public NAR believe(@NotNull Term c, @NotNull Tense tense) {
         believe(c, tense, 1f);
         return this;
     }
@@ -1144,7 +1131,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * activate/"turn-ON"/install a concept in the index and activates it, used for setup of custom concept implementations
      * implementations should apply active concept capacity policy
      */
-    @NotNull
     public final Concept on(@NotNull Concept c) {
 
         Concept existing = concept(c);

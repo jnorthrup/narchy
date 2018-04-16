@@ -1,21 +1,20 @@
 package nars;
 
-import jcog.Util;
 import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.exe.Focus;
-import nars.exe.WorkerMultiExec;
+import nars.exe.PoolMultiExec;
 import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
-import nars.index.term.map.CaffeineIndex;
+import nars.index.concept.CaffeineIndex;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.RealTime;
-import nars.time.Tense;
 import nars.util.signal.Bitmap2DSensor;
+import nars.util.time.Tense;
 import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
@@ -140,23 +139,23 @@ abstract public class NAgentX extends NAgent {
 //                    }
 //                })
 
-//                .exe(new PoolMultiExec(
-//                        128,
-//                        //new Focus.DefaultRevaluator()
-//                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
-//                    )
-//                )
-
-                .exe(new WorkerMultiExec(
-                        //new Focus.DefaultRevaluator(),
+                .exe(new PoolMultiExec(
+                        //new Focus.DefaultRevaluator()
                         new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        Util.defaultConcurrency(2),
-                        512, 2048) {
-                        {
-                            Util.setExecutor(this);
-                        }
-                     }
+                        512
+                    )
                 )
+
+//                .exe(new WorkerMultiExec(
+//                        //new Focus.DefaultRevaluator(),
+//                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+//                        Util.defaultConcurrency(2),
+//                        512, 2048) {
+//                        {
+//                            Util.setExecutor(this);
+//                        }
+//                     }
+//                )
 
                 .time(clock)
                 .deriverAdd(1, 1)

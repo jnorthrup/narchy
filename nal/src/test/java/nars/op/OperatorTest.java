@@ -4,7 +4,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.test.TestNAR;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.util.AtomicExec;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;

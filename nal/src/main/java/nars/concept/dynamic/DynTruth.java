@@ -14,7 +14,7 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.time.Tense;
+import nars.util.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.XTERNAL;
+import static nars.util.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
