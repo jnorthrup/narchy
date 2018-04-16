@@ -2103,7 +2103,7 @@ public enum Util {
     }
 
     public static float softmax(float x, float temp) {
-        return (float) Math.exp((float) Math.exp(x/temp));
+        return (float) Math.exp(x/temp);
     }
 
 

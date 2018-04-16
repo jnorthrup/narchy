@@ -108,7 +108,7 @@ public class Deriver extends Causable {
     protected int next(NAR n, final int iterations) {
 
 
-        int matchTTL = Param.TTL_MIN() * 2;
+        int matchTTL = Param.TTL_MIN * 2;
         int deriveTTL = n.matchTTLmean.intValue();
 
 
@@ -118,19 +118,20 @@ public class Deriver extends Causable {
         int totalPremisesRemain = iterations * iterMult;
 
 
-        /** temporary buffer for storing unique premises */
-        ArrayHashSet<Premise> premiseBurst =
-                //new LinkedHashSet();
-                new ArrayHashSet<>(Math.round(burstMax*1.5f));
 
         Derivation d = derivation.get().cycle(n, this);
+
+        /** temporary buffer for storing unique premises */
+        ArrayHashSet<Premise> premiseBurst =
+                d.premiseBurst;
+
 
         while (totalPremisesRemain > 0) {
 
             int burstSize = Math.min(burstMax, totalPremisesRemain);
             totalPremisesRemain -= burstSize;
 
-            assert(premiseBurst.isEmpty());
+            premiseBurst.clear();
 
             //SELECT
             selectPremises(n, burstSize, (t, termlink) -> {
@@ -176,7 +177,6 @@ public class Deriver extends Causable {
 
             });
 
-            premiseBurst.clear();
 
             d.flush(target);
         }

@@ -5,7 +5,6 @@ import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2c;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
@@ -63,7 +62,7 @@ public class PreciseTruth extends DiscreteTruth {
 
     @Override
     public float conf() {
-        return w2c(e);
+        return w2cSafe(e);
     }
 
     /** create a DiscreteTruth instance, shedding the freq,evi floats stored here */

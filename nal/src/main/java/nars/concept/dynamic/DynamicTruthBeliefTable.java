@@ -173,7 +173,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         if (s == 0)
             return 0;
 
-        int dur = nar.dur();
+        //int dur = nar.dur();
 
         IntFloatHashMap dtEvi = new IntFloatHashMap(s);
         forEachTask(t -> {
@@ -191,7 +191,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         } else {
             MutableList<IntFloatPair> ll = dtEvi.keyValuesView().toList();
             int selected = n != 1 ?
-                    Roulette.decideRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
+                    Roulette.selectRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
             return ll.get(selected).getOne();
         }
     }

@@ -80,7 +80,7 @@ public class MultiLink<X extends Prioritized,Y> extends AbstractPLink<Y> {
             return null;
         }
 
-        int s = Roulette.decideRoulette(c, i -> pri[i], ThreadLocalRandom.current());
+        int s = Roulette.selectRoulette(c, i -> pri[i], ThreadLocalRandom.current());
         return transduce.apply(x[s]);
     }
 

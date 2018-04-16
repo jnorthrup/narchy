@@ -154,8 +154,8 @@ public class Premise {
 //            long[] focus = n.timeFocus(task.nearestPointInternal(n.time()));
 //            long focusStart = focus[0];
 //            long focusEnd = focus[1];
-            long focusStart = Tense.dither(task.start(), n);
-            long focusEnd = Tense.dither(task.end(), n);
+            long taskStart = Tense.dither(task.start(), n);
+            long taskEnd = Tense.dither(task.end(), n);
 
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
@@ -167,9 +167,9 @@ public class Premise {
                                         beliefConcept.goals() :
                                         bb;
 
-                        Task match = answerTable.answer(focusStart, focusEnd, beliefTerm, d::add, stampFilter(d), n);
+                        Task match = answerTable.answer(taskStart, taskEnd, beliefTerm, d::add, stampFilter(d), n);
                         if (match == null) {
-                            match = bb.answer(focusStart, focusEnd, beliefTerm, d::add,null, n); //retry without stamp filter
+                            match = bb.answer(taskStart, taskEnd, beliefTerm, d::add,null, n); //retry without stamp filter
                             if (!validMatch(match))
                                 match = null;
                         }
@@ -191,12 +191,29 @@ public class Premise {
                 }
 
                 if ((belief == null) && !bb.isEmpty()) {
-                    belief = bb.match(focusStart, focusEnd, beliefTerm, stampFilter(d), n);
+
+                    Predicate<Task> taskStampFilter = stampFilter(d);
+
+                    //TASK'S MOMENT (stamp filtered)
+                    belief = bb.match(taskStart, taskEnd, beliefTerm, taskStampFilter, n);
+                    if (!validMatch(belief)) belief = null; //force single
+
                     if (belief == null) {
-                        belief = bb.match(focusStart, focusEnd, beliefTerm, null, n); //retry without stamp filter
-                        if (!validMatch(belief))
-                            belief = null; //force single
+
+                        long[] focus = n.timeFocus();
+                        if (focus[0] != taskStart && focus[1] != taskEnd) {
+                            //CURRENT MOMENT (stamp filtered)
+                            belief = bb.match(focus[0], focus[1], beliefTerm, taskStampFilter, n);
+                            if (!validMatch(belief)) belief = null; //force single
+                        }
                     }
+
+                    if (belief == null) {
+                        //TASK's MOMENT (unfiltered)
+                        belief = bb.match(taskStart, taskEnd, beliefTerm, null, n); //retry without stamp filter
+                        if (!validMatch(belief)) belief = null; //force single
+                    }
+
                 }
             }
 
@@ -212,12 +229,21 @@ public class Premise {
     }
 
     private boolean validMatch(@Nullable Task x) {
-        return x!=null && !x.equals(task);
+        if (x!=null && !x.equals(task))
+            return true;
+//        else {
+//            if (x != null) {
+//                boolean reallyEqualWTF = task.equals(x);
+//                throw new RuntimeException(reallyEqualWTF + "=equal - shouldnt happen if stamp overlap filtered");
+//            }
+//        }
+        return false;
     }
 
     private Predicate<Task> stampFilter(Derivation d) {
-        ImmutableLongSet taskStamp = (d._task !=null && d._task.equals(task)) ? d.taskStamp : Stamp.toSet(task);
-        return (t) -> !Stamp.overlapsAny(taskStamp, t.stamp());
+        ImmutableLongSet taskStamp = //(d._task !=null && d._task.equals(task)) ? d.taskStamp :
+                Stamp.toSet(task);
+        return t -> !Stamp.overlapsAny(taskStamp, t.stamp());
     }
 
 

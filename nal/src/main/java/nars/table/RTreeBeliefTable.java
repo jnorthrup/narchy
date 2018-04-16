@@ -319,9 +319,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             if (t!=null) {
                 if (eternals != null) {
                     ImmutableLongSet tStamp = Stamp.toSet(t);
-                    Task e = eternals.select(x -> !Stamp.overlapsAny(tStamp, x.stamp()));
+                    Task e = eternals.select(x ->
+                        (filter==null || filter.test(x)) &&
+                        !Stamp.overlapsAny(tStamp, x.stamp()
+                    ));
                     if (e != null) {
-                        return Revision.mergeTemporal(nar, t, e);
+                        return Revision.mergeTasks(nar, t, e);
                     } else {
                         return t;
                     }
@@ -329,7 +332,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
         }
 
-        return eternals!=null ? eternals.strongest() : null;
+        return eternals!=null ? eternals.select(filter) : null;
     }
 
     abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
@@ -478,7 +481,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         if (closest!=null && closest.the != null) {
             Task theClosest = (Task) closest.the;
-            IW = Revision.mergeTemporal(nar, I, theClosest);
+            IW = Revision.mergeTasks(nar, I, theClosest);
         } else {
             IW = null;
         }
@@ -540,7 +543,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             AB = null;
             value[MergeLeaf] = Float.NEGATIVE_INFINITY; //impossible
         } else {
-            AB = Revision.mergeTemporal(nar, A, B);
+            AB = Revision.mergeTasks(nar, A, B);
             if (AB == null || (AB.equals(A) || AB.equals(B))) {
                 value[MergeLeaf] = Float.NEGATIVE_INFINITY; //impossible
             } else {
@@ -731,7 +734,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
             int n = tt.size();
-            return n > 0 ? Revision.mergeTemporal(nar, start, end, tt.list) : null;
+            return n > 0 ? Revision.mergeTasks(nar, start, end, tt.list) : null;
         }
     }
 
@@ -759,43 +762,43 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             TaskRegion[] ttt = (TaskRegion[]) tt.array();
 
-            if (n > 1) {
-                //find the most consistent term of the set of tasks and remove any that dont match it
-                //terms are classified by their dt:
-                //
-                int pos = 0, neg = 0;
+//            if (n > 1) {
+//                //find the most consistent term of the set of tasks and remove any that dont match it
+//                //terms are classified by their dt:
+//                //
+//                int pos = 0, neg = 0;
+//
+//                for (TaskRegion x : ttt) {
+//                    if (x == null)
+//                        break;//end of list
+//                    int dt = (((Task) x).term()).dt();
+//                    if (dt != 0 && dt != DTERNAL) {
+//                        if (dt < -dur / 2) neg++;
+//                        else if (dt > +dur / 2) pos++;
+//                    }
+//                }
+//                if (pos > 0 && neg > 0) {
+//                    boolean polarity =
+//                            (pos == neg) ?
+//                                    ((template.dt() != DTERNAL && template.dt() != 0 && template.dt() != XTERNAL)) ? (template.dt() > 0) : nar.random().nextBoolean() //if equal, choose on polarity at random
+//                                    :
+//                                    (pos > neg);
+//
+//                    FasterList<TaskRegion> xx = new FasterList<>(0, new TaskRegion[n - (polarity ? neg : pos)]);
+//                    for (TaskRegion x : ttt) {
+//                        if (x == null)
+//                            break;//end of list
+//                        int dt = (((Task) x).term()).dt();
+//                        if (dt == 0 || dt == DTERNAL || (polarity && dt > +dur / 2) || (!polarity && dt < -dur / 2))
+//                            xx.addWithoutResizeCheck(x);
+//                    }
+//                    ttt = xx.array();
+//                    n = ttt.length;
+//                }
+//            }
 
-                for (TaskRegion x : ttt) {
-                    if (x == null)
-                        break;//end of list
-                    int dt = (((Task) x).term()).dt();
-                    if (dt != 0 && dt != DTERNAL) {
-                        if (dt < -dur / 2) neg++;
-                        else if (dt > +dur / 2) pos++;
-                    }
-                }
-                if (pos > 0 && neg > 0) {
-                    boolean polarity =
-                            (pos == neg) ?
-                                    ((template.dt() != DTERNAL && template.dt() != 0 && template.dt() != XTERNAL)) ? (template.dt() > 0) : nar.random().nextBoolean() //if equal, choose on polarity at random
-                                    :
-                                    (pos > neg);
 
-                    FasterList<TaskRegion> xx = new FasterList<>(0, new TaskRegion[n - (polarity ? neg : pos)]);
-                    for (TaskRegion x : ttt) {
-                        if (x == null)
-                            break;//end of list
-                        int dt = (((Task) x).term()).dt();
-                        if (dt == 0 || dt == DTERNAL || (polarity && dt > +dur / 2) || (!polarity && dt < -dur / 2))
-                            xx.addWithoutResizeCheck(x);
-                    }
-                    ttt = xx.array();
-                    n = ttt.length;
-                }
-            }
-
-
-            return Revision.mergeTemporal(nar, start, end, ttt);
+            return Revision.mergeTasks(nar, start, end, ttt);
         }
 
 
@@ -871,13 +874,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         @Override
         protected boolean addUnique(TaskRegion x) {
             --attemptsRemain;
-            return (filter == null || (!(x instanceof Task)) || validTask((Task) x))
+            return ((!(x instanceof Task)) || validTask((Task) x))
                     &&
                     super.addUnique(x);
         }
 
         private boolean validTask(Task x) {
-            return !x.isDeleted() && filter.test(x);
+            return !x.isDeleted() && (filter == null || filter.test(x));
         }
 
         boolean continueScan(TimeRange t) {

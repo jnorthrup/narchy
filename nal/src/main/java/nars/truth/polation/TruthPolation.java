@@ -3,21 +3,22 @@ package nars.truth.polation;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.list.FasterList;
+import nars.NAR;
 import nars.Op;
+import nars.Param;
 import nars.Task;
 import nars.task.Revision;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
 import static java.lang.Float.NaN;
+import static nars.task.Revision.dtDiff;
 
 /**
  * Truth Interpolation and Extrapolation of Temporal Beliefs/Goals
@@ -32,6 +33,13 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     public final long start;
     public final long end;
     public int dur;
+
+    /**
+     * content term, either equal in all the tasks, or the result is
+     * intermpolated (and evidence reduction applied as necessary)
+     */
+    public Term term = null;
+
     protected TruthPolation(long start, long end, int dur) {
         this.start = start;
         this.end = end;
@@ -39,6 +47,12 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         assert (dur > 0);
         this.dur = dur;
     }
+
+    /**
+     * computes the final truth value
+     */
+    @Nullable
+    public abstract Truth truth(NAR nar);
 
     public TruthPolation add(Task t) {
         super.add(new TaskComponent(t));
@@ -90,10 +104,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return e;
     }
 
-    /**
-     * computes the final truth value
-     */
-    abstract public Truth truth();
 
     public final TruthPolation add(Tasked... tasks) {
         ensureCapacity(tasks.length);
@@ -119,47 +129,70 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         return this;
     }
 
-    public ObjectFloatPair<Term> filterDTDiff() {
+    public float intermpolate(NAR nar) {
+        int thisSize = this.size();
+        if (thisSize == 0) return 0;
+        if (thisSize == 1) {
+            term = get(0).task.term();
+            return 1;
+        }
+
         Term first = null, second = null;
-        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+
+        for (int i = 0; i < thisSize; i++) {
             TaskComponent t = this.get(i);
             Term ttt = t.task.term();
             if (i == 0) {
-                if (!ttt.hasAny(Op.Temporal))
-                    return PrimitiveTuples.pair(ttt, 1f); //we can assume all the terms are equal
                 first = ttt;
+                if (!ttt.hasAny(Op.Temporal))
+                    break;
             } else {
                 if (!first.equals(ttt)) {
-                    second = ttt;
-                    //HACK stop here for now
-                    //TODO do Termpolation
-                    removeAbove(i-1);
-                    return PrimitiveTuples.pair(first, 1f);
+                    if (second != null) {
+                        //TODO > 2 termpolation
+                        removeAbove(i);
+                        break;
+                    } else {
+                        second = ttt;
+                    }
                 }
+                //TODO second = ttt; ...
 
             }
         }
 
-//        Term content;
-//        float differenceFactor = 1f;
-//        if (!termSame) {
-//            Task second = tt1[1].task();
-//
-//            Term a = first.term();
-//            Term b = second.term();
+        if (second == null) {
+            term = first;
+            return 1f;
+        } else {
+
+            float differenceFactor;
+            Term a = first.term();
+            Term b = second.term();
 //            if (a.op()!=CONJ) {
-//
-//
-//                float diff = dtDiff(a, b);
-//                if (!Float.isFinite(diff))
-//                    return null; //impossible
-//                if (diff > 0)
-//                    differenceFactor = (float) Param.evi(1f, diff, dur); //proport
-//
-//                float e1 = first.evi();
-//                float e2 = second.evi();
-//                float firstProp = e1 / (e1 + e2);
-//                content = intermpolate(first.term(), second.term(), firstProp, nar);
+
+
+            float diff = dtDiff(a, b);
+            if (!Float.isFinite(diff))
+                return 0; //impossible
+            if (diff > 0)
+                differenceFactor = (float) Param.evi(1f, diff,
+                        Math.max(1,dur) /* cant be zero */); //proport
+            else {
+                //throw new RuntimeException("terms are different but no dt differnece?");
+                //TODO why
+                differenceFactor = 1f;
+            }
+
+            Term finalFirst = first;
+            Term finalSecond = second;
+            float e1 = (float) sumOfFloat(x -> x.task.term().equals(finalFirst) ? x.eviInteg : 0);
+            float e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.eviInteg : 0);
+            float firstProp = e1 / (e1 + e2);
+            Term term = Revision.intermpolate(first, second, firstProp, nar);
+
+
+
 //            } else {
 //                //CONJ merge, with any offset shift computed
 //                Conj c = new Conj();
@@ -173,17 +206,30 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 //                    end1 = start1 + Math.min(first.range(), second.range())-1;
 //                }
 //            }
+
+            //TODO apply a discount factor for the relative difference of the two intermpolated terms
+
+            if (Task.validTaskTerm(term)) {
+                this.term = term;
+                return differenceFactor;
+            } else {
+                removeIf(t -> !t.task.term().equals(finalFirst));
+                this.term = first;
+                return 1f;
+            }
+        }
+
+
+//        Term content;
+//        float differenceFactor = 1f;
+//        if (!termSame) {
+//            Task second = tt1[1].task();
 //
-//            //TODO apply a discount factor for the relative difference of the two intermpolated terms
-//
-//            if (!Task.validTaskTerm(content))
-//                return first;
 //
 //        } else {
 //            content = first.term();
 //        }
 
-        return null;
     }
 
     public byte punc() {
@@ -199,6 +245,13 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         }
         return t;
     }
+
+    @Nullable
+    @Deprecated
+    public Truth truth() {
+        return truth(null);
+    }
+
 
     public static class TaskComponent {
         public final Task task;

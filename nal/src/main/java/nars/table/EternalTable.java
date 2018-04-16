@@ -103,7 +103,10 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
     }
 
-    public Task select(Predicate<? super Task> selector) {
+    public Task select(@Nullable Predicate<? super Task> selector) {
+        if (selector == null)
+            return strongest();
+
         Task[] a = toArray();
         for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
             Task x = a[i];
@@ -343,7 +346,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                         revisionTruth,
                         nar.time() /* creation time */,
                         ETERNAL, ETERNAL,
-                        Stamp.zip(prevBelief.stamp(), y.stamp(), 0.5f /* TODO proportionalize */)
+                        Stamp.zip(y.stamp(),prevBelief.stamp(), aProp)
                 )
         );
         if (x != null) {
@@ -437,6 +440,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
             Task revised = tryRevision(input, nar);
             if (revised != null) {
+
+                if (revised!=input && revised instanceof NALTask) {
+                    ((NALTask)revised).causeMerge(input);
+                }
+
                 //generated a revision
                 if (insert(revised)) {
 //                    //link the revision

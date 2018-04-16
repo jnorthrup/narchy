@@ -159,7 +159,7 @@ public enum TrieDeriver { ;
         } else if (p instanceof Fork) {
             out.println(Util.className(p) + " {");
             Fork ac = (Fork) p;
-            for (PrediTerm b : ac.branches) {
+            for (PrediTerm b : ac.branch) {
                 print(b, out, indent + 2);
             }
             TermTrie.indent(indent);

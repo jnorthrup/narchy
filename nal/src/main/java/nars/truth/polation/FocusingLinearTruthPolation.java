@@ -1,5 +1,7 @@
 package nars.truth.polation;
 
+import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -41,9 +43,18 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     }
 
 
+
     @Override
     @Nullable
-    public Truth truth() {
+    public Truth truth(NAR nar) {
+
+        float eviFactor = 1f;
+        if (nar!=null) {
+            eviFactor *= intermpolate(nar);
+            if (eviFactor < Float.MIN_NORMAL)
+                return null; //intermpolate failure
+        }
+
 
         int s = size();
         float eInteg, f;
@@ -86,12 +97,12 @@ public class FocusingLinearTruthPolation extends TruthPolation {
             }
         }
 
-
-
         long rangeDivisor = start==ETERNAL ? 1 : (end-start+1);
-        float eAvg = eInteg / rangeDivisor;
-
-        return new PreciseTruth(f, eAvg, false);
+        float eAvg = eviFactor * eInteg / rangeDivisor;
+        if (eAvg > Param.TRUTH_MIN_EVI)
+            return new PreciseTruth(f, eAvg, false);
+        else
+            return null;
     }
 
 

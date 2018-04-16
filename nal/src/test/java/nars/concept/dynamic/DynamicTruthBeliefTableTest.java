@@ -48,8 +48,9 @@ public class DynamicTruthBeliefTableTest {
 
         long now = n.time();
         assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now)); //truth only
+        assertEquals($.t(1f, 0.81f), n.belief($("(a:x && a:y)"), now).truth()); //truth only
 
-        n.believe("--(a:x && a:y)"); //contradict
+        n.believe($$("--(a:x && a:y)"), 0); //contradict
 
         n.concept("(a:x && a:y)").beliefs().print();
 
@@ -76,7 +77,7 @@ public class DynamicTruthBeliefTableTest {
         n.believe($$("--(a:x && a:y)"), now); //contradict
 
         //n.concept("(a:x && a:y)").beliefs().print();
-        Truth tt = n.beliefTruth($("(a:x && a:y)"), now);
+        Truth tt = n.belief($("(a:x && a:y)"), now).truth();
         assertTrue($.t(0.32f, 0.93f).equalsIn(tt, n));
     }
 

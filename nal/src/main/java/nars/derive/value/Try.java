@@ -20,6 +20,9 @@ public class Try implements Consumer<Derivation> {
     public final PrediTerm<Derivation>[] branches;
     public final Cause[] causes;
 
+    float spendRatePerBranch = 0.5f;
+    float spendRatePerFanOut = 0.04f;
+
     Try(PrediTerm<Derivation>[] branches, Cause[] causes) {
         this.branches = branches;
         this.causes = causes;
@@ -27,7 +30,7 @@ public class Try implements Consumer<Derivation> {
 
     public Try(ValueFork[] branches) {
         this(branches,
-             Stream.of(branches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new));
+             Stream.of(branches).flatMap(b -> Stream.of(b.branchCause)).toArray(Cause[]::new));
     }
 
 //    public Try transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
@@ -57,9 +60,9 @@ public class Try implements Consumer<Derivation> {
                 break;
             default:
 
-                forkRoulette(d, choices,
+
+                forkRoulette(d, choices
                         //1f
-                        0.5f  //exponential decay
                         //1f/N
                         //1f/((float)Math.sqrt(N))
                 );
@@ -102,36 +105,49 @@ public class Try implements Consumer<Derivation> {
 //
 //    }
 
-    void forkRoulette(Derivation d, short[] choices, float reserve) {
+    void forkRoulette(Derivation d, short[] choices) {
         int N = choices.length;
         float[] w =
                 //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);
-                Util.softmax(N, i -> valueSum(choices[i]), Param.TRIE_DERIVER_TEMPERATURE);
+                Util.softmax(N, i -> branchValue(branches[choices[i]]), Param.TRIE_DERIVER_TEMPERATURE);
 
         //System.out.println(Arrays.toString(choices) + " " + Arrays.toString(w));
 
         int before = d.now();
-        Roulette.RouletteUnique.run(w, (i) -> {
-            int ttlSave = d.ttl;
+        Roulette.MutableRoulette.run(w, wi -> wi/2 /* harmonic decay */, (i) -> {
+            int ttlStart = d.ttl;
 
 
-            //int fanout = ((ValueFork)(branches[ci])).causes.length;
-            int ttlFrac =
-                    Math.round(ttlSave*reserve);
+            int fanout = ((ValueFork)(branches[choices[i]])).branchCause.length;
+            int ttlSpend = Math.max(
+                    Math.round(ttlStart * spendRatePerBranch * fanout * spendRatePerFanOut),
+                    Param.TTL_MIN);
                     //Math.min(ttlSave, Math.max(fanout * Param.TTL_MIN, Math.round(ttlSave*reserve)));
-            d.ttl = ttlFrac;
+
+            d.ttl = ttlSpend;
 
             branches[choices[i]].test(d);
 
-            int ttlUsed = Math.max(1, ttlFrac - d.ttl);
+            int ttlUsed = Math.max(1, ttlSpend - d.ttl);
 
-            return ((d.ttl = ttlSave - ttlUsed) > 0 && d.revertLive(before));
+            return ((d.ttl = ttlStart - ttlUsed - Param.TTL_BRANCH) > 0 && d.revertLive(before));
         }, d.random);
     }
 
     /** sum of downstream cause values*/
-    float valueSum(int choice) {
-        return Util.sum(Cause::value, ((ValueFork)(branches[choice])).causes);
+    static float branchValue(PrediTerm<Derivation> branch) {
+        return Util.sum(
+                Try::causeValue, //each cause given a benefit of the doubt bias
+                ((ValueFork)branch).branchCause);
+    }
+
+    /** transformation of the raw value to include a positive
+     * 'benefit of the doubt' exploratory bias
+     * that also varies the weight of each branch in proportion
+     * to its fanout.
+     */
+    public static float causeValue(Cause c) {
+        return 0.1f + c.value();
     }
 
     public void recurseTerms(Consumer<Term> each) {

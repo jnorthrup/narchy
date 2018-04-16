@@ -17,7 +17,7 @@ public class RouletteTest {
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
-            f.addValue(Roulette.decideRoulette(uniques, (k) -> 0.5f, rng));
+            f.addValue(Roulette.selectRoulette(uniques, (k) -> 0.5f, rng));
 
         //System.out.println(f);
         assertEquals(f.getUniqueCount(), uniques);
@@ -33,7 +33,7 @@ public class RouletteTest {
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
-            f.addValue(Roulette.decideRoulette(uniques, (k) -> (k+1f)/(uniques), rng));
+            f.addValue(Roulette.selectRoulette(uniques, (k) -> (k+1f)/(uniques), rng));
 
         System.out.println(f);
         assertEquals(f.getUniqueCount(), uniques);

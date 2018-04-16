@@ -2,16 +2,13 @@ package jcog.decide;
 
 import jcog.Util;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
-import jcog.pri.Prioritized;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import java.util.Random;
 import java.util.function.IntPredicate;
 
 import static java.lang.Float.MIN_NORMAL;
-import static java.lang.Math.exp;
 
 /**
  * roulette decision making
@@ -19,37 +16,37 @@ import static java.lang.Math.exp;
 public enum Roulette {
     ;
 
-    public final static FloatFunction<? super PriReference> linearPri = (p) -> {
-        return Math.max(p.priElseZero(), Prioritized.EPSILON);
-    };
+//    public final static FloatFunction<? super PriReference> linearPri = (p) -> {
+//        return Math.max(p.priElseZero(), Prioritized.EPSILON);
+//    };
+//
+//    final static FloatFunction<? super PriReference> softMaxPri = (p) -> {
+//        return (float) exp(p.priElseZero() * 3 /* / temperature */);
+//    };
 
-    final static FloatFunction<? super PriReference> softMaxPri = (p) -> {
-        return (float) exp(p.priElseZero() * 3 /* / temperature */);
-    };
 
-
-    public static int decideRoulette(float[] x, Random rng) {
-        return decideRoulette(x.length, (n) -> x[n], rng);
+    public static int selectRoulette(float[] x, Random rng) {
+        return selectRoulette(x.length, (n) -> x[n], rng);
     }
 
     /**
      * https://en.wikipedia.org/wiki/Fitness_proportionate_selection
      * Returns the selected index based on the weights(probabilities)
      */
-    public static int decideRoulette(int weightCount, IntToFloatFunction weight, Random rng) {
+    public static int selectRoulette(int weightCount, IntToFloatFunction weight, Random rng) {
         // calculate the total weight
         assert (weightCount > 0);
-        return decideRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
+        return selectRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
     }
 
 
-    /**
-     * roulette selection on a softmax scale
-     */
-    public static int decideSoftmax(int count, IntToFloatFunction weight, float temperature, Random random) {
-        return decideRoulette(count, (i) ->
-                (float) exp(weight.valueOf(i) / temperature), random);
-    }
+//    /**
+//     * roulette selection on a softmax scale
+//     */
+//    public static int decideSoftmax(int count, IntToFloatFunction weight, float temperature, Random random) {
+//        return decideRoulette(count, (i) ->
+//                (float) exp(weight.valueOf(i) / temperature), random);
+//    }
 
 //  /** roulette selection on a softmax scale */
 //    public static void decideSoftmax(int count, IntToFloatFunction weight, float temperature, Random random, IntFunction<RouletteControl> each) {
@@ -60,7 +57,7 @@ public enum Roulette {
     /**
      * faster if the sum is already known
      */
-    public static int decideRoulette(final int count, IntToFloatFunction weight, float weight_sum, Random rng) {
+    public static int selectRoulette(final int count, IntToFloatFunction weight, float weight_sum, Random rng) {
 
         int i = rng.nextInt(count); //random start location
         assert (i >= 0);
@@ -82,27 +79,60 @@ public enum Roulette {
         return i;
     }
 
-    public static class RouletteUnique {
+    /** efficient embeddable roulette decision executor.
+     * takes a weight-update function applied to the current
+     * choice after it has been selected in order to influence
+     * its probability of being selected again.
+     *
+     * if the update function returns zero, then the choice is
+     * deactivated and can not be selected again.
+     *
+     * when no choices remain, it exits automatically.
+     */
+    public static class MutableRoulette {
         /** weights of each choice */
         private final float[] w;
         private final Random rng;
 
+        private final FloatToFloatFunction weightUpdate;
+
         /** current weight sum */
         private float weightSum;
-        private float remaining;
+        private int remaining;
 
         int i;
 
-        public static void run(float[] weights, IntPredicate select, Random rng) {
+        public static void run(float[] weights, FloatToFloatFunction weightUpdate, IntPredicate select, Random rng) {
             switch (weights.length) {
                 case 0: throw new UnsupportedOperationException();
                 case 1: select.test(0); return;
                 //TODO simple 2 case, with % probability of the ordering then try the order in sequence
                 default: {
-                    RouletteUnique r = new RouletteUnique(weights, rng);
+                    MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
                     while (r.next(select)) { }
                 }
             }
+        }
+
+
+        MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
+            this.w = w;
+            this.remaining = w.length;
+            this.weightUpdate = weightUpdate;
+
+            float ws = 0;
+            for (int i1 = 0, wLength = w.length; i1 < wLength; i1++) {
+                float x = w[i1];
+                if (x < MIN_NORMAL) {
+                    w[i1] = 0; //hard set to zero
+                    remaining--;
+                }
+                ws += x;
+            }
+            assert(remaining > 0);
+
+            this.weightSum = ws;
+            this.i = (this.rng = rng).nextInt(w.length); //random start position
         }
 
         public boolean next(IntPredicate select) {
@@ -133,7 +163,8 @@ public enum Roulette {
 
                 int i = this.i;
 
-                while ((distance = distance - w[i]) > MIN_NORMAL) {
+                float wi;
+                while ((distance = distance - (wi = w[i])) > MIN_NORMAL) {
                     //if (dir) {
                     if (++i == count) i = 0;
                     //} else {
@@ -141,29 +172,20 @@ public enum Roulette {
                     //}
                 }
 
-
-                weightSum -= w[i];
-                w[i] = 0; //clear
+                float nextWeight = weightUpdate.valueOf(wi);
+                if (nextWeight!=wi) {
+                    float delta = nextWeight - wi;
+                    w[i] = nextWeight;
+                    weightSum += delta;
+                    if (nextWeight < Float.MIN_NORMAL)
+                        remaining--;
+                }
 
                 this.i = i;
 
                 return i;
             }
 
-        }
-
-        RouletteUnique(float[] w, Random rng) {
-            this.w = w;
-            this.remaining = w.length;
-
-            float ws = 0;
-            for (float x : w) {
-                assert(x > MIN_NORMAL);
-                ws += x;
-            }
-
-            this.weightSum = ws;
-            this.i = (this.rng = rng).nextInt(w.length); //random start position
         }
 
     }

@@ -40,7 +40,9 @@ public class RevectionTest {
 
         //System.out.println( TruthPolation.truth(0, a, b) );
         assertEquals(Revision.revise(a, b),
-                new FocusingLinearTruthPolation(0, 1, n.dur()).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth());
+                new FocusingLinearTruthPolation(0, 0, n.dur())
+                        .add(Lists.newArrayList(a.apply(n), b.apply(n)))
+                        .truth());
 
     }
 
@@ -295,7 +297,7 @@ public class RevectionTest {
 
         n.run(3);
         b.print();
-        assertEquals(4+4, b.capacity(true));
+        //assertEquals(4+4, b.capacity(true));
         assertEquals(4, b.size(true));
 
         b.print();

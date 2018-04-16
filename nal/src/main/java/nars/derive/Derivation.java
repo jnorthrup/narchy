@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.data.ArrayHashSet;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
 import nars.$;
@@ -63,6 +64,9 @@ public class Derivation extends PreDerivation {
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
     final Map<Task, Task> derivedTasks = new HashMap<>();
+    final ArrayHashSet<Premise> premiseBurst =
+            //new LinkedHashSet();
+            new ArrayHashSet<>();
 
     public NAR nar;
 

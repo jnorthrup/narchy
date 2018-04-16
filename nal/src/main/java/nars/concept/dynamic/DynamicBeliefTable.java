@@ -141,7 +141,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
         if (x.term().equals(y.term()) && !Stamp.overlapping(x, y)) {
             //try to revise
-            Task xy = Revision.mergeTemporal(nar, start, end, x, y);
+            Task xy = Revision.mergeTasks(nar, start, end, x, y);
             if (xy != null && (filter==null || filter.test(xy)))
                 top.accept(xy);
         }

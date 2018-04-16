@@ -85,7 +85,7 @@ public interface ArraySet<X> extends Set<X> {
 		for (int i = 0; i < s; i++) {
 			weights[i] = rank.floatValueOf(get(i));
 		}
-		return get(Roulette.decideRoulette(weights, rng));
+		return get(Roulette.selectRoulette(weights, rng));
 	}
 
 	/** shuffles the list */

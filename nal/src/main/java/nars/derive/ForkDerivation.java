@@ -26,7 +26,7 @@ public class ForkDerivation<D extends PreDerivation> extends Fork<D> {
 
         int before = m.now();
 
-        for (PrediTerm c : branches) {
+        for (PrediTerm c : branch) {
 
             c.test(m);
 

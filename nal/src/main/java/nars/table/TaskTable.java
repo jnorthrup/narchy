@@ -100,7 +100,7 @@ public interface TaskTable {
             float[] w = Util.map(t, Util.softmaxFunc(m.value(), 0.5f));
 
             final int[] remain = {limit};
-            Roulette.RouletteUnique.run(w, (x)->{
+            Roulette.MutableRoulette.run(w, wi -> 0 /* unique */, (x)->{
                 target.accept(t[x]);
                 return --remain[0] >0;
             }, rng);

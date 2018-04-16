@@ -23,7 +23,6 @@ import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -567,18 +566,18 @@ public class Revision {
 //    }
 
     @Nullable
-    public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
+    public static Task mergeTasks(NAR nar, TaskRegion... tt) {
         long[] u = Tense.union(tt);
-        return mergeTemporal(nar, u[0], u[1], tt);
+        return mergeTasks(nar, u[0], u[1], tt);
     }
 
     @Nullable
-    public static Task mergeTemporal(NAR nar, long start, long end, TaskRegion... tt) {
-        return mergeTemporal(nar, nar.dur(), start, end, false, tt);
+    public static Task mergeTasks(NAR nar, long start, long end, TaskRegion... tt) {
+        return mergeTasks(nar, nar.dur(), start, end, false, tt);
     }
 
     @Nullable
-    public static Task mergeTemporal(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
+    public static Task mergeTasks(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
 
         tasks = ArrayUtils.removeNulls(tasks, Task[]::new); //HACK
 
@@ -589,15 +588,11 @@ public class Revision {
         TruthPolation T = Param.truth(start, end, dur).add(tasks);
         LongHashSet stamp = T.filterCyclic();
 
-        ObjectFloatPair<Term> termpolation = T.filterDTDiff();
-        if (termpolation == null)
-            return null;
-
-        Truth baseTruth = T.truth();
+        Truth baseTruth = T.truth(nar);
         if (baseTruth == null)
             return null; //nothing
 
-        float truthEvi = baseTruth.evi() * termpolation.getTwo();
+        float truthEvi = baseTruth.evi();
 
         float range = (start != ETERNAL) ? (end - start + 1) : 1;
         if ((truthEvi * range) < eviMinInteg)
@@ -615,7 +610,7 @@ public class Revision {
 
         byte punc = T.punc();
 
-        Task t = Task.tryTask(termpolation.getOne(), punc, cTruth, (c, tr) ->
+        Task t = Task.tryTask(T.term, punc, cTruth, (c, tr) ->
                 new NALTask(c, punc,
                         tr,
                         nar.time(), start, end,
@@ -629,7 +624,8 @@ public class Revision {
         tasks = T.tasks(); //HACK
 
         t.priSet(Priority.fund(Util.max((TaskRegion p) -> p.task().priElseZero(), tasks),
-                false,
+                true,
+                //false,
                 Tasked::task, tasks));
 
         ((NALTask) t).cause(Cause.sample(Param.causeCapacity.intValue(), tasks));

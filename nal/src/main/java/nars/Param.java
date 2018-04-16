@@ -150,7 +150,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange matchTTLmean = new IntRange(900, 0, 1024);
+    public final IntRange matchTTLmean = new IntRange(800, 0, 1024);
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */
@@ -185,15 +185,18 @@ public abstract class Param {
         return new long[] {from, to};
     }
 
-    public static final int TTL_MIN() {
-            return Param.TTL_UNIFY * 2 +
-                    Param.TTL_DERIVE_TASK_SUCCESS; }
+    public static final int TTL_MIN =
+            Param.TTL_UNIFY * 2 +
+                    Param.TTL_DERIVE_TASK_SUCCESS;
 
     /**
      * cost of attempting a unification
      */
     @Range(min=0, max=64)
     public static int TTL_UNIFY = 2;
+
+    @Range(min=0, max=64)
+    public static final int TTL_BRANCH = 1;
 
     /**
      * cost of executing a termute permutation

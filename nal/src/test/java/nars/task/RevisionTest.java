@@ -251,7 +251,9 @@ public class RevisionTest {
         Concept c = n.concept($.$("(x ==> y)"));
         assertEquals(2, c.beliefs().size());
 
-        Truth t = n.belief($.$("(x ==> y)"), 0).truth();
+        Task tt = n.belief($.$("(x ==> y)"), 0);
+        assertNotNull(tt);
+        Truth t = tt.truth();
         assertEquals(0.5f, t.freq(), 0.01f);
         assertEquals(0.947f, t.conf(), 0.01f);
     }

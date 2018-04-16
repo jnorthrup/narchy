@@ -29,7 +29,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
-    public final Cause[] causes;
+    public final Cause[] branchCause;
 
 
     public ValueFork(PrediTerm[] branches/*, RoaringBitmap downstream*/) {
@@ -42,7 +42,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
             ).eachMatch)), Taskify[]::new, branches);
 
 
-        causes = Util.map(c -> c.channel, Cause[]::new, conc);
+        branchCause = Util.map(c -> c.channel, Cause[]::new, conc);
     }
 
     @Override
@@ -50,26 +50,26 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
         int before = d.now();
 
-        int N = this.branches.length;
+        int N = this.branch.length;
         if (N == 1) {
-            this.branches[0].test(d);
+            this.branch[0].test(d);
             return d.revertLive(before);
         } else {
 
             float[] w =
                     //Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
-                    Util.softmax(N, i -> causes[i].value(),
+                    Util.softmax(N, i -> Try.causeValue(branchCause[i]),
                             Param.TRIE_DERIVER_TEMPERATURE);
 
-            Roulette.RouletteUnique.run(w, (b) -> {
+            Roulette.MutableRoulette.run(w, wi -> wi/2 /* harmonic decay */, (b) -> {
 
-                this.branches[b].test(d);
+                this.branch[b].test(d);
 
-                return d.revertLive(before);
+                return d.use(Param.TTL_BRANCH) && d.revertLive(before);
 
             }, d.random);
 
-            return d.live();
+            return true;
         }
     }
 

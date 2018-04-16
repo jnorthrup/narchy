@@ -45,9 +45,10 @@ public class BooleanTest {
 //        for (int i = 0; i < 2; i++) {
 //            for (int j = 0; j < 2; j++) {
         NAR d = NARS.tmp();
-        d.freqResolution.set(0.05f);
-        d.termVolumeMax.set(24);
+        d.freqResolution.set(0.02f);
+        d.termVolumeMax.set(28);
 
+//        d.log();
         String[] outcomes = {
                 "x:{0}", //"(x-->(0,0))",
                 "x:{1}", //"(x-->(0,1))",

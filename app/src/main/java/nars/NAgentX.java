@@ -325,8 +325,8 @@ abstract public class NAgentX extends NAgent {
 //        ), 800, 600);
 
 
-        //ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 8, 64);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
+        //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 8, 64);
 
         //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 16);
 

@@ -125,20 +125,20 @@ public final class TruthFunctions {
         return analogyNew(a, b.freq(), b.conf(), minConf);
     }
 
-    /**
-     * {<S <=> M>, <M <=> P>} |- <S <=> P>
-     *
-     * @param a Truth value of the first premise
-     * @param b Truth value of the second premise
-     * @return Truth value of the conclusion
-     */
-    @Nullable
-    public static Truth resemblance(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float f1 = a.freq();
-        float f2 = b.freq();
-        float c = and(a.conf(), b.conf(), or(f1, f2));
-        return (c < minConf) ? null : t(and(f1, f2), c);
-    }
+//    /**
+//     * {<S <=> M>, <M <=> P>} |- <S <=> P>
+//     *
+//     * @param a Truth value of the first premise
+//     * @param b Truth value of the second premise
+//     * @return Truth value of the conclusion
+//     */
+//    @Nullable
+//    public static Truth resemblance(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+//        float f1 = a.freq();
+//        float f2 = b.freq();
+//        float c = and(a.conf(), b.conf(), or(f1, f2));
+//        return (c < minConf) ? null : t(and(f1, f2), c);
+//    }
 
     /**
      * {<S ==> M>, <P ==> M>} |- <S ==> P>

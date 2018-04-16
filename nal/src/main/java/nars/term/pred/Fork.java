@@ -14,12 +14,12 @@ import java.util.function.Function;
  */
 public class Fork<X> extends AbstractPred<X> {
 
-    public final PrediTerm<X>[] branches;
+    public final PrediTerm<X>[] branch;
 
     public Fork(PrediTerm<X>[] actions) {
         super($.sFast((Term[]) actions));
         assert (actions.length > 0);
-        this.branches = actions;
+        this.branch = actions;
     }
 
     /**
@@ -28,7 +28,7 @@ public class Fork<X> extends AbstractPred<X> {
     @Override
     public boolean test(X x) {
 
-        for (PrediTerm c : branches)
+        for (PrediTerm c : branch)
             c.test(x);
 
         return true;
@@ -42,7 +42,7 @@ public class Fork<X> extends AbstractPred<X> {
 
     @Override
     public PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
-        return fork(PrediTerm.transform(f, branches), Fork::new);
+        return fork(PrediTerm.transform(f, branch), Fork::new);
     }
 
 

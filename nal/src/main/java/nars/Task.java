@@ -66,7 +66,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if ((!Arrays.equals(evidence, b.stamp())))
             return false;
 
-        if (evidence.length > 1) {
+//        if (evidence.length > 1) {
             Truth at = a.truth();
             Truth bt = b.truth();
             if (at == null) {
@@ -77,7 +77,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             if ((a.start() != b.start()) || (a.end() != b.end()))
                 return false;
-        }
+//        }
 
         if (a.term().equals(b.term())) {
 

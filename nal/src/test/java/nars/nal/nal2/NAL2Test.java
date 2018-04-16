@@ -1,10 +1,7 @@
 package nars.nal.nal2;
 
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
@@ -15,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 1250;
+    static final int cycles = 550;
 
 
     @Override
@@ -157,10 +154,10 @@ public class NAL2Test extends NALTest {
     @Test
     public void analogyNeg() {
 
-        TestNAR tester = test;
-        tester.believe("--(p1 --> p2)");
-        tester.believe("(p2 <-> p3)");
-        tester.mustBelieve(cycles, "(p1 --> p3)",
+        test
+        .believe("--(p1 --> p2)")
+        .believe("(p2 <-> p3)")
+        .mustBelieve(cycles, "(p1 --> p3)",
                 0f, 0.81f);
         //tester.debug();
     }
