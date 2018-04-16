@@ -18,7 +18,7 @@ package org.oakgp.evolve;
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 import org.oakgp.select.NodeSelector;
 import org.oakgp.select.NodeSelectorFactory;
 
@@ -52,7 +52,7 @@ public class GenerationEvolverImplTest {
         }
 
         // create objects to pass as argument to evolve method
-        RankedCandidates input = new RankedCandidates(new RankedCandidate[]{new RankedCandidate(expectedOutput[0], 1),
+        Candidates input = new Candidates(new RankedCandidate[]{new RankedCandidate(expectedOutput[0], 1),
                 new RankedCandidate(expectedOutput[1], 2), new RankedCandidate(expectedOutput[2], elitismSize), new RankedCandidate(mockNode(), 4),
                 new RankedCandidate(mockNode(), 5)});
 

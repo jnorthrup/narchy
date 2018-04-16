@@ -47,8 +47,9 @@ public final class NodeWalk {
                 FunctionNode functionNode = (FunctionNode) node;
                 Arguments arguments = functionNode.args();
                 int total = 0;
-                for (int i = 0; i < arguments.args(); i++) {
-                    Node child = arguments.arg(i);
+                int a = arguments.length();
+                for (int i = 0; i < a; i++) {
+                    Node child = arguments.get(i);
                     int c = child.size();
                     if (total + c > index) {
                         index = index - total;
@@ -74,13 +75,17 @@ public final class NodeWalk {
     public static Node replaceAt(Node node, int index, Function<Node, Node> replacement) {
         if (NodeType.isFunction(node)) {
             FunctionNode functionNode = (FunctionNode) node;
-            Arguments arguments = functionNode.args();
+            org.oakgp.function.Function f = functionNode.func();
+            Arguments args = functionNode.args();
             int total = 0;
-            for (int i = 0; i < arguments.args(); i++) {
-                Node child = arguments.arg(i);
+            int a = args.length();
+            for (int i = 0; i < a; i++) {
+                Node child = args.get(i);
                 int c = child.size();
                 if (total + c > index) {
-                    return new FunctionNode(functionNode.func(), arguments.replaceAt(i, replaceAt(child, index - total, replacement)));
+
+                    return new FunctionNode(f,
+                            args.replaceAt(i, replaceAt(child, index - total, replacement)));
                 } else {
                     total += c;
                 }
@@ -88,6 +93,7 @@ public final class NodeWalk {
         }
         return replacement.apply(node);
     }
+
 
     /**
      * Returns a new {@code Node} resulting from replacing any components that match the specified predicate with the result of applying the specified function.
@@ -104,9 +110,9 @@ public final class NodeWalk {
                     FunctionNode functionNode = (FunctionNode) node;
                     Arguments arguments = functionNode.args();
                     boolean updated = false;
-                    Node[] replacementArgs = new Node[arguments.args()];
-                    for (int i = 0; i < arguments.args(); i++) {
-                        Node arg = arguments.arg(i);
+                    Node[] replacementArgs = new Node[arguments.length()];
+                    for (int i = 0; i < arguments.length(); i++) {
+                        Node arg = arguments.get(i);
                         Node replacedArg = replaceAll(arg, criteria, replacement);
                         if (arg != replacedArg) {
                             updated = true;
@@ -114,7 +120,8 @@ public final class NodeWalk {
                         replacementArgs[i] = replacedArg;
                     }
                     if (updated) {
-                        return new FunctionNode(functionNode.func(), new Arguments(replacementArgs));
+                        org.oakgp.function.Function f = functionNode.func();
+                        return new FunctionNode(f, Arguments.get(f, replacementArgs));
                     } else {
                         return node;
                     }

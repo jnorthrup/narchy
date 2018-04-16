@@ -16,6 +16,7 @@
 package org.oakgp.evolve.crossover;
 
 import org.oakgp.Arguments;
+import org.oakgp.function.Function;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 
@@ -35,15 +36,17 @@ final class CommonRegion {
             FunctionNode f1 = (FunctionNode) n1;
             FunctionNode f2 = (FunctionNode) n2;
             Arguments arguments = f1.args();
-            int argCount = arguments.args();
-            if (argCount == f2.args().args()) {
+            int argCount = arguments.length();
+            if (argCount == f2.args().length()) {
                 int total = 0;
                 for (int i = 0; i < argCount; i++) {
-                    Node a1 = arguments.arg(i);
-                    Node a2 = f2.args().arg(i);
+                    Node a1 = arguments.get(i);
+                    Node a2 = f2.args().get(i);
                     int c = getNodeCount(a1, a2);
                     if (total + c > crossOverPoint) {
-                        return new FunctionNode(f1.func(), arguments.replaceAt(i, crossoverAt(a1, a2, crossOverPoint - total)));
+                        Function f = f1.func();
+                        return new FunctionNode(f,
+                                arguments.replaceAt(i, crossoverAt(a1, a2, crossOverPoint - total)));
                     } else {
                         total += c;
                     }
@@ -59,10 +62,10 @@ final class CommonRegion {
             int total = sameType(n1, n2) ? 1 : 0;
             FunctionNode f1 = (FunctionNode) n1;
             FunctionNode f2 = (FunctionNode) n2;
-            int argCount = f1.args().args();
-            if (argCount == f2.args().args()) {
+            int argCount = f1.args().length();
+            if (argCount == f2.args().length()) {
                 for (int i = 0; i < argCount; i++) {
-                    total += getNodeCount(f1.args().arg(i), f2.args().arg(i));
+                    total += getNodeCount(f1.args().get(i), f2.args().get(i));
                 }
             }
             return total;

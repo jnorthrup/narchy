@@ -20,7 +20,7 @@ import org.oakgp.generate.TreeGenerator;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
 import org.oakgp.select.DummyNodeSelector;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.BDDMockito.given;
@@ -53,7 +53,7 @@ public class ConstantToFunctionMutationTest {
         assertNodeEquals("(if (< 6 v0) 3 (if true 8 4))", mutate(nextInt(4).returns(3), mockTreeGenerator, input));
     }
 
-    private Node mutate(Random random, TreeGenerator treeGenerator, Node input) {
+    private Node mutate(GPRandom random, TreeGenerator treeGenerator, Node input) {
         DummyNodeSelector selector = new DummyNodeSelector(input);
         Node result = new ConstantToFunctionMutation(random, treeGenerator).evolve(selector);
         selector.assertEmpty();

@@ -17,7 +17,7 @@ package org.oakgp.function.hof;
 
 import org.oakgp.function.AbstractFunctionTest;
 import org.oakgp.function.Function;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 
 import static org.oakgp.Type.integerType;
 
@@ -45,6 +45,6 @@ public class ReduceTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntegerUtils.the.getAdd(), IntegerUtils.the.getMultiply()};
+        return new Function[]{getFunction(), IntFunc.the.getAdd(), IntFunc.the.getMultiply()};
     }
 }

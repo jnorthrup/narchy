@@ -28,14 +28,19 @@ import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
  * Performs multiplication.
  */
 final class Multiply extends ArithmeticOperator {
-    private final NumberUtils<?> numberUtils;
+    private final NumFunc<?> numberUtils;
 
     /**
-     * @see NumberUtils#getMultiply()
+     * @see NumFunc#getMultiply()
      */
-    Multiply(NumberUtils<?> numberUtils) {
+    Multiply(NumFunc<?> numberUtils) {
         super(numberUtils.getType());
         this.numberUtils = numberUtils;
+    }
+
+    @Override
+    public final boolean argsSorted() {
+        return true;
     }
 
     /**
@@ -45,6 +50,10 @@ final class Multiply extends ArithmeticOperator {
      */
     @Override
     protected Object evaluate(Node arg1, Node arg2, Assignments assignments) {
+        if (arg1.equals(numberUtils.one))
+            return arg2.eval(assignments);
+        if (arg2.equals(numberUtils.one))
+            return arg1.eval(assignments);
         return numberUtils.multiply(arg1, arg2, assignments).eval(null);
     }
 
@@ -57,18 +66,18 @@ final class Multiply extends ArithmeticOperator {
             // as for addition the order of the arguments is not important, order arguments in a consistent way
             // e.g. (* v1 1) -> (* 1 v1)
             return new FunctionNode(this, arg2, arg1);
-        } else if (numberUtils.isZero(arg1)) {
+        } else if (numberUtils.zero.equals(arg1)) {
             // anything multiplied by zero is zero
             // e.g. (* 0 v0) -> 0
-            return numberUtils.zero();
-        } else if (numberUtils.isZero(arg2)) {
+            return numberUtils.zero;
+        } else if (numberUtils.zero.equals(arg2)) {
             // the earlier ordering or arguments means we should never get here
             throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
-        } else if (numberUtils.isOne(arg1)) {
+        } else if (numberUtils.one.equals(arg1)) {
             // anything multiplied by one is itself
             // e.g. (* 1 v0) -> v0
             return arg2;
-        } else if (numberUtils.isOne(arg2)) {
+        } else if (numberUtils.one.equals(arg2)) {
             // the earlier ordering or arguments means we should never get here
             throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
         } else {

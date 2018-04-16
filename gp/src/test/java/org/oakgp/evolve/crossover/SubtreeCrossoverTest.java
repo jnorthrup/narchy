@@ -75,7 +75,7 @@ public class SubtreeCrossoverTest {
 
         GeneticOperator c = new SubtreeCrossover(dummyRandom, DEFAULT_DEPTH);
 
-        assertNodeEquals("(+ 6 5)", c.evolve(dummySelector));
+        assertNodeEquals("(+ 5 6)", c.evolve(dummySelector));
         assertNodeEquals("(+ 4 6)", c.evolve(dummySelector));
         assertNodeEquals("(+ 4 7)", c.evolve(dummySelector));
         assertNodeEquals("(+ 4 8)", c.evolve(dummySelector));

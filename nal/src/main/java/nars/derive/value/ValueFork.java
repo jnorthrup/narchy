@@ -61,7 +61,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
                     Util.softmax(N, i -> Try.causeValue(branchCause[i]),
                             Param.TRIE_DERIVER_TEMPERATURE);
 
-            Roulette.MutableRoulette.run(w, wi -> wi/2 /* harmonic decay */, (b) -> {
+            Roulette.MutableRoulette.run(w, wi -> wi/N /* harmonic decay */, (b) -> {
 
                 this.branch[b].test(d);
 

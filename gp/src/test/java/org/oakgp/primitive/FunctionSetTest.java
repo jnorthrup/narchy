@@ -26,7 +26,7 @@ import org.oakgp.function.coll.Count;
 import org.oakgp.function.compare.*;
 import org.oakgp.function.hof.Filter;
 import org.oakgp.function.hof.Reduce;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 
 import java.util.List;
 
@@ -35,9 +35,9 @@ import static org.oakgp.TestUtils.assertUnmodifiable;
 import static org.oakgp.Type.*;
 
 public class FunctionSetTest {
-    private static final Function ADD = IntegerUtils.the.getAdd();
-    private static final Function SUBTRACT = IntegerUtils.the.getSubtract();
-    private static final Function MULTIPLY = IntegerUtils.the.getMultiply();
+    private static final Function ADD = IntFunc.the.getAdd();
+    private static final Function SUBTRACT = IntFunc.the.getSubtract();
+    private static final Function MULTIPLY = IntFunc.the.getMultiply();
 
     private static FunctionSet createFunctionSet() {
         return new FunctionSet(

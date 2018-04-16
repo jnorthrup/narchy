@@ -16,7 +16,7 @@
 package org.oakgp.terminate;
 
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.function.Predicate;
 
@@ -25,7 +25,7 @@ import java.util.function.Predicate;
  * <p>
  * Also known as the <i>success predicate</i>.
  */
-public final class TargetFitnessTerminator implements Predicate<RankedCandidates> {
+public final class TargetFitnessTerminator implements Predicate<Candidates> {
     private final Predicate<RankedCandidate> targetCriteira;
 
     /**
@@ -36,7 +36,7 @@ public final class TargetFitnessTerminator implements Predicate<RankedCandidates
     }
 
     @Override
-    public boolean test(RankedCandidates t) {
+    public boolean test(Candidates t) {
         return targetCriteira.test(t.best());
     }
 }

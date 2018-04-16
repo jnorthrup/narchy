@@ -18,7 +18,7 @@ package org.oakgp.primitive;
 import org.oakgp.Type;
 import org.oakgp.function.Function;
 import org.oakgp.node.Node;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
     private final FunctionSet functionSet;
     private final ConstantSet constantSet;
     private final VariableSet variableSet;
-    private final Random random;
+    private final GPRandom random;
     private final double ratioVariables;
 
     /**
@@ -41,7 +41,7 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
      * @param random         used to randomly select components to use in the construction of programs
      * @param ratioVariables a value in the range 0 to 1 (inclusive) which specifies the proportion of terminal nodes that should represent variables, rather than constants
      */
-    public PrimitiveSetImpl(FunctionSet functionSet, ConstantSet constantSet, VariableSet variableSet, Random random, double ratioVariables) {
+    public PrimitiveSetImpl(FunctionSet functionSet, ConstantSet constantSet, VariableSet variableSet, GPRandom random, double ratioVariables) {
         this.functionSet = functionSet;
         this.constantSet = constantSet;
         this.variableSet = variableSet;

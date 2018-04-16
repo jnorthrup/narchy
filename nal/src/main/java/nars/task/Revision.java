@@ -640,6 +640,10 @@ public class Revision {
 
     public static float eviAvg(Task x, long start, long end, int dur) {
 
+        if (start == ETERNAL) {
+            return x.isEternal() ? x.evi() : x.eviEternalized();
+        }
+
         //integrate, potentialy inside and outside
         float e = eviInteg(x, start, end, dur);
         long range = (start == ETERNAL) ? 1 : (end - start + 1);
@@ -651,6 +655,8 @@ public class Revision {
      * convenience method for selecting evidence integration strategy
      */
     public static float eviInteg(Task x, long start, long end, int dur) {
+        assert(start!=ETERNAL);
+
         if (x.isEternal())
             return x.evi() * (end-start+1); //simple
 

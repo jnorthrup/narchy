@@ -28,7 +28,7 @@ import org.oakgp.function.classify.IsZero;
 import org.oakgp.function.coll.Count;
 import org.oakgp.function.compare.*;
 import org.oakgp.function.hof.Filter;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
 import org.oakgp.rank.fitness.FitnessFunction;
@@ -38,8 +38,8 @@ import java.util.*;
 import static org.oakgp.TestUtils.createArguments;
 import static org.oakgp.Type.*;
 import static org.oakgp.rank.fitness.TestDataFitnessFunction.createIntegerTestDataFitnessFunction;
-import static org.oakgp.util.Utils.createIntegerConstants;
-import static org.oakgp.util.Utils.createIntegerTypeArray;
+import static org.oakgp.util.Utils.intConsts;
+import static org.oakgp.util.Utils.intArrayType;
 
 /**
  * Performs full genetic programming runs without relying on any mock objects.
@@ -52,8 +52,8 @@ public class FitnessFunctionSystemTest {
     private static final int NUM_GENERATIONS = 50;
     private static final int INITIAL_POPULATION_SIZE = 50;
     private static final int INITIAL_POPULATION_MAX_DEPTH = 4;
-    private static final Function[] ARITHMETIC_FUNCTIONS = {IntegerUtils.the.getAdd(), IntegerUtils.the.getSubtract(),
-            IntegerUtils.the.getMultiply()};
+    private static final Function[] ARITHMETIC_FUNCTIONS = {IntFunc.the.getAdd(), IntFunc.the.getSubtract(),
+            IntFunc.the.getMultiply()};
 
     private static Map<Assignments, Integer> createTests(int numVariables, java.util.function.Function<Assignments, Integer> f) {
         int count = 200;
@@ -82,8 +82,8 @@ public class FitnessFunctionSystemTest {
 
     @Test
     public void testTwoVariableArithmeticExpression() {
-        ConstantNode[] constants = createIntegerConstants(0, 11);
-        Type[] variableTypes = createIntegerTypeArray(2);
+        ConstantNode[] constants = intConsts(0, 11);
+        Type[] variableTypes = intArrayType(2);
 
         FitnessFunction fitnessFunction = createIntegerTestDataFitnessFunction(createTests(variableTypes.length, a -> {
             int x = (int) a.get(0);
@@ -91,20 +91,20 @@ public class FitnessFunctionSystemTest {
             return (x * x) + 2 * y + 3 * x + 5;
         }));
 
-        new Evolution().returning(integerType())
-                .setConstants(constants)
-                .setVariables(variableTypes)
-                .setFunctions(ARITHMETIC_FUNCTIONS)
-                .setFitness(fitnessFunction)
-                .setInitialPopulationSize(INITIAL_POPULATION_SIZE)
-                .setTreeDepth(INITIAL_POPULATION_MAX_DEPTH)
+        new Evolution().returns(integerType())
+                .constants(constants)
+                .variables(variableTypes)
+                .functions(ARITHMETIC_FUNCTIONS)
+                .goal(fitnessFunction)
+                .population(INITIAL_POPULATION_SIZE)
+                .depth(INITIAL_POPULATION_MAX_DEPTH)
                 .setMaxGenerations(NUM_GENERATIONS).get();
     }
 
     @Test
     public void testThreeVariableArithmeticExpression() {
-        ConstantNode[] constants = createIntegerConstants(0, 11);
-        Type[] variableTypes = createIntegerTypeArray(3);
+        ConstantNode[] constants = intConsts(0, 11);
+        Type[] variableTypes = intArrayType(3);
 
         FitnessFunction fitnessFunction = createIntegerTestDataFitnessFunction(createTests(variableTypes.length, a -> {
             int x = (int) a.get(0);
@@ -113,18 +113,18 @@ public class FitnessFunctionSystemTest {
             return (x * -3) + (y * 5) - z;
         }));
 
-        new Evolution().returning(integerType()).setConstants(constants).setVariables(variableTypes).setFunctions(ARITHMETIC_FUNCTIONS)
-                .setFitness(fitnessFunction)
-                .setInitialPopulationSize(INITIAL_POPULATION_SIZE)
-                .setTreeDepth(INITIAL_POPULATION_MAX_DEPTH)
+        new Evolution().returns(integerType()).constants(constants).variables(variableTypes).functions(ARITHMETIC_FUNCTIONS)
+                .goal(fitnessFunction)
+                .population(INITIAL_POPULATION_SIZE)
+                .depth(INITIAL_POPULATION_MAX_DEPTH)
                 .setMaxGenerations(NUM_GENERATIONS).get();
     }
 
     @Test
     public void testTwoVariableBooleanLogicExpression() {
-        ConstantNode[] constants = createIntegerConstants(0, 5);
-        Type[] variableTypes = createIntegerTypeArray(2);
-        Function[] functions = {IntegerUtils.the.getAdd(), IntegerUtils.the.getSubtract(), IntegerUtils.the.getMultiply(),
+        ConstantNode[] constants = intConsts(0, 5);
+        Type[] variableTypes = intArrayType(2);
+        Function[] functions = {IntFunc.the.getAdd(), IntFunc.the.getSubtract(), IntFunc.the.getMultiply(),
                 LessThan.create(integerType()), LessThanOrEqual.create(integerType()), new GreaterThan(integerType()), new GreaterThanOrEqual(integerType()),
                 new Equal(integerType()), new NotEqual(integerType()), new If(integerType())};
 
@@ -134,8 +134,8 @@ public class FitnessFunctionSystemTest {
             return x > 20 ? x : y;
         }));
 
-        new Evolution().returning(integerType()).setConstants(constants).setVariables(variableTypes).setFunctions(functions)
-                .setFitness(fitnessFunction).setInitialPopulationSize(INITIAL_POPULATION_SIZE).setTreeDepth(INITIAL_POPULATION_MAX_DEPTH)
+        new Evolution().returns(integerType()).constants(constants).variables(variableTypes).functions(functions)
+                .goal(fitnessFunction).population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH)
                 .setMaxGenerations(NUM_GENERATIONS).get();
     }
 
@@ -164,8 +164,8 @@ public class FitnessFunctionSystemTest {
         testData.put(new Assignments(createArguments("0", "0", "0")), 3);
         FitnessFunction fitnessFunction = createIntegerTestDataFitnessFunction(testData);
 
-        new Evolution().returning(integerType()).setConstants(constants).setVariables(variableTypes).setFunctions(functions)
-                .setFitness(fitnessFunction).setInitialPopulationSize(INITIAL_POPULATION_SIZE).setTreeDepth(INITIAL_POPULATION_MAX_DEPTH)
+        new Evolution().returns(integerType()).constants(constants).variables(variableTypes).functions(functions)
+                .goal(fitnessFunction).population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH)
                 .setMaxGenerations(NUM_GENERATIONS).get();
     }
 }

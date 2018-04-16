@@ -25,14 +25,14 @@ import org.oakgp.function.coll.Count;
 import org.oakgp.function.compare.*;
 import org.oakgp.function.hof.Filter;
 import org.oakgp.function.hof.Reduce;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 import org.oakgp.primitive.VariableSet;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 import org.oakgp.serialize.NodeReader;
 import org.oakgp.serialize.NodeWriter;
 
@@ -46,10 +46,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.oakgp.Type.*;
-import static org.oakgp.util.Utils.createIntegerTypeArray;
+import static org.oakgp.util.Utils.intArrayType;
 
 public class TestUtils {
-    public static final VariableSet VARIABLE_SET = VariableSet.createVariableSet(createIntegerTypeArray(100));
+    public static final VariableSet VARIABLE_SET = VariableSet.createVariableSet(intArrayType(100));
     private static final Function[] FUNCTIONS = createDefaultFunctions();
 
     public static void assertVariable(int expectedId, Node node) {
@@ -106,10 +106,10 @@ public class TestUtils {
     private static Function[] createDefaultFunctions() {
         List<Function> functions = new ArrayList<>();
 
-        functions.add(IntegerUtils.the.getAdd());
-        functions.add(IntegerUtils.the.getSubtract());
-        functions.add(IntegerUtils.the.getMultiply());
-        functions.add(IntegerUtils.the.getDivide());
+        functions.add(IntFunc.the.getAdd());
+        functions.add(IntFunc.the.getSubtract());
+        functions.add(IntFunc.the.getMultiply());
+        functions.add(IntFunc.the.getDivide());
 
         functions.add(LessThan.create(integerType()));
         functions.add(LessThanOrEqual.create(integerType()));
@@ -177,20 +177,20 @@ public class TestUtils {
     }
 
     public static void assertRankedCandidate(RankedCandidate actual, Node expectedNode, double expectedFitness) {
-        assertSame(expectedNode, actual.getNode());
-        assertEquals(expectedFitness, actual.getFitness(), 0.001f);
+        assertSame(expectedNode, actual.node);
+        assertEquals(expectedFitness, actual.fitness, 0.001f);
     }
 
     public static void assertNodeEquals(String expected, Node actual) {
         assertEquals(expected, writeNode(actual));
     }
 
-    public static RankedCandidates singletonRankedCandidates() {
+    public static Candidates singletonRankedCandidates() {
         return singletonRankedCandidates(1);
     }
 
-    public static RankedCandidates singletonRankedCandidates(double fitness) {
-        return new RankedCandidates(new RankedCandidate[]{new RankedCandidate(mockNode(), fitness)});
+    public static Candidates singletonRankedCandidates(double fitness) {
+        return new Candidates(new RankedCandidate[]{new RankedCandidate(mockNode(), fitness)});
     }
 
     public static Node mockNode() {

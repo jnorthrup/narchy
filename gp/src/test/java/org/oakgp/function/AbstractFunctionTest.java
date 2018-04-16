@@ -33,10 +33,10 @@ import java.util.Observer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.node.NodeType.isFunction;
-import static org.oakgp.util.Utils.createIntegerTypeArray;
+import static org.oakgp.util.Utils.intArrayType;
 
 public abstract class AbstractFunctionTest {
-    private static final Type[] DEFAULT_VARIABLE_TYPES = createIntegerTypeArray(100);
+    private static final Type[] DEFAULT_VARIABLE_TYPES = intArrayType(100);
 
     private final Function[] functions;
     /**
@@ -215,9 +215,9 @@ public abstract class AbstractFunctionTest {
         }
 
         private void assertSameArgumentTypes(Arguments args, Signature signature) {
-            assertEquals(args.args(), signature.size());
+            assertEquals(args.length(), signature.size());
             for (int i = 0; i < signature.size(); i++) {
-                assertSame(args.arg(i).returnType(), signature.argType(i));
+                assertSame(args.get(i).returnType(), signature.argType(i));
             }
         }
 

@@ -48,8 +48,8 @@ public class TicTacToeSystemTest {
                 new GetPossibleMove("side", Board::getFreeSide), new GetWinningMove(), new GetAnyMove(), new OrElse(MOVE_TYPE)};
         TwoPlayerGame game = createTicTacToeGame();
 
-        new Evolution().returning(MOVE_TYPE).setConstants().setVariables(VARIABLE_TYPES).setFunctions(functions).setTwoPlayerGame(game)
-                .setInitialPopulationSize(INITIAL_POPULATION_SIZE).setTreeDepth(INITIAL_POPULATION_MAX_DEPTH).setMaxGenerations(NUM_GENERATIONS).get();
+        new Evolution().returns(MOVE_TYPE).constants().variables(VARIABLE_TYPES).functions(functions).setTwoPlayerGame(game)
+                .population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH).setMaxGenerations(NUM_GENERATIONS).get();
     }
 
     @Test
@@ -58,8 +58,8 @@ public class TicTacToeSystemTest {
         ConstantNode[] constants = getMoveConstants();
         TwoPlayerGame game = createTicTacToeGame();
 
-        new Evolution().returning(MOVE_TYPE).setConstants(constants).setVariables(VARIABLE_TYPES).setFunctions(functions).setTwoPlayerGame(game)
-                .setInitialPopulationSize(INITIAL_POPULATION_SIZE).setTreeDepth(INITIAL_POPULATION_MAX_DEPTH).setMaxGenerations(NUM_GENERATIONS).get();
+        new Evolution().returns(MOVE_TYPE).constants(constants).variables(VARIABLE_TYPES).functions(functions).setTwoPlayerGame(game)
+                .population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH).setMaxGenerations(NUM_GENERATIONS).get();
     }
 
     @Test
@@ -68,13 +68,13 @@ public class TicTacToeSystemTest {
         ConstantNode[] constants = getMoveConstants();
         TicTacToeFitnessFunction fitnessFunction = new TicTacToeFitnessFunction();
 
-        new Evolution().returning(MOVE_TYPE).setConstants(constants).setVariables(VARIABLE_TYPES).setFunctions(functions)
-                .setFitness(fitnessFunction).setInitialPopulationSize(INITIAL_POPULATION_SIZE).setTreeDepth(INITIAL_POPULATION_MAX_DEPTH)
+        new Evolution().returns(MOVE_TYPE).constants(constants).variables(VARIABLE_TYPES).functions(functions)
+                .goal(fitnessFunction).population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH)
                 .setMaxGenerations(NUM_GENERATIONS).get();
     }
 
     private ConstantNode[] getMoveConstants() {
-        return Utils.createEnumConstants(Move.class, POSSIBLE_MOVE);
+        return Utils.enumConsts(Move.class, POSSIBLE_MOVE);
     }
 
     private TwoPlayerGame createTicTacToeGame() {

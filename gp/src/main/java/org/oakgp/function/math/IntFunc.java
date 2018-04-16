@@ -20,16 +20,16 @@ import static org.oakgp.Type.integerType;
 /**
  * Provides support for working with instances of {@code java.lang.Integer}.
  */
-public final class IntegerUtils extends NumberUtils<Integer> {
+public final class IntFunc extends NumFunc<Integer> {
     /**
      * Singleton instance.
      */
-    public static final IntegerUtils the = new IntegerUtils();
+    public static final IntFunc the = new IntFunc();
 
     /**
      * @see #the
      */
-    private IntegerUtils() {
+    private IntFunc() {
         super(integerType(), 0, 1, 2);
     }
 

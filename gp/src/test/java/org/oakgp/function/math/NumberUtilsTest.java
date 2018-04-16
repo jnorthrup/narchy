@@ -25,7 +25,7 @@ import static org.oakgp.TestUtils.*;
 import static org.oakgp.Type.integerType;
 
 public class NumberUtilsTest {
-    private static final IntegerUtils NUMBER_UTILS = IntegerUtils.the;
+    private static final IntFunc NUMBER_UTILS = IntFunc.the;
 
     @Test
     public void testNegate() {

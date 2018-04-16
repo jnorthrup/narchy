@@ -22,7 +22,7 @@ import java.math.BigInteger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BigIntegerUtilsTest {
-    private static final NumberUtils<BigInteger> UTILS = BigIntegerUtils.the;
+    private static final NumFunc<BigInteger> UTILS = BigIntegerFunc.the;
 
     @Test
     public void testAdd() {

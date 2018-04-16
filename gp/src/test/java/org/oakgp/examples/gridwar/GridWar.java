@@ -18,7 +18,7 @@ package org.oakgp.examples.gridwar;
 import org.oakgp.Assignments;
 import org.oakgp.node.Node;
 import org.oakgp.rank.tournament.TwoPlayerGame;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 /**
  * Game engine for Grid War.
@@ -45,9 +45,9 @@ class GridWar implements TwoPlayerGame {
      * The reward assigned to both players of a drawn game.
      */
     private static final int NO_WINNER = 0;
-    private final Random random;
+    private final GPRandom random;
 
-    GridWar(Random random) {
+    GridWar(GPRandom random) {
         this.random = random;
     }
 

@@ -17,8 +17,8 @@ package org.oakgp.util;
 
 import static java.util.Objects.requireNonNull;
 
-public class DummyRandom implements Random {
-    public static final Random EMPTY = new DummyRandom();
+public class DummyRandom implements GPRandom {
+    public static final GPRandom EMPTY = new DummyRandom();
 
     private final DummyValuesQueue<Boolean> booleans;
     private final DummyValuesQueue<Double> doubles;

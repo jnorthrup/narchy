@@ -22,16 +22,16 @@ import static org.oakgp.Type.bigDecimalType;
 /**
  * Provides support for working with instances of {@code java.math.BigDecimal}.
  */
-public final class BigDecimalUtils extends NumberUtils<BigDecimal> {
+public final class BigDecimalFunc extends NumFunc<BigDecimal> {
     /**
      * Singleton instance.
      */
-    public static final BigDecimalUtils the = new BigDecimalUtils();
+    public static final BigDecimalFunc the = new BigDecimalFunc();
 
     /**
      * @see #the
      */
-    private BigDecimalUtils() {
+    private BigDecimalFunc() {
         super(bigDecimalType(), BigDecimal.ZERO, BigDecimal.ONE, BigDecimal.valueOf(2));
     }
 

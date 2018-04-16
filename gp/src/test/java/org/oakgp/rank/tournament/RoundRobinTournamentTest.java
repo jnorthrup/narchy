@@ -18,7 +18,7 @@ package org.oakgp.rank.tournament;
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
 import org.oakgp.rank.GenerationRanker;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +45,7 @@ public class RoundRobinTournamentTest {
 
         // invoke rank method
         GenerationRanker tournament = new RoundRobinTournament(mockGame);
-        RankedCandidates output = tournament.rank(input);
+        Candidates output = tournament.rank(input);
 
         // assert output
         assertRankedCandidate(output.get(0), a, 2);

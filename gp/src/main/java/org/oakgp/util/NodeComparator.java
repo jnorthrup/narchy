@@ -15,6 +15,8 @@
  */
 package org.oakgp.util;
 
+import org.oakgp.node.ConstantNode;
+import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
@@ -29,7 +31,6 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
      * Singleton instance.
      */
     public static final NodeComparator NODE_COMPARATOR = new NodeComparator();
-    private static final long serialVersionUID = 1L;
 
     /**
      * Private constructor to force use of {@link #notify()}.
@@ -40,7 +41,7 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
 
     @Override
     public int compare(Node o1, Node o2) {
-        if (o1 == o2)
+        if (o1.equals(o2))
             return 0;
 
         NodeType t1 = o1.nodeType();
@@ -48,19 +49,26 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
 
         if (t1 == t2) {
             int i = o1.returnType().compareTo(o2.returnType());
-            if (i == 0) {
-                int i1 = o1.hashCode();
-                int i2 = o2.hashCode();
-                if (i1 == i2) {
-                    return 0;
-                } else if (i1 < i2) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            } else {
-                return i;
+            if (i != 0) return i;
+
+            int iDepth = Integer.compare(o1.depth(), o2.depth());
+            if (iDepth!=0) return iDepth;
+
+            if (t1 == NodeType.CONSTANT) {
+                ConstantNode c1 = (ConstantNode) o1;
+                ConstantNode c2 = (ConstantNode) o2;
+                int ii = c1.type.compareTo(c2.type);
+                if (ii!=0) return ii;
+                else return compareValue(c1.value, ((ConstantNode)o2).value);
+            } else if (t1 == NodeType.FUNCTION) {
+                FunctionNode f1 = (FunctionNode)o1;
+                FunctionNode f2 = (FunctionNode)o2;
+                ///...
             }
+
+            //last option
+            return o1.toString().compareTo(o2.toString());  //HACK
+
         } else if (t1 == NodeType.CONSTANT) {
             return -1;
         } else if (t2 == NodeType.CONSTANT) {
@@ -71,6 +79,16 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
             return -1;
         } else {
             throw new IllegalStateException();
+        }
+    }
+
+    static private int compareValue(Object x, Object y) {
+        if (x instanceof Comparable) {
+            return ((Comparable)x).compareTo(y);
+        } else {
+            int i = Integer.compare(x.hashCode(), y.hashCode());
+            if (i!=0) return i;
+            return x.toString().compareTo(y.toString());
         }
     }
 }

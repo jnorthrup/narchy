@@ -75,7 +75,7 @@ public class NLPGen {
 
                         final String[] result = {null};
 
-                        Unify u = new Unify(VAR_PATTERN, terminal.random(), Param.UnificationStackMax, terminal.matchTTLmean.intValue()) {
+                        Unify u = new Unify(VAR_PATTERN, terminal.random(), Param.UnificationStackMax, terminal.deriveTTL.intValue()) {
 
                             @Override
                             public void tryMatch() {

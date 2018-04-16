@@ -79,6 +79,8 @@ public class Tasklinks {
         //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
 //        float effectiveness = priEffect / priCause;
 //        if (effectiveness >= Param.TASK_ACTIVATION_THRESHOLD)
+
+
             nar.eventTask.emit(t);
 
             return link;

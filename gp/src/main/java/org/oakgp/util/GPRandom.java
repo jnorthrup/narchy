@@ -21,7 +21,7 @@ package org.oakgp.util;
  * This interface is used by the framework (rather than directly using the {@code java.util.Random} concrete class) in order to provide support for different
  * approaches to generating random numbers. e.g. There may be a requirement to use a hardware random number generator.
  */
-public interface Random {
+public interface GPRandom {
     /**
      * Returns a {@code int} value between 0 (inclusive) and the specified value (exclusive).
      *
@@ -36,6 +36,10 @@ public interface Random {
      * @return a {@code double} value in the range {@code 0.0d} (inclusive) to {@code 1.0d} (exclusive)
      */
     double nextDouble();
+
+    default float nextFloat() {
+        return (float)nextDouble();
+    }
 
     /**
      * Returns a {@code boolean} value.

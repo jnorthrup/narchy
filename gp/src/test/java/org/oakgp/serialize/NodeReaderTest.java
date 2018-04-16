@@ -199,7 +199,7 @@ public class NodeReaderTest {
 
     @Test
     public void testFunctionNodeWithFunctionNodeArguments() {
-        assertParseFunction("(+ (- v0 587) (* 43 v1))");
+        assertParseFunction("(+ (* 43 v1) (- v0 587))");
     }
 
     @Test

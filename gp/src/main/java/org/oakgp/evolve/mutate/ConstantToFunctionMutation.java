@@ -21,13 +21,13 @@ import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 import org.oakgp.node.walk.StrategyWalk;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 /**
  * Replaces a randomly selected terminal node of the parent with a newly generated subtree.
  */
 public final class ConstantToFunctionMutation implements GeneticOperator {
-    private final Random random;
+    private final GPRandom random;
     private final TreeGenerator treeGenerator;
 
     /**
@@ -36,7 +36,7 @@ public final class ConstantToFunctionMutation implements GeneticOperator {
      * @param random        used to randomly select terminal nodes to mutate
      * @param treeGenerator used to generate new subtrees to replace terminal nodes selected for mutation
      */
-    public ConstantToFunctionMutation(Random random, TreeGenerator treeGenerator) {
+    public ConstantToFunctionMutation(GPRandom random, TreeGenerator treeGenerator) {
         this.random = random;
         this.treeGenerator = treeGenerator;
     }

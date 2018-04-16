@@ -101,9 +101,25 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             if (a == null) {
                 return b;
             } else {
-                return (Revision.eviInteg(a, start, end, 1) >
-                        Revision.eviInteg(b, start, end, 1)) ?
-                        a : b;
+                boolean ae = a.isEternal();
+                boolean be = b.isEternal();
+                if (!ae && !be) {
+                    return (Revision.eviInteg(a, start, end, 1) >=
+                            Revision.eviInteg(b, start, end, 1)) ?
+                            a : b;
+                } else if (ae && be) {
+                    return a.evi() >= b.evi() ? a : b;
+                } else {
+                    //compare eternal vs. temporal
+                    if (start == ETERNAL) {
+                        //prefer the eternal result
+                        return ae ? a : b;
+                    } else {
+                        //prefer the temporal result
+                        return ae ? b : a;
+                    }
+
+                }
             }
         }
     }
@@ -1128,7 +1144,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         area += evi(last, dur) / 2;
         for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
             long ti = times[i];
-            assert (ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
+            if (!(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]))
+                throw new RuntimeException("invalid time point for evi integration");
             area += evi(ti, dur);
         }
 

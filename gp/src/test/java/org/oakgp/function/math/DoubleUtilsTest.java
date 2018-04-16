@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DoubleUtilsTest {
-    private static final NumberUtils<Double> UTILS = DoubleUtils.the;
+    private static final NumFunc<Double> UTILS = DoubleFunc.the;
 
     @Test
     public void testAdd() {

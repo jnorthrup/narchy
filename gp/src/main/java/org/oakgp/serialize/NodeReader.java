@@ -82,8 +82,8 @@ public final class NodeReader implements Closeable {
     public NodeReader(String input, Function[] functions, ConstantNode[] constants, VariableSet variableSet) {
         StringReader sr = new StringReader(input);
         this.cr = new CharReader(new BufferedReader(sr));
-        this.functions = copyOf(functions);
-        this.constants = copyOf(constants);
+        this.functions = functions.clone();
+        this.constants = constants.clone();
         this.variableSet = variableSet;
         this.readers = createReaders();
     }
@@ -292,8 +292,10 @@ public final class NodeReader implements Closeable {
             arguments.add(n);
             types.add(n.returnType());
         }
-        Function function = getFunction(functionName, types);
-        return new FunctionNode(function, new Arguments(arguments));
+        Function f = getFunction(functionName, types);
+        return new FunctionNode(
+                f,
+                Arguments.get(f, arguments));
     }
 
     private Function getFunction(String functionName, List<Type> types) {

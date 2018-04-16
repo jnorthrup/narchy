@@ -84,7 +84,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
     public final LongHashSet filterCyclic() {
         filter();
 
-        sortThisByFloat(tc -> -tc.eviInteg); //descending by strength
+        sortThisByFloat(tc -> -tc.evi); //descending by strength
         //TODO maybe factor in originality to reduce overlap so evidence can be combined better
 
         //remove the weaker holder of any overlapping evidence
@@ -186,8 +186,8 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Term finalFirst = first;
             Term finalSecond = second;
-            float e1 = (float) sumOfFloat(x -> x.task.term().equals(finalFirst) ? x.eviInteg : 0);
-            float e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.eviInteg : 0);
+            float e1 = (float) sumOfFloat(x -> x.task.term().equals(finalFirst) ? x.evi : 0);
+            float e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.evi : 0);
             float firstProp = e1 / (e1 + e2);
             Term term = Revision.intermpolate(first, second, firstProp, nar);
 
@@ -259,7 +259,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         /**
          * NaN if not yet computed
          */
-        public float eviInteg = NaN;
+        public float evi = NaN;
         public float freq = NaN;
 
         TaskComponent(Task task) {
@@ -268,7 +268,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
         @Override
         public String toString() {
-            return eviInteg + "," + freq + "=" + task;
+            return evi + "," + freq + "=" + task;
         }
 
         public boolean isComputed() {
@@ -283,18 +283,18 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         public final TaskComponent update(long start, long end, int dur) {
             if (!isComputed()) {
                 float eTotal =
-                        Revision.eviInteg(task, start, end, dur);
+                        Revision.eviAvg(task, start, end, dur);
 
                 if (eTotal < Float.MIN_NORMAL) {
-                    this.eviInteg = -1;
+                    this.evi = -1;
                     return null; //no evidence; remove
                 } else {
                     this.freq = task.freq();
-                    this.eviInteg = eTotal;
+                    this.evi = eTotal;
                     return this;
                 }
             } else {
-                return this.eviInteg > 0 ? this : null;
+                return this.evi > 0 ? this : null;
             }
 
 

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.oakgp.TestUtils.*;
 import static org.oakgp.Type.integerType;
-import static org.oakgp.function.math.IntegerUtils.the;
+import static org.oakgp.function.math.IntFunc.the;
 
 public class FunctionNodeTest {
     @Test
@@ -52,7 +52,7 @@ public class FunctionNodeTest {
         FunctionNode functionNode = new FunctionNode(function, arguments);
 
         assertSame(function, functionNode.func());
-        assertSame(arguments, functionNode.args());
+        assertEquals(arguments, functionNode.args());
 
         Assignments assignments = new Assignments(3);
         assertEquals(126, functionNode.eval(assignments));
@@ -213,9 +213,9 @@ public class FunctionNodeTest {
 
         FunctionNode n = new FunctionNode(mock(Function.class), args);
 
-        assertEquals(args.length, n.args().args());
+        assertEquals(args.length, n.args().length());
         for (int i = 0; i < args.length; i++) {
-            assertSame(args[i], n.args().arg(i));
+            assertSame(args[i], n.args().get(i));
         }
     }
 

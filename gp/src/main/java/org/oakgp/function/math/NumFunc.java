@@ -30,7 +30,7 @@ import static org.oakgp.node.NodeType.isFunction;
  *
  * @param <T> the type this instance is concerned with; this will commonly be (but is not limited to) a sub-class of {@code java.lang.Number}
  */
-abstract class NumberUtils<T extends Comparable<T>> {
+abstract class NumFunc<T extends Comparable<T>> {
 
     public final Type type;
     public final T rawZero;
@@ -53,7 +53,7 @@ abstract class NumberUtils<T extends Comparable<T>> {
      * @param one  the value {@code 1} of type {@link #T}
      * @param two  the value {@code 2} of type {@link #T}
      */
-    protected NumberUtils(Type type, T zero, T one, T two) {
+    protected NumFunc(Type type, T zero, T one, T two) {
         this.type = type;
         this.rawZero = zero;
         this.rawOne = one;
@@ -113,34 +113,6 @@ abstract class NumberUtils<T extends Comparable<T>> {
     }
 
     /**
-     * Returns true if the given {@code Node} is a {@code ConstantNode} with the value {@code 0} of type {@link #T}.
-     */
-    public final boolean isZero(Node n) {
-        return zero.equals(n);
-    }
-
-    /**
-     * Returns true if the given {@code Node} is a {@code ConstantNode} with the value {@code 1} of type {@link #T}.
-     */
-    public final boolean isOne(Node n) {
-        return one.equals(n);
-    }
-
-    /**
-     * Returns a {@code ConstantNode} with the value {@code 0} of type {@link #T}.
-     */
-    public final ConstantNode zero() {
-        return zero;
-    }
-
-    /**
-     * Returns a {@code ConstantNode} with the value {@code 1} of type {@link #T}.
-     */
-    public final ConstantNode one() {
-        return one;
-    }
-
-    /**
      * Returns the result of adding the result of evaluating the given {@code Node}s with the given {@code Assignments}.
      */
     public final ConstantNode add(Node n1, Node n2, Assignments assignments) {
@@ -192,6 +164,8 @@ abstract class NumberUtils<T extends Comparable<T>> {
      * @return {@code n1} - {@code n2}
      */
     public final ConstantNode subtract(Node n1, Node n2) {
+        if (n1.equals(n2))
+            return zero;
         return subtract(n1, n2, null);
     }
 

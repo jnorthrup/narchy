@@ -21,7 +21,7 @@ import org.oakgp.evolve.GenerationEvolver;
 import org.oakgp.node.Node;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -36,12 +36,12 @@ public class RunnerTest {
         // Create mock objects to pass as arguments to process method of Runner
         GenerationRanker ranker = mock(GenerationRanker.class);
         GenerationEvolver evolver = mock(GenerationEvolver.class);
-        Predicate<RankedCandidates> terminator = mock(Predicate.class);
+        Predicate<Candidates> terminator = mock(Predicate.class);
         Collection<Node> initialPopulation = mock(Collection.class);
 
         RankedCandidate expected = EvolutionTest.createRunExpectations(ranker, evolver, terminator, initialPopulation);
 
-        RankedCandidates output = Evolution.process(ranker, evolver, terminator, initialPopulation);
+        Candidates output = Evolution.process(ranker, evolver, terminator, initialPopulation);
         RankedCandidate actual = output.best();
 
         // confirm output matches expected behaviour

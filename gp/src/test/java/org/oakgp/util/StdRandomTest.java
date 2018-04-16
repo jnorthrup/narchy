@@ -23,7 +23,7 @@ public class StdRandomTest {
     @Test
     public void test() {
         int seed = 0;
-        Random adapter = new StdRandom(seed);
+        GPRandom adapter = new StdRandom(seed);
         java.util.Random javaUtilRandom = new java.util.Random(seed);
 
         assertEquals(javaUtilRandom.nextInt(5), adapter.nextInt(5));

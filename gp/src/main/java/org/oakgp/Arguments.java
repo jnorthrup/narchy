@@ -15,21 +15,21 @@
  */
 package org.oakgp;
 
+import org.oakgp.function.Function;
 import org.oakgp.node.Node;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.oakgp.util.Utils.copyOf;
 
 /**
  * Represents the arguments of a function.
  * <p>
  * Immutable.
  */
-public final class Arguments {
+public class Arguments {
     private final Node[] args;
     private final int hashCode;
+    public final int depth;
 
     /**
      * @see #createArguments(Node...)
@@ -37,21 +37,77 @@ public final class Arguments {
     public Arguments(Node... args) {
         this.args = args;
         this.hashCode = Arrays.hashCode(args);
+        this.depth = calcDepth(args);
+    }
+
+    public static Arguments get(Function f, Node... aa) {
+        if (aa.length > 1 && f.argsSorted()) {
+            aa = aa.clone();
+            Arrays.sort(aa);
+            return new SortedArguments(aa);
+        } else {
+            return new Arguments(aa);
+        }
+    }
+
+    public static Arguments get(Function f, List<Node> a) {
+        if (f.argsSorted() && a.size() > 1) {
+            Node[] aa = a.toArray(new Node[0]);
+            Arrays.sort(aa);
+            return new SortedArguments(aa);
+        } else {
+            return new Arguments(a);
+        }
+
+    }
+
+    public Arguments sorted() {
+        if (length() < 2)
+            return this;
+
+        Node[] a = args.clone();
+        Arrays.sort(a);
+        if (Arrays.equals(args, a))
+            return new SortedArguments(args); //no change, already sorted
+        else
+            return new SortedArguments(a);
+    }
+
+    public static class SortedArguments extends Arguments {
+
+        SortedArguments(Node[] knownToBeSorted) {
+            super(knownToBeSorted);
+        }
+
+        @Override
+        public Arguments sorted() {
+            return this;
+        }
     }
 
     public Arguments(List<? extends Node> args) {
         this(args.toArray(new Node[args.size()]));
     }
 
+    static int calcDepth(Node[] arguments) {
+        int height = 0;
+        int n = arguments.length;
+        for (int i = 0; i < n; i++) {
+            height = Math.max(height, arguments[i].depth());
+        }
+        return height + 1;
+    }
+
+
     /**
      * Returns the {@code Node} at the specified position in this {@code Arguments}.
      *
-     * @param index index of the element to return
+     * @param arg index of the element to return
      * @return the {@code Node} at the specified position in this {@code Arguments}
      * @throws ArrayIndexOutOfBoundsException if the index is out of range (<tt>index &lt; 0 || index &gt;= getArgCount()</tt>)
      */
-    public Node arg(int index) {
-        return args[index];
+    public Node get(int arg) {
+        return args[arg];
     }
 
     /**
@@ -80,7 +136,7 @@ public final class Arguments {
      *
      * @return the number of elements in this {@code Arguments}
      */
-    public int args() {
+    public final int length() {
         return args.length;
     }
 
@@ -92,7 +148,9 @@ public final class Arguments {
      * @return A new {@code Arguments} derived from this {@code Arguments} by replacing the element at position {@code index} with {@code replacement}.
      */
     public Arguments replaceAt(int index, Node replacement) {
-        Node[] clone = copyOf(args);
+        if (args[index].equals(replacement))
+            return this;
+        Node[] clone = args.clone();
         clone[index] = replacement;
         return new Arguments(clone);
     }
@@ -105,24 +163,30 @@ public final class Arguments {
      * @return A new {@code Arguments} resulting from switching the node located at index {@code index1} with the node located at index {@code index2}.
      */
     public Arguments swap(int index1, int index2) {
-        Node[] clone = copyOf(args);
+        if (index1==index2)
+            return this;
+        Node[] clone = args.clone();
         clone[index1] = args[index2];
         clone[index2] = args[index1];
         return new Arguments(clone);
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return hashCode;
     }
 
     @Override
-    public boolean equals(Object o) {
-        return this ==o || (o instanceof Arguments && Arrays.equals(this.args, ((Arguments) o).args));
+    public final boolean equals(Object o) {
+        return this == o  ||
+                (hashCode == o.hashCode() &&
+                (o instanceof Arguments && Arrays.equals(this.args, ((Arguments) o).args)));
     }
 
     @Override
     public String toString() {
         return Arrays.toString(args);
     }
+
+
 }

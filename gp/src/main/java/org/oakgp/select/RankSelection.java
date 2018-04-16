@@ -16,23 +16,22 @@
 package org.oakgp.select;
 
 import org.oakgp.node.Node;
-import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
-import org.oakgp.util.Random;
+import org.oakgp.rank.Candidates;
+import org.oakgp.util.GPRandom;
 
 /**
  * The <i>relative</i> fitness of candidates is used to determine the probability that they will be selected.
  */
 public final class RankSelection implements NodeSelector {
-    private final Random random;
-    private final RankedCandidates candidates;
+    private final GPRandom random;
+    private final Candidates candidates;
     private final int size;
     private final double sum;
 
     /**
      * Creates a {@code RankSelection} that uses the given {@code Random} to select from the given {@code RankedCandidates}.
      */
-    public RankSelection(Random random, RankedCandidates candidates) {
+    public RankSelection(GPRandom random, Candidates candidates) {
         this.random = random;
         this.candidates = candidates;
         this.size = candidates.size();
@@ -45,16 +44,15 @@ public final class RankSelection implements NodeSelector {
 
     @Override
     public Node next() {
-        final double r = random.nextDouble();
+        final double r = random.nextFloat();
         double p = 0;
         for (int i = 0; i < size; i++) {
             p += (size - i) / sum;
             if (r < p) {
-                RankedCandidate c = candidates.get(i);
-                return c.getNode();
+                return candidates.get(i).node;
             }
         }
         // should only get here if rounding error - default to selecting the best candidate
-        return candidates.best().getNode();
+        return candidates.best().node;
     }
 }

@@ -51,7 +51,7 @@ public enum Utils { ;
      * @param e the enum that the {@code ConstantNode} instances should wrap
      * @param t the {@code Type} that should be associated with the {@code ConstantNode} instances
      */
-    public static ConstantNode[] createEnumConstants(Class<? extends Enum<?>> e, Type t) {
+    public static ConstantNode[] enumConsts(Class<? extends Enum<?>> e, Type t) {
         Enum<?>[] enumConstants = e.getEnumConstants();
         ConstantNode[] constants = new ConstantNode[enumConstants.length];
         for (int i = 0; i < enumConstants.length; i++) {
@@ -66,14 +66,14 @@ public enum Utils { ;
      * @param minInclusive the minimum value (inclusive) to be represented by a {@code ConstantNode} in the returned array
      * @param maxInclusive the minimum value (inclusive) to be represented by a {@code ConstantNode} in the returned array
      */
-    public static ConstantNode[] createIntegerConstants(int minInclusive, int maxInclusive) {
+    public static ConstantNode[] intConsts(int minInclusive, int maxInclusive) {
         ConstantNode[] constants = new ConstantNode[maxInclusive - minInclusive + 1];
         for (int n = minInclusive, i = 0; n <= maxInclusive; i++, n++) {
             constants[i] = new ConstantNode(n, integerType());
         }
         return constants;
     }
-    public static ConstantNode[] createDoubleConstants(int minInclusive, int maxInclusive) {
+    public static ConstantNode[] doubleConsts(int minInclusive, int maxInclusive) {
         ConstantNode[] constants = new ConstantNode[maxInclusive - minInclusive + 1];
         for (int n = minInclusive, i = 0; n <= maxInclusive; i++, n++) {
             constants[i] = new ConstantNode((double)n, doubleType());
@@ -84,7 +84,7 @@ public enum Utils { ;
     /**
      * Creates an array of the specified size and assigns the result of {@link Type#integerType()} to each element.
      */
-    public static Type[] createIntegerTypeArray(int size) {
+    public static Type[] intArrayType(int size) {
         Type[] array = new Type[size];
         Type type = integerType();
         Arrays.fill(array, type);
@@ -122,7 +122,7 @@ public enum Utils { ;
     /**
      * Returns randomly selected index of a node from the specified tree.
      */
-    public static int selectSubNodeIndex(Random random, Node tree) {
+    public static int selectSubNodeIndex(GPRandom random, Node tree) {
         int nodeCount = tree.size();
         if (nodeCount == 1) {
             // will get here if and only if 'tree' is a terminal (i.e. variable or constant) rather than a function node
@@ -135,16 +135,9 @@ public enum Utils { ;
     /**
      * Returns a int value between 0 (inclusive) and the specified {@code nodeCount} value minus 1 (exclusive).
      */
-    public static int selectSubNodeIndex(Random random, int nodeCount) {
+    public static int selectSubNodeIndex(GPRandom random, int nodeCount) {
         // Note: -1 to avoid selecting root node
         return random.nextInt(nodeCount - 1);
     }
 
-    /**
-     * Returns a copy of the specified array.
-     */
-    public static <T> T[] copyOf(T[] original) {
-        return original.clone();
-        //return Arrays.copyOf(original, original.length);
-    }
 }

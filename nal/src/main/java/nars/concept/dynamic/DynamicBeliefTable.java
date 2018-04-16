@@ -137,7 +137,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
             return x;
 
         //choose highest confidence
-        Top<Task> top = new Top<>(t->Revision.eviInteg(t, start, end, 1));
+        Top<Task> top = new Top<>(t->Revision.eviAvg(t, start, end, 1));
 
         if (x.term().equals(y.term()) && !Stamp.overlapping(x, y)) {
             //try to revise

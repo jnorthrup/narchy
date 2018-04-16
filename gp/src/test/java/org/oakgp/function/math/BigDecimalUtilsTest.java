@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BigDecimalUtilsTest {
-    private static final NumberUtils<BigDecimal> UTILS = BigDecimalUtils.the;
+    private static final NumFunc<BigDecimal> UTILS = BigDecimalFunc.the;
 
     @Test
     public void testAdd() {

@@ -45,8 +45,8 @@ public final class DepthWalk {
             int total = treeWalkerStrategy.test(node, currentDepth) ? 1 : 0;
             FunctionNode functionNode = (FunctionNode) node;
             Arguments arguments = functionNode.args();
-            for (int i = 0; i < arguments.args(); i++) {
-                total += getNodeCount(arguments.arg(i), treeWalkerStrategy, currentDepth + 1);
+            for (int i = 0; i < arguments.length(); i++) {
+                total += getNodeCount(arguments.get(i), treeWalkerStrategy, currentDepth + 1);
             }
             return total;
         } else {
@@ -68,8 +68,8 @@ public final class DepthWalk {
                 int total = 0;
                 FunctionNode functionNode = (FunctionNode) current;
                 Arguments arguments = functionNode.args();
-                for (int i = 0; i < arguments.args(); i++) {
-                    Node child = arguments.arg(i);
+                for (int i = 0; i < arguments.length(); i++) {
+                    Node child = arguments.get(i);
                     int c = getNodeCount(child, treeWalkerStrategy, currentDepth + 1);
                     if (total + c > index) {
                         currentDepth = currentDepth + 1;
@@ -104,12 +104,17 @@ public final class DepthWalk {
         if (NodeType.isFunction(current)) {
             int total = 0;
             FunctionNode functionNode = (FunctionNode) current;
-            Arguments arguments = functionNode.args();
-            for (int i = 0; i < arguments.args(); i++) {
-                Node child = arguments.arg(i);
+            Arguments args = functionNode.args();
+            int n = args.length();
+            for (int i = 0; i < n; i++) {
+                Node child = args.get(i);
                 int c = child.size();
                 if (total + c > index) {
-                    return new FunctionNode(functionNode.func(), arguments.replaceAt(i, replaceAt(child, index - total, replacement, currentDepth + 1)));
+                    Arguments newArgs = args.replaceAt(i, replaceAt(child, index - total, replacement, currentDepth + 1));
+                    if (newArgs.equals(args))
+                        return functionNode; //no change
+                    else
+                        return new FunctionNode(functionNode.func(), newArgs);
                 } else {
                     total += c;
                 }

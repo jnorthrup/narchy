@@ -40,7 +40,7 @@ public final class Count implements Function {
     @Override
     public Object evaluate(Arguments arguments, Assignments assignments) {
         Arguments a = arguments.firstArg().eval(assignments);
-        return a.args();
+        return a.length();
     }
 
     @Override

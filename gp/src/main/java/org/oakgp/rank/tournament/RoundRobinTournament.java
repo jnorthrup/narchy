@@ -18,7 +18,7 @@ package org.oakgp.rank.tournament;
 import org.oakgp.node.Node;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,17 +36,17 @@ public final class RoundRobinTournament implements GenerationRanker {
         this.game = game;
     }
 
-    private static RankedCandidates toRankedCandidates(Node[] input, double[] fitness) {
+    private static Candidates toRankedCandidates(Node[] input, double[] fitness) {
         int size = fitness.length;
         RankedCandidate[] output = new RankedCandidate[size];
         for (int i = 0; i < size; i++) {
             output[i] = new RankedCandidate(input[i], fitness[i]);
         }
-        return new RankedCandidates(output, Collections.reverseOrder());
+        return new Candidates(output, Collections.reverseOrder());
     }
 
     @Override
-    public RankedCandidates rank(Collection<Node> input) {
+    public Candidates rank(Collection<Node> input) {
         Node[] inputAsArray = input.toArray(new Node[input.size()]);
         double[] fitness = evaluateFitness(inputAsArray);
         return toRankedCandidates(inputAsArray, fitness);

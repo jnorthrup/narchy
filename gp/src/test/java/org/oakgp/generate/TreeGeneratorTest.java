@@ -30,7 +30,7 @@ import static org.oakgp.TestUtils.assertNodeEquals;
 import static org.oakgp.TestUtils.integerConstant;
 import static org.oakgp.Type.integerType;
 import static org.oakgp.Type.type;
-import static org.oakgp.function.math.IntegerUtils.the;
+import static org.oakgp.function.math.IntFunc.the;
 import static org.oakgp.util.DummyRandom.random;
 
 public class TreeGeneratorTest {
@@ -47,7 +47,7 @@ public class TreeGeneratorTest {
         PrimitiveSet p = createPrimitiveSet();
         TreeGenerator g = TreeGeneratorImpl.grow(p, random().setBooleans(true, true, false, true, true, true, false).build());
         Node result = g.generate(integerType(), 3);
-        assertNodeEquals("(+ (+ 1 (+ 2 3)) (+ (+ 4 5) 6))", result);
+        assertNodeEquals("(+ (+ 1 (+ 2 3)) (+ 6 (+ 4 5)))", result);
     }
 
     /**

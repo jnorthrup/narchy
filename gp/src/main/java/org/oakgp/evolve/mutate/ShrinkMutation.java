@@ -21,7 +21,7 @@ import org.oakgp.node.NodeType;
 import org.oakgp.node.walk.StrategyWalk;
 import org.oakgp.primitive.PrimitiveSet;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
 
 /**
@@ -30,7 +30,7 @@ import org.oakgp.util.Utils;
  * The resulting offspring will be smaller than the parent.
  */
 public final class ShrinkMutation implements GeneticOperator {
-    private final Random random;
+    private final GPRandom random;
     private final PrimitiveSet primitiveSet;
 
     /**
@@ -39,7 +39,7 @@ public final class ShrinkMutation implements GeneticOperator {
      * @param random       used to randomly select function nodes
      * @param primitiveSet used to select terminal nodes to replace function nodes with
      */
-    public ShrinkMutation(Random random, PrimitiveSet primitiveSet) {
+    public ShrinkMutation(GPRandom random, PrimitiveSet primitiveSet) {
         this.random = random;
         this.primitiveSet = primitiveSet;
     }

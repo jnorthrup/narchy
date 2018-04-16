@@ -23,21 +23,24 @@ import org.oakgp.node.Node;
  * Performs division.
  */
 final class Divide extends ArithmeticOperator {
-    private final NumberUtils<?> numberUtils;
+    private final NumFunc<?> numberUtils;
 
 
     /**
-     * @see NumberUtils#getDivide()
+     * @see NumFunc#getDivide()
      */
-    Divide(NumberUtils<?> numberUtils) {
+    Divide(NumFunc<?> numberUtils) {
         super(numberUtils.getType());
         this.numberUtils = numberUtils;
     }
 
     @Override
     protected Object evaluate(Node arg1, Node arg2, Assignments assignments) {
-        if (numberUtils.isZero(arg2)) {
-            return numberUtils.one().eval(null);
+        if (numberUtils.one.equals(arg2))
+            return arg1.eval(assignments);
+
+        if (numberUtils.zero.equals(arg2)) {
+            return numberUtils.one.eval(null);
         } else {
             return numberUtils.divide(arg1, arg2, assignments).eval(null);
         }
@@ -46,9 +49,9 @@ final class Divide extends ArithmeticOperator {
     @Override
     public Node simplify(Arguments arguments) {
         Node arg2 = arguments.secondArg();
-        if (numberUtils.isZero(arg2)) {
-            return numberUtils.one();
-        } else if (numberUtils.isOne(arg2)) {
+        if (numberUtils.zero.equals(arg2)) {
+            return numberUtils.one;
+        } else if (numberUtils.one.equals(arg2)) {
             return arguments.firstArg();
         } else if (numberUtils.minusOne.equals(arg2)) {
             return numberUtils.negate(arguments.firstArg());

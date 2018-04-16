@@ -26,7 +26,7 @@ import static org.oakgp.Type.integerType;
 public class DivideTest extends AbstractFunctionTest {
     @Override
     protected Divide getFunction() {
-        return IntegerUtils.the.getDivide();
+        return IntFunc.the.getDivide();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class DivideTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntegerUtils.the.getSubtract(), LongUtils.the.getDivide(), DoubleUtils.the.getDivide(),
-                BigIntegerUtils.the.getDivide(), BigDecimalUtils.the.getDivide()};
+        return new Function[]{getFunction(), IntFunc.the.getSubtract(), LongFunc.the.getDivide(), DoubleFunc.the.getDivide(),
+                BigIntegerFunc.the.getDivide(), BigDecimalFunc.the.getDivide()};
     }
 }

@@ -26,7 +26,7 @@ import static org.oakgp.Type.integerType;
 public class MultiplyTest extends AbstractFunctionTest {
     @Override
     protected Multiply getFunction() {
-        return IntegerUtils.the.getMultiply();
+        return IntFunc.the.getMultiply();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class MultiplyTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntegerUtils.the.getAdd(), IntegerUtils.the.getSubtract(), LongUtils.the.getMultiply(),
-                DoubleUtils.the.getMultiply(), BigIntegerUtils.the.getMultiply(), BigDecimalUtils.the.getMultiply()};
+        return new Function[]{getFunction(), IntFunc.the.getAdd(), IntFunc.the.getSubtract(), LongFunc.the.getMultiply(),
+                DoubleFunc.the.getMultiply(), BigIntegerFunc.the.getMultiply(), BigDecimalFunc.the.getMultiply()};
     }
 }

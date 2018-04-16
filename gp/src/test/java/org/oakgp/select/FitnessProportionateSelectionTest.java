@@ -17,9 +17,9 @@ package org.oakgp.select;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 import org.oakgp.util.DummyRandom;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 import java.util.Collections;
 
@@ -32,25 +32,25 @@ public class FitnessProportionateSelectionTest {
         RankedCandidate c1 = new RankedCandidate(integerConstant(1), 4);
         RankedCandidate c2 = new RankedCandidate(integerConstant(2), 2);
         RankedCandidate c3 = new RankedCandidate(integerConstant(3), 1);
-        RankedCandidates candidates = new RankedCandidates(new RankedCandidate[]{c1, c2, c3}, Collections.reverseOrder());
+        Candidates candidates = new Candidates(new RankedCandidate[]{c1, c2, c3}, Collections.reverseOrder());
 
         DummyRandom r = new DummyRandom(.0, .57, .58, .85, .86, .999, .25, .65, .93);
         NodeSelector s = createFitnessProportionateSelection(r, candidates);
 
-        assertEquals(c1.getNode(), s.next());
-        assertEquals(c1.getNode(), s.next());
-        assertEquals(c2.getNode(), s.next());
-        assertEquals(c2.getNode(), s.next());
-        assertEquals(c3.getNode(), s.next());
-        assertEquals(c3.getNode(), s.next());
-        assertEquals(c1.getNode(), s.next());
-        assertEquals(c2.getNode(), s.next());
-        assertEquals(c3.getNode(), s.next());
+        assertEquals(c1.node, s.next());
+        assertEquals(c1.node, s.next());
+        assertEquals(c2.node, s.next());
+        assertEquals(c2.node, s.next());
+        assertEquals(c3.node, s.next());
+        assertEquals(c3.node, s.next());
+        assertEquals(c1.node, s.next());
+        assertEquals(c2.node, s.next());
+        assertEquals(c3.node, s.next());
 
         r.assertEmpty();
     }
 
-    private FitnessProportionateSelection createFitnessProportionateSelection(Random random, RankedCandidates candidates) {
+    private FitnessProportionateSelection createFitnessProportionateSelection(GPRandom random, Candidates candidates) {
         FitnessProportionateSelectionFactory f = new FitnessProportionateSelectionFactory(random);
         return f.getSelector(candidates);
     }

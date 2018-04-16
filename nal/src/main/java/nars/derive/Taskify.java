@@ -100,7 +100,7 @@ public class Taskify extends AbstractPred<Derivation> {
         float priority = d.deriver.prioritize.pri(t, d);
         if (priority != priority) {
             d.nar.emotion.deriveFailPrioritize.increment();
-            return spam(d, Param.TTL_DERIVE_TASK_PRIORITIZE);
+            return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
         t.priSet(priority);

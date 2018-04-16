@@ -21,7 +21,7 @@ import org.oakgp.function.Function;
 import org.oakgp.function.Signature;
 import org.oakgp.function.compare.GreaterThan;
 import org.oakgp.function.compare.LessThan;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -76,7 +76,7 @@ public class IfTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntegerUtils.the.getAdd(), IntegerUtils.the.getMultiply(), LessThan.create(integerType()),
+        return new Function[]{getFunction(), IntFunc.the.getAdd(), IntFunc.the.getMultiply(), LessThan.create(integerType()),
                 new GreaterThan(integerType())};
     }
 }

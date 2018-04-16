@@ -147,10 +147,6 @@ public abstract class Param {
     public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.0001f;
     public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0002f;
 
-    /**
-     * 'time to live', unification steps until unification is stopped
-     */
-    public final IntRange matchTTLmean = new IntRange(800, 0, 1024);
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */
@@ -185,15 +181,22 @@ public abstract class Param {
         return new long[] {from, to};
     }
 
+    /**
+     * 'time to live', unification steps until unification is stopped
+     */
+    public final IntRange deriveTTL = new IntRange(128, 0, 1024);
+
+
+    /** estimate */
     public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +
-                    Param.TTL_DERIVE_TASK_SUCCESS;
+                    Param.TTL_DERIVE_TASK_SUCCESS + (Param.TTL_BRANCH * 2);
 
     /**
      * cost of attempting a unification
      */
     @Range(min=0, max=64)
-    public static int TTL_UNIFY = 2;
+    public static int TTL_UNIFY = 1;
 
     @Range(min=0, max=64)
     public static final int TTL_BRANCH = 1;
@@ -202,38 +205,38 @@ public abstract class Param {
      * cost of executing a termute permutation
      */
     @Range(min=0, max=64)
-    public static int TTL_MUTATE = 2;
+    public static int TTL_MUTATE = 1;
 
     /**
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 15;
+    public static int TTL_DERIVE_TASK_SUCCESS = 5;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_REPEAT = 42;
+    public static int TTL_DERIVE_TASK_REPEAT = 5;
 
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_PRIORITIZE = 42;
+    public static int TTL_DERIVE_TASK_UNPRIORITIZABLE = 5;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SAME = 30;
+    public static int TTL_DERIVE_TASK_SAME = 5;
 
     /** cost of having insufficient evidence (according to NAR's confMin param) to derive task */
     @Range(min=0, max=64)
-    public static int TTL_EVI_INSUFFICIENT = 10;
+    public static int TTL_EVI_INSUFFICIENT = 3;
 
     /**
      * cost of a failed/aborted task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_FAIL = 28;
+    public static int TTL_DERIVE_TASK_FAIL = 5;
 
     //    /**
 //     * number between 0 and 1 controlling the proportion of activation going

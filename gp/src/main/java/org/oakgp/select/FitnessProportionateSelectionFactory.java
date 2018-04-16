@@ -15,24 +15,24 @@
  */
 package org.oakgp.select;
 
-import org.oakgp.rank.RankedCandidates;
-import org.oakgp.util.Random;
+import org.oakgp.rank.Candidates;
+import org.oakgp.util.GPRandom;
 
 /**
  * Returns instances of {@code FitnessProportionateSelection}.
  */
 public final class FitnessProportionateSelectionFactory implements NodeSelectorFactory {
-    private final Random random;
+    private final GPRandom random;
 
     /**
      * Creates a {@code FitnessProportionateSelectionFactory} that creates {@code FitnessProportionateSelection} instances that use the given {@code Random}.
      */
-    public FitnessProportionateSelectionFactory(Random random) {
+    public FitnessProportionateSelectionFactory(GPRandom random) {
         this.random = random;
     }
 
     @Override
-    public FitnessProportionateSelection getSelector(RankedCandidates candidates) {
+    public FitnessProportionateSelection getSelector(Candidates candidates) {
         return new FitnessProportionateSelection(random, candidates);
     }
 }

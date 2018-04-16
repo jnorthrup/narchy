@@ -16,7 +16,7 @@
 package org.oakgp.evolve;
 
 import org.oakgp.node.Node;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 import org.oakgp.select.NodeSelector;
 import org.oakgp.select.NodeSelectorFactory;
 import org.oakgp.util.NodeSet;
@@ -41,7 +41,7 @@ public final class GenerationEvolverImpl implements GenerationEvolver {
      * @param elitismSize     the number of best candidates from an existing generation to automatically include "as-is" in the next generation
      * @param selectorFactory used to select candidates from an existing generation to be used as a basis for evolving candidates for the next generation
      * @param operators       the genetic operators to be used to evolve new candidates where the key = a genetic operator and the value = the number of times that genetic
-     *                        operator should be applied during each single invocation of {@link #evolve(RankedCandidates)}
+     *                        operator should be applied during each single invocation of {@link #evolve(Candidates)}
      */
     public GenerationEvolverImpl(int elitismSize, NodeSelectorFactory selectorFactory, Map<GeneticOperator, Integer> operators) {
         this.elitismSize = elitismSize;
@@ -56,13 +56,13 @@ public final class GenerationEvolverImpl implements GenerationEvolver {
      * @return a new generation of {@code Node} instances evolved from the existing generation specified by {@code oldGeneration}
      */
     @Override
-    public Collection<Node> evolve(RankedCandidates oldGeneration) {
+    public Collection<Node> evolve(Candidates oldGeneration) {
         NodeSelector selector = selectorFactory.getSelector(oldGeneration);
         Set<Node> newGeneration = new NodeSet();
 
         final int elitismSizeForGeneration = min(elitismSize, oldGeneration.size());
         for (int i = 0; i < elitismSizeForGeneration; i++) {
-            newGeneration.add(oldGeneration.get(i).getNode());
+            newGeneration.add(oldGeneration.get(i).node);
         }
 
         for (Map.Entry<GeneticOperator, Integer> e : operators.entrySet()) {

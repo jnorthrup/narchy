@@ -22,7 +22,7 @@ import org.oakgp.primitive.DummyPrimitiveSet;
 import org.oakgp.primitive.PrimitiveSet;
 import org.oakgp.select.DummyNodeSelector;
 import org.oakgp.util.DummyRandom;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.oakgp.TestUtils.*;
@@ -74,7 +74,7 @@ public class ShrinkMutationTest {
         random.assertEmpty();
     }
 
-    private Node shrinkMutate(Random random, PrimitiveSet primitiveSet, Node input) {
+    private Node shrinkMutate(GPRandom random, PrimitiveSet primitiveSet, Node input) {
         DummyNodeSelector selector = new DummyNodeSelector(input);
         Node result = new ShrinkMutation(random, primitiveSet).evolve(selector);
         selector.assertEmpty();

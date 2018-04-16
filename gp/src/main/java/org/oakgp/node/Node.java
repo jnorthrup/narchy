@@ -18,10 +18,13 @@ package org.oakgp.node;
 import org.oakgp.Assignments;
 import org.oakgp.Type;
 
+import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
+
 /**
  * A node represents a single point of a tree structure.
  */
-public interface Node {
+public interface Node extends Comparable<Node> {
+
     /**
      * Returns the result of evaluating this {@code Node} using the values of the specified {@code Assignments}.
      *
@@ -55,4 +58,12 @@ public interface Node {
      * This can be used to determine if the node is a function, constant or variable node.
      */
     NodeType nodeType();
+
+    /** default impl: not entirely */
+    @Override default int compareTo(Node o) {
+        return NODE_COMPARATOR.compare(this, o);
+    }
+
+
+
 }

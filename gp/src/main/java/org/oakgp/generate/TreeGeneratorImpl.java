@@ -21,7 +21,7 @@ import org.oakgp.function.Signature;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.primitive.PrimitiveSet;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 import java.util.Objects;
 import java.util.function.IntPredicate;
@@ -32,7 +32,7 @@ import java.util.function.IntPredicate;
  * Can be used to create randomly generate the initial population of a genetic programming run.
  *
  * @see #full(PrimitiveSet)
- * @see #grow(PrimitiveSet, Random)
+ * @see #grow(PrimitiveSet, GPRandom)
  */
 public final class TreeGeneratorImpl implements TreeGenerator {
     private final PrimitiveSet primitiveSet;
@@ -40,7 +40,7 @@ public final class TreeGeneratorImpl implements TreeGenerator {
 
     /**
      * @see #full(PrimitiveSet)
-     * @see #grow(PrimitiveSet, Random)
+     * @see #grow(PrimitiveSet, GPRandom)
      */
     private TreeGeneratorImpl(PrimitiveSet primitiveSet, IntPredicate strategy) {
         Objects.requireNonNull(primitiveSet);
@@ -69,7 +69,7 @@ public final class TreeGeneratorImpl implements TreeGenerator {
      * @param random       used to randomly determine the structure of the generated trees
      * @return a {@code TreeGenerator} that uses the "grow" approach to creating trees.
      */
-    public static TreeGenerator grow(PrimitiveSet primitiveSet, Random random) {
+    public static TreeGenerator grow(PrimitiveSet primitiveSet, GPRandom random) {
         return new TreeGeneratorImpl(primitiveSet, d -> d > 0 && random.nextBoolean());
     }
 

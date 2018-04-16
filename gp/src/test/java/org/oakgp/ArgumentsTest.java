@@ -138,7 +138,7 @@ public class ArgumentsTest {
 
     private void assertArrayIndexOutOfBoundsException(Arguments arguments, int index) {
         try {
-            arguments.arg(index);
+            arguments.get(index);
             fail("");
         } catch (ArrayIndexOutOfBoundsException e) {
             // expected
@@ -146,16 +146,16 @@ public class ArgumentsTest {
     }
 
     /**
-     * tests {@link Arguments#args()}, {@link Arguments#arg(int)}, {@link Arguments#firstArg()}, {@link Arguments#secondArg()},
+     * tests {@link Arguments#length()}, {@link Arguments#get(int)}, {@link Arguments#firstArg()}, {@link Arguments#secondArg()},
      * {@link Arguments#thirdArg()}
      */
     private void assertArguments(Arguments actual, Node... expected) {
-        assertEquals(expected.length, actual.args());
+        assertEquals(expected.length, actual.length());
         assertSame(expected[0], actual.firstArg());
         assertSame(expected[1], actual.secondArg());
         assertSame(expected[2], actual.thirdArg());
         for (int i = 0; i < expected.length; i++) {
-            assertSame(expected[i], actual.arg(i));
+            assertSame(expected[i], actual.get(i));
         }
     }
 }

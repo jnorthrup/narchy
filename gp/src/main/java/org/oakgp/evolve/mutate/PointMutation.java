@@ -22,7 +22,7 @@ import org.oakgp.node.Node;
 import org.oakgp.node.walk.NodeWalk;
 import org.oakgp.primitive.PrimitiveSet;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
 
 import static org.oakgp.node.NodeType.isFunction;
@@ -37,7 +37,7 @@ import static org.oakgp.node.NodeType.isFunction;
  * </p>
  */
 public final class PointMutation implements GeneticOperator {
-    private final Random random;
+    private final GPRandom random;
     private final PrimitiveSet primitiveSet;
 
     /**
@@ -46,7 +46,7 @@ public final class PointMutation implements GeneticOperator {
      * @param random       used to randomly select nodes to mutate
      * @param primitiveSet used to select replacements for nodes selected for mutation
      */
-    public PointMutation(Random random, PrimitiveSet primitiveSet) {
+    public PointMutation(GPRandom random, PrimitiveSet primitiveSet) {
         this.random = random;
         this.primitiveSet = primitiveSet;
     }

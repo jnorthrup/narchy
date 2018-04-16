@@ -26,7 +26,7 @@ import org.oakgp.node.Node;
 import org.oakgp.primitive.DummyPrimitiveSet;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -41,20 +41,20 @@ import static org.oakgp.TestUtils.singletonRankedCandidates;
 
 public class EvolutionTest {
     private static final DummyPrimitiveSet DUMMY_PRIMITIVE_SET = new DummyPrimitiveSet();
-    private static final Random DUMMY_RANDOM = DummyRandom.EMPTY;
+    private static final GPRandom DUMMY_RANDOM = DummyRandom.EMPTY;
     private static final Type RETURN_TYPE = Type.type("runBuilderTest");
 
     @SuppressWarnings("unchecked")
-    static RankedCandidate createRunExpectations(GenerationRanker ranker, GenerationEvolver evolver, Predicate<RankedCandidates> terminator,
+    static RankedCandidate createRunExpectations(GenerationRanker ranker, GenerationEvolver evolver, Predicate<Candidates> terminator,
                                                  Collection<Node> initialPopulation) {
         // create mock objects used in processing
-        RankedCandidates rankedInitialPopulation = singletonRankedCandidates();
+        Candidates rankedInitialPopulation = singletonRankedCandidates();
         Collection<Node> secondGeneration = mock(Collection.class);
-        RankedCandidates rankedSecondGeneration = singletonRankedCandidates();
+        Candidates rankedSecondGeneration = singletonRankedCandidates();
         Collection<Node> thirdGeneration = mock(Collection.class);
-        RankedCandidates rankedThirdGeneration = singletonRankedCandidates();
+        Candidates rankedThirdGeneration = singletonRankedCandidates();
         Collection<Node> fourthGeneration = mock(Collection.class);
-        RankedCandidates rankedFourthGeneration = singletonRankedCandidates();
+        Candidates rankedFourthGeneration = singletonRankedCandidates();
 
         // expectations for initial population
         when(ranker.rank(initialPopulation)).thenReturn(rankedInitialPopulation);
@@ -81,7 +81,7 @@ public class EvolutionTest {
         // Create mock objects to pass as arguments to process method of Runner
         GenerationRanker ranker = mock(GenerationRanker.class);
         GenerationEvolver evolver = mock(GenerationEvolver.class);
-        Predicate<RankedCandidates> terminator = mock(Predicate.class);
+        Predicate<Candidates> terminator = mock(Predicate.class);
         Collection<Node> initialPopulation = mock(Collection.class);
 
         Function<Config, Collection<Node>> initialPopulationCreator = c -> {
@@ -99,7 +99,7 @@ public class EvolutionTest {
 
         RankedCandidate expected = createRunExpectations(ranker, evolver, terminator, initialPopulation);
 
-        RankedCandidates output = new Evolution().returning(RETURN_TYPE).setRandom(DUMMY_RANDOM).setPrimitiveSet(DUMMY_PRIMITIVE_SET)
+        Candidates output = new Evolution().returns(RETURN_TYPE).setRandom(DUMMY_RANDOM).setPrimitiveSet(DUMMY_PRIMITIVE_SET)
                 .ranked(ranker).setInitialPopulation(initialPopulationCreator).setGenerationEvolver(generationEvolverCreator)
                 .setTerminator(terminator).get();
         RankedCandidate actual = output.best();
@@ -111,18 +111,18 @@ public class EvolutionTest {
     @Test
     public void testInvalidPopulationSize() {
         InitialPopulationSetter setter = createInitialPopulationSetter();
-        assertInvalidSizes(setter::setInitialPopulationSize);
+        assertInvalidSizes(setter::population);
     }
 
     @Test
     public void testInvalidTreeDepth() {
-        TreeDepthSetter setter = createInitialPopulationSetter().setInitialPopulationSize(1000);
-        assertInvalidSizes(setter::setTreeDepth);
+        TreeDepthSetter setter = createInitialPopulationSetter().population(1000);
+        assertInvalidSizes(setter::depth);
     }
 
     private InitialPopulationSetter createInitialPopulationSetter() {
         GenerationRanker ranker = mock(GenerationRanker.class);
-        return new Evolution().returning(RETURN_TYPE).setRandom(DUMMY_RANDOM).setPrimitiveSet(DUMMY_PRIMITIVE_SET).ranked(ranker);
+        return new Evolution().returns(RETURN_TYPE).setRandom(DUMMY_RANDOM).setPrimitiveSet(DUMMY_PRIMITIVE_SET).ranked(ranker);
     }
 
     private void assertInvalidSizes(IntFunction<?> setter) {

@@ -20,6 +20,7 @@ import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
+import org.oakgp.util.NodeSimplifier;
 
 import java.util.Optional;
 
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.*;
 
 public class ArithmeticExpressionSimplifierTest {
-    private static final ArithmeticExpressionSimplifier SIMPLIFIER = IntegerUtils.the.getSimplifier();
+    private static final ArithmeticExpressionSimplifier SIMPLIFIER = IntFunc.the.getSimplifier();
 
     @Test
     public void testCombineWithChildNodes() {
@@ -91,36 +92,36 @@ public class ArithmeticExpressionSimplifierTest {
 
     @Test
     public void testSimplify() {
-        assertSimplify("(+ 1 1)", "(+ 1 1)");
-        assertSimplify("(- 1 1)", "(- 1 1)");
+        assertSimplify("(+ 1 1)", "2");
+        assertSimplify("(- 1 1)", "0");
 
         assertAdditionSimplification("v0", "(+ 1 v0)", "(+ 1 (* 2 v0))");
 
-        assertAdditionSimplification("v0", "(+ v1 (+ v1 (+ v0 9)))", "(+ v1 (+ v1 (+ (* 2 v0) 9)))");
+        assertAdditionSimplification("v0", "(+ v1 (+ v1 (+ v0 9)))", "(+ (* 2 v1) (+ 9 (* 2 v0)))");
 
-        assertAdditionSimplification("v1", "(+ v1 (+ v1 (+ v0 9)))", "(+ (* 2 v1) (+ v1 (+ v0 9)))");
+        assertAdditionSimplification("v1", "(+ v1 (+ v1 (+ v0 9)))", "(+ (+ 9 v0) (* 3 v1))");
 
         assertAdditionSimplification("v0", "(* 1 v0)", "(* 2 v0)");
 
-        assertSimplify("(- 1 1)", "(- 1 1)");
+        assertSimplify("(- 1 1)", "0");
 
-        assertSimplify("(+ v0 (- 1 v0))", "(- 1 0)");
+        assertSimplify("(+ v0 (- 1 v0))", "1");
 
         assertSimplify("(- v0 (- v1 (- v0 9)))", "(- 0 (- v1 (- (* 2 v0) 9)))");
         assertSimplify("(- v0 (- v1 (- v1 (- v0 9))))", "(- 0 (- v1 (- v1 (- 0 9))))");
 
-        assertAdditionSimplification("9", "(+ v0 3)", "(+ v0 12)");
+        assertAdditionSimplification("9", "(+ v0 3)", "(+ 12 v0)");
 
         assertAdditionSimplification("9", "(- v0 3)", "(- v0 -6)");
 
         assertSimplify("(- 4 (- v1 (- v0 9)))", "(- 0 (- v1 (- v0 5)))");
-        assertSimplify("(- 4 (- v1 (+ v0 9)))", "(- 0 (- v1 (+ v0 13)))");
+        assertSimplify("(- 4 (- v1 (+ v0 9)))", "(- 0 (- v1 (+ 13 v0)))");
 
         assertSimplify("(- (+ 4 v0) 3)", "(+ 1 v0)");
         assertSimplify("(- (- v0 1) v1)", "(- (- v0 1) v1)");
 
-        assertSimplify("(- (- v0 1) (- v0 1))", "(- (- 0 0) (- 1 1))");
-        assertSimplify("(- (+ v0 1) (+ v0 1))", "(- (+ 0 0) (+ -1 1))");
+        assertSimplify("(- (- v0 1) (- v0 1))", "0");
+        assertSimplify("(- (+ v0 1) (+ v0 1))", "0");
         assertSimplify("(+ (- v0 1) (- v0 1))", "(+ (- 0 0) (- (* 2 v0) 2))");
         assertSimplify("(+ (+ v0 1) (+ v0 1))", "(+ (+ 0 0) (+ (* 2 v0) 2))");
         assertSimplify("(- (+ v0 1) (- v0 1))", "(- (+ 0 0) (- -1 1))");
@@ -133,7 +134,7 @@ public class ArithmeticExpressionSimplifierTest {
     private void assertSimplify(String input, String expectedOutput) {
         FunctionNode in = readFunctionNode(input);
         Arguments args = in.args();
-        Node simplifiedVersion = simplify(in, args).orElse(in);
+        Node simplifiedVersion = NodeSimplifier.simplify(in); //simplify(in, args).orElse(in);
         assertNodeEquals(expectedOutput, simplifiedVersion);
         if (!simplifiedVersion.equals(in)) {
             int[][] assignedValues = {{0, 0}, {1, 21}, {2, 14}, {3, -6}, {7, 3}, {-1, 9}, {-7, 0}};

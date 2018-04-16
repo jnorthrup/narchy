@@ -25,14 +25,14 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.mockNode;
 
-public class RankedCandidatesTest {
+public class CandidatesTest {
     private final RankedCandidate element1 = new RankedCandidate(mockNode(), -7);
     private final RankedCandidate element2 = new RankedCandidate(mockNode(), -2.25);
     private final RankedCandidate element3 = new RankedCandidate(mockNode(), 0);
     private final RankedCandidate element4 = new RankedCandidate(mockNode(), 1);
     private final RankedCandidate element5 = new RankedCandidate(mockNode(), 785.5);
     private final RankedCandidate[] input = {element5, element3, element1, element2, element4};
-    private final RankedCandidates rankedCandidates = new RankedCandidates(input);
+    private final Candidates rankedCandidates = new Candidates(input);
 
     @Test
     public void testSize() {
@@ -92,8 +92,8 @@ public class RankedCandidatesTest {
 
     @Test
     public void testCustomComparator() {
-        RankedCandidates defaultOrderedCandidates = new RankedCandidates(input);
-        RankedCandidates reverseOrderedCandidates = new RankedCandidates(input, Collections.reverseOrder());
+        Candidates defaultOrderedCandidates = new Candidates(input);
+        Candidates reverseOrderedCandidates = new Candidates(input, Collections.reverseOrder());
         assertEquals(5, defaultOrderedCandidates.size());
         assertEquals(5, reverseOrderedCandidates.size());
         assertSame(defaultOrderedCandidates.get(0), reverseOrderedCandidates.get(4));
@@ -105,22 +105,22 @@ public class RankedCandidatesTest {
 
     @Test
     public void testBest() {
-        RankedCandidates defaultOrderedCandidates = new RankedCandidates(input);
-        RankedCandidates reverseOrderedCandidates = new RankedCandidates(input, Collections.reverseOrder());
+        Candidates defaultOrderedCandidates = new Candidates(input);
+        Candidates reverseOrderedCandidates = new Candidates(input, Collections.reverseOrder());
         assertSame(element1, defaultOrderedCandidates.best());
         assertSame(element5, reverseOrderedCandidates.best());
     }
 
     @Test
     public void testStream() {
-        assertEquals("[-7.0, -2.25, 0.0, 1.0, 785.5]", rankedCandidates.stream().map(c -> c.getFitness()).collect(toList()).toString());
+        assertEquals("[-7.0, -2.25, 0.0, 1.0, 785.5]", rankedCandidates.stream().map(c -> c.fitness).collect(toList()).toString());
     }
 
     @Test
     public void testImmutable() {
         // test that making subsequent changes to the array given to the constructor does not alter the RandedCandidate
         final RankedCandidate[] input = {element3, element1, element2};
-        final RankedCandidates rankedCandidates = new RankedCandidates(input);
+        final Candidates rankedCandidates = new Candidates(input);
         input[0] = element4;
         input[1] = element5;
         input[2] = element1;
@@ -137,7 +137,7 @@ public class RankedCandidatesTest {
         assertArrayIndexOutOfBoundsException(rankedCandidates, Integer.MAX_VALUE);
     }
 
-    private void assertArrayIndexOutOfBoundsException(RankedCandidates candidates, int index) {
+    private void assertArrayIndexOutOfBoundsException(Candidates candidates, int index) {
         try {
             candidates.get(index);
             fail("");

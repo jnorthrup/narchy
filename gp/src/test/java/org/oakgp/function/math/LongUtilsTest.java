@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LongUtilsTest {
-    private static final NumberUtils<Long> UTILS = LongUtils.the;
+    private static final NumFunc<Long> UTILS = LongFunc.the;
 
     @Test
     public void testAdd() {

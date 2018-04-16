@@ -26,8 +26,8 @@ import java.util.Objects;
  * Return the same value each time is it evaluated.
  */
 public final class ConstantNode extends TerminalNode {
-    private final Object value;
-    private final Type type;
+    public final Object value;
+    public final Type type;
 
     /**
      * Constructs a new {@code ConstantNode} that represents the specified value.
@@ -44,7 +44,7 @@ public final class ConstantNode extends TerminalNode {
      * Returns the value specified when this {@code ConstantNode} was constructed.
      */
     @Override
-    public Object eval(Assignments assignments) {
+    public final Object eval(Assignments assignments) {
         return value;
     }
 
@@ -69,7 +69,8 @@ public final class ConstantNode extends TerminalNode {
             return true;
         } else if (o instanceof ConstantNode) {
             ConstantNode c = (ConstantNode) o;
-            return this.type == c.type && Objects.equals(this.value, c.value);
+            return this.type == c.type &&
+                    Objects.equals(this.value, c.value);
         } else {
             return false;
         }
@@ -79,4 +80,6 @@ public final class ConstantNode extends TerminalNode {
     public String toString() {
         return Objects.toString(value);
     }
+
+
 }

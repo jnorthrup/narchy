@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.*;
-import static org.oakgp.function.math.IntegerUtils.the;
+import static org.oakgp.function.math.IntFunc.the;
 import static org.oakgp.util.Utils.TRUE_NODE;
 
 public class StrategyWalkTest {

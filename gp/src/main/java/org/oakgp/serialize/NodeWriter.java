@@ -80,8 +80,8 @@ public final class NodeWriter {
         Arguments arguments = functionNode.args();
         StringBuilder sb = new StringBuilder();
         sb.append('(').append(function.name());
-        for (int i = 0; i < arguments.args(); i++) {
-            sb.append(' ').append(writeNode(arguments.arg(i)));
+        for (int i = 0; i < arguments.length(); i++) {
+            sb.append(' ').append(writeNode(arguments.get(i)));
         }
         return sb.append(')').toString();
     }
@@ -94,11 +94,11 @@ public final class NodeWriter {
     private String writeArguments(Arguments args) {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
-        for (int i = 0; i < args.args(); i++) {
+        for (int i = 0; i < args.length(); i++) {
             if (i != 0) {
                 sb.append(' ');
             }
-            sb.append(writeNode(args.arg(i)));
+            sb.append(writeNode(args.get(i)));
         }
         return sb.append(']').toString();
     }

@@ -7,8 +7,6 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.time.Tense.ETERNAL;
-
 /**
  * result frequency = linear combination of frequency values weighted by evidence;
  * result evidence = evidence sum
@@ -51,13 +49,13 @@ public class FocusingLinearTruthPolation extends TruthPolation {
         float eviFactor = 1f;
         if (nar!=null) {
             eviFactor *= intermpolate(nar);
-            if (eviFactor < Float.MIN_NORMAL)
+            if (eviFactor < Param.TRUTH_MIN_EVI)
                 return null; //intermpolate failure
         }
 
 
         int s = size();
-        float eInteg, f;
+        float eAvg, f;
         switch (s) {
             case 0: return null;
             case 1: {
@@ -65,8 +63,8 @@ public class FocusingLinearTruthPolation extends TruthPolation {
                 TaskComponent x = update(0);
                 if (x == null)
                     return null; //could have been pre-filtered
-                eInteg = x.eviInteg;
-                if (eInteg < Float.MIN_NORMAL)
+                eAvg = x.evi;
+                if (eAvg < Param.TRUTH_MIN_EVI)
                     return null;
 
                 f = x.freq;
@@ -74,31 +72,31 @@ public class FocusingLinearTruthPolation extends TruthPolation {
             }
             default: {
                 float wFreqSum = 0;
-                eInteg = 0;
+                eAvg = 0;
                 for (int i = 0; i < s; i++) {
                     TaskComponent x = update(i);
                     if (x == null)
                         continue;  //could have been pre-filtered
 
-                    float ee = x.eviInteg;
+                    float ee = x.evi;
 
-                    eInteg += ee;
+                    eAvg += ee;
 //                        float ce = w2cSafe(ee);
 //                        confSum += ce;
                     //wFreqSum += ce * x.freq;
                     wFreqSum += ee * x.freq;
                 }
-                if (eInteg < Float.MIN_NORMAL)
+                if (eAvg < Param.TRUTH_MIN_EVI)
                     return null;
 
                 //f = (wFreqSum / confSum);
-                f = (wFreqSum / eInteg);
+                f = (wFreqSum / eAvg);
                 break;
             }
         }
 
-        long rangeDivisor = start==ETERNAL ? 1 : (end-start+1);
-        float eAvg = eviFactor * eInteg / rangeDivisor;
+
+        eAvg *= eviFactor;
         if (eAvg > Param.TRUTH_MIN_EVI)
             return new PreciseTruth(f, eAvg, false);
         else

@@ -57,21 +57,21 @@ public final class SwitchEnum implements Function {
     public Object evaluate(Arguments arguments, Assignments assignments) {
         Enum<?> input = arguments.firstArg().eval(assignments);
         int index = (input == null ? enumConstants.length : input.ordinal()) + 1;
-        return arguments.arg(index).eval(assignments);
+        return arguments.get(index).eval(assignments);
     }
 
     @Override
     public Node simplify(Arguments arguments) {
         // TODO this is similar to the logic in NodeWalk.replaceAll - is it possible to reuse?
         boolean updated = false;
-        Node[] replacementArgs = new Node[arguments.args()];
+        Node[] replacementArgs = new Node[arguments.length()];
         Node input = arguments.firstArg();
         replacementArgs[0] = input;
-        for (int i = 1; i < arguments.args(); i++) {
-            Node arg = arguments.arg(i);
+        for (int i = 1; i < arguments.length(); i++) {
+            Node arg = arguments.get(i);
             final int idx = i;
             Node replacedArg = NodeWalk.replaceAll(arg, n -> isFunction(n) && ((FunctionNode) n).func() == this, n -> ((FunctionNode) n).args()
-                    .arg(idx));
+                    .get(idx));
             if (arg != replacedArg) {
                 updated = true;
             }

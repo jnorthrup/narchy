@@ -37,10 +37,9 @@ import java.util.stream.Stream;
  */
 public class Deriver extends Causable {
 
-    private static final AtomicInteger serial = new AtomicInteger();
-    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
+    @Deprecated private static final AtomicInteger serial = new AtomicInteger();
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
+    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
     public final DeriveRules rules;
 
@@ -53,19 +52,22 @@ public class Deriver extends Causable {
 
     protected PrioritizeDerivation prioritize = new PrioritizeDerivation.DefaultPrioritizeDerivation();
 
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
+
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 2;
+    public int premisesPerConcept = 4;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
     @Range(min = 1, max = 8)
     public int termLinksPerTaskLink = 2;
 
+    /** max # premises per batch; dont make too large.  allow the reasoner to incrementally digest results */
     @Range(min = 1, max = 1024)
-    public int burstMax = 64;
+    public int burstMax = 32;
 
     public Deriver(NAR nar, String... rules) {
         this(new DeriveRuleSet(nar, rules), nar);
@@ -109,7 +111,7 @@ public class Deriver extends Causable {
 
 
         int matchTTL = Param.TTL_MIN * 2;
-        int deriveTTL = n.matchTTLmean.intValue();
+        int deriveTTL = n.deriveTTL.intValue();
 
 
         int fired = 0;

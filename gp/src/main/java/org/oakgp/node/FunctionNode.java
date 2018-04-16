@@ -15,6 +15,7 @@
  */
 package org.oakgp.node;
 
+import jcog.Util;
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.Type;
@@ -24,19 +25,11 @@ import org.oakgp.function.Function;
  * Contains a function (operator) and the arguments (operands) to apply to it.
  */
 public final class FunctionNode implements Node {
-    /**
-     * A sequence of prime numbers.
-     * <p>
-     * Used to generate the {@code hashCode} value. This is used - rather than calling {@code java.util.Arrays.hashCode(Object a[])} with the node's arguments -
-     * so that, for example, the two expressions {@code (- (- (* -1 v3) 0) (- 13 v1))} and {@code (- (- (* -1 v3) 13) (- 0 v1))} have different hash code values.
-     * See {@code org.oakgp.node.FunctionNodeTest.testHashCode()} for more details.
-     */
-    private static final int[] PRIMES = {2, 3, 5, 7, 11, 13, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
 
     private final Function function;
     private final Arguments arguments;
     private final int nodeCount;
-    private final int hashCode;
+    private final int hash;
 
     /**
      * Constructs a new {@code FunctionNode} with the specified function function and arguments.
@@ -45,7 +38,7 @@ public final class FunctionNode implements Node {
      * @param arguments the arguments (i.e. operands) to apply to {@code function} when evaluating this {@code FunctionNode}
      */
     public FunctionNode(Function function, Node... arguments) {
-        this(function, new Arguments(arguments));
+        this(function, Arguments.get(function, arguments));
     }
 
     /**
@@ -55,30 +48,27 @@ public final class FunctionNode implements Node {
      * @param arguments the arguments (i.e. operands) to apply to {@code function} when evaluating this {@code FunctionNode}
      */
     public FunctionNode(Function function, Arguments arguments) {
+        if (function.argsSorted()) {
+//            if (arguments.length() > 1 && !(arguments instanceof Arguments.SortedArguments)) {
+//                System.err.println("could have been pre-sorted");
+//            }
+            arguments = arguments.sorted();
+        }
+
         this.function = function;
         this.arguments = arguments;
         this.nodeCount = calculateNodeCount(arguments);
-        this.hashCode = (function.getClass().getName().hashCode() * 31) * createHashCode(arguments, nodeCount);
+        //this.hashCode = (function.getClass().getName().hashCode() * 31) * createHashCode(arguments, nodeCount);
+        this.hash = Util.hashCombine(function.getClass().hashCode(), arguments.hashCode());
     }
 
     private static int calculateNodeCount(Arguments arguments) {
         int total = 1;
-        for (int i = 0; i < arguments.args(); i++) {
-            total += arguments.arg(i).size();
+        int n = arguments.length();
+        for (int i = 0; i < n; i++) {
+            total += arguments.get(i).size();
         }
         return total;
-    }
-
-    private static int createHashCode(Arguments arguments, int nodeCount) {
-        int hashCode = 0;
-        int primesIdx = 0;
-        for (int i = 0; i < arguments.args(); i++) {
-            hashCode += arguments.arg(i).hashCode() * (PRIMES[primesIdx] + nodeCount);
-            if (++primesIdx == PRIMES.length) {
-                primesIdx = 0;
-            }
-        }
-        return hashCode;
     }
 
     public Function func() {
@@ -88,6 +78,7 @@ public final class FunctionNode implements Node {
     public Arguments args() {
         return arguments;
     }
+
 
     @SuppressWarnings("unchecked")
     @Override
@@ -102,12 +93,7 @@ public final class FunctionNode implements Node {
 
     @Override
     public int depth() {
-        // TODO it may be beneficial to cache this result on its first call
-        int height = 0;
-        for (int i = 0; i < arguments.args(); i++) {
-            height = Math.max(height, arguments.arg(i).depth());
-        }
-        return height + 1;
+        return arguments.depth;
     }
 
     @Override
@@ -122,14 +108,14 @@ public final class FunctionNode implements Node {
 
     @Override
     public int hashCode() {
-        return hashCode;
+        return hash;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o == null || this.hashCode != o.hashCode()) {
+        } else if (o == null || this.hash != o.hashCode()) {
             return false;
         } else if (o instanceof FunctionNode) {
             FunctionNode fn = (FunctionNode) o;
@@ -142,10 +128,11 @@ public final class FunctionNode implements Node {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(64);
         sb.append('(').append(function.name());
-        for (int i = 0; i < arguments.args(); i++) {
-            sb.append(' ').append(arguments.arg(i));
+        int n = arguments.length();
+        for (int i = 0; i < n; i++) {
+            sb.append(' ').append(arguments.get(i));
         }
         return sb.append(')').toString();
     }

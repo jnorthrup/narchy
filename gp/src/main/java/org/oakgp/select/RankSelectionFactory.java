@@ -15,24 +15,24 @@
  */
 package org.oakgp.select;
 
-import org.oakgp.rank.RankedCandidates;
-import org.oakgp.util.Random;
+import org.oakgp.rank.Candidates;
+import org.oakgp.util.GPRandom;
 
 /**
  * Returns instances of {@code RankSelection}.
  */
 public final class RankSelectionFactory implements NodeSelectorFactory {
-    private final Random random;
+    private final GPRandom random;
 
     /**
      * Creates a {@code RankSelectionFactory} that creates {@code RankSelection} instances that use the given {@code Random}.
      */
-    public RankSelectionFactory(Random random) {
+    public RankSelectionFactory(GPRandom random) {
         this.random = random;
     }
 
     @Override
-    public RankSelection getSelector(RankedCandidates candidates) {
+    public RankSelection getSelector(Candidates candidates) {
         return new RankSelection(random, candidates);
     }
 }

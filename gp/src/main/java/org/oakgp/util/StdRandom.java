@@ -18,7 +18,7 @@ package org.oakgp.util;
 /**
  * Allows a {@code java.util.Random} to be used as a {@code org.oakgp.util.Random}.
  */
-public final class StdRandom implements Random {
+public final class StdRandom implements GPRandom {
     private final java.util.Random random;
 
     /**
@@ -53,6 +53,11 @@ public final class StdRandom implements Random {
     @Override
     public double nextDouble() {
         return random.nextDouble();
+    }
+
+    @Override
+    public float nextFloat() {
+        return random.nextFloat();
     }
 
     @Override

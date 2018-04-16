@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.oakgp.Arguments;
 import org.oakgp.function.classify.IsPositive;
 import org.oakgp.function.hof.Filter;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
@@ -82,16 +82,16 @@ public class NodeWriterTest {
     @Test
     public void testFunctionNode() {
         NodeWriter writer = new NodeWriter();
-        String output = writer.writeNode(new FunctionNode(IntegerUtils.the.getAdd(), integerConstant(5), createVariable(0)));
+        String output = writer.writeNode(new FunctionNode(IntFunc.the.getAdd(), integerConstant(5), createVariable(0)));
         assertEquals("(+ 5 v0)", output);
     }
 
     @Test
     public void testFunctionNodeWithFunctionNodeArguments() {
         NodeWriter writer = new NodeWriter();
-        FunctionNode arg1 = new FunctionNode(IntegerUtils.the.getSubtract(), integerConstant(5), createVariable(0));
-        FunctionNode arg2 = new FunctionNode(IntegerUtils.the.getMultiply(), createVariable(1), integerConstant(-6876));
-        String output = writer.writeNode(new FunctionNode(IntegerUtils.the.getAdd(), arg1, arg2));
+        FunctionNode arg1 = new FunctionNode(IntFunc.the.getSubtract(), integerConstant(5), createVariable(0));
+        FunctionNode arg2 = new FunctionNode(IntFunc.the.getMultiply(), createVariable(1), integerConstant(-6876));
+        String output = writer.writeNode(new FunctionNode(IntFunc.the.getAdd(), arg1, arg2));
         assertEquals("(+ (- 5 v0) (* v1 -6876))", output);
     }
 

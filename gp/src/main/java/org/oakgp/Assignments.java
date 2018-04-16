@@ -15,8 +15,6 @@
  */
 package org.oakgp;
 
-import org.oakgp.util.Utils;
-
 import java.util.Arrays;
 
 /**
@@ -32,7 +30,7 @@ public final class Assignments {
      * @see #createAssignments(Node...)
      */
     public Assignments(Object... assignments) {
-        this.assignments = Utils.copyOf(assignments);
+        this.assignments = assignments.clone();
         this.hashCode = Arrays.hashCode(assignments);
     }
 

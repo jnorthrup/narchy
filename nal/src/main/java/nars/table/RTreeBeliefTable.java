@@ -26,7 +26,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -36,7 +35,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.table.TemporalBeliefTable.value;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -196,13 +196,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
         if (start == ETERNAL) {
-            return RTreeBeliefTable::valueEternal;
+            return RTreeBeliefTable::valueInEternity;
         } else {
             return x -> value(x, start, end, dur);
         }
     }
 
-    private static float valueEternal(Task x) {
+    private static float valueInEternity(Task x) {
         return x.eviEternalized() * x.range();
     }
 
@@ -214,14 +214,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return taskStrength(start, end, dur);
         } else {
             if (start == ETERNAL) {
-                return x -> valueEternal(x) / costDtDiff(template, x, dur);
+                return x -> valueInEternity(x) / costDtDiff(template, x, dur);
             } else {
                 return x -> value(x, start, end, dur) / costDtDiff(template, x, dur);
             }
         }
     }
 
-    private static float costDtDiff(@NotNull Term template, Task x, int dur) {
+    private static float costDtDiff(Term template, Task x, int dur) {
         return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
     }
 

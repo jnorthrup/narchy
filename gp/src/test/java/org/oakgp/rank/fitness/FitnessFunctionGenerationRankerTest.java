@@ -18,7 +18,7 @@ package org.oakgp.rank.fitness;
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
 import org.oakgp.rank.GenerationRanker;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +48,7 @@ public class FitnessFunctionGenerationRankerTest {
 
         // invoke rank method
         GenerationRanker generationRanker = new FitnessFunctionGenerationRanker.SingleThread(mockFitnessFunction);
-        RankedCandidates output = generationRanker.rank(input);
+        Candidates output = generationRanker.rank(input);
 
         // assert output
         assertRankedCandidate(output.get(0), c, cFitness);

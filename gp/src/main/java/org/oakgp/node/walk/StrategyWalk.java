@@ -16,6 +16,7 @@
 package org.oakgp.node.walk;
 
 import org.oakgp.Arguments;
+import org.oakgp.function.Function;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
@@ -43,8 +44,9 @@ public final class StrategyWalk {
         if (NodeType.isFunction(node)) {
             FunctionNode functionNode = (FunctionNode) node;
             Arguments arguments = functionNode.args();
-            for (int i = 0; i < arguments.args(); i++) {
-                total += getNodeCount(arguments.arg(i), treeWalkerStrategy);
+            int n = arguments.length();
+            for (int i = 0; i < n; i++) {
+                total += getNodeCount(arguments.get(i), treeWalkerStrategy);
             }
         }
         return total;
@@ -60,8 +62,8 @@ public final class StrategyWalk {
                 FunctionNode functionNode = (FunctionNode) node;
                 Arguments arguments = functionNode.args();
                 int total = 0;
-                for (int i = 0; i < arguments.args(); i++) {
-                    Node child = arguments.arg(i);
+                for (int i = 0; i < arguments.length(); i++) {
+                    Node child = arguments.get(i);
                     int c = getNodeCount(child, treeWalkerStrategy);
                     if (total + c > index) {
                         index = index - total;
@@ -90,13 +92,16 @@ public final class StrategyWalk {
     public static Node replaceAt(Node node, int index, java.util.function.Function<Node, Node> replacement, Predicate<Node> treeWalkerStrategy) {
         if (NodeType.isFunction(node)) {
             FunctionNode functionNode = (FunctionNode) node;
-            Arguments arguments = functionNode.args();
+            Arguments args = functionNode.args();
             int total = 0;
-            for (int i = 0; i < arguments.args(); i++) {
-                Node child = arguments.arg(i);
+            int n = args.length();
+            for (int i = 0; i < n; i++) {
+                Node child = args.get(i);
                 int c = getNodeCount(child, treeWalkerStrategy);
                 if (total + c > index) {
-                    return new FunctionNode(functionNode.func(), arguments.replaceAt(i, replaceAt(child, index - total, replacement, treeWalkerStrategy)));
+                    Function f = functionNode.func();
+                    return new FunctionNode(f,
+                            args.replaceAt(i, replaceAt(child, index - total, replacement, treeWalkerStrategy)));
                 } else {
                     total += c;
                 }

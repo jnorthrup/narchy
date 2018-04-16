@@ -16,6 +16,7 @@
 package org.oakgp.util;
 
 import org.oakgp.Arguments;
+import org.oakgp.function.Function;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
@@ -99,11 +100,11 @@ public final class NodeSimplifier {
 
         // try to simplify each of the arguments
         Arguments inputArgs = input.args();
-        Node[] simplifiedArgs = new Node[inputArgs.args()];
+        Node[] simplifiedArgs = new Node[inputArgs.length()];
         boolean haveAnyArgumentsBeenSimplified = false;
         boolean areAllArgumentsConstants = true;
         for (int i = 0; i < simplifiedArgs.length; i++) {
-            Node originalArg = inputArgs.arg(i);
+            Node originalArg = inputArgs.get(i);
             simplifiedArgs[i] = simplifyOnce(originalArg);
             if (originalArg != simplifiedArgs[i]) {
                 haveAnyArgumentsBeenSimplified = true;
@@ -116,9 +117,10 @@ public final class NodeSimplifier {
         // if could simplify arguments then use simplified version to create new FunctionNode
         Arguments arguments;
         FunctionNode output;
+        Function f = input.func();
         if (haveAnyArgumentsBeenSimplified) {
-            arguments = new Arguments(simplifiedArgs);
-            output = new FunctionNode(input.func(), arguments);
+            output = new FunctionNode(f, Arguments.get(f, simplifiedArgs));
+            arguments = output.args();
         } else {
             arguments = inputArgs;
             output = input;
@@ -128,12 +130,12 @@ public final class NodeSimplifier {
         // the result of evaluating it will always be the same -
         // so, to avoid unnecessary computation and to reduce bloat,
         // the function node can be replaced with the result of evaluating it
-        if (areAllArgumentsConstants && input.func().isPure()) {
+        if (areAllArgumentsConstants && f.isPure()) {
             return new ConstantNode(output.eval(null), output.returnType());
         }
 
         // try to simplify using function specific logic
-        Node simplifiedByFunctionVersion = input.func().simplify(arguments);
+        Node simplifiedByFunctionVersion = f.simplify(arguments);
         if (simplifiedByFunctionVersion == null) {
             return output;
         } else {

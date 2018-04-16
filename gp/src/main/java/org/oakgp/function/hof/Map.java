@@ -55,11 +55,11 @@ public final class Map implements Function {
         Function f = arguments.firstArg().eval(assignments);
         Type returnType = f.sig().returnType();
         Arguments candidates = arguments.secondArg().eval(assignments);
-        int args = candidates.args();
+        int args = candidates.length();
 
         List<Node> result = new ArrayList<>(args);
         for (int i = 0; i < args; i++) {
-            Node inputNode = candidates.arg(i);
+            Node inputNode = candidates.get(i);
             Object evaluateResult = f.evaluate(new Arguments(inputNode), assignments);
             ConstantNode outputNode = new ConstantNode(evaluateResult, returnType);
             result.add(outputNode);

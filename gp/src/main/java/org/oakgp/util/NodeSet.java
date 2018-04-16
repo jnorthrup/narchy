@@ -17,15 +17,15 @@ package org.oakgp.util;
 
 import org.oakgp.node.Node;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * A {@code java.util.Set} of the simplified versions of {@code Node} instances.
  *
  * @see NodeSimplifier
  */
-public final class NodeSet extends HashSet<Node> {
-    private static final long serialVersionUID = 1L;
+public final class NodeSet extends LinkedHashSet<Node> {
+
 
     /**
      * Adds the simplified version of the specified {@code Node} to this set if it is not already present.
@@ -39,7 +39,12 @@ public final class NodeSet extends HashSet<Node> {
         return super.add(NodeSimplifier.simplify(n));
     }
 
-//    @Override
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException();
+    }
+
+    //    @Override
 //    public boolean addAll(Collection<? extends Node> c) {
 //        return super.addAll(c);
 //    }

@@ -24,7 +24,7 @@ import static org.oakgp.TestUtils.singletonRankedCandidates;
 public class TargetFitnessTerminatorTest {
     @Test
     public void test() {
-        TargetFitnessTerminator t = new TargetFitnessTerminator(c -> c.getFitness() == 0);
+        TargetFitnessTerminator t = new TargetFitnessTerminator(c -> c.fitness == 0);
 
         assertTrue(shouldTerminate(t, 0));
 

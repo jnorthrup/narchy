@@ -18,14 +18,15 @@ package org.oakgp.examples.simple;
 import org.oakgp.Assignments;
 import org.oakgp.Evolution;
 import org.oakgp.Type;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.Node;
-import org.oakgp.rank.RankedCandidates;
-import org.oakgp.rank.fitness.TestDataFitnessFunction;
+import org.oakgp.rank.Candidates;
 import org.oakgp.util.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.oakgp.rank.fitness.TestDataFitnessFunction.createIntegerTestDataFitnessFunction;
 
 /**
  * An example of using symbolic regression to evolve a program that best fits a given data set for the function {@code x2 + x + 1}.
@@ -38,21 +39,23 @@ public class SymbolicRegressionExample {
     public static void main(String[] args) {
 
 
-        RankedCandidates o = new Evolution().returning(Type.integerType())
-                .setConstants(Utils.createIntegerConstants(0, 10)) // the constant set will contain the integers in the range 0-10 inclusive
-                .setVariables(Type.integerType()) // the variable set will contain a single variable - representing the integer value input to the function
-                .setFunctions(
-                        IntegerUtils.the.add,
-                        IntegerUtils.the.subtract,
-                        IntegerUtils.the.multiply
+        Candidates o = new Evolution()
+                .returns(Type.integerType())
+                .constants(Utils.intConsts(0, 10)) // the constant set will contain the integers in the range 0-10 inclusive
+                .variables(Type.integerType()) // the variable set will contain a single variable - representing the integer value input to the function
+                .functions(
+                        IntFunc.the.add,
+                        IntFunc.the.subtract,
+                        IntFunc.the.multiply
                 )
-                .setFitness(TestDataFitnessFunction.createIntegerTestDataFitnessFunction(createDataSet())) // the fitness function will compare candidates against a data set which maps inputs to their expected outputs
-                .setInitialPopulationSize(INITIAL_POPULATION_SIZE).setTreeDepth(INITIAL_POPULATION_MAX_DEPTH)
-                .setTargetFitness(TARGET_FITNESS)
+                .goal(createIntegerTestDataFitnessFunction(createDataSet())) // the fitness function will compare candidates against a data set which maps inputs to their expected outputs
+                .population(INITIAL_POPULATION_SIZE)
+                .depth(INITIAL_POPULATION_MAX_DEPTH)
+                .goalTarget(TARGET_FITNESS)
                 .get();
 
         System.out.println(o);
-        Node best = o.best().getNode();
+        Node best = o.best().node;
         System.out.println(best);
     }
 

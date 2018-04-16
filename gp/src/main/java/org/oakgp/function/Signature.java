@@ -16,7 +16,6 @@
 package org.oakgp.function;
 
 import org.oakgp.Type;
-import org.oakgp.util.Utils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,7 +33,7 @@ public final class Signature {
 
     public Signature(Type returnType, Type... userSuppliedArgumentTypes) {
         this.returnType = returnType;
-        this.argumentTypes = Utils.copyOf(userSuppliedArgumentTypes);
+        this.argumentTypes = userSuppliedArgumentTypes.clone();
         this.hashCode = (returnType.hashCode() * 31) * Arrays.hashCode(argumentTypes);
     }
 

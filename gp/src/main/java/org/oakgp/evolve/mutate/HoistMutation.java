@@ -19,7 +19,7 @@ import org.oakgp.evolve.GeneticOperator;
 import org.oakgp.node.Node;
 import org.oakgp.node.walk.StrategyWalk;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
 
 import java.util.function.Predicate;
@@ -30,12 +30,12 @@ import java.util.function.Predicate;
  * The resulting offspring will be smaller than the parent.
  */
 public final class HoistMutation implements GeneticOperator {
-    private final Random random;
+    private final GPRandom random;
 
     /**
      * Creates a {@code HoistMutation} that uses the given {@code Random} to select subtrees as new offspring.
      */
-    public HoistMutation(Random random) {
+    public HoistMutation(GPRandom random) {
         this.random = random;
     }
 

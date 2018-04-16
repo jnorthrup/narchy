@@ -101,6 +101,14 @@ public interface BeliefTable extends TaskTable {
 
     };
 
+    static float eternalTaskValue(Task eternal) {
+        return eternal.evi();
+    }
+    
+    static float eternalTaskValueWithOriginality(Task eternal) {
+        return eternalTaskValue(eternal) * eternal.originality();
+    }
+
     void setCapacity(int eternals, int temporals);
 
     /**

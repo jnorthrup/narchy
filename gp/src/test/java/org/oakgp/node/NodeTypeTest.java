@@ -17,7 +17,7 @@ package org.oakgp.node;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.TestUtils;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class NodeTypeTest {
     private static final ConstantNode CONSTANT_NODE = TestUtils.integerConstant(7);
     private static final VariableNode VARIABLE_NODE = TestUtils.createVariable(1);
-    private static final FunctionNode FUNCTION_NODE = new FunctionNode(IntegerUtils.the.getAdd(), CONSTANT_NODE, VARIABLE_NODE);
+    private static final FunctionNode FUNCTION_NODE = new FunctionNode(IntFunc.the.getAdd(), CONSTANT_NODE, VARIABLE_NODE);
 
     @Test
     public void testIsConstant() {

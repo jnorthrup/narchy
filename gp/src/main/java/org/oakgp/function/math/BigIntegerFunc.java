@@ -15,41 +15,43 @@
  */
 package org.oakgp.function.math;
 
-import static org.oakgp.Type.doubleType;
+import java.math.BigInteger;
+
+import static org.oakgp.Type.bigIntegerType;
 
 /**
- * Provides support for working with instances of {@code java.lang.Double}.
+ * Provides support for working with instances of {@code java.math.BigInteger}.
  */
-public final class DoubleUtils extends NumberUtils<Double> {
+public final class BigIntegerFunc extends NumFunc<BigInteger> {
     /**
      * Singleton instance.
      */
-    public static final DoubleUtils the = new DoubleUtils();
+    public static final BigIntegerFunc the = new BigIntegerFunc();
 
     /**
      * @see #the
      */
-    private DoubleUtils() {
-        super(doubleType(), 0d, 1d, 2d);
+    private BigIntegerFunc() {
+        super(bigIntegerType(), BigInteger.ZERO, BigInteger.ONE, BigInteger.valueOf(2));
     }
 
     @Override
-    protected Double add(Double i1, Double i2) {
-        return i1 + i2;
+    protected BigInteger add(BigInteger i1, BigInteger i2) {
+        return i1.add(i2);
     }
 
     @Override
-    protected Double subtract(Double i1, Double i2) {
-        return i1 - i2;
+    protected BigInteger subtract(BigInteger i1, BigInteger i2) {
+        return i1.subtract(i2);
     }
 
     @Override
-    protected Double multiply(Double i1, Double i2) {
-        return i1 * i2;
+    protected BigInteger multiply(BigInteger i1, BigInteger i2) {
+        return i1.multiply(i2);
     }
 
     @Override
-    protected Double divide(Double i1, Double i2) {
-        return i1 / i2;
+    protected BigInteger divide(BigInteger i1, BigInteger i2) {
+        return i1.divide(i2);
     }
 }

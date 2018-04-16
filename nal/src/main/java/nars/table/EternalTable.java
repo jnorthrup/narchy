@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static nars.table.BeliefTable.*;
 import static nars.time.Tense.ETERNAL;
 
 
@@ -45,11 +46,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         @Override
         public Task weakest() {
             return null;
-        }
-
-        @Override
-        public @Nullable Task put(/*@NotNull*/ Task incoming) {
-            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -206,23 +202,31 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     public Task weakest() {
+        int s = size;
+        if (s == 0) return null;
         Object[] l = this.list;
         if (l.length == 0) return null;
-        int n = l.length - 1;
-        Task w = null;
-        while (n > 0 && (w = (Task) l[n]) != null) n--; //scan upwards for first non-null
-        return w;
+        return (Task) l[size-1];
+
+//        Object[] l = this.list;
+//        if (l.length == 0) return null;
+//        int n = size;
+//        Task w = null;
+//        while (n > 0 && (w = (Task) l[n]) == null) n--; //scan upwards for first non-null
+//        return w;
 
     }
 
     /**
-     * for ranking purposes
+     * for ranking purposes.  returns negative for descending order
      */
     @Override
     public final float floatValueOf(/*@NotNull*/ Task w) {
         //return rankEternalByConfAndOriginality(w);
-        return -w.evi();
+        return -eternalTaskValue(w);
     }
+
+
 
 
     @Deprecated
@@ -365,14 +369,16 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Nullable
-    public Task put(final Task incoming) {
+    private Task put(final Task incoming) {
         Task displaced = null;
 
         synchronized (this) {
             if (size == capacity()) {
                 Task weakestPresent = weakest();
                 if (weakestPresent != null) {
-                    if (floatValueOf(weakestPresent) <= floatValueOf(incoming)) {
+                    if (eternalTaskValueWithOriginality(weakestPresent)
+                            <=
+                        eternalTaskValueWithOriginality(incoming)) {
                         displaced = removeLast();
                     } else {
                         return incoming; //insufficient confidence
@@ -430,54 +436,82 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             return false;
         }
 
-        if ((input.conf() >= 1f) && (cap != 1) && (isEmpty() || (first().conf() < 1f))) {
-            //AXIOMATIC/CONSTANT BELIEF/GOAL
-            synchronized (this) {
-                addEternalAxiom(input, this, nar);
-                return true;
-            }
-        } else {
+//        if ((input.conf() >= 1f) && (cap != 1) && (isEmpty() || (first().conf() < 1f))) {
+//            //AXIOMATIC/CONSTANT BELIEF/GOAL
+//            synchronized (this) {
+//                addEternalAxiom(input, this, nar);
+//                return true;
+//            }
+//        } else {
 
             Task revised = tryRevision(input, nar);
-            if (revised != null) {
-
-                if (revised!=input && revised instanceof NALTask) {
-                    ((NALTask)revised).causeMerge(input);
-                }
-
-                //generated a revision
-                if (insert(revised)) {
-//                    //link the revision
-//                    Tasklinks.linkTask(revised, iPri, c, nar);
-                } else {
-                    revised.delete(); //rejected revision
-                }
-
-                if (!revised.equals(input)) {
-
-                    nar.eventTask.emit(revised); //separately
-
-                    //try to insert the original input also
-                    boolean inputIns = insert(input);
-                    if (inputIns) {
-                        return true; //accepted revision and accepted input
-                    } else {
-                        input.delete();
-                        return true; //accepted revision and rejected input
-                    }
-                } else {
-                    return !revised.isDeleted();
-                }
-
-            } else {
+            if (revised == null) {
                 if (insert(input)) {
                     return true; //accepted input
                 } else {
                     input.delete();
                     return false; //rejected
                 }
+            } else {
+
+                if (revised.equals(input)) {
+                    //input is a duplicate of existing item
+                    if (revised!=input)
+                        input.delete();
+                    return true;
+                } else {
+
+                    if (insert(revised)) {
+                        //no need to link task separately since the insertion succeeded whether or not the actual input was inserted since at least the revision was
+                        //just emit the task event
+
+                        if (input.equals(revised)) {
+                            System.out.println("input=revised");
+                        }
+
+                        if (insert(input)) {
+                            //accept input also
+                        } else {
+                            input.delete(); //delete the input, but got the revision
+                        }
+
+                    }
+
+                    nar.eventTask.emit(revised);
+
+                    return true; //accepted revision
+                }
+
+//                if (revised!=input && revised instanceof NALTask) {
+//                    ((NALTask)revised).causeMerge(input);
+//                }
+//
+//                //generated a revision
+//                if (insert(revised)) {
+////                    //link the revision
+////                    Tasklinks.linkTask(revised, iPri, c, nar);
+//                } else {
+//                    revised.delete(); //rejected revision
+//                }
+//
+//                if (!revised.equals(input)) {
+//
+//                    nar.eventTask.emit(revised); //separately
+//
+//                    //try to insert the original input also
+//                    boolean inputIns = insert(input);
+//                    if (inputIns) {
+//                        return true; //accepted revision and accepted input
+//                    } else {
+//                        input.delete();
+//                        return true; //accepted revision and rejected input
+//                    }
+//                } else {
+//                    return !revised.isDeleted();
+//                }
+
             }
-        }
+//        }
 
     }
 
@@ -502,25 +536,25 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         return true;
     }
 
-    private void addEternalAxiom(/*@NotNull*/ Task input, /*@NotNull*/ EternalTable et, NAR nar) {
-        //lock incoming 100% confidence belief/goal into a 1-item capacity table by itself, preventing further insertions or changes
-        //1. clear the corresponding table, set capacity to one, and insert this task
-        et.forEachTask(t -> removeTask(t, "Overridden"));
-        et.clear();
-        et.setCapacity(1);
-
-//        //2. clear the other table, set capcity to zero preventing temporal tasks
-        //TODO
-//        TemporalBeliefTable otherTable = temporal;
-//        otherTable.forEach(overridden);
-//        otherTable.clear();
-//        otherTable.capacity(0);
-
-        //NAR.logger.info("axiom: {}", input);
-
-        et.put(input);
-
-    }
+//    private void addEternalAxiom(/*@NotNull*/ Task input, /*@NotNull*/ EternalTable et, NAR nar) {
+//        //lock incoming 100% confidence belief/goal into a 1-item capacity table by itself, preventing further insertions or changes
+//        //1. clear the corresponding table, set capacity to one, and insert this task
+//        et.forEachTask(t -> removeTask(t, "Overridden"));
+//        et.clear();
+//        et.setCapacity(1);
+//
+////        //2. clear the other table, set capcity to zero preventing temporal tasks
+//        //TODO
+////        TemporalBeliefTable otherTable = temporal;
+////        otherTable.forEach(overridden);
+////        otherTable.clear();
+////        otherTable.capacity(0);
+//
+//        //NAR.logger.info("axiom: {}", input);
+//
+//        et.put(input);
+//
+//    }
 
 
     @Nullable public Truth strongestTruth() {

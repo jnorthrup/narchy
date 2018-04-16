@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.oakgp.evolve.GeneticOperator;
 import org.oakgp.function.Function;
 import org.oakgp.function.classify.IsZero;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.primitive.DummyPrimitiveSet;
@@ -59,8 +59,8 @@ public class PointMutationTest {
     public void testFunctionSubNodes() {
         DummyRandom dummyRandom = nextInt(3).returns(1, 2, 0);
         Function rootFunction = new IsZero();
-        Function inputFunction = IntegerUtils.the.getAdd();
-        Function outputFunction = IntegerUtils.the.getSubtract();
+        Function inputFunction = IntFunc.the.getAdd();
+        Function outputFunction = IntFunc.the.getSubtract();
         Node inputArg1 = integerConstant(3);
         Node inputArg2 = integerConstant(7);
         Node input = new FunctionNode(rootFunction, new FunctionNode(inputFunction, inputArg1, inputArg2));

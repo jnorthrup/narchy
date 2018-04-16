@@ -24,7 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.oakgp.TestUtils.*;
 
 public class DepthWalkTest {
-    private static final FunctionNode INPUT = readFunctionNode("(+ (+ 6 (+ 7 8)) 9)");
+    private static final FunctionNode INPUT =
+            readFunctionNode("(+ (+ 6 (+ 7 8)) 9)");
 
     @Test
     public void testNodeCountFunctionNode() {
@@ -55,7 +56,7 @@ public class DepthWalkTest {
 
     @Test
     public void testReplaceAt() {
-        assertReplaceAt(0, "(+ (+ 3 (+ 7 8)) 9)");
+        assertReplaceAt(0, "(+ 2 (+ 6 (+ 7 8)))");
         assertReplaceAt(1, "(+ (+ 6 (+ 4 8)) 9)");
         assertReplaceAt(2, "(+ (+ 6 (+ 7 4)) 9)");
         assertReplaceAt(3, "(+ (+ 6 3) 9)");

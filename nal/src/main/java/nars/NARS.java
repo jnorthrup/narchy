@@ -271,7 +271,7 @@ public class NARS {
                 1f/Math.sqrt(((AbstractExec)nar.exe).active.capacity())
             );
 
-            nar.termVolumeMax.set(40);
+            nar.termVolumeMax.set(30);
             //nar.confMin.setValue(0.05f);
 
             nar.beliefPriDefault.set(0.5f);

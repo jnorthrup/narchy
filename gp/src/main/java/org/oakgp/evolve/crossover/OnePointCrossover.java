@@ -18,7 +18,7 @@ package org.oakgp.evolve.crossover;
 import org.oakgp.evolve.GeneticOperator;
 import org.oakgp.node.Node;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
 
 /**
@@ -32,12 +32,12 @@ import org.oakgp.util.Utils;
  * Mutation</a>
  */
 public final class OnePointCrossover implements GeneticOperator {
-    private final Random random;
+    private final GPRandom random;
 
     /**
      * Creates a {@code OnePointCrossover} that uses the given {@code Random} to select crossover points.
      */
-    public OnePointCrossover(Random random) {
+    public OnePointCrossover(GPRandom random) {
         this.random = random;
     }
 

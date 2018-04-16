@@ -30,5 +30,5 @@ public interface GenerationRanker {
      * @param input the {@code Node} instances to evaluate the fitness of
      * @return a collection of {@code RankedCandidate} - one for each {@code Node} specified in {@code input} - sorted by fitness
      */
-    RankedCandidates rank(Collection<Node> input);
+    Candidates rank(Collection<Node> input);
 }

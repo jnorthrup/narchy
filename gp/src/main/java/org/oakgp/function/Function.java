@@ -88,4 +88,9 @@ public interface Function {
     default boolean isPure() {
         return true;
     }
+
+    /**
+     * sorted but not deduplicated.
+     * true for commutive functions like add, multiply, etc. */
+    default boolean argsSorted() { return false; }
 }

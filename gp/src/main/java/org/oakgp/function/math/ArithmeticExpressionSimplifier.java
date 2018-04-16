@@ -26,11 +26,11 @@ import static org.oakgp.node.NodeType.*;
 import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
 
 final class ArithmeticExpressionSimplifier {
-    private static final boolean SANITY_CHECK = true;
+    private static final boolean SANITY_CHECK = false;
 
-    private final NumberUtils<?> numberUtils;
+    private final NumFunc<?> numberUtils;
 
-    ArithmeticExpressionSimplifier(NumberUtils<?> numberUtils) {
+    ArithmeticExpressionSimplifier(NumFunc<?> numberUtils) {
         this.numberUtils = numberUtils;
     }
 
@@ -91,28 +91,45 @@ final class ArithmeticExpressionSimplifier {
             assertArgumentsOrdered(function, firstArg, secondArg);
         });
 
-        return getSimplifiedVersion(function, firstArg, secondArg);
+        return functionSimplified(function, firstArg, secondArg);
     }
 
-    private Node getSimplifiedVersion(Function function, Node firstArg, Node secondArg) {
-        boolean isPos = numberUtils.isAdd(function);
+    private Node functionSimplified(Function f, Node firstArg, Node secondArg) {
+        if (f.argsSorted() && secondArg.compareTo(firstArg) < 0) {
+            Node x = firstArg;
+            firstArg = secondArg;
+            secondArg = x;
+        }
+
+        if (f instanceof ArithmeticOperator) {
+            if (isConstant(firstArg) && isConstant(secondArg)) {
+                return new ConstantNode(
+                        ((ArithmeticOperator) f).evaluate(
+                                firstArg, secondArg, null
+                        ), f.sig().returnType()
+                );
+            }
+        }
+
+        boolean isPos = numberUtils.isAdd(f);
         if (areFunctions(firstArg, secondArg)) {
+
             NodePair p = removeFromChildNodes(firstArg, secondArg, isPos);
             if (p != null) {
-                return new FunctionNode(function, p.nodeThatHasBeenReduced, p.nodeThatHasBeenExpanded);
+                return new FunctionNode(f, p.nodeThatHasBeenReduced, p.nodeThatHasBeenExpanded);
             }
             p = removeFromChildNodes(secondArg, firstArg, isPos);
             if (p != null) {
-                return new FunctionNode(function, p.nodeThatHasBeenExpanded, p.nodeThatHasBeenReduced);
+                return new FunctionNode(f, p.nodeThatHasBeenExpanded, p.nodeThatHasBeenReduced);
             }
         } else if (isFunction(firstArg)) {
             return combineWithChildNodes(firstArg, secondArg, isPos);
         } else if (isFunction(secondArg)) {
             // 3, (+ (* 12 v2) 30) -> (+ (* 12 v2) 33)
             Node tmp = combineWithChildNodes(secondArg, firstArg, isPos);
-            if (tmp != null && numberUtils.isSubtract(function)) {
+            if (tmp != null && numberUtils.isSubtract(f)) {
                 // 3, (- (* 12 v2) 30) -> (- (* 12 v2) 33) -> (0 - (- (* 12 v2) 33))
-                return new FunctionNode(function, numberUtils.zero(), tmp);
+                return new FunctionNode(f, numberUtils.zero, tmp);
             } else {
                 return tmp;
             }
@@ -120,6 +137,7 @@ final class ArithmeticExpressionSimplifier {
 
         return null;
     }
+
 
     /**
      * Returns the result of removing the second argument from the first argument.
@@ -147,12 +165,12 @@ final class ArithmeticExpressionSimplifier {
                         result = numberUtils.subtract(a.firstArg(), firstArg);
                     }
                     Node tmp = new FunctionNode(f, result, secondArg);
-                    return new NodePair(numberUtils.zero(), tmp);
+                    return new NodePair(numberUtils.zero, tmp);
                 }
 
                 Node tmp = combineWithChildNodes(nodeToRemove, nodeToWalk, isPos);
                 if (tmp != null) {
-                    return new NodePair(numberUtils.zero(), tmp);
+                    return new NodePair(numberUtils.zero, tmp);
                 }
             }
 
@@ -172,10 +190,10 @@ final class ArithmeticExpressionSimplifier {
                     return new NodePair(new FunctionNode(f, firstArg, p.nodeThatHasBeenReduced), p.nodeThatHasBeenExpanded);
                 }
             }
-        } else if (!numberUtils.isZero(nodeToWalk)) {
+        } else if (!numberUtils.zero.equals(nodeToWalk)) {
             Node tmp = combineWithChildNodes(nodeToRemove, nodeToWalk, isPos);
             if (tmp != null) {
-                return new NodePair(numberUtils.zero(), tmp);
+                return new NodePair(numberUtils.zero, tmp);
             }
         }
         return null;
@@ -201,35 +219,35 @@ final class ArithmeticExpressionSimplifier {
         FunctionNode currentFunctionNode = (FunctionNode) nodeToWalk;
         Node firstArg = currentFunctionNode.args().firstArg();
         Node secondArg = currentFunctionNode.args().secondArg();
-        Function currentFunction = currentFunctionNode.func();
-        boolean isAdd = numberUtils.isAdd(currentFunction);
-        boolean isSubtract = numberUtils.isSubtract(currentFunction);
+        Function f = currentFunctionNode.func();
+        boolean isAdd = numberUtils.isAdd(f);
+        boolean isSubtract = numberUtils.isSubtract(f);
         if (isAdd || isSubtract) {
             boolean recursiveIsPos = isPos;
             if (isSubtract) {
                 recursiveIsPos = !isPos;
             }
             if (isSuitableForCombining(firstArg, nodeToAdd)) {
-                return new FunctionNode(currentFunction, combine(firstArg, nodeToAdd, isPos), secondArg);
+                return new FunctionNode(f, combine(firstArg, nodeToAdd, isPos), secondArg);
             } else if (isSuitableForCombining(secondArg, nodeToAdd)) {
-                return new FunctionNode(currentFunction, firstArg, combine(secondArg, nodeToAdd, recursiveIsPos));
+                return new FunctionNode(f, firstArg, combine(secondArg, nodeToAdd, recursiveIsPos));
             }
             Node tmp = combineWithChildNodes(firstArg, nodeToAdd, isPos);
             if (tmp != null) {
-                return new FunctionNode(currentFunction, tmp, secondArg);
+                return new FunctionNode(f, tmp, secondArg);
             }
             tmp = combineWithChildNodes(secondArg, nodeToAdd, recursiveIsPos);
             if (tmp != null) {
-                return new FunctionNode(currentFunction, firstArg, tmp);
+                return new FunctionNode(f, firstArg, tmp);
             }
-        } else if (numberUtils.isMultiply(currentFunction) && isConstant(firstArg) && secondArg.equals(nodeToAdd)) {
+        } else if (numberUtils.isMultiply(f) && isConstant(firstArg) && secondArg.equals(nodeToAdd)) {
             ConstantNode multiplier;
             if (isPos) {
                 multiplier = numberUtils.increment(firstArg);
             } else {
                 multiplier = numberUtils.decrement(firstArg);
             }
-            return new FunctionNode(currentFunction, multiplier, nodeToAdd);
+            return new FunctionNode(f, multiplier, nodeToAdd);
         } else if (isMultiplyingTheSameValue(nodeToWalk, nodeToAdd)) {
             return combineMultipliers(nodeToWalk, nodeToAdd, isPos);
         }
@@ -259,7 +277,7 @@ final class ArithmeticExpressionSimplifier {
             if (isPos) {
                 return numberUtils.multiplyByTwo(second);
             } else {
-                return numberUtils.zero();
+                return numberUtils.zero;
             }
         }
     }

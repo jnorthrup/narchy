@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 /**
  * A sorted immutable collection of {@code RankedCandidate} objects.
  */
-public final class RankedCandidates implements Iterable<RankedCandidate> {
+public final class Candidates implements Iterable<RankedCandidate> {
     private static final Comparator<RankedCandidate> COMPARE_TO = RankedCandidate::compareTo;
 
     private final RankedCandidate[] sortedCandidates;
@@ -35,14 +35,14 @@ public final class RankedCandidates implements Iterable<RankedCandidate> {
      *
      * @see RankedCandidate#compareTo(RankedCandidate)
      */
-    public RankedCandidates(RankedCandidate[] candidates) {
+    public Candidates(RankedCandidate[] candidates) {
         this(candidates, COMPARE_TO);
     }
 
     /**
      * Constructs a new collection of candidates sorted according to the given comparator.
      */
-    public RankedCandidates(RankedCandidate[] candidates, Comparator<RankedCandidate> comparator) {
+    public Candidates(RankedCandidate[] candidates, Comparator<RankedCandidate> comparator) {
         this.sortedCandidates = Arrays.copyOf(candidates, candidates.length);
         Arrays.sort(sortedCandidates, comparator);
     }

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IntegerUtilsTest {
-    private static final NumberUtils<Integer> UTILS = IntegerUtils.the;
+    private static final NumFunc<Integer> UTILS = IntFunc.the;
 
     @Test
     public void testAdd() {

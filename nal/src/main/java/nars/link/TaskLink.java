@@ -38,7 +38,10 @@ public interface TaskLink extends Priority, Termed {
         public Tasklike(Term term, byte punc, long when) {
             this.punc = punc;
 
-            assert(when!=XTERNAL);
+            if (when == XTERNAL || when!=ETERNAL &&
+                    (when < -9023372036854775808L || when > +9023372036854775808L ) )
+                throw new RuntimeException("detected invalid time");
+
             this.when = when;
 
             this.term = term;
@@ -123,16 +126,17 @@ public interface TaskLink extends Priority, Termed {
 
         public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
             Term tt = t.term();
+            long when = t.isEternal() ? ETERNAL : Tense.dither(
+                    //t.mid()
+                    t.mid() + tt.dtRange() / 2
+                    , n);
             return seed(
                     tt
                         .root()
                         .negIf(
                             polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
                         ),
-                    t.punc(), Tense.dither(
-                        //t.mid()
-                       t.mid() + tt.dtRange()/2
-                    , n));
+                    t.punc(), when);
         }
 
 

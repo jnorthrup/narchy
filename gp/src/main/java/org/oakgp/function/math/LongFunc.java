@@ -20,16 +20,16 @@ import static org.oakgp.Type.longType;
 /**
  * Provides support for working with instances of {@code java.lang.Long}.
  */
-public final class LongUtils extends NumberUtils<Long> {
+public final class LongFunc extends NumFunc<Long> {
     /**
      * Singleton instance.
      */
-    public static final LongUtils the = new LongUtils();
+    public static final LongFunc the = new LongFunc();
 
     /**
      * @see #INTEGER_UTILS
      */
-    private LongUtils() {
+    private LongFunc() {
         super(longType(), 0L, 1L, 2L);
     }
 

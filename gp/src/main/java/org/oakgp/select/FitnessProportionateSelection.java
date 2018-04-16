@@ -17,8 +17,8 @@ package org.oakgp.select;
 
 import org.oakgp.node.Node;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
-import org.oakgp.util.Random;
+import org.oakgp.rank.Candidates;
+import org.oakgp.util.GPRandom;
 
 /**
  * The fitness of candidates is used to determine the probability that they will be selected.
@@ -26,23 +26,23 @@ import org.oakgp.util.Random;
  * Also known as roulette wheel selection.
  */
 public final class FitnessProportionateSelection implements NodeSelector {
-    private final Random random;
-    private final RankedCandidates candidates;
+    private final GPRandom random;
+    private final Candidates candidates;
     private final int size;
     private final double sumFitness;
 
     /**
      * Creates a {@code FitnessProportionateSelection} that uses the given {@code Random} to select from the given {@code RankedCandidates}.
      */
-    public FitnessProportionateSelection(Random random, RankedCandidates candidates) {
+    public FitnessProportionateSelection(GPRandom random, Candidates candidates) {
         this.random = random;
         this.candidates = candidates;
         this.size = candidates.size();
         this.sumFitness = sumFitness(candidates);
     }
 
-    private static double sumFitness(RankedCandidates candidates) {
-        return candidates.stream().mapToDouble(RankedCandidate::getFitness).sum();
+    private static double sumFitness(Candidates candidates) {
+        return candidates.stream().mapToDouble(rankedCandidate -> rankedCandidate.fitness).sum();
     }
 
     @Override
@@ -51,12 +51,12 @@ public final class FitnessProportionateSelection implements NodeSelector {
         double p = 0;
         for (int i = 0; i < size; i++) {
             RankedCandidate c = candidates.get(i);
-            p += c.getFitness() / sumFitness;
+            p += c.fitness / sumFitness;
             if (r < p) {
-                return c.getNode();
+                return c.node;
             }
         }
         // should only get here if rounding error - default to selecting the best candidate
-        return candidates.best().getNode();
+        return candidates.best().node;
     }
 }

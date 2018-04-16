@@ -42,7 +42,7 @@ public class NodeComparatorTest {
     public void testCompareFunctionsSameReturnType() {
         // ordering of function nodes is a bit arbitrary (relies on hashCode of Function class name and arguments)
         // the important thing is that it is consistent
-        assertOrdered(readNode("(- 1 1)"), readNode("(+ 1 1)"));
+        assertOrdered(readNode("(+ 1 1)"), readNode("(- 1 1)"));
         assertOrdered(readNode("(* 3 3)"), readNode("(* 3 4)"));
     }
 
@@ -75,6 +75,18 @@ public class NodeComparatorTest {
         assertTrue(NODE_COMPARATOR.compare(n1, n2) < 0);
         assertTrue(NODE_COMPARATOR.compare(n2, n1) > 0);
     }
+    @Test
+    public void testCommutive() {
+        Node x = readNode("(+ 2 1)");
+        assertEquals(
+            readNode("(+ 2 1)"),
+            readNode("(+ 1 2)")
+        );
+        assertEquals(
+                readNode("(* 2 1)"),
+                readNode("(* 1 2)")
+        );
+    }
 
     @Test
     public void testSort() {
@@ -89,14 +101,22 @@ public class NodeComparatorTest {
         nodes.add(readNode("3"));
         nodes.add(f3);
         nodes.add(readNode("v0"));
-        Collections.sort(nodes, NODE_COMPARATOR);
 
-        assertEquals("-1", nodes.get(0).toString());
-        assertEquals("3", nodes.get(1).toString());
-        assertEquals("v0", nodes.get(2).toString());
-        assertEquals("v1", nodes.get(3).toString());
-        assertEquals(f2, nodes.get(4));
-        assertEquals(f1, nodes.get(5));
-        assertEquals(f3, nodes.get(6));
+
+        for (int i = 0; i < 10; i++) {
+            Collections.shuffle(nodes);
+            Collections.sort(nodes, NODE_COMPARATOR);
+            assertEquals("[-1, 3, v0, v1, (* 1 1), (+ 1 1), (- 1 1)]", nodes.toString());
+        }
+
+
+
+//        assertEquals("-1", nodes.get(0).toString());
+//        assertEquals("3", nodes.get(1).toString());
+//        assertEquals("v0", nodes.get(2).toString());
+//        assertEquals("v1", nodes.get(3).toString());
+//        assertEquals(f2, nodes.get(4));
+//        assertEquals(f1, nodes.get(5));
+//        assertEquals(f3, nodes.get(6));
     }
 }

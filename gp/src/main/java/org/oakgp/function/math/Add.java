@@ -28,16 +28,21 @@ import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
  * Performs addition.
  */
 final class Add extends ArithmeticOperator {
-    private final NumberUtils<?> numberUtils;
+    private final NumFunc<?> numberUtils;
     private final ArithmeticExpressionSimplifier simplifier;
 
     /**
-     * @see NumberUtils#getAdd()
+     * @see NumFunc#getAdd()
      */
-    Add(NumberUtils<?> numberUtils) {
+    Add(NumFunc<?> numberUtils) {
         super(numberUtils.getType());
         this.numberUtils = numberUtils;
         this.simplifier = numberUtils.getSimplifier();
+    }
+
+    @Override
+    public final boolean argsSorted() {
+        return true;
     }
 
     /**
@@ -59,11 +64,11 @@ final class Add extends ArithmeticOperator {
             // as for addition the order of the arguments is not important, order arguments in a consistent way
             // e.g. (+ v1 1) -> (+ 1 v1)
             return new FunctionNode(this, arg2, arg1);
-        } else if (numberUtils.isZero(arg1)) {
+        } else if (numberUtils.zero.equals(arg1)) {
             // anything plus zero is itself
             // e.g. (+ 0 v0) -> v0
             return arg2;
-        } else if (numberUtils.isZero(arg2)) {
+        } else if (numberUtils.zero.equals(arg2)) {
             // the earlier ordering or arguments means we should never get here
             throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
         } else if (arg1.equals(arg2)) {

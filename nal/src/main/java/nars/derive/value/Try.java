@@ -21,7 +21,7 @@ public class Try implements Consumer<Derivation> {
     public final Cause[] causes;
 
     float spendRatePerBranch = 0.5f;
-    float spendRatePerFanOut = 0.04f;
+    float spendRatePerFanOut = 0.25f;
 
     Try(PrediTerm<Derivation>[] branches, Cause[] causes) {
         this.branches = branches;
@@ -114,7 +114,7 @@ public class Try implements Consumer<Derivation> {
         //System.out.println(Arrays.toString(choices) + " " + Arrays.toString(w));
 
         int before = d.now();
-        Roulette.MutableRoulette.run(w, wi -> wi/2 /* harmonic decay */, (i) -> {
+        Roulette.MutableRoulette.run(w, wi -> wi/N /* harmonic decay */, (i) -> {
             int ttlStart = d.ttl;
 
 

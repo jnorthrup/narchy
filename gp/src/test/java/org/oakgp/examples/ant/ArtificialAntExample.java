@@ -19,7 +19,7 @@ import org.oakgp.Evolution;
 import org.oakgp.function.Function;
 import org.oakgp.function.choice.If;
 import org.oakgp.node.Node;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 import org.oakgp.rank.fitness.FitnessFunction;
 
 import static org.oakgp.examples.ant.AntMovement.*;
@@ -39,10 +39,10 @@ public class ArtificialAntExample {
         Function[] functions = {new If(VOID_TYPE), new IsFoodAhead(), FORWARD, LEFT, RIGHT, BISEQUENCE, TRISEQUENCE};
         FitnessFunction fitnessFunction = new ArtificialAntFitnessFunction();
 
-        RankedCandidates output = new Evolution().returning(VOID_TYPE).setConstants(VOID_CONSTANT).setVariables(STATE_TYPE).setFunctions(functions)
-                .setFitness(fitnessFunction).setInitialPopulationSize(INITIAL_POPULATION_SIZE).setTreeDepth(INITIAL_POPULATION_MAX_DEPTH)
-                .setTargetFitness(TARGET_FITNESS).setMaxGenerations(NUM_GENERATIONS).get();
-        Node best = output.best().getNode();
+        Candidates output = new Evolution().returns(VOID_TYPE).constants(VOID_CONSTANT).variables(STATE_TYPE).functions(functions)
+                .goal(fitnessFunction).population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH)
+                .goalTarget(TARGET_FITNESS).setMaxGenerations(NUM_GENERATIONS).get();
+        Node best = output.best().node;
         System.out.println(best);
     }
 }

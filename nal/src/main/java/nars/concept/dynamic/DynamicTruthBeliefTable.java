@@ -182,7 +182,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
                 if (tdt == XTERNAL)
                     throw new RuntimeException("XTERNAL should not be present in " + t);
                 if ((t.term().subs() > 2) == commutive)
-                    dtEvi.addToValue(tdt, Revision.eviInteg(t, start, end, 1)); //maybe evi
+                    dtEvi.addToValue(tdt, Revision.eviAvg(t, start, end, 1)); //maybe evi
             }
         });
         int n = dtEvi.size();

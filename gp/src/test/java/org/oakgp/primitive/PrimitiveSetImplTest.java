@@ -20,27 +20,27 @@ import org.oakgp.Type;
 import org.oakgp.function.Function;
 import org.oakgp.function.choice.If;
 import org.oakgp.function.compare.*;
-import org.oakgp.function.math.IntegerUtils;
+import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.VariableNode;
 import org.oakgp.util.DummyRandom;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.oakgp.TestUtils.*;
 import static org.oakgp.Type.*;
-import static org.oakgp.util.Utils.createIntegerTypeArray;
+import static org.oakgp.util.Utils.intArrayType;
 
 public class PrimitiveSetImplTest {
     // TODO add extra tests for when: a) numVariables=0, b) numVariables=1 and c) constants.length=0
 
     private static final double VARIABLE_RATIO = .6;
     private static final ConstantNode[] CONSTANTS = {integerConstant(7), integerConstant(8), integerConstant(9)};
-    private static final Type[] VARIABLE_TYPES = createIntegerTypeArray(3);
-    private static final Function[] FUNCTIONS = new Function[]{IntegerUtils.the.getAdd(), IntegerUtils.the.getSubtract(),
-            IntegerUtils.the.getMultiply(), new If(integerType()), LessThan.create(integerType()), LessThanOrEqual.create(integerType()),
+    private static final Type[] VARIABLE_TYPES = intArrayType(3);
+    private static final Function[] FUNCTIONS = new Function[]{IntFunc.the.getAdd(), IntFunc.the.getSubtract(),
+            IntFunc.the.getMultiply(), new If(integerType()), LessThan.create(integerType()), LessThanOrEqual.create(integerType()),
             new GreaterThan(integerType()), new GreaterThanOrEqual(integerType()), new Equal(integerType()), new NotEqual(integerType())};
 
     @Test
@@ -59,7 +59,7 @@ public class PrimitiveSetImplTest {
 
     @Test
     public void testNextFunction() {
-        Random mockRandom = mock(Random.class);
+        GPRandom mockRandom = mock(GPRandom.class);
         // mock randomly selecting one of the 4 functions in OPERATORS with an integer return type
         given(mockRandom.nextInt(4)).willReturn(1, 0, 2, 1, 2, 0, 3);
         // mock randomly selecting one of the 6 functions in OPERATORS with a boolean return type
@@ -84,7 +84,7 @@ public class PrimitiveSetImplTest {
 
     @Test
     public void testNextAlternativeFunction() {
-        Random mockRandom = mock(Random.class);
+        GPRandom mockRandom = mock(GPRandom.class);
         PrimitiveSet functionSet = createWithFunctions(mockRandom);
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 2, 0);
@@ -111,7 +111,7 @@ public class PrimitiveSetImplTest {
 
     @Test
     public void testNextTerminal() {
-        Random mockRandom = mock(Random.class);
+        GPRandom mockRandom = mock(GPRandom.class);
         given(mockRandom.nextDouble()).willReturn(0.0, VARIABLE_RATIO, VARIABLE_RATIO + .01, .9, VARIABLE_RATIO - .01, .7);
         given(mockRandom.nextInt(3)).willReturn(1, 0, 2, 1, 0, 2);
 
@@ -128,7 +128,7 @@ public class PrimitiveSetImplTest {
 
     @Test
     public void testNextAlternativeConstant() {
-        Random mockRandom = mock(Random.class);
+        GPRandom mockRandom = mock(GPRandom.class);
         given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO); // this will force constants to be produced
 
         PrimitiveSet terminalSet = createWithTerminals(mockRandom);
@@ -162,7 +162,7 @@ public class PrimitiveSetImplTest {
 
     @Test
     public void testNextAlternativeVariable() {
-        Random mockRandom = mock(Random.class);
+        GPRandom mockRandom = mock(GPRandom.class);
         given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO - .01); // this will force variables to be produced
 
         ConstantSet constantSet = new ConstantSet(CONSTANTS);
@@ -200,13 +200,13 @@ public class PrimitiveSetImplTest {
         assertVariable(1, terminalSet.nextAlternativeTerminal(constantNode));
     }
 
-    private PrimitiveSet createWithTerminals(Random random) {
+    private PrimitiveSet createWithTerminals(GPRandom random) {
         ConstantSet constantSet = new ConstantSet(CONSTANTS);
         VariableSet variableSet = VariableSet.createVariableSet(VARIABLE_TYPES);
         return new PrimitiveSetImpl(null, constantSet, variableSet, random, VARIABLE_RATIO);
     }
 
-    private PrimitiveSet createWithFunctions(Random random) {
+    private PrimitiveSet createWithFunctions(GPRandom random) {
         return new PrimitiveSetImpl(new FunctionSet(FUNCTIONS), null, null, random, .1);
     }
 }

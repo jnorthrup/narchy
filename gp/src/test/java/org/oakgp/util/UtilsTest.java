@@ -86,7 +86,7 @@ public class UtilsTest {
         int minInclusive = 7;
         int maxInclusive = 12;
 
-        ConstantNode[] result = Utils.createIntegerConstants(minInclusive, maxInclusive);
+        ConstantNode[] result = Utils.intConsts(minInclusive, maxInclusive);
 
         assertEquals(6, result.length);
         for (int i = 0; i < result.length; i++) {
@@ -105,7 +105,7 @@ public class UtilsTest {
     }
 
     private void assertIntegerTypeArray(int size) {
-        Type[] t = Utils.createIntegerTypeArray(size);
+        Type[] t = Utils.intArrayType(size);
         assertEquals(size, t.length);
         for (Type element : t) {
             assertSame(integerType(), element);
@@ -115,7 +115,7 @@ public class UtilsTest {
     @Test
     public void testCopyOf() {
         String[] original = {"abc", "def", "ghi"};
-        String[] copy = Utils.copyOf(original);
+        String[] copy = original.clone();
         assertNotSame(original, copy);
         assertTrue(Arrays.equals(original, copy));
     }
@@ -125,7 +125,7 @@ public class UtilsTest {
         Type type = Type.type("testCreateEnumConstants");
         TestCreateEnumConstantsEnum[] input = TestCreateEnumConstantsEnum.values();
 
-        ConstantNode[] result = Utils.createEnumConstants(TestCreateEnumConstantsEnum.class, type);
+        ConstantNode[] result = Utils.enumConsts(TestCreateEnumConstantsEnum.class, type);
 
         assertEquals(input.length, result.length);
         for (int i = 0; i < input.length; i++) {

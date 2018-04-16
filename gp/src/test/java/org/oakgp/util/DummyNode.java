@@ -20,6 +20,7 @@ import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
 public abstract class DummyNode implements Node {
+
     @Override
     public int size() {
         throw new UnsupportedOperationException();

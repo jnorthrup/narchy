@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.oakgp.TestUtils.*;
-import static org.oakgp.function.math.IntegerUtils.the;
+import static org.oakgp.function.math.IntFunc.the;
 import static org.oakgp.node.NodeType.*;
 
 public class NodeWalkTest {
@@ -82,11 +82,11 @@ public class NodeWalkTest {
         FunctionNode n = createFunctionNode();
         java.util.function.Function<Node, Node> replacement = t -> integerConstant(9);
 
-        assertEquals("(+ (* 9 v1) (+ v2 1))", NodeWalk.replaceAt(n, 0, replacement).toString());
-        assertEquals("(+ (* v0 9) (+ v2 1))", NodeWalk.replaceAt(n, 1, replacement).toString());
-        assertEquals("(+ 9 (+ v2 1))", NodeWalk.replaceAt(n, 2, replacement).toString());
-        assertEquals("(+ (* v0 v1) (+ 9 1))", NodeWalk.replaceAt(n, 3, replacement).toString());
-        assertEquals("(+ (* v0 v1) (+ v2 9))", NodeWalk.replaceAt(n, 4, replacement).toString());
+        assertEquals("(+ (* 9 v1) (+ 1 v2))", NodeWalk.replaceAt(n, 0, replacement).toString());
+        assertEquals("(+ (* 9 v0) (+ 1 v2))", NodeWalk.replaceAt(n, 1, replacement).toString());
+        assertEquals("(+ 9 (+ 1 v2))", NodeWalk.replaceAt(n, 2, replacement).toString());
+        assertEquals("(+ (* v0 v1) (+ 9 v2))", NodeWalk.replaceAt(n, 3, replacement).toString());
+        assertEquals("(+ (* v0 v1) (+ 9 v2))", NodeWalk.replaceAt(n, 4, replacement).toString());
         assertEquals("(+ (* v0 v1) 9)", NodeWalk.replaceAt(n, 5, replacement).toString());
         assertEquals("9", NodeWalk.replaceAt(n, 6, replacement).toString());
     }
@@ -104,8 +104,9 @@ public class NodeWalkTest {
         assertNodeEquals("(- (- (* 42 v3) 42) (- 42 v1))", NodeWalk.replaceAll(input, n -> isConstant(n), replacement));
 
         Predicate<Node> criteria = n -> isFunction(n) && ((FunctionNode) n).func() == the.getSubtract();
-        assertNodeEquals("(+ (+ (* -1 v3) 0) (+ 13 v1))",
-                NodeWalk.replaceAll(input, criteria, n -> new FunctionNode(the.getAdd(), ((FunctionNode) n).args())));
+        assertNodeEquals("(+ (+ 13 v1) (+ 0 (* -1 v3)))",
+                NodeWalk.replaceAll(input, criteria, n ->
+                        new FunctionNode(the.getAdd(), ((FunctionNode) n).args())));
     }
 
     @Test
@@ -115,10 +116,10 @@ public class NodeWalkTest {
         assertEquals("v0", NodeWalk.getAt(n, 0).toString());
         assertEquals("v1", NodeWalk.getAt(n, 1).toString());
         assertEquals("(* v0 v1)", NodeWalk.getAt(n, 2).toString());
-        assertEquals("v2", NodeWalk.getAt(n, 3).toString());
-        assertEquals("1", NodeWalk.getAt(n, 4).toString());
-        assertEquals("(+ v2 1)", NodeWalk.getAt(n, 5).toString());
-        assertEquals("(+ (* v0 v1) (+ v2 1))", NodeWalk.getAt(n, 6).toString());
+        assertEquals("1", NodeWalk.getAt(n, 3).toString());
+        assertEquals("v2", NodeWalk.getAt(n, 4).toString());
+        assertEquals("(+ 1 v2)", NodeWalk.getAt(n, 5).toString());
+        assertEquals("(+ (* v0 v1) (+ 1 v2))", NodeWalk.getAt(n, 6).toString());
     }
 
     /**

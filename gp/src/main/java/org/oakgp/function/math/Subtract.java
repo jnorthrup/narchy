@@ -27,13 +27,13 @@ import static org.oakgp.node.NodeType.isConstant;
  * Performs subtraction.
  */
 final class Subtract extends ArithmeticOperator {
-    private final NumberUtils<?> numberUtils;
+    private final NumFunc<?> numberUtils;
     private final ArithmeticExpressionSimplifier simplifier;
 
     /**
-     * @see NumberUtils#getSubtract()
+     * @see NumFunc#getSubtract()
      */
-    Subtract(NumberUtils<?> numberUtils) {
+    Subtract(NumFunc<?> numberUtils) {
         super(numberUtils.getType());
         this.numberUtils = numberUtils;
         this.simplifier = numberUtils.getSimplifier();
@@ -57,12 +57,12 @@ final class Subtract extends ArithmeticOperator {
         if (arg1.equals(arg2)) {
             // anything minus itself is zero
             // e.g. (- x x) -> 0
-            return numberUtils.zero();
-        } else if (numberUtils.isZero(arg2)) {
+            return numberUtils.zero;
+        } else if (numberUtils.zero.equals(arg2)) {
             // anything minus zero is itself
             // e.g. (- x 0) -> x
             return arg1;
-        } else if (numberUtils.isZero(arg1) && numberUtils.isSubtract(arg2)) {
+        } else if (numberUtils.zero.equals(arg1) && numberUtils.isSubtract(arg2)) {
             // simplify "zero minus n" expressions
             // e.g. (- 0 (- x y) -> (- y x)
             FunctionNode fn2 = (FunctionNode) arg2;
@@ -80,21 +80,21 @@ final class Subtract extends ArithmeticOperator {
                 Node fnArg1 = args.firstArg();
                 Node fnArg2 = args.secondArg();
                 if (numberUtils.isMultiply(f) && isConstant(fnArg1)) {
-                    if (numberUtils.isZero(arg1)) {
+                    if (numberUtils.zero.equals(arg1)) {
                         // (- 0 (* -3 v0)) -> (* 3 v0)
                         return new FunctionNode(f, numberUtils.negateConstant(fnArg1), fnArg2);
                     } else if (numberUtils.isNegative(fnArg1)) {
                         // (- 7 (* -3 v0)) -> (+ 7 (* 3 v0))
                         return new FunctionNode(numberUtils.getAdd(), arg1, new FunctionNode(f, numberUtils.negateConstant(fnArg1), fnArg2));
                     }
-                } else if (numberUtils.isAdd(f) && numberUtils.isZero(arg1)) {
+                } else if (numberUtils.isAdd(f) && numberUtils.zero.equals(arg1)) {
                     // (- 0 (+ v0 v1)) -> (+ (0 - v0) (0 - v1))
                     return new FunctionNode(f, numberUtils.negate(fnArg1), numberUtils.negate(fnArg2));
                 } else if (numberUtils.isSubtract(fn) && isConstant(arg1) && isConstant(fnArg1)) {
-                    if (numberUtils.isZero(arg1)) {
+                    if (numberUtils.zero.equals(arg1)) {
                         // added exception to confirm we never actually get here
                         throw new IllegalArgumentException();
-                    } else if (numberUtils.isZero(fnArg1)) {
+                    } else if (numberUtils.zero.equals(fnArg1)) {
                         // (- 1 (- 0 v0)) -> (+ 1 v0)
                         return new FunctionNode(numberUtils.getAdd(), arg1, fnArg2);
                     } else {

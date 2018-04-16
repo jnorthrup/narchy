@@ -21,7 +21,7 @@ import org.oakgp.node.Node;
 import org.oakgp.node.walk.DepthWalk;
 import org.oakgp.node.walk.StrategyWalk;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.Random;
+import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
 
 import java.util.function.Predicate;
@@ -34,7 +34,7 @@ import java.util.function.Predicate;
  * </p>
  */
 public final class SubtreeCrossover implements GeneticOperator {
-    private final Random random;
+    private final GPRandom random;
     private final int maxDepth;
 
     /**
@@ -43,7 +43,7 @@ public final class SubtreeCrossover implements GeneticOperator {
      * @param random   used to randomly select subtrees to replace and the subtrees to replace them with
      * @param maxDepth used to enforce a maximum depth of any offspring
      */
-    public SubtreeCrossover(Random random, int maxDepth) {
+    public SubtreeCrossover(GPRandom random, int maxDepth) {
         this.random = random;
         this.maxDepth = maxDepth;
     }
@@ -52,6 +52,8 @@ public final class SubtreeCrossover implements GeneticOperator {
     public Node evolve(NodeSelector selector) {
         Node parent1 = selector.next();
         Node parent2 = selector.next();
+        if (parent1.equals(parent2))
+            return parent1;
         int to = Utils.selectSubNodeIndex(random, parent1);
         return DepthWalk.replaceAt(parent1, to, (t, d) -> {
             int maxHeightParent2 = maxDepth - d;

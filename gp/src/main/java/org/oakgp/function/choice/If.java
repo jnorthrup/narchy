@@ -61,7 +61,7 @@ public final class If implements Function {
     @Override
     public Object evaluate(Arguments arguments, Assignments assignments) {
         int index = getOutcomeArgumentIndex(arguments, assignments);
-        return arguments.arg(index).eval(assignments);
+        return arguments.get(index).eval(assignments);
     }
 
     @Override

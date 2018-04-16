@@ -16,7 +16,7 @@
 package org.oakgp.evolve;
 
 import org.oakgp.node.Node;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 
@@ -31,5 +31,5 @@ public interface GenerationEvolver {
      * @param oldGeneration the existing generation to use as a basis for evolving a new generation
      * @return a new generation of {@code Node} instances evolved from the existing generation specified by {@code oldGeneration}
      */
-    Collection<Node> evolve(RankedCandidates oldGeneration);
+    Collection<Node> evolve(Candidates oldGeneration);
 }

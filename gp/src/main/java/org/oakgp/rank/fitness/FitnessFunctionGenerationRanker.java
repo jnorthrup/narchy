@@ -18,7 +18,7 @@ package org.oakgp.rank.fitness;
 import org.oakgp.node.Node;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.RankedCandidates;
+import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 
@@ -55,14 +55,14 @@ abstract public class FitnessFunctionGenerationRanker implements GenerationRanke
          * @return a {@code List} of {@code RankedCandidate} - one for each {@code Node} specified in {@code input} - sorted by fitness
          */
         @Override
-        public RankedCandidates rank(Collection<Node> input) {
+        public Candidates rank(Collection<Node> input) {
             RankedCandidate[] output = new RankedCandidate[input.size()];
             int ctr = 0;
             for (Node n : input) {
                 RankedCandidate rankedCandidate = rankCandidate(n);
                 output[ctr++] = rankedCandidate;
             }
-            return new RankedCandidates(output);
+            return new Candidates(output);
         }
     }
 
@@ -77,8 +77,8 @@ abstract public class FitnessFunctionGenerationRanker implements GenerationRanke
         }
 
         @Override
-        public RankedCandidates rank(Collection<Node> input) {
-            return new RankedCandidates( input.parallelStream().map(this::rankCandidate).toArray(RankedCandidate[]::new));
+        public Candidates rank(Collection<Node> input) {
+            return new Candidates( input.parallelStream().map(this::rankCandidate).toArray(RankedCandidate[]::new));
         }
     }
 

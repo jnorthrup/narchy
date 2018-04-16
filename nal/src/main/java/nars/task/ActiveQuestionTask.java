@@ -67,7 +67,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     public ITask next(NAR nar) {
         ITask next = super.next(nar);
         this.random = nar.random();
-        this.ttl = nar.matchTTLmean.intValue();
+        this.ttl = nar.deriveTTL.intValue();
         this.onTask = nar.onTask(this);
         return next;
     }
