@@ -36,10 +36,10 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     public final Truth truth(long start, long end, NAR nar) {
         Truth d = truthDynamic(start, end, nar);
         Truth e = truthStored(start, end, nar);
-        if (e == null || d == e)
-            return d;
         if (d == null)
             return e;
+        if (e == null || d.equals(e))
+            return d;
 
         //return Revision.revise(d, e); //<- this is optimistic that the truths dont overlap
         return Truth.stronger(d, e); //<- this is conservative disallowing any overlap
@@ -136,15 +136,12 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         if (x.equals(y))
             return x;
 
-        int dur = nar.dur();
-
         //choose highest confidence
-        Top<Task> top = new Top<>(t->t.evi(start,end,dur));
-
+        Top<Task> top = new Top<>(t->Revision.eviInteg(t, start, end, 1));
 
         if (x.term().equals(y.term()) && !Stamp.overlapping(x, y)) {
             //try to revise
-            Task xy = Revision.mergeTemporal(nar, x, y);
+            Task xy = Revision.mergeTemporal(nar, start, end, x, y);
             if (xy != null && (filter==null || filter.test(xy)))
                 top.accept(xy);
         }

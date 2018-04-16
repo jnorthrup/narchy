@@ -3,6 +3,7 @@ package nars.time;
 import jcog.Util;
 import jcog.math.LongInterval;
 import nars.NAR;
+import nars.task.util.TaskRegion;
 
 
 /**
@@ -115,6 +116,28 @@ public enum Tense {
         }
 
         return dt; //unaffected
+    }
+
+    public static long[] union(TaskRegion... tt) {
+        long start = Long.MAX_VALUE;
+        long end = Long.MIN_VALUE;
+        //computes the time range from the union of the involved tasks
+        for (TaskRegion x : tt) {
+            if (x == null)
+                continue;
+            long xs = x.start();
+            if (xs == ETERNAL)
+                continue;
+            start = Math.min(xs, start);
+
+            long xe = x.end();
+            end = Math.max(xe, end);
+        }
+        if (start == Long.MAX_VALUE) {
+            //assume all the tasks are ETERNAL
+            start = end = ETERNAL;
+        }
+        return new long[] { start, end };
     }
 
 

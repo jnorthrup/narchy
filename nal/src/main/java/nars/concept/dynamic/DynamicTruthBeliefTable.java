@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.table.TemporalBeliefTable;
+import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.list.MutableList;
@@ -181,7 +182,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
                 if (tdt == XTERNAL)
                     throw new RuntimeException("XTERNAL should not be present in " + t);
                 if ((t.term().subs() > 2) == commutive)
-                    dtEvi.addToValue(tdt, t.evi(start, end, dur)); //maybe evi
+                    dtEvi.addToValue(tdt, Revision.eviInteg(t, start, end, 1)); //maybe evi
             }
         });
         int n = dtEvi.size();

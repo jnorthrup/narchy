@@ -45,6 +45,10 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
     @Override
     public boolean add(T x) {
         float xx = rank.floatValueOf(x);
+
+        if (xx != xx)
+            return false;
+
         if (xx > aa) {
             b = a;
             bb = aa; //shift down

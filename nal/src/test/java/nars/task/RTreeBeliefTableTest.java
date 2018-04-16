@@ -89,16 +89,17 @@ public class RTreeBeliefTableTest {
         add(r, X, 1f, 0.9f, 0, 1, n);
         add(r, X, 0f, 0.9f, 2, 3, n);
 
-        assertEquals(1f, r.truth(0, 0, null, 1).freq());
-        assertEquals("%.65;.93%", r.truth(0, 1, null, 1).toString());
-        assertEquals("%.65;.93%", r.truth(1, 1, null, 1).toString());
-        assertEquals("%.50;.95%", r.truth(1, 2, null, 1).toString());
-        assertEquals("%.35;.93%", r.truth(2, 3, null, 1).toString());
-        assertEquals(0f, r.truth(3, 3, null, 1).freq());
+        assertEquals("%1.0;.90%", r.truth(0, 0, null, 1).toString());
+        assertEquals("%1.0;.90%", r.truth(0, 1, null, 1).toString());
+        assertEquals("%1.0;.90%", r.truth(1, 1, null, 1).toString());
+        assertEquals("%.50;.90%", r.truth(1, 2, null, 1).toString());
+        assertEquals("%0.0;.90%", r.truth(2, 3, null, 1).toString());
+        assertEquals("%0.0;.90%", r.truth(3, 3, null, 1).toString());
 
-        assertEquals("%0.0;.83%", r.truth(4, 4, null, 1).toString());
-        assertEquals("%0.0;.83%", r.truth(4, 5, null, 1).toString());
-        assertEquals("%0.0;.78%", r.truth(5, 5, null, 1).toString());
+        assertEquals("%.33;.87%", r.truth(4, 4, null, 1).toString());
+        assertEquals("%.35;.85%", r.truth(4, 5, null, 1).toString());
+        assertEquals("%.38;.83%", r.truth(5, 5, null, 1).toString());
+        assertEquals("%.40;.91%", r.truth(5, 8, null, 1).toString());
     }
 
 

@@ -33,7 +33,6 @@ import static nars.util.UtilityFunctions.and;
  * All truth-value (and desire-value) functions used in logic rules
  */
 public final class TruthFunctions {
-    public static final float MAX_CONF = 1f - Param.TRUTH_EPSILON;
 
     /* ----- Single argument functions, called in MatchingRules ----- */
 
@@ -529,7 +528,7 @@ public final class TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     private static float c2w(float c, float horizon) {
-        if (!((Float.isFinite(c) && (c <= MAX_CONF) && (c >= Param.TRUTH_EPSILON))))
+        if (!((Float.isFinite(c) && (c <= Param.TRUTH_MAX_CONF) && (c >= Param.TRUTH_MIN_CONF))))
             throw new RuntimeException("invalid confidence: " + c);
         return c2wSafe(c, horizon);
     }

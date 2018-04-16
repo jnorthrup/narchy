@@ -21,8 +21,8 @@ public class ProxyTemporalBeliefTable implements TemporalBeliefTable {
     }
 
     @Override
-    public Task match(long start, long end, @Nullable Term against, NAR nar, Predicate<Task> filter) {
-        return ref.match(start, end, against, nar, filter);
+    public Task match(long start, long end, @Nullable Term template, EternalTable ete, NAR nar, Predicate<Task> filter) {
+        return ref.match(start, end, template, ete, nar, filter);
     }
 
     @Override

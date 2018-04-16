@@ -4,7 +4,6 @@ import jcog.pri.Priority;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -19,6 +18,11 @@ public class TaskProxy implements Task {
         if (task==null)
             throw new NullPointerException();
         this.task = task;
+    }
+
+    @Override
+    public float freq(long w, int dur) {
+        return task.freq(w, dur);
     }
 
     @Override
@@ -207,31 +211,31 @@ public class TaskProxy implements Task {
 
     }
 
-    /**
-     * adds a Truth cache
-     */
-    public static class WithTermCachedTruth extends WithTerm {
-
-        private final int dur;
-
-        final LongObjectHashMap<Truth> truthCached = new LongObjectHashMap<>(0);
-
-        public WithTermCachedTruth(Term term, Task task, int dur) {
-            super(term, task);
-            this.dur = dur;
-        }
-
-        @Override
-        public @Nullable Truth truth(long when, long dur) {
-            if (dur == this.dur) {
-                return truthCached.getIfAbsentPutWithKey(when, w -> super.truth(w, dur));
-            } else {
-                return super.truth(when, dur);
-            }
-        }
-
-
-    }
+//    /**
+//     * adds a Truth cache
+//     */
+//    public static class WithTermCachedTruth extends WithTerm {
+//
+//        private final int dur;
+//
+//        final LongObjectHashMap<Truth> truthCached = new LongObjectHashMap<>(0);
+//
+//        public WithTermCachedTruth(Term term, Task task, int dur) {
+//            super(term, task);
+//            this.dur = dur;
+//        }
+//
+//        @Override
+//        public @Nullable Truth truth(long when, long dur) {
+//            if (dur == this.dur) {
+//                return truthCached.getIfAbsentPutWithKey(when, w -> super.truth(w, dur));
+//            } else {
+//                return super.truth(when, dur);
+//            }
+//        }
+//
+//
+//    }
 
     public static class WithTruthAndTime extends TaskProxy {
 
@@ -240,7 +244,7 @@ public class TaskProxy implements Task {
         private final boolean negated;
 
         /** either Truth, Function<Task,Truth>, or null */
-        Object truth;
+        Object truthCached;
 
         public WithTruthAndTime(Task task, long start, long end, boolean negated, Function<Task,Truth> truth) {
             super(task);
@@ -248,7 +252,7 @@ public class TaskProxy implements Task {
             this.end = end;
             this.negated = negated;
 
-            this.truth = truth;
+            this.truthCached = truth;
         }
 
         @Override
@@ -266,17 +270,10 @@ public class TaskProxy implements Task {
             return end;
         }
 
-        @Override
-        public @Nullable Truth truth(long when, long dur, float minConf) {
-            if (when < start) return null;
-            if (when > end) return null;
-            return truth();
-        }
-
 
         @Override
         public @Nullable Truth truth() {
-            Object tt = this.truth;
+            Object tt = this.truthCached;
 
             if (tt instanceof Function) {
                 Truth computed = ((Function<Task,Truth>) tt).apply(task);
@@ -284,10 +281,10 @@ public class TaskProxy implements Task {
                     if (negated) {
                         computed = computed.neg();
                     }
-                    this.truth = computed;
+                    this.truthCached = computed;
                     return computed;
                 } else {
-                    this.truth = null;
+                    this.truthCached = null;
                     return null;
                 }
             }

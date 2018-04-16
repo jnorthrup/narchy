@@ -79,15 +79,7 @@ public class TruthletTask extends SignalTask {
         return truthlet.intersects(start, end);
     }
 
-    @Nullable
-    public final Truth truth(long when, long dur, float minConf) {
-        Truth t = truth(when);
-        if (t != null) {
-            if (minConf == 0 || t.conf() >= minConf)
-                return t;
-        }
-        return null;
-    }
+
 //    @Override
 //    public float freq() {
 //        return 0.5f;
@@ -111,10 +103,6 @@ public class TruthletTask extends SignalTask {
 //        }
 //    }
 
-    @Override
-    public @Nullable Truth truth(long when, long dur) {
-        return truth(when);
-    }
 
 
     public @Nullable Truth truth(long when) {

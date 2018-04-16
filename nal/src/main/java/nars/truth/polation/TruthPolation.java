@@ -3,10 +3,16 @@ package nars.truth.polation;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.list.FasterList;
+import nars.Op;
 import nars.Task;
+import nars.task.Revision;
 import nars.task.Tasked;
+import nars.task.util.TaskRegion;
+import nars.term.Term;
 import nars.truth.Truth;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -23,53 +29,9 @@ import static java.lang.Float.NaN;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
-    static class TaskComponent {
-        public final Task task;
-
-        /**
-         * NaN if not yet computed
-         */
-        public float evi = NaN;
-        public float freq = NaN;
-
-        TaskComponent(Task task) {
-            this.task = task;
-        }
-
-        @Override
-        public String toString() {
-            return evi + "," + freq + "=" + task;
-        }
-
-        public boolean isComputed() {
-            float f = freq;
-            return f == f;
-        }
-
-        @Nullable public final TaskComponent update(TruthPolation p) {
-            if (!isComputed()) {
-                Truth tt = p.truth(task);
-                if (tt != null) {
-                    this.freq = tt.freq(); //not necessarily the task's reported "average" freq in case of Truthlets
-                    this.evi = tt.evi();
-                    return this;
-                } else {
-                    this.evi = -1;
-                    return null; //removed
-                }
-            } else {
-                return this.evi > 0 ? this : null;
-            }
-
-
-        }
-    }
-
     public final long start;
     public final long end;
     public int dur;
-
-
     protected TruthPolation(long start, long end, int dur) {
         this.start = start;
         this.end = end;
@@ -78,61 +40,59 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         this.dur = dur;
     }
 
-
     public TruthPolation add(Task t) {
         super.add(new TaskComponent(t));
         return this;
     }
 
-
-
-    /** computes the truth value of a component */
-    protected Truth truth(Task t) {
-        return t.truth(start, end, dur, 0);
-    }
-
-    /** remove components contributing no evidence */
-    public final TruthPolation preFilter() {
-        removeIf(x -> update(x)==null);
+    /**
+     * remove components contributing no evidence
+     */
+    public final TruthPolation filter() {
+        removeIf(x -> update(x) == null);
         return this;
     }
 
-    @Nullable protected final TaskComponent update(int i) {
+    @Nullable
+    protected final TaskComponent update(int i) {
         return update(get(i));
     }
 
-    @Nullable protected final TaskComponent update(TaskComponent tc) {
-        return tc.update(this);
+    @Nullable
+    protected final TaskComponent update(TaskComponent tc) {
+        return tc.update(start, end, dur);
     }
 
-    /** removes the weakest components sharing overlapping evidence with stronger ones.
-     *  should be called after all entries are added */
-    public final TruthPolation filterCyclic() {
-        preFilter();
+    /**
+     * removes the weakest components sharing overlapping evidence with stronger ones.
+     * should be called after all entries are added
+     */
+    public final LongHashSet filterCyclic() {
+        filter();
 
-        int s = size();
-        if (s > 1) {
-            sortThisByFloat(tc -> -tc.evi); //descending by strength
-            //TODO maybe factor in originality to reduce overlap so evidence can be combined better
+        sortThisByFloat(tc -> -tc.eviInteg); //descending by strength
+        //TODO maybe factor in originality to reduce overlap so evidence can be combined better
 
-            //remove the weaker holder of any overlapping evidence
-            LongHashSet e = new LongHashSet(s * 2);
-            removeIf(tc -> {
-                long[] stamp = tc.task.stamp();
+        //remove the weaker holder of any overlapping evidence
+        LongHashSet e = new LongHashSet(size() * 2);
+        removeIf(tc -> {
+            long[] stamp = tc.task.stamp();
 
-                for (long ss : stamp) {
-                    if (!e.add(ss))
-                        return true; //overlap
-                }
+            for (long ss : stamp) {
+                if (!e.add(ss))
+                    return true; //overlap
+            }
 
 
-                return false;
-            });
-        }
-        return this;
+            return false;
+        });
+
+        return e;
     }
 
-    /** computes the final truth value */
+    /**
+     * computes the final truth value
+     */
     abstract public Truth truth();
 
     public final TruthPolation add(Tasked... tasks) {
@@ -151,12 +111,141 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     public final TruthPolation add(Collection<? extends Tasked> tasks) {
         ensureCapacity(tasks.size());
-        return add((Iterable)tasks);
+        return add((Iterable) tasks);
     }
 
     public final TruthPolation add(Tasked tt) {
         add(tt.task());
         return this;
+    }
+
+    public ObjectFloatPair<Term> filterDTDiff() {
+        Term first = null, second = null;
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            TaskComponent t = this.get(i);
+            Term ttt = t.task.term();
+            if (i == 0) {
+                if (!ttt.hasAny(Op.Temporal))
+                    return PrimitiveTuples.pair(ttt, 1f); //we can assume all the terms are equal
+                first = ttt;
+            } else {
+                if (!first.equals(ttt)) {
+                    second = ttt;
+                    //HACK stop here for now
+                    //TODO do Termpolation
+                    removeAbove(i-1);
+                    return PrimitiveTuples.pair(first, 1f);
+                }
+
+            }
+        }
+
+//        Term content;
+//        float differenceFactor = 1f;
+//        if (!termSame) {
+//            Task second = tt1[1].task();
+//
+//            Term a = first.term();
+//            Term b = second.term();
+//            if (a.op()!=CONJ) {
+//
+//
+//                float diff = dtDiff(a, b);
+//                if (!Float.isFinite(diff))
+//                    return null; //impossible
+//                if (diff > 0)
+//                    differenceFactor = (float) Param.evi(1f, diff, dur); //proport
+//
+//                float e1 = first.evi();
+//                float e2 = second.evi();
+//                float firstProp = e1 / (e1 + e2);
+//                content = intermpolate(first.term(), second.term(), firstProp, nar);
+//            } else {
+//                //CONJ merge, with any offset shift computed
+//                Conj c = new Conj();
+//                if (!(c.add(a, first.start()) && c.add(b, second.start()))) {
+//                    return first; //failed
+//                }
+//                content = c.term();
+//                if (start1 !=ETERNAL) {
+//                    long shift = c.shift();
+//                    start1 += shift;
+//                    end1 = start1 + Math.min(first.range(), second.range())-1;
+//                }
+//            }
+//
+//            //TODO apply a discount factor for the relative difference of the two intermpolated terms
+//
+//            if (!Task.validTaskTerm(content))
+//                return first;
+//
+//        } else {
+//            content = first.term();
+//        }
+
+        return null;
+    }
+
+    public byte punc() {
+        if (isEmpty()) throw new RuntimeException();
+        return get(0).task.punc(); //HACK assumes any others are of the same type
+    }
+
+    public TaskRegion[] tasks() {
+        int size = this.size();
+        TaskRegion[] t = new TaskRegion[size];
+        for (int i = 0; i < size; i++) {
+            t[i] = get(i).task;
+        }
+        return t;
+    }
+
+    public static class TaskComponent {
+        public final Task task;
+
+        /**
+         * NaN if not yet computed
+         */
+        public float eviInteg = NaN;
+        public float freq = NaN;
+
+        TaskComponent(Task task) {
+            this.task = task;
+        }
+
+        @Override
+        public String toString() {
+            return eviInteg + "," + freq + "=" + task;
+        }
+
+        public boolean isComputed() {
+            float f = freq;
+            return f == f;
+        }
+
+        /**
+         * TODO move to TruthPolation
+         */
+        @Nullable
+        public final TaskComponent update(long start, long end, int dur) {
+            if (!isComputed()) {
+                float eTotal =
+                        Revision.eviInteg(task, start, end, dur);
+
+                if (eTotal < Float.MIN_NORMAL) {
+                    this.eviInteg = -1;
+                    return null; //no evidence; remove
+                } else {
+                    this.freq = task.freq();
+                    this.eviInteg = eTotal;
+                    return this;
+                }
+            } else {
+                return this.eviInteg > 0 ? this : null;
+            }
+
+
+        }
     }
 
 

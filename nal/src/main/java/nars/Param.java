@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
-import static nars.truth.TruthFunctions.MAX_CONF;
 
 /**
  * NAR Parameters
@@ -355,6 +354,10 @@ public abstract class Param {
      * internal granularity which truth components are rounded to
      */
     public static final float TRUTH_EPSILON = 0.01f;
+    public static final float TRUTH_MIN_CONF = TRUTH_EPSILON;
+    public static final float TRUTH_MAX_CONF = 1f - TRUTH_EPSILON;
+    public static final float TRUTH_MIN_EVI = Float.MIN_NORMAL;
+    public static final float TRUTH_MAX_EVI = Float.MAX_VALUE;
 
 
     /**
@@ -377,7 +380,7 @@ public abstract class Param {
     /**
      * truth confidence threshold necessary to form tasks
      */
-    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, MAX_CONF);
+    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, TRUTH_MAX_CONF);
 
     /**
      * global truth frequency resolution by which reasoning is dithered

@@ -1,9 +1,12 @@
 package nars.truth;
 
+import jcog.Util;
+import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * extends DiscreteTruth's raw hash representation with
@@ -26,21 +29,18 @@ public class PreciseTruth extends DiscreteTruth {
     }
 
     public PreciseTruth(float freq, float ce, boolean xIsConfOrEvidence) {
-        super(freq, xIsConfOrEvidence ? w2c(ce) : ce);
+        super(freq, xIsConfOrEvidence ? ce : w2cSafe(ce));
 
-        assert ((Float.isFinite(freq ) ) && (freq >= 0) && (freq <= 1)):
-                "invalid freq: " + freq;
 
-        this.f = freq;
 
-        if (xIsConfOrEvidence) {
-            this.e = c2wSafe(ce);
-            assert(e > Float.MIN_NORMAL);
-        } else {
-            assert(Float.isFinite(ce) && ce > Float.MIN_NORMAL);
-            this.e = ce;
-        }
+        float e;
+        if (xIsConfOrEvidence)
+            e = c2wSafe(ce); //CONF -> EVI
+        else
+            e = ce; //EVI -> EVI
 
+        this.e = Util.clamp(e, Param.TRUTH_MIN_EVI, Param.TRUTH_MAX_EVI);
+        this.f = Util.clamp(freq, 0, 1f);
     }
 
     public PreciseTruth(@Nullable Truth truth) {

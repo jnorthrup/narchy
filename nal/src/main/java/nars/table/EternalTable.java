@@ -515,4 +515,9 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
 
+    @Nullable public Truth strongestTruth() {
+        Task e = strongest();
+        return (e != null) ? e.truth() : null;
+    }
+
 }

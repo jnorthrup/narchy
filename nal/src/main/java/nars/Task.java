@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
-import static nars.truth.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -102,7 +101,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             if (a == null) {
                 return b;
             } else {
-                return (a.evi() > b.evi(start, end, 1)) ?
+                return (Revision.eviInteg(a, start, end, 1) >
+                        Revision.eviInteg(b, start, end, 1)) ?
                         a : b;
             }
         }
@@ -473,7 +473,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         int dur = n.dur();
 
         return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, tt ->
-                tt.truth(subStart, subEnd, dur, 0)
+                tt.truth(subStart, subEnd, dur)
         );
     }
 
@@ -492,6 +492,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 /* TODO current time, from NAR */ x.creation(),
                 ETERNAL, ETERNAL
         );
+        if (ete.isDeleted())
+            ete.pri(0); //x was deleted
 
         return ete;
 
@@ -536,7 +538,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     /**
-     * amount of evidence measured at a given time with a given duration window
+     * POINT EVIDENCE
+     *
+     * amount of evidence measured at a given point in time with a given duration window
      * <p>
      * WARNING check that you arent calling this with (start,end) values
      *
@@ -546,7 +550,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * @return value >= 0 indicating the evidence
      */
     default float evi(long when, final long dur) {
-
 
         long s = start();
 
@@ -572,35 +575,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
     }
-
-//    default float eternalizability() {
-//        return 1f; //always
-//        //return originality();
-//        //return 0.5f; //some
-//        //return punc()==BELIEF ? 1f: 0f; //always if belief
-//        //return 0f; //never
-//
-////        Term t = term();
-////        return t.op().temporal || t.vars() > 0 ? 1f : 0f;
-//
-//        //return term().vars() > 0 ? 1f : 0f;
-//        //return term().vars() > 0 ? 1f : 0.5f;
-//        //return term().varIndep() > 0 ? 1f: 0f;
-//
-////        Term t = term();
-////        return t.varIndep() > 0 || t.op() == IMPL ?
-////                //0.5f + 0.5f * polarity()
-////                polarity()
-////                    : 0f;
-//
-//        //return true;
-//        //return op().temporal;
-//
-//
-//        //Op op = term.op();
-//        //return op ==IMPL || op ==EQUI || term.vars() > 0;
-//        //return op.statement || term.vars() > 0;
-//    }
 
     @Override
     @NotNull
@@ -882,34 +856,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return term().dt();
     }
 
-    default float conf(long start, long end, long dur) {
-        return w2cSafe(evi(start, end, dur));
-//        float cw = evi(start, end, dur);
-//        assert (cw == cw);
-//        return cw > 0 ? w2cSafe(cw) : Float.NaN;
-    }
-
-    default float conf(long when, long dur) {
-        return conf(when, when, dur);
-    }
-
-    @Nullable
-    default Truth truth(long when, long dur, NAR nar) {
-        Truth t = truth(when, dur, nar.confMin.floatValue());
-        if (t == null)
-            return t;
-        return t.dither(nar);
-    }
-
-    @Nullable
-    default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
-        return truth(nearestPointExternal(targetStart, targetEnd), dur, minConf);
-    }
-
-    default float evi(long targetStart, long targetEnd, final long dur) {
-        return evi(nearestPointExternal(targetStart, targetEnd), dur);
-    }
-
 
 //    /**
 //     * prints this task as a TSV/CSV line.  fields:
@@ -936,11 +882,16 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //    }
 
     @Nullable
-    default Truth truth(long when, long dur, float minConf) {
-        float eve = evi(when, dur);
-        if (eve == eve && eve > Float.MIN_NORMAL && w2cSafe(eve) >= minConf) {
+    default Truth truth(long targetStart, long targetEnd, int dur) {
 
-            return new PreciseTruth(freq(), eve, false);
+
+
+        float eve = Revision.eviAvg(this, targetStart, targetEnd, dur);
+
+        if (eve > Param.TRUTH_MIN_EVI) {
+            return new PreciseTruth(
+                freq() /* TODO interpolate frequency wave */,
+                eve, false);
 
             //quantum entropy uncertainty:
 //                float ff = freq();
@@ -950,6 +901,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //                return $.t(ff, conf);
         }
         return null;
+    }
+
+    @Nullable
+    default Truth truth(long when, int dur) {
+        return truth(when, when, dur);
     }
 
     /**
@@ -1014,7 +970,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     default float expectation(long start, long end, int dur) {
-        Truth t = truth(start, end, dur, 0);
+        Truth t = truth(start, end, dur);
         if (t == null) return Float.NaN;
         return t.expectation();
     }
@@ -1140,16 +1096,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        return c >= cMin && c <= cMax;
 //    }
 
-    /**
-     * projected truth value
-     */
-    @Nullable
-    default Truth truth(long when, long dur) {
-        float e = evi(when, dur);
-        if (e <= Float.MIN_NORMAL)
-            return null;
-        return new PreciseTruth(freq(), e, false);
-    }
+
 
     /**
      * TODO cause should be merged if possible when merging tasks in belief table or otherwise
@@ -1170,7 +1117,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         assert (first < last
                 && first != ETERNAL && first != XTERNAL
-                && last != ETERNAL && last != XTERNAL);
+                /*&& last != ETERNAL */&& last != XTERNAL);
 
         float X = 1 + (last - first);
         float dx = X / n;
@@ -1181,7 +1128,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         area += evi(last, dur) / 2;
         for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
             long ti = times[i];
-            assert (ti!=ETERNAL && ti!=XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
+            assert (ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]);
             area += evi(ti, dur);
         }
 
@@ -1198,30 +1145,24 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return this;
     }
 
-    default float freq(long w, int dur) {
-        Truth x = truth(w, dur);
-        if (x != null)
-            return x.freq();
-        else
-            return Float.NaN;
-    }
+    float freq(long w, int dur);
 
-    default float freqMean(int dur, long... when) {
-
-        assert (when.length > 1);
-
-        float fSum = 0;
-        int num = 0;
-        for (long w : when) {
-            float tf = freq(w, dur);
-            if (tf == tf) {
-                fSum += tf;
-                num++;
-            }
-        }
-        if (num == 0)
-            return Float.NaN;
-        return fSum / num;
-    }
+//    default float freqMean(int dur, long... when) {
+//
+//        assert (when.length > 1);
+//
+//        float fSum = 0;
+//        int num = 0;
+//        for (long w : when) {
+//            float tf = freq(w, dur);
+//            if (tf == tf) {
+//                fSum += tf;
+//                num++;
+//            }
+//        }
+//        if (num == 0)
+//            return Float.NaN;
+//        return fSum / num;
+//    }
 
 }

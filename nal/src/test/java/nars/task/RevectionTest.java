@@ -1,14 +1,12 @@
 package nars.task;
 
 import com.google.common.collect.Lists;
-import jcog.math.Longerval;
 import nars.*;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.FocusingLinearTruthPolation;
-import nars.truth.util.EviDensity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -382,55 +380,5 @@ public class RevectionTest {
 
     }
 
-    @Test public void testTimeFusion_Pairs() {
-        //point overlap
-        assertTimeFusion(1, 1, 1f, new Longerval(1), new Longerval(1));
 
-        //range overlap
-        assertTimeFusion(1, 2, 1f, new Longerval(1,2), new Longerval(1,2));
-
-        //partial range overlap
-        assertTimeFusion(1, 2, 0.75f, new Longerval(1,1), new Longerval(1,2));
-
-        //end-to-end point joint
-        assertTimeFusion(1, 2, 0.5f, new Longerval(1), new Longerval(2));
-
-        //end-to-end range joint
-        assertTimeFusion(1, 4, 0.5f, new Longerval(1,2), new Longerval(3, 4));
-
-        //gap
-        assertTimeFusion(1, 3, 1/3f, new Longerval(1,1), new Longerval(3,3));
-    }
-
-    @Test public void testTimeFusion_Triples() {
-        //point overlap
-        assertTimeFusion(1, 1, 1f, new Longerval(1), new Longerval(1), new Longerval(1));
-
-        //range overlap
-        assertTimeFusion(1, 2, 1f, new Longerval(1,2), new Longerval(1,2), new Longerval(1,2));
-
-        //partial range overlap
-        assertTimeFusion(1, 2, 0.833f, new Longerval(1,1), new Longerval(1,2), new Longerval(1,2));
-        assertTimeFusion(1, 2, 2/3f, new Longerval(1,1), new Longerval(1,1), new Longerval(1,2));
-
-        //end-to-end point joint
-        assertTimeFusion(1, 3, 1/3f, new Longerval(1), new Longerval(2), new Longerval(3));
-
-        //end-to-end range joint
-        assertTimeFusion(1, 6, 1/3f, new Longerval(1,2), new Longerval(3, 4), new Longerval(5, 6));
-
-        //gap
-        assertTimeFusion(1, 5, 1/5f, new Longerval(1), new Longerval(3), new Longerval(5));
-
-    }
-
-    static void assertTimeFusion(long start, long end, float factor, Longerval... ii) {
-        EviDensity a = new EviDensity(1);
-        for (Longerval i : ii) {
-            a.add(i.a, i.b, 1);
-        }
-        assertEquals(start, a.unionStart);
-        assertEquals(end, a.unionEnd);
-        assertEquals(factor, a.factor(), 0.001f);
-    }
 }

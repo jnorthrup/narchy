@@ -97,15 +97,15 @@ abstract public class AbstractExec extends Exec {
                                     return value;
                                 }
 
-                                @Override
-                                public void onAdd(Activate value) {
-                                    value.id.state(nar.conceptBuilder.awake());
-                                }
-
-                                @Override
-                                public void onRemove(Activate value) {
-                                    value.id.state(nar.conceptBuilder.sleep());
-                                }
+//                                @Override
+//                                public void onAdd(Activate value) {
+//                                    value.id.state(nar.conceptBuilder.awake());
+//                                }
+//
+//                                @Override
+//                                public void onRemove(Activate value) {
+//                                    value.id.state(nar.conceptBuilder.sleep());
+//                                }
                             }
 
                             :
@@ -114,15 +114,15 @@ abstract public class AbstractExec extends Exec {
                                     Param.activateMerge, new HashMap<>(CAPACITY*2),
                                     CAPACITY) {
 
-                                @Override
-                                public void onAdd(Activate value) {
-                                    value.id.state(nar.conceptBuilder.awake());
-                                }
-
-                                @Override
-                                public void onRemove(Activate value) {
-                                    value.id.state(nar.conceptBuilder.sleep());
-                                }
+//                                @Override
+//                                public void onAdd(Activate value) {
+//                                    value.id.state(nar.conceptBuilder.awake());
+//                                }
+//
+//                                @Override
+//                                public void onRemove(Activate value) {
+//                                    value.id.state(nar.conceptBuilder.sleep());
+//                                }
                             }
             ;
 

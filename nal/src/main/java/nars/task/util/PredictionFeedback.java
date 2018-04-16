@@ -7,6 +7,7 @@ import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
+import nars.task.Revision;
 import nars.task.signal.SignalTask;
 
 import java.util.List;
@@ -139,9 +140,8 @@ public class PredictionFeedback {
             return false;
 
         //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
-        float yEvi = y.evi(start, end, dur);
-        float xEvi = x.evi(start, end, dur);
-
+        float yEvi = Revision.eviInteg(y, start, end, dur); //TODO cache either if possible
+        float xEvi = Revision.eviInteg(x, start, end, dur); //TODO cache either if possible
 
         float error = Math.abs(x.freq() - y.freq());
         float coherence;
@@ -163,13 +163,13 @@ public class PredictionFeedback {
         }
     }
 
-    private static float error(Task x, Task y, long start, long end, int dur) {
-        //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
-
-        float yEvi = y.evi(start, end, dur);
-        float xEvi = x.evi(start, end, dur);
-
-
-        return Math.abs(x.freq() - y.freq());
-    }
+//    private static float error(Task x, Task y, long start, long end, int dur) {
+//        //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
+//
+//        float yEvi = y.evi(start, end, dur);
+//        float xEvi = x.evi(start, end, dur);
+//
+//
+//        return Math.abs(x.freq() - y.freq());
+//    }
 }

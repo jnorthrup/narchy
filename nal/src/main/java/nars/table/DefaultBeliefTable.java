@@ -128,9 +128,7 @@ public class DefaultBeliefTable implements BeliefTable {
 
     @Override
     public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-        Task ete = filter==null ? eternal.strongest() : eternal.select(filter);
-        Task tmp = temporal.match(start, end, template, nar, filter);
-        return Task.eviMax(ete, tmp, start, end);
+        return temporal.match(start, end, template, eternal, nar, filter);
     }
 
 

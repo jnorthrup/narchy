@@ -255,7 +255,7 @@ public class NAgentTest {
         }, Derivers.rules(1, 8, n).compile(), n);
 
         new STMLinkage(n, 1, false);
-        d.conceptsPerIteration.set(8);
+        d.conceptsPerIteration.set(2);
 
 //        n.log();
 

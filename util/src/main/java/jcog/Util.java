@@ -2099,7 +2099,11 @@ public enum Util {
     }
 
     public static float[] softmax(int num, IntToFloatFunction build, float temperature) {
-        return Util.map(num, i -> (i!=0 ? ((float) Math.exp(build.valueOf(i)/ temperature)) : 1) );
+        return Util.map(num, i -> softmax(build.valueOf(i), temperature) );
+    }
+
+    public static float softmax(float x, float temp) {
+        return (float) Math.exp((float) Math.exp(x/temp));
     }
 
 
@@ -2395,6 +2399,10 @@ public enum Util {
             xx[i] = f.apply(x);
         }
         return xx;
+    }
+
+    public static <X> FloatFunction<X>  softmaxFunc(FloatFunction<X> f, float temperature) {
+        return (x) -> softmax(f.floatValueOf(x), temperature);
     }
 
 

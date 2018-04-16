@@ -10,7 +10,6 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.task.Revision;
 import nars.term.Term;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -97,10 +96,9 @@ public interface TaskTable {
                 return;
             }
 
-            //roulette selection
-            FloatFunction<Task> value = m.value();
+            //roulette selection, softmax so negative values dont disturb the roulette weighting
+            float[] w = Util.map(t, Util.softmaxFunc(m.value(), 0.5f));
 
-            float[] w = Util.map(t, value);
             final int[] remain = {limit};
             Roulette.RouletteUnique.run(w, (x)->{
                 target.accept(t[x]);

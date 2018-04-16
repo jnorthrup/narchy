@@ -3,6 +3,7 @@ package nars.task;
 import jcog.Texts;
 import jcog.Util;
 import jcog.list.FasterList;
+import jcog.math.Longerval;
 import jcog.pri.Priority;
 import nars.NAR;
 import nars.Op;
@@ -19,9 +20,10 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.util.EviDensity;
+import nars.truth.polation.TruthPolation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -523,8 +525,6 @@ public class Revision {
     }
 
 
-
-
 //    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, FasterList<TaskRegion> tt) {
 //        //filter the task set:
 //        // if there are any exact matches to the interval, remove any others
@@ -546,249 +546,95 @@ public class Revision {
 //    }
 
 
-    @Nullable public static Task mergeTemporal(NAR nar, FasterList<TaskRegion> tt) {
-        return mergeTemporal(nar, tt.array());
-    }
-
-    /** preprocesses the tasks with respect to the specified time bounds being truthpolated */
-    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, TaskRegion[] tt) {
-
-        if (start == ETERNAL) {
-            //replace the array with eternalized proxy tasks
-            //tt = tt.clone();
-            float factor =
-                    1f;
-            //1/n
-
-            tt = Util.replaceDirect(tt, 0, tt.length,
-                    x -> Task.eternalize((Task) x, factor));
-        } else {
-
-            //   TODO clip tasks to the specified ranges?
-        }
-
-        return mergeTemporal(nar, tt);
-    }
-
-    @Nullable public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
-
-        switch (tt.length) {
-            case 0:
-                return null;
-
-            case 1:
-                return tt[0].task();
-
-            default:
-                return Revision.mergeTemporal(
-                        Float.MIN_NORMAL /*Truth.EVI_MIN*/,
-                        //c2wSafe(nar.confMin.floatValue()),
-                        nar, tt
-                );
-
-        }
-
-    }
-
-
-    /** assumes:
-     *          the tasks to be sorted in descending strength
-     * the input minEvi corresponds to the absolute minimum accepted
-     * evidence integral (evidence * time) for a point-like result (dtRange == 0)
-     * */
-    @Nullable static Task mergeTemporal(float eviMinInteg, NAR nar, TaskRegion... tt) {
-        assert(tt.length > 1);
-
-        tt = ArrayUtils.removeNulls(tt, Task[]::new); //HACK
-
-        Task first = tt[0].task();
-
-        //assumes the tasks are ordered in decreasing strength, so any detected overlap cancels the weaker tasks
-        //TODO calculate the temporal density at the same time as this first part to avoid naively generating a sparse result afterward
-        //TODO combine evidensity with the stamp calculation
-        //TODO allow evidensity to skip a task in the array and proceed to the next without recurse
-        LongHashSet evidence = new LongHashSet();
-        int overlap = 0, totalEv = 0;
-        int tasks = 0;
-        boolean termSame = true;
-        EviDensity density = new EviDensity(nar.dur());
-
-        boolean exit = false;
-        for (int i = 0; i < tt.length && !exit; i++) {
-            TaskRegion ri = tt[i];
-            if (ri == null)
-                continue;
-
-            Task ti = ri.task();
-
-
-            long[] ts = ti.stamp();
-            totalEv += ts.length;
-
-            int overlapsToAdd;
-            if (tasks == 0) {
-                overlapsToAdd = 0;
-            } else {
-                overlapsToAdd = Stamp.overlaps(evidence, ts);
-                if (overlapsToAdd > 0) {
-                    if (totalEv > 0 && Param.overlapFactor(overlap+overlapsToAdd) < Float.MIN_NORMAL) {/* current amount so far */
-                        //would cause zero evidence, regardless of whatever truth is calculated later
-                        tt[i] = null;
-                        continue; //skip this one
-                    }
-                } else {
-
-                    if (termSame) {
-                        Term termI = ti.term();
-
-                        //limit to 2 tasks if the terms differ
-                        if ((i > 0) && !termI.equals(first.term())) {
-                            if (tasks == 1) {
-                                //limit termpolation to max 2 tasks for now
-                                termSame = false; //difference in terms
-                                //TODO loop dont recurse, just buffer the accumulated evidence changes to the end of the loop
-                                tt = new TaskRegion[]{first, ri};
-                                exit = true;
-                                //continue
-                            } else {
-                                //skip this term, it would conflict with the other 2+ terms which are already known to be the same
-                                tt[i] = null;
-                                continue; //skip this task
-                            }
-                        }
-                    }
-                }
-            }
-
-            density.add(ri);
-
-            evidence.addAll(ts);
-
-            //if (tasks > 1)
-            //    evidence.compact(); //because it may be compared against frequently
-
-            overlap += overlapsToAdd;
-            tasks++;
-        }
-
-        if (tasks == 1) {
-            //assert(first !=null);
-            return first; //return the top one, nothing could be merged
-        }
-
-        long start = density.unionStart;
-        long end = density.unionEnd;
-
-        int dur = nar.dur();
-
-        //dont settle for anything worse than the first (strongest) task by un-revised
-        eviMinInteg = Math.max(
-                eviInteg(first, start, end, dur),
-                eviMinInteg
-        );
-
-        float overlapFactor = Param.overlapFactor(((float)overlap)/totalEv);
-        if (overlapFactor < Float.MIN_NORMAL)
-            return first;
-
-
-        if (tasks!=tt.length)
-            tt = ArrayUtils.removeNulls(tt, Task[]::new);
-
-        long range = start != ETERNAL ? 1 + (end - start) : XTERNAL /* "Long.POSITIVE_INFINITY" */;
-
-        Term content;
-        float differenceFactor = 1f;
-        if (!termSame) {
-            Task second = tt[1].task();
-
-            Term a = first.term();
-            Term b = second.term();
-            if (a.op()!=CONJ) {
-
-
-                float diff = dtDiff(a, b);
-                if (!Float.isFinite(diff))
-                    return null; //impossible
-                if (diff > 0)
-                    differenceFactor = (float) Param.evi(1f, diff, dur); //proport
-
-                float e1 = first.evi();
-                float e2 = second.evi();
-                float firstProp = e1 / (e1 + e2);
-                content = intermpolate(first.term(), second.term(), firstProp, nar);
-            } else {
-                //CONJ merge, with any offset shift computed
-                Conj c = new Conj();
-                if (!(c.add(a, first.start()) && c.add(b, second.start()))) {
-                    return first; //failed
-                }
-                content = c.term();
-                if (start!=ETERNAL) {
-                    long shift = c.shift();
-                    start += shift;
-                    end = start + Math.min(first.range(), second.range())-1;
-                }
-            }
-
-            //TODO apply a discount factor for the relative difference of the two intermpolated terms
-
-            if (!Task.validTaskTerm(content))
-                return first;
-
-        } else {
-            content = first.term();
-        }
-
-        Truth truth = Param.truth(start, end, dur).add(tt).preFilter().truth();
-        if (truth == null) return first;
-
-        float truthEvi = density.factor(truth.evi());
-        float eAdjusted = truthEvi
-                    * differenceFactor //affects overall result
-                    * overlapFactor; //affects overall result
-
-
-//        if (densityFactor < 1f) {
-//            //apply densityFactor as a LERP of evidence from eternalized to full
-//            eAdjusted = Util.lerp(densityFactor, truth.eviEternalized(), truth.evi());
+//    /** preprocesses the tasks with respect to the specified time bounds being truthpolated */
+//    @Nullable public static Task mergeTemporal(NAR nar, long start, long end, TaskRegion[] tt) {
+//
+//        if (start == ETERNAL) {
+//            //replace the array with eternalized proxy tasks
+//            //tt = tt.clone();
+//            float factor =
+//                    1f;
+//            //1/n
+//
+//            tt = Util.replaceDirect(tt, 0, tt.length,
+//                    x -> Task.eternalize((Task) x, factor));
+//        } else {
+//
+//            //   TODO clip tasks to the specified ranges?
 //        }
+//
+//        return mergeTemporal(nar, tt);
+//    }
 
-        //if eAdjusted were to stretch fully through the entire range, and it still is lower than the minimum, give up
-        if ((eAdjusted * range) < eviMinInteg)
-            return first;
+    @Nullable
+    public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
+        long[] u = Tense.union(tt);
+        return mergeTemporal(nar, u[0], u[1], tt);
+    }
 
-        PreciseTruth cTruth = Truth.theDithered(truth.freq(), eAdjusted, nar);
+    @Nullable
+    public static Task mergeTemporal(NAR nar, long start, long end, TaskRegion... tt) {
+        return mergeTemporal(nar, nar.dur(), start, end, false, tt);
+    }
+
+    @Nullable
+    public static Task mergeTemporal(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
+
+        tasks = ArrayUtils.removeNulls(tasks, Task[]::new); //HACK
+
+        /*Truth.EVI_MIN*/
+        //c2wSafe(nar.confMin.floatValue()),
+        float eviMinInteg = Float.MIN_NORMAL;
+
+        TruthPolation T = Param.truth(start, end, dur).add(tasks);
+        LongHashSet stamp = T.filterCyclic();
+
+        ObjectFloatPair<Term> termpolation = T.filterDTDiff();
+        if (termpolation == null)
+            return null;
+
+        Truth baseTruth = T.truth();
+        if (baseTruth == null)
+            return null; //nothing
+
+        float truthEvi = baseTruth.evi() * termpolation.getTwo();
+
+        float range = (start != ETERNAL) ? (end - start + 1) : 1;
+        if ((truthEvi * range) < eviMinInteg)
+            return null;
+
+        Truth cTruth = Truth.theDithered(baseTruth.freq(), truthEvi, nar);
         if (cTruth == null)
             return null;
 
-        long _start = start;
-        long _end = end;
-        Task t = Task.tryTask(content, first.punc(), cTruth, (c, tr)->
-            new NALTask(c, first.punc(),
-                    tr,
-                    nar.time(), _start, _end,
-                    Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
-            )
+        if (!forceProjection && T.size() == 1) {
+            //can't do better than the only remaining task, unless you want to force reprojection to the specified start,end range (ie. eternalize)
+            Task only = T.get(0).task;
+            return only;
+        }
+
+        byte punc = T.punc();
+
+        Task t = Task.tryTask(termpolation.getOne(), punc, cTruth, (c, tr) ->
+                new NALTask(c, punc,
+                        tr,
+                        nar.time(), start, end,
+                        Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+                )
         );
 
         if (t == null)
-            return first; //failed to create task
+            return null; //failed to create task
 
-        //check final eviInteg of a temporal result
-        if (start!=ETERNAL && (eviInteg(t, start, end, dur) < eviMinInteg))
-            return first;
+        tasks = T.tasks(); //HACK
 
-        t.priSet(Priority.fund(Util.max((TaskRegion p)->p.task().priElseZero(),tt),
+        t.priSet(Priority.fund(Util.max((TaskRegion p) -> p.task().priElseZero(), tasks),
                 false,
-                Tasked::task, tt));
+                Tasked::task, tasks));
 
-        ((NALTask)t).cause(Cause.sample(Param.causeCapacity.intValue(), tt));
+        ((NALTask) t).cause(Cause.sample(Param.causeCapacity.intValue(), tasks));
 
-        if (Param.DEBUG)
-            t.log("Temporal Merge");
-
-//        for (TaskRegion x : tt) {
+//        for (TaskRegion x : tasks) {
 //            x.task().meta("@", (k) -> t); //forward to the revision
 //        }
 
@@ -796,19 +642,51 @@ public class Revision {
     }
 
 
-    /** convenience method for selecting evidence integration strategy */
+    public static float eviAvg(Task x, long start, long end, int dur) {
+
+        //integrate, potentialy inside and outside
+        float e = eviInteg(x, start, end, dur);
+        long range = (start == ETERNAL) ? 1 : (end - start + 1);
+        return e / range;
+
+    }
+
+    /**
+     * convenience method for selecting evidence integration strategy
+     */
     public static float eviInteg(Task x, long start, long end, int dur) {
+        if (x.isEternal())
+            return x.evi() * (end-start+1); //simple
+
         if (start == end) {
             return x.evi(start, dur); //point-like
         } else {
-            if (end - start <= dur) {
+            long d = end - start;
+            if (d <= dur || d < 2) {
                 return x.eviInteg(dur,
                         start,
                         end);
             } else {
+                @Nullable Longerval se = Longerval.intersect(start, end, x.start(), x.end());
+                if (se != null) {
+
+                    boolean a = (se.a > start && se.a < end);  //add point se.a?
+
+                    boolean b = (se.b > start && se.b < end && se.b!=se.a); //add point se.b?
+
+                    if (a && b) {
+                        return x.eviInteg(dur, start, se.a, se.b, end);
+                    } else if (a) {
+                        return x.eviInteg(dur, start, se.a, end);
+                    } else if (b) {
+                        return x.eviInteg(dur, start, se.b, end);
+                    }
+
+                }
+
                 return x.eviInteg(dur,
                         start,
-                        (start+end)/2L, //midpoint
+                        (start + end) / 2L, //midpoint
                         end);
             }
         }
@@ -871,7 +749,7 @@ public class Revision {
             String bs = Conj.sequenceString(b, c).toString();
 
             int levDist = Texts.levenshteinDistance(as, bs);
-            float seqDiff = (((float)levDist)/(Math.min(as.length(),bs.length())));
+            float seqDiff = (((float) levDist) / (Math.min(as.length(), bs.length())));
 
             //HACK estimate
             float rangeDiff = Math.max(1f, Math.abs(a.dtRange() - b.dtRange()));
@@ -880,7 +758,7 @@ public class Revision {
 
         } else {
             if (!aSubsEqualsBSubs) {
-                if (aa.subs()!=bb.subs())
+                if (aa.subs() != bb.subs())
                     return Float.POSITIVE_INFINITY;
 
                 for (int i = 0; i < len; i++)

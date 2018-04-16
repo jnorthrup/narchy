@@ -6,8 +6,12 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.task.Revision;
 import nars.task.signal.SignalTask;
+import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -84,9 +88,33 @@ public interface TemporalBeliefTable extends TaskTable {
 //                 //1 / ((1 + t.distanceTo(start, end)/fdur));
     }
 
+    static FloatFunction<TaskRegion> mergabilityWith(Task x, float tableDur) {
+        ImmutableLongSet xStamp = Stamp.toSet(x);
+
+        long xStart = x.start();
+        long xEnd = x.end();
+
+        //how important the weak confidence is
+        float weakConfFactor = 0.25f;
+
+        return (TaskRegion _y) -> {
+            Task y = (Task) _y;
+
+            if (Stamp.overlapsAny(xStamp, y.stamp()))
+                return Float.NaN;
+
+            //float freqCoherence = 1 - Math.abs(x.freq() - y.freq());
+            return
+                    (1f / (1f +
+                            (Math.abs(y.start() - xStart) + Math.abs(y.end() - xEnd))/tableDur))
+                    //* (1f + weakConfFactor * (1f - y.conf())) //prefer weak
+            ;
+        };
+    }
+
     /** finds or generates the strongest match to the specified parameters.
      * Task against is an optional argument which can be used to compare internal temporal dt structure for similarity */
-    Task match(long start, long end, @Nullable Term against, NAR nar, Predicate<Task> filter);
+    Task match(long start, long end, @Nullable Term template, EternalTable eternals, NAR nar, Predicate<Task> filter);
 
     /** estimates the truth value for the provided time.
      * the eternal table's top value, if existent, contributes a 'background'
@@ -155,7 +183,7 @@ public interface TemporalBeliefTable extends TaskTable {
         }
 
         @Override
-        public Task match(long start, long end, @Nullable Term against, NAR nar, Predicate<Task> filter) {
+        public Task match(long start, long end, @Nullable Term template, EternalTable ete, NAR nar, Predicate<Task> filter) {
             return null;
         }
 

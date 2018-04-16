@@ -16,7 +16,6 @@ import nars.term.compound.util.Conj;
 import nars.term.var.VarPattern;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.util.EviDensity;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongLongPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -932,10 +931,11 @@ public class DeriveTime extends TimeGraph {
                     boolean taskEvi = !task.isQuestionOrQuest();
                     boolean beliefEvi = !belief.isQuestionOrQuest();
                     if (taskEvi && beliefEvi) {
-                        EviDensity density = new EviDensity(d.dur, task, belief);
-                        s = density.unionStart;
-                        e = density.unionEnd;
-                        d.concEviFactor *= density.factor(); //TODO eternalization margin?
+                        //EviDensity density = new EviDensity(d.dur, task, belief);
+                        long[] u = Tense.union(task, belief);
+                        s = u[0];
+                        e = u[1];
+                        //d.concEviFactor *= density.factor(); //TODO eternalization margin?
                     } else if (taskEvi) {
                         s = task.start();
                         e = task.end();

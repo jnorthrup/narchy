@@ -66,7 +66,14 @@ public interface Truth extends Truthed {
      */
     static int truthToInt(float freq, float conf, short discreteness) {
 
+        assert(Float.isFinite(freq) && (freq >= 0) && (freq <= 1)):
+                "invalid freq: " + freq;
+
         int freqHash = floatToInt(freq, discreteness);// & 0x0000ffff;
+
+        assert(Float.isFinite(conf) && conf > Float.MIN_NORMAL && conf < 1f);
+
+        conf = Util.clamp(conf, Param.TRUTH_MIN_CONF, Param.TRUTH_MAX_CONF);
         int confHash = floatToInt(conf, discreteness);// & 0x0000ffff;
 
         return (freqHash << 16) | confHash;
@@ -155,7 +162,7 @@ public interface Truth extends Truthed {
 
 
     @NotNull
-    default StringBuilder appendString(@NotNull StringBuilder sb) {
+    default StringBuilder appendString(StringBuilder sb) {
         return Truth.appendString(sb, 2, freq(), conf());
     }
 
@@ -167,7 +174,7 @@ public interface Truth extends Truthed {
         return appendString(new StringBuilder(7)).toString();
     }
 
-    static int compare(@NotNull Truth a, @NotNull Truth b) {
+    static int compare(Truth a, Truth b) {
         if (a == b) return 0;
 
         //see how Truth hash() is calculated to know why this works
@@ -183,7 +190,7 @@ public interface Truth extends Truthed {
 
 
 //    @NotNull
-//    default Truth interpolate(@NotNull Truthed y) {
+//    default Truth interpolate(Truthed y) {
 //        float xc = confWeight();
 //        float yc = y.confWeight();
 //
@@ -357,7 +364,7 @@ public interface Truth extends Truthed {
 //        Frequency, Confidence, Expectation
 //    }
 //
-//    default float component(@NotNull TruthComponent c) {
+//    default float component(TruthComponent c) {
 //        switch (c) {
 //            case Frequency: return freq();
 //            case Confidence: return conf();
@@ -368,7 +375,7 @@ public interface Truth extends Truthed {
 //
 //    /** provides a statistics summary (mean, min, max, variance, etc..) of a particular TruthValue component across a given list of Truthables (sentences, TruthValue's, etc..).  null values in the iteration are ignored */
 //    @NotNull
-//    static DescriptiveStatistics statistics(@NotNull Iterable<? extends Truthed> t, @NotNull TruthComponent component) {
+//    static DescriptiveStatistics statistics(Iterable<? extends Truthed> t, TruthComponent component) {
 //        DescriptiveStatistics d = new DescriptiveStatistics();
 //        for (Truthed x : t) {
 //            Truth v = x.truth();

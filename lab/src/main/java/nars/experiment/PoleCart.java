@@ -9,9 +9,7 @@ import nars.NAgentX;
 import nars.concept.Concept;
 import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
-import nars.op.language.NARSpeak;
 import spacegraph.SpaceGraph;
-import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,15 +40,14 @@ public class PoleCart extends NAgentX {
 
             try {
                 NAgent a = new PoleCart(n);
-                a.nar().freqResolution.set(0.02f);
-                a.nar().confResolution.set(0.02f);
+                //a.nar().freqResolution.set(0.02f);
+                //a.nar().confResolution.set(0.02f);
 
 
+//                NARSpeak s = new NARSpeak(n);
+//                s.speech.chatty();
+//                s.spoken.on(new NativeSpeechDispatcher()::speak);
 
-
-                NARSpeak s = new NARSpeak(n);
-                s.speech.chatty();
-                s.spoken.on(new NativeSpeechDispatcher()::speak);
 //                new NARSpeak.VocalCommentary(a);
 
                 //a.durations.setValue(1f);

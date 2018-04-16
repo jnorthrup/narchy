@@ -7,10 +7,10 @@ import jcog.pri.Prioritized;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.function.IntPredicate;
 
+import static java.lang.Float.MIN_NORMAL;
 import static java.lang.Math.exp;
 
 /**
@@ -133,7 +133,7 @@ public enum Roulette {
 
                 int i = this.i;
 
-                while ((distance = distance - w[i]) > Float.MIN_NORMAL) {
+                while ((distance = distance - w[i]) > MIN_NORMAL) {
                     //if (dir) {
                     if (++i == count) i = 0;
                     //} else {
@@ -156,21 +156,20 @@ public enum Roulette {
             this.w = w;
             this.remaining = w.length;
 
-            this.weightSum = Util.sum(w);
-
-            if (weightSum > Float.MIN_VALUE){
-                //weightSum + " is non-positive";
-                Arrays.fill(w, 1);
-                weightSum = w.length;
+            float ws = 0;
+            for (float x : w) {
+                assert(x > MIN_NORMAL);
+                ws += x;
             }
 
+            this.weightSum = ws;
             this.i = (this.rng = rng).nextInt(w.length); //random start position
         }
 
     }
 
 
-    public static enum RouletteControl {
-        STOP, CONTINUE, WEIGHTS_CHANGED
-    }
+//    public static enum RouletteControl {
+//        STOP, CONTINUE, WEIGHTS_CHANGED
+//    }
 }

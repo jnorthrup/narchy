@@ -138,7 +138,7 @@ public class TruthLab extends Gridding {
     class TaskTimeline extends TruthTimeline {
 
         public TaskTimeline(Task task, long start, long end, int samplePeriod) {
-            super(start, end, samplePeriod, (w) -> task.truth(w, dur, Param.TRUTH_EPSILON));
+            super(start, end, samplePeriod, (w) -> task.truth(w, dur));
 
             this.label = task.toString();
 
@@ -157,7 +157,7 @@ public class TruthLab extends Gridding {
                     return b.truth(w, w, nar);
                 } else {
                     Task x = b.match(w, w, null, nar);
-                    return x != null ? x.truth(w, dur, Param.TRUTH_EPSILON) : null;
+                    return x != null ? x.truth(w, dur) : null;
 
                 }
             });

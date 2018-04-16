@@ -79,7 +79,7 @@ public class DecideSoftmax implements Deciding {
         /* http://www.cse.unsw.edu.au/~cs9417ml/RL1/source/RLearner.java */
         float sumProb = 0;
         for (int i = 0; i < actions; i++) {
-            sumProb += (motProb[i]  = (float) Math.exp(mot[i] / temperature));
+            sumProb += (motProb[i]  = Util.softmax(mot[i], temperature));
         }
 
         float r = random.nextFloat() * sumProb;

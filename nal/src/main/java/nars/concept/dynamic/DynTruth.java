@@ -14,11 +14,10 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.util.EviDensity;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -44,9 +43,14 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         super(initialCap);
     }
 
+    @Override
+    protected Object[] newArray(int newCapacity) {
+        return new TaskRegion[newCapacity];
+    }
+
     public float pri() {
 
-        int s = size();
+        int s = size;
         assert (s > 0);
 
         if (s > 1) {
@@ -151,13 +155,15 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 } else {
                     //dilute the evidence in proportion to temporal sparseness for non-temporal results
 
-                    EviDensity se = new EviDensity(nar.dur(), this);
-                    evi = se.factor(evi);
-                    if (evi!=evi || evi < eviMin)
-                        return null;
-                    start = se.unionStart;
-                    end = se.unionEnd;
+//                    EviDensity se = new EviDensity(nar.dur(), this);
+//                    evi = se.factor(evi);
+//                    if (evi!=evi || evi < eviMin)
+//                        return null;
+//                    start = se.unionStart;
+//                    end = se.unionEnd;
 
+                    long[] u = Tense.union(this.array());
+                    start = u[0]; end = u[1];
                 }
             } else {
                 //only one task
@@ -183,7 +189,6 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             return Truth.theDithered(f, freqRes, evi, confRes, w2cSafe(eviMin));
 
         //undithered until final step for max precision
-        PreciseTruth tr = new PreciseTruth(f, evi, false);
 
         // then if the term is valid, see if it is valid for a task
         Term content = truthModel instanceof DynamicTruthModel ?
@@ -201,8 +206,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
-                tr.negIf(r.getTwo())
-                        .dither(freqRes, confRes, w2cSafe(eviMin)),
+                Truth.theDithered(r.getTwo() ? (1-f) : f, freqRes, evi, confRes, w2cSafe(eviMin)),
                 nar, start, end,
                 ss.getOne());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);

@@ -329,7 +329,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         if (d == null)
             return null;
 
-        Truth pp = Param.truth(start, end, dur).add((Collection)d).preFilter().truth();
+        Truth pp = Param.truth(start, end, dur).add((Collection)d).filter().truth();
         if (pp == null)
             return null;
 

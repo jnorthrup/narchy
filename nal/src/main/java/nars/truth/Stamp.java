@@ -25,7 +25,6 @@ import jcog.Util;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
-import nars.Task;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
@@ -141,7 +140,7 @@ public interface Stamp {
         return toSetArray(c, maxLen);
     }
 
-    static ImmutableLongSet toSet(Task task) {
+    static ImmutableLongSet toSet(Stamp task) {
         return new LongHashSet(task.stamp()).toImmutable();
     }
 

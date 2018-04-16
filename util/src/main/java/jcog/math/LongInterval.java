@@ -233,4 +233,11 @@ public interface LongInterval {
         long start = start();
         return (start == ETERNAL) || (rangeStart >= start && rangeEnd <= end());
     }
+
+//    default boolean containedBy(long start, long end) {
+//        if (start == ETERNAL) return true;
+//        long s = start();
+//        if (s == )
+//        if only.isEternal() || (only.start() == start && only.end() == end)
+//    }
 }

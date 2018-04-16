@@ -25,6 +25,7 @@ import nars.truth.polation.TruthPolation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,16 +114,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //            return super.add(element, elementRank, cmp);
 //        }
 //    }
-
-    static FloatFunction<TaskRegion> mergabilityWith(Task x) {
-        ImmutableLongSet xStamp = Stamp.toSet(x);
-        return (TaskRegion _y) -> {
-            Task y = (Task) _y;
-            if (Stamp.overlapsAny(xStamp, y.stamp()))
-                return Float.NaN;
-            return (1f + Math.abs(x.freq() - y.freq())) * (1f / (1f + Math.abs(y.start() - x.start()) + Math.abs(y.end() - x.end())));
-        };
-    }
 
     /**
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
@@ -238,7 +229,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         //Set<TaskRegion> seen = new HashSet(size());
         return (t) -> {
             //if (seen.add(t)) {
-            Task tt = t.task();
+            Task tt = ((Task)t); //.task();
             if (!tt.isDeleted())
                 return each.test(tt);
 //            }
@@ -281,13 +272,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     @Override
     public Truth truth(long start, long end, EternalTable eternal, int dur) {
 
-
         assert (end >= start);
-
-        final Task ete = eternal != null ? eternal.strongest() : null;
 
         int s = size();
         if (s > 0) {
+
 
             int maxTruths = TRUTHPOLATION_LIMIT;
 
@@ -295,36 +284,52 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             maxTries = Math.min(s * 2 /* in case the same task is encountered twice HACK*/,
                     maxTries);
 
-            ScanFilter tt = new ScanFilter(maxTruths, maxTruths,
+            ScanFilter temporalTasks = new ScanFilter(maxTruths, maxTruths,
                     task(taskStrength(start, end, dur)),
                     maxTries)
                     .scan(this, start, end);
 
-            if (!tt.isEmpty()) {
+            if (!temporalTasks.isEmpty()) {
 
-                TruthPolation t = Param.truth(start, end, dur).add(tt);
+                TruthPolation t = Param.truth(start, end, dur).add(temporalTasks);
 
-                if (ete != null)
-                    t.add(ete);
+                LongHashSet temporalStamp = t.filterCyclic();
+                if (eternal != null && !eternal.isEmpty()) {
+                    Task ee = eternal.select(ete -> !Stamp.overlapsAny(temporalStamp, ete.stamp()));
+                    if (ee != null) {
+                        t.add(ee);
+                    }
+                }
 
-                return t.preFilter().filterCyclic().truth();
+                return t.truth();
             }
         }
 
-        return ete != null ? ete.truth() : null;
-
+        return eternal!=null ? eternal.strongestTruth() : null;
     }
 
     @Override
-    public final Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter) {
+    public final Task match(long start, long end, @Nullable Term template, EternalTable eternals, NAR nar, Predicate<Task> filter) {
         int s = size();
-        if (s == 0) return null; //quick exit
+        if (s > 0) {
+            int dur = nar.dur();
+            assert (end >= start);
 
-        int dur = nar.dur();
-        assert (end >= start);
+            Task t = match(start, end, template, nar, filter, dur);
+            if (t!=null) {
+                if (eternals != null) {
+                    ImmutableLongSet tStamp = Stamp.toSet(t);
+                    Task e = eternals.select(x -> !Stamp.overlapsAny(tStamp, x.stamp()));
+                    if (e != null) {
+                        return Revision.mergeTemporal(nar, t, e);
+                    } else {
+                        return t;
+                    }
+                }
+            }
+        }
 
-
-        return match(start, end, template, nar, filter, dur);
+        return eternals!=null ? eternals.strongest() : null;
     }
 
     abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
@@ -406,7 +411,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         while (treeRW.size() > cap) {
             if (!compress(treeRW, e == 0 ? inputRegion : null /** only limit by inputRegion first */,
                     taskStrength, added, cap,
-                    now, (long) (1 + tableDur()), perceptDur, nar))
+                    now, (long) Math.ceil(tableDur()), perceptDur, nar))
                 return false;
             e++;
         }
@@ -430,11 +435,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
         Top2<Leaf<TaskRegion>> weakLeaf = new Top2(leafWeakness);
 
-        FloatFunction<TaskRegion> weakestTask =
-                (t -> 1f / (1f + taskStrength.floatValueOf((Task) t)));
+        FloatFunction<TaskRegion> weakestTask = (t ->
+                1f / (1f + taskStrength.floatValueOf((Task) t)));
 
         Top<TaskRegion> closest = input!=null ? new Top<>(
-                mergabilityWith(input)
+                TemporalBeliefTable.mergabilityWith(input, tableDur)
         ) : null;
         Top<TaskRegion> weakest = new Top<>(
                 weakestTask
@@ -649,13 +654,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private double tableDur() {
         HyperRegion root = root().bounds();
         if (root == null)
-            return 0;
+            return 1;
         else
-            return root.rangeIfFinite(0, 1);
+            return 1 + root.rangeIfFinite(0, 1);
     }
 
     private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
-        int tableDur = 1 + (int) (tableDur());
+        int tableDur = (int) (tableDur());
         return (Task x) -> {
             if (x.isDeleted())
                 return Float.NEGATIVE_INFINITY;
@@ -723,6 +728,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
                     filter)
                     .scan(this, start, end);
+
 
             int n = tt.size();
             return n > 0 ? Revision.mergeTemporal(nar, start, end, tt.list) : null;

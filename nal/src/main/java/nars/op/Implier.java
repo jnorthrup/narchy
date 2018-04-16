@@ -194,7 +194,7 @@ public class Implier extends DurService {
          */
 
             long when = then;
-            Truth implTruth = impl.truth(when, dur, nar);
+            Truth implTruth = impl.truth(when, dur);
             if (implTruth!=null) {
 
                 Truth S_belief = nar.beliefTruth(S, when);
@@ -221,7 +221,7 @@ public class Implier extends DurService {
          */
 
             long when = then;
-            Truth implTruth = impl.truth(when, dur, nar);
+            Truth implTruth = impl.truth(when, dur);
             if (implTruth!=null) {
 
                 Truth S_goal = nar.goalTruth(S, when);
@@ -248,7 +248,7 @@ public class Implier extends DurService {
          */
 
             long when = then;
-            Truth implTruth = impl.truth(when, dur, nar);
+            Truth implTruth = impl.truth(when, dur);
             if (implTruth!=null) {
 
                 Truth P_goal = nar.goalTruth(P, when + implDT);

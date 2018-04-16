@@ -559,8 +559,8 @@ public class Derivation extends PreDerivation {
     }
 
     private Task taskProxy(Term y, Task t) {
-        return (t.isBeliefOrGoal() && !t.isEternal()) ?
-                new TaskProxy.WithTermCachedTruth(y, t, dur) :
+        return //(t.isBeliefOrGoal() && !t.isEternal()) ?
+                //new TaskProxy.WithTermCachedTruth(y, t, dur) :
                 new TaskProxy.WithTerm(y, t);
     }
 

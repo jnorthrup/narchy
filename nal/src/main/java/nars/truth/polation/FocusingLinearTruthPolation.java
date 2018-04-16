@@ -5,6 +5,8 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.time.Tense.ETERNAL;
+
 /**
  * result frequency = linear combination of frequency values weighted by evidence;
  * result evidence = evidence sum
@@ -44,7 +46,7 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     public Truth truth() {
 
         int s = size();
-        float e, f;
+        float eInteg, f;
         switch (s) {
             case 0: return null;
             case 1: {
@@ -52,36 +54,44 @@ public class FocusingLinearTruthPolation extends TruthPolation {
                 TaskComponent x = update(0);
                 if (x == null)
                     return null; //could have been pre-filtered
-                e = x.evi;
+                eInteg = x.eviInteg;
+                if (eInteg < Float.MIN_NORMAL)
+                    return null;
+
                 f = x.freq;
                 break;
             }
             default: {
-                float eviSum = 0, wFreqSum = 0;
+                float wFreqSum = 0;
+                eInteg = 0;
                 for (int i = 0; i < s; i++) {
                     TaskComponent x = update(i);
                     if (x == null)
                         continue;  //could have been pre-filtered
 
-                    float ee = x.evi;
+                    float ee = x.eviInteg;
 
-                    eviSum += ee;
+                    eInteg += ee;
 //                        float ce = w2cSafe(ee);
 //                        confSum += ce;
                     //wFreqSum += ce * x.freq;
                     wFreqSum += ee * x.freq;
                 }
-                e = eviSum;
-                if (e < Float.MIN_NORMAL)
+                if (eInteg < Float.MIN_NORMAL)
                     return null;
 
                 //f = (wFreqSum / confSum);
-                f = (wFreqSum / eviSum);
+                f = (wFreqSum / eInteg);
                 break;
             }
         }
 
-        return new PreciseTruth(f, e, false);
+
+
+        long rangeDivisor = start==ETERNAL ? 1 : (end-start+1);
+        float eAvg = eInteg / rangeDivisor;
+
+        return new PreciseTruth(f, eAvg, false);
     }
 
 

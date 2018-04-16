@@ -1,7 +1,6 @@
 package nars.gui;
 
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
@@ -29,7 +28,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
-    private static final float baseTaskSize = 0.04f;
+    private static final float taskHeight = 0.04f;
     private static final float CROSSHAIR_THICK = 3;
     private static final float angleSpeed = 0.5f;
     final Term term;
@@ -40,7 +39,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     private final Label label;
     private final boolean showTaskLinks = false;
     @Deprecated
-    private final boolean showEternal = true;
+    private final boolean showEternal = false;
     private TaskConcept cc; //cached concept
     private float cp; //cached priority
     private float beliefTheta, goalTheta;
@@ -108,6 +107,8 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
         gl.glBegin(GL2.GL_LINE_STRIP);
 
+        float dt = ((maxT - minT)/((float)wave.capacity()));
+        float dMargin = dt/8;
         wave.forEach((freq, conf, start, end) -> {
 
             boolean eternal = (start != start);
@@ -115,10 +116,12 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 //            float pw = baseTaskSize;// + gew / (1f / conf) / 4f;//10 + 10 * conf;
 //            float ph = baseTaskSize;// + geh / (1f / conf) / 4f;//10 + 10 * conf;
 
+            //float mid = (start + end)/2;
+
             if (eternal) {
                 x = nowX; //???
             } else if ((start >= minT) && (start <= maxT)) {
-                x = xTime(minT, maxT, (long) start);
+                x = xTime(minT, maxT, start + dMargin);
             } else {
                 return;
             }
@@ -137,7 +140,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 return;
 
             if ((end >= minT) && (end <= maxT)) {
-                x = xTime(minT, maxT, (long) end);
+                x = xTime(minT, maxT, end-dMargin);
                 gl.glVertex2f(x, Y);
             }
 
@@ -146,9 +149,9 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         gl.glEnd();
     }
 
-    private static float xTime(long minT, long maxT, long o) {
+    private static float xTime(long minT, long maxT, float o) {
         if (minT == maxT) return 0.5f;
-        return (Math.min(maxT, Math.max(minT, o)) - minT) / ((float) (maxT - minT));
+        return (Math.min(maxT, Math.max(minT, o)) - minT) / (maxT - minT);
     }
 
 
@@ -227,6 +230,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             float nowX = xTime(minT, maxT, now);
             cc.tasklinks().forEach(tl -> {
                 if (tl != null) {
+                    //TODO handle GeneralizedTaskLink's specified time directly without this Task lookup
                     Task x = tl.get(nar);
                     if ((x != null) && (x.isBeliefOrGoal())) {
                         long o = x.start();
@@ -432,24 +436,21 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
 
             final float ph =
-                    baseTaskSize;
+                    taskHeight;
             //Util.lerp(conf, 0.2f, /* down to */ baseTaskSize / 64f); //smudge a low confidence task across more of the frequency range
 
             float start, end;
             if (showEternal && eternal) {
                 start = end = nowX;
-            } else if (((e <= maxT) && (e >= minT)) || ((s >= minT) && (s <= maxT))) {
-                start = xTime(minT, maxT, (long) s);
-                end = s == e ? start : xTime(minT, maxT, (long) e);
             } else {
-                return;
+                if (e >= minT && s <= maxT) {
+                    s = Math.max(minT, s);
+                    e = Math.min(maxT, e);
+                }
+                start = xTime(minT, maxT, s);
+                end = xTime(minT, maxT, e + 1);
             }
 
-
-            //r.renderTask(gl, qua, conf, pw, ph, xStart, xEnd, freq);
-
-            float mid = (end + start) / 2f;
-            float W = Util.max((end - start), baseTaskSize / 4);
 
             if (beliefOrGoal) {
                 gl.glColor4f(1f, 0, 0.25f, 0.1f + 0.5f * conf);
@@ -457,10 +458,9 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 gl.glColor4f(0f, 1, 0.25f, 0.1f + 0.5f * conf);
             }
             float y = freq - ph / 2;
-            float x = mid - W / 2;
             Draw.rect(gl,
-                    x, y,
-                    W, ph);
+                    start, y,
+                    end-start, ph);
 
 
         });
