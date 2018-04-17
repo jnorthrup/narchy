@@ -31,9 +31,7 @@ package jcog.data.map;
 
 import jcog.util.ArrayIterator;
 
-import java.util.AbstractSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -75,6 +73,15 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
         }
 
         @Override
+        public boolean remove(Object key, Object value) {
+            if (super.remove(key, value)) {
+                list = null;
+                return true;
+            }
+            return false;
+        }
+
+        @Override
         public void clear() {
             super.clear();
             list = null;
@@ -109,7 +116,7 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new ArrayIterator(toArray());
+        return ArrayIterator.get(toArray());
     }
 
     @Override
@@ -141,4 +148,6 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
     public void clear() {
         set.clear();
     }
+
+
 }

@@ -1,7 +1,7 @@
 package nars.derive.control;
 
 import jcog.Util;
-import jcog.decide.Roulette;
+import jcog.decide.MutableRoulette;
 import nars.$;
 import nars.Param;
 import nars.control.Cause;
@@ -60,7 +60,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
                     Util.softmax(N, i -> Try.causeValue(branchCause[i]),
                             Param.TRIE_DERIVER_TEMPERATURE);
 
-            Roulette.MutableRoulette.run(w, wi -> wi/N /* harmonic decay */, (b) -> {
+            MutableRoulette.run(w, wi -> wi/N /* harmonic decay */, (b) -> {
 
                 this.branch[b].test(d);
 

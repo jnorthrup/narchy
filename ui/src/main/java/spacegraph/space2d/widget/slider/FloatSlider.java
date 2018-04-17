@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.tree.rtree.rect.RectFloat2D;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -27,19 +28,15 @@ public class FloatSlider extends Widget {
     protected final BaseSlider slider;
 
     public FloatSlider(float v, float min, float max) {
-
-
-
-        content(
-            new Scale((slider = slider(v, min, max)), 0.95f),
-            label.scale(0.85f).align(AspectAlign.Align.Center)
-        );
-        updateText();
-
+        this(new FloatRange(v, min, max));
     }
 
-    protected FloatSlider.XSlider slider(float v, float min, float max) {
+    @Deprecated protected FloatSlider.XSlider slider(float v, float min, float max) {
         return new XSlider(v, min, max);
+    }
+
+    protected FloatSlider.XSlider slider(FloatRange f) {
+        return slider(f.get(), f.min, f.max);
     }
 
 
@@ -54,9 +51,15 @@ public class FloatSlider extends Widget {
     }
 
     public FloatSlider(FloatRange f) {
-        this(f.floatValue(), f.min, f.max);
+        super();
+
+        content(
+                new Scale(slider = slider(f), 0.95f),
+                label.scale(0.85f).align(AspectAlign.Align.Center)
+        );
+        updateText();
+
         input = f;
-        slider.on((s, v) -> f.set(v));
     }
 
 
@@ -133,6 +136,12 @@ public class FloatSlider extends Widget {
         protected void changed(float p) {
             super.changed(p);
             updateText();
+
+            //TODO other setter models, ex: AtomicDouble etc
+            if (input instanceof MutableFloat) {
+                ((MutableFloat) input).set(p);
+            }
+
         }
 
         @Override

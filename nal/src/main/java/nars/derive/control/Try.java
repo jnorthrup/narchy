@@ -2,7 +2,7 @@ package nars.derive.control;
 
 import com.google.common.base.Joiner;
 import jcog.Util;
-import jcog.decide.Roulette;
+import jcog.decide.MutableRoulette;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -114,7 +114,7 @@ public class Try implements Consumer<Derivation> {
         //System.out.println(Arrays.toString(choices) + " " + Arrays.toString(w));
 
         int before = d.now();
-        Roulette.MutableRoulette.run(w, wi -> wi/N /* harmonic decay */, (i) -> {
+        MutableRoulette.run(w, wi -> wi/N /* harmonic decay */, (i) -> {
             int ttlStart = d.ttl;
 
 

@@ -445,7 +445,7 @@ public class PriMap<K> {
             v = incoming;
             v0 = -1;
         }
-        return Util.intFromShorts(v0, v);
+        return Util.short2Int(v0, v);
     }
 
 

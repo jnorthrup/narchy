@@ -34,7 +34,7 @@ public class Bordering extends Stacking {
     }
 
     @Override
-    public void doLayout(int dtMS) {
+    protected void doLayout(int dtMS) {
 
         float X = x();
         float Y = y();

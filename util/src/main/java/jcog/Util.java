@@ -1542,11 +1542,12 @@ public enum Util {
         return true;
     }
 
-    public static int intFromShorts(short high, short low) {
+    public static int short2Int(short high, short low) {
         return high << 16 | low;
     }
 
-    public static short intFromShorts(int x, boolean high) {
+
+    public static short short2Int(int x, boolean high) {
         return high ? (short) (x >> 16) : (short) (x & 0xffff);
     }
 
@@ -2452,6 +2453,7 @@ public enum Util {
 //        else
         return (float)sqrt(a*b);
     }
+
 
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {

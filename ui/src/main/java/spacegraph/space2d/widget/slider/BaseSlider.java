@@ -81,10 +81,11 @@ public class BaseSlider extends Widget {
     }
 
     protected void changed(float p) {
-        if (Util.equals(this.p, p, Float.MIN_NORMAL))
+        if (this.p == this.p && Util.equals(this.p, p, Float.MIN_NORMAL))
             return;
 
         this.p = p;
+
         if (change!=null)
             change.value(this, value());
     }

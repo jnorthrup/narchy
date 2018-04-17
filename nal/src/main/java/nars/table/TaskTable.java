@@ -1,7 +1,7 @@
 package nars.table;
 
 import jcog.Util;
-import jcog.decide.Roulette;
+import jcog.decide.MutableRoulette;
 import jcog.sort.CachedTopN;
 import jcog.sort.Top;
 import jcog.sort.TopN;
@@ -100,7 +100,7 @@ public interface TaskTable {
             float[] w = Util.map(t, Util.softmaxFunc(m.value(), 0.5f));
 
             final int[] remain = {limit};
-            Roulette.MutableRoulette.run(w, wi -> 0 /* unique */, (x)->{
+            MutableRoulette.run(w, wi -> 0 /* unique */, (x)->{
                 target.accept(t[x]);
                 return --remain[0] >0;
             }, rng);

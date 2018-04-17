@@ -70,7 +70,7 @@ public class MutableContainer extends Container {
     }
 
     @Override
-    public void doLayout(int dtMS) {
+    protected void doLayout(int dtMS) {
         children.forEach(Surface::layout);
     }
 

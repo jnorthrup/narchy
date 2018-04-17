@@ -68,8 +68,8 @@ public class Baggie<X> extends PriMap<X> {
             int ch = update(x, pri, merge, full ? () -> {
                 trash[0] = removeLowest(1);
             } : null);
-            from = Util.intFromShorts(ch, true);
-            to = Util.intFromShorts(ch, false);
+            from = Util.short2Int(ch, true);
+            to = Util.short2Int(ch, false);
             if (from != to) {
                 if (from>0 && to>0)
                     pressure += to - from;
