@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT;
+import static com.jogamp.opengl.GL2ES3.GL_STENCIL;
 import static com.jogamp.opengl.GL2GL3.GL_POLYGON_SMOOTH_HINT;
 import static com.jogamp.opengl.GLES2.GL_MAX;
 import static com.jogamp.opengl.fixedfunc.GLLightingFunc.*;
@@ -111,7 +112,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     @Override
     protected void init(GL2 gl) {
 
-
+        gl.glEnable(GL_STENCIL);
 
 
         //gl.glEnable(GL_POINT_SPRITE);
@@ -175,9 +176,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     protected void initDepth(GL2 gl) {
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LEQUAL);
-
-        gl.glClearDepth(1.0f);  // Depth Buffer Setup
-        gl.glClearStencil(0);  // Clear The Stencil Buffer To 0
 
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
         gl.glClearDepth(1f); // Depth Buffer Setup

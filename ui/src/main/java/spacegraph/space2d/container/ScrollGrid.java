@@ -3,6 +3,7 @@ package spacegraph.space2d.container;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
+import jcog.exe.Loop;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +52,7 @@ public class ScrollGrid<X> extends Bordering {
         /** return null to remove the content of a displayed cell */
         @Nullable X get(int x, int y);
 
-        default void start(ScrollGrid x) { }
+        default void start(ScrollGrid<X> x) { }
         default void stop() { }
     }
 
@@ -99,8 +100,8 @@ public class ScrollGrid<X> extends Bordering {
                     scrollH = new FloatRange(0.5f, 0, 1)),
                 new EmptySurface()  //HACK
         ));
-        sliderX.on((sx,x)-> viewShift(x, Float.NaN));
-        sliderY.on((sy,y)-> viewShift(Float.NaN, y));
+        sliderX.on((sx,x)-> view(x, Float.NaN));
+        sliderY.on((sy,y)-> view(Float.NaN, y));
 
 
     }
@@ -110,7 +111,7 @@ public class ScrollGrid<X> extends Bordering {
      * allowing shift of either or both X and Y coordinates of the
      * visible cell window.
      */
-    public ScrollGrid viewShift(float xFrac, float yFrac) {
+    public ScrollGrid view(float xFrac, float yFrac) {
 
         int nx1, nx2, ny1, ny2;
 
@@ -157,7 +158,9 @@ public class ScrollGrid<X> extends Bordering {
         if (invalidCoordinate(y1) || invalidCoordinate(y2) || y2 <= y1)
             throw new RuntimeException("non-positive height or y coordinate");
 
-        view((short)x1, (short)y1, (short)x2, (short)y2);
+        Loop.invokeLater(()->{
+            view((short)x1, (short)y1, (short)x2, (short)y2);
+        });
         return this;
     }
 
@@ -173,13 +176,15 @@ public class ScrollGrid<X> extends Bordering {
         //TODO supress update if these coordinates didnt change
 
         //refresh cache
+        boolean change = false;
         for (short  x = x1; x < x2; x++) {
             for (short y = y1; y < y2; y++) {
-                set(x, y, model.get(x, y));
+                change |= set(x, y, model.get(x, y));
             }
         }
 
-        layout();
+        if (change)
+            layout();
 
         return this;
     }
@@ -238,10 +243,11 @@ public class ScrollGrid<X> extends Bordering {
     /** allows a model to asynchronously report changes, which may be visible or not.
      *  set 'v' to null to remove an entry (followed by a subsequent non-null 'v'
      *  is a way to force rebuilding of a cell.)
+     *  returns if there was a change
      * */
-    protected void set(short x, short y, @Nullable X v) {
+    protected boolean set(short x, short y, @Nullable X v) {
         if (!cellVisible(x, y))
-            return; //ignore
+            return false; //ignore
 
         GridCell<X> entry = cache.compute(short2Int(x, y), (index, existingEntry) -> {
             if (existingEntry != null) {
@@ -257,12 +263,13 @@ public class ScrollGrid<X> extends Bordering {
         if (v == null && entry.surface!=null) {
             //removal
             content.remove(entry.surface);
-            layout();
+            return true;
         } else if (entry.surface == null) {
             content.add(entry.surface = render.apply(x, y, entry.value));
-            layout();
+            return true;
         } else {
             //no change
+            return false;
         }
     }
 
@@ -291,11 +298,20 @@ public class ScrollGrid<X> extends Bordering {
         return false;
     }
 
+    @Override
+    protected void paintIt(GL2 gl) {
+        Draw.stencilStart(gl);
+        Draw.rect(gl, bounds);
+        Draw.stencilUse(gl, true);
+    }
 
+    @Override protected void paintAbove(GL2 gl, int dtMS) {
+        Draw.stencilEnd(gl);
+    }
 
     public static void main(String[] args) {
 
-        GridModel<String> model = new GridModel<String>() {
+        GridModel<String> model = new GridModel<>() {
 
             @Override
             public String get(int x, int y) {
@@ -322,7 +338,7 @@ public class ScrollGrid<X> extends Bordering {
                         }
                     };
                     return p;
-                }, 16, 16), 1024, 800);
+                }, 8, 6), 1024, 800);
     }
 }
 

@@ -104,6 +104,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //        config.setHardwareAccelerated(true);
 
 
+        config.setStencilBits(8);
 //        config.setAlphaBits(8);
 //        config.setAccumAlphaBits(8);
 //        config.setAccumRedBits(8);

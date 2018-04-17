@@ -993,6 +993,70 @@ public enum Draw {
         gl.glEnd();
     }
 
+    /**
+     * utility for stencil painting
+     *    include = only draw inside the stencil
+     *    exclude = only draw outside the stencil
+     * adapted from: https://gist.github.com/daltonks/4c2d1c5e6fd5017ea9f0
+     */
+    public static void stencilMask(GL2 gl, boolean includeOrExclude, Consumer<GL2> paintTheStencilRegion, Consumer<GL2> paintStenciled) {
+
+        stencilStart(gl);
+
+        paintTheStencilRegion.accept(gl);
+
+        stencilUse(gl, includeOrExclude);
+
+        paintStenciled.accept(gl);
+
+        stencilEnd(gl);
+    }
+
+    public static void stencilStart(GL2 gl) {
+        gl.glEnable(gl.GL_STENCIL_TEST);
+
+        //Disable writing to the color and depth buffers: this is just for creating the stencil
+        gl.glColorMask(false, false, false, false);
+        gl.glDepthMask(false);
+
+        /*
+            gl.GL_NEVER: For every pixel, fail the stencil test (so we automatically overwrite the pixel's stencil buffer value)
+            1: write a '1' to the stencil buffer for every drawn pixel because glStencilOp has 'gl.GL_REPLACE'
+            0xFF: function mask, you'll usually use 0xFF
+        */
+
+        gl.glStencilFunc(gl.GL_NEVER, 1, 0xFF);
+        gl.glStencilOp(gl.GL_REPLACE, gl.GL_KEEP, gl.GL_KEEP);
+
+        //Stencil mask must be set to 0xFF before clearing the buffer
+        gl.glStencilMask(0xFF);
+
+        //Clear the buffer
+        gl.glClear(gl.GL_STENCIL_BUFFER_BIT);
+
+        //NEXT: draw the stencil region itself
+        //"Drawing" the objects only ends up writing 1's to the stencil buffer no matter what color or depth they are
+    }
+
+
+    public static void stencilEnd(GL2 gl) {
+        //Disable stencil testing, because we're done using it!
+        gl.glDisable(gl.GL_STENCIL_TEST);
+    }
+
+    public static void stencilUse(GL2 gl, boolean includeOrExclude) {
+        //Enable writing to the color and depth buffers
+        gl.glColorMask(true, true, true, true);
+        gl.glDepthMask(true);
+
+        //Disable writing to the stencil buffer
+        gl.glStencilMask(0x00);
+
+        //Test the stencil buffer: if the pixel's stencil value equals 0, draw it
+        gl.glStencilFunc(includeOrExclude ? GL2.GL_NOTEQUAL : GL2.GL_EQUAL, 0, 0xFF);
+
+        //NEXT: ready to use the stencil, and afterward call stencilEnd
+    }
 
 //
 //    public static void hsb(float h, float s, float b, float a, float[] target) {
