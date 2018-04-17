@@ -59,17 +59,18 @@ public interface TaskMatch {
                         t.conf()
                         :
                         //QUESTIONS/QUESTS
-                        t.pri() * t.originality()
+                        1 + (t.pri() * t.originality())
                 );
             } else {
                 //DEFAULT TEMPORAL VALUE FUNCTION
 
+                int dur = (int)(end - start + 1);
                 value = (Task t) -> (t.isBeliefOrGoal() ?
                         //BELIEFS/GOALS
-                        TemporalBeliefTable.value(t, start, end, 1)
+                        TemporalBeliefTable.value(t, start, end, dur)
                         :
                         //QUESTIONS/QUESTS
-                        t.pri() / (1 + t.minDistanceTo(start, end))
+                        1 + (t.pri() / (1f + (t.minDistanceTo(start, end)/((float)dur))))
                 );
             }
         }

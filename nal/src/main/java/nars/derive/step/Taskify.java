@@ -10,8 +10,8 @@ import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.util.time.Tense;
 import nars.truth.Truth;
+import nars.util.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +24,8 @@ import static nars.util.time.Tense.ETERNAL;
 public class Taskify extends AbstractPred<Derivation> {
 
 
+    static final int PatternsOrBool = VAR_PATTERN.bit | BOOL.bit;
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
-
     /**
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
@@ -40,7 +40,6 @@ public class Taskify extends AbstractPred<Derivation> {
         this.channel = channel;
     }
 
-    static final int PatternsOrBool = VAR_PATTERN.bit | BOOL.bit;
     public static boolean valid(Term x) {
         if ((x != null) && x.unneg().op().conceptualizable) {
 
@@ -54,11 +53,19 @@ public class Taskify extends AbstractPred<Derivation> {
         return false;
     }
 
-    /** note: the return value here shouldnt matter so just return true anyway */
-    @Override public boolean test(Derivation d) {
+    private static boolean spam(Derivation p, int cost) {
+        p.use(cost);
+        return true; //just does
+    }
+
+    /**
+     * note: the return value here shouldnt matter so just return true anyway
+     */
+    @Override
+    public boolean test(Derivation d) {
 
         Truth tru = d.concTruth;
-        if (tru!=null) {
+        if (tru != null) {
             float finalEvi = tru.evi() * d.concEviFactor;
             if (d.eviMin > finalEvi) {
                 d.use(Param.TTL_EVI_INSUFFICIENT);
@@ -80,29 +87,24 @@ public class Taskify extends AbstractPred<Derivation> {
             //post-process occurrence time
             int dither = d.ditherTime;
             long start = occ[0], end = occ[1];
-            if (start!=ETERNAL) {
-                assert (end >= start): "task has reversed occurrence: " + start + ".." + end;
-
+            int dur = d.dur;
+            if (start != ETERNAL && dur > 1) {
+                assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
                 //stretch to at least one duration
-                int dur = d.dur;
-                if (end - start < dur) {
-                    double mid = (end+start)/2.0;
-                    start = Tense.dither(mid - dur/2.0, dither);
-                    end = Tense.dither(mid + dur/2.0, dither);
+                if ((end - start < dur)) {
+                    double mid = (end + start) / 2.0;
+                    start = Tense.dither(mid - dur / 2.0, dither);
+                    end = Tense.dither(mid + dur / 2.0, dither);
                 } else {
                     start = Tense.dither(start, dither);
                     end = Tense.dither(end, dither);
                 }
-
-
-            } else {
-                assert(end == ETERNAL);
             }
 
 
             return Param.DEBUG ?
-                            new DebugDerivedTask(C, punc, tr, start, end, d) :
-                            new DerivedTask(C, punc, tr, start, end, d);
+                    new DebugDerivedTask(C, punc, tr, start, end, d) :
+                    new DerivedTask(C, punc, tr, start, end, d);
         });
 
         if (t == null) {
@@ -140,14 +142,6 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
         return true;
-    }
-
-
-
-
-    private static boolean spam(Derivation p, int cost) {
-        p.use(cost);
-        return true; //just does
     }
 
     protected boolean same(Task derived, Task parent, float truthResolution) {

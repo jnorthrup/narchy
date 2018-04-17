@@ -4,7 +4,7 @@ import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.derive.Derivers;
-import nars.derive.deriver.SimpleDeriver;
+import nars.derive.deriver.MatrixDeriver;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.EmotionPlot;
@@ -218,18 +218,18 @@ abstract public class NAgentX extends NAgent {
                 )
                 .get();
 
-        new SimpleDeriver(Derivers.nal(1, 1, n));
-        new SimpleDeriver(Derivers.nal(2, 2, n));
-        new SimpleDeriver(Derivers.nal(3, 3, n));
-        new SimpleDeriver(Derivers.nal(5, 5, n));
-        new SimpleDeriver(Derivers.nal(6, 8, n));
-        new SimpleDeriver(Derivers.files(n, "motivation.nal"));
+        new MatrixDeriver(Derivers.nal(1, 1, n));
+        new MatrixDeriver(Derivers.nal(2, 2, n));
+        new MatrixDeriver(Derivers.nal(3, 3, n));
+        new MatrixDeriver(Derivers.nal(5, 5, n));
+        new MatrixDeriver(Derivers.nal(6, 8, n));
+        new MatrixDeriver(Derivers.files(n, "motivation.nal"));
         //.deriverAdd("goal_analogy.nal")
         //.deriverAdd(6,6) //extra NAL6
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(0.5f); //nyquist alert
+        n.dtDither.set(0.1f); //nyquist alert
         //n.timeFocus.set(4);
 
         n.confMin.set(0.01f);

@@ -5,6 +5,7 @@ import jcog.pri.Pri;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.IntPredicate;
 
@@ -111,28 +112,37 @@ public enum Roulette {
                     MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
                     while (r.next(select)) { }
                 }
+                break;
             }
         }
 
 
         MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
             this.w = w;
-            this.remaining = w.length;
+            int n = w.length;
+            this.remaining = n;
             this.weightUpdate = weightUpdate;
 
             float ws = 0;
-            for (int i1 = 0, wLength = w.length; i1 < wLength; i1++) {
+            for (int i1 = 0, wLength = n; i1 < wLength; i1++) {
                 float x = w[i1];
+                assert(x >= 0);
                 if (x < MIN_NORMAL) {
                     w[i1] = 0; //hard set to zero
                     remaining--;
+                } else {
+                    ws += x;
                 }
-                ws += x;
             }
-            assert(remaining > 0);
+
+            if (remaining == 0) {
+                //flat
+                Arrays.fill(w, 1);
+                ws = remaining = n;
+            }
 
             this.weightSum = ws;
-            this.i = (this.rng = rng).nextInt(w.length); //random start position
+            this.i = (this.rng = rng).nextInt(n); //random start position
         }
 
         public boolean next(IntPredicate select) {

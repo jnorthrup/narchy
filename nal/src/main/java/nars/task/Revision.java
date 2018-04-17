@@ -655,10 +655,8 @@ public class Revision {
      * convenience method for selecting evidence integration strategy
      */
     public static float eviInteg(Task x, long start, long end, int dur) {
-        assert(start!=ETERNAL);
-
         if (start == end) {
-            //point in time
+            //point in time or eternity
             return x.evi(start, dur);
         } else {
             long xStart = x.start();

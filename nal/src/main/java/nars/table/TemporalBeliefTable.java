@@ -42,9 +42,9 @@ public interface TemporalBeliefTable extends TaskTable {
 
         float focusedEvi = Revision.eviInteg(t, start, end, dur);
         float absDistance = t.midDistanceTo((start + end) / 2L) / ((float)dur);
-        float ownEvi = t.eviInteg(dur, t.start(), t.end());
+        float ownEvi = Revision.eviInteg(t, t.start(), t.end(), dur);
 
-        return focusedEvi - absDistance / ownEvi;
+        return focusedEvi - absDistance / (1 + ownEvi);
 
 //        if (focusedEvi > Float.MIN_NORMAL) {
 //            return focusedEvi;
