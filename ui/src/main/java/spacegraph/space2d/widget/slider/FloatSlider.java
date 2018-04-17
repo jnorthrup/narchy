@@ -18,26 +18,22 @@ import spacegraph.space2d.widget.windo.Widget;
 
 /**
  * Created by me on 11/18/16.
+ * TODO extend Surface
  */
 public class FloatSlider extends Widget {
 
     final Label label = new Label();
+    public final FloatSliderModel model;
     public FloatSupplier input;
     private String labelText = "";
 
-    protected final BaseSlider slider;
+    protected final SliderModel slider;
 
     public FloatSlider(float v, float min, float max) {
         this(new FloatRange(v, min, max));
     }
 
-    @Deprecated protected FloatSlider.XSlider slider(float v, float min, float max) {
-        return new XSlider(v, min, max);
-    }
 
-    protected FloatSlider.XSlider slider(FloatRange f) {
-        return slider(f.get(), f.min, f.max);
-    }
 
 
     public FloatSlider(String label, float v, float min, float max) {
@@ -49,17 +45,26 @@ public class FloatSlider extends Widget {
         this(f);
         this.labelText = label;
     }
+    public FloatSlider(String label, FloatSliderModel f) {
+        this(f);
+        this.labelText = label;
+    }
 
     public FloatSlider(FloatRange f) {
+        this(new DefaultFloatSlider(f.get(), f.min, f.max));
+        input = f;
+    }
+
+    public FloatSlider(FloatSliderModel m) {
         super();
 
+        this.model = m;
+
         content(new Stacking(
-                new Scale(slider = slider(f), 0.95f),
+                new Scale(slider = m, 0.95f),
                 label.scale(0.85f).align(AspectAlign.Align.Center)
         ));
         updateText();
-
-        input = f;
     }
 
 
@@ -102,28 +107,31 @@ public class FloatSlider extends Widget {
         this.slider.changed(p);
     }
 
-    public FloatSlider on(ObjectFloatProcedure<BaseSlider> c) {
+    public FloatSlider on(ObjectFloatProcedure<SliderModel> c) {
         slider.on(c);
         return this;
     }
 
-    protected class XSlider extends BaseSlider {
+    abstract public static class FloatSliderModel extends SliderModel {
 
-        private final float min;
-        private final float max;
 
-        public XSlider(float v, float min, float max) {
-            super((v - min) / (max - min));
-            this.min = min;
-            this.max = max;
+        public FloatSliderModel(float v) {
+            super(0);
+            p(v);
         }
 
+        public abstract float min();
+        public abstract float max();
 
         @Override
         protected void paint(GL2 gl, int dtMS) {
 
-            if (input != null)
-                super.value(input.asFloat());
+            FloatSlider p = parent(FloatSlider.class);
+            if (p!=null) {
+                FloatSupplier input = p.input; //HACK
+                if (input != null)
+                    super.value(input.asFloat());
+            }
 
             super.paint(gl, dtMS);
         }
@@ -131,25 +139,57 @@ public class FloatSlider extends Widget {
         @Override
         protected void changed(float p) {
             super.changed(p);
-            updateText();
 
-            //TODO other setter models, ex: AtomicDouble etc
-            if (input instanceof MutableFloat) {
-                ((MutableFloat) input).set(v(p));
+            FloatSlider parent = parent(FloatSlider.class);
+            if (parent!=null) {
+
+                parent.updateText();
+
+                //TODO other setter models, ex: AtomicDouble etc
+                FloatSupplier input = parent.input; //HACK
+                if (input instanceof MutableFloat) {
+                    ((MutableFloat) input).set(v(p));
+                }
             }
 
         }
 
         @Override
         protected float p(float v) {
+            float min = min();
+            float max = max();
             return (Util.clamp(v, min, max) - min) / (max - min);
         }
 
         @Override
         protected float v(float p) {
+            float min = min();
+            float max = max();
             return Util.clamp(p, 0, 1f) * (max - min) + min;
         }
 
     }
 
+    /** with constant min/max limits */
+    public static class DefaultFloatSlider extends FloatSliderModel {
+
+        private final float min;
+        private final float max;
+
+        public DefaultFloatSlider(float v, float min, float max) {
+            super(v);
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public float min() {
+            return min;
+        }
+
+        @Override
+        public float max() {
+            return max;
+        }
+    }
 }

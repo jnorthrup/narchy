@@ -25,7 +25,7 @@ import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.TreeChart;
-import spacegraph.space2d.widget.slider.BaseSlider;
+import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.video.Draw;
@@ -95,7 +95,7 @@ public class ExeCharts {
                             }
                         }
                                 .text(MetaGoal.values()[w].name())
-                                .type(BaseSlider.Knob)
+                                .type(SliderModel.Knob)
                                 .on((s, v) -> {
                                     if (!auto.on())
                                         want[w] = v;

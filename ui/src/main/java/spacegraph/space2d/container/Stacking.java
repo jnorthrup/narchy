@@ -17,6 +17,8 @@ public class Stacking extends MutableContainer {
     protected void doLayout(int dtMS) {
         for (Surface c : children())
             c.pos(bounds);
+
+        super.doLayout(dtMS);
     }
 
 

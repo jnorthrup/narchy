@@ -2454,6 +2454,12 @@ public enum Util {
         return (float)sqrt(a*b);
     }
 
+    public static void assertUnitized(float... f) {
+        for (float x : f) {
+            if (!Float.isFinite(x) || x < 0 || x > 1)
+                throw new UnsupportedOperationException("non-unitized value: " + x);
+        }
+    }
 
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {

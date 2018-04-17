@@ -69,8 +69,8 @@ abstract public class Container extends Surface {
 
         //TODO maybe in a separate update thread
         if (mustLayout) {
-            doLayout(dtMS);
             mustLayout = false;
+            doLayout(dtMS);
         }
 
         prePaint(dtMS);

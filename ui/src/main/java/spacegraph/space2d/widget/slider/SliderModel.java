@@ -18,7 +18,7 @@ import static spacegraph.space2d.container.Gridding.grid;
 /**
  * abstract 1D slider/scrollbar
  */
-public class BaseSlider extends Surface {
+public class SliderModel extends Surface {
 
 
     /** dead-zone at the edges to latch min/max values */
@@ -28,17 +28,16 @@ public class BaseSlider extends Surface {
 
     //private static final float EPSILON = Float.MIN_NORMAL;
 
-    @Nullable ObjectFloatProcedure<BaseSlider> change;
+    @Nullable ObjectFloatProcedure<SliderModel> change;
+
     private float p;
 
-
-
-    public BaseSlider(float p) {
+    public SliderModel(float p) {
         this.p = p;
     }
 
 
-    public BaseSlider on(ObjectFloatProcedure<BaseSlider> c) {
+    public SliderModel on(ObjectFloatProcedure<SliderModel> c) {
         this.change = c;
         return this;
     }
@@ -50,7 +49,7 @@ public class BaseSlider extends Surface {
 
     FloatObjectProcedure<GL2> draw = SolidLeft;
 
-    public BaseSlider type(FloatObjectProcedure<GL2> draw) {
+    public SliderModel type(FloatObjectProcedure<GL2> draw) {
         this.draw = draw;
         return this;
     }
@@ -62,7 +61,7 @@ public class BaseSlider extends Surface {
         if (finger!=null && finger.pressed(0)) {
             if (finger.tryFingering(new FingerDragging(0) {
                 @Override protected boolean drag(Finger f) {
-                    v2 hitPoint = finger.relativePos(BaseSlider.this);
+                    v2 hitPoint = finger.relativePos(SliderModel.this);
                     if (hitPoint.inUnit()) {
                         _set(p(hitPoint));
                     }
@@ -125,9 +124,9 @@ public class BaseSlider extends Surface {
                 grid(
                         new XYSlider(), new XYSlider(), new XYSlider(),
                         col(
-                                new BaseSlider(0.75f),
-                                new BaseSlider(0.25f),
-                                new BaseSlider(0.5f)
+                                new SliderModel(0.75f),
+                                new SliderModel(0.25f),
+                                new SliderModel(0.5f)
                         )
                 )
                 , 800, 800);

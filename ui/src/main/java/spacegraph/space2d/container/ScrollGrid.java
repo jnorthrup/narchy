@@ -3,20 +3,30 @@ package spacegraph.space2d.container;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
-import jcog.math.FloatRange;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.slider.BaseSlider;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.slider.SliderModel;
+import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
 
 import static jcog.Util.short2Int;
 
+/** see also:
+ *      https://www.youtube.com/watch?v=ffMpyLQ9YA0
+ *      https://www.youtube.com/watch?v=Gi_hoOLFtpo
+ * */
 public class ScrollGrid<X> extends Bordering {
+
+
+    static final float MIN_DISPLAYED_CELLS = 0.25f; //max zoom-in hard limit
+    static final int MAX_DISPLAYED_CELLS_X = 32;    //max zoom-out hard limit
+    static final int MAX_DISPLAYED_CELLS_Y = 32;    //max zoom-out hard limit
 
     private final GridModel<X> model;
     private final GridRenderer<X> render;
@@ -24,22 +34,23 @@ public class ScrollGrid<X> extends Bordering {
 
     private final ConcurrentFastIteratingHashMap<Integer, GridCell<X>> cache =
             new ConcurrentFastIteratingHashMap(new GridCell[0]);
-    private final FloatRange scrollX, scrollY, scrollW, scrollH;
+
     private final FloatSlider sliderX, sliderY, sliderW, sliderH;
     /**
      * current view, in local grid coordinate
      */
-    RectFloat2D view = RectFloat2D.XYWH(0f, 0f, 1, 1);
+    RectFloat2D view = RectFloat2D.Zero;
 
     /**
      * sub-grid offset (remainder)
      */
-    @Deprecated transient private float ox = 0, oy = 0;
+    @Deprecated
+    transient private float ox = 0, oy = 0;
 
     /**
      * caches the x,y ranges of cells which are at least partially visible
      */
-    private transient short cellVisXmin = 0, cellVisXmax = 1, cellVisYmin = 0, cellVisYmax = 1;
+    private volatile transient short cellVisXmin = 0, cellVisXmax = 0, cellVisYmin = 0, cellVisYmax = 0;
 
     public ScrollGrid(GridModel<X> model, GridRenderer<X> render, int visX, int visY) {
         this(model, render);
@@ -54,31 +65,140 @@ public class ScrollGrid<X> extends Bordering {
         this.model = model;
         this.render = render;
 
-        set(C, new Clipped(content = new MutableContainer(true)));
+        set(C, new Clipped(content = new MutableContainer(
+                //true
+                false
+        ) {
+            @Override
+            protected void doLayout(int dtMS) {
+                if (parent != null) {
+
+                    float dx = content.x();
+                    float dy = content.y();
+                    float ww = content.w();
+                    float hh = content.h();
+                    float cw = ww / view.w;
+                    float ch = hh / view.h;
+
+                    //refresh cache
+                    boolean changedContent = false;
+
+                    short cellVisXmax = ScrollGrid.this.cellVisXmax;
+                    short cellVisXmin = ScrollGrid.this.cellVisXmin;
+                    short cellVisYmax = ScrollGrid.this.cellVisYmax;
+                    short cellVisYmin = ScrollGrid.this.cellVisYmin;
+
+                    for (short sx = cellVisXmin; sx < cellVisXmax; sx++) {
+                        for (short sy = cellVisYmin; sy < cellVisYmax; sy++) {
+                            changedContent |= ScrollGrid.this.set(sx, sy, model.get(sx, sy), true);
+                        }
+                    }
+                    //remove or hibernate cache entry surfaces which are not visible
+                    //and set the layout positions of those which are
+                    cache.forEachValue(e -> {
+                        int cellID = e.cell;
+                        Surface s = e.surface;
+
+                        boolean deleted = false;
+                        if (s == null) { //remove the unused entry
+                            deleted = true;
+                        } else {
+                            short sx = (short) (cellID >> 16);
+                            short sy = (short) (cellID & 0xffff);
+                            if (!cellVisible(sx, sy)) {
+                                e.surface = null;
+                                content.remove(s); //remove the surface
+                                deleted = true;  //remove the entry
+                            } else {
+
+                                //layout(s, x, y);
+                                float cx = dx + (sx - view.x + 0.5f) * cw;
+                                float cy = dy + (sy - view.y + 0.5f) * ch;
+                                s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
+                            }
+                        }
+
+                        if (deleted) {
+                            cache.remove(cellID);
+                        }
+                    });
+
+
+                }
+
+                super.doLayout(dtMS);
+            }
+        }));
 
         set(S, this.sliderX = new FloatSlider("X",
-                scrollX = new FloatRange(0, 0, 1)
-        ).type(BaseSlider.Knob));
+                new FloatSlider.FloatSliderModel(0 /* left initial pos */) {
+                    @Override
+                    public float min() {
+                        return 0;
+                    }
+
+                    @Override
+                    public float max() {
+                        return model.cellsX();
+                    }
+                }
+        ).type(SliderModel.Knob));
 
         set(E, this.sliderY = new FloatSlider("Y",
-                scrollY = new FloatRange(0, 0, 1)
-        ).type(BaseSlider.Knob)); //TODO make vertical
+                new FloatSlider.FloatSliderModel(0) {
+                    @Override
+                    public float min() {
+                        return 0;
+                    }
+
+                    @Override
+                    public float max() {
+                        return model.cellsY();
+                    }
+                }
+        ).type(SliderModel.Knob)); //TODO make vertical
+
 
         set(N, new Gridding(
                 new EmptySurface(), //HACK
                 this.sliderW = new FloatSlider("W",
-                        scrollW = new FloatRange(0.5f, 0, 1)),
+                        new FloatSlider.FloatSliderModel(1) {
+
+                            @Override
+                            public float min() {
+                                return MIN_DISPLAYED_CELLS;
+                            }
+
+                            @Override
+                            public float max() {
+                                return Math.min(model.cellsX(), MAX_DISPLAYED_CELLS_X);
+                            }
+                        }
+                ),
                 new EmptySurface()  //HACK
         ));
         set(W, new Gridding(
                 new EmptySurface(), //HACK
                 this.sliderH = new FloatSlider("H",
-                        scrollH = new FloatRange(0.5f, 0, 1)),
+                        new FloatSlider.FloatSliderModel(1) {
+
+                            @Override
+                            public float min() {
+                                return MIN_DISPLAYED_CELLS;
+                            }
+
+                            @Override
+                            public float max() {
+                                return Math.min(model.cellsY(), MAX_DISPLAYED_CELLS_Y);
+                            }
+                        }
+                ),
                 new EmptySurface()  //HACK
         ));
-        sliderX.on((sx, x) -> view(x, Float.NaN));
-        sliderY.on((sy, y) -> view(Float.NaN, y));
-
+        sliderX.on((sx, x) -> view(x, view.y));
+        sliderY.on((sy, y) -> view(view.x, y));
+        sliderW.on((sx, w) -> view(view.x, view.y, w, view.h));
+        sliderH.on((sy, h) -> view(view.x, view.y, view.w, h));
 
     }
 
@@ -107,15 +227,15 @@ public class ScrollGrid<X> extends Bordering {
         };
         SpaceGraph.window(new ScrollGrid<String>(model,
                 (x, y, s) -> {
-                    PushButton p = new PushButton(s) {
+                    Surface p = new PushButton(s) {
                         @Override
                         protected void paintWidget(GL2 gl, RectFloat2D bounds) {
                             Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
                             Draw.rect(gl, bounds);
                         }
                     };
-                    return p;
-                }, 16, 16), 1024, 800);
+                    return new Widget(p);
+                }, 8, 4), 1024, 800);
     }
 
     public ScrollGrid view(float x, float y) {
@@ -134,40 +254,36 @@ public class ScrollGrid<X> extends Bordering {
      */
     public ScrollGrid view(float x, float y, float w, float h) {
 
+        float px = x;
+        float py = y;
 
         RectFloat2D v = view;
 
-
         float x1, x2, y1, y2;
-        if (x == x) {
-            float totalW = model.cellsX();
-            float visW = Math.min(totalW, w); //in case model shrunk, shrink to fit
-            float visXnext = visW / 2 + (x * (totalW - visW)); //TODO shrink the actual moveable space based on half of visW
-            x1 = visXnext - visW / 2;
-            x2 = visXnext + visW / 2;
+        float maxW = model.cellsX();
+        w = Math.min(w, maxW);
 
-            if (!(x1 >= 0 && x2 <= totalW && Util.equals(w, (x2 - x1), 0.001f)))
-                throw new RuntimeException("OOB x");
-        } else {
-            //unchanged
-            x1 = v.left();
-            x2 = v.right();
+        x = ((((x/maxW)-0.5f)*2 /* -1..+1 */ * (1f - w/maxW)) / 2 + 0.5f ) * maxW;
+        x1 = (x-w/2);
+        x2 = (x+w/2);
+        if (x1 < 0) { x1 = 0; x2 = w; }
+        if (x2 > maxW) { x2 = maxW; x1 = maxW-w; }
+
+        float maxH = model.cellsY();
+        h = Math.min(h, maxH);
+        y = ((((y/maxH)-0.5f)*2 /* -1..+1 */ * (1f - h/maxH)) / 2 + 0.5f ) * maxH;
+        y1 = (y-h/2);
+        y2 = (y+h/2);
+        if (y1 < 0) { y1 = 0; y2 = h; }
+        if (y2 > maxH) { y2 = maxH; y1 = maxH-h; }
+
+        RectFloat2D nextView = RectFloat2D.XYXY(x1, y1, x2, y2);
+        if (!v.equals(nextView, Spatialization.EPSILONf)) {
+//            sliderX.value(px); //for when invoked by other than the slider
+//            sliderY.value(py); //for when invoked by other than the slider
+//            sliderW.value(w); //for when invoked by other than the slider
+//            sliderH.value(h); //for when invoked by other than the slider
         }
-
-        if (y == y) {
-            float totalH = model.cellsY();
-            float visH = Math.min(totalH, h); //in case model shrunk, shrink to fit
-            float visyneyt = visH / 2 + (y * (totalH - visH)); //TODO shrink the actual moveable space based on half of visH
-            y1 = visyneyt - visH / 2;
-            y2 = visyneyt + visH / 2;
-            if (!(y1 >= 0 && y2 <= totalH && Util.equals(h, (y2 - y1), 0.001f)))
-                throw new RuntimeException("OOB y");
-        } else {
-            y1 = v.top();
-            y2 = v.bottom();
-        }
-
-        this.view = RectFloat2D.XYXY(x1, y1, x2, y2);
 
 
         float vLeft = x1;
@@ -176,46 +292,24 @@ public class ScrollGrid<X> extends Bordering {
         short vTopI = (short) Math.floor(y1);
         this.ox = vLeft - vLeftI;
         this.oy = vTop - vTopI;
+        short vRightI = (short) Math.ceil(x2 + 1);
+        short vBottomI = (short) Math.ceil(y2 + 1);
 
-        view(
-                vLeftI,
-                vTopI,
-                (short) Math.ceil(x2 + 1),
-                (short) Math.ceil(y2 + 1)
-        );
+        if (invalidCoordinate(vLeftI) || invalidCoordinate(vRightI) || vRightI <= vLeftI)
+            throw new RuntimeException("non-positive width or x coordinate: " + vLeftI + ".." + vRightI);
+        if (invalidCoordinate(vTopI) || invalidCoordinate(vBottomI) || vBottomI <= vTopI)
+            throw new RuntimeException("non-positive height or y coordinate: " + vTopI + ".." + vBottomI);
 
-        return this;
-    }
+        cellVisXmin = vLeftI;
+        cellVisYmin = vTopI;
+        cellVisXmax = vRightI;
+        cellVisYmax = vBottomI;
 
-    /**
-     * set viewing window in cell coordinates
-     */
-    private ScrollGrid view(short gx1, short gy1, short gx2, short gy2) {
-        if (invalidCoordinate(gx1) || invalidCoordinate(gx2) || gx2 <= gx1)
-            throw new RuntimeException("non-positive width or x coordinate");
-        if (invalidCoordinate(gy1) || invalidCoordinate(gy2) || gy2 <= gy1)
-            throw new RuntimeException("non-positive height or y coordinate");
+        view = nextView;
 
-        cellVisXmin = gx1;
-        cellVisYmin = gy1;
-        cellVisXmax = gx2;
-        cellVisYmax = gy2;
+        System.out.println(view);
 
-        //System.out.println(summary());
-
-        //TODO supress update if these coordinates didnt change
-
-        if (parent!=null) {
-            //refresh cache
-            boolean changedContent = false;
-            for (short x = gx1; x < gx2; x++) {
-                for (short y = gy1; y < gy2; y++) {
-                    changedContent |= set(x, y, model.get(x, y), true);
-                }
-            }
-
-            layout(); //layout regardless because the sub-grid position may have changed
-        }
+        content.layout(); //layout regardless because the sub-grid position may have changed
 
         return this;
     }
@@ -235,47 +329,10 @@ public class ScrollGrid<X> extends Bordering {
     protected void doLayout(int dtMS) {
 
 
-        float dx = content.x();
-        float dy = content.y();
-        float ww = content.w();
-        float hh = content.h();
-        float cw = ww / view.w;
-        float ch = hh / view.h;
-
-
-        //remove or hibernate cache entry surfaces which are not visible
-        //and set the layout positions of those which are
-        cache.forEachValue(e -> {
-            int cellID = e.cell;
-            Surface s = e.surface;
-
-            boolean deleted = false;
-            if ((s == null) //remove the unused entry
-                    ||
-                    (s.parent == null)) { //the surface removed itself, or something else did
-                deleted = true;
-            } else {
-                short x = (short) (cellID >> 16);
-                short y = (short) (cellID & 0xffff);
-                if (!cellVisible(x, y)) {
-                    content.remove(s); //remove the surface
-                    e.surface = null;
-                    deleted = true;  //remove the entry
-                } else {
-
-                    //layout(s, x, y);
-                    float cx = dx + (x - view.x + 0.5f) * cw;
-                    float cy = dy + (y - view.y + 0.5f) * ch;
-                    s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
-                }
-            }
-
-            if (deleted) {
-                cache.remove(cellID);
-            }
-        });
-
         super.doLayout(dtMS);
+
+//        System.out.println(cache.size());
+//        System.out.println(content.size());
     }
 
     public final boolean set(short x, short y, @Nullable X v) {
@@ -293,28 +350,46 @@ public class ScrollGrid<X> extends Bordering {
         if (!force && !cellVisible(x, y))
             return false; //ignore
 
-        GridCell<X> entry = cache.compute(short2Int(x, y), (index, existingEntry) -> {
-            if (existingEntry != null) {
-
-                if (v == null || existingEntry.value == null || existingEntry.value.equals(v)) {
-                    return existingEntry; //same value or removal
-                }
-            }
-
+        GridCell<X> entry = cache.computeIfAbsent(short2Int(x, y), (index) -> {
+//            if (existingEntry != null) {
+//
+//                if (v == null || existingEntry.value == null || existingEntry.value.equals(v)) {
+//                    return existingEntry; //same value or removal
+//                }
+//            }
+//
             return new GridCell<>(index, v); //replace or create new cell
         });
 
-        if (v == null && entry.surface != null) {
-            //removal
-            content.remove(entry.surface);
-            return true;
-        } else if (entry.surface == null) {
-            content.add(entry.surface = render.apply(x, y, entry.value));
-            return true;
-        } else {
-            //no change
-            return false;
+        Surface existingSurface = entry.surface;
+
+        boolean create = false, delete = false;
+
+        if (existingSurface != null) {
+            if (v == null) {
+                //removal
+                delete = true;
+            } else {
+                if (entry.value.equals(v)) {
+                    //equal value, dont re-create surface
+                } else {
+                    delete = true;
+                    create = true;
+                }
+            }
+        } else { //if (existingSurface == null) {
+            create = true;
         }
+
+        if (delete) {
+            entry.surface = null;
+            content.remove(existingSurface);
+        }
+
+        if (create)
+            content.add(entry.surface = render.apply(x, y, entry.value));
+
+        return create || delete;
     }
 
     /**
@@ -335,9 +410,7 @@ public class ScrollGrid<X> extends Bordering {
         if (super.start(parent)) {
             model.start(this);
 
-            layout(); //pre-init
-
-            view(view);
+            layout();
 
             return true;
         }

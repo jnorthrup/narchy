@@ -138,7 +138,6 @@ public class MutableContainer extends Container {
 
     public void add(Surface s) {
         _add(s);
-        layout();
     }
 
     private void _add(Surface s) {
@@ -148,6 +147,8 @@ public class MutableContainer extends Container {
             } else {
                 if (s.start(this)) {
                     children.add(s); //assume it was added to the list
+                    if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+                        layout();
                 }
             }
         }
@@ -160,8 +161,13 @@ public class MutableContainer extends Container {
             } else {
                 if (children.remove(s)) {
                     assert (s.parent == this);
-                    s.stop();
-                    layout();
+
+                    if (!s.stop())
+                        throw new RuntimeException("error stopping: " + s);
+
+                    if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+                        layout();
+
                     return true;
                 } else {
                     return false;
@@ -222,29 +228,17 @@ public class MutableContainer extends Container {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        for (Surface x : children.copy) {
-            o.accept(x);
-        }
+        children.forEach(o);
     }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        for (Surface x : children.copy) {
-            if (!o.test(x))
-                return false;
-        }
-        return true;
+        return children.whileEach(o);
     }
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        @Nullable Surface[] copy = children.copy;
-        for (int i = copy.length - 1; i >= 0; i--) {
-            Surface x = copy[i];
-            if (!o.test(x))
-                return false;
-        }
-        return true;
+        return children.whileEachReverse(o);
     }
 
     public int size() {

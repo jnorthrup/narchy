@@ -14,9 +14,8 @@ public class IntSlider extends FloatSlider {
         slider.on((s, v) -> x.set(v));
     }
 
-    @Override
-    protected FloatSlider.XSlider slider(float v, float min, float max) {
-        return new XSlider(v, min, max) {
+    protected FloatSliderModel slider(float v, float min, float max) {
+        return new DefaultFloatSlider(v, min, max) {
 
             @Override
             protected float p(float v) {

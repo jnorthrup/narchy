@@ -9,7 +9,7 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
-import spacegraph.space2d.widget.slider.BaseSlider;
+import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.Label;
@@ -56,7 +56,7 @@ public class WidgetTest {
                         col(
                                 new Label("label"),
                                 new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
-                                new FloatSlider("knob slider", 0.75f, 0, 1).type(BaseSlider.Knob)
+                                new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.Knob)
                         ),
                         new XYSlider(),//.state(Widget.META),
                         new DummyConsole().surface(),

@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 public class BufferedCoWList<X> extends FastCoWList<X> {
 
@@ -85,4 +86,9 @@ public class BufferedCoWList<X> extends FastCoWList<X> {
         }
     }
 
+    @Override
+    public boolean whileEach(Predicate<X> o) {
+        commit();
+        return super.whileEach(o);
+    }
 }

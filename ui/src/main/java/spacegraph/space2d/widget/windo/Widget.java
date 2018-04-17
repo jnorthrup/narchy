@@ -13,7 +13,7 @@ import spacegraph.video.Draw;
 /**
  * Base class for GUI widgets, similarly designed to JComponent
  */
-abstract public class Widget extends Bordering {
+public class Widget extends Bordering {
 
 
     public static final int RAW = 0;

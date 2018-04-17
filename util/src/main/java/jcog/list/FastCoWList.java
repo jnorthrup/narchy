@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 /** be careful about synchronizing to instances of this class
  * because the class synchronizes on itself and not a separate lock object
@@ -200,6 +201,23 @@ public class FastCoWList<X> extends FasterList<X> {
             size = newValues.length;
             commit();
         }
+    }
+
+    public boolean whileEach(Predicate<X> o) {
+        for (X x : copy) {
+            if (!o.test(x))
+                return false;
+        }
+        return true;
+    }
+    public boolean whileEachReverse(Predicate<X> o) {
+        @Nullable X[] copy = this.copy;
+        for (int i = copy.length - 1; i >= 0; i--) {
+            X x = copy[i];
+            if (!o.test(x))
+                return false;
+        }
+        return true;
     }
 
 }

@@ -7,7 +7,7 @@ import spacegraph.space2d.Surface;
 
 
  */
-public class Bordering extends Stacking {
+public class Bordering extends MutableContainer {
     public final static int C = 0;
     public final static int N = 1;
     public final static int S = 2;
@@ -113,6 +113,8 @@ public class Bordering extends Stacking {
             assert (x2 >= x1 && y2 >= y1);
             c.pos(X + x1, Y + y1, X + x2, Y + y2);
         }
+
+        super.doLayout(dtMS);
     }
 
     /** replace center content */
