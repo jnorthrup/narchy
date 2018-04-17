@@ -47,7 +47,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
             for (int i = 0; i < count; i++) {
                 TimedFuture b = buffer[i];
                 buffer[i] = null;
-                schedule(b, c);
+                scheduleUnlessImmediate(b, c, timer);
             }
             Arrays.fill(buffer, 0, count, null);
         }

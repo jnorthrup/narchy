@@ -24,7 +24,9 @@ public class BaseSlider extends Widget {
 
 
     /** dead-zone at the edges to latch min/max values */
-    private static final float margin = 0.02f;
+    static private final float margin =
+            //0.02f;
+            0.0001f;
 
     //private static final float EPSILON = Float.MIN_NORMAL;
 

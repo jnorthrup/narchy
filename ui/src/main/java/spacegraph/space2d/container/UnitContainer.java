@@ -6,7 +6,7 @@ import spacegraph.space2d.SurfaceBase;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public abstract class UnitContainer extends Container {
+public class UnitContainer extends Container {
 
     public final Surface the;
 
@@ -31,6 +31,12 @@ public abstract class UnitContainer extends Container {
             return true;
         }
         return false;
+    }
+
+    /** default behavior: inherit bounds directly */
+    @Override
+    protected void doLayout(int dtMS) {
+        the.pos(bounds);
     }
 
     @Override

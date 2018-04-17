@@ -58,7 +58,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     }
 
     public RectFloat2D move(float dx, float dy) {
-        return move(dx, dy, Float.MIN_NORMAL);
+        return move(dx, dy, Spatialization.EPSILONf);
     }
 
     public RectFloat2D move(float dx, float dy, float epsilon) {

@@ -50,10 +50,19 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         abstract public void reschedule(int wheel, TimedFuture r);
 
-        public final void schedule(TimedFuture<?> r, int c) {
-            reschedule(idx(c + r.getOffset(resolution) + 1), r);
+        public final void schedule(TimedFuture r, int c) {
+            int index = idx(c + r.getOffset(resolution) + 1);
+            reschedule(index, r);
         }
-
+        public final void scheduleUnlessImmediate(TimedFuture r, int c, HashedWheelTimer timer) {
+            int offset = r.getOffset(resolution);
+            if (offset>-1 || r.isPeriodic()) {
+                int index = idx(c + offset + 1);
+                reschedule(index, r);
+            } else {
+                timer.execute(r); //immediately
+            }
+        }
     }
 
     private final WheelModel model;
@@ -185,13 +194,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     @Override public TimedFuture<?> submit(Runnable runnable) {
-        assertRunning();
-
-        TimedFuture r = new RunnableSoon.Wrapper(0, runnable);
-        return submit(r);
+        return submit((TimedFuture) new Soon.Run(runnable));
     }
 
     public final <D> TimedFuture<D> submit(TimedFuture<D> r) {
+        assertRunning();
         model.schedule(r);
         return r;
     }
@@ -422,8 +429,6 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Deprecated private <V> TimedFuture<V> scheduleOneShot(long firstDelay, Callable<V> callable) {
 
-        assertRunning();
-
         if (firstDelay < resolution) {
             // round up to resolution
             firstDelay = resolution;
@@ -468,7 +473,6 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     private <V> FixedDelayTimedFuture<V> scheduleFixedDelay(long recurringTimeout,
                                                             long firstDelay,
                                                             Callable<V> callable) {
-        assertRunning();
         isTrue(recurringTimeout >= resolution,
                 "Cannot schedule tasks for amount of time less than timer precision.");
 
@@ -486,7 +490,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 return null;
             });
         } else {
-            model.schedule(r);
+            submit(r);
         }
 
         return r;

@@ -11,6 +11,7 @@ import java.util.function.Function;
 public class Spatialization<T> {
 
     public static final double EPSILON = Math.sqrt(Float.MIN_NORMAL);
+    public static final float EPSILONf = (float) Math.sqrt(Float.MIN_NORMAL);
 
     public final Split<T> split;
     public final Function<T, HyperRegion> bounds;

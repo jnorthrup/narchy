@@ -2,17 +2,17 @@ package jcog.exe.realtime;
 
 import java.util.concurrent.TimeUnit;
 
-/** lighweight one time Runnable */
-abstract public class RunnableSoon extends AbstractTimedFuture<Object> {
+/** lighweight one time procedure */
+abstract public class Soon extends AbstractTimedFuture<Object> {
 
-    protected RunnableSoon(int rounds) {
+    protected Soon(int rounds) {
         super(rounds);
     }
 
     /** wont need rescheduled */
     @Override
     public int getOffset(long resolution) {
-        return 0;
+        return -1;
     }
 
     @Override
@@ -43,12 +43,12 @@ abstract public class RunnableSoon extends AbstractTimedFuture<Object> {
     }
 
     /** wraps a Runnable */
-    final static class Wrapper extends RunnableSoon {
+    final static class Run extends Soon {
 
         private final Runnable runnable;
 
-        Wrapper(int firstFireRounds, Runnable runnable) {
-            super(firstFireRounds);
+        Run(Runnable runnable) {
+            super(0 /* immediately */);
             this.runnable = runnable;
         }
 

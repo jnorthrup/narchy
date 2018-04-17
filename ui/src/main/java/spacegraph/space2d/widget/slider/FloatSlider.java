@@ -121,11 +121,7 @@ public class FloatSlider extends Widget {
 
         @Override
         protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-//            super.paint(gl, dtMS);
-//        }
-//
-//        @Override
-//        protected void paintIt(GL2 gl) {
+
             if (input != null)
                 super.value(input.asFloat());
 
