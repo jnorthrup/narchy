@@ -278,7 +278,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                     }
                 } else {
                     long mid = (start+end)/2L;
-                    inner.sortThisByLong(x -> x.meanDistanceTo(mid));
+                    inner.sortThisByLong(x -> x.midDistanceTo(mid));
                     for (int i = 0; i < limit; i++) {
                         target.accept(inner.get(i));
                         n++;

@@ -54,8 +54,8 @@ public final class Termify extends AbstractPred<Derivation> {
 
         if (!Taskify.valid(c1)) {
             Term c1e = c1;
-            d.nar.emotion.deriveFailEval.increment(()->
-                rule + " |\n\t" + d.xy + "\n\t -> " + c1e
+            d.nar.emotion.deriveFailEval.increment(() ->
+                    rule + " |\n\t" + d.xy + "\n\t -> " + c1e
             );
             return false;
         }
@@ -75,7 +75,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
             boolean singleTime =
                     d.task.isEternal() ? d.belief == null : d.single;
-                    //d.single;
+            //d.single;
 
             DeriveTime dt = singleTime ? d.dtSingle : d.dtDouble;
             if (dt == null) {
@@ -93,10 +93,10 @@ public final class Termify extends AbstractPred<Derivation> {
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
-            if ((c1!=c2 && !Taskify.valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
+            if ((c1 != c2 && !Taskify.valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
                 Term c1e = c1;
-                d.nar.emotion.deriveFailTemporal.increment(()->
-                    rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
+                d.nar.emotion.deriveFailTemporal.increment(() ->
+                        rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
                 );
                 return false;
             }
@@ -111,15 +111,15 @@ public final class Termify extends AbstractPred<Derivation> {
 
             if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single &&
                     Op.values()[d._beliefOp].temporal
-                    //d._beliefOp == IMPL.ordinal() //impl only
-                ) {
-            long derivedGoalStart = occ[0];
+                //d._beliefOp == IMPL.ordinal() //impl only
+                    ) {
+                long derivedGoalStart = occ[0];
 
                 if (derivedGoalStart != ETERNAL) {
 
                     long taskWants =
                             d.task.start();
-                            //d.task.myNearestTimeTo(d.time);
+                    //d.task.myNearestTimeTo(d.time);
 
                     if (taskWants == ETERNAL) {
                         taskWants = d.time; //now
@@ -137,7 +137,7 @@ public final class Termify extends AbstractPred<Derivation> {
         } else {
             if (d.concPunc == BELIEF || d.concPunc == GOAL) {
                 c2 = c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-                if (c1!=c2 && !Taskify.valid(c2)) {
+                if (c1 != c2 && !Taskify.valid(c2)) {
                     d.nar.emotion.deriveFailTemporal.increment();
                     return false;
                 }

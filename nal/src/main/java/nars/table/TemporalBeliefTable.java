@@ -40,13 +40,24 @@ public interface TemporalBeliefTable extends TaskTable {
 //        //float fdur = dur;
 //        //float range = t.range();
 
-        float ee = Revision.eviInteg(t, start, end, dur);
-        if (ee > Float.MIN_NORMAL) {
-            return ee;
-        } else {
-            //rank out-of-range by distance
-            return -t.minDistanceTo(start, end);
-        }
+        float focusedEvi = Revision.eviInteg(t, start, end, dur);
+        float absDistance = t.midDistanceTo((start + end) / 2L) / ((float)dur);
+        float ownEvi = t.eviInteg(dur, t.start(), t.end());
+
+        return focusedEvi - absDistance / ownEvi;
+
+//        if (focusedEvi > Float.MIN_NORMAL) {
+//            return focusedEvi;
+//        } else {
+//            //rank out-of-range by distance divided by its evidence integral
+//
+//            return
+//                    //-t.minDistanceTo(start, end)
+//                    //-t.midDistanceTo(start, end) //TODO
+//                    absDistance
+//                    /
+//                    +t.eviInteg(dur, t.start(), t.end());
+//        }
 
 //        if (dt == 0)
 //            return ee; //full integral

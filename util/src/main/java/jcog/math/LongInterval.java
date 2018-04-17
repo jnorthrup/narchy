@@ -209,7 +209,7 @@ public interface LongInterval {
         }
     }
 
-    default long meanDistanceTo(long x) {
+    default long midDistanceTo(long x) {
         long start = start();
         if (start == ETERNAL) return 0;
         long end = end();

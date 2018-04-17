@@ -439,7 +439,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         Top2<Leaf<TaskRegion>> weakLeaf = new Top2(leafWeakness);
 
         FloatFunction<TaskRegion> weakestTask = (t ->
-                1f / (1f + taskStrength.floatValueOf((Task) t)));
+                -taskStrength.floatValueOf((Task) t));
 
         Top<TaskRegion> closest = input!=null ? new Top<>(
                 TemporalBeliefTable.mergabilityWith(input, tableDur)
@@ -662,15 +662,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return 1 + root.rangeIfFinite(0, 1);
     }
 
-    private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
-        int tableDur = (int) (tableDur());
+    private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int dur) {
         return (Task x) -> {
-            if (x.isDeleted())
-                return Float.NEGATIVE_INFINITY;
-
             //boost for present and future
-            return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) *
-                    value(x, when, when, tableDur);
+            return (!x.isBefore(now - dur) ? presentAndFutureBoost : 1f) *
+                    value(x, when, when, dur);
         };
     }
 

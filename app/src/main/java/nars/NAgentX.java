@@ -86,8 +86,8 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                fps * 2, //NYQUIST
-                //fps * 1, //1:1
+                //fps * 2, //NYQUIST
+                fps * 1, //1:1
                 fps);
     }
 
@@ -109,9 +109,10 @@ abstract public class NAgentX extends NAgent {
                 narFPS;
 
         RealTime clock =
-                clockFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
-                        new RealTime.CS(true) :
-                        new RealTime.DSHalf(true);
+                new RealTime.MS(true);
+//                clockFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
+//                        new RealTime.CS(true) :
+//                        new RealTime.DSHalf(true);
 
         clock.durFPS(clockFPS);
 
@@ -228,7 +229,7 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(1f);
+        n.dtDither.set(0.5f); //nyquist alert
         //n.timeFocus.set(4);
 
         n.confMin.set(0.01f);

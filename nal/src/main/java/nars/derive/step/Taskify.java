@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import static nars.Op.BOOL;
 import static nars.Op.VAR_PATTERN;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
+import static nars.util.time.Tense.ETERNAL;
 
 public class Taskify extends AbstractPred<Derivation> {
 
@@ -76,10 +77,28 @@ public class Taskify extends AbstractPred<Derivation> {
 
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
+            //post-process occurrence time
             int dither = d.ditherTime;
-            long start = Tense.dither(occ[0], dither);
-            long end = Tense.dither(occ[1], dither);
-            assert (end >= start): "task has reversed occurrence: " + start + ".." + end;
+            long start = occ[0], end = occ[1];
+            if (start!=ETERNAL) {
+                assert (end >= start): "task has reversed occurrence: " + start + ".." + end;
+
+                //stretch to at least one duration
+                int dur = d.dur;
+                if (end - start < dur) {
+                    double mid = (end+start)/2.0;
+                    start = Tense.dither(mid - dur/2.0, dither);
+                    end = Tense.dither(mid + dur/2.0, dither);
+                } else {
+                    start = Tense.dither(start, dither);
+                    end = Tense.dither(end, dither);
+                }
+
+
+            } else {
+                assert(end == ETERNAL);
+            }
+
 
             return Param.DEBUG ?
                             new DebugDerivedTask(C, punc, tr, start, end, d) :

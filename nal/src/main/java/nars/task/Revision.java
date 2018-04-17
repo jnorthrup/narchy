@@ -657,19 +657,21 @@ public class Revision {
     public static float eviInteg(Task x, long start, long end, int dur) {
         assert(start!=ETERNAL);
 
-        if (x.isEternal())
-            return x.evi() * (end-start+1); //simple
-
         if (start == end) {
-            return x.evi(start, dur); //point-like
+            //point in time
+            return x.evi(start, dur);
         } else {
+            long xStart = x.start();
+            if (xStart == ETERNAL)
+                return x.evi() * (end-start+1); //simple
+
             long d = end - start;
             if (d <= dur || d < 2) {
                 return x.eviInteg(dur,
                         start,
                         end);
             } else {
-                @Nullable Longerval se = Longerval.intersect(start, end, x.start(), x.end());
+                @Nullable Longerval se = Longerval.intersect(start, end, xStart, x.end());
                 if (se != null) {
 
                     boolean a = (se.a > start && se.a < end);  //add point se.a?

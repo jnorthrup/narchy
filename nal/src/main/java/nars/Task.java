@@ -567,8 +567,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     default float evi(long when, final long dur) {
 
         long s = start();
-
-
         if (s == ETERNAL) {
             return evi();
         } else if (when == ETERNAL) {

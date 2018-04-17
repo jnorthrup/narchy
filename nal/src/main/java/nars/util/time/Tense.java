@@ -83,6 +83,16 @@ public enum Tense {
         }
     }
 
+    public static long dither(double t, int dither) {
+        if (dither > 1) {
+            if (t == ETERNAL) return ETERNAL;
+            else if (t == TIMELESS) return TIMELESS;
+            else return Math.round(Util.round(t, dither)); //collapse to simultaneous if less than the dither
+        } else {
+            return Math.round(t);
+        }
+    }
+
     public static long dither(long t, int dither) {
         if (dither > 1) {
             if (t == ETERNAL) return ETERNAL;

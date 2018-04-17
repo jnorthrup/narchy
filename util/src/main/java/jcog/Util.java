@@ -737,6 +737,7 @@ public enum Util {
         return Math.round(value / epsilon) * epsilon;
     }
 
+
     /**
      * rounds x to the nearest multiple of the dither parameter
      */

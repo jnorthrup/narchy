@@ -44,9 +44,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
+import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.util.time.Tense.ETERNAL;
 import static nars.util.time.Tense.TIMELESS;
-import static nars.truth.TruthFunctions.c2wSafe;
 
 
 /**
@@ -106,7 +106,7 @@ public class Derivation extends PreDerivation {
     public Task belief;
 
     public Truth taskTruth;
-    public Truth beliefTruth, beliefTruthProjected;
+    public Truth beliefTruth, beliefTruthDuringTask;
 
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
@@ -500,12 +500,12 @@ public class Derivation extends PreDerivation {
             this._taskOp = taskTerm.op().id;
         }
 
-        long tAt;
-        //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
-        if (_task.isEternal() && (_belief!=null && !_belief.isEternal()))
-            tAt = time;
-        else
-            tAt = _task.nearestPointInternal(time);
+        long tAt = _task.start();
+//        //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
+//        if (_task.isEternal() && (_belief!=null && !_belief.isEternal()))
+//            tAt = time;
+//        else
+//            tAt = _task.nearestPointInternal(time);
 
         if (tAt == TIMELESS)
             throw new RuntimeException();
@@ -514,42 +514,42 @@ public class Derivation extends PreDerivation {
         this.taskPunc = _task.punc();
 
         if ((taskPunc == BELIEF || taskPunc == GOAL)) {
-            if ((this.taskTruth = _task.truth(tAt, dur)) == null)
+            if ((this.taskTruth = _task.truth()) == null)
                 return false;
         } else {
             this.taskTruth = null;
         }
 
 
-        if (_belief != null) {
-            beliefTerm = anon.put(this._beliefTerm = _belief.term());
-            this._belief = _belief;
-            this.belief = taskProxy(beliefTerm, _belief);
+        if (_belief!=null) {
+            if ((this.beliefTruthDuringTask = _belief.truth(_task.start(), _task.end(), dur)) != null)
+                this.beliefTruth = _belief.truth();
 
-            long bAt = belief.nearestPointExternal(_task.start(), _task.end());
-            this.beliefAt =
-                    //bAt;
-                    belief.start();
-
-            this.beliefTruth = belief.truth(beliefAt,dur);
-            this.beliefTruthProjected = belief.truth(bAt, dur);
-            if (beliefTruth == null && beliefTruthProjected == null) {
+            if (beliefTruth != null || beliefTruthDuringTask != null) {
+                this._belief = _belief;
+            } else {
                 this._belief = null; //force single premise
             }
         } else {
+            this._belief = null; //single premise
+        }
+
+        if (this._belief != null) {
+            //double
+            beliefTerm = anon.put(this._beliefTerm = _belief.term());
+            this.belief = taskProxy(beliefTerm, _belief);
+            this.beliefAt = _belief.start();
+        } else {
+            //single
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
-            this._belief = null;
+            this.beliefAt = TIMELESS;
+            this.belief = null;
+            this.beliefTruth = this.beliefTruthDuringTask = null;
         }
 
         assert(beliefTerm!=null): (_beliefTerm + " could not be anonymized");
         this._beliefStruct = beliefTerm.structure();
         this._beliefOp = beliefTerm.op().id;
-
-        if (_belief == null) {
-            this.belief = null;
-            this.beliefAt = TIMELESS;
-            this.beliefTruth = this.beliefTruthProjected = null;
-        }
 
         this.forEachMatch = null;
         this.concTruth = null;
