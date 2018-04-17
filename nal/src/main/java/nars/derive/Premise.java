@@ -42,7 +42,7 @@ public class Premise {
 
 
 
-    Premise(Task task, PriReference<Term> termLink) {
+    public Premise(Task task, PriReference<Term> termLink) {
         super();
         this.task = task;
         this.termLink = termLink;

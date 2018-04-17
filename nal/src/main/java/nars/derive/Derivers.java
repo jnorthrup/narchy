@@ -2,12 +2,8 @@ package nars.derive;
 
 import nars.NAR;
 import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.premise.PremiseDeriverProto;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Function;
+import java.util.*;
 
 /**
  * utility class for working witih Deriver's
@@ -58,15 +54,15 @@ public class Derivers {
         return files;
     }
 
-    /**
-     * loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
-     * of multiple deriver layers each targetting a specific range of the NAL spectrum
-     */
-    public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
-        assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
-
-        return (nar)->new Deriver(rules(minLevel, maxLevel, nar, extraFiles), nar);
-    }
+//    /**
+//     * loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
+//     * of multiple deriver layers each targetting a specific range of the NAL spectrum
+//     */
+//    public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
+//        assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
+//
+//        return (nar)->new Deriver(files(minLevel, maxLevel, nar, extraFiles), nar);
+//    }
 
 //    public static Function<NAR, Deriver> deriver(String... extraFiles) {
 //        return nar -> new Deriver(DeriveRuleSet.load(nar,
@@ -76,9 +72,18 @@ public class Derivers {
 //    }
 
     /** standard ruleset */
-    public static Set<PremiseDeriverProto> rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
-        return PremiseDeriverRuleSet.load(nar,
-            standard(minLevel, maxLevel, extraFiles)
-        );
+    public static PremiseDeriverRuleSet nal(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
+        return files(nar, standard(minLevel, maxLevel, extraFiles)        );
+    }
+
+    public static PremiseDeriverRuleSet files(NAR nar, String... filename) {
+        return files(nar, List.of(filename));
+    }
+
+    public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
+        return PremiseDeriverRuleSet.files(nar, filename);
+    }
+    public static PremiseDeriverRuleSet parse(NAR nar, String... rules) {
+        return new PremiseDeriverRuleSet(nar, rules);
     }
 }

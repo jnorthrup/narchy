@@ -19,16 +19,10 @@ import java.util.stream.Stream;
  * intermediate representation of a set of compileable Premise Rules
  * TODO remove this class, just use Set<PremiseDeriverProto>'s
  */
-@Deprecated public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
+public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
 
 
-    public static Set<PremiseDeriverProto> load(NAR nar, Collection<String> filename) {
-        PremisePatternIndex p = new PremisePatternIndex();
-        p.nar = nar;
-        return new PremiseDeriverRuleSet(filename.stream().flatMap(n -> ruleCache.apply(n).stream()), p, nar);
-    }
-
-    private final static Memoize<String, List<PremiseDeriverSource>> ruleCache = new SoftMemoize<>((String n) -> {
+    public final static Memoize<String, List<PremiseDeriverSource>> ruleCache = new SoftMemoize<>((String n) -> {
         InputStream nn = null;
         try {
             nn = ClassLoader.getSystemResource(n).openStream();
@@ -51,24 +45,28 @@ import java.util.stream.Stream;
 
     }, 32, true);
 
+    public final NAR nar;
+
 
     public PremiseDeriverRuleSet(NAR nar, String... rules) {
-        this(new PremisePatternIndex(), nar, rules);
+        this(new PremisePatternIndex(nar), rules);
     }
 
-    PremiseDeriverRuleSet(PremisePatternIndex index, NAR nar, String... rules) {
-        this(PremiseDeriverSource.parse(rules), index, nar);
+    PremiseDeriverRuleSet(PremisePatternIndex index, String... rules) {
+        this(index, PremiseDeriverSource.parse(rules));
     }
 
-    private PremiseDeriverRuleSet(Stream<PremiseDeriverSource> parsed, PremisePatternIndex patterns, NAR nar) {
-        //HACK
-        if (patterns.nar == null)
-            patterns.nar = nar;
-        else
-            if (patterns.nar!=nar)
-                throw new RuntimeException("wrong NAR ref");
-
+    private PremiseDeriverRuleSet(PremisePatternIndex patterns, Stream<PremiseDeriverSource> parsed) {
+        assert(patterns.nar!=null);
+        this.nar = patterns.nar;
         parsed.forEach(rule -> super.add(new PremiseDeriverProto(rule, patterns)));
+    }
+
+
+    public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
+        return new PremiseDeriverRuleSet(
+                new PremisePatternIndex(nar),
+                filename.stream().flatMap(n -> PremiseDeriverRuleSet.ruleCache.apply(n).stream()));
     }
 
     @Override
@@ -159,6 +157,7 @@ import java.util.stream.Stream;
 //        }
 
     }
+
 
 
 

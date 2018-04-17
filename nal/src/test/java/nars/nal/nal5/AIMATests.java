@@ -5,6 +5,7 @@ import jcog.io.SparkLine;
 import jcog.list.FasterList;
 import nars.*;
 import nars.derive.Deriver;
+import nars.derive.deriver.MatrixDeriver;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,8 +13,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-import static nars.util.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +55,7 @@ public class AIMATests {
         n.termVolumeMax.set(26);
         //n.conceptActivation.set(0.5f);
 
-        Deriver.derivers(n).forEach(x->x.conceptsPerIteration.set(8));
+        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(8));
         //new QuerySpider(n);
         //new PrologCore(n);
         //n.run(1);

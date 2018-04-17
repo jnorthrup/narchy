@@ -10,11 +10,12 @@ import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.derive.deriver.MatrixDeriver;
 import nars.exe.AbstractExec;
 import nars.exe.Exec;
 import nars.exe.UniExec;
-import nars.index.concept.ConceptIndex;
 import nars.index.concept.CaffeineIndex;
+import nars.index.concept.ConceptIndex;
 import nars.index.concept.MapConceptIndex;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
@@ -98,29 +99,12 @@ public class NARS {
     /**
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
-    public NARS deriverAdd(int minLevel, int maxLevel) {
-        derivers.add(
-                Derivers.deriver(minLevel, maxLevel)
+    @Deprecated public NARS deriverAdd(int minLevel, int maxLevel) {
+        postInit.add((n)->
+                new MatrixDeriver(Derivers.nal(minLevel, maxLevel, n))
         );
         return this;
     }
-
-    /**
-     * adds a deriver with the provided rulesets
-     */
-    public NARS deriverAdd(String... ruleFiles) {
-        deriverAdd(
-                Derivers.deriver(1, 9, ruleFiles)
-        );
-        return this;
-    }
-
-
-    public NARS deriverAdd(Function<NAR, Deriver> dBuilder) {
-        this.derivers.add(dBuilder);
-        return this;
-    }
-
 
     /**
      * defaults

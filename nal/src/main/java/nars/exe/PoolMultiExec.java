@@ -40,12 +40,10 @@ public class PoolMultiExec extends AbstractExec {
             this.focus = new Focus(nar, revaluator);
         }
 
-        for (int i = 0; i < parallelization; i++) {
+        for (int i = 0; i < parallelization; i++)
             new Next();
-        }
 
     }
-
 
     @Override
     public void execute(Runnable async) {
@@ -89,38 +87,35 @@ public class PoolMultiExec extends AbstractExec {
         @Override
         public boolean exec() {
             try {
-                int[] i = focus.sliceIters;
-                int n = i.length;
-
-                int remain = batchSize;
-                for (int a = 0; a < n; a++) { //safety limit
-                    if (++cursor >= n)
-                        cursor = 1;
-                    if (focus.tryRun(cursor)) {
-                        if (--remain <= 0)
-                            break; //done
-                    }
-                }
+                play();
 
             } finally {
-//                if (ForkJoinPool.commonPool().getQueuedTaskCount())
-//                    execute(this); //reinvoke
-//                else {
-//                    //defer reinvocation
-//                    nar.runLater(this);
-//                }
 
-//                quietlyComplete();
-//                ForkJoinPool.commonPool().submit((ForkJoinTask)this).reinitialize();
-//                System.out.println(id + " @ " + cursor);
-                //reinitialize();
+                try {
 
-                work();
+                    work();
 
+                } finally {
 
-                fork();
+                    fork();
+                }
             }
             return false;
+        }
+
+        public void play() {
+            int[] i = focus.sliceIters;
+            int n = i.length;
+
+            int remain = batchSize;
+            for (int a = 0; a < n; a++) { //safety limit
+                if (++cursor >= n)
+                    cursor = 1;
+                if (focus.tryRun(cursor)) {
+                    if (--remain <= 0)
+                        break; //done
+                }
+            }
         }
 
         public void work() {

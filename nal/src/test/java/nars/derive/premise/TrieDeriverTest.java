@@ -4,7 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.Deriver;
+import nars.derive.deriver.MatrixDeriver;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.test.TestNAR;
@@ -55,7 +55,8 @@ public class TrieDeriverTest {
 
     @Test
     public void testConclusionWithXTERNAL() {
-        PremisePatternIndex idx = new PremisePatternIndex() {
+        NAR n = NARS.shell();
+        PremisePatternIndex idx = new PremisePatternIndex(n) {
             @Override
             public @Nullable Termed get(@NotNull Term x, boolean create) {
                 Termed u = super.get(x, create);
@@ -71,7 +72,8 @@ public class TrieDeriverTest {
         };
 
 
-        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(idx, NARS.shell(),
+
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(idx,
                 "Y, Y |- (?1 &&+0 Y), ()",
                 "X, X |- (?1 &&+- X), ()"
         ), null);
@@ -196,10 +198,8 @@ public class TrieDeriverTest {
     private final List<TestNAR> tests = $.newArrayList();
 
     protected TestNAR test(String... rules) {
-        new NARS().deriverAdd(
-                n1 -> new Deriver(new PremiseDeriverRuleSet(n1, rules), n1)
-        );
         NAR n = new NARS().get();
+        new MatrixDeriver(new PremiseDeriverRuleSet(n, rules));
         TestNAR t = new TestNAR(n);
         tests.add(t);
         return t;

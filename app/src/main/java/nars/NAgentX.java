@@ -3,6 +3,8 @@ package nars;
 import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
+import nars.derive.Derivers;
+import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.EmotionPlot;
@@ -156,18 +158,7 @@ abstract public class NAgentX extends NAgent {
 //                        }
 //                     }
 //                )
-
                 .time(clock)
-                .deriverAdd(1, 1)
-                .deriverAdd(2, 2)
-                .deriverAdd(3, 3)
-                .deriverAdd(5, 5)
-                .deriverAdd(6, 8)
-                .deriverAdd("motivation.nal")
-                //.deriverAdd("goal_analogy.nal")
-                //.deriverAdd(6,6) //extra NAL6
-                //.deriverAdd("list.nal")
-
                 .index(
                         new CaffeineIndex(
                                 //800 * 1024,
@@ -226,8 +217,14 @@ abstract public class NAgentX extends NAgent {
                 )
                 .get();
 
-        //n.defaultWants();
-
+        new SimpleDeriver(Derivers.nal(1, 1, n));
+        new SimpleDeriver(Derivers.nal(2, 2, n));
+        new SimpleDeriver(Derivers.nal(3, 3, n));
+        new SimpleDeriver(Derivers.nal(5, 5, n));
+        new SimpleDeriver(Derivers.nal(6, 8, n));
+        new SimpleDeriver(Derivers.files(n, "motivation.nal"));
+        //.deriverAdd("goal_analogy.nal")
+        //.deriverAdd(6,6) //extra NAL6
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist

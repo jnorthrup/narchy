@@ -3,7 +3,8 @@ package nars.concept;
 import jcog.pri.PLink;
 import nars.*;
 import nars.control.Activate;
-import nars.derive.Deriver;
+import nars.derive.Derivers;
+import nars.derive.deriver.MatrixDeriver;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
@@ -43,7 +44,8 @@ public class ActivateTest {
 
         Term A = $.the("a");
 
-        Deriver dummy = new Deriver(n, "(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:Weak)");
+        MatrixDeriver dummy = new MatrixDeriver(Derivers.parse(n,
+        "(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:Weak)"));
 
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};

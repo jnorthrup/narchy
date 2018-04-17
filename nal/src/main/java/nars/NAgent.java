@@ -151,8 +151,14 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         return t;
     }
 
-    @Deprecated public Task alwaysQuestion(Termed x) {
-        Task t = new NALTask(x.term(), QUESTION, null, now,
+    public Task alwaysQuestion(Termed x) {
+        return alwaysQuestion(x, true);
+    }
+    public Task alwaysQuest(Termed x) {
+        return alwaysQuestion(x, false);
+    }
+    public Task alwaysQuestion(Termed x, boolean questionOrQuest) {
+        Task t = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
                 ETERNAL, ETERNAL,
                 //Stamp.UNSTAMPED
                 nar().time.nextStampArray()
@@ -317,10 +323,13 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             alwaysWant((Iterable)happy, nar.confDefault(GOAL));
 
-            actions.keySet().forEach(a ->
-                    //alwaysQuest(a)
-                    alwaysQuestion(Op.IMPL.the(happy.term, 0 /*XTERNAL*/, a.term))
-            );
+            actions.keySet().forEach(a -> {
+                alwaysQuest(a);
+                //alwaysQuestion(Op.IMPL.the(happy.term, 0 /*XTERNAL*/, a.term));
+                //alwaysQuestion(Op.CONJ.the(happy.term, a.term, $.varQuery(1)));
+                alwaysQuestion(Op.CONJ.the(happy.term, a.term));
+                alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
+            });
 
             this.in = nar.newChannel(this);
             this.now = nar.time();

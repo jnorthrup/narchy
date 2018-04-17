@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import nars.NAR;
 import nars.Op;
 import nars.index.concept.MapConceptIndex;
 import nars.subterm.Subterms;
@@ -33,6 +34,11 @@ public class PremisePatternIndex extends MapConceptIndex {
 
     public PremisePatternIndex() {
         super(new HashMap<>(512));
+    }
+
+    public PremisePatternIndex(NAR nar) {
+        this();
+        this.nar = nar;
     }
 
 

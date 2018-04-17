@@ -9,6 +9,7 @@ import nars.*;
 import nars.concept.scalar.SwitchAction;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.derive.deriver.MatrixDeriver;
 import nars.exe.UniExec;
 import nars.gui.Vis;
 import nars.index.concept.CaffeineIndex;
@@ -130,13 +131,14 @@ public class TrackXY extends NAgent {
 //                n.goal($.the(action), Tense.Present, 1f, 0.1f);
 //            }
 
-            Deriver d = new Deriver(Derivers.rules(
+            Deriver d = new MatrixDeriver(Derivers.nal(
                     //1,
                     1,
                     8, n,
                     //"list.nal",
-                    "motivation.nal"), n);
-            d.conceptsPerIteration.set(32);
+                    "motivation.nal"));
+
+            ((MatrixDeriver)d).conceptsPerIteration.set(32);
             n.timeFocus.set(2);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,

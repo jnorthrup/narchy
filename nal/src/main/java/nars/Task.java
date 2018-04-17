@@ -9,6 +9,7 @@ import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.proto.TaskAddTask;
+import nars.derive.Premise;
 import nars.task.*;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
@@ -43,8 +44,6 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.data.map.MetaMap, Priority {
 
-
-    Task[] EmptyArray = new Task[0];
 
     /**
      * assumes identity and hash have been tested already.
@@ -650,6 +649,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //                    (this, "unconceptualized");
 //        }
     }
+
+    Task[] EmptyArray = new Task[0];
+
+
+    /** sloppy pre-sort of premises by task/task_term,
+     *  to maximize sequential repeat of derived task term */
+    Comparator<? super Premise> sortByTaskSloppy =
+            Comparator
+                    .comparingInt((Premise a) -> a.task.hashCode())
+                    .thenComparingInt((Premise a) -> a.task.term().hashCode())
+                    .thenComparingInt((Premise a) -> System.identityHashCode(a.task));
 
 
 //    @NotNull

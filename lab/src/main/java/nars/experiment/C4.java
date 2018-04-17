@@ -7,6 +7,7 @@ import nars.Narsese;
 import nars.Task;
 import nars.concept.Concept;
 import nars.derive.Deriver;
+import nars.derive.deriver.MatrixDeriver;
 import nars.experiment.connect4.ConnectFour;
 import nars.op.java.Opjects;
 import nars.time.RealTime;
@@ -37,7 +38,7 @@ public class C4 {
         frame.setVisible(true);
 
         //n.startFPS(51f);
-        Deriver.derivers(n).forEach(d -> d.conceptsPerIteration.set(20));
+        Deriver.derivers(n).forEach(d -> ((MatrixDeriver)d).conceptsPerIteration.set(20));
         n.startFPS(10f);
 
         n.input("isWinPositionFor(c,(#x,#y,1),true)!");

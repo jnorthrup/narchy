@@ -65,7 +65,7 @@ public class Derivation extends PreDerivation {
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
     final Map<Task, Task> derivedTasks = new HashMap<>();
-    final ArrayHashSet<Premise> premiseBurst =
+    public final ArrayHashSet<Premise> premiseBuffer =
             //new LinkedHashSet();
             new ArrayHashSet<>();
 
@@ -798,13 +798,14 @@ public class Derivation extends PreDerivation {
         return Null;
     });
 
-    public void flush(Consumer<Collection<Task>> target) {
+    public int flush(Consumer<Collection<Task>> target) {
         int s = derivedTasks.size();
         if (s > 0) {
             nar.emotion.deriveTask.increment(s);
             target.accept(derivedTasks.values());
             derivedTasks.clear();
         }
+        return s;
     }
 
 
