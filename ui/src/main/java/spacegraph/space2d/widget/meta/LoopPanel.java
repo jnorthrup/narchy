@@ -8,12 +8,11 @@ import spacegraph.space2d.widget.button.IconToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.IntSpinner;
 import spacegraph.space2d.widget.tab.ButtonSet;
-import spacegraph.space2d.widget.windo.Widget;
 
 /**
  * control and view statistics of a loop
  */
-public class LoopPanel extends Widget {
+public class LoopPanel extends Gridding {
 
     protected final Loop loop;
     private final IntSpinner fpsLabel;
@@ -36,7 +35,7 @@ public class LoopPanel extends Widget {
             cycleTimePlot = null; //TODO
         }
 
-        content(
+        set(
                 new Gridding(
                         new ButtonSet(ButtonSet.Mode.One,
                                 IconToggleButton.awesome("play").on((b) -> {

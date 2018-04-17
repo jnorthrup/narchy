@@ -1,6 +1,5 @@
 package spacegraph.space2d.container;
 
-import jcog.exe.Loop;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
@@ -46,9 +45,9 @@ public class Switching extends Container {
      * selects the active state
      */
     public Switching state(int next) {
-        Loop.invokeLater(() -> {
+        //Loop.invokeLater(() -> {
             if (switched == next)
-                return;
+                return this;
 
             Surface prevSurface = this.current;
 
@@ -59,18 +58,18 @@ public class Switching extends Container {
 
             if (parent != null) {
                 nextSurface.start(this);
+                layout();
             }
 
-            layout();
-        });
+        //});
         return this;
     }
 
     @Override
     public boolean start(@Nullable SurfaceBase parent) {
         if (super.start(parent)) {
-            assert (current.parent == null);
-            current.start(this);
+            if (!current.start(this))
+                throw new RuntimeException();
             layout();
             return true;
         }
@@ -98,16 +97,12 @@ public class Switching extends Container {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        if (current.parent != null) //if ready
-            o.accept(current);
+        o.accept(current);
     }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        if (current.parent != null)
-            return o.test(current);
-        else
-            return true;
+        return o.test(current);
     }
 
     @Override

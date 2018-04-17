@@ -29,7 +29,6 @@ import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.PhyWall;
 import spacegraph.space2d.widget.windo.Port;
-import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -162,7 +161,7 @@ public class TensorRL1 {
                     out(a);
                 }
             };
-            set(bmp.state(Widget.META), outPort);
+            set(bmp/*.state(Widget.META)*/, outPort);
         }
     }
 

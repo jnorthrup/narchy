@@ -1,12 +1,12 @@
 package spacegraph.space2d.container;
 
 import com.google.common.collect.Sets;
+import jcog.list.BufferedCoWList;
 import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -20,17 +20,27 @@ public class MutableContainer extends Container {
     static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> {
         return i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
     };
-    private final FastCoWList<Surface> children = new FastCoWList(1,
-            NEW_SURFACE_ARRAY);
+    private final FastCoWList<Surface> children;
+
+
 
     public MutableContainer(Surface... children) {
-        super();
-        if (children.length > 0)
-            set(children);
+        this(false, children);
     }
 
-    public MutableContainer(Collection<Surface> x) {
-        this(x.toArray(new Surface[0]));
+    public MutableContainer(boolean buffered, Surface... children) {
+        this(buffered ? new BufferedCoWList(children.length + 1, NEW_SURFACE_ARRAY)
+                :
+                new FastCoWList(children.length + 1, NEW_SURFACE_ARRAY),
+            children
+        );
+    }
+    public MutableContainer(FastCoWList<Surface> childrenModel, Surface... children) {
+        super();
+
+        this.children = childrenModel;
+        if (children.length > 0)
+            set(children);
     }
 
     public Surface[] children() {
@@ -45,10 +55,10 @@ public class MutableContainer extends Container {
     @Override
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
-            synchronized (children) {
-
+            synchronized (this) {
+                //add pre-added
                 children.forEach(c -> {
-                    assert (c.parent == null || c.parent == this);
+                    assert (c.parent == null): c + " has parent " + c.parent + " when trying to add to " + MutableContainer.this;
                     c.start(this);
                 });
             }
@@ -61,9 +71,7 @@ public class MutableContainer extends Container {
     @Override
     public boolean stop() {
         if (super.stop()) {
-            synchronized (children) {
-                children.forEach(Surface::stop);
-            }
+            clear();
             return true;
         }
         return false;
@@ -71,6 +79,10 @@ public class MutableContainer extends Container {
 
     @Override
     protected void doLayout(int dtMS) {
+
+        if (children instanceof BufferedCoWList)
+            ((BufferedCoWList)children).commit();
+
         children.forEach(Surface::layout);
     }
 
@@ -78,23 +90,36 @@ public class MutableContainer extends Container {
         return children.copy[index];
     }
 
+    @Nullable
+    public Surface getSafe(int index) {
+        @Nullable Surface[] c = children.copy;
+        if (index >= 0 && index < c.length)
+            return c[index];
+        else
+            return null;
+    }
+
     /**
      * returns the existing value that was replaced
      */
     public Surface set(int index, Surface next) {
         Surface existing;
-        synchronized (children) {
-            if (children.size() - 1 < index)
-                throw new RuntimeException("index out of bounds");
+        synchronized (this) {
+            if (parent == null) {
+                return children.set(index, next);
+            } else {
+                if (children.size() - 1 < index)
+                    throw new RuntimeException("index out of bounds");
 
-            existing = get(index);
-            if (existing != next) {
-                existing.stop();
+                existing = get(index);
+                if (existing != next) {
+                    existing.stop();
 
-                children.set(index, next);
+                    children.set(index, next);
 
-                if (this.parent != null)
-                    next.start(this);
+                    if (this.parent != null)
+                        next.start(this);
+                }
             }
         }
         layout();
@@ -104,81 +129,89 @@ public class MutableContainer extends Container {
     //TODO: addIfNotPresent(x) that tests for existence first
 
     public void addAll(Surface... s) {
+        if (s.length == 0) return;
+        
         for (Surface x : s)
-            add(x);
-    }
-
-    public void add(Surface s) {
-        synchronized (children) {
-
-            assert (s.parent == null);
-            s.start(this);
-
-            children.add(s); //assume it was added to the list
-        }
-
+            _add(x);
         layout();
     }
 
-    public boolean remove(Surface s) {
-        synchronized (children) {
-            assert (s.parent == this);
-            if (children.remove(s)) {
-                s.stop();
-                layout();
-                return true;
+    public void add(Surface s) {
+        _add(s);
+        layout();
+    }
+
+    private void _add(Surface s) {
+        synchronized (this) {
+            if (parent == null) {
+                children.add(s);
             } else {
-                return false;
+                if (s.start(this)) {
+                    children.add(s); //assume it was added to the list
+                }
+            }
+        }
+    }
+
+    public boolean remove(Surface s) {
+        synchronized (this) {
+            if (parent == null) {
+                return children.remove(s);
+            } else {
+                if (children.remove(s)) {
+                    assert (s.parent == this);
+                    s.stop();
+                    layout();
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
     }
 
     public final Container set(Surface... next) {
 
-        synchronized (children) {
+        synchronized (this) {
 
             if (parent == null) {
                 children.set(next);
                 return this;
-            }
-
-            int numExisting = children.size();
-            if (numExisting == 0) {
-                //currently empty, just add all
-                for (Surface n : next)
-                    n.start(this);
-
-                children.set(next);
-
-            } else if (next.length == 0) {
-
-                children.forEach(Surface::stop);
-                children.clear();
-
             } else {
-                //possibly some remaining, so use Set intersection to invoke start/stop only as necessary
 
-                Sets.SetView unchanged = Sets.intersection(
-                        Set.of(children.copy), Set.of(next)
-                );
-                if (unchanged.isEmpty()) unchanged = null;
+                int numExisting = size();
+                if (numExisting == 0) {
 
-                for (Surface existing : children.copy) {
-                    if (unchanged == null || !unchanged.contains(existing))
-                        existing.stop();
+                    //currently empty, just add all
+                    addAll(next);
+
+                } else if (next.length == 0) {
+
+                    clear();
+
+                } else {
+                    //possibly some remaining, so use Set intersection to invoke start/stop only as necessary
+
+                    Sets.SetView unchanged = Sets.intersection(
+                            Set.of(children.copy), Set.of(next)
+                    );
+                    if (unchanged.isEmpty()) unchanged = null;
+
+                    for (Surface existing : children.copy) {
+                        if (unchanged == null || !unchanged.contains(existing))
+                            remove(existing);
+                    }
+
+                    for (Surface n : next) {
+                        if (unchanged == null || !unchanged.contains(n))
+                            add(n);
+                    }
+
                 }
-
-                for (Surface n : next) {
-                    if (unchanged == null || !unchanged.contains(n))
-                        n.start(this);
-                }
-
-                children.set(next);
             }
 
         }
 
-        layout();
         return this;
     }
 
@@ -190,17 +223,15 @@ public class MutableContainer extends Container {
     @Override
     public void forEach(Consumer<Surface> o) {
         for (Surface x : children.copy) {
-            if (x.parent != null) //if ready
-                o.accept(x);
+            o.accept(x);
         }
     }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         for (Surface x : children.copy) {
-            if (x.parent != null) //if ready
-                if (!o.test(x))
-                    return false;
+            if (!o.test(x))
+                return false;
         }
         return true;
     }
@@ -210,9 +241,8 @@ public class MutableContainer extends Container {
         @Nullable Surface[] copy = children.copy;
         for (int i = copy.length - 1; i >= 0; i--) {
             Surface x = copy[i];
-            if (x.parent != null) //if ready
-                if (!o.test(x))
-                    return false;
+            if (!o.test(x))
+                return false;
         }
         return true;
     }
@@ -226,11 +256,15 @@ public class MutableContainer extends Container {
     }
 
     public void clear() {
-        synchronized (children) {
-            if (size() > 0) {
-                children.forEach(Surface::stop);
+        synchronized (this) {
+            if (parent == null) {
                 children.clear();
-                layout();
+            } else {
+                if (!children.isEmpty()) {
+                    children.forEach(Surface::stop);
+                    children.clear();
+                    layout();
+                }
             }
         }
     }
@@ -239,8 +273,8 @@ public class MutableContainer extends Container {
      * this can be accelerated by storing children as a Map
      */
     public void replace(Surface child, Surface replacement) {
-        synchronized (children) {
-            if (!children.remove(child))
+        synchronized (this) {
+            if (!remove(child))
                 throw new RuntimeException("could not replace missing " + child + " with " + replacement);
 
             add(replacement);
@@ -255,7 +289,7 @@ public class MutableContainer extends Container {
 //
 //        @Override
 //        public boolean add(Surface surface) {
-//            synchronized (children) {
+//            synchronized (this) {
 //                if (!super.add(surface)) {
 //                    return false;
 //                }
@@ -269,7 +303,7 @@ public class MutableContainer extends Container {
 //        @Override
 //        public Surface set(int index, Surface neww) {
 //            Surface old;
-//            synchronized (children) {
+//            synchronized (this) {
 //                while (size() <= index) {
 //                    add(null);
 //                }
@@ -291,7 +325,7 @@ public class MutableContainer extends Container {
 //
 //        @Override
 //        public boolean addAll(Collection<? extends Surface> c) {
-//            synchronized (children) {
+//            synchronized (this) {
 //                for (Surface s : c)
 //                    add(s);
 //            }
@@ -302,7 +336,7 @@ public class MutableContainer extends Container {
 //        @Override
 //        public Surface remove(int index) {
 //            Surface x;
-//            synchronized (children) {
+//            synchronized (this) {
 //                x = super.remove(index);
 //                if (x == null)
 //                    return null;
@@ -314,7 +348,7 @@ public class MutableContainer extends Container {
 //
 //        @Override
 //        public boolean remove(Object o) {
-//            synchronized (children) {
+//            synchronized (this) {
 //                if (!super.remove(o))
 //                    return false;
 //                ((Surface) o).stop();
@@ -326,7 +360,7 @@ public class MutableContainer extends Container {
 //
 //        @Override
 //        public void add(int index, Surface element) {
-//            synchronized (children) {
+//            synchronized (this) {
 //                super.add(index, element);
 //            }
 //            layout();
@@ -334,7 +368,7 @@ public class MutableContainer extends Container {
 //
 //        @Override
 //        public void clear() {
-//            synchronized (children) {
+//            synchronized (this) {
 //                this.removeIf(x -> {
 //                    x.stop();
 //                    return true;

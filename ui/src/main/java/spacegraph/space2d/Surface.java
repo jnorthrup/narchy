@@ -147,6 +147,8 @@ abstract public class Surface implements SurfaceBase {
         if (_parent.getAndSet(this, parent)==null) { //if this atomic update changed from non-null to null, the callee has got it
             return true;
         }
+        if (this.parent!=parent)
+            throw new RuntimeException("parent mismatch");
         return false;
     }
 
@@ -158,6 +160,7 @@ abstract public class Surface implements SurfaceBase {
         if (_parent.getAndSet(this, null)!=null) { //if this atomic update changed from non-null to null, the callee has got it
             return true;
         }
+        //already stopped. ok
         return false;
     }
 

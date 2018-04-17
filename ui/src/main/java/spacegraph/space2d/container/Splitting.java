@@ -49,7 +49,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableCont
     public Splitting split(float split) {
         float s = this.split;
         this.split = split;
-        if (!Util.equals(s, split, 0.001f)) {
+        if (!Util.equals(s, split, 0.0001f)) {
             layout();
         }
         return this;
@@ -58,7 +58,6 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableCont
     public Splitting split(X top, Y bottom, float split) {
         set(top, bottom);
         split(split);
-        layout();
         return this;
     }
 

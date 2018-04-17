@@ -33,6 +33,12 @@ public class Bordering extends Stacking {
         set(center);
     }
 
+    public Bordering border(float all) {
+        borderNorth = borderSouth = borderEast = borderWest = all;
+        layout();
+        return this;
+    }
+
     @Override
     protected void doLayout(int dtMS) {
 
@@ -107,6 +113,12 @@ public class Bordering extends Stacking {
             assert (x2 >= x1 && y2 >= y1);
             c.pos(X + x1, Y + y1, X + x2, Y + y2);
         }
+    }
+
+    /** replace center content */
+    public Bordering content(Surface next) {
+        set(C, next);
+        return this;
     }
 
     @Override

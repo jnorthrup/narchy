@@ -4,7 +4,6 @@ import jcog.exe.Loop;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Gridding;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Splitting;
@@ -39,6 +38,8 @@ public class TabPane extends Splitting {
 
     public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder, Function<String, ToggleButton> buttonBuilder) {
         super();
+
+        split(0f);
 
         content = new Gridding();
 
@@ -81,8 +82,10 @@ public class TabPane extends Splitting {
             return bb.on(toggle);
         }).toArray(ToggleButton[]::new));
 
+        set(tabs, content);
 
     }
+
 
     public static void main(String[] args) {
         SpaceGraph.window(new TabPane(Map.of(
@@ -90,13 +93,5 @@ public class TabPane extends Splitting {
                 "b", () -> new PushButton("x"))), 800, 800);
     }
 
-    @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
-            split(0).set(tabs, content);
-            return true;
-        }
-        return false;
-    }
 
 }

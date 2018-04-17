@@ -6,17 +6,14 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRoot;
-import spacegraph.space2d.container.Stacking;
-import spacegraph.space2d.container.Switching;
-import spacegraph.space2d.widget.meta.MetaFrame;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.EmptySurface;
 import spacegraph.video.Draw;
-
-import java.util.List;
 
 /**
  * Base class for GUI widgets, similarly designed to JComponent
  */
-abstract public class Widget extends Switching {
+abstract public class Widget extends Bordering {
 
 
     public static final int RAW = 0;
@@ -53,14 +50,6 @@ abstract public class Widget extends Switching {
 
     /** if non-null, a finger which is currently hovering on this */
     @Nullable Finger touchedBy;
-
-    public final Stacking content = new Stacking() {
-
-
-        @Override
-        public boolean tangible() {
-            return true;
-        }
 
 
         /**
@@ -153,16 +142,10 @@ abstract public class Widget extends Switching {
 
 
 
-    };
 
 
     public boolean isTouched() {
         return touchedBy!=null;
-    }
-
-    @Override
-    protected final void paintIt(GL2 gl) {
-
     }
 
     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
@@ -170,34 +153,31 @@ abstract public class Widget extends Switching {
     }
 
     public Widget() {
+        this(new EmptySurface());
+    }
+
+    public Widget(Surface content) {
         super();
-        states(
-            ()-> content,
-            ()->{
-                //meta
-                return new MetaFrame(this);
-            }
-        );
+
+        border(0.1f);
+
+
+        content(content);
+//        states(
+//            ()-> content,
+//            ()->{
+//                //meta
+//                return new MetaFrame(this);
+//            }
+//        );
     }
 
-    public Widget(Surface... child) {
-        this();
-        content(child);
+
+    @Nullable public Surface content() {
+        return getSafe(C);
     }
 
-    public Surface[] content() {
-        return content.children();
-    }
 
-    public final Widget content(List<Surface> next) {
-        content.set(next);
-        return this;
-    }
-
-    public final Widget content(Surface... next) {
-        content.set(next);
-        return this;
-    }
 //    public final Widget add(Surface x) {
 //        content.add(x);
 //        return this;
@@ -220,9 +200,9 @@ abstract public class Widget extends Switching {
 
             if (finger.clickedNow(1, this)) { //released middle button
 
-                int curState = switched;
-                int nextState = nextState(curState);
-                state(nextState); //toggle
+//                int curState = switched;
+//                int nextState = nextState(curState);
+//                state(nextState); //toggle
 
             } else if (finger.releasedNow(2 /*right button*/, this)) {
 //                /** hold to zoom */
@@ -258,6 +238,11 @@ abstract public class Widget extends Switching {
             }
 
         }
+    }
+
+    public Widget content(Surface next) {
+        super.content(next);
+        return this;
     }
 
     private int nextState(int curState) {

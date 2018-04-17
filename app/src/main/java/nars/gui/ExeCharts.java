@@ -227,7 +227,7 @@ public class ExeCharts {
             this.nar = loop.nar;
             if (nar.time instanceof RealTime) {
                 time = ((RealTime)nar.time);
-                ((Gridding) content()[0]).add(
+                add(
                         new FloatSlider("Dur*", dur)
                 );
                 dur.set(time.durRatio(loop));
@@ -239,14 +239,14 @@ public class ExeCharts {
 
         @Override
         public void update() {
-            synchronized (this) {
+            //synchronized (this) {
                 super.update();
                 if (loop.isRunning()) {
                     if (time != null) {
                         time.durRatio(loop, dur.floatValue());
                     }
                 }
-            }
+            //}
         }
     }
 

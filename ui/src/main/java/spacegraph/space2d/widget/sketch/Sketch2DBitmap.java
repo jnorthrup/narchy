@@ -57,7 +57,8 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
     @Override
     public Surface tryTouch(Finger finger) {
 
-        if (finger!=null) {
+        Surface content;
+        if ((finger!=null && (content=content())!=null)) {
             v2 hitPoint = finger.relativePos(content);
             if (hitPoint.inUnit() && finger.pressed(0)) {
 
@@ -169,7 +170,9 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
     public static void main(String[] args) {
 
 
-        SpaceGraph.window(new Sketch2DBitmap(256, 256).state(Widget.META), 800, 800);
+        SpaceGraph.window(new Sketch2DBitmap(256, 256)
+                //.state(Widget.META)
+                , 800, 800);
     }
 }
 

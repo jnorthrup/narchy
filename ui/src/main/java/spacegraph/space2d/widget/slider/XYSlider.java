@@ -2,19 +2,17 @@ package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
 /**
  * Created by me on 6/26/16.
  */
-public class XYSlider extends Widget {
+public class XYSlider extends Surface {
 
     final v2 knob = new v2(0.5f, 0.5f);
 
@@ -43,8 +41,8 @@ public class XYSlider extends Widget {
 
     @Override
     public Surface tryTouch(Finger finger) {
-        Surface s = super.tryTouch(finger);
-        if (s == this && finger!=null && finger.pressed(0)) {
+
+        if (finger!=null && finger.pressed(0)) {
             finger.tryFingering(new FingerDragging(0) {
 
                 @Override
@@ -63,7 +61,7 @@ public class XYSlider extends Widget {
                 }
 
                 @Override protected boolean drag(Finger f) {
-                    v2 hitPoint = finger.relativePos(content);
+                    v2 hitPoint = finger.relativePos(XYSlider.this);
                     if (hitPoint.inUnit()) {
                         pressing = true;
                         if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
@@ -76,7 +74,7 @@ public class XYSlider extends Widget {
                 }
             });
         }
-        return s;
+        return this;
 //
 //        if (finger!=null && leftButton(buttons)) {
 //            pressing = true;
@@ -96,6 +94,7 @@ public class XYSlider extends Widget {
 
 
 
+
     protected void updated() {
         FloatFloatProcedure c = change;
         if (c!=null) {
@@ -103,8 +102,9 @@ public class XYSlider extends Widget {
         }
     }
 
+
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paint(GL2 gl, int dtMS) {
         gl.glColor4f(0f, 0f, 0f, 0.8f); //background
         Draw.rect(gl, bounds);
 

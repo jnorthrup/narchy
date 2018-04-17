@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.control.DurService;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.container.UnitContainer;
 
 import java.util.function.Consumer;
 
@@ -13,16 +13,11 @@ import java.util.function.Consumer;
  * automatically attaches update handler on start (ex: added to graph) and
  * removes on stop (ex: removal from graph)
  */
-abstract public class DurSurface extends Widget {
+abstract public class DurSurface extends UnitContainer {
     protected final NAR nar;
     DurService on;
 
-    protected DurSurface(NAR nar) {
-        super();
-        this.nar = nar;
-    }
-
-    private DurSurface(Surface x, NAR nar) {
+    protected DurSurface(Surface x, NAR nar) {
         super(x);
         this.nar = nar;
     }

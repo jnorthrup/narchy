@@ -1,7 +1,6 @@
 package nars.gui;
 
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Task;
@@ -36,7 +35,6 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     private final TruthWave beliefProj;
     private final TruthWave goals;
     private final TruthWave goalProj;
-    private final Label label;
     private final boolean showTaskLinks = false;
     @Deprecated
     private final boolean showEternal = false;
@@ -58,16 +56,15 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 //    }
 
     public BeliefTableChart(NAR n, Termed term, long[] range) {
-        super(n);
+        super(new Label(term.toString()), n);
         this.term = term.term();
 
         this.range = range;
 
-        label = new Label(this.term.toString());
-        label.textColor.a(0.5f);
-        //label.scale(0.5f, 0.5f);
-
-        content(label);
+//        label.textColor.a(0.5f);
+//        //label.scale(0.5f, 0.5f);
+//
+//        content(label);
 
         beliefs = new TruthWave(0);
         beliefProj = new TruthWave(0);
@@ -256,7 +253,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     }
 
     @Override
-    protected void paintWidget(GL2 ggl, RectFloat2D bounds) {
+    protected void paintIt(GL2 ggl) {
 
         /*if (!redraw.compareAndSet(true, false)) {
             return;
@@ -323,7 +320,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             } else {
                 termString = term.toString();
             }
-            label.text(termString);
+            //label.text(termString);
         });
 
         //        gl.glColor4f(0.75f, 0.75f, 0.75f, 0.8f + 0.2f * cp);

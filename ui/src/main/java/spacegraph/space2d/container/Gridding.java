@@ -32,7 +32,8 @@ public class Gridding extends MutableContainer {
     }
 
     public Gridding(float margin, float aspect, Surface... children) {
-        this(children);
+        this(aspect);
+        set(children);
         this.margin = margin;
     }
 
@@ -41,15 +42,18 @@ public class Gridding extends MutableContainer {
     }
 
     public Gridding(float aspect, Surface... children) {
-        super();
-        this.gridAspect = (aspect);
+        this(aspect);
         set(children);
     }
 
     public Gridding(float aspect, List<Surface> children) {
-        super();
-        this.gridAspect = (aspect);
+        this(aspect);
         set(children);
+    }
+
+    private Gridding(float aspect) {
+        super(false);
+        this.gridAspect = (aspect);
     }
 
     public boolean isGrid() {
@@ -226,7 +230,7 @@ public class Gridding extends MutableContainer {
     }
     public static Gridding grid(int num, IntFunction<Surface> build) {
         Surface[] x = Util.map(0, num, build, Surface[]::new);
-        return new Gridding(new FasterList(x));
+        return new Gridding(x);
     }
 
 }

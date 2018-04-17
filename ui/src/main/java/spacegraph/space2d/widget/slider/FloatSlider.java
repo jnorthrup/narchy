@@ -5,7 +5,6 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
-import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
@@ -13,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.windo.Widget;
 
@@ -53,10 +53,10 @@ public class FloatSlider extends Widget {
     public FloatSlider(FloatRange f) {
         super();
 
-        content(
+        content(new Stacking(
                 new Scale(slider = slider(f), 0.95f),
                 label.scale(0.85f).align(AspectAlign.Align.Center)
-        );
+        ));
         updateText();
 
         input = f;
@@ -120,12 +120,12 @@ public class FloatSlider extends Widget {
 
 
         @Override
-        protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+        protected void paint(GL2 gl, int dtMS) {
 
             if (input != null)
                 super.value(input.asFloat());
 
-            super.paintWidget(gl, bounds);
+            super.paint(gl, dtMS);
         }
 
         @Override

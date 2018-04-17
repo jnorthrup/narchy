@@ -16,7 +16,7 @@ public class MetaFrame extends Bordering {
 
 
     public MetaFrame(Widget widget) {
-        super(widget.content);
+        super(widget.content());
 //        this.widget = widget;
 
         Surface m = grid(

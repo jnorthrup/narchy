@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +9,6 @@ import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
@@ -20,7 +18,7 @@ import static spacegraph.space2d.container.Gridding.grid;
 /**
  * abstract 1D slider/scrollbar
  */
-public class BaseSlider extends Widget {
+public class BaseSlider extends Surface {
 
 
     /** dead-zone at the edges to latch min/max values */
@@ -46,10 +44,8 @@ public class BaseSlider extends Widget {
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-        Draw.bounds(gl, bounds, (g)->{
-            draw.value(this.p, g);
-        });
+    protected void paint(GL2 gl, int dtMS) {
+        Draw.bounds(gl, bounds, (g)-> draw.value(this.p, g));
     }
 
     FloatObjectProcedure<GL2> draw = SolidLeft;
@@ -62,23 +58,24 @@ public class BaseSlider extends Widget {
     @Override
     public Surface tryTouch(Finger finger) {
 
-        Surface s = super.tryTouch(finger);
-        if (s == this && finger!=null && finger.pressed(0)) {
-            finger.tryFingering(new FingerDragging(0) {
+
+        if (finger!=null && finger.pressed(0)) {
+            if (finger.tryFingering(new FingerDragging(0) {
                 @Override protected boolean drag(Finger f) {
-                    v2 hitPoint = finger.relativePos(content);
+                    v2 hitPoint = finger.relativePos(BaseSlider.this);
                     if (hitPoint.inUnit()) {
                         _set(p(hitPoint));
                     }
                     return true;
                 }
-            });
+            }))
+                return this;
         }
-        return s;
+        return null; //transparent
     }
 
 
-    public void _set(float p) {
+    void _set(float p) {
         changed(p);
     }
 

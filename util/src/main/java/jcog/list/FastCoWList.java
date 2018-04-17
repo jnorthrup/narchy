@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.util.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.procedure.Procedure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -11,6 +12,10 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
+/** be careful about synchronizing to instances of this class
+ * because the class synchronizes on itself and not a separate lock object
+ * (for efficiency purposes)
+ */
 public class FastCoWList<X> extends FasterList<X> {
 
     private final IntFunction<X[]> arrayBuilder;
@@ -32,7 +37,7 @@ public class FastCoWList<X> extends FasterList<X> {
         return arrayBuilder.apply(newCapacity);
     }
 
-    private final void commit() {
+    protected void commit() {
         this.copy = //(size == 0) ? null :
                 toArrayRecycled(arrayBuilder);
     }
@@ -51,8 +56,9 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     @Override
-    public final boolean isEmpty() {
-        return copy.length == 0;
+    public boolean isEmpty() {
+        @Nullable X[] copy = this.copy;
+        return copy == null || copy.length == 0;
     }
 
     @Override
@@ -95,16 +101,6 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
-    @Override
-    public boolean add(X o) {
-        synchronized (this) {
-            if (super.add(o)) {
-                commit();
-                return true;
-            }
-            return false;
-        }
-    }
 
     @Override
     public void forEach(Consumer c) {
@@ -115,6 +111,15 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
+    @Override
+    public void reverseForEach(Procedure c) {
+        X[] copy = this.copy;
+        if (copy != null) {
+            for (int i = copy.length-1; i >= 0; i--) {
+                c.accept(copy[i]);
+            }
+        }
+    }
 
     @Override
     public boolean remove(Object o) {
@@ -127,9 +132,33 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
+    protected boolean addDirect(X o) {
+        return super.add(o);
+    }
+    protected boolean removeDirect(Object o) {
+        return super.remove(o);
+    }
+
+    @Override
+    public boolean add(X o) {
+        synchronized (this) {
+            if (super.add(o)) {
+                commit();
+                return true;
+            }
+            return false;
+        }
+    }
+
     @Override
     public boolean addAll(Collection<? extends X> source) {
-        throw new TODO();
+        synchronized (this) {
+            if (super.addAll(source)) {
+                commit();
+                return true;
+            }
+            return false;
+        }
     }
 
     @Override
@@ -161,6 +190,11 @@ public class FastCoWList<X> extends FasterList<X> {
      * directly set
      */
     public void set(X[] newValues) {
+        if (newValues.length == 0) {
+            clear();
+            return;
+        }
+
         synchronized (this) {
             items = newValues;
             size = newValues.length;
