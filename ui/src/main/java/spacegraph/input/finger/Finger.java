@@ -1,18 +1,15 @@
 package spacegraph.input.finger;
 
 import com.jogamp.nativewindow.util.Point;
+import jcog.data.bit.AtomicMetalBitSet;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.math.v2;
 
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-
-import static java.lang.System.arraycopy;
-import static java.util.Arrays.fill;
 
 /**
  * gestural generalization of mouse cursor's (or touchpad's, etc)
@@ -23,67 +20,141 @@ import static java.util.Arrays.fill;
 public class Finger {
 
     /**
-     * exclusive state which may be requested by a surface
-     */
-    private final AtomicReference<Fingering> fingering = new AtomicReference<>();
-
-    /**
      * global pointer screen coordinate, set by window the (main) cursor was last active in
      */
     public final static Point pointer = new Point();
-
-    public final v2 pos = new v2(), posGlobal = new v2();
-    public final v2[] hitOnDown = new v2[5], hitOnDownGlobal = new v2[5];
-    public final boolean[] buttonDown = new boolean[5];
-    public final boolean[] prevButtonDown = new boolean[5];
-
-
-    //TODO wheel state
-
-    /**
-     * widget above which this finger currently hovers
-     */
-    public @Nullable Widget touching;
-
+    final static int MAX_BUTTONS = 5;
     /**
      * TODO scale this to pixel coordinates, this spatial coordinate is tricky and resolution dependent anyway
      */
     final static float DRAG_THRESHOLD = 3f;
+    public final v2 pos = new v2(), posGlobal = new v2();
+    public final v2[] hitOnDown = new v2[MAX_BUTTONS], hitOnDownGlobal = new v2[MAX_BUTTONS];
+    public final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
+    public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
+
+    //TODO wheel state
+    /**
+     * exclusive state which may be requested by a surface
+     */
+    private final AtomicReference<Fingering> fingering = new AtomicReference<>();
+    /**
+     * dummy intermediate placeholder state
+     */
+    private final Fingering STARTING = new Fingering() {
+
+        @Override
+        public boolean start(Finger f) {
+            return false;
+        }
+
+        @Override
+        public boolean update(Finger f) {
+            return true;
+        }
+    };
+    /**
+     * widget above which this finger currently hovers
+     */
+    public @Nullable Widget touching;
 
 
     public Finger() {
 
     }
 
-    /**
-     * async, thread-safe call at any time
-     */
-    public void updateButtons(short[] nextButtonDown) {
-        arraycopy(this.buttonDown, 0, prevButtonDown, 0, buttonDown.length);
+    public static Consumer<Finger> clicked(int button, Runnable clicked) {
+        return clicked(button, clicked, null, null, null);
+    }
 
-        fill(this.buttonDown, false);
+    public static Consumer<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
 
-        if (nextButtonDown != null) {
-            for (short s : nextButtonDown) {
-                if (s > 0) //ignore -1 values
-                    this.buttonDown[s - 1 /* start at zero=left button */] = true;
-            }
+        final boolean[] idle = {true};
 
-            for (int j = 0, jj = hitOnDown.length; j < jj; j++) {
-                if (!prevButtonDown[j] && buttonDown[j]) {
-                    hitOnDown[j] = new v2(pos);
-                    hitOnDownGlobal[j] = new v2(posGlobal);
+        if (becameIdle != null)
+            becameIdle.run();
+
+        return (finger) -> {
+
+            Surface what;
+            if (finger != null && (what = finger.touching) != null) {
+                if ((clicked != null) && finger.clickedNow(button, what)) {
+                    clicked.run();
+                } else if ((armed != null) && finger.pressed(button)) {
+                    armed.run();
+                } else {
+                    if (hover != null) hover.run();
+                }
+                idle[0] = false;
+            } else {
+                if (becameIdle != null && !idle[0]) {
+                    becameIdle.run();
+                    idle[0] = true;
                 }
             }
+        };
+    }
 
-        } else {
-            Arrays.fill(hitOnDown, null);
-        }
+    public static v2 relative(v2 x, Surface c) {
+        v2 y = new v2(x);
+        RectFloat2D b = c.bounds;
+        y.sub(b.x, b.y);
+        y.scaled(1f / b.w, 1f / b.h);
+        return y;
+    }
+
+    /**
+     * synch update: should be called periodically during update loop
+     * for handling that involves the real timing of events
+     */
+    public void update() {
 
         Widget t = this.touching;
         if (t != null) {
             t.onFinger(this);
         }
+
+        for (int b = 0;  b< MAX_BUTTONS; b++) {
+            boolean wasPressed = wasPressed(b);
+            boolean pressed = pressed(b);
+            if (!wasPressed && pressed) {
+                hitOnDown[b] = new v2(pos);
+                hitOnDownGlobal[b] = new v2(posGlobal);
+            } else if (wasPressed && !pressed) {
+                hitOnDownGlobal[b] = hitOnDown[b] = null; //release
+            }
+        }
+
+
+        //finally:
+        prevButtonDown.copyFrom(buttonDown);
+    }
+
+    public String buttonSummary() {
+        return prevButtonDown.toBitString() + " -> " + buttonDown.toBitString();
+    }
+
+    /**
+     * asynch updates: buttons and motion
+     * if a surface is touched, calls its
+     * event handler.  this could mean that there is either mouse
+     * motion or button status has changed.
+     */
+    public void update(short[] nextButtonDown) {
+
+
+        //System.out.println(Arrays.toString(nextButtonDown));
+        for (short b : nextButtonDown) {
+
+            boolean pressed = (b > 0);
+
+            if (!pressed) b = (short) -b; //invert to positive
+            b--; //shift to actual button ID
+
+            buttonDown.set(b, pressed);
+
+        }
+
     }
 
     public Surface on(Surface root) {
@@ -116,13 +187,6 @@ public class Finger {
             }
 
 
-            for (int j = 0, jj = hitOnDown.length; j < jj; j++) {
-                if (!buttonDown[j] && hitOnDown[j] != null) {
-                    hitOnDown[j] = null; //release
-                }
-            }
-
-
         } finally {
 
             if (ff == null)
@@ -139,7 +203,6 @@ public class Finger {
         return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
 
-
     private boolean on(@Nullable Widget touched) {
 
         if (touched != touching && touching != null) {
@@ -154,7 +217,6 @@ public class Finger {
         }
     }
 
-
     public boolean off() {
         if (touching != null) {
             on(null);
@@ -163,37 +225,52 @@ public class Finger {
         return false;
     }
 
-
     public boolean released(int button) {
-        return !buttonDown[button];
+        return !pressed(button);
     }
 
     public boolean pressed(int button) {
-        return buttonDown[button];
+        return buttonDown.get(button);
     }
 
-    public boolean pressedNow(int i) {
-        return pressed(i) && !prevButtonDown[i];
+    public boolean pressedNow(int button) {
+        return pressed(button) && !wasPressed(button);
     }
 
-    public boolean releasedNow(int i) {
-        return !pressed(i) && prevButtonDown[i];
+    public boolean wasPressed(int button) {
+        return prevButtonDown.get(button);
+    }
+
+    public boolean wasReleased(int button) {
+        return !wasPressed(button);
+    }
+
+    public boolean releasedNow(int button) {
+        return !pressed(button) && wasPressed(button);
     }
 
     public boolean releasedNow(int i, Surface c) {
         return releasedNow(i) && (c != null && hitOnDown[i] != null && Finger.relative(hitOnDown[i], c).inUnit());
     }
 
-
     /**
      * additionally tests for no dragging while pressed
      */
     public boolean clickedNow(int button) {
-        return releasedNow(button) && !dragging(button);
+        boolean clicked = releasedNow(button);
+        boolean notDragging = !dragging(button);
+        //System.out.println("released: " + clicked + " notDragging: " + notDragging);
+        return clicked && notDragging;
     }
 
     public boolean clickedNow(int i, Surface c) {
-        return clickedNow(i) && (c != null && hitOnDown[i] != null && Finger.relative(hitOnDown[i], c).inUnit());
+        if (clickedNow(i)) {
+            v2 where = hitOnDown[i];
+            if (where != null)
+                if (Finger.relative(where, c).inUnit())
+                    return true;
+        }
+        return false;
     }
 
     /**
@@ -217,67 +294,12 @@ public class Finger {
         return false;
     }
 
-    /**
-     * dummy intermediate placeholder state
-     */
-    private final Fingering STARTING = new Fingering() {
-
-        @Override
-        public boolean start(Finger f) {
-            return false;
-        }
-
-        @Override
-        public boolean update(Finger f) {
-            return true;
-        }
-    };
-
-    public static Consumer<Finger> clicked(int button, Runnable clicked) {
-        return clicked(button, clicked, null, null, null);
-    }
-
-    public static Consumer<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
-
-        final boolean[] idle = {true};
-
-        if (becameIdle != null) becameIdle.run();
-
-        return (finger) -> {
-
-            if (finger != null && finger.touching != null) {
-                if (finger.clickedNow(button, finger.touching)) {
-                    if (clicked != null) clicked.run();
-                } else if (finger.pressedNow(button)) {
-                    if (armed != null) armed.run();
-                } else {
-                    if (hover != null) hover.run();
-                }
-                idle[0] = false;
-            } else {
-                if (becameIdle != null && !idle[0]) {
-                    becameIdle.run();
-                    idle[0] = true;
-                }
-            }
-        };
-    }
-
     public boolean isFingering() {
         return fingering.get() != null;
     }
 
     public v2 relativePos(Surface c) {
         return relative(pos, c);
-    }
-
-
-    public static v2 relative(v2 x, Surface c) {
-        v2 y = new v2(x);
-        RectFloat2D b = c.bounds;
-        y.sub(b.x, b.y);
-        y.scaled(1f / b.w, 1f / b.h);
-        return y;
     }
 
 }

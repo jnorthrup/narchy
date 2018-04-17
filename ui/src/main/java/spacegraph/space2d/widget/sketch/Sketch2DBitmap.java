@@ -59,7 +59,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
 
         if (finger!=null) {
             v2 hitPoint = finger.relativePos(content);
-            if (hitPoint.inUnit() && finger.buttonDown[0]) {
+            if (hitPoint.inUnit() && finger.pressed(0)) {
 
 //            if (fb == null)
 //                fb = new FastBlur(pw, ph);

@@ -140,7 +140,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
                         localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
                     );
                     Surface f = this.finger.on(front);
-                    finger.updateButtons(buttons);
+                    finger.update(buttons);
                     return f;
                     //return mouseFront.update(null, localPoint.x, localPoint.y, buttons);
                 }

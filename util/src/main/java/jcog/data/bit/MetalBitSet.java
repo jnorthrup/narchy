@@ -3,12 +3,12 @@ package jcog.data.bit;
 import jcog.TODO;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
- * Bare metal bitset implementation. For performance reasons, this
- * implementation does not check for index bounds nor expand the bitset size if
- * the specified index is greater than the size.
+ * Bare Metal Fixed-Size BitSets
+ *
+ * for serious performance. implementations will not check index bounds
+ * nor grow in capacity
  */
 abstract public class MetalBitSet {
 
@@ -24,6 +24,12 @@ abstract public class MetalBitSet {
     public abstract int getCardinality();
 
     public abstract boolean isAllOff();
+
+    public final void set(int i, boolean v) {
+        if (v) set(i);
+        else clear(i);
+    }
+
 
     public static class LongArrayBitSet extends MetalBitSet {
         final long[] data;
@@ -190,65 +196,6 @@ abstract public class MetalBitSet {
         @Override
         public void clear(int i) {
             x &= ~(1 << i);
-        }
-
-        @Override
-        public void clearAll() {
-            x = 0;
-        }
-
-        @Override
-        public int getCardinality() {
-            return Integer.bitCount(x);
-        }
-
-        @Override
-        public boolean isAllOff() {
-            return x == 0;
-        }
-    }
-
-    public static class AtomicIntBitSet extends MetalBitSet {
-
-        static final AtomicIntegerFieldUpdater<AtomicIntBitSet> _x = AtomicIntegerFieldUpdater.newUpdater(AtomicIntBitSet.class, "x");
-        private volatile int x;
-
-        @Override
-        public void setAll() {
-            x = 0xffffffff;
-        }
-
-        @Override
-        public boolean get(int i) {
-            return (x & (1 << i)) != 0;
-        }
-
-        public boolean compareAndSet(int i, boolean expect, boolean set) {
-            int mask = 1 << i;
-            final boolean[] got = {false};
-            _x.updateAndGet(this, v->{
-                if (((v & mask) != 0)==expect) {
-                    //set
-                    got[0] = true;
-                    return set ? v|mask : v&(~mask);
-                } else {
-                    //no change
-                    return v;
-                }
-            });
-            return got[0];
-        }
-
-        @Override
-        public void set(int i) {
-            int mask = 1<<i;
-            _x.updateAndGet(this, v-> v|(mask) );
-        }
-
-        @Override
-        public void clear(int i) {
-            int mask = ~(1<<i);
-            _x.updateAndGet(this, v-> v&(mask) );
         }
 
         @Override

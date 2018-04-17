@@ -243,14 +243,14 @@ public class AWTSurface extends Widget {
 
         //        this(source, id, when, modifiers, x, y, clickCount, popupTrigger, NOBUTTON);
 
-        if (finger.buttonDown[0] && !finger.prevButtonDown[0]) {
+        if (finger.pressed(0) && !finger.prevButtonDown.get(0)) {
             handle(new MouseEvent(target,
                     MouseEvent.MOUSE_PRESSED,
                     now, InputEvent.BUTTON1_DOWN_MASK,
                     px, py, px, py, 0, false, MouseEvent.BUTTON1
             ));
         }
-        if (!finger.buttonDown[0] && finger.prevButtonDown[0]) {
+        if (!finger.pressed(0) && finger.prevButtonDown.get(0)) {
             handle(new MouseEvent(target,
                     MouseEvent.MOUSE_RELEASED,
                     now, InputEvent.BUTTON1_DOWN_MASK,
@@ -266,16 +266,16 @@ public class AWTSurface extends Widget {
         boolean moved = lpx != px || lpy != py;
 
         //TODO filter if no distance moved
-        if (finger.buttonDown[0]) {
+        if (finger.pressed(0)) {
             //drag
-            if (moved && finger.prevButtonDown[0]) {
+            if (moved && finger.prevButtonDown.get(0)) {
                 handle(new MouseEvent(target,
                         MouseEvent.MOUSE_DRAGGED,
                         now, 0,
                         px, py, px, py, 0, false, MouseEvent.BUTTON1
                 ));
             }
-            if (!finger.prevButtonDown[0] &&
+            if (!finger.prevButtonDown.get(0) &&
                     target.isFocusable() && !target.hasFocus()) {
 
 

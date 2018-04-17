@@ -12,11 +12,7 @@ abstract public class FingerDragging extends Fingering {
 
     @Override
     public boolean start(Finger f) {
-        if (!f.prevButtonDown[button] && pressed(f)) {
-            drag(f);
-            return true;
-        } else
-            return false;
+        return f.pressed(button) && drag(f);
     }
 
 
@@ -36,7 +32,7 @@ abstract public class FingerDragging extends Fingering {
     }
 
     private boolean pressed(Finger finger) {
-        return finger.buttonDown.length > 0 && finger.buttonDown[button];
+        return finger.pressed(button);
     }
 
     /** return false to cancel the operation */

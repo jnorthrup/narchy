@@ -5,7 +5,6 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.On;
 import jcog.tree.rtree.rect.RectFloat2D;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
@@ -390,7 +389,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public void mousePressed(MouseEvent e) {
 //        if (e.isConsumed())
 //            return;
-        if (update(false, e)) {
+        if (update(false, e, e.getButtonsDown())) {
             if (finger.touching!=null)
                 e.setConsumed(true);
         }
@@ -401,8 +400,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 //        if (e.isConsumed())
 //            return;
         short[] bd = e.getButtonsDown();
-        int ii = ArrayUtils.indexOf(bd, e.getButton());
-        bd[ii] = -1;
+
+        //invert to negative value to indicate release
+        for (int i = 0, bdLength = bd.length; i < bdLength; i++)
+            bd[i] = (short) -bd[i];
+
         update(false, e, bd);
 
         if (finger.touching!=null) e.setConsumed(true);
@@ -428,7 +430,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     protected boolean update(boolean moved, MouseEvent e) {
-        return update(moved, e, e != null ? e.getButtonsDown() : null);
+        return update(moved, e, null);
     }
 
     private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
@@ -457,11 +459,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             }
         }
 
-        finger.updateButtons(buttonsDown);
-
-//        if (moved) {
-//            fingerMoved.set(true);
-//        }
+        if (buttonsDown!=null) {
+            finger.update(buttonsDown); //calls .update()
+        } else if (moved) {
+            finger.update(); //just move event
+        }
 
         return e!=null;
     }
@@ -478,6 +480,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         /*if (e == null) {
             off();
         } else {*/
+
+        finger.update();
 
         Surface touching = finger.touching;
         Surface touchedNext = finger.on(surface);

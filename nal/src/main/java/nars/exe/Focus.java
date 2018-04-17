@@ -2,7 +2,7 @@ package nars.exe;
 
 import jcog.Service;
 import jcog.Util;
-import jcog.data.bit.MetalBitSet;
+import jcog.data.bit.AtomicMetalBitSet;
 import jcog.decide.AtomicRoulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
@@ -31,14 +31,15 @@ import static nars.util.time.Tense.ETERNAL;
  */
 public class Focus extends AtomicRoulette<Causable> {
 
-    /** note: more granularity increases the 'compression' ratio of high to low prioritization. */
+    /** note: more granularity increases the potential dynamic range
+     * (ratio of high to low prioritization). */
     protected static final int PRI_GRANULARITY = 32;
 
     /**
      * how quickly the iteration demand can grow from previous (max) values
      */
     //static final double IterGrowthIncrement = 1;
-    static final double IterGrowthRate = 1.5f;
+    static final double IterGrowthRate = 1.25f;
 
 
     private final Exec.Revaluator revaluator;
@@ -126,7 +127,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
     final AtomicBoolean updating = new AtomicBoolean(false);
 
-    final MetalBitSet.AtomicIntBitSet singletonBusy = new MetalBitSet.AtomicIntBitSet();
+    final AtomicMetalBitSet singletonBusy = new AtomicMetalBitSet();
 
     protected void update(NAR nar) {
 
