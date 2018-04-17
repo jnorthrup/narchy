@@ -139,7 +139,7 @@ public class FloatSlider extends Widget {
 
             //TODO other setter models, ex: AtomicDouble etc
             if (input instanceof MutableFloat) {
-                ((MutableFloat) input).set(p);
+                ((MutableFloat) input).set(v(p));
             }
 
         }

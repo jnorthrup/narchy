@@ -29,8 +29,8 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     final TimedFuture[] buffer = new TimedFuture[ADMISSION_CAPACITY];
 
-    public AdmissionQueueWheelModel(int wheels) {
-        super(wheels);
+    public AdmissionQueueWheelModel(int wheels, long resolution) {
+        super(wheels, resolution);
 
         this.wheel = new Queue[wheels];
         for (int i = 0; i < wheels; i++) {

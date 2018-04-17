@@ -107,7 +107,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public final Surface pos(float x1, float y1, float x2, float y2) {
-        return pos(new RectFloat2D(x1, y1, x2, y2));
+        return pos(RectFloat2D.XYXY(x1, y1, x2, y2));
     }
 
     public AspectAlign align(AspectAlign.Align align) {

@@ -3,13 +3,13 @@ package jcog.exe.realtime;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
-public class FixedDelayTimedFuture<T> extends OneShotTimedFuture<T> {
+public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
 
 
     private final Consumer<TimedFuture<?>> rescheduleCallback;
     private final long periodNS;
-    private final long resolution;
-    private final int wheels;
+    @Deprecated private final int wheels;
+    @Deprecated private final long resolution;
 
     public FixedDelayTimedFuture(int rounds,
                                  Callable<T> callable,
@@ -17,7 +17,7 @@ public class FixedDelayTimedFuture<T> extends OneShotTimedFuture<T> {
                                  long resolution,
                                  int wheels,
                                  Consumer<TimedFuture<?>> rescheduleCallback) {
-        super(rounds, callable, periodNS);
+        super(rounds, callable);
         this.periodNS = periodNS;
         this.resolution = resolution;
         this.wheels = wheels;
@@ -32,15 +32,15 @@ public class FixedDelayTimedFuture<T> extends OneShotTimedFuture<T> {
 
     @Override
     public int rounds() {
-        return getOffset() / wheels;
+        return getOffset(resolution) / wheels;
     }
 
-    public int getOffset() {
+    public int getOffset(long resolution) {
         return (int) (periodNS / resolution);
     }
 
     public void reset() {
-        this.rounds.set(rounds());
+        this.rounds = rounds();
     }
 
     @Override

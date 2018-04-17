@@ -31,16 +31,17 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
 
-
     abstract static class WheelModel {
-        public final int numWheels;
+        public final int wheels;
+        public final long resolution;
 
-        protected WheelModel(int numWheels) {
-            this.numWheels = numWheels;
+        protected WheelModel(int wheels, long resolution) {
+            this.wheels = wheels;
+            this.resolution = resolution;
         }
 
         public final int idx(int cursor) {
-            return cursor % numWheels;
+            return cursor % wheels;
         }
 
         abstract public void run(int wheel, HashedWheelTimer timer);
@@ -50,7 +51,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         abstract public void reschedule(int wheel, TimedFuture r);
 
         public final void schedule(TimedFuture<?> r, int c) {
-            reschedule(idx(c + r.getOffset() + 1), r);
+            reschedule(idx(c + r.getOffset(resolution) + 1), r);
         }
 
     }
@@ -62,8 +63,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 //    private static final String DEFAULT_TIMER_NAME = HashedWheelTimer.class.getSimpleName();
 
 
-    private final long resolution;
-    private final int numWheels;
+    public final long resolution;
+    public final int wheels;
 
     private final Thread loop;
     private final Executor executor;
@@ -80,8 +81,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      *                     for sparse timeouts. Sane default is 512.
      * @param waitStrategy strategy for waiting for the next tick
      */
-    public HashedWheelTimer(long res, WheelModel model, WaitStrategy waitStrategy) {
-        this(null, res, model, waitStrategy, Executors.newFixedThreadPool(1));
+    public HashedWheelTimer(WheelModel model, WaitStrategy waitStrategy) {
+        this(null, model, waitStrategy,
+                Executors.newFixedThreadPool(1));
     }
 
 
@@ -95,15 +97,15 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * @param strategy  strategy for waiting for the next tick
      * @param exec      Executor instance to submit tasks to
      */
-    public HashedWheelTimer(String name, long res, WheelModel model, WaitStrategy strategy, Executor exec) {
+    public HashedWheelTimer(String name, WheelModel model, WaitStrategy strategy, Executor exec) {
         this.waitStrategy = strategy;
 
-        this.resolution = res;
+        this.resolution = model.resolution;
 
         this.executor = exec;
 
         this.model = model;
-        this.numWheels = model.numWheels;
+        this.wheels = model.wheels;
 
         this.loop = name != null ? new Thread(this, name) : new Thread(this);
         this.loop.start();
@@ -140,7 +142,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
 
-        long epochTime = numWheels * resolution;
+        long epochTime = wheels * resolution;
         long nextEpoch = deadline;
 
         long tolerableLagPerEpochNS =
@@ -148,7 +150,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 epochTime / 2;
 
         int c;
-        while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % numWheels : Integer.MIN_VALUE)) >= 0) {
+        while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % wheels : Integer.MIN_VALUE)) >= 0) {
 
             if (c == 0) {
                 //synch deadline
@@ -182,9 +184,16 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         }
     }
 
-    @Override
-    public TimedFuture<?> submit(Runnable runnable) {
-        return scheduleOneShot(resolution, constantlyNull(runnable));
+    @Override public TimedFuture<?> submit(Runnable runnable) {
+        assertRunning();
+
+        TimedFuture r = new RunnableSoon.Wrapper(0, runnable);
+        return submit(r);
+    }
+
+    public final <D> TimedFuture<D> submit(TimedFuture<D> r) {
+        model.schedule(r);
+        return r;
     }
 
     @Override
@@ -218,7 +227,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @Override
     public String toString() {
         return String.format("HashedWheelTimer { Buffer Size: %d, Resolution: %d }",
-                numWheels,
+                wheels,
                 resolution);
     }
 
@@ -411,26 +420,26 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
      * INTERNALS
      */
 
-    private <V> TimedFuture<V> scheduleOneShot(long firstDelay,
-                                               Callable<V> callable) {
+    @Deprecated private <V> TimedFuture<V> scheduleOneShot(long firstDelay, Callable<V> callable) {
+
         assertRunning();
+
         if (firstDelay < resolution) {
             // round up to resolution
             firstDelay = resolution;
         }
 
         int firstFireOffset = (int) (firstDelay / resolution);
-        int firstFireRounds = firstFireOffset / numWheels;
+        int firstFireRounds = firstFireOffset / wheels;
 
-        TimedFuture<V> r = new OneShotTimedFuture<>(firstFireOffset, firstFireRounds, callable, firstDelay);
+        TimedFuture<V> r = new OneTimedFuture<>(firstFireOffset, firstFireRounds, callable);
         // We always add +1 because we'd like to keep to the right boundary of event on execution, not to the left:
         //
         // For example:
         //    |          now          |
         // res start               next tick
         // The earliest time we can tick is aligned to the right. Think of it a bit as a `ceil` function.
-        model.schedule(r);
-        return r;
+        return submit(r);
     }
 
 
@@ -442,7 +451,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 "Cannot schedule tasks for amount of time less than timer precision.");
 
         FixedRateTimedFuture<V> r = new FixedRateTimedFuture(0, callable,
-                recurringTimeout, resolution, numWheels);
+                recurringTimeout, resolution, wheels);
 
         if (firstDelay > 0) {
             scheduleOneShot(firstDelay, () -> {
@@ -468,7 +477,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(0,
                 callable,
-                recurringTimeout, resolution, numWheels,
+                recurringTimeout, resolution, wheels,
                 model::schedule);
 
         if (firstDelay > 0) {
@@ -555,4 +564,5 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
     }
+
 }

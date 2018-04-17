@@ -6,15 +6,11 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
 
     int rounds();
 
-    /**
-     * Decrement an amount of runs Registration has to run until it's elapsed
-     */
-    void decrement();
 
     /**
      * Reset the Registration
      */
-    void reset();
+    void reset(long resolution, int wheels);
 
 
     Status state();
@@ -25,7 +21,7 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
      *
      * @return the offset of current Registration
      */
-    int getOffset();
+    int getOffset(long resolution);
 
     long getDelay(TimeUnit unit);
 

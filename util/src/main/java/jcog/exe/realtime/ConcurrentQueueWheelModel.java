@@ -4,8 +4,8 @@ package jcog.exe.realtime;
  *  where each wheel is simply its own concurrent queue */
 public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
 
-    protected ConcurrentQueueWheelModel(int numWheels) {
-        super(numWheels);
+    protected ConcurrentQueueWheelModel(int wheels, long resolution) {
+        super(wheels, resolution);
     }
 
     @Override

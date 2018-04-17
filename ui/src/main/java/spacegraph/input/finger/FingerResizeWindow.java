@@ -23,7 +23,7 @@ public class FingerResizeWindow extends FingerResize {
         int sw = w.getWidth();
         int sy = w.getY();
         int sx = w.getX();
-        originalSize = new RectFloat2D(sx, sy, sw + sx, sh + sy);
+        originalSize = RectFloat2D.XYXY((float) sx, (float) sy, (float) (sw + sx), (float) (sh + sy));
     }
 
     @Override

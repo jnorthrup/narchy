@@ -9,12 +9,23 @@ import jcog.tree.rtree.point.Float2D;
 
 public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D> {
 
-    public static final RectFloat2D Unit = new RectFloat2D(0, 0, 1, 1);
-    public static final RectFloat2D Zero = new RectFloat2D(0, 0, 0, 0);
+    public static final RectFloat2D Unit = XYXY(0, 0, 1, 1);
+    public static final RectFloat2D Zero = XYXY(0, 0, 0, 0);
 
     public final float x, y, w, h;
 
-    public RectFloat2D(float x1, float y1, float x2, float y2) {
+
+    /** specified as a pair of X,Y coordinate pairs defining the diagonal extent */
+    public static RectFloat2D XYXY(float x1, float y1, float x2, float y2) {
+        return new RectFloat2D(x1, y1, x2, y2);
+    }
+
+    /** specified as a center point (cx,cy) and width,height extent (w,h) */
+    public static RectFloat2D XYWH(float cx, float cy, float w, float h) {
+        return new RectFloat2D(cx - w/2 , cy -h/2, cx + w/2, cy + h/2);
+    }
+
+    private RectFloat2D(float x1, float y1, float x2, float y2) {
         if (x2 < x1) {
             float t = x2;
             x2 = x1;
@@ -41,6 +52,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     }
 
 
+
     public RectFloat2D move(double dx, double dy) {
         return move((float)dx, (float)dy);
     }
@@ -52,7 +64,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     public RectFloat2D move(float dx, float dy, float epsilon) {
         return Math.abs(dx) < epsilon && Math.abs(dy) < epsilon ?
                 this :
-                new RectFloat2D(x + dx, y + dy, x + w + dx, y + h + dy);
+                XYXY(x + dx, y + dy, x + w + dx, y + h + dy);
     }
 
     @Override
@@ -65,7 +77,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         final float maxX = Util.max(x+w, r2.x+r2.w);
         final float maxY = Util.max(y+h, r2.y+r2.h);
 
-        return new RectFloat2D(minX, minY, maxX, maxY);
+        return XYXY(minX, minY, maxX, maxY);
     }
 
     @Override
@@ -192,33 +204,28 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         return Math.max( w, h );
     }
 
-    public boolean contains(float px, float py) {
+    public final boolean contains(float px, float py) {
         return (px >= x && px <= x+w && py >= y && py <= y+h);
     }
 
-    public float top() {
+    public final float top() {
         return y;
     }
-
-    public float left() {
+    public final float left() {
         return x;
     }
-    public float right() {
+    public final float right() {
         return x + w;
     }
-    public float bottom() {
+    public final float bottom() {
         return y + h;
     }
 
-    public float cx() {
+    public final float cx() {
         return x + w/2;
     }
-    public float cy() {
+    public final float cy() {
         return y + h/2;
-    }
-
-    public static RectFloat2D XYWH(float cx, float cy, float w, float h) {
-        return new RectFloat2D(cx - w/2 , cy -h/2, cx + w/2, cy + h/2);
     }
 
     public RectFloat2D scale(float s) {
@@ -228,13 +235,13 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
             return RectFloat2D.XYWH(cx(), cy(), w*s, h*s);
     }
 
-    public float radius() {
+    public final float radius() {
         float W = w/2;
         float H = h/2;
         return ((float) Math.sqrt(W*W+H*H));
     }
 
-    public float area() {
+    public final float area() {
         return w*h;
     }
 }

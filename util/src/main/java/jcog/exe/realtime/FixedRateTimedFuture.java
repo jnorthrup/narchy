@@ -2,26 +2,23 @@ package jcog.exe.realtime;
 
 import java.util.concurrent.Callable;
 
-public class FixedRateTimedFuture<T> extends OneShotTimedFuture<T> {
+public class FixedRateTimedFuture<T> extends AbstractTimedCallable<T> {
 
-    private final long resolution;
-    private final int wheelSize;
+    /** adjustable while running */
     private volatile long period;
 
     public FixedRateTimedFuture(int rounds,
                                 Callable<T> callable,
                                 long recurringTimeout, long resolution, int wheelSize) {
-        super(rounds, callable, 0);
+        super(rounds, callable);
         this.period = recurringTimeout;
-        this.resolution = resolution;
-        this.wheelSize = wheelSize;
-        reset();
+        reset(resolution, wheelSize);
     }
 
     @Override
     public void execute(HashedWheelTimer t) {
         super.execute(t);
-        reset();
+        reset(t.resolution, t.wheels);
         t._schedule(this);
     }
 
@@ -38,12 +35,12 @@ public class FixedRateTimedFuture<T> extends OneShotTimedFuture<T> {
         this.period = periodNS;
     }
 
-    public int getOffset() {
+    public int getOffset(long resolution) {
         return (int) (period / resolution);
     }
 
-    public void reset() {
-        this.rounds.set(getOffset() / wheelSize);
+    public void reset(long resolution, int wheels) {
+        this.rounds = (getOffset(resolution) / wheels);
     }
 
 }

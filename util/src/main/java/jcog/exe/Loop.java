@@ -34,10 +34,9 @@ abstract public class Loop {
             Executor exe = Util.executor();
             HashedWheelTimer.logger.info("global timer start: executor={}", exe);
             timer = new HashedWheelTimer(Loop.class.getName(),
-                    TimeUnit.MILLISECONDS.toNanos(1),
-                    new AdmissionQueueWheelModel(32),
-                     //HashedWheelTimer.WaitStrategy.YieldingWait,
-                    HashedWheelTimer.WaitStrategy.SleepWait,
+                        new AdmissionQueueWheelModel(32, TimeUnit.MILLISECONDS.toNanos(1)),
+                         //HashedWheelTimer.WaitStrategy.YieldingWait,
+                        HashedWheelTimer.WaitStrategy.SleepWait,
                     exe);
         }
         return timer;

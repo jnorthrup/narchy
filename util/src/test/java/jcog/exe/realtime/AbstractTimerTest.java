@@ -25,9 +25,9 @@ public abstract class AbstractTimerTest {
     public void before() {
         // TODO: run tests on different sequences
         timer = new HashedWheelTimer(
-                TimeUnit.MILLISECONDS.toNanos(1),
-                new AdmissionQueueWheelModel(128),
-                waitStrategy());
+                    new AdmissionQueueWheelModel(128,
+                        TimeUnit.MILLISECONDS.toNanos(1)),
+                    waitStrategy());
     }
 
     @AfterEach

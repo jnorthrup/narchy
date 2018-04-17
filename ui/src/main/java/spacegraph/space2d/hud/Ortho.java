@@ -240,7 +240,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
                 }
                 //}
                 float s = scale.x;
-                RectFloat2D curZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
+                RectFloat2D curZoom = RectFloat2D.XYXY(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
                 zoomStack.addLast(() -> curZoom);
 
                 target = su.bounds;

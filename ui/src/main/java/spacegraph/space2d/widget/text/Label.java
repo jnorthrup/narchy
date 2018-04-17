@@ -44,7 +44,7 @@ public class Label extends AspectAlign {
 
     @Override
     protected void doLayout(float tx, float ty, float tw, float th) {
-        innerBounds = new RectFloat2D(tx, ty, tx + tw, ty + th);
+        innerBounds = RectFloat2D.XYXY(tx, ty, tx + tw, ty + th);
 
         int len = text().length();
         if (len == 0) return;

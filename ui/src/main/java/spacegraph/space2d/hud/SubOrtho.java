@@ -22,7 +22,7 @@ public class SubOrtho extends Ortho {
 
     /** position and size relative to the containing window (1=width, 1=height)*/
     public Ortho posWindow(float x, float y, float w, float h) {
-        this.boundsWin = new RectFloat2D(x, y, w, h);
+        this.boundsWin = RectFloat2D.XYXY(x, y, w, h);
         layout();
         return this;
     }
@@ -32,7 +32,7 @@ public class SubOrtho extends Ortho {
         int ww = window.getWidth();
         int wh = window.getHeight();
 
-        pos(new RectFloat2D(boundsWin.x * ww, boundsWin.y * wh, boundsWin.w * ww, boundsWin.h * wh ));
+        pos(RectFloat2D.XYXY(boundsWin.x * ww, boundsWin.y * wh, boundsWin.w * ww, boundsWin.h * wh));
 
         super.doLayout(dtMS);
     }
