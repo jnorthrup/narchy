@@ -10,15 +10,15 @@ import com.github.fge.grappa.stack.ArrayValueStack;
 import com.github.fge.grappa.support.Var;
 import jcog.Texts;
 import jcog.list.FasterList;
-import nars.unify.match.Ellipsis;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.var.UnnormalizedVariable;
-import nars.util.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import nars.unify.match.Ellipsis;
+import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -27,7 +27,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.table.BeliefTable.*;
+import static nars.table.BeliefTable.eternalTaskValue;
+import static nars.table.BeliefTable.eternalTaskValueWithOriginality;
 import static nars.util.time.Tense.ETERNAL;
 
 

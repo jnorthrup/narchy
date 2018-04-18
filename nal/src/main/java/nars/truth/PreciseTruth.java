@@ -30,8 +30,6 @@ public class PreciseTruth extends DiscreteTruth {
     public PreciseTruth(float freq, float ce, boolean xIsConfOrEvidence) {
         super(freq, xIsConfOrEvidence ? ce : w2cSafe(ce));
 
-
-
         float e;
         if (xIsConfOrEvidence)
             e = c2wSafe(ce); //CONF -> EVI

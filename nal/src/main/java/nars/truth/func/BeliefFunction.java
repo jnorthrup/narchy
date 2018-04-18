@@ -7,7 +7,6 @@ import nars.truth.Truth;
 import nars.truth.TruthFunctions;
 import nars.truth.func.annotation.AllowOverlap;
 import nars.truth.func.annotation.SinglePremise;
-import nars.truth.func.annotation.UnprojectedBelief;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -150,18 +149,7 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    @UnprojectedBelief  AbductionUnprojected() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
-            return Abduction.apply(T,B,n,minConf);
-        }
-    },
-    @UnprojectedBelief  InductionUnprojected() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
-            return Induction.apply(T,B,n,minConf);
-        }
-    },
+
 
     /**
      * polarizes according to an implication belief.
@@ -248,21 +236,6 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.intersection(T, B, minConf);
-        }
-    },
-
-    @UnprojectedBelief
-    IntersectionUnprojected() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return Intersection.apply(T, B, m, minConf);
-        }
-    },
-    @UnprojectedBelief
-    UnionUnprojected() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return Union.apply(T, B, m, minConf);
         }
     },
 
@@ -506,7 +479,6 @@ public enum BeliefFunction implements TruthOperator {
 
     public final boolean single;
     public final boolean overlap;
-    public final boolean beliefProjected;
 
     BeliefFunction() {
 
@@ -514,7 +486,6 @@ public enum BeliefFunction implements TruthOperator {
             Field enumField = getClass().getField(name());
             this.single = enumField.isAnnotationPresent(SinglePremise.class);
             this.overlap = enumField.isAnnotationPresent(AllowOverlap.class);
-            this.beliefProjected = !enumField.isAnnotationPresent(UnprojectedBelief.class);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -532,8 +503,5 @@ public enum BeliefFunction implements TruthOperator {
         return overlap;
     }
 
-    @Override
-    public boolean beliefProjected() {
-        return beliefProjected;
-    }
+
 }

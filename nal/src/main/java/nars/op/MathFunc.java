@@ -1,7 +1,7 @@
 package nars.op;
 
-import nars.term.Functor;
 import nars.term.Evaluation;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Int;
 

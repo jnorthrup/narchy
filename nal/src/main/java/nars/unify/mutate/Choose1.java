@@ -1,12 +1,12 @@
 package nars.unify.mutate;
 
 import nars.$;
-import nars.unify.match.Ellipsis;
-import nars.unify.match.EllipsisMatch;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
+import nars.unify.match.Ellipsis;
+import nars.unify.match.EllipsisMatch;
 
 import java.util.Arrays;
 import java.util.SortedSet;

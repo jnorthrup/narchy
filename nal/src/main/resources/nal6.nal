@@ -87,7 +87,7 @@
       (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
       (S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-    (S ==> M), (M ==> P) |- (P ==>+- S), (Belief:Exemplification)
+    (P ==> M), (M ==> S) |- (S ==>+- P), (Belief:Exemplification)
 
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>

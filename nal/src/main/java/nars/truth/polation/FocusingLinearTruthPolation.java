@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FocusingLinearTruthPolation extends TruthPolation {
 
+    static final boolean durShrink = false;
+
     private final static int minDur =
             0; //<- anything besides what matches the specified interval is ignored
             //1; //<- allows some temporal bleed-through during interpolation when an exact match is present
@@ -29,11 +31,13 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     public TruthPolation add(Task t) {
         super.add(t);
 
-        if (dur > minDur) {
-            if (!t.isEternal()) {
-                long dd = t.minDistanceTo(start, end);
-                if (dd < dur)
-                    dur = Math.max(minDur, (int) dd);
+        if (durShrink) {
+            if (dur > minDur) {
+                if (!t.isEternal()) {
+                    long dd = t.minDistanceTo(start, end);
+                    if (dd < dur)
+                        dur = Math.max(minDur, (int) dd);
+                }
             }
         }
 

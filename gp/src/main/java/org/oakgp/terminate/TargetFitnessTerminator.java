@@ -15,8 +15,8 @@
  */
 package org.oakgp.terminate;
 
-import org.oakgp.rank.RankedCandidate;
 import org.oakgp.rank.Candidates;
+import org.oakgp.rank.RankedCandidate;
 
 import java.util.function.Predicate;
 

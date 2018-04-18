@@ -16,8 +16,8 @@
 package org.oakgp.select;
 
 import org.oakgp.node.Node;
-import org.oakgp.rank.RankedCandidate;
 import org.oakgp.rank.Candidates;
+import org.oakgp.rank.RankedCandidate;
 import org.oakgp.util.GPRandom;
 
 /**

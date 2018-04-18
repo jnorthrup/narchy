@@ -1,7 +1,6 @@
 package nars.index.concept;
 
 import nars.concept.PermanentConcept;
-import nars.index.concept.ConceptIndex;
 import nars.term.Termed;
 
 import java.util.function.BiFunction;

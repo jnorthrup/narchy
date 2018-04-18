@@ -6,10 +6,11 @@ import nars.term.control.AbstractPred;
 import org.roaringbitmap.RoaringBitmap;
 
 /**
- * remembers the possiblity of a choice which "can" be pursued
+ * remembers the possiblity of a derivation branch
+ * valid for the premise.  a choice which "can" be tried
  * (ie. according to value rank)
  */
-public class DeriveCan extends AbstractPred<Derivation> {
+public class Branchify extends AbstractPred<Derivation> {
 
     public final int id;
 
@@ -18,9 +19,8 @@ public class DeriveCan extends AbstractPred<Derivation> {
 //         */
 //        private final RoaringBitmap downstream;
 
-    public DeriveCan(int id, RoaringBitmap downstream) {
+    public Branchify(int id, RoaringBitmap downstream) {
         super($.func("can", /*$.the(id),*/ $.sFast(downstream)));
-
         this.id = id;
 //            this.downstream = downstream;
     }

@@ -24,9 +24,9 @@ import org.oakgp.Type;
 import org.oakgp.evolve.GenerationEvolver;
 import org.oakgp.node.Node;
 import org.oakgp.primitive.DummyPrimitiveSet;
+import org.oakgp.rank.Candidates;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 import java.util.function.Function;

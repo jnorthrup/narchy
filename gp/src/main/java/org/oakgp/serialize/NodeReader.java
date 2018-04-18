@@ -35,7 +35,8 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static org.oakgp.Type.*;
-import static org.oakgp.util.Utils.*;
+import static org.oakgp.util.Utils.FALSE_NODE;
+import static org.oakgp.util.Utils.TRUE_NODE;
 import static org.oakgp.util.Void.VOID_CONSTANT;
 
 /**

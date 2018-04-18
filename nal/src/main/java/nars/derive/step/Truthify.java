@@ -13,15 +13,17 @@ import static nars.Op.*;
  * After temporalization, truth may be recalculated.  the confidence
  * will not exceed the prior value calculated here.
  */
-abstract public class Solve extends AbstractPred<Derivation> {
+abstract public class Truthify extends AbstractPred<Derivation> {
 
-    private final TruthOperator belief;
-    private final TruthOperator goal;
+    public final TruthOperator belief;
+    public final TruthOperator goal;
+    private final boolean projectBeliefToTask;
 
-    Solve(Term id, TruthOperator belief, TruthOperator goal) {
+    Truthify(Term id, TruthOperator belief, TruthOperator goal, boolean projectBeliefToTask) {
         super(id);
         this.belief = belief;
         this.goal = goal;
+        this.projectBeliefToTask = projectBeliefToTask;
     }
 
     @Override
@@ -47,8 +49,7 @@ abstract public class Solve extends AbstractPred<Derivation> {
                 if (single = f.single()) {
                     beliefTruth = null;
                 } else {
-
-                    beliefTruth = f.beliefProjected() ? d.beliefTruthDuringTask : d.beliefTruth;
+                    beliefTruth = projectBeliefToTask ? d.beliefTruthDuringTask : d.beliefTruth;
                     if (beliefTruth == null)
                         return false; //double premise requiring a belief, but belief is null
                 }
@@ -101,12 +102,12 @@ abstract public class Solve extends AbstractPred<Derivation> {
     /**
      * Created by me on 5/26/16.
      */
-    public static final class SolvePuncOverride extends Solve {
+    public static final class TruthifyPuncOverride extends Truthify {
         private final byte puncOverride;
 
 
-        public SolvePuncOverride(Term i, byte puncOverride, TruthOperator belief, TruthOperator desire) {
-            super(i, belief, desire);
+        public TruthifyPuncOverride(Term i, byte puncOverride, TruthOperator belief, TruthOperator desire, boolean projectBeliefToTask) {
+            super(i, belief, desire, projectBeliefToTask);
             this.puncOverride = puncOverride;
         }
 
@@ -121,10 +122,10 @@ abstract public class Solve extends AbstractPred<Derivation> {
     /**
      * Created by me on 5/26/16.
      */
-    public static final class SolvePuncFromTask extends Solve {
+    public static final class TruthifyPuncFromTask extends Truthify {
 
-        public SolvePuncFromTask(Term i, TruthOperator belief, TruthOperator desire) {
-            super(i, belief, desire);
+        public TruthifyPuncFromTask(Term i, TruthOperator belief, TruthOperator desire, boolean projectBeliefToTask) {
+            super(i, belief, desire, projectBeliefToTask);
         }
 
         @Override

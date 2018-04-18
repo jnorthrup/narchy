@@ -2,14 +2,14 @@ package nars.unify.mutate;
 
 import jcog.math.Combinations;
 import nars.$;
-import nars.unify.match.Ellipsis;
-import nars.unify.match.EllipsisMatch;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
+import nars.unify.match.Ellipsis;
+import nars.unify.match.EllipsisMatch;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.SortedSet;

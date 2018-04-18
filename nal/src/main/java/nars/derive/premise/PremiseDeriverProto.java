@@ -8,24 +8,25 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.control.Cause;
-import nars.derive.*;
-import nars.derive.step.Solve;
+import nars.derive.Derivation;
+import nars.derive.step.Occurrify;
 import nars.derive.step.Taskify;
 import nars.derive.step.Termify;
+import nars.derive.step.Truthify;
 import nars.op.DepIndepVarIntroduction;
-import nars.term.Termed;
-import nars.term.control.AbstractPred;
-import nars.unify.constraint.*;
-import nars.unify.op.*;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.Terms;
+import nars.term.control.AbstractPred;
 import nars.term.control.AndCondition;
 import nars.term.control.PrediTerm;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.GoalFunction;
 import nars.truth.func.TruthOperator;
+import nars.unify.constraint.*;
+import nars.unify.op.*;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,6 +63,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
     final List<PrediTerm<PreDerivation>> pre = new FasterList(8);
     final List<PrediTerm<Derivation>> post = new FasterList(8);
+    private Truthify truthify;
 
 
     public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
@@ -461,7 +463,99 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             }
         }
 
-        match(this, pre, post, index, nar);
+        Term beliefTruth = null, goalTruth = null;
+        byte puncOverride = 0;
+        Occurrify.TaskTimeMerge time = Occurrify.mergeDefault;
+
+        Term[] modifiers = Terms.sorted(((Subterms) postcons[1]).arrayShared());
+        for (Term m : modifiers) {
+            if (m.op() != Op.INH)
+                throw new RuntimeException("Unknown postcondition format: " + m);
+
+            Term type = m.sub(1);
+            Term which = m.sub(0);
+
+            switch (type.toString()) {
+
+                case "Punctuation":
+                    switch (which.toString()) {
+                        case "Question":
+                            puncOverride = Op.QUESTION;
+                            break;
+                        case "Goal":
+                            puncOverride = Op.GOAL;
+                            break;
+                        case "Belief":
+                            puncOverride = Op.BELIEF;
+                            break;
+                        case "Quest":
+                            puncOverride = Op.QUEST;
+                            break;
+
+                        default:
+                            throw new RuntimeException("unknown punctuation: " + which);
+                    }
+                    break;
+
+                case "Time":
+                    time = Occurrify.merge.get(which);
+                    if (time == null)
+                        throw new RuntimeException("unknown Time modifier:" + which);
+                    break;
+
+//                case "Truth":
+//                    throw new UnsupportedOperationException("Use Belief:.. or Goal:..");
+
+                case "Belief":
+                    beliefTruth = which;
+                    break;
+
+                case "Goal":
+                    goalTruth = which;
+                    break;
+
+//                case "Permute":
+//                    if (which.equals(PostCondition.backward)) {
+//                        rule.permuteBackward = true;
+//                    } else if (which.equals(PostCondition.swap)) {
+//                        rule.permuteForward = true;
+//                    } else
+//                        throw new RuntimeException("illegal Permute opcode: " + which);
+//                    break;
+
+//                case "Order":
+//                    //ignore, because this only affects at TaskRule construction
+//                    break;
+//
+//                case "Event":
+//                    if (which.equals(PostCondition.anticipate)) {
+//                        //IGNORED
+//                        //rule.anticipate = true;
+//                    }
+//                    break;
+//
+//                case "Eternalize":
+//                    if (which.equals(PostCondition.immediate)) {
+//                        rule.eternalize = true;
+//                    }
+//                    break;
+
+//                case "SequenceIntervals":
+//                    //IGNORED
+////                    if (which.equals(PostCondition.fromBelief)) {
+////                        rule.sequenceIntervalsFromBelief = true;
+////                    } else if (which.equals(PostCondition.fromTask)) {
+////                        rule.sequenceIntervalsFromTask = true;
+////                    }
+//                    break;
+
+                default:
+                    throw new RuntimeException("Unhandled postcondition: " + type + ':' + which);
+            }
+
+        }
+
+        build(this, pre, post, puncOverride, beliefTruth, goalTruth, time, index);
 
         constraints.forEach(c -> {
             PrediTerm<PreDerivation> p = c.asPredicate(taskPattern, beliefPattern);
@@ -472,14 +566,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         List<PostCondition> postConditions = newArrayList(postcons.length);
 
-        for (int i = 0; i < postcons.length; ) {
-            Term t = postcons[i++];
-            if (i >= postcons.length)
-                throw new RuntimeException("invalid rule: missing meta term for postcondition involving " + t);
-
-            postConditions.add(PostCondition.make(this, t, Terms.sorted(((Subterms) postcons[i++]).arrayShared())));
-        }
-
+        postConditions.add(
+                PostCondition.the(this, postcons[0], puncOverride, beliefTruth, goalTruth)
+        );
 
         int pcs = postConditions.size();
         assert (pcs > 0) : "no postconditions";
@@ -509,13 +598,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 pres.add(TaskPunctuation.BeliefOrGoal);
             } else if (b) {
                 pres.add(TaskPunctuation.Belief);
-            } else {
+            } else /* if (g) */ {
                 pres.add(TaskPunctuation.Goal);
             }
 
         } else if (taskPunc == ' ') {
             //any task type
-            taskPunc = 0;
         }
 
         //store to arrays
@@ -523,9 +611,19 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
     }
 
-    public static void match(final PremiseDeriverProto rule, List<PrediTerm<PreDerivation>> pre, List<PrediTerm<Derivation>> post, PremisePatternIndex index, NAR nar) {
+    public void build(final PremiseDeriverProto rule, List<PrediTerm<PreDerivation>> pre, List<PrediTerm<Derivation>> post,
+                      byte puncOverride, Term beliefTruthTerm, Term goalTruthTerm,
+                      @Nullable Occurrify.TaskTimeMerge time, PremisePatternIndex index) {
 
         Term pattern = rule.conclusion().sub(0);
+
+        final Term taskPattern = rule.getTask();
+        final Term beliefPattern = rule.getBelief();
+
+        Op to = taskPattern.op();
+        boolean taskIsPatVar = to == Op.VAR_PATTERN;
+        Op bo = beliefPattern.op();
+        boolean belIsPatVar = bo == Op.VAR_PATTERN;
 
         //TODO may interfere with constraints, functors, etc or other features, ie.
         // if the pattern is a product for example?
@@ -546,6 +644,39 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 //        }
 
         //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
+
+
+        pattern = index.get(pattern, true).term();
+
+
+
+        TruthOperator beliefTruth = BeliefFunction.get(beliefTruthTerm);
+        if ((beliefTruth != null) && !beliefTruth.equals(TruthOperator.NONE) && (beliefTruth == null)) {
+            throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
+        }
+        TruthOperator goalTruth = GoalFunction.get(goalTruthTerm);
+        if ((goalTruth != null) && !goalTruth.equals(TruthOperator.NONE) && (goalTruth == null)) {
+            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
+        }
+        String beliefLabel = beliefTruth != null ? beliefTruth.toString() : "_";
+        String goalLabel = goalTruth != null ? goalTruth.toString() : "_";
+
+        FasterList<Term> args = new FasterList();
+        args.add($.the(beliefLabel));
+        args.add($.the(goalLabel));
+        if (puncOverride != 0)
+            args.add($.quote(((char) puncOverride)));
+
+        Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
+
+        boolean projectBeliefToTask = time!= Occurrify.TaskTimeMerge.Task && time!=Occurrify.TaskTimeMerge.Belief; //TODO make method in the enum
+        this.truthify = (puncOverride == 0) ?
+                new Truthify.TruthifyPuncFromTask(ii, beliefTruth, goalTruth, projectBeliefToTask) :
+                new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruth, goalTruth, projectBeliefToTask);
+
+        NAR nar = index.nar;
+        Taskify taskify = new Taskify(nar.newCause((s) -> new RuleCause(rule, s)));
+
         boolean introVars1;
         Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i) -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
         if (outerFunctor != null) {
@@ -554,26 +685,26 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         } else {
             introVars1 = false;
         }
-
-        pattern = index.get(pattern, true).term();
-
-        Taskify taskify = new Taskify(nar.newCause((s) -> new RuleCause(rule, s)));
-
         PrediTerm<Derivation> conc = AndCondition.the(
-                new Termify($.func("derive", pattern), pattern, rule),
+                new Termify(pattern, rule, truthify, time),
                 introVars1 ?
                         AndCondition.the(introVars, taskify)
                         :
                         taskify
         );
+        if (taskPattern.equals(beliefPattern)) {
+            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
+        }
+        if (taskFirst(taskPattern, beliefPattern)) {
+            //task first
+            post.add(new UnifyTerm.UnifySubterm(0, taskPattern));
+            post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern, conc));
+        } else {
+            //belief first
+            post.add(new UnifyTerm.UnifySubterm(1, beliefPattern));
+            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
+        }
 
-        final Term taskPattern = rule.getTask();
-        final Term beliefPattern = rule.getBelief();
-
-        Op to = taskPattern.op();
-        boolean taskIsPatVar = to == Op.VAR_PATTERN;
-        Op bo = beliefPattern.op();
-        boolean belIsPatVar = bo == Op.VAR_PATTERN;
 
         if (!taskIsPatVar) {
             pre.add(new TaskBeliefOp(to, true, false));
@@ -604,18 +735,6 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         //match both
         //code.add(new MatchTerm.MatchTaskBeliefPair(pattern, initConstraints(constraints)));
 
-        if (taskPattern.equals(beliefPattern)) {
-            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
-        }
-        if (taskFirst(taskPattern, beliefPattern)) {
-            //task first
-            post.add(new UnifyTerm.UnifySubterm(0, taskPattern));
-            post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern, conc));
-        } else {
-            //belief first
-            post.add(new UnifyTerm.UnifySubterm(1, beliefPattern));
-            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
-        }
 
         //Term beliefPattern = pattern.term(1);
 
@@ -647,10 +766,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * the task-term pattern
      */
     public final Term getTask() {
-        return (match().sub(0));
+        return (build().sub(0));
     }
 
-    public Compound match() {
+    public Compound build() {
         return (Compound) term().sub(0);
     }
 
@@ -662,7 +781,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * the belief-term pattern
      */
     public final Term getBelief() {
-        return (match().sub(1));
+        return (build().sub(1));
     }
 
     static void eventPrefilter(Set<PrediTerm<PreDerivation>> pres, Term conj, Term taskPattern, Term beliefPattern) {
@@ -733,16 +852,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      */
     public Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> build(PostCondition post) {
 
-        byte puncOverride = post.puncOverride;
 
-        TruthOperator belief = BeliefFunction.get(post.beliefTruth);
-        if ((post.beliefTruth != null) && !post.beliefTruth.equals(TruthOperator.NONE) && (belief == null)) {
-            throw new RuntimeException("unknown BeliefFunction: " + post.beliefTruth);
-        }
-        TruthOperator goal = GoalFunction.get(post.goalTruth);
-        if ((post.goalTruth != null) && !post.goalTruth.equals(TruthOperator.NONE) && (goal == null)) {
-            throw new RuntimeException("unknown GoalFunction: " + post.goalTruth);
-        }
 
 //        //if (puncOverride==0) {
 //        if (belief!=null && goal!=null) {
@@ -762,25 +872,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
 
-        String beliefLabel = belief != null ? belief.toString() : "_";
-        String goalLabel = goal != null ? goal.toString() : "_";
-
-        FasterList<Term> args = new FasterList();
-        args.add($.the(beliefLabel));
-        args.add($.the(goalLabel));
-        if (puncOverride != 0)
-            args.add($.quote(((char) puncOverride)));
-
-        Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
-
-
-        Solve truth = (puncOverride == 0) ?
-                new Solve.SolvePuncFromTask(ii, belief, goal) :
-                new Solve.SolvePuncOverride(ii, puncOverride, belief, goal);
-
         //PREFIX
         Set<PrediTerm<PreDerivation>> precon = newHashSet(4); //for ensuring uniqueness / no duplicates
-
         addAll(precon, PRE);
 
         precon.addAll(this.pre);
@@ -795,7 +888,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         PrediTerm[] suff = new PrediTerm[n];
         int k = 0;
-        suff[k++] = truth;
+        suff[k++] = this.truthify;
         for (PrediTerm p : this.constraints) {
             suff[k++] = p;
         }

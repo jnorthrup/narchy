@@ -2,15 +2,15 @@ package nars.util.term.transform;
 
 import nars.$;
 import nars.Op;
-import nars.term.Evaluation;
-import nars.unify.match.EllipsisMatch;
 import nars.subterm.Subterms;
 import nars.subterm.util.DisposableTermList;
 import nars.subterm.util.TermList;
 import nars.term.Compound;
+import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.NormalizedVariable;
+import nars.unify.match.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;

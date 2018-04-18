@@ -8,7 +8,6 @@ import nars.truth.Truth;
 import nars.truth.TruthFunctions;
 import nars.truth.func.annotation.AllowOverlap;
 import nars.truth.func.annotation.SinglePremise;
-import nars.truth.func.annotation.UnprojectedBelief;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -207,8 +206,6 @@ public enum GoalFunction implements TruthOperator {
         TruthOperator.permuteTruth(GoalFunction.values(), atomToTruthModifier);
     }
 
-    private final boolean beliefProjected;
-
 
     public static TruthOperator get(Term a) {
         return atomToTruthModifier.get(a);
@@ -224,7 +221,6 @@ public enum GoalFunction implements TruthOperator {
             Field enumField = getClass().getField(name());
             this.single = enumField.isAnnotationPresent(SinglePremise.class);
             this.overlap = enumField.isAnnotationPresent(AllowOverlap.class);
-            this.beliefProjected = !enumField.isAnnotationPresent(UnprojectedBelief.class);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -239,11 +235,6 @@ public enum GoalFunction implements TruthOperator {
     @Override
     public boolean allowOverlap() {
         return overlap;
-    }
-
-    @Override
-    public boolean beliefProjected() {
-        return beliefProjected;
     }
 
     private static float confDefault(NAR m) {

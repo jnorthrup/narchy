@@ -16,9 +16,9 @@
 package org.oakgp.rank.fitness;
 
 import org.oakgp.node.Node;
+import org.oakgp.rank.Candidates;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 

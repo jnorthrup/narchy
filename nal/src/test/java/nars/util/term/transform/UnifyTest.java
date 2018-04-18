@@ -5,8 +5,8 @@ import nars.*;
 import nars.derive.premise.PremisePatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.unify.Unify;
 import nars.test.TestNAR;
+import nars.unify.Unify;
 import nars.util.signal.RuleTest;
 import org.junit.jupiter.api.Test;
 

@@ -4,11 +4,11 @@ import com.github.benmanes.caffeine.cache.*;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
-import nars.util.term.TermContainerToOpMap;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Variable;
+import nars.util.term.TermContainerToOpMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;

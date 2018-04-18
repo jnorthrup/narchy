@@ -16,8 +16,8 @@
 package org.oakgp.select;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.rank.RankedCandidate;
 import org.oakgp.rank.Candidates;
+import org.oakgp.rank.RankedCandidate;
 import org.oakgp.util.DummyRandom;
 import org.oakgp.util.GPRandom;
 

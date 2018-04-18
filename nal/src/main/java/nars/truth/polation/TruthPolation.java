@@ -74,7 +74,25 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
     @Nullable
     protected final TaskComponent update(TaskComponent tc) {
-        return tc.update(start, end, dur);
+        if (!tc.isComputed()) {
+
+            Task task = tc.task;
+
+            float eTotal = Revision.eviAvg(task, start, end, dur);
+
+            if (eTotal < Float.MIN_NORMAL) {
+                tc.evi = -1;
+                return null; //no evidence; remove
+            } else {
+                tc.freq = task.freq();
+                tc.evi = eTotal;
+                return tc;
+            }
+        } else {
+            return tc.evi > 0 ? tc : null;
+        }
+
+
     }
 
     /**
@@ -274,30 +292,6 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         public boolean isComputed() {
             float f = freq;
             return f == f;
-        }
-
-        /**
-         * TODO move to TruthPolation
-         */
-        @Nullable
-        public final TaskComponent update(long start, long end, int dur) {
-            if (!isComputed()) {
-                float eTotal =
-                        Revision.eviAvg(task, start, end, dur);
-
-                if (eTotal < Float.MIN_NORMAL) {
-                    this.evi = -1;
-                    return null; //no evidence; remove
-                } else {
-                    this.freq = task.freq();
-                    this.evi = eTotal;
-                    return this;
-                }
-            } else {
-                return this.evi > 0 ? this : null;
-            }
-
-
         }
     }
 

@@ -1,5 +1,6 @@
 package nars.derive.step;
 
+import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.derive.Derivation;
@@ -22,18 +23,19 @@ import static nars.util.time.Tense.ETERNAL;
  */
 public final class Termify extends AbstractPred<Derivation> {
 
-
-    //private final static Logger logger = LoggerFactory.getLogger(Conclusion.class);
     public final Term pattern;
-
 
     //    public final Set<Variable> uniqueVars;
     public final PremiseDeriverProto rule;
+    private final Occurrify.TaskTimeMerge timeJoin;
 
-    public Termify(Term id, Term pattern, PremiseDeriverProto rule) {
-        super(id);
+    public Termify(Term pattern, PremiseDeriverProto rule, Truthify solve, Occurrify.TaskTimeMerge time) {
+        super($.func("derive", pattern, solve, time.term()));
         this.rule = rule;
         this.pattern = pattern;
+
+        this.timeJoin = time;
+
 //        this.uniqueVars = pattern instanceof Compound ? ((PatternCompound)pattern).uniqueVars : Set.of();
     }
 
@@ -73,22 +75,7 @@ public final class Termify extends AbstractPred<Derivation> {
         Term c2;
         if (d.temporal) {
 
-            boolean singleTime =
-                    d.task.isEternal() ? d.belief == null : d.single;
-            //d.single;
-
-            DeriveTime dt = singleTime ? d.dtSingle : d.dtDouble;
-            if (dt == null) {
-                dt = new DeriveTime(d, singleTime);
-                if (singleTime)
-                    d.dtSingle = dt;
-                else
-                    d.dtDouble = dt;
-            }
-
-            DeriveTime dtt = dt.get();
-            //dtt.print();
-            c2 = dtt.solve(c1);
+            c2 = timeJoin.solve(d, c1);
 
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
@@ -148,6 +135,8 @@ public final class Termify extends AbstractPred<Derivation> {
 
         return d.derivedTerm.set(c2) != null;
     }
+
+
 
 
 }

@@ -31,8 +31,8 @@ import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 import org.oakgp.primitive.VariableSet;
-import org.oakgp.rank.RankedCandidate;
 import org.oakgp.rank.Candidates;
+import org.oakgp.rank.RankedCandidate;
 import org.oakgp.serialize.NodeReader;
 import org.oakgp.serialize.NodeWriter;
 

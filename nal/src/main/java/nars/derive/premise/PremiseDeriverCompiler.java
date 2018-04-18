@@ -7,13 +7,13 @@ import nars.$;
 import nars.Op;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.step.DeriveCan;
-import nars.derive.step.Taskify;
-import nars.term.control.OpSwitch;
 import nars.derive.control.ValueFork;
+import nars.derive.step.Branchify;
+import nars.derive.step.Taskify;
 import nars.term.Term;
 import nars.term.control.AndCondition;
 import nars.term.control.Fork;
+import nars.term.control.OpSwitch;
 import nars.term.control.PrediTerm;
 import nars.unify.constraint.MatchConstraint;
 import nars.unify.op.TaskBeliefOp;
@@ -34,7 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static nars.Param.*;
+import static nars.Param.TRIE_DERIVER_TEMPERATURE;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -67,8 +67,7 @@ public enum PremiseDeriverCompiler { ;
                 int id = conclusions.size();
                 conclusions.add(c.getTwo());
 
-                post.computeIfAbsent(c.getOne(), (x) ->
-                        new RoaringBitmap()).add(id);
+                post.computeIfAbsent(c.getOne(), x -> new RoaringBitmap()).add(id);
             }
         });
 
@@ -110,7 +109,7 @@ public enum PremiseDeriverCompiler { ;
             //attach this branch to the root fork
             {
                 //append the conclusion step
-                pre.add(new DeriveCan(
+                pre.add(new Branchify(
                     /* branch ID */ postChoices.size(), v));
 
                 PrediTerm<Derivation> prev = path.put(pre, f);

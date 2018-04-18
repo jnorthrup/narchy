@@ -5,18 +5,19 @@ import com.google.common.collect.SortedSetMultimap;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
+import nars.$;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.util.time.TimeGraph;
-import nars.unify.match.EllipsisMatch;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
-import nars.term.var.VarPattern;
-import nars.util.time.Tense;
+import nars.term.compound.util.Image;
 import nars.truth.Truth;
+import nars.util.time.Tense;
+import nars.util.time.TimeGraph;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongLongPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -36,6 +37,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
 /**
+ * solves a derivation's occurrence time.
+ *
  * unknowns to solve otherwise the result is impossible:
  * - derived task start time
  * - derived task end time
@@ -50,7 +53,80 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * if that fails, a heuristic could decide the match. in the worst case,
  * the derivation will not be temporalizable and this method returns null.
  */
-public class DeriveTime extends TimeGraph {
+public class Occurrify extends TimeGraph {
+
+    public static final TaskTimeMerge mergeDefault = TaskTimeMerge.Union;
+
+    public static final Map<Term,TaskTimeMerge> merge = Map.of(
+        Atomic.the("TaskRelative"),TaskTimeMerge.Task,
+        Atomic.the("BeliefRelative"),TaskTimeMerge.Belief
+    );
+
+    public enum TaskTimeMerge {
+
+        /** for unprojected truth rules; the result will be relative to the task's time */
+        Task() {
+            @Override
+            @Nullable long[] occurrence(Task task, Task belief) {
+                return new long[] { task.start(), task.end() };
+            }
+        },
+        /** for unprojected truth rules; the result will be relative to the belief's time */
+        Belief() {
+            @Override
+            @Nullable long[] occurrence(Task task, Task belief) {
+                return new long[] { belief.start(), belief.end() };
+            }
+        },
+        Intersect() {
+            @Override
+            @Nullable long[] occurrence(Task a, Task b) {
+                Longerval i = Longerval.intersect(a.start(), a.end(), b.start(), b.end());
+                return i != null ? new long[]{i.a, i.b} : null;
+            }
+        },
+
+        Union() {
+            @Override
+            @Nullable long[] occurrence(Task a, Task b) {
+                Longerval i = Longerval.union(a.start(), a.end(), b.start(), b.end());
+                return i != null ? new long[]{i.a, i.b} : null;
+            }
+        };
+
+        private final Term term;
+
+        TaskTimeMerge() {
+            this.term = $.the(name());
+        }
+
+        abstract @Nullable long[] occurrence(Task a, Task b);
+
+
+        public Term term() {
+            return term;
+        }
+
+        public Term solve(Derivation d, Term c1) {
+            boolean singleTime =
+                    //d.task.isEternal() ? d.belief == null : d.single; // ?
+                    d.single;
+
+            Occurrify dt = singleTime ? d.dtSingle : d.dtDouble;
+            if (dt == null) {
+                dt = new Occurrify(d, singleTime ? null : this, singleTime);
+                if (singleTime)
+                    d.dtSingle = dt;
+                else
+                    d.dtDouble = dt;
+            }
+
+            //return dt.get().solve(c1);
+            return dt.solve(c1);
+        }
+    };
+
+    final TaskTimeMerge join;
 
     private final Task task, belief;
 
@@ -61,53 +137,42 @@ public class DeriveTime extends TimeGraph {
      */
     private final HashSet<Event> seen;
 
-
-    /**
-     * on .get(), also sets the occurrence time and any other derivation state
-     */
-    final Map<Term, Supplier<Term>> cache;
-
-    @Override
-    public void clear() {
-        super.clear();
-        cache.clear();
-    }
-
-    /**
-     * for dynamic
-     */
-    DeriveTime(DeriveTime copy) {
-        this.cache = null;
-        this.d = copy.d;
-        this.task = copy.task;
-        this.belief = copy.belief;
-        this.seen = copy.seen;
-
-        //TODO optimized clone of the copy's graph
-        //this.byTerm.putAll(copy.byTerm);
-        //this.nodes...
-
-        //for now, just do manual reconstruct
-
-        copy.byTerm.forEach((x, event) -> {
-            addNode(event);
-
-            Term y = x.eval(d);
-            if (y != x && !y.equals(x) && y.op().conceptualizable) {
-                link(know(x), 0, know(y));
-            }
-
-        });
-
-        //link all non-pattern var substitutions
-        d.xy.forEach((x, y) -> {
-            if (!(x instanceof VarPattern) && x.op().conceptualizable && !(x instanceof EllipsisMatch)) {
-                link(know(x), 0, know(y));
-            }
-        });
-
-
-    }
+//    /**
+//     * for dynamic
+//     */
+//    Occurrify(Occurrify copy) {
+//        this.cache = null;
+//        this.d = copy.d;
+//        this.join = copy.join;
+//        this.task = copy.task;
+//        this.belief = copy.belief;
+//        this.seen = copy.seen;
+//
+//        //TODO optimized clone of the copy's graph
+//        //this.byTerm.putAll(copy.byTerm);
+//        //this.nodes...
+//
+//        //for now, just do manual reconstruct
+//
+//        copy.byTerm.forEach((x, event) -> {
+//            addNode(event);
+//
+//            Term y = x.eval(d);
+//            if (y != x && !y.equals(x) && y.op().conceptualizable) {
+//                link(know(x), 0, know(y));
+//            }
+//
+//        });
+//
+//        //link all non-pattern var substitutions
+//        d.xy.forEach((x, y) -> {
+//            if (!(x instanceof VarPattern) && x.op().conceptualizable && !(x instanceof EllipsisMatch)) {
+//                link(know(x), 0, know(y));
+//            }
+//        });
+//
+//
+//    }
 
 //    private void knowTransformed(Term tt, Task t) {
 //        Iterable<Event> ee = know(t, tt);
@@ -118,16 +183,19 @@ public class DeriveTime extends TimeGraph {
 //    }
 
 
-    public DeriveTime(Derivation d, boolean single) {
+    Occurrify(Derivation d, @Nullable Occurrify.TaskTimeMerge join, boolean single) {
         this.d = d;
-        this.cache = new HashMap(0);
+        this.join = join;
+//        this.cache = new HashMap(0);
         this.seen = new HashSet<>();
+
+
 
         this.belief = !single ? d.belief : null;
 
         //determine whether to auto-neg
         Term tt = (this.task = d.task).term();
-        Term bb = !single ? (belief).term() : null;
+        Term bb = !single ? belief.term() : null;
         //HACK autoNeg only the specific terms which appear as both
         if (tt.hasAny(NEG) || (bb != null && bb.hasAny(NEG))) {
             ObjectByteHashMap<Term> events = new ObjectByteHashMap();
@@ -217,16 +285,16 @@ public class DeriveTime extends TimeGraph {
     }
 
 
-    /**
-     * if current state of the derivation produced novel terms as a result of substitutions, etc
-     */
-    public DeriveTime get() {
-        if (ifDynamic(task) != null || (belief != null && ifDynamic(belief) != null)) {
-            return new DeriveTime(this);
-        } else {
-            return this;
-        }
-    }
+//    /**
+//     * if current state of the derivation produced novel terms as a result of substitutions, etc
+//     */
+//    public Occurrify get() {
+//        if (ifDynamic(task) != null || (belief != null && ifDynamic(belief) != null)) {
+//            return new Occurrify(this);
+//        } else {
+//            return this;
+//        }
+//    }
 
     Term ifDynamic(Termed xt) {
         Term x = xt.term();
@@ -380,26 +448,26 @@ public class DeriveTime extends TimeGraph {
         Term tt = t.term();
 
 
-        int taken = 0;
-        if (when != ETERNAL && (!t.isEternal() && t.range() > 1)) {
-            LongHashSet sampled = new LongHashSet(3);
+//        int taken = 0;
+//        if (when != ETERNAL && (!t.isEternal() && t.range() > 1)) {
+//            LongHashSet sampled = new LongHashSet(3);
+//
+//            //HACK all points in time where the task's truth (used in the derivation's truth calculation) is constant are eligible to be sampled
+//            //TODO parameter for max subsampling
+//            long ts = t.start();
+//            taken += knowIfSameTruth(t, tt, tr, ts, sampled);
+//
+//            long te = t.end();
+//            taken += knowIfSameTruth(t, tt, tr, te, sampled);
+//
+//            long tm = t.mid();
+//            taken += knowIfSameTruth(t, tt, tr, tm, sampled);
+//        }
 
-            //HACK all points in time where the task's truth (used in the derivation's truth calculation) is constant are eligible to be sampled
-            //TODO parameter for max subsampling
-            long ts = t.start();
-            taken += knowIfSameTruth(t, tt, tr, ts, sampled);
-
-            long te = t.end();
-            taken += knowIfSameTruth(t, tt, tr, te, sampled);
-
-            long tm = t.mid();
-            taken += knowIfSameTruth(t, tt, tr, tm, sampled);
-        }
-
-        if (taken == 0) {
+//        if (taken == 0) {
             //use the direct point only
             event(tt, when, true);
-        }
+//        }
     }
 
     private int knowIfSameTruth(Task t, Term tt, Truth tr, long w, LongHashSet sampled) {
@@ -447,7 +515,9 @@ public class DeriveTime extends TimeGraph {
 
 //        long[] occ = d.concOcc;
 
-        Supplier<Term> solution = cache != null ? solveCached(pattern) : solveAll(pattern);
+
+        //Supplier<Term> solution = cache != null ? solveCached(pattern) : solveAll(pattern);
+        Supplier<Term> solution = solveAll(pattern);
         if (solution == null)
             return null;
         else
@@ -456,6 +526,23 @@ public class DeriveTime extends TimeGraph {
 
     }
 
+    @Override
+    public Event know(Term t, long start) {
+        Event e = super.know(t, start);
+
+        Term u = t.transform(d);
+        if (u!=null && !u.equals(t)) {
+            //resolved differently
+            super.know(u, start);
+        }
+
+        Term v = Image.imageNormalize(t);
+        if (!v.equals(t)) {
+            super.know(v, start);
+        }
+
+        return e;
+    }
 
     @Nullable
     Term solveThe(Event event) {
@@ -466,7 +553,7 @@ public class DeriveTime extends TimeGraph {
             return solveRaw(st);
         } else {
             if (!eternalCheck(es))
-                return null;
+                return null; //??
             d.concOcc[0] = d.concOcc[1] = es;
             return st;
         }
@@ -756,9 +843,9 @@ public class DeriveTime extends TimeGraph {
 //    }
 //
 
-    protected Supplier<Term> solveCached(Term pattern) {
-        return cache.computeIfAbsent(pattern, this::solveAll);
-    }
+//    protected Supplier<Term> solveCached(Term pattern) {
+//        return cache.computeIfAbsent(pattern, this::solveAll);
+//    }
 
 
     protected Supplier<Term> solveAll(Term pattern) {
@@ -806,21 +893,7 @@ public class DeriveTime extends TimeGraph {
         seen.clear();
         solve(pattern, false /* take everything */, seen, each);
 
-//        boolean neg = false;
-//        if (solutions.isEmpty() && pattern.op()==NEG) {
-//            solve(pattern.unneg(), false, each);
-//            neg = true;
-//        }
-
-        Supplier<Term> x = solution(pattern, solutions);
-//        if (x!=null && neg) {
-//            return ()-> {
-//                Term y = x.get();
-//                return y.neg();
-//            };
-//        } else {
-        return x;
-//        }
+        return solution(pattern, solutions);
     }
 
     protected Supplier<Term> solution(Term pattern, ArrayHashSet<Event> solutions) {
@@ -932,11 +1005,13 @@ public class DeriveTime extends TimeGraph {
                     boolean taskEvi = !task.isQuestionOrQuest();
                     boolean beliefEvi = !belief.isQuestionOrQuest();
                     if (taskEvi && beliefEvi) {
-                        //EviDensity density = new EviDensity(d.dur, task, belief);
-                        long[] u = Tense.union(task, belief);
-                        s = u[0];
-                        e = u[1];
-                        //d.concEviFactor *= density.factor(); //TODO eternalization margin?
+                        long[] u = join.occurrence(task, belief);
+                        if (u != null) {
+                             s = u[0];
+                             e = u[1];
+                        } else {
+                            return null;
+                        }
                     } else if (taskEvi) {
                         s = task.start();
                         e = task.end();
@@ -947,7 +1022,7 @@ public class DeriveTime extends TimeGraph {
                         throw new UnsupportedOperationException("evidence from nowhere?");
                     }
                 } else {
-                    //question: use the interval union
+                    //question: use the interval union - does this even happen
                     Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
                     s = u.start();
                     e = u.end();

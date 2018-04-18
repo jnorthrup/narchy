@@ -66,14 +66,14 @@ public interface Truth extends Truthed {
      */
     static int truthToInt(float freq, float conf, short discreteness) {
 
-        assert(Float.isFinite(freq) && (freq >= 0) && (freq <= 1)):
-                "invalid freq: " + freq;
+        if (!(Float.isFinite(freq) && (freq >= 0) && (freq <= 1)))
+            throw new RuntimeException("invalid freq: " + freq);
 
         int freqHash = floatToInt(freq, discreteness);// & 0x0000ffff;
 
-        assert(Float.isFinite(conf) && conf > Float.MIN_NORMAL && conf < 1f);
+        if (!(Float.isFinite(conf) && conf <= Param.TRUTH_MAX_CONF))
+            throw new RuntimeException("invalid conf: " + conf);
 
-        conf = Util.clamp(conf, Param.TRUTH_MIN_CONF, Param.TRUTH_MAX_CONF);
         int confHash = floatToInt(conf, discreteness);// & 0x0000ffff;
 
         return (freqHash << 16) | confHash;

@@ -14,10 +14,10 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.util.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.util.time.Tense;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.util.time.Tense.XTERNAL;
 
 /**
  * Created by me on 12/4/16.

@@ -19,7 +19,10 @@ public class DiscreteTruth implements Truth {
     }
 
     public DiscreteTruth(float f, float c) {
-        this(Truth.truthToInt(f, Math.min(c, Param.TRUTH_MAX_CONF), hashDiscretenessEpsilon));
+        this(Truth.truthToInt(f,
+                //Math.min(c, Param.TRUTH_MAX_CONF),
+                c,
+                hashDiscretenessEpsilon));
     }
 
     public DiscreteTruth(float f, float c, float res) {

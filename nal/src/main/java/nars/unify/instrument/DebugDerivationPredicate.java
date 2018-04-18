@@ -2,10 +2,10 @@ package nars.unify.instrument;
 
 import jcog.Texts;
 import nars.derive.Derivation;
-import nars.unify.op.UnifyTerm;
 import nars.term.control.AndCondition;
 import nars.term.control.Fork;
 import nars.term.control.PrediTerm;
+import nars.unify.op.UnifyTerm;
 import org.fusesource.jansi.Ansi;
 
 public class DebugDerivationPredicate extends InstrumentedDerivationPredicate {

@@ -120,9 +120,9 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         } finally {
             now = (this.lastStarted = nar.time());
             if (!isOff()) {
-                busy.set(false);
                 nar.runAt(now + durCycles, this);
             }
+            busy.set(false); //must be LAST
         }
     }
 

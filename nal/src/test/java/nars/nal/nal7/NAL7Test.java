@@ -4,8 +4,8 @@ import nars.$;
 import nars.Narsese;
 import nars.term.Term;
 import nars.test.TestNAR;
-import nars.util.time.Tense;
 import nars.util.NALTest;
+import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -215,10 +215,10 @@ public class NAL7Test extends NALTest {
     @Test
     public void testDropAnyEventSimple2bb() {
         test
-                .inputAt(1, "((happy &&+4120 (i)) &&+1232 (--,(i)))! :|:")
-                .mustGoal(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(happy &&+4120 (i))", GOAL, 1233)
-                .mustNotOutput(cycles, "((i)&&happy)", GOAL, 1)
+                .inputAt(1, "((happy &&+4120 i) &&+1232 --i)! :|:")
+                .mustGoal(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
+                .mustNotOutput(cycles*2, "(happy &&+4120 i)", GOAL, 1233)
+                .mustNotOutput(cycles*2, "(i && happy)", GOAL, 1)
         ;
     }
 
@@ -1367,13 +1367,13 @@ public class NAL7Test extends NALTest {
         */
 
         test
-                .inputAt(1, "((a) &&+5 (c)). :|:")
-                .inputAt(3, "(b). :|:")
+                .inputAt(1, "(a &&+5 c). :|:")
+                .inputAt(3, "b. :|:")
                 .mustBelieve(cycles * 2,
-                        "(((a) &&+2 (b)) &&+3 (c))",
+                        "((a &&+2 b) &&+3 c)",
                         1f, 0.81f, 1)
                 .mustNotOutput(cycles * 2,
-                        "((b) &&+3 ((a) &&+5 (c)))", BELIEF, (t) -> t == 1 || t == ETERNAL);
+                        "(b &&+3 (a &&+5 c))", BELIEF, (t) -> t == 1 || t == ETERNAL);
     }
 
     @Test

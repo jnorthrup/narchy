@@ -10,9 +10,9 @@ import jcog.util.FloatFloatToFloatFunction;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.term.atom.Atom;
-import nars.util.time.Tense;
 import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
+import nars.util.time.Tense;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,7 +59,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 12;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 6;
 
 
 //    public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
@@ -184,7 +184,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(96, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(128, 0, 1024);
 
 
     /** estimate */
@@ -211,7 +211,7 @@ public abstract class Param {
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 2;
+    public static int TTL_DERIVE_TASK_SUCCESS = 4;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
@@ -352,15 +352,10 @@ public abstract class Param {
     //public static boolean DEBUG_NONETERNAL_QUESTIONS = false;
     public static final boolean DEBUG_TASK_LOG = true; //false disables task history completely
 
-
-
-
-
     /**
      * internal granularity which truth components are rounded to
      */
     public static final float TRUTH_EPSILON = 0.01f;
-    public static final float TRUTH_MIN_CONF = TRUTH_EPSILON;
     public static final float TRUTH_MAX_CONF = 1f - TRUTH_EPSILON;
     public static final float TRUTH_MIN_EVI = Float.MIN_NORMAL;
     public static final float TRUTH_MAX_EVI = Float.MAX_VALUE;

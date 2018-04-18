@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.oakgp.Evolution;
 import org.oakgp.evolve.GenerationEvolver;
 import org.oakgp.node.Node;
+import org.oakgp.rank.Candidates;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
-import org.oakgp.rank.Candidates;
 
 import java.util.Collection;
 import java.util.function.Predicate;

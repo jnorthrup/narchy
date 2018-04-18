@@ -18,12 +18,12 @@ package nars.term;
 
 import nars.*;
 import nars.concept.Concept;
-import nars.unify.match.EllipsisMatch;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.unify.match.EllipsisMatch;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

@@ -40,10 +40,10 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.util.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import nars.util.time.Tense;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.ShortCountsHistogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
@@ -69,8 +69,8 @@ import java.util.zip.GZIPOutputStream;
 import static nars.$.$;
 import static nars.Op.*;
 import static nars.term.Functor.f;
-import static nars.util.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2w;
+import static nars.util.time.Tense.ETERNAL;
 import static org.fusesource.jansi.Ansi.ansi;
 
 

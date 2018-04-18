@@ -14,16 +14,16 @@
 //    B, A, task("."), time(dtEvents)                       notImpl(A) |- (A ==>+- B), (Belief:Induction)
 //    B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B),       notImpl(A) |- varIntro((A ==>+- B)), (Belief:Induction)
 
-   B, A, notImpl(A),notImpl(B) |- (A ==>+- B), (Belief:InductionUnprojected)
-    B, A, neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((A ==>+- B)), (Belief:InductionUnprojected)
-        B, A, notImpl(A),notImpl(B) |- (--A ==>+- B), (Belief:InductionUnprojectedPN)
-        B, A, neqAndCom(A,B),   notImpl(A),notImpl(B) |- varIntro((--A ==>+- B)), (Belief:InductionUnprojectedPN)
+   B, A, notImpl(A),notImpl(B) |- (A ==>+- B), (Belief:Induction, Time:BeliefRelative)
+    B, A, neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((A ==>+- B)), (Belief:Induction, Time:BeliefRelative)
+        B, A, notImpl(A),notImpl(B) |- (--A ==>+- B), (Belief:InductionPN, Time:BeliefRelative)
+        B, A, neqAndCom(A,B),   notImpl(A),notImpl(B) |- varIntro((--A ==>+- B)), (Belief:InductionPN, Time:BeliefRelative)
 
-    B, A, notImpl(A),notImpl(B) |- (B ==>+- A), (Belief:AbductionUnprojected)
-    B, A, neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((B ==>+- A)), (Belief:AbductionUnprojected)
-        B, A, notImpl(A),notImpl(B) |- (--B ==>+- A), (Belief:AbductionUnprojectedN)
+    B, A, notImpl(A),notImpl(B) |- (B ==>+- A), (Belief:Abduction, Time:TaskRelative)
+    B, A, neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((B ==>+- A)), (Belief:Abduction, Time:TaskRelative)
+        B, A, notImpl(A),notImpl(B) |- (--B ==>+- A), (Belief:AbductionN, Time:TaskRelative)
             //time(dtAfter),
-        B, A, neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((--B ==>+- A)), (Belief:AbductionUnprojectedN)
+        B, A, neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((--B ==>+- A)), (Belief:AbductionN, Time:TaskRelative)
             //, time(dtAfterOrEternals)
 
 //    B, A, task(positive), task("."), time(dtEvents), notImpl(B) |- (B ==>+- A), (Belief:Abduction)
@@ -36,11 +36,11 @@
 //        B, A, belief(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B),   notImpl(A) |- varIntro((--A ==>+- B)), (Belief:InductionPN)
 
 //&&
-    B, A, notImpl(A),notImpl(B)                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionUnprojectedDepolarized)
-        //B, A, task("."), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionUnprojectedDepolarized)
+    B, A, notImpl(A),notImpl(B)                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:TaskRelative)
+        //B, A, task("."), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(dtEvents), notImpl(A),notImpl(B)                            |- (B &&+- A), (Belief:Intersection)
-    B, A, neqAndCom(A,B),notImpl(A),notImpl(B)   |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionUnprojectedDepolarized)
+    B, A, neqAndCom(A,B),notImpl(A),notImpl(B)   |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionDepolarized, Time:TaskRelative)
         //B, A, task("."), neqAndCom(A,B),  notImpl(A),notImpl(B)  |- varIntro((--,((--,polarize(B,task)) &&+- (--,polarize(A,belief))))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B), notImpl(A),notImpl(B)  |- varIntro((B &&+- A)), (Belief:Intersection)
@@ -60,8 +60,10 @@
 
 
 
-//NAL3 difference
-    A, B, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B), notImpl(A), notImpl(B) |- (A ~ B), (Belief:Difference)
+//NAL3 difference (belief projected to task)
+    B, A, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B), notImpl(A), notImpl(B) |- (B ~ A), (Belief:Difference)
+    B, A, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B), notImpl(A), notImpl(B) |- (A ~ B), (Belief:DifferenceReverse)
+
         //the hasNoDiffs constraint is not entirely necessary;
         //for now it is just meant to prevent derivations like:
         //  (tetris(5,13)~(((5,13)~(3,13))-->tetris)).

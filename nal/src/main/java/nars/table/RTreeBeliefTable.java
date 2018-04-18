@@ -35,10 +35,10 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.table.TemporalBeliefTable.value;
-import static nars.util.time.Tense.ETERNAL;
-import static nars.util.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.util.time.Tense.ETERNAL;
+import static nars.util.time.Tense.XTERNAL;
 
 public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 

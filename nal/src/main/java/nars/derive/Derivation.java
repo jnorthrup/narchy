@@ -10,7 +10,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
-import nars.derive.step.DeriveTime;
+import nars.derive.step.Occurrify;
 import nars.op.ListFunc;
 import nars.op.SetFunc;
 import nars.op.SubIfUnify;
@@ -150,7 +150,7 @@ public class Derivation extends PreDerivation {
     public float premiseEviSingle;
     public float premiseEviDouble;
     private long[] evidenceDouble, evidenceSingle;
-    public DeriveTime dtSingle = null, dtDouble = null;
+    public Occurrify dtSingle = null, dtDouble = null;
 
 
     /**
@@ -752,7 +752,7 @@ public class Derivation extends PreDerivation {
                 Term a = xx.sub(1);
                 Term b = replacement;
                 if (!a.equals(b)) {
-                    replaceXY(a, b); //also include the subterms in case the structure of the compound changed signficantly the events may still hold the clue
+//                    replaceXY(a, b); //also include the subterms in case the structure of the compound changed signficantly the events may still hold the clue
 //                    //replaceXY(b, a); //reverse mapping
                 }
             }

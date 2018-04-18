@@ -17,8 +17,8 @@ package org.oakgp.evolve;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
-import org.oakgp.rank.RankedCandidate;
 import org.oakgp.rank.Candidates;
+import org.oakgp.rank.RankedCandidate;
 import org.oakgp.select.NodeSelector;
 import org.oakgp.select.NodeSelectorFactory;
 

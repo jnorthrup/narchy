@@ -45,7 +45,6 @@ public interface TruthOperator {
 
     boolean allowOverlap();
     boolean single();
-    boolean beliefProjected();
 
     abstract class ProxyTruthOperator implements TruthOperator {
         @NotNull protected final TruthOperator o;
@@ -58,10 +57,6 @@ public interface TruthOperator {
 
         @Override public boolean single() {
             return o.single();
-        }
-
-        @Override public boolean beliefProjected() {
-            return o.beliefProjected();
         }
 
     }

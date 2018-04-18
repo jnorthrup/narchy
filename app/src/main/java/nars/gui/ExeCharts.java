@@ -18,15 +18,15 @@ import nars.time.RealTime;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.TreeChart;
-import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.video.Draw;
 

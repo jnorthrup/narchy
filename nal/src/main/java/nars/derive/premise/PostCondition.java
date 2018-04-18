@@ -1,6 +1,5 @@
 package nars.derive.premise;
 
-import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -10,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
-
-import static nars.term.atom.Atomic.the;
 
 /**
  * Describes a derivation postcondition
@@ -37,20 +34,20 @@ public final class PostCondition implements Serializable //since there can be mu
 
 
     public static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
-            the("Belief"),
-            the("Stamp"),
-            the("Goal"),
-            the("Order"),
-            the("Permute"),
-            the("Info"),
-            the("Event"),
-            the("Punctuation")
+            Atomic.the("Belief"),
+            Atomic.the("Stamp"),
+            Atomic.the("Goal"),
+            Atomic.the("Order"),
+            Atomic.the("Permute"),
+            Atomic.the("Info"),
+            Atomic.the("Event"),
+            Atomic.the("Punctuation")
     );
 
 
-    private static final Atomic
-            swap = the("Swap");
-    private static final Atomic backward = the("Backward");
+//    private static final Atomic
+//            swap = the("Swap");
+//    private static final Atomic backward = the("Backward");
 
 
     /**
@@ -66,96 +63,11 @@ public final class PostCondition implements Serializable //since there can be mu
      * @param modifiers
      * @throws RuntimeException
      */
-    @NotNull
-    public static PostCondition make(PremiseDeriverProto rule, Term pattern,
-                                     @NotNull Term... modifiers) throws RuntimeException {
+    public static PostCondition the(PremiseDeriverProto rule, Term pattern,
+                                    byte puncOverride,
+                                    Term beliefTruth, Term goalTruth) throws RuntimeException {
 
 
-        Term beliefTruth = null, goalTruth = null;
-
-        //boolean negate = false;
-        byte puncOverride = 0;
-
-        for (Term m : modifiers) {
-            if (m.op() != Op.INH)
-                throw new RuntimeException("Unknown postcondition format: " + m);
-
-            Term type = m.sub(1);
-            Term which = m.sub(0);
-
-            switch (type.toString()) {
-
-                case "Punctuation":
-                    switch (which.toString()) {
-                        case "Question":
-                            puncOverride = Op.QUESTION;
-                            break;
-                        case "Goal":
-                            puncOverride = Op.GOAL;
-                            break;
-                        case "Belief":
-                            puncOverride = Op.BELIEF;
-                            break;
-                        case "Quest":
-                            puncOverride = Op.QUEST;
-                            break;
-
-                        default:
-                            throw new RuntimeException("unknown punctuation: " + which);
-                    }
-                    break;
-
-//                case "Truth":
-//                    throw new UnsupportedOperationException("Use Belief:.. or Goal:..");
-
-                case "Belief":
-                    beliefTruth = which;
-                    break;
-
-                case "Goal":
-                    goalTruth = which;
-                    break;
-
-//                case "Permute":
-//                    if (which.equals(PostCondition.backward)) {
-//                        rule.permuteBackward = true;
-//                    } else if (which.equals(PostCondition.swap)) {
-//                        rule.permuteForward = true;
-//                    } else
-//                        throw new RuntimeException("illegal Permute opcode: " + which);
-//                    break;
-
-//                case "Order":
-//                    //ignore, because this only affects at TaskRule construction
-//                    break;
-//
-//                case "Event":
-//                    if (which.equals(PostCondition.anticipate)) {
-//                        //IGNORED
-//                        //rule.anticipate = true;
-//                    }
-//                    break;
-//
-//                case "Eternalize":
-//                    if (which.equals(PostCondition.immediate)) {
-//                        rule.eternalize = true;
-//                    }
-//                    break;
-
-//                case "SequenceIntervals":
-//                    //IGNORED
-////                    if (which.equals(PostCondition.fromBelief)) {
-////                        rule.sequenceIntervalsFromBelief = true;
-////                    } else if (which.equals(PostCondition.fromTask)) {
-////                        rule.sequenceIntervalsFromTask = true;
-////                    }
-//                    break;
-
-                default:
-                    throw new RuntimeException("Unhandled postcondition: " + type + ':' + which);
-            }
-
-        }
 
         PostCondition pc = new PostCondition(pattern, beliefTruth, goalTruth, puncOverride);
 

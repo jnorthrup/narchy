@@ -9,14 +9,14 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.compound.LightCompoundDT;
-import nars.unify.Unify;
-import nars.util.term.transform.VariableNormalization;
 import nars.term.var.Variable;
+import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
 import nars.unify.mutate.CommutivePermutations;
+import nars.util.term.transform.VariableNormalization;
 
 import java.util.HashMap;
 import java.util.SortedSet;

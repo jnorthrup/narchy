@@ -38,8 +38,8 @@ import java.util.*;
 import static org.oakgp.TestUtils.createArguments;
 import static org.oakgp.Type.*;
 import static org.oakgp.rank.fitness.TestDataFitnessFunction.createIntegerTestDataFitnessFunction;
-import static org.oakgp.util.Utils.intConsts;
 import static org.oakgp.util.Utils.intArrayType;
+import static org.oakgp.util.Utils.intConsts;
 
 /**
  * Performs full genetic programming runs without relying on any mock objects.

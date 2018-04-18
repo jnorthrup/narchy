@@ -4,11 +4,11 @@ import nars.$;
 import nars.IO;
 import nars.Narsese;
 import nars.Op;
-import nars.util.term.TermBytes;
 import nars.subterm.UnitSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.util.term.TermBytes;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

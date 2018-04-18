@@ -25,9 +25,9 @@ import nars.$;
 import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
+import static jcog.Util.and;
 import static jcog.Util.or;
 import static nars.$.t;
-import static jcog.Util.and;
 
 /**
  * All truth-value (and desire-value) functions used in logic rules
@@ -528,7 +528,7 @@ public final class TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     private static float c2w(float c, float horizon) {
-        if (!((Float.isFinite(c) && (c <= Param.TRUTH_MAX_CONF) && (c >= Param.TRUTH_MIN_CONF))))
+        if (!((Float.isFinite(c) && (c <= Param.TRUTH_MAX_CONF))))
             throw new RuntimeException("invalid confidence: " + c);
         return c2wSafe(c, horizon);
     }

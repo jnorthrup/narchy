@@ -31,7 +31,9 @@ package jcog.data.map;
 
 import jcog.util.ArrayIterator;
 
-import java.util.*;
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 

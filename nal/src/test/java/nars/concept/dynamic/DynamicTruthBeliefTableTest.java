@@ -78,7 +78,7 @@ public class DynamicTruthBeliefTableTest {
 
         //n.concept("(a:x && a:y)").beliefs().print();
         Truth tt = n.belief($("(a:x && a:y)"), now).truth();
-        assertTrue($.t(0.32f, 0.93f).equalsIn(tt, n));
+        assertTrue($.t(0f, 0.93f).equalsIn(tt, n), ()-> tt.toString());
     }
 
     @Test

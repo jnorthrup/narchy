@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BusyPool extends AbstractExecutorService {
 
-    final private ConcurrentQueue  q;
+    protected final ConcurrentQueue  q;
     public List<Thread> workers = new FasterList<>();
 //    final WorkLoop anonymous;
     static final Logger logger = LoggerFactory.getLogger(BusyPool.class);

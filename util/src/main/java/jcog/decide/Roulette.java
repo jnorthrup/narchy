@@ -2,14 +2,9 @@ package jcog.decide;
 
 import jcog.Util;
 import jcog.pri.Pri;
-import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
-import java.util.Arrays;
 import java.util.Random;
-import java.util.function.IntPredicate;
-
-import static java.lang.Float.MIN_NORMAL;
 
 /**
  * roulette decision making

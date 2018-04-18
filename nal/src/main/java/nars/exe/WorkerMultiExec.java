@@ -146,8 +146,18 @@ public class WorkerMultiExec extends AbstractExec {
 
                 @Override
                 protected void queueOverflow(Object x) {
-                    //emergency defer to ForkJoin commonPool
-                    ForkJoinPool.commonPool().execute(x instanceof Runnable ? ((Runnable)x) : ()->executeNow(x));
+
+                    //help clear the queue
+                    int qSize = q.size();
+                    Object next;
+                    while (((next = q.poll())!=null) && qSize-- > 0) {
+                        executeNow(next);
+                    }
+                    if (!q.offer(x)) {
+                        //emergency defer to ForkJoin commonPool
+                        ForkJoinPool.commonPool().execute(x instanceof Runnable ? ((Runnable)x) : ()->executeNow(x));
+                    }
+
                 }
             };
             pool.workers.forEach(this::register);

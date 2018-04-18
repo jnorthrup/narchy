@@ -29,8 +29,8 @@ import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
-import static nars.util.time.TimeGraph.TimeSpan.TS_ZERO;
 import static nars.util.time.Tense.*;
+import static nars.util.time.TimeGraph.TimeSpan.TS_ZERO;
 
 /**
  * represents a multigraph of events and their relationships
@@ -120,6 +120,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     public Event know(Term t, long start) {
         return event(t, start, true);
     }
+    public void know(Term t, long start, long end) {
+        know(t, start);
+//        if (end!=start) {
+//            event(t, end, true); //endpoint
+//            //TODO midpoints, etc
+//        }
+    }
 
 //    /**
 //     * negate if negated, for precision in discriminating positive/negative
@@ -137,6 +144,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     public Event event(Term t, long when, boolean add) {
         if (t instanceof Bool)
             return null;
+
 
 
         Event e;
