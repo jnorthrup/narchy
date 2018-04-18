@@ -1,12 +1,13 @@
 package nars;
 
+import jcog.Util;
 import jcog.exe.Loop;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.Focus;
-import nars.exe.PoolMultiExec;
+import nars.exe.WorkerMultiExec;
 import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
@@ -142,23 +143,23 @@ abstract public class NAgentX extends NAgent {
 //                    }
 //                })
 
-                .exe(new PoolMultiExec(
-                        //new Focus.DefaultRevaluator()
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        512
-                    )
-                )
-
-//                .exe(new WorkerMultiExec(
-//                        //new Focus.DefaultRevaluator(),
+//                .exe(new PoolMultiExec(
+//                        //new Focus.DefaultRevaluator()
 //                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-//                        Util.defaultConcurrency(2),
-//                        512, 2048) {
-//                        {
-//                            Util.setExecutor(this);
-//                        }
-//                     }
+//                        512
+//                    )
 //                )
+
+                .exe(new WorkerMultiExec(
+                        //new Focus.DefaultRevaluator(),
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        Util.defaultConcurrency(2),
+                        512, 2048) {
+                        {
+                            Util.setExecutor(this);
+                        }
+                     }
+                )
                 .time(clock)
                 .index(
                         new CaffeineIndex(
@@ -404,19 +405,17 @@ abstract public class NAgentX extends NAgent {
         n.on(a);
         n.synch();
 
-        //n.runLater(() -> {
+        n.runLater(() -> {
 
             chart(a);
 
             SpaceGraph.window(Vis.top(n), 800, 800);
 
-//            window(new ConceptView(a.happy,n), 800, 600);
-
 
             //START AGENT
             Loop aLoop = a.startFPS(agentFPS);
 
-        //});
+        });
         Loop loop = n.startFPS(narFPS);
 
         return n;

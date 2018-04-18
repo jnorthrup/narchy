@@ -184,7 +184,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(64, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(96, 0, 1024);
 
 
     /** estimate */
@@ -211,7 +211,7 @@ public abstract class Param {
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 5;
+    public static int TTL_DERIVE_TASK_SUCCESS = 2;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation

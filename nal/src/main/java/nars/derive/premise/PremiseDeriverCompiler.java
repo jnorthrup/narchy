@@ -5,9 +5,12 @@ import jcog.list.FasterList;
 import jcog.tree.perfect.TrieNode;
 import nars.$;
 import nars.Op;
+import nars.Param;
+import nars.control.Cause;
 import nars.derive.Derivation;
+import nars.derive.step.DeriveCan;
+import nars.derive.step.Taskify;
 import nars.term.control.OpSwitch;
-import nars.derive.control.Try;
 import nars.derive.control.ValueFork;
 import nars.term.Term;
 import nars.term.control.AndCondition;
@@ -29,7 +32,10 @@ import org.roaringbitmap.RoaringBitmap;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static nars.Param.*;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -62,7 +68,8 @@ public enum PremiseDeriverCompiler { ;
                 int id = conclusions.size();
                 conclusions.add(c.getTwo());
 
-                post.computeIfAbsent(c.getOne(), (x) -> new RoaringBitmap()).add(id);
+                post.computeIfAbsent(c.getOne(), (x) ->
+                        new RoaringBitmap()).add(id);
             }
         });
 
@@ -70,44 +77,78 @@ public enum PremiseDeriverCompiler { ;
 
         post.forEach((k, v) -> {
 
-            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
+            FasterList<PrediTerm<Derivation>> pre = new FasterList<>(k, PrediTerm[]::new, +1);
             pre.sortThis(sortPrecondition);
 
-            PrediTerm<Derivation>[] ll = StreamSupport.stream(v.spliterator(), false)
+            PrediTerm<Derivation>[] branches = StreamSupport.stream(v.spliterator(), false)
                     .map(i -> compileBranch(conclusions.get(i))).toArray(PrediTerm[]::new);
-            assert (ll.length > 0);
+            assert (branches.length > 0);
 
-            ValueFork v1 = new ValueFork(ll/*, v*/);
 
-            int branchID = postChoices.size();
-            pre.add(new ValueFork.ValueBranch(branchID, v)); //append the conclusion step
+            ValueFork f;
+            {
+                //map the downstream conclusions to the causes upstream
+                Taskify[] conc = Util.map(b -> (Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
+                        AndCondition.last(b)
+                ).eachMatch), Taskify[]::new, branches);
 
-            PrediTerm<Derivation> prev = path.put(pre, v1);
-            assert(prev == null);
+                Cause[] causes = Util.map(c -> c.channel, Cause[]::new, conc);
 
-            postChoices.add(v1);
+                f = new ValueFork(branches, causes,
+
+                    //weight vector func
+                    d ->
+                        Util.map(causes.length,
+                                c -> Util.softmax(ValueFork.causeValue(causes[c]), TRIE_DERIVER_TEMPERATURE),
+                                new float[causes.length]),
+
+                    //choice -> branch mapping: directly to the branch #
+                    (d,choice) -> branches[choice]
+                );
+            }
+
+
+            //attach this branch to the root fork
+            {
+                //append the conclusion step
+                pre.add(new DeriveCan(
+                    /* branch ID */ postChoices.size(), v));
+
+                PrediTerm<Derivation> prev = path.put(pre, f);
+
+                postChoices.add(f);
+
+                assert (prev == null);
+            }
+
 
         });
 
-        postChoices.compact();
-
-//        FasterList<ValueFork> pc = t.postChoices;
-//        for (int i = 0, postChoices1Size = pc.size(); i < postChoices1Size; i++) {
-//            ValueFork x = pc.get(i);
-//            PrediTerm<Derivation>[] branches = x.branches;
-//            for (int j = 0, branchesLength = branches.length; j < branchesLength; j++) {
-//                branches[j] = compileBranch(branches[j]);
-//            }
-//
-//        }
-
         assert(!path.isEmpty());
+
 
         PrediTerm<Derivation> compiledPaths = PremiseDeriverCompiler.compile(path, each);
 
-        return new PremiseDeriver(
-                compiledPaths,
-                new Try(postChoices.toArrayRecycled(ValueFork[]::new)));
+        ValueFork[] rootBranches = postChoices.toArrayRecycled(ValueFork[]::new);
+        return new PremiseDeriver(compiledPaths,
+            new ValueFork(
+                rootBranches,
+                Stream.of(rootBranches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new),
+
+                //weight vector function
+                d ->
+                    Util.map(d.will.length, (int i) ->
+                        Util.softmax(
+                            // sum of downstream cause values
+                            Util.sum(
+                                ValueFork::causeValue,
+                                rootBranches[d.will[i]].causes
+                            ), TRIE_DERIVER_TEMPERATURE),
+                        new float[d.will.length]),
+
+                //choice -> branch mapping: mapped through the derivation's calculated possibilty set
+                (d,choice) -> rootBranches[d.will[choice]]
+        ));
     }
 
     static PrediTerm compileBranch(PrediTerm<Derivation> branch) {
@@ -144,7 +185,7 @@ public enum PremiseDeriverCompiler { ;
             }
             TermTrie.indent(indent);
             out.println("}");
-        } else if (p instanceof Try) {
+        } /*else if (p instanceof Try) {
             out.println("eval {");
             Try ac = (Try) p;
             int i = 0;
@@ -156,7 +197,7 @@ public enum PremiseDeriverCompiler { ;
             }
             TermTrie.indent(indent);
             out.println("}");
-        } else if (p instanceof Fork) {
+        } */else if (p instanceof Fork) {
             out.println(Util.className(p) + " {");
             Fork ac = (Fork) p;
             for (PrediTerm b : ac.branch) {

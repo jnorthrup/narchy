@@ -37,7 +37,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         this.x = x;
     }
 
-    public static PrediTerm<Derivation> combineConstraints(AndCondition a) {
+    public static PrediTerm<Derivation> combineConstraints(AndCondition<Derivation> a) {
         RoaringBitmap constraints = new RoaringBitmap();
         @NotNull PrediTerm[] cond1 = a.cond;
         for (int i = 0, cl = cond1.length; i < cl; i++) {

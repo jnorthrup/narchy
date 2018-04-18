@@ -88,7 +88,8 @@ abstract public class Deriver extends Causable {
 
         derive(n, iterations, d);
 
-        return d.flush(target);
+        int derived = d.flush(target);
+        return iterations; //HACK
     }
 
     abstract protected void derive(NAR n, int iterations, Derivation d);

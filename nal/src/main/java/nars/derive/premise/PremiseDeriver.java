@@ -4,7 +4,7 @@ import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.control.Try;
+import nars.derive.control.ValueFork;
 import nars.term.control.PrediTerm;
 
 import java.io.PrintStream;
@@ -16,14 +16,14 @@ import java.io.PrintStream;
 public final class PremiseDeriver {
 
     public final PrediTerm<Derivation> what;
-    protected final Try can;
+    public final ValueFork can;
 
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
     final Memoize<PremiseKey, short[]> whats;
 
-    public PremiseDeriver(PrediTerm<Derivation> what, Try can) {
+    public PremiseDeriver(PrediTerm<Derivation> what, ValueFork can) {
         this.what = what;
         this.can = can;
         this.whats = new HijackMemoize<>(k->k.solve(what),
@@ -58,8 +58,5 @@ public final class PremiseDeriver {
         PremiseDeriverCompiler.print(can, p, indent);
     }
 
-    public final void run(Derivation d) {
-        can.accept(d);
-    }
 
 }

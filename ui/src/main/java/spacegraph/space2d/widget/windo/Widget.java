@@ -121,7 +121,7 @@ public class Widget extends Bordering {
         public Surface tryTouch(Finger finger) {
             Surface x = super.tryTouch(finger);
             if (x == this)
-                return Widget.this;
+                return this;
             return x;
         }
 

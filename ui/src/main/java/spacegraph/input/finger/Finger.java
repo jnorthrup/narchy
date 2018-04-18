@@ -9,7 +9,7 @@ import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.math.v2;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * gestural generalization of mouse cursor's (or touchpad's, etc)
@@ -63,11 +63,11 @@ public class Finger {
 
     }
 
-    public static Consumer<Finger> clicked(int button, Runnable clicked) {
+    public static Predicate<Finger> clicked(int button, Runnable clicked) {
         return clicked(button, clicked, null, null, null);
     }
 
-    public static Consumer<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
+    public static Predicate<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
 
         final boolean[] idle = {true};
 
@@ -80,8 +80,10 @@ public class Finger {
             if (finger != null && (what = finger.touching) != null) {
                 if ((clicked != null) && finger.clickedNow(button, what)) {
                     clicked.run();
+                    return true;
                 } else if ((armed != null) && finger.pressing(button)) {
                     armed.run();
+                    return true;
                 } else {
                     if (hover != null) hover.run();
                 }
@@ -92,6 +94,7 @@ public class Finger {
                     idle[0] = true;
                 }
             }
+            return false;
         };
     }
 

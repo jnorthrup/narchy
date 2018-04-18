@@ -84,21 +84,17 @@ public class NARTest {
         AtomicInteger cycCount = new AtomicInteger(0);
         StringWriter sw = new StringWriter( );
 
-        NARS.tmp()
+        NAR m = NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
-                .stopIf( () -> false ).onCycle(n1 -> cycCount.incrementAndGet());
-        NARS.tmp()
-                .input("<a --> b>.", "<b --> c>.")
-                .stopIf(() -> false)
-                .trace(sw).run(frames);
+                .stopIf(() -> false);
+                m.onCycle(nn -> cycCount.incrementAndGet() );
+                m.trace(sw).run(frames);
 
-        NARS.tmp()
+        NAR n = NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
-                .stopIf(() -> false).onCycle(n -> cycCount.incrementAndGet());
-        NARS.tmp()
-                .input("<a --> b>.", "<b --> c>.")
-                .stopIf(() -> false)
-                .trace(sw)
+                .stopIf(() -> false);
+                n.onCycle(nn -> cycCount.incrementAndGet());
+                n.trace(sw);
                 //.tasks().forEach(System.out::println )
         ;
 

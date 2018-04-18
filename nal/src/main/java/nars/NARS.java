@@ -115,7 +115,7 @@ public class NARS {
                 //new CaffeineIndex(new DefaultConceptBuilder(), 8*1024, 16*1024, null)
                 new MapConceptIndex(
                         //new /*Linked*/HashMap(256, 0.9f)
-                        new MRUCache<>(8*1024) {
+                        new MRUCache<>(32*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();
@@ -130,7 +130,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exe = () -> new UniExec(72);
+        exe = () -> new UniExec(64);
 
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
@@ -260,8 +260,8 @@ public class NARS {
 
             nar.beliefPriDefault.set(0.5f);
             nar.questionPriDefault.set(0.5f);
-            nar.goalPriDefault.set(0.25f);
-            nar.questPriDefault.set(0.25f);
+            nar.goalPriDefault.set(0.5f);
+            nar.questPriDefault.set(0.5f);
 
 //            nar.emotion.want(Perceive, -0.1f);
 

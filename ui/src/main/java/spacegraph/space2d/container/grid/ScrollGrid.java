@@ -116,6 +116,7 @@ public class ScrollGrid<X> extends Bordering {
                             short sx = (short) (cellID >> 16);
                             short sy = (short) (cellID & 0xffff);
                             if (!cellVisible(sx, sy)) {
+                                e.value = null;
                                 e.surface = null;
                                 content.remove(s); //remove the surface
                                 deleted = true;  //remove the entry
@@ -248,6 +249,9 @@ public class ScrollGrid<X> extends Bordering {
         scaleW.on((sx, w) -> view(view.x, view.y, w, view.h));
         scaleH.on((sy, h) -> view(view.x, view.y, view.w, h));
 
+
+        //default initial view: attempt to view entire model
+        view(0,0, model.cellsX(), model.cellsY());
     }
 
     static boolean invalidCoordinate(float xy) {
@@ -365,8 +369,8 @@ public class ScrollGrid<X> extends Bordering {
         if (!v.equals(nextView, Spatialization.EPSILONf)) {
 //            sliderX.value(px); //for when invoked by other than the slider
 //            sliderY.value(py); //for when invoked by other than the slider
-//            sliderW.value(w); //for when invoked by other than the slider
-//            sliderH.value(h); //for when invoked by other than the slider
+            scaleW.value(w); //for when invoked by other than the slider
+            scaleH.value(h); //for when invoked by other than the slider
         }
 
 
@@ -447,6 +451,7 @@ public class ScrollGrid<X> extends Bordering {
 
         if (delete) {
             if (existingSurface!=null) {
+                entry.value = null;
                 entry.surface = null;
                 content.remove(existingSurface);
             }

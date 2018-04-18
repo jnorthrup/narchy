@@ -32,13 +32,13 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 512);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 4;
+    public int premisesPerConcept = 2;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
@@ -53,7 +53,7 @@ public class MatrixDeriver extends Deriver {
         this(rules, rules.nar);
     }
 
-    public MatrixDeriver(Set<PremiseDeriverProto> rules, NAR nar) {
+    public MatrixDeriver(Set<PremiseDeriverProd nto> rules, NAR nar) {
         super(rules, nar);
     }
 

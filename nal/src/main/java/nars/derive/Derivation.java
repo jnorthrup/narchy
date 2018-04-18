@@ -56,8 +56,6 @@ public class Derivation extends PreDerivation {
 
 
 
-
-
     /** initial capacity, it will grow as needed */
     int ANON_CAPACITY = 16;
 
@@ -68,6 +66,10 @@ public class Derivation extends PreDerivation {
     public final ArrayHashSet<Premise> premiseBuffer =
             //new LinkedHashSet();
             new ArrayHashSet<>();
+
+
+//    /** re-used buffer for roulette/choice weight values */
+//    public final float[] choices = new float[128];
 
     public NAR nar;
 
@@ -651,7 +653,7 @@ public class Derivation extends PreDerivation {
 
         deriver.prioritize.premise(this);
 
-        deriver.rules.run(this);
+        deriver.rules.can.test(this);
     }
 
     @Override
@@ -808,6 +810,10 @@ public class Derivation extends PreDerivation {
         return s;
     }
 
+    public final boolean revertLive(int before, int cost) {
+        ttl -= cost;
+        return revertLive(before);
+    }
 
 
     //    /**

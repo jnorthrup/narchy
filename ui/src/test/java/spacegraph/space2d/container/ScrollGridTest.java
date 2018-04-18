@@ -67,7 +67,7 @@ class ScrollGridTest {
                 new ScrollGrid<>(
                     ListModel.of("a", "b", "c", "d", "e", "f"),
                         (x, y, n)->
-                            new CheckBox(n), 1, 3)
+                            new CheckBox(n))
                     , 800, 800);
         }
     }

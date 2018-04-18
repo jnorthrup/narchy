@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.windo.Widget;
 
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Created by me on 11/12/16.
@@ -13,7 +13,7 @@ public abstract class AbstractButton extends Widget {
 
 
 
-    final Consumer<Finger> pressable = Finger.clicked(0, ()->{
+    final Predicate<Finger> pressable = Finger.clicked(0, ()->{
         dz = 0;
         onClick();
     }, ()-> {
@@ -27,7 +27,7 @@ public abstract class AbstractButton extends Widget {
     @Override
     public void onFinger(@Nullable Finger finger) {
         super.onFinger(finger);
-        pressable.accept(finger);
+        pressable.test(finger);
     }
 
     protected abstract void onClick();

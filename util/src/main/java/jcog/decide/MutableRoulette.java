@@ -120,6 +120,8 @@ public class MutableRoulette {
             }
 
             float nextWeight = weightUpdate.valueOf(wi);
+            if (!Float.isFinite(nextWeight))
+                throw new RuntimeException("math error");
             if (nextWeight!=wi) {
                 float delta = nextWeight - wi;
                 w[i] = nextWeight;

@@ -18,8 +18,8 @@ import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -35,7 +35,7 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class Shell {
@@ -175,7 +175,7 @@ public class Shell {
 
                 float scale = 80f;
 
-                Consumer<Finger> pressable = Finger.clicked(0, () -> {
+                Predicate<Finger> pressable = Finger.clicked(0, () -> {
                     if (menuShown.compareAndSet(false, true)) {
                         content(menu);
                     } else if (menuShown.compareAndSet(true, false)) {
@@ -187,7 +187,7 @@ public class Shell {
                 @Override
                 public void onFinger(@Nullable Finger finger) {
                     super.onFinger(finger);
-                    pressable.accept(finger);
+                    pressable.test(finger);
                 }
 
 
