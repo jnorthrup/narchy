@@ -279,8 +279,9 @@ public enum Terms {
         out.println();
 
 
-        for (Term z : x.subterms())
-            printRecursive(out, z, level + 1);
+
+        x.subterms().forEach(z -> printRecursive(out, z, level + 1));
+
 
     }
 

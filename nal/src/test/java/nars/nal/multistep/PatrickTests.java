@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.Op.GOAL;
 
 /**
  * see Natural_Language_Processing2.md
@@ -125,7 +126,8 @@ public class PatrickTests extends NALTest {
         tt.nar.confResolution.set(0.02f);
 
         //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
-        tt.nar.time.dur(10);
+        int dur = 10;
+        tt.nar.time.dur(dur);
         tt.nar.termVolumeMax.set(32);
         //tt.nar.deep.set(0.75f);
         //tt.log();
@@ -156,8 +158,8 @@ public class PatrickTests extends NALTest {
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.3f,
-                (t) -> t == 0);
-//        tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, (t)->t!=0);
+                (t) -> t >= -dur/2 && t <= +dur/2 /* centered at zero */);
+        tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, (t)->t>dur/2 || t <-dur/2 );
 
 
 

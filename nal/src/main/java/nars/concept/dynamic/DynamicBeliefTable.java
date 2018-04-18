@@ -33,9 +33,9 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Override
     @Nullable
-    public final Truth truth(long start, long end, NAR nar) {
-        Truth d = truthDynamic(start, end, nar);
-        Truth e = truthStored(start, end, nar);
+    public final Truth truth(long start, long end, Term template, NAR nar) {
+        Truth d = truthDynamic(start, end, template, nar);
+        Truth e = truthStored(start, end, template, nar);
         if (d == null)
             return e;
         if (e == null || d.equals(e))
@@ -49,7 +49,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
      * generates a dynamic matching truth
      */
     @Nullable
-    protected abstract Truth truthDynamic(long start, long end, NAR nar);
+    protected abstract Truth truthDynamic(long start, long end, Term template, NAR nar);
 
 //    @Override
 //    public boolean add(final Task input, TaskConcept concept, NAR nar) {
@@ -105,8 +105,8 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
 
-    protected final Truth truthStored(long start, long end, NAR nar) {
-        return super.truth(start, end, nar);
+    protected final Truth truthStored(long start, long end, Term template, NAR nar) {
+        return super.truth(start, end, template, nar);
     }
 
 

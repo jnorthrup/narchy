@@ -194,7 +194,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         };
     }
 
-    private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
+    public static FloatFunction<Task> taskStrength(long start, long end, int dur) {
         if (start == ETERNAL) {
             return RTreeBeliefTable::valueInEternity;
         } else {
@@ -206,20 +206,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return x.eviEternalized() * x.range();
     }
 
-    /**
-     * simple version, ignores term content
-     */
-    private static FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
-        if (template == null) { // || !template.isTemporal() || template.equals(template.root())) {
-            return taskStrength(start, end, dur);
-        } else {
-            if (start == ETERNAL) {
-                return x -> valueInEternity(x) / costDtDiff(template, x, dur);
-            } else {
-                return x -> value(x, start, end, dur) / costDtDiff(template, x, dur);
-            }
-        }
-    }
+
+    abstract protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur);
 
     private static float costDtDiff(Term template, Task x, int dur) {
         return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
@@ -270,7 +258,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
     @Override
-    public Truth truth(long start, long end, EternalTable eternal, int dur) {
+    public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
 
         assert (end >= start);
 
@@ -285,7 +273,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     maxTries);
 
             ScanFilter temporalTasks = new ScanFilter(maxTruths, maxTruths,
-                    task(taskStrength(start, end, dur)),
+                    task(taskStrength(template, start, end, dur)),
                     maxTries)
                     .scan(this, start, end);
 
@@ -720,6 +708,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static class Simple extends RTreeBeliefTable {
 
         @Override
+        protected FloatFunction<Task> taskStrength(@Nullable Term templateIgnored, long start, long end, int dur) {
+            return taskStrength(start, end, dur);
+        }
+
+        @Override
         protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
 
             ScanFilter tt = new ScanFilter(SIMPLE_EVENT_MATCH_LIMIT, SIMPLE_EVENT_MATCH_LIMIT,
@@ -736,11 +729,18 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private static class Complex extends RTreeBeliefTable {
 
-//        @Override
-//        public Truth truth(long start, long end, EternalTable eternal, int dur) {
-//            //disallows computing point truth values on temporal concepts (compound events can not be compared directly)
-//            return null;
-//        }
+        @Override protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
+            if (template == null) {
+                //should this be allowed, or should we assume the root form of the term?
+                return taskStrength(start, end, dur);
+            } else {
+                if (start == ETERNAL) {
+                    return x -> valueInEternity(x) / costDtDiff(template, x, dur);
+                } else {
+                    return x -> value(x, start, end, dur) / costDtDiff(template, x, dur);
+                }
+            }
+        }
 
         @Override
         protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {

@@ -28,6 +28,15 @@ public interface TemporalBeliefTable extends TaskTable {
      * range will be between 0 and 1
      */
     static float value(Task t, long start, long end, int dur) {
+
+        float focusedEvi = Revision.eviInteg(t, start, end, dur);
+        float absDistance = t.midDistanceTo((start + end) / 2L) / ((float)dur);
+        float ownEvi = Revision.eviInteg(t, t.start(), t.end(), dur);
+
+        //the ownEvi * 0.5 might be somewhat of an analog of the HORIZON parameter, reducing the strength of old evidence in relation to newer
+        return (1 + focusedEvi) * (1 + ownEvi * 0.5f) / (1 + absDistance);
+
+
 //        if (t.isDeleted())
 //            return Float.NEGATIVE_INFINITY;
 
@@ -39,12 +48,6 @@ public interface TemporalBeliefTable extends TaskTable {
 //
 //        //float fdur = dur;
 //        //float range = t.range();
-
-        float focusedEvi = Revision.eviInteg(t, start, end, dur);
-        float absDistance = t.midDistanceTo((start + end) / 2L) / ((float)dur);
-        float ownEvi = Revision.eviInteg(t, t.start(), t.end(), dur);
-
-        return (1 + focusedEvi) * (1 + ownEvi) / (1 + absDistance);
 
 //        if (focusedEvi > Float.MIN_NORMAL) {
 //            return focusedEvi;
@@ -131,7 +134,7 @@ public interface TemporalBeliefTable extends TaskTable {
      * the eternal table's top value, if existent, contributes a 'background'
      * level in interpolation.
      * */
-    Truth truth(long start, long end, EternalTable eternal, int dur);
+    Truth truth(long start, long end, EternalTable eternal, Term template, int dur);
 
 
     void setCapacity(int temporals);
@@ -199,7 +202,7 @@ public interface TemporalBeliefTable extends TaskTable {
         }
 
         @Override
-        public Truth truth(long start, long end, EternalTable eternal, int dur) {
+        public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
             return null;
         }
 

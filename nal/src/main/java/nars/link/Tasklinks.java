@@ -13,14 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class Tasklinks {
 
-    @Deprecated public static void linkTask(Task x, float p, Bag b) {
-        TaskLink xx =
-                new TaskLink.DirectTaskLink(x, p);
-                //new TaskLink.GeneralTaskLink(x, p);
-
-        linkTask(xx, b, null);
-    }
-
     static void linkTask(TaskLink xx, Bag<?, TaskLink> b, @Nullable MutableFloat overflow) {
 
         if (overflow != null) {
@@ -133,6 +125,15 @@ public class Tasklinks {
             }
         }
     }
+
+//    @Deprecated public static void linkTask(Task x, float p, Bag b) {
+//        TaskLink xx =
+//                new TaskLink.DirectTaskLink(x, p);
+//                //new TaskLink.GeneralTaskLink(x, p);
+//
+//        linkTask(xx, b, null);
+//    }
+
 
 //    public static void linkTask(Task t, Concept cc, NAR nar) {
 //        float p = t.pri();

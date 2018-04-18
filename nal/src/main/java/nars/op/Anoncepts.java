@@ -47,13 +47,13 @@ public class Anoncepts extends LeakBack {
         taskLinkActivationRate.set(1f/taskCapacity);
     }
 
-    @Override
-    protected boolean preFilter(Task next) {
-//        if (filter.addIfMissing(next)) {
-            return super.preFilter(next);
-//        }
-//        return false;
-    }
+//    @Override
+//    protected boolean preFilter(Task next) {
+////        if (filter.addIfMissing(next)) {
+//            return super.preFilter(next);
+////        }
+////        return false;
+//    }
 
     @Override
     protected float leak(Task task) {

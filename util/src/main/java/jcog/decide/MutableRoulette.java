@@ -39,21 +39,26 @@ public class MutableRoulette {
     /** current index (roulette ball position) */
     int i;
 
-    public static void run(float[] weights, FloatToFloatFunction weightUpdate, IntPredicate select, Random rng) {
+    /** weight array may be modified */
+    public static void run(float[] weights, Random rng, FloatToFloatFunction weightUpdate, IntPredicate choose) {
         switch (weights.length) {
-            case 0: throw new UnsupportedOperationException();
-            case 1: select.test(0); return;
+            case 0:
+                throw new UnsupportedOperationException();
+            case 1: {
+                float theWeight = weights[0];
+                while (choose.test(0) && ((theWeight = weightUpdate.valueOf(theWeight)) > EPSILON)) { }
+                break;
+            }
             //TODO simple 2 case, with % probability of the ordering then try the order in sequence
             default: {
                 MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
-                while (r.next(select)) { }
+                while (r.next(choose)) { }
+                break;
             }
-            break;
         }
     }
 
-
-    MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
+    private MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
         this.w = w;
         int n = w.length;
         this.remaining = n;

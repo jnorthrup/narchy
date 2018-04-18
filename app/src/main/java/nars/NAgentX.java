@@ -230,7 +230,7 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(0.1f); //nyquist alert
+        n.dtDither.set(0.5f); //nyquist alert
         //n.timeFocus.set(4);
 
         n.confMin.set(0.01f);

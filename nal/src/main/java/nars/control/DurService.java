@@ -23,7 +23,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     public final MutableFloat durations;
 
     /** when the last cycle ended */
-    private long now;
+    private volatile long lastStarted;
 
     protected final AtomicBoolean busy = new AtomicBoolean(false);
 
@@ -34,7 +34,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     protected DurService(NAR n, MutableFloat durations) {
         super(n);
         this.durations = durations;
-        this.now = n.time() - n.dur();
+        this.lastStarted = n.time() - n.dur();
     }
 
 
@@ -101,36 +101,27 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         //long lastNow = this.now;
         //long now = nar.time();
         //if (now - lastNow >= durations.floatValue() * nar.dur()) {
-        if (busy.compareAndSet(false, true)) {
+        if (!busy.compareAndSet(false, true))
+            return;
 
+        long now = nar.time();
+        int dur = nar.dur();
+        long durCycles = Math.round(durations.floatValue() * dur);
 
-            long last = this.now;
-            long now = nar.time();
-
-            int dur = nar.dur();
-            long durCycles = Math.round(durations.floatValue() * dur);
-
-            try {
-
-                long delta = (now - last);
-                if (delta >= durCycles) {
-                    try {
-                        run(nar, delta);
-                    } catch (Throwable t) {
-                        logger.error("{} {}", this, t);
-                    }
-                } else {
-                    //too soon, reschedule
-                }
-
-            } catch (Exception e) {
-                logger.error("{} {}", this, e);
-            } finally {
-                now = (this.now = nar.time());
-                if (!isOff()) {
-                    nar.runAt((now) + durCycles, this);
-                    busy.set(false);
-                }
+        try {
+            long delta = now - this.lastStarted;
+            if (delta >= durCycles) {
+                run(nar, delta);
+            } else {
+                //too soon, reschedule
+            }
+        } catch (Throwable e) {
+            logger.error("{} {}", this, e);
+        } finally {
+            now = (this.lastStarted = nar.time());
+            if (!isOff()) {
+                busy.set(false);
+                nar.runAt(now + durCycles, this);
             }
         }
     }

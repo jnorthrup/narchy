@@ -368,7 +368,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     }
 
     @Override
-    protected @Nullable Truth truthDynamic(long start, long end, NAR nar) {
+    protected @Nullable Truth truthDynamic(long start, long end, Term templateIgnored, NAR nar) {
         return (Truth) (eval(false, start, end, nar));
     }
 

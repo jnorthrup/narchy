@@ -20,7 +20,6 @@ import nars.link.TaskLink;
 import nars.term.Term;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -32,7 +31,7 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 512);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
@@ -96,7 +95,7 @@ public class MatrixDeriver extends Deriver {
                 break;
 
             if (s > 2)
-                Collections.sort(premiseBurst.list, Task.sortByTaskSloppy);
+                premiseBurst.list.sort(Task.sortByTaskSloppy);
 
             //--- FIRE
             premiseBurst.forEach(premise -> {

@@ -226,8 +226,8 @@ public class DynamicTruthBeliefTableTest {
         DynamicTruthBeliefTable xtable = (DynamicTruthBeliefTable) cc.beliefs();
         Compound template = $("((x) &&+4 (y))");
 
-        DynTruth xt = xtable.truth(0, 0, template, n);
-        assertNotNull(xt);
+//        DynTruth xt = xtable.truthDynamic(0, 0, template, n);
+//        assertNotNull(xt);
         //assertTrue($.t(1f, 0.81f).equals(xt.truth(n), 0.1f), xt.truth(n).toString());
 
         assertEquals(0.81f, xtable.taskDynamic(0, 0, $("((x) &&+4 (y))"), n).conf(), 0.05f); //best match to the input

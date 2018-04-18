@@ -57,7 +57,7 @@ public class Derivation extends PreDerivation {
 
 
     /** initial capacity, it will grow as needed */
-    int ANON_CAPACITY = 16;
+    final static int ANON_CAPACITY = 16;
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
@@ -496,7 +496,7 @@ public class Derivation extends PreDerivation {
 
             this._task = _task;
 
-            this.task = taskProxy(taskTerm, _task); //create new proxy even if task are .equal() because cause and other instance-specific details may differ
+            this.task = new TaskProxy.WithTerm(taskTerm, _task); //create new proxy even if task are .equal() because cause and other instance-specific details may differ
 
             this._taskStruct = taskTerm.structure();
             this._taskOp = taskTerm.op().id;
@@ -539,7 +539,7 @@ public class Derivation extends PreDerivation {
         if (this._belief != null) {
             //double
             beliefTerm = anon.put(this._beliefTerm = _belief.term());
-            this.belief = taskProxy(beliefTerm, _belief);
+            this.belief = new TaskProxy.WithTerm(beliefTerm, _belief);
             this.beliefAt = _belief.start();
         } else {
             //single
@@ -564,15 +564,6 @@ public class Derivation extends PreDerivation {
 
         return true; //ready
     }
-
-    private Task taskProxy(Term y, Task t) {
-        return //(t.isBeliefOrGoal() && !t.isEternal()) ?
-                //new TaskProxy.WithTermCachedTruth(y, t, dur) :
-                new TaskProxy.WithTerm(y, t);
-    }
-
-
-
 
 
     /** called after protoderivation has returned some possible Try's */

@@ -6,14 +6,16 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.bag.leak.LeakBack;
+import nars.concept.TaskConcept;
+import nars.table.BeliefTable;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
+import nars.truth.Truth;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
 import nars.util.time.Tense;
-import nars.truth.Truth;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.jetbrains.annotations.NotNull;
@@ -36,8 +38,8 @@ public class Inperience extends LeakBack {
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
     public static final Atomic believe = the("believe");
     public static final Atomic want = the("want");
-    public static final Atomic happy = the("happy");
-    public static final Atomic sad = the("sad");
+    //public static final Atomic happy = the("happy");
+    //public static final Atomic sad = the("sad");
     public static final Atomic wonder = the("wonder");
     public static final Atomic evaluate = the("evaluate");
     public static final Atomic reflect = the("reflect");
@@ -106,50 +108,82 @@ public class Inperience extends LeakBack {
 //        });
     }
 
-    static Term reify(Task x, NAR nar) {
+    /** compute current value of the truth for the task's time;
+     *  dont just regurgitate what the task says. the truth may differ
+     *  at some point after the task was created so we get a more
+     *  updated result.
+     */
+    static Term reify(Task t, NAR nar) {
+        byte punc = t.punc();
+        if (punc == QUEST || punc == QUESTION) {
+            return reifyQuestion(t.term(), punc, nar);
+        } else{
+            return reifyBelief(t, nar);
+        }
+    }
 
-        Truth tr = x.truth();
+    private static Term reifyBelief(Task t, NAR nar) {
+        TaskConcept c = (TaskConcept) t.concept(nar, true);
+        if (c == null)
+            return Null;
 
-        Term xx = x.term().negIf(tr != null && tr.isNegative());
+        Term xx = t.term();
 
-        xx = !x.isBeliefOrGoal() ? xx.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).conceptualizableOrNull() : xx;
-        if (xx == Null) return Null;
-
-        xx = xx.hasAny(VAR_QUERY) ? xx.transform(TermTransform.queryToDepVar).conceptualizableOrNull() : xx;
-        if (xx == Null) return Null;
+        Truth belief = ((BeliefTable) c.table(BELIEF))
+                .truth(t.start(), t.end(), xx, nar);
 
         Term self = nar.self();
-        switch (x.punc()) {
-            case BELIEF:
-                return $.func(believe, self, xx);
-            case GOAL: {
-                long start = x.start();
-                long end = x.end();
-                float ge = x.expectation(start, end, nar.dur());
-                if (ge == ge) {
-                    Truth bt = nar.beliefTruth(x.term(), start, end);
-                    if (bt != null) {
-                        float be = bt.expectation();
-                        Term feeling;
-                        float expRange = 2*Math.max(Math.abs(be-0.5f), Math.abs(ge-0.5f));
-                        float expDiff = Math.abs(be - ge)/expRange;
-                        if (expDiff <= 0.5f) {
-                            feeling = happy; //satisfied
-                        } else {
-                            feeling = sad; //frustrated
-                        }
-                        return $.func(want, self, xx, feeling);
-                    }
-                }
-                return $.func(want, self, xx); //generic WANT
+        if (t.punc() == BELIEF) {
+            if (belief == null)
+                return Null;
+            return $.func(believe, self, xx.negIf(belief.isNegative()));
+        } else {
+            Truth goal = ((BeliefTable) c.table(GOAL))
+                    .truth(t.start(), t.end(), xx, nar);
+            if (goal == null)
+                return Null;
+
+            Term want = $.func(Inperience.want, self, xx.negIf(goal.isNegative()));
+            if (belief == null)
+                return want;
+            else {
+                //conjoin with belief truth
+                return CONJ.the(want, $.func(believe, self, xx.negIf(belief.isNegative())));
             }
-            case QUESTION:
-                return $.func(wonder, self, xx);
-            case QUEST:
-                return $.func(evaluate, self, xx);
-            default:
-                throw new UnsupportedOperationException();
         }
+//                case GOAL: {
+//                    long start = x.start();
+//                    long end = x.end();
+//                    float ge = x.expectation(start, end, nar.dur());
+//                    if (ge == ge) {
+//                        Truth bt = nar.beliefTruth(x.term(), start, end);
+//                        if (bt != null) {
+//                            float be = bt.expectation();
+//                            Term feeling;
+//                            float expRange = 2 * Math.max(Math.abs(be - 0.5f), Math.abs(ge - 0.5f));
+//                            float expDiff = Math.abs(be - ge) / expRange;
+//                            if (expDiff <= 0.5f) {
+//                                feeling = happy; //satisfied
+//                            } else {
+//                                feeling = sad; //frustrated
+//                            }
+//                            return $.func(want, self, xx),$.func(believe, xx, feeling);
+//                        }
+//                    }
+//                    return $.func(want, self, xx); //generic WANT
+//                }
+//                default:
+//                    throw new UnsupportedOperationException();
+//            }
+
+    }
+    private static Term reifyQuestion(Term x, byte punc, NAR nar) {
+        x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).conceptualizableOrNull();
+        if (x == Null) return Null;
+        x = x.hasAny(VAR_QUERY) ? x.transform(TermTransform.queryToDepVar).conceptualizableOrNull() : x;
+        if (x == Null) return Null;
+
+       return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), x);
     }
 
     @Override

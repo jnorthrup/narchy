@@ -1360,8 +1360,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (!(concept instanceof TaskConcept))
             return null;
 
-        return ((BeliefTable) concept.table(punc)).answer(start, end,
-                c.term(), this::input, null,this);
+        Task answer = ((BeliefTable) concept.table(punc)).match(start, end,
+                c.term(), null,this);
+        if (answer!=null && !answer.isDeleted()) {
+            input(answer);
+        }
+        return answer;
     }
 
     public SortedMap<String, Object> stats(Appendable out) {

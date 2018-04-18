@@ -17,10 +17,9 @@ import static nars.term.atom.Atomic.the;
  * Describes a derivation postcondition
  * Immutable
  */
-public class PostCondition implements Serializable //since there can be multiple tasks derived per rule
+public final class PostCondition implements Serializable //since there can be multiple tasks derived per rule
 {
 
-    @NotNull
     public final Term pattern;
 
     @Nullable

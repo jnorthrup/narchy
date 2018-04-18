@@ -108,10 +108,7 @@ abstract public class Deriver extends Causable {
 
         termlinks.commit(termlinks.forget(linkForgetting));
         int ntermlinks = termlinks.size();
-        if (ntermlinks == 0)
-            return false;
-
-        return true;
+        return ntermlinks != 0;
     }
 
 

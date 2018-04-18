@@ -1,6 +1,5 @@
 package nars.derive.control;
 
-import jcog.WTF;
 import jcog.decide.MutableRoulette;
 import nars.Param;
 import nars.control.Cause;
@@ -17,28 +16,30 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
 
 
-//    private final RoaringBitmap downstream;
-
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
 //    final PrediTerm<Derivation>[] conc;
     public final Cause[] causes;
 
-    /** weight vector generation function */
-    private final Function<Derivation, float[]> weights;
+    /**
+     * weight vector generation function
+     */
+    private final Function<Derivation, float[]> value;
 
-    /** choice id to branch mapping function */
+    /**
+     * choice id to branch mapping function
+     */
     private final ObjectIntToObjectFunction<Derivation, PrediTerm<Derivation>> branchChoice;
 
 
-    public ValueFork(PrediTerm[] branches, Cause[] causes, Function<Derivation,float[]> weights, ObjectIntToObjectFunction<Derivation,PrediTerm<Derivation>> choiceToBranch) {
+    public ValueFork(PrediTerm[] branches, Cause[] causes, Function<Derivation, float[]> value, ObjectIntToObjectFunction<Derivation, PrediTerm<Derivation>> choiceToBranch) {
         super(branches);
 
-        assert(branches.length > 0);
+        assert (branches.length > 0);
 
         this.causes = causes;
-        this.weights = weights;
+        this.value = value;
         this.branchChoice = choiceToBranch;
     }
 
@@ -47,37 +48,25 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
         int before = d.now();
 
-        float[] w = weights.apply(d);
-        int N = w.length;
+        float[] weights = value.apply(d);
+        int N = weights.length;
 
-        switch (N) {
-            case 0:
-                throw new WTF();
-            case 1:
-                branchChoice.valueOf(d,0).test(d);
+        assert (N > 0);
+        MutableRoulette.run(weights, d.random,
+
+            wi -> wi / 2 /* harmonic decay */,
+
+            b -> {
+
+                branchChoice.valueOf(d, b).test(d); //fork's return value ignored
+
                 return d.revertLive(before, Param.TTL_BRANCH);
 
-            default: {
-                MutableRoulette.run(w, wi -> wi / 2 /* harmonic decay */, b -> {
-
-                    branchChoice.valueOf(d, b).test(d);
-                    return d.revertLive(before, Param.TTL_BRANCH);
-
-                }, d.random);
-                return true;
             }
-        }
+
+        );
+        return true;
     }
-
-
-
-    @Override
-    @Deprecated public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
-        //return new ValueFork(PrediTerm.transform(f, branches), valueBranch, downstream);
-        throw new UnsupportedOperationException();
-    }
-
-
 
 
 //    void forkRoulette(Derivation d, short[] choices) {
@@ -109,9 +98,11 @@ public class ValueFork extends ForkDerivation<Derivation> {
 //        }, d.random);
 //    }
 
-
-    public static float causeValue(Cause c) {
-        return c.value();
+    @Override
+    @Deprecated
+    public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
+        //return new ValueFork(PrediTerm.transform(f, branches), valueBranch, downstream);
+        throw new UnsupportedOperationException();
     }
 
 //    @Override

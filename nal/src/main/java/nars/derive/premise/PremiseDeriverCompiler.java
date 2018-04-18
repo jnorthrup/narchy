@@ -5,7 +5,6 @@ import jcog.list.FasterList;
 import jcog.tree.perfect.TrieNode;
 import nars.$;
 import nars.Op;
-import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.step.DeriveCan;
@@ -77,7 +76,7 @@ public enum PremiseDeriverCompiler { ;
 
         post.forEach((k, v) -> {
 
-            FasterList<PrediTerm<Derivation>> pre = new FasterList<>(k, PrediTerm[]::new, +1);
+            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
             pre.sortThis(sortPrecondition);
 
             PrediTerm<Derivation>[] branches = StreamSupport.stream(v.spliterator(), false)
@@ -99,7 +98,7 @@ public enum PremiseDeriverCompiler { ;
                     //weight vector func
                     d ->
                         Util.map(causes.length,
-                                c -> Util.softmax(ValueFork.causeValue(causes[c]), TRIE_DERIVER_TEMPERATURE),
+                                c -> Util.softmax(causes[c].value(), TRIE_DERIVER_TEMPERATURE),
                                 new float[causes.length]),
 
                     //choice -> branch mapping: directly to the branch #
@@ -141,7 +140,7 @@ public enum PremiseDeriverCompiler { ;
                         Util.softmax(
                             // sum of downstream cause values
                             Util.sum(
-                                ValueFork::causeValue,
+                                    (Cause c) -> c.value(),
                                 rootBranches[d.will[i]].causes
                             ), TRIE_DERIVER_TEMPERATURE),
                         new float[d.will.length]),

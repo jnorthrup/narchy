@@ -1,7 +1,5 @@
 package jcog.version;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * versioning context that holds versioned instances
  * a maximum stack size is provided at construction and will not be exceeded
@@ -22,13 +20,10 @@ public class Versioning<X>
         setTTL(initialTTL);
     }
 
-    @NotNull
     @Override
     public String toString() {
         return size + ":" + super.toString();
     }
-
-
 
     public final boolean revertLive(int to) {
         if (live()) {

@@ -75,7 +75,6 @@ public class Premise {
      *
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
-    @Nullable
     public boolean match(Derivation d, int matchTTL) {
 
         Term taskTerm = task.term();
@@ -160,42 +159,66 @@ public class Premise {
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
                 final BeliefTable bb = beliefConcept.beliefs();
+                Predicate<Task> beliefFilter = null;
                 if (task.isQuestionOrQuest()) {
                     if (beliefConceptCanAnswerTaskConcept) {
+
                         final BeliefTable answerTable =
-                                (task.isGoal() || task.isQuest()) ?
+                                (task.isQuest()) ?
                                         beliefConcept.goals() :
                                         bb;
 
-                        Task match = answerTable.answer(taskStart, taskEnd, beliefTerm, d::add, stampFilter(d), n);
-                        if (match == null) {
-                            match = bb.answer(taskStart, taskEnd, beliefTerm, d::add,null, n); //retry without stamp filter
-                            if (!validMatch(match))
-                                match = null;
-                        }
+                        if (beliefFilter==null) beliefFilter = stampFilter(d); //lazy compute
 
-                        if (match != null) {
-                            assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+                        if (!answerTable.isEmpty()) {
+                            //try task start/end time
+                            Task match = answerTable.match(taskStart, taskEnd, beliefTerm, beliefFilter, n);
+                            if (!validMatch(match)) match = null;
+                            if (match == null) {
 
-                            if (match.isBelief()) {
-                                belief = match;
+                                //try current moment
+                                if (match == null) {
+                                    long[] focus = n.timeFocus();
+                                    if (focus[0] != taskStart && focus[1] != taskEnd) {
+                                        //CURRENT MOMENT (stamp filtered)
+                                        belief = answerTable.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
+                                        if (!validMatch(match)) match = null; //force single
+                                    }
+                                }
+
+                                if (match == null) {
+                                    match = answerTable.match(taskStart, taskEnd, beliefTerm, null, n); //retry without stamp filter
+                                    if (!validMatch(match)) match = null;
+                                }
                             }
 
-                            @Nullable Task answered = task.onAnswered(match, n);
-                            if (answered != null) {
-                                n.emotion.onAnswer(task, answered);
-                            }
+                            if (match != null) {
+                                assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
+                                //add the answer to the derived tasks for eventual input
+                                d.add(match);
+
+                                if (match.isBelief()) {
+                                    belief = match;
+                                }
+
+                                @Nullable Task answered = task.onAnswered(match, n);
+                                if (answered != null) {
+                                    n.emotion.onAnswer(task, answered);
+                                }
+
+                            }
                         }
                     }
                 }
 
                 if ((belief == null) && !bb.isEmpty()) {
 
-                    Predicate<Task> taskStampFilter = stampFilter(d);
+                    if (beliefFilter==null) beliefFilter = stampFilter(d); //lazy compute
+
 
                     //TASK'S MOMENT (stamp filtered)
-                    belief = bb.match(taskStart, taskEnd, beliefTerm, taskStampFilter, n);
+                    belief = bb.match(taskStart, taskEnd, beliefTerm, beliefFilter, n);
                     if (!validMatch(belief)) belief = null; //force single
 
                     if (belief == null) {
@@ -203,7 +226,7 @@ public class Premise {
                         long[] focus = n.timeFocus();
                         if (focus[0] != taskStart && focus[1] != taskEnd) {
                             //CURRENT MOMENT (stamp filtered)
-                            belief = bb.match(focus[0], focus[1], beliefTerm, taskStampFilter, n);
+                            belief = bb.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
                             if (!validMatch(belief)) belief = null; //force single
                         }
                     }
@@ -229,15 +252,13 @@ public class Premise {
     }
 
     private boolean validMatch(@Nullable Task x) {
-        if (x!=null && !x.equals(task))
-            return true;
+        return x != null && !x.isDeleted() && !x.equals(task);
 //        else {
 //            if (x != null) {
 //                boolean reallyEqualWTF = task.equals(x);
 //                throw new RuntimeException(reallyEqualWTF + "=equal - shouldnt happen if stamp overlap filtered");
 //            }
 //        }
-        return false;
     }
 
     private Predicate<Task> stampFilter(Derivation d) {

@@ -195,7 +195,7 @@ public class DeriveTime extends TimeGraph {
 
     }
 
-    void eventPolarities(Term tt, ObjectByteHashMap<Term> events) {
+    static void eventPolarities(Term tt, ObjectByteHashMap<Term> events) {
 
         tt.eventsWhile((w, t) -> {
             byte polarity;

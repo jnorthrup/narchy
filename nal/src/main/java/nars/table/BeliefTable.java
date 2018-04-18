@@ -20,7 +20,64 @@ import java.util.stream.Stream;
  */
 public interface BeliefTable extends TaskTable {
 
-    /*@NotNull*/
+    static float eternalTaskValue(Task eternal) {
+        return eternal.evi();
+    }
+    
+    static float eternalTaskValueWithOriginality(Task eternal) {
+        return eternalTaskValue(eternal) * eternal.originality();
+    }
+
+    void setCapacity(int eternals, int temporals);
+
+    /**
+     * minT and maxT inclusive
+     * TODO add Predicate<> form of this for early exit
+     */
+    void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x);
+
+    /**
+     * attempt to insert a task; returns what was input or null if nothing changed (rejected)
+     */
+    @Override
+    boolean add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar);
+
+    @Override
+    default Task match(long start, long end, Term template, NAR nar) {
+        return match(start, end, template, null, nar);
+    }
+
+    Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR nar);
+
+    /**
+     * estimates the current truth value from the top task, projected to the specified 'when' time;
+     * returns null if no evidence is available
+     *
+     * if the term is temporal, template specifies the specifically temporalized term to seek
+     * if template is null then the concept() form of the task's term is
+     */
+    Truth truth(long start, long end, @Nullable Term template, NAR nar);
+
+    default Truth truth(long when, NAR nar) {
+        return truth(when, when, null, nar);
+    }
+
+    default Truth truth(long start, long end, NAR nar) {
+        return truth(start, end, null, nar);
+    }
+
+    default void print(/*@NotNull*/ PrintStream out) {
+        this.forEachTask(t -> out.println(t + " " + Arrays.toString(t.stamp()))); //TODO print Stamp using same methods Task uses
+    }
+
+    default void print() {
+        print(System.out);
+    }
+
+    default float priSum() {
+        return (float) streamTasks().mapToDouble(Prioritized::pri).sum();
+    }
+
     BeliefTable Empty = new BeliefTable() {
 
         @Override
@@ -80,7 +137,7 @@ public interface BeliefTable extends TaskTable {
         }
 
         @Override
-        public Task match(long start, long end, Term template, Predicate<Task> accept, NAR nar) {
+        public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
             return null;
         }
 
@@ -90,7 +147,7 @@ public interface BeliefTable extends TaskTable {
         }
 
         @Override
-        public Truth truth(long start, long end, NAR nar) {
+        public Truth truth(long start, long end, Term template, NAR nar) {
             return null;
         }
 
@@ -100,139 +157,6 @@ public interface BeliefTable extends TaskTable {
         }
 
     };
-
-    static float eternalTaskValue(Task eternal) {
-        return eternal.evi();
-    }
-    
-    static float eternalTaskValueWithOriginality(Task eternal) {
-        return eternalTaskValue(eternal) * eternal.originality();
-    }
-
-    void setCapacity(int eternals, int temporals);
-
-    /**
-     * minT and maxT inclusive
-     * TODO add Predicate<> form of this for early exit
-     */
-    void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x);
-
-//    /**
-//     * projects to a new task at a given time
-//     * was: getTask(q, now, getBeliefs()).  Does not affect the table itself */
-//    public Task project(Task t, long now);
-
-    /*default public Task project(final Task t) {
-        return project(t, Stamp.TIMELESS);
-    }*/
-
-//    static float rankEternalByConfAndOriginality(/*@NotNull*/ Task b) {
-//        return rankEternalByConfAndOriginality(b.conf(), b.originality());
-//    }
-//
-//    static float rankEternalByConfAndOriginality(float conf, float originality) {
-//        return and(conf, originality);
-//    }
-//
-//    static float rankEternalByConfAndOriginality(float conf, int hypotheticalEvidenceLength /* > 0 */) {
-//        return rankEternalByConfAndOriginality(conf, TruthFunctions.originality(hypotheticalEvidenceLength));
-//    }
-
-
-    /**
-     * attempt to insert a task; returns what was input or null if nothing changed (rejected)
-     */
-    @Override
-    boolean add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar);
-
-
-
-    default void print(/*@NotNull*/ PrintStream out) {
-        this.forEachTask(t -> out.println(t + " " + Arrays.toString(t.stamp()))); //TODO print Stamp using same methods Task uses
-    }
-
-    default void print() {
-        print(System.out);
-    }
-
-//    /**
-//     * simple metric that guages the level of inconsistency (ex: variance) aggregated by contained belief states.
-//     * returns 0 if no tasks exist
-//     */
-//    default float coherence() {
-//        throw new UnsupportedOperationException("TODO");
-//    }
-
-    default float priSum() {
-        return (float) streamTasks().mapToDouble(Prioritized::pri).sum();
-    }
-
-
-
-
-    //    default float expectation(long when, int dur) {
-//        Truth t = truth(when, dur);
-//        return t != null ? t.expectation() : 0.5f;
-//    }
-//    default float motivation(long when, int dur) {
-//        Truth t = truth(when, dur);
-//        return t != null ? t.motivation() : 0;
-//    }
-//
-//    default float freq(long when, int dur) {
-//        Truth t = truth(when, dur);
-//        return t != null ? t.freq() : Float.NaN;
-//    }
-
-    /**
-     * estimates the current truth value from the top task, projected to the specified 'when' time;
-     * returns null if no evidence is available
-     */
-    Truth truth(long start, long end, NAR nar);
-
-    default Truth truth(long when, NAR nar) {
-        return truth(when, when, nar);
-    }
-
-    default Truth truth(long[] focus, NAR nar) {
-        assert(focus.length == 2);
-        return truth(focus[0], focus[1], nar);
-    }
-
-    Task match(long start, long end, @Nullable Term template, Predicate<Task> accept, NAR nar);
-
-    @Override
-    default Task match(long start, long end, Term template, NAR nar) {
-        return match(start, end, template, null, nar);
-    }
-
-    /**
-     * if match returns something, then supply it to the consumer
-     */
-    default Task answer(long start, long end, Term template, Consumer<Task> withNovel, @Nullable Predicate<Task> filter, NAR nar) {
-
-        if (isEmpty())
-            return null;
-
-        Task answer = match(start, end, template, filter, nar);
-        if (answer == null || answer.isDeleted())
-            return null;
-
-        withNovel.accept(answer);
-
-        return answer;
-    }
-
-    default double freq(long now, NAR n) {
-        Truth t = truth(now, n);
-        return t == null ? Float.NaN : t.freq();
-    }
-
-    /** truth expectation: returns 0.5f (neutral) if no truth can be determined */
-    default double exp(long now, NAR n) {
-        Truth t = truth(now, n);
-        return t == null ? 0.5f : t.expectation();
-    }
 
 
 //    /** 2-element array containing running min/max range accumulator */

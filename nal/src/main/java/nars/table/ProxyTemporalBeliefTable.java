@@ -26,8 +26,8 @@ public class ProxyTemporalBeliefTable implements TemporalBeliefTable {
     }
 
     @Override
-    public Truth truth(long start, long end, EternalTable eternal, int dur) {
-        return ref.truth(start, end, eternal, dur);
+    public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
+        return ref.truth(start, end, eternal, template, dur);
     }
 
     @Override

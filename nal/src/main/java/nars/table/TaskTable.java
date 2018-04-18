@@ -100,10 +100,10 @@ public interface TaskTable {
             float[] w = Util.map(t, Util.softmaxFunc(m.value(), 0.5f));
 
             final int[] remain = {limit};
-            MutableRoulette.run(w, wi -> 0 /* unique */, (x)->{
+            MutableRoulette.run(w, rng, wi -> 0 /* unique */, (x)->{
                 target.accept(t[x]);
                 return --remain[0] >0;
-            }, rng);
+            });
 
         }
 

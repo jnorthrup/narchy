@@ -75,17 +75,17 @@ public class TermList extends FasterList<Term> implements Subterms {
         }
     }
 
-    public TermList added(Term... x) {
-        ensureCapacity(size + x.length);
-        for (Term xx : x)
-            addWithoutResizeCheck(xx);
-        return this;
-    }
+//    public TermList added(Term... x) {
+//        ensureCapacity(size + x.length);
+//        for (Term xx : x)
+//            addWithoutResizeCheck(xx);
+//        return this;
+//    }
 
-    public TermList added(Iterable<? extends Term> x) {
-        addAllIterable(x);
-        return this;
-    }
+//    public TermList added(Iterable<? extends Term> x) {
+//        addAllIterable(x);
+//        return this;
+//    }
 
     public void addAll(Subterms x, int xStart, int xEnd) {
         ensureCapacity(xEnd-xStart);

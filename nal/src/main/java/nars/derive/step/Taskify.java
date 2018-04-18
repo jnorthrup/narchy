@@ -43,11 +43,7 @@ public class Taskify extends AbstractPred<Derivation> {
     public static boolean valid(Term x) {
         if ((x != null) && x.unneg().op().conceptualizable) {
 
-            if (x.hasAny(PatternsOrBool))
-                return false; //throw new RuntimeException("shouldnt happen");
-
-            //return  Task.validTaskTerm(x);
-            return true;
+            return !x.hasAny(PatternsOrBool);
         }
 
         return false;

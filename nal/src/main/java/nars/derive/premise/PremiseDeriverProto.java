@@ -519,7 +519,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
 
         //store to arrays
-        this.PRE = pres.toArray(new PrediTerm[pres.size()]);
+        this.PRE = pres.toArray(new PrediTerm[0]);
 
     }
 
@@ -827,7 +827,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
     }
 
-    public static class IntroVars extends AbstractPred<Derivation> {
+    public static final class IntroVars extends AbstractPred<Derivation> {
 
         static final Term VAR_INTRO = $.the("varIntro");
 

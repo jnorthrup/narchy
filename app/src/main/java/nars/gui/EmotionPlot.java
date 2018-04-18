@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NAgent;
 import nars.concept.Concept;
 import nars.control.DurService;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.Plot2D;
@@ -43,7 +44,8 @@ public class EmotionPlot extends Gridding {
         a.happy.forEach(h -> {
             @Nullable Concept hc = nar.concept(h);
             plot3.add(h.toString(), () -> {
-                return hc.beliefs().freq(a.now, a.nar());
+                Truth t = hc.beliefs().truth(a.now, a.nar());
+                return t == null ? Float.NaN : t.freq();
             }, 0, 1f);
 //                plot3.add("WantHpy", () -> {
 //                    return hc.goals().freq(a.now, a.nar);

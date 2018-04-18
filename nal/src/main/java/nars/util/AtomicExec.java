@@ -111,13 +111,15 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 return;
             }
 
-            Truth goalTruth = c.goals().truth(focus, n);
+            long start = focus[0];
+            long end = focus[1];
+            Truth goalTruth = c.goals().truth(start, end, n);
             if (goalTruth == null || goalTruth.expectation() < exeThresh) {
                 x.delete();
                 return; //undesired
             }
 
-            Truth beliefTruth = c.beliefs().truth(focus, n); /* assume false with no evidence */
+            Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
             if (beliefTruth != null && beliefTruth.expectation() > exeThresh) {
                 return; //satisfied
             }

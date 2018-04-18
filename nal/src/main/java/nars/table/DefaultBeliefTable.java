@@ -48,8 +48,8 @@ public class DefaultBeliefTable implements BeliefTable {
      * TODO this value can be cached per cycle (when,now) etc
      */
     @Override
-    public Truth truth(long start, long end, NAR nar) {
-        return temporal.truth(start, end, eternal, nar.dur());
+    public Truth truth(long start, long end, Term template, NAR nar) {
+        return temporal.truth(start, end, eternal, template, nar.dur());
     }
 
     @Override

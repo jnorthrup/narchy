@@ -62,16 +62,16 @@ abstract public class TermMetadata implements Termlike {
         this.complexity = (short) ((this.volume = (short) s.vol) - varTot);
     }
 
-    public TermMetadata(int structure, byte varPattern, byte varDep, byte varQuery, byte varIndep, short complexity, short volume, int hash) {
-        this.structure = structure;
-        this.varPattern = varPattern;
-        this.varDep = varDep;
-        this.varQuery = varQuery;
-        this.varIndep = varIndep;
-        this.complexity = complexity;
-        this.volume = volume;
-        this.hash = hash;
-    }
+//    public TermMetadata(int structure, byte varPattern, byte varDep, byte varQuery, byte varIndep, short complexity, short volume, int hash) {
+//        this.structure = structure;
+//        this.varPattern = varPattern;
+//        this.varDep = varDep;
+//        this.varQuery = varQuery;
+//        this.varIndep = varIndep;
+//        this.complexity = complexity;
+//        this.volume = volume;
+//        this.hash = hash;
+//    }
 
     public final int vars() {
         return varDep + varIndep + varQuery;

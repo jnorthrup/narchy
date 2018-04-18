@@ -138,8 +138,8 @@ abstract public class FastCompound implements Compound /* The */ {
         int structure = o.bit, hashCode = 1;
         byte volume = 1;
 
-        for (Term x : subterms) {
-            x.recurseTerms((child) -> {
+        for (Term x : subterms) { //TODO use non-iterator method
+            x.recurseTerms(child -> {
                 shadow.writeUnsignedByte((byte) child.op().ordinal());
                 if (child.op().atomic) {
                     int aid = atoms.getIfAbsentPut(child, nextUniqueAtom);

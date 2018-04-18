@@ -36,9 +36,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         return false;
     }
 
-    public DynTruth truth(long start, long end, Term template, NAR n) {
-        return model.eval(template, beliefOrGoal, start, end, n);
-    }
+
 
     @Override
     protected Task taskDynamic(long start, long end, final Term _template, NAR nar) {
@@ -47,7 +45,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         if (template == null || (template!=_template && template.op()!=_template.op()))
             return null;
 
-        DynTruth yy = truth(start, end, template, nar);
+        DynTruth yy = model.eval(template, beliefOrGoal, start, end, nar);
         if (yy != null) {
             Task generated = yy.task(template, model, beliefOrGoal, nar);
 
@@ -65,14 +63,17 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 
 
     @Override
-    protected @Nullable Truth truthDynamic(long start, long end, NAR nar) {
+    protected @Nullable Truth truthDynamic(long start, long end, Term template, NAR nar) {
 
-        if (term.hasXternal())
+        if (template == null)
+            template = term;
+
+        if (template.hasXternal())
             return null; //cant be evaluated without a template
 
-        DynTruth d = model.eval(term, beliefOrGoal, start, end, nar);
+        DynTruth d = model.eval(template, beliefOrGoal, start, end, nar);
         if (d!=null)
-            return d.truth(term, model, beliefOrGoal, nar);
+            return d.truth(template, model, beliefOrGoal, nar);
         else
             return null;
     }
