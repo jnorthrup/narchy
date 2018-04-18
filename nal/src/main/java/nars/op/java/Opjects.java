@@ -432,7 +432,10 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
 //                } else {
 //                }
 
-            Opjects.this.in.input(feedback, value);
+            if (feedback == null)
+                in.input(value);
+            else
+                in.input(feedback, value);
 
 //                List<Task> i = new FasterList(3);
 

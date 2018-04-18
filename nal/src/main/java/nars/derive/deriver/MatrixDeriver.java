@@ -53,7 +53,7 @@ public class MatrixDeriver extends Deriver {
         this(rules, rules.nar);
     }
 
-    public MatrixDeriver(Set<PremiseDeriverProd nto> rules, NAR nar) {
+    public MatrixDeriver(Set<PremiseDeriverProto> rules, NAR nar) {
         super(rules, nar);
     }
 
