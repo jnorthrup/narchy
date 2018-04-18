@@ -1,47 +1,43 @@
 package spacegraph.input.finger;
 
-import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.space2d.Surface;
 import spacegraph.util.math.v2;
 
-public class FingerMove extends FingerDragging {
-    private final Surface moving;
-    private RectFloat2D before;
-    boolean x, y;
+public abstract class FingerMove extends FingerDragging {
 
-    public FingerMove(Surface moving) {
-        this(moving, true, true);
+    protected final float xSpeed, ySpeed;
+
+    /** for locking specific axes */
+    public FingerMove(int button, boolean xAxis, boolean yAxis) {
+        this(button, xAxis ? 1 : 0, yAxis ? 1 : 0);
+        assert(xAxis || yAxis);
     }
 
-    public FingerMove(Surface moving, boolean xAxis, boolean yAxis) {
-        super(0 /* LEFT BUTTON */);
-        this.x = xAxis;
-        this.y = yAxis;
-        this.moving = moving;
+    public FingerMove(int button, float xSpeed, float ySpeed) {
+        super(button);
+        this.xSpeed = xSpeed;
+        this.ySpeed = ySpeed;
     }
 
+    public abstract float xStart();
+    public abstract float yStart();
+
+    public abstract void move(float tx, float ty);
 
     @Override public boolean drag(Finger finger) {
-        if (before == null)
-            this.before = moving.bounds;
 
-        float pmx = before.x;
-        float pmy = before.y;
+
+
         v2 fh = finger.pos;
         //if (fh!=null) {
-            v2 fhd = finger.hitOnDown[0];
+            v2 fhd = finger.hitOnDown[button];
             if (fhd!=null) {
-                float tx = pmx + (x ? (fh.x - fhd.x) : 0);
-                float ty = pmy + (y ? (fh.y - fhd.y) : 0);
-                moved(tx, ty, moving.w() + tx, moving.h() + ty);
+                float tx = xStart() + (xSpeed > 0 ? (fh.x - fhd.x) * xSpeed : 0);
+                float ty = yStart() + (ySpeed > 0 ? (fh.y - fhd.y) * ySpeed : 0);
+                move(tx, ty);
                 return true;
             }
         //}
         return false;
-    }
-
-    protected void moved(float x1, float y1, float x2, float y2) {
-        moving.pos(x1, y1, x2, y2);
     }
 
 

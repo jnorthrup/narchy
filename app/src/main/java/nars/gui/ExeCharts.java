@@ -18,7 +18,7 @@ import nars.time.RealTime;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meta.AutoSurface;
@@ -35,7 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static spacegraph.space2d.container.Gridding.*;
+import static spacegraph.space2d.container.grid.Gridding.*;
 
 public class ExeCharts {
 

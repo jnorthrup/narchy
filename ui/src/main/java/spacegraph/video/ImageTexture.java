@@ -8,7 +8,7 @@ import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 
 import java.io.File;
 import java.io.IOException;

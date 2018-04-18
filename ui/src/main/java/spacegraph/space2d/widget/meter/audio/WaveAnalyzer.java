@@ -24,7 +24,7 @@ package spacegraph.space2d.widget.meter.audio;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.Tex;
 
 import java.awt.image.BufferedImage;

@@ -14,7 +14,7 @@ import spacegraph.space3d.SpaceGraphPhys3D;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 

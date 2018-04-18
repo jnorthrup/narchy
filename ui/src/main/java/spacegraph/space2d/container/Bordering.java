@@ -33,9 +33,24 @@ public class Bordering extends MutableContainer {
         set(center);
     }
 
-    public Bordering border(float all) {
-        borderNorth = borderSouth = borderEast = borderWest = all;
-        layout();
+    /** sets all edge sizes to a value */
+    public Bordering edge(float size) {
+        borderNorth = borderSouth = borderEast = borderWest = size;
+        layout(); //TODO elide if unchanged
+        return this;
+    }
+
+    /** sets a specific edge size */
+    public Bordering edge(int direction, float size) {
+        switch (direction) {
+            case N: borderNorth = size; break;
+            case S: borderSouth = size; break;
+            case E: borderEast = size; break;
+            case W: borderWest = size; break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        layout(); //TODO elide if unchanged
         return this;
     }
 

@@ -5,7 +5,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.windo.Widget;
 
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display

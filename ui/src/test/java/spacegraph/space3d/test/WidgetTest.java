@@ -14,7 +14,7 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.Label;
 
-import static spacegraph.space2d.container.Gridding.*;
+import static spacegraph.space2d.container.grid.Gridding.*;
 
 public class WidgetTest {
 

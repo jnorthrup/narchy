@@ -10,7 +10,7 @@ import spacegraph.space3d.widget.SimpleGraph;
 import spacegraph.space3d.widget.SpaceWidget;
 
 import static nars.util.time.Tense.ETERNAL;
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class TestTimeGraphVis extends SimpleGraph<TimeGraph.Event> {
 

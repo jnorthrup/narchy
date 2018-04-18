@@ -141,7 +141,7 @@ public class Windo extends Stacking {
             //System.out.println(this + " POTENTIAL " + potentialDragMode);
             this.potentialDragMode = potentialDragMode;
 
-            if (finger.pressed(ZoomOrtho.PAN_BUTTON)) {
+            if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
                 //actual drag mode enabled
                 FingerDragging d = potentialDragMode!=null ? (FingerDragging) fingering(potentialDragMode) : null;
                 if (d != null && finger.tryFingering(d)) {
@@ -189,7 +189,7 @@ public class Windo extends Stacking {
     }
 
     protected Fingering fingeringMove() {
-        return new FingerMove(this);
+        return new FingerSurfaceMove(this);
     }
 
     public boolean fingerable(DragEdit d) {

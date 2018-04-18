@@ -12,7 +12,7 @@ import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meter.Plot2D;
 
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.PI;
 import static nars.Op.BELIEF;
-import static spacegraph.space2d.container.Gridding.*;
+import static spacegraph.space2d.container.grid.Gridding.*;
 
 /**
  * Created by me on 3/15/17.

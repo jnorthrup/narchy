@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.slider;
 
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 
 public class AllOrNothingSlider {

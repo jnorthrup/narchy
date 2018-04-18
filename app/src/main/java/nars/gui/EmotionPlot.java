@@ -5,7 +5,7 @@ import nars.NAgent;
 import nars.concept.Concept;
 import nars.control.DurService;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.Plot2D;
 
 public class EmotionPlot extends Gridding {

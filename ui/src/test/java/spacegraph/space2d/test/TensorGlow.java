@@ -7,7 +7,7 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.tensor.Tensor;
 import jcog.math.tensor.TensorLERP;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.Body2D;
@@ -33,7 +33,7 @@ import spacegraph.util.math.v2;
 
 import java.util.Random;
 
-import static spacegraph.space2d.container.Gridding.VERTICAL;
+import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 import static spacegraph.space2d.phys.dynamics.Dynamics2D.staticBox;
 
 public class TensorGlow {

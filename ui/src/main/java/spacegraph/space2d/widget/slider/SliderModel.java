@@ -12,8 +12,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
-import static spacegraph.space2d.container.Gridding.col;
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.col;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * abstract 1D slider/scrollbar
@@ -58,7 +58,7 @@ public class SliderModel extends Surface {
     public Surface tryTouch(Finger finger) {
 
 
-        if (finger!=null && finger.pressed(0)) {
+        if (finger!=null && finger.pressing(0)) {
             if (finger.tryFingering(new FingerDragging(0) {
                 @Override protected boolean drag(Finger f) {
                     v2 hitPoint = finger.relativePos(SliderModel.this);

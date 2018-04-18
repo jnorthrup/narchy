@@ -7,7 +7,7 @@ import jcog.exe.Loop;
 import jcog.math.OneDHaar;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.meter.audio.WaveAnalyzer;

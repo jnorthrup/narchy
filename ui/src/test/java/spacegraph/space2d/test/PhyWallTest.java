@@ -5,7 +5,7 @@ import jcog.exe.Loop;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.widget.button.PushButton;
@@ -20,8 +20,8 @@ import spacegraph.util.math.v2;
 
 import java.lang.reflect.Field;
 
-import static spacegraph.space2d.container.Gridding.HORIZONTAL;
-import static spacegraph.space2d.container.Gridding.VERTICAL;
+import static spacegraph.space2d.container.grid.Gridding.HORIZONTAL;
+import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 import static spacegraph.space2d.test.TensorGlow.rng;
 
 

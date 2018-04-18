@@ -116,18 +116,18 @@ public class ZoomOrtho extends Ortho {
 
             panning = false;
 
-            if (!zoomingOut && (finger.pressed(PAN_BUTTON) || finger.pressed(MOVE_WINDOW_BUTTON))) {
+            if (!zoomingOut && (finger.pressing(PAN_BUTTON) || finger.pressing(MOVE_WINDOW_BUTTON))) {
                 //int mx = e.getX();
                 //int my = window.getHeight() - e.getY();
                 int mx = Finger.pointer.getX();
                 int my = Finger.pointer.getY();
-                if (panStart == null && finger.pressed(PAN_BUTTON) /* rising edge */) {
+                if (panStart == null && finger.pressing(PAN_BUTTON) /* rising edge */) {
 
                     panStart = new int[2];
                     panStart[0] = mx;
                     panStart[1] = my;
 
-                    if (finger.pressed(MOVE_WINDOW_BUTTON)) {
+                    if (finger.pressing(MOVE_WINDOW_BUTTON)) {
                         //TODO compute this in the EDT on the first invocation
                         //Point p = new Point();
 
@@ -151,14 +151,14 @@ public class ZoomOrtho extends Ortho {
 
                     } else {
 
-                        if (finger.pressed(PAN_BUTTON)) {
+                        if (finger.pressing(PAN_BUTTON)) {
 
                             cam.add(-dx / scale.x, +dy / scale.x);
                             panStart[0] = mx;
                             panStart[1] = my;
                             panning = true;
 
-                        } else if (finger.pressed(MOVE_WINDOW_BUTTON)) {
+                        } else if (finger.pressing(MOVE_WINDOW_BUTTON)) {
 
                             //TODO use FingerDragging to implement this
 
@@ -207,7 +207,7 @@ public class ZoomOrtho extends Ortho {
 
             }
 
-            if (finger.pressed(ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON) && Math.max(scale.x,scale.y) > scaleMin) {
+            if (finger.pressing(ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON) && Math.max(scale.x,scale.y) > scaleMin) {
                 if (finger.touching==null) {
 
                     panStart = null;

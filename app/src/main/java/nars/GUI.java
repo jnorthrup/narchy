@@ -5,7 +5,7 @@ import nars.gui.Vis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.windo.PhyWall;

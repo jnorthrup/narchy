@@ -80,7 +80,7 @@ public class Finger {
             if (finger != null && (what = finger.touching) != null) {
                 if ((clicked != null) && finger.clickedNow(button, what)) {
                     clicked.run();
-                } else if ((armed != null) && finger.pressed(button)) {
+                } else if ((armed != null) && finger.pressing(button)) {
                     armed.run();
                 } else {
                     if (hover != null) hover.run();
@@ -116,7 +116,7 @@ public class Finger {
 
         for (int b = 0;  b< MAX_BUTTONS; b++) {
             boolean wasPressed = wasPressed(b);
-            boolean pressed = pressed(b);
+            boolean pressed = pressing(b);
             if (!wasPressed && pressed) {
                 hitOnDown[b] = new v2(pos);
                 hitOnDownGlobal[b] = new v2(posGlobal);
@@ -226,15 +226,15 @@ public class Finger {
     }
 
     public boolean released(int button) {
-        return !pressed(button);
+        return !pressing(button);
     }
 
-    public boolean pressed(int button) {
+    public boolean pressing(int button) {
         return buttonDown.get(button);
     }
 
     public boolean pressedNow(int button) {
-        return pressed(button) && !wasPressed(button);
+        return pressing(button) && !wasPressed(button);
     }
 
     public boolean wasPressed(int button) {
@@ -246,7 +246,7 @@ public class Finger {
     }
 
     public boolean releasedNow(int button) {
-        return !pressed(button) && wasPressed(button);
+        return !pressing(button) && wasPressed(button);
     }
 
     public boolean releasedNow(int i, Surface c) {

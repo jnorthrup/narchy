@@ -5,7 +5,7 @@ import jcog.list.FasterList;
 import org.apache.lucene.document.Document;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;

@@ -13,7 +13,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.IconToggleButton;

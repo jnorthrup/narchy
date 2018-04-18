@@ -21,7 +21,7 @@ import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.video.Draw;
 

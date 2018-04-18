@@ -21,7 +21,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AspectAlign;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.video.Draw;
 

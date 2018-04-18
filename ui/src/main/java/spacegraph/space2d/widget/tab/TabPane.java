@@ -4,7 +4,7 @@ import jcog.exe.Loop;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.CheckBox;

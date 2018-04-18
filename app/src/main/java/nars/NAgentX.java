@@ -51,7 +51,7 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:

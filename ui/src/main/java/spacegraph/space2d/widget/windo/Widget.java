@@ -159,7 +159,7 @@ public class Widget extends Bordering {
     public Widget(Surface content) {
         super();
 
-        border(0.1f);
+        edge(0.1f);
 
 
         content(content);

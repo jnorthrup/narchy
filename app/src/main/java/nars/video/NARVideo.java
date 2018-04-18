@@ -7,7 +7,7 @@ import nars.control.NARService;
 import nars.control.NARServiceSet;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.WebCam;
 

@@ -17,7 +17,7 @@ import nars.NAgent;
 import nars.experiment.PoleCart;
 import nars.op.RLBooster;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.hud.ZoomOrtho;

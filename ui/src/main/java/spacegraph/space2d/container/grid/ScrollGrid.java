@@ -1,19 +1,21 @@
-package spacegraph.space2d.container;
+package spacegraph.space2d.container.grid;
 
-import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Clipped;
+import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
-import spacegraph.space2d.widget.windo.Widget;
-import spacegraph.video.Draw;
 
 import static jcog.Util.short2Int;
 
@@ -35,17 +37,18 @@ public class ScrollGrid<X> extends Bordering {
     private final ConcurrentFastIteratingHashMap<Integer, GridCell<X>> cache =
             new ConcurrentFastIteratingHashMap(new GridCell[0]);
 
-    private final FloatSlider sliderX, sliderY, sliderW, sliderH;
+
+    /** proportional in scale to bounds */
+    static final float defaultScrollMargin = 0.15f;
+
+    private final FloatSlider scrollX, scrollY, scaleW, scaleH;
+
     /**
      * current view, in local grid coordinate
      */
-    RectFloat2D view = RectFloat2D.Zero;
+    private volatile RectFloat2D view = RectFloat2D.Zero;
 
-    /**
-     * sub-grid offset (remainder)
-     */
-    @Deprecated
-    transient private float ox = 0, oy = 0;
+
 
     /**
      * caches the x,y ranges of cells which are at least partially visible
@@ -66,8 +69,8 @@ public class ScrollGrid<X> extends Bordering {
         this.render = render;
 
         set(C, new Clipped(content = new MutableContainer(
-                //true
-                false
+                true
+                //false
         ) {
             @Override
             protected void doLayout(int dtMS) {
@@ -128,9 +131,47 @@ public class ScrollGrid<X> extends Bordering {
 
                 super.doLayout(dtMS);
             }
+
+
+            @Override
+            public boolean tangible() {
+                return true;
+            }
+
+            @Override
+            public Surface tryTouch(Finger finger) {
+                Surface inner = super.tryTouch(finger);
+                final int moveDragButton = 1;
+                if ((inner == null || inner == this) && finger.pressing(moveDragButton)) {
+                    if (finger.tryFingering(new FingerMove(moveDragButton,
+                            0.05f, 0.05f) {
+
+                        final float sx = view.x;
+                        final float sy = view.y;
+
+                        @Override
+                        public float xStart() {
+                            return sx;
+                        }
+
+                        @Override
+                        public float yStart() {
+                            return sy;
+                        }
+
+                        @Override
+                        public void move(float tx, float ty) {
+                            view(tx, ty);
+                        }
+                    }))
+                        return this;
+                }
+                return inner;
+            }
+
         }));
 
-        set(S, this.sliderX = new FloatSlider("X",
+        set(S, this.scrollX = new FloatSlider("X",
                 new FloatSlider.FloatSliderModel(0 /* left initial pos */) {
                     @Override
                     public float min() {
@@ -144,7 +185,7 @@ public class ScrollGrid<X> extends Bordering {
                 }
         ).type(SliderModel.Knob));
 
-        set(E, this.sliderY = new FloatSlider("Y",
+        set(E, this.scrollY = new FloatSlider("Y",
                 new FloatSlider.FloatSliderModel(0) {
                     @Override
                     public float min() {
@@ -161,7 +202,7 @@ public class ScrollGrid<X> extends Bordering {
 
         set(N, new Gridding(
                 new EmptySurface(), //HACK
-                this.sliderW = new FloatSlider("W",
+                this.scaleW = new FloatSlider("W",
                         new FloatSlider.FloatSliderModel(1) {
 
                             @Override
@@ -179,7 +220,7 @@ public class ScrollGrid<X> extends Bordering {
         ));
         set(W, new Gridding(
                 new EmptySurface(), //HACK
-                this.sliderH = new FloatSlider("H",
+                this.scaleH = new FloatSlider("H",
                         new FloatSlider.FloatSliderModel(1) {
 
                             @Override
@@ -195,10 +236,10 @@ public class ScrollGrid<X> extends Bordering {
                 ),
                 new EmptySurface()  //HACK
         ));
-        sliderX.on((sx, x) -> view(x, view.y));
-        sliderY.on((sy, y) -> view(view.x, y));
-        sliderW.on((sx, w) -> view(view.x, view.y, w, view.h));
-        sliderH.on((sy, h) -> view(view.x, view.y, view.w, h));
+        scrollX.on((sx, x) -> view(x, view.y));
+        scrollY.on((sy, y) -> view(view.x, y));
+        scaleW.on((sx, w) -> view(view.x, view.y, w, view.h));
+        scaleH.on((sy, h) -> view(view.x, view.y, view.w, h));
 
     }
 
@@ -206,44 +247,53 @@ public class ScrollGrid<X> extends Bordering {
         return xy < 0 || xy > Short.MAX_VALUE - 1;
     }
 
-    public static void main(String[] args) {
-
-        GridModel<String> model = new GridModel<>() {
-
-            @Override
-            public String get(int x, int y) {
-                return x + "," + y;
-            }
-
-            @Override
-            public int cellsX() {
-                return 64;
-            }
-
-            @Override
-            public int cellsY() {
-                return 64;
-            }
-        };
-        SpaceGraph.window(new ScrollGrid<String>(model,
-                (x, y, s) -> {
-                    Surface p = new PushButton(s) {
-                        @Override
-                        protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-                            Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
-                            Draw.rect(gl, bounds);
-                        }
-                    };
-                    return new Widget(p);
-                }, 8, 4), 1024, 800);
+    /** the current view */
+    public final RectFloat2D view() {
+        return view;
     }
 
-    public ScrollGrid view(float x, float y) {
+    /** set the view window's center of focus, re-using the current width and height */
+    public final ScrollGrid<X> view(float x, float y) {
         return view(x, y, view.w, view.h);
     }
 
-    private ScrollGrid view(RectFloat2D v) {
+    /** set the view window's center and size of focus, in grid coordinates */
+    public final ScrollGrid<X> view(RectFloat2D v) {
         return view(v.x, v.y, v.w, v.h);
+    }
+
+
+    /** enables requesting entries from the -1'th row and -1'th column of
+     * the model to use as 'pinned' row header cells
+     */
+    public ScrollGrid<X> setHeader(boolean rowOrColumn, boolean enabled) {
+        throw new TODO();
+    }
+
+    /** enables or disables certain scrollbar-related features per axis */
+    public ScrollGrid<X> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
+        if (xOrY) {
+            scrollX.visible(scrollVisible);
+            edge(S, scrollVisible ? defaultScrollMargin : 0);
+            scaleW.visible(scaleVisible);
+            edge(N, scaleVisible ? defaultScrollMargin : 0);
+        } else {
+            scrollY.visible(scrollVisible);
+            edge(E, scrollVisible ? defaultScrollMargin : 0);
+            scaleH.visible(scaleVisible);
+            edge(W, scaleVisible ? defaultScrollMargin : 0);
+        }
+        return this;
+    }
+
+    /** limits the scaling range per axis */
+    public ScrollGrid<X> setCellScale(boolean xOrY, float minScale, float maxScale) {
+        throw new TODO();
+    }
+
+    /** limits the viewing range per axis */
+    public ScrollGrid<X> setCellView(boolean xOrY, float minCoord, float maxCoord) {
+        throw new TODO();
     }
 
     /**
@@ -252,10 +302,10 @@ public class ScrollGrid<X> extends Bordering {
      * allowing shift of either or both X and Y coordinates of the
      * visible cell window.
      */
-    public ScrollGrid view(float x, float y, float w, float h) {
+    public ScrollGrid<X> view(float x, float y, float w, float h) {
 
-        float px = x;
-        float py = y;
+//        float px = x;
+//        float py = y;
 
         RectFloat2D v = view;
 
@@ -286,12 +336,12 @@ public class ScrollGrid<X> extends Bordering {
         }
 
 
-        float vLeft = x1;
+//        float vLeft = x1;
         short vLeftI = (short) Math.floor(x1);
-        float vTop = y1;
+//        float vTop = y1;
         short vTopI = (short) Math.floor(y1);
-        this.ox = vLeft - vLeftI;
-        this.oy = vTop - vTopI;
+//        this.ox = vLeft - vLeftI;
+//        this.oy = vTop - vTopI;
         short vRightI = (short) Math.ceil(x2 + 1);
         short vBottomI = (short) Math.ceil(y2 + 1);
 
@@ -307,8 +357,6 @@ public class ScrollGrid<X> extends Bordering {
 
         view = nextView;
 
-        System.out.println(view);
-
         content.layout(); //layout regardless because the sub-grid position may have changed
 
         return this;
@@ -317,23 +365,11 @@ public class ScrollGrid<X> extends Bordering {
     public String summary() {
         return (view + " -> [" +
                 cellVisXmin + ".." + cellVisXmax + "," +
-                cellVisYmin + ".." + cellVisYmax + "] + ("
-                + ox + "," + oy + ")"
+                cellVisYmin + ".." + cellVisYmax + "]"
+                //+ (" + ox + "," + oy + ")"
         );
     }
 
-    /**
-     * refresh visible cells
-     */
-    @Override
-    protected void doLayout(int dtMS) {
-
-
-        super.doLayout(dtMS);
-
-//        System.out.println(cache.size());
-//        System.out.println(content.size());
-    }
 
     public final boolean set(short x, short y, @Nullable X v) {
         return set(x, y, v, false);
@@ -350,16 +386,9 @@ public class ScrollGrid<X> extends Bordering {
         if (!force && !cellVisible(x, y))
             return false; //ignore
 
-        GridCell<X> entry = cache.computeIfAbsent(short2Int(x, y), (index) -> {
-//            if (existingEntry != null) {
-//
-//                if (v == null || existingEntry.value == null || existingEntry.value.equals(v)) {
-//                    return existingEntry; //same value or removal
-//                }
-//            }
-//
-            return new GridCell<>(index, v); //replace or create new cell
-        });
+        GridCell<X> entry = cache.computeIfAbsent(short2Int(x, y), xy ->
+            new GridCell<>(xy, v)
+        );
 
         Surface existingSurface = entry.surface;
 
@@ -386,8 +415,11 @@ public class ScrollGrid<X> extends Bordering {
             content.remove(existingSurface);
         }
 
-        if (create)
-            content.add(entry.surface = render.apply(x, y, entry.value));
+        if (create) {
+            Surface ss = entry.surface = render.apply(x, y, entry.value);
+            if (ss!=null)
+                content.add(ss);
+        }
 
         return create || delete;
     }
@@ -427,29 +459,12 @@ public class ScrollGrid<X> extends Bordering {
     }
 
 
-    public interface GridModel<X> {
-        int cellsX();
-
-        int cellsY();
-
-        /**
-         * return null to remove the content of a displayed cell
-         */
-        @Nullable X get(int x, int y);
-
-        default void start(ScrollGrid<X> x) {
-        }
-
-        default void stop() {
-        }
-    }
-
     @FunctionalInterface
-    interface GridRenderer<X> {
+    public interface GridRenderer<X> {
         Surface apply(int x, int y, X value);
     }
 
-    static class GridCell<X> {
+    public static class GridCell<X> {
         /**
          * x,y coordinates of this cell encoded as a pair of 16-bit short's
          */

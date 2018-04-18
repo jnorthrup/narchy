@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static spacegraph.space2d.container.Gridding.grid;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
 public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
@@ -60,7 +60,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
         Surface content;
         if ((finger!=null && (content=content())!=null)) {
             v2 hitPoint = finger.relativePos(content);
-            if (hitPoint.inUnit() && finger.pressed(0)) {
+            if (hitPoint.inUnit() && finger.pressing(0)) {
 
 //            if (fb == null)
 //                fb = new FastBlur(pw, ph);

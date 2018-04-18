@@ -7,7 +7,7 @@ import nars.control.DurService;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 
 import java.io.IOException;

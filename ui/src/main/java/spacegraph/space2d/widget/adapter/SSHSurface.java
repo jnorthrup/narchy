@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.adapter;
 
 import com.jcraft.jcterm.JCTermSwingFrame;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Gridding;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.windo.PhyWall;
 
 import javax.swing.*;

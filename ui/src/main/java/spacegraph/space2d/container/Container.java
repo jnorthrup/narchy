@@ -126,6 +126,9 @@ abstract public class Container extends Surface {
 
                     //                float hx = relativeHit.x, hy = relativeHit.y;
 
+                    if (!c.visible())
+                        return true; //continue
+
                     if (!clipTouchBounds || (
                             fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
 
