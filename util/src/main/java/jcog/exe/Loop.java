@@ -2,7 +2,7 @@ package jcog.exe;
 
 import jcog.Util;
 import jcog.exe.realtime.AdmissionQueueWheelModel;
-import jcog.exe.realtime.FixedRateTimedFuture;
+import jcog.exe.realtime.FixedDelayTimedFuture;
 import jcog.exe.realtime.HashedWheelTimer;
 import org.slf4j.Logger;
 
@@ -21,7 +21,7 @@ abstract public class Loop {
     protected final Logger logger;
 
     //make Loop extend FixedRateFuture...
-    @Deprecated private volatile FixedRateTimedFuture<?> task = null;
+    @Deprecated private volatile FixedDelayTimedFuture<?> task = null;
 
     /** busy lock */
     private final AtomicBoolean executing = new AtomicBoolean(false);
@@ -121,8 +121,8 @@ abstract public class Loop {
                     assert(this.task == null);
                     onStart();
                     this.task = timer()
-                        .scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
-                        //.scheduleWithFixedDelay(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                        //.scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                        .scheduleWithFixedDelay(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS <= 0) {
 
@@ -130,7 +130,7 @@ abstract public class Loop {
 
                 synchronized (periodMS) {
                     //Thread prevThread = this.thread;
-                    FixedRateTimedFuture prevTask = this.task;
+                    FixedDelayTimedFuture prevTask = this.task;
                     if (prevTask != null) {
 
                         this.task = null;
@@ -151,7 +151,7 @@ abstract public class Loop {
 
                 logger.debug("period={}ms", nextPeriodMS);
 
-                FixedRateTimedFuture<?> task = this.task;
+                FixedDelayTimedFuture<?> task = this.task;
                 if (task!=null) {
                     task.setPeriodMS(nextPeriodMS);
                 }

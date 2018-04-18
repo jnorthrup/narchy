@@ -83,7 +83,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int COMPLETE_SCAN_SIZE_THRESHOLD = MAX_TASKS_PER_LEAF;
 
 
-    private static final int RejectInput = 0, EvictWeakest = 1, MergeWeakest = 2, MergeLeaf = 3;
+    private static final int RejectInput = 0, EvictWeakest = 1, MergeInputClosest = 2, MergeLeaf = 3;
 
     protected int capacity;
 
@@ -465,13 +465,16 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         // and also the cost of removing tasks from the weakest leaf below
 
 
-        Task A, B, W, AB, IW;
+        Task A, B, W, AB, IW, C;
 
-        if (closest!=null && closest.the != null) {
-            Task theClosest = (Task) closest.the;
-            IW = Revision.mergeTasks(nar, I, theClosest);
+        if (I!= null && closest!=null && closest.the != null) {
+            C = (Task) closest.the;
+            IW = Revision.mergeTasks(nar, I, C);
+            if (IW.equals(I) || IW.equals(C))
+                IW = null; //ignore
         } else {
             IW = null;
+            C = null;
         }
 
 
@@ -524,8 +527,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 I!=null ? -taskStrength.floatValueOf(I) : Float.NEGATIVE_INFINITY;
         value[EvictWeakest] =
                 (I!=null ? taskStrength.floatValueOf(I) : 0) - taskStrength.floatValueOf(W);
-        value[MergeWeakest] =
-                IW!=null ? (+taskStrength.floatValueOf(IW) - taskStrength.floatValueOf(W)) : Float.NEGATIVE_INFINITY;
+        value[MergeInputClosest] =
+                IW!=null ? (+taskStrength.floatValueOf(IW) - taskStrength.floatValueOf(C))
+                                : Float.NEGATIVE_INFINITY;
 
         if (B == null) {
             AB = null;
@@ -567,8 +571,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 return false;
             }
 
-            case MergeWeakest: {
+            case MergeInputClosest: {
+
                 I.delete();
+
+                treeRW.remove(C);
+                C.delete();
+
                 if (treeRW.add(IW))
                     added.accept(IW);
                 return true;

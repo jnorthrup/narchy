@@ -64,20 +64,24 @@ public class Occurrify extends TimeGraph {
 
     public enum TaskTimeMerge {
 
-        /** for unprojected truth rules; the result will be relative to the task's time */
+        /** for unprojected truth rules;
+         * result should be left-aligned (relative) to the task's start time */
         Task() {
             @Override
             @Nullable long[] occurrence(Task task, Task belief) {
                 return new long[] { task.start(), task.end() };
             }
         },
-        /** for unprojected truth rules; the result will be relative to the belief's time */
+        /** for unprojected truth rules;
+         * result should be left-aligned (relative) to the belief's start time */
         Belief() {
             @Override
             @Nullable long[] occurrence(Task task, Task belief) {
                 return new long[] { belief.start(), belief.end() };
             }
         },
+
+        /** result occurs in the intersecting time interval, if exists; otherwise fails */
         Intersect() {
             @Override
             @Nullable long[] occurrence(Task a, Task b) {
@@ -86,6 +90,9 @@ public class Occurrify extends TimeGraph {
             }
         },
 
+        /** result occurs in the union time interval, and this always exists.
+         * the evidence integration applied in the truth calculation should
+         * reflect the loss of evidence from any non-intersecting time ranges */
         Union() {
             @Override
             @Nullable long[] occurrence(Task a, Task b) {

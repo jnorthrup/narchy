@@ -28,7 +28,7 @@ public class FixedRateTimedFuture<T> extends AbstractTimedCallable<T> {
     }
 
     public void setPeriodMS(long periodMS) {
-        setPeriodNS(periodMS * 1000 * 1000);
+        setPeriodNS(periodMS * 1_000_000);
     }
 
     public void setPeriodNS(long periodNS) {

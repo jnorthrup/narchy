@@ -419,7 +419,7 @@ public abstract class AbstractTimerTest {
             assertTrue(waitFor(() -> ref.get() == 7, 10, TimeUnit.SECONDS));
             long end = System.currentTimeMillis();
             long diff = end - start;
-            assertTrue(diff >= 500 && diff <= 600); // wiggle
+            assertTrue(diff >= 500 && diff <= 600, ()->diff + "diff"); // wiggle
 
             assertEquals(7, ref.get());
             Thread.sleep(1000);

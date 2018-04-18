@@ -583,30 +583,35 @@ public class Revision {
 
         /*Truth.EVI_MIN*/
         //c2wSafe(nar.confMin.floatValue()),
-        float eviMinInteg = Float.MIN_NORMAL;
+        float range = (start != ETERNAL) ? (end - start + 1) : 1;
+        float eviMinInteg = Param.TRUTH_MIN_EVI;
+        Task defaultTask;
+        if (!forceProjection) {
+            defaultTask = (Task) tasks[0];
+            eviMinInteg = range * Revision.eviAvg(defaultTask, tasks[0].start(), tasks[0].end(), dur);
+        } else {
+            defaultTask = null;
+        }
 
         TruthPolation T = Param.truth(start, end, dur).add(tasks);
         LongHashSet stamp = T.filterCyclic();
+        if (!forceProjection && T.size() == 1) {
+            //can't do better than the only remaining task, unless you want to force reprojection to the specified start,end range (ie. eternalize)
+            return defaultTask;
+        }
 
         Truth baseTruth = T.truth(nar);
         if (baseTruth == null)
-            return null; //nothing
+            return defaultTask; //nothing
 
         float truthEvi = baseTruth.evi();
 
-        float range = (start != ETERNAL) ? (end - start + 1) : 1;
         if ((truthEvi * range) < eviMinInteg)
-            return null;
+            return defaultTask;
 
         Truth cTruth = Truth.theDithered(baseTruth.freq(), truthEvi, nar);
         if (cTruth == null)
-            return null;
-
-        if (!forceProjection && T.size() == 1) {
-            //can't do better than the only remaining task, unless you want to force reprojection to the specified start,end range (ie. eternalize)
-            Task only = T.get(0).task;
-            return only;
-        }
+            return defaultTask;
 
         byte punc = T.punc();
 

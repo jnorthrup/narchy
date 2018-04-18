@@ -40,7 +40,7 @@ public class RuleInductionTest {
 
         MatrixDeriver d = new MatrixDeriver(new PremiseDeriverRuleSet(n,
             //CONJ induction
-        "B, A, notImpl(A) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionUnprojectedDepolarized)"
+        "B, A, notImpl(A),notImpl(B)                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:TaskRelative)"
             //CONJ decompose
 
             ////IMPL induction
@@ -66,7 +66,7 @@ public class RuleInductionTest {
 
         n.time.dur(dur);
 
-        //n.log();
+        n.log();
 
         Term aConjB = $$("(a &&+" + dutyPeriod + " b)");
         Term aConjB_root = aConjB.concept();
