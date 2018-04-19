@@ -3,11 +3,14 @@ package jcog.exe.realtime;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
+/** reschedules after each execution.  at that point it has the option
+ * to use a fixed delay or to subtract from it the duty cycle
+ * consumed since being invoked, to approximate fixed rate.
+ */
 public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
 
-
-    private final Consumer<TimedFuture<?>> rescheduleCallback;
-    private long periodNS;
+    protected final Consumer<TimedFuture<?>> rescheduleCallback;
+    protected long periodNS;
     @Deprecated private final int wheels;
     @Deprecated private final long resolution;
 
@@ -30,8 +33,10 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
         return true;
     }
 
-    public int getOffset(long resolution) {
-        return (int) (periodNS / resolution);
+    @Override public int getOffset(long resolution) {
+        return (int) Math.min(Integer.MAX_VALUE-1,
+                Math.round(((double)Math.max(resolution, periodNS)) / resolution)
+        );
     }
 
     void reset() {
@@ -44,6 +49,8 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
         reset();
         rescheduleCallback.accept(this);
     }
+
+
 
     public void setPeriodMS(int nextPeriodMS) {
         periodNS = nextPeriodMS * 1_000_000L;

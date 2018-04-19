@@ -168,15 +168,24 @@ public abstract class AbstractTimerTest {
         assertTrue(r.get(2) - r.get(1) >= 100);
     }
     @Test
+    public void fixedRateSubsequentFireTest_40ms() throws InterruptedException {
+        fixedDelaySubsequentFireTest(40, 40, false);
+    }
+    @Test
+    public void fixedRateSubsequentFireTest_20ms() throws InterruptedException {
+        fixedDelaySubsequentFireTest(20, 40, false);
+    }
+
+    @Test
     public void fixedDelaySubsequentFireTest_40ms() throws InterruptedException {
-        fixedDelaySubsequentFireTest(40, 40);
+        fixedDelaySubsequentFireTest(40, 40, true);
     }
     @Test
     public void fixedDelaySubsequentFireTest_20ms() throws InterruptedException {
-        fixedDelaySubsequentFireTest(20, 40);
+        fixedDelaySubsequentFireTest(20, 40, true);
     }
 
-    void fixedDelaySubsequentFireTest(int delayMS, int count) throws InterruptedException {
+    void fixedDelaySubsequentFireTest(int delayMS, int count, boolean fixedDelayOrRate) throws InterruptedException {
 
         int warmup = 1;
 
@@ -187,21 +196,30 @@ public abstract class AbstractTimerTest {
                 1_000_000_000L * 4 /* 4 Sec */, 5);
 
         final long[] last = {start};
-        timer.scheduleWithFixedDelay(() -> {
-                    long now = System.nanoTime();
+        Runnable task = () -> {
+            long now = System.nanoTime();
 
-                    if (latch.getCount() < (count-warmup))
-                        when.recordValue(now - last[0]);
+            if (latch.getCount() < (count - warmup))
+                when.recordValue(now - last[0]);
 
-                    last[0] = now;
-                    latch.countDown();
-                },
-                0,
-                delayMS,
-                TimeUnit.MILLISECONDS);
+            last[0] = now;
+            latch.countDown();
+        };
+
+        if (fixedDelayOrRate) {
+            timer.scheduleWithFixedDelay(task,
+                    0,
+                    delayMS,
+                    TimeUnit.MILLISECONDS);
+        } else {
+            timer.scheduleAtFixedRate(task,
+                    0,
+                    delayMS,
+                    TimeUnit.MILLISECONDS);
+        }
 
         assertTrue(latch.await(count, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
-        assertTrue(1 >= timer.size(), "only one task in the entire wheel");
+        assertTrue(1 >= timer.size(), timer.size() + " tasks in wheel");
 
         {
             Histogram w = when.copy();
@@ -227,7 +245,7 @@ public abstract class AbstractTimerTest {
                 TimeUnit.MILLISECONDS);
         assertTrue(latch.await(10, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
         long end = System.currentTimeMillis();
-        assertTrue(end - start >= 1000);
+        assertTrue(end - start >= 1000, ()->end-start + "(ms) start to end");
     }
 
     // TODO: precision test

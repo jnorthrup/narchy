@@ -20,7 +20,7 @@ import java.util.function.Function;
 /**
  * display a directed graph by wrapping its elements in NAR concepts (HACK)
  */
-public class SimpleGraph<X> extends DynamicListSpace<X> {
+public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
 
 //    final Random rng = new XoRoShiRo128PlusRandom(1);
@@ -54,11 +54,11 @@ public class SimpleGraph<X> extends DynamicListSpace<X> {
 
     protected final SpaceWidget.SimpleNodeVis vis;
 
-    public SimpleGraph() {
+    public SimpleGraph3D() {
         this((SpaceWidget.SimpleNodeVis)defaultVis);
     }
 
-    public SimpleGraph(SpaceWidget.SimpleNodeVis<SpaceWidget<X>> vis) {
+    public SimpleGraph3D(SpaceWidget.SimpleNodeVis<SpaceWidget<X>> vis) {
         super();
         this.vis = vis;
     }
@@ -117,19 +117,19 @@ public class SimpleGraph<X> extends DynamicListSpace<X> {
 
 
     /** adapts guava Graph as input */
-    public SimpleGraph<X> commit(Graph<X> g) {
+    public SimpleGraph3D<X> commit(Graph<X> g) {
         return commit(g.nodes(), g::successors);
     }
 
-    public SimpleGraph<X> commit(SuccessorsFunction<X> g, X start) {
+    public SimpleGraph3D<X> commit(SuccessorsFunction<X> g, X start) {
         return commit(g, List.of(start));
     }
 
-    public SimpleGraph<X> commit(SuccessorsFunction<X> s, Iterable<X> start) {
+    public SimpleGraph3D<X> commit(SuccessorsFunction<X> s, Iterable<X> start) {
         return commit(new MapNodeGraph<>(s, start));
     }
 
-    public SimpleGraph<X> commit(MapNodeGraph<X,Object> g) {
+    public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
         return commit(
                 Iterables.transform(g.nodes(), x-> x.id),
                 x-> Iterables.transform(
@@ -139,11 +139,11 @@ public class SimpleGraph<X> extends DynamicListSpace<X> {
                 ));
     }
 
-    public SimpleGraph<X> commit(Iterable<X> nodes, Function<X,Iterable<X>> edges) {
+    public SimpleGraph3D<X> commit(Iterable<X> nodes, Function<X,Iterable<X>> edges) {
         return update(nodes, edges, false);
     }
 
-    public SimpleGraph<X> update(Iterable<X> nodes, Function<X,Iterable<X>> edges, boolean addOrReplace ) {
+    public SimpleGraph3D<X> update(Iterable<X> nodes, Function<X,Iterable<X>> edges, boolean addOrReplace ) {
         List<Spatial<X>> n2 = new FasterList();
 
         nodes.forEach((x)->{

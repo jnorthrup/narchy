@@ -36,11 +36,50 @@ public class FixedRateTimedFuture<T> extends AbstractTimedCallable<T> {
     }
 
     public int getOffset(long resolution) {
-        return (int) (period / resolution);
+        return (int) Math.round(((double)period)/resolution);
     }
 
     public void reset(long resolution, int wheels) {
-        this.rounds = (getOffset(resolution) / wheels);
+        this.rounds = (int)
+            Math.min(Integer.MAX_VALUE-1,
+                Math.round((((double)period)/resolution) / wheels)
+            );
     }
 
+
 }
+
+//public class FixedRateTimedFuture<T> extends FixedDelayTimedFuture<T> {
+//
+//    public FixedRateTimedFuture(int rounds,
+//                                Callable<T> callable,
+//                                long periodNS, long resolution, int wheels, Consumer<TimedFuture<?>> resched) {
+//        super(rounds, callable, periodNS, resolution, wheels, resched);
+//    }
+//
+//
+//    private long lastDutyNS;
+//
+////    @Override public int getOffset(long resolution) {
+////        return (int) Math.min(Integer.MAX_VALUE-1,
+////                Math.round(((double)Math.max(resolution, (periodNS-lastDutyNS))) / resolution)
+////        );
+////    }
+//
+//
+//    public int getOffset(long resolution) {
+//        return (int) (periodNS / resolution);
+//    }
+//
+//    @Override
+//    public void run() {
+//        long start = System.nanoTime();
+//        super.run();
+//        long end = System.nanoTime();
+//        this.lastDutyNS = end - start;
+//
+//        reset();
+//        rescheduleCallback.accept(this);
+//    }
+//
+//}

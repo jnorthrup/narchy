@@ -10,54 +10,56 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
+public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
 
     final Y[] emptyArray;
-
+    final Map<X, Y> map = new ConcurrentHashMap<>();
     volatile Y[] list = null;
 
-    final Map<X, Y> map = new ConcurrentHashMap<>() {
-
-        /** without synchronizing this entire method, the best this can do is
-         * a near atomic invalidation of the list after the hashmap method returns */
-        @Override
-        public Y putIfAbsent(X key, Y value) {
-            Y r;
-            if ((r = super.putIfAbsent(key, value)) == null) {
-                invalidate();
-                return null;
-            }
-            return r;
-        }
-
-        /** without synchronizing this entire method, the best this can do is
-         * a near atomic invalidation of the list after the hashmap method returns */
-        @Override
-        public Y remove(Object key) {
-            Y r = super.remove(key);
-            if (r != null)
-                invalidate();
-            return r;
-        }
-
-        @Override
-        public boolean remove(Object key, Object value) {
-            if (super.remove(key, value)) {
-                invalidate();
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            invalidate();
-        }
-    };
 
     public ConcurrentFastIteratingHashMap(Y[] emptyArray) {
         this.emptyArray = emptyArray;
+    }
+
+    /**
+     * without synchronizing this entire method, the best this can do is
+     * a near atomic invalidation of the list after the hashmap method returns
+     */
+    @Override
+    public Y putIfAbsent(X key, Y value) {
+        Y r;
+        if ((r = map.putIfAbsent(key, value)) == null) {
+            invalidate();
+            return null;
+        }
+        return r;
+    }
+
+    /**
+     * without synchronizing this entire method, the best this can do is
+     * a near atomic invalidation of the list after the hashmap method returns
+     */
+    @Override
+    public Y remove(Object key) {
+        Y r = map.remove(key);
+        if (r != null)
+            invalidate();
+        return r;
+    }
+
+    @Override
+    public boolean remove(Object key, Object value) {
+        if (map.remove(key, value)) {
+            invalidate();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void clear() {
+        map.clear();
+        invalidate();
     }
 
     @Override
@@ -70,7 +72,9 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
         return map.isEmpty();
     }
 
-    /** this is the fast value iterating method */
+    /**
+     * this is the fast value iterating method
+     */
     public void forEachValue(Consumer<? super Y> action) {
         Y[] x = valueArray();
         for (Y t : x)
@@ -85,7 +89,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
     @Override
     public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
         final boolean[] changed = {false};
-        Y prev = super.computeIfAbsent(key, (p) -> {
+        Y prev = map.computeIfAbsent(key, (p) -> {
             Y next = mappingFunction.apply(p);
             if (next != p)
                 changed[0] = true;
@@ -114,7 +118,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
 
     public boolean whileEachValueReverse(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        for (int i = x.length-1; i >= 0; i--) {
+        for (int i = x.length - 1; i >= 0; i--) {
             if (!action.test(x[i]))
                 return false;
         }
@@ -167,18 +171,4 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
         return map.put(key, value);
     }
 
-    @Override
-    public boolean remove(Object key, Object value) {
-        return map.remove(key, value);
-    }
-
-    @Override
-    public Y remove(Object o) {
-        return map.remove(o);
-    }
-
-    @Override
-    public void clear() {
-        map.clear();
-    }
 }

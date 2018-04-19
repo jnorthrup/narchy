@@ -3,9 +3,9 @@ package spacegraph.space3d.test;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import jcog.data.graph.MapNodeGraph;
-import spacegraph.space3d.widget.SimpleGraph;
+import spacegraph.space3d.widget.SimpleGraph3D;
 
-public class SimpleGraphTest {
+public class SimpleGraph3DTest {
     public static void main(String[] args) {
 
         MutableGraph g = GraphBuilder.directed().build();
@@ -23,7 +23,7 @@ public class SimpleGraphTest {
         h.addEdge(("y"), ("yz"), ("z"));
         h.addEdge(("w"), ("wy"), ("y"));
 
-        SimpleGraph sg = new SimpleGraph();
+        SimpleGraph3D sg = new SimpleGraph3D();
         //sg.commit(g);
         sg.commit(h);
         sg.show(800, 600, false);

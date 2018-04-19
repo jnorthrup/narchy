@@ -8,14 +8,14 @@ public abstract class AbstractMutableContainer extends Container {
     @Override
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
-            synchronized (this) {
-                //add pre-added
-                forEach(c -> {
-                    assert (c.parent == null): c + " has parent " + c.parent + " when trying to add to " + AbstractMutableContainer.this;
-                    c.start(this);
-                });
-            }
-            layout();
+
+            //add pre-added
+            forEach(c -> {
+                assert (c.parent == null) : c + " has parent " + c.parent + " when trying to add to " + AbstractMutableContainer.this;
+                c.start(this);
+            });
+
+            //layout();
             return true;
         }
         return false;

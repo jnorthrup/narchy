@@ -1,8 +1,6 @@
 package spacegraph.space2d.container.grid;
 
 import jcog.TODO;
-import jcog.Util;
-import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
@@ -10,13 +8,11 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.*;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Clipped;
+import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
-
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import static jcog.Util.short2Int;
 
@@ -48,14 +44,11 @@ public class ScrollGrid<X> extends Bordering {
      */
     private volatile RectFloat2D view = RectFloat2D.Zero;
 
-
-
-    /**
-     * caches the x,y ranges of cells which are at least partially visible
-     */
-    private volatile transient short cellVisXmin = 0, cellVisXmax = 0, cellVisYmin = 0, cellVisYmax = 0;
-
     private static final boolean autoHideScrollForSingleColumnOrRow = true;
+
+    /** layout temporary values */
+    private transient float cw, ch, dx, dy;
+
 
     public ScrollGrid(GridModel<X> model, GridRenderer<X> render, int visX, int visY) {
         this(model, render);
@@ -71,7 +64,50 @@ public class ScrollGrid<X> extends Bordering {
         this.model = model;
         this.render = render;
 
-        set(C, new Clipped(content = new ScrollGridContainer()));
+        set(C, new Clipped(content = new ScrollGridContainer<X>() {
+
+            @Override
+            protected Surface surface(short x, short y, X nextValue) {
+                return render.apply(x, y, nextValue);
+            }
+
+            @Override
+            protected X value(short sx, short sy) {
+                return model.get(sx, sy);
+            }
+
+            @Override
+            public Surface tryTouch(Finger finger) {
+                Surface inner = super.tryTouch(finger);
+                final int moveDragButton = 1;
+                if ((inner == null || inner == this) && finger.pressing(moveDragButton)) {
+                    if (finger.tryFingering(new FingerMove(moveDragButton,
+                            0.05f, 0.05f) {
+
+                        final float sx = view.x;
+                        final float sy = view.y;
+
+                        @Override
+                        public float xStart() {
+                            return sx;
+                        }
+
+                        @Override
+                        public float yStart() {
+                            return sy;
+                        }
+
+                        @Override
+                        public void move(float tx, float ty) {
+                            view(tx, ty);
+                        }
+                    }))
+                        return this;
+                }
+                return inner;
+            }
+
+        }));
 
         set(S, this.scrollX = new FloatSlider("X",
                 new FloatSlider.FloatSliderModel(0 /* left initial pos */) {
@@ -115,7 +151,7 @@ public class ScrollGrid<X> extends Bordering {
                             @Override
                             public float max() {
                                 //TODO if constrain to bounds ...
-                                //  return Math.min(model.cellsX(), MAX_DISPLAYED_CELLS_X);
+                                //return Math.min(model.cellsX()+1, MAX_DISPLAYED_CELLS_X);
                                 //return MAX_DISPLAYED_CELLS_X;
                                 return Math.min(model.cellsX() * 1.25f, MAX_DISPLAYED_CELLS_X);
                             }
@@ -136,7 +172,7 @@ public class ScrollGrid<X> extends Bordering {
                             @Override
                             public float max() {
                                 //TODO if constrain to bounds ...
-                                //  return Math.min(model.cellsX(), MAX_DISPLAYED_CELLS_Y);
+                                //return Math.min(model.cellsX()+1, MAX_DISPLAYED_CELLS_Y);
                                 //return MAX_DISPLAYED_CELLS_Y;
                                 return Math.min(model.cellsY() * 1.25f, MAX_DISPLAYED_CELLS_Y);
                             }
@@ -152,10 +188,6 @@ public class ScrollGrid<X> extends Bordering {
 
         //default initial view: attempt to view entire model
         view(0,0, model.cellsX(), model.cellsY());
-    }
-
-    static boolean invalidCoordinate(float xy) {
-        return xy < 0 || xy > Short.MAX_VALUE - 1;
     }
 
     /** the current view */
@@ -215,16 +247,12 @@ public class ScrollGrid<X> extends Bordering {
      */
     public ScrollGrid<X> view(float x, float y, float w, float h) {
 
-//        float px = x;
-//        float py = y;
-
         RectFloat2D v = view;
 
         float x1, x2, y1, y2;
 
         float maxW = model.cellsX();
         if (maxW == 1 && autoHideScrollForSingleColumnOrRow) {
-            w = 1;
             x1 = 0;
             x2 = 1;
             setScrollBar(true, false, false);
@@ -248,7 +276,6 @@ public class ScrollGrid<X> extends Bordering {
 
         float maxH = model.cellsY();
         if (maxH == 1 && autoHideScrollForSingleColumnOrRow) {
-            h = 1;
             y1 = 0;
             y2 = 1;
             setScrollBar(false, false, false);
@@ -277,71 +304,29 @@ public class ScrollGrid<X> extends Bordering {
         if (!v.equals(nextView, Spatialization.EPSILONf)) {
 //            sliderX.value(px); //for when invoked by other than the slider
 //            sliderY.value(py); //for when invoked by other than the slider
-            scaleW.value(w); //for when invoked by other than the slider
-            scaleH.value(h); //for when invoked by other than the slider
+//            scaleW.value(w); //for when invoked by other than the slider
+//            scaleH.value(h); //for when invoked by other than the slider
         }
-
-
-//        float vLeft = x1;
-        short vLeftI = (short) Math.floor(x1);
-//        float vTop = y1;
-        short vTopI = (short) Math.floor(y1);
-//        this.ox = vLeft - vLeftI;
-//        this.oy = vTop - vTopI;
-        short vRightI = (short) Math.ceil(Math.min(maxW+1, x2 + 1));
-        short vBottomI = (short) Math.ceil(Math.min(maxH+1, y2 + 1));
-
-//        if (invalidCoordinate(vLeftI) || invalidCoordinate(vRightI) || vRightI <= vLeftI)
-//            throw new RuntimeException("non-positive width or x coordinate: " + vLeftI + ".." + vRightI);
-//        if (invalidCoordinate(vTopI) || invalidCoordinate(vBottomI) || vBottomI <= vTopI)
-//            throw new RuntimeException("non-positive height or y coordinate: " + vTopI + ".." + vBottomI);
-
-        cellVisXmin = vLeftI;
-        cellVisYmin = vTopI;
-        cellVisXmax = vRightI;
-        cellVisYmax = vBottomI;
 
         view = nextView;
 
-        content.layout(); //layout regardless because the sub-grid position may have changed
+        content.layout(view,
+                (short) Math.max(0, Math.floor(x1)),
+                (short) Math.max(0, Math.floor(y1)),
+                (short) Math.min(maxW,Math.ceil(x2 + 1)),
+                (short) Math.min(maxH,Math.ceil(y2 + 1))
+        ); //layout regardless because the sub-grid position may have changed
+
+        //System.out.println(view + " " + content.x1 + "," + content.y1 + "," + content.x2 + "," + content.y2);
 
         return this;
     }
 
-    public String summary() {
-        return (view + " -> [" +
-                cellVisXmin + ".." + cellVisXmax + "," +
-                cellVisYmin + ".." + cellVisYmax + "]"
-                //+ (" + ox + "," + oy + ")"
-        );
-    }
-
-
-    public final boolean set(short x, short y, @Nullable X v) {
-        return content.set(x, y, v, false);
-    }
-
-
-    /**
-     * test if a cell is currently visible
-     */
-    public boolean cellVisible(short x, short y) {
-        return (x >= cellVisXmin && x < cellVisXmax)
-                &&
-                (y >= cellVisYmin && y < cellVisYmax);
-    }
-
-//    /** x and y should correspond to a currently visible cell */
-//    protected void layout(Surface s, short x, short y) {
-//    }
 
     @Override
     public boolean start(SurfaceBase parent) {
+        model.start(this);
         if (super.start(parent)) {
-            model.start(this);
-
-            layout();
-
             return true;
         }
         return false;
@@ -366,110 +351,112 @@ public class ScrollGrid<X> extends Bordering {
         Surface apply(int x, int y, X value);
     }
 
-    public static class GridCell<X> {
-        /**
-         * x,y coordinates of this cell encoded as a pair of 16-bit short's
-         */
-        public final int cell;
-        X value;
-        Surface surface;
 
-        GridCell(short x, short y, X value) {
-            this(Util.short2Int(x, y), value);
-        }
 
-        GridCell(int cell, X value) {
-            this.cell = cell;
-            this.value = value;
-        }
+    /** hashes 2D cell entries in 16-bit pairs of x,y coordinates */
+    abstract static class ScrollGridContainer<X> extends MutableMapContainer<Integer,X> {
 
-    }
-
-    private class ScrollGridContainer extends AbstractMutableContainer {
-
-        private final ConcurrentFastIteratingHashMap<Integer, GridCell<X>> cache =
-                new ConcurrentFastIteratingHashMap(new GridCell[0]);
+        volatile short x1=0, y1=0, x2=1, y2=1;
+        private transient RectFloat2D view;
+        private transient float dx, dy, cw, ch;
 
         public ScrollGridContainer() {
-
+            super();
         }
 
-        @Override
-        public void forEach(Consumer<Surface> o) {
-            cache.forEachValue(e -> o.accept(e.surface));
+        /**
+         * test if a cell is currently visible
+         */
+        public boolean cellVisible(short x, short y) {
+            return (x >= x1 && x < x2)
+                    &&
+                    (y >= y1 && y < y2);
         }
 
-        @Override
-        public boolean whileEach(Predicate<Surface> o) {
-            return cache.whileEachValue(e -> o.test(e.surface));
+        public void layout(RectFloat2D view, short x1, short y1, short x2, short y2) {
+            this.view = view;
+
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+
+            layout();
         }
 
-        @Override
-        public boolean whileEachReverse(Predicate<Surface> o) {
-            return cache.whileEachValueReverse(e -> o.test(e.surface));
-        }
+
 
         @Override
         protected void doLayout(int dtMS) {
-            if (parent != null) {
 
-                float dx = content.x();
-                float dy = content.y();
-                float ww = content.w();
-                float hh = content.h();
-                float cw = ww / view.w;
-                float ch = hh / view.h;
+            if (parent == null)
+                return;
 
-                //refresh cache
-                boolean changedContent = false;
+            dx = x();
+            dy = y();
+            float ww = w();
+            float hh = h();
+            cw = ww / view.w;
+            ch = hh / view.h;
 
-                short cellVisXmax = ScrollGrid.this.cellVisXmax;
-                short cellVisXmin = ScrollGrid.this.cellVisXmin;
-                short cellVisYmax = ScrollGrid.this.cellVisYmax;
-                short cellVisYmin = ScrollGrid.this.cellVisYmin;
-                cellVisXmin = (short) Math.max(cellVisXmin, 0);
-                cellVisYmin = (short) Math.max(cellVisYmin, 0);
-                cellVisXmax = (short) Math.min(cellVisXmax, model.cellsX());
-                cellVisYmax = (short) Math.min(cellVisYmax, model.cellsY());
-                for (short sx = cellVisXmin; sx < cellVisXmax; sx++) {
-                    for (short sy = cellVisYmin; sy < cellVisYmax; sy++) {
-                        changedContent |= set(sx, sy, model.get(sx, sy), true);
+
+            //remove or hibernate cache entry surfaces which are not visible
+            //and set the layout positions of those which are
+            cache.forEachValue(e -> {
+                int cellID = e.key;
+                Surface s = e.surface;
+
+                boolean deleted = false;
+                if (s == null) { //remove the unused entry
+                    deleted = true;
+                } else {
+                    short sx = (short) (cellID >> 16);
+                    short sy = (short) (cellID & 0xffff);
+                    if (!cellVisible(sx, sy)) {
+                        deleted = true; //!onCellInvisible(e);
                     }
                 }
-                //remove or hibernate cache entry surfaces which are not visible
-                //and set the layout positions of those which are
-                cache.forEachValue(e -> {
-                    int cellID = e.cell;
-                    Surface s = e.surface;
 
-                    boolean deleted = false;
-                    if (s == null) { //remove the unused entry
-                        deleted = true;
-                    } else {
-                        short sx = (short) (cellID >> 16);
-                        short sy = (short) (cellID & 0xffff);
-                        if (!cellVisible(sx, sy)) {
-                            e.value = null;
-                            e.surface = null;
-                            deleted = true;  //remove the entry
-                        } else {
+                if (deleted) {
+                    boolean removed = remove(cellID); assert(removed);
+                }
+            });
 
-                            //layout(s, x, y);
-                            float cx = dx + (sx - view.x + 0.5f) * cw;
-                            float cy = dy + (sy - view.y + 0.5f) * ch;
-                            s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
-                        }
+            short x1 = this.x1;
+            short y1 = this.y1;
+            short x2 = this.x2;
+            short y2 = this.y2;
+
+            for (short sx = x1; sx < x2; sx++) {
+                for (short sy = y1; sy < y2; sy++) {
+                    CacheCell<Integer, X> e = set(sx, sy, value(sx, sy), true);
+                    if (e!=null) {
+                        Surface s = e.surface;
+                        if (s!=null)
+                            doLayout(s, sx, sy);
                     }
-
-                    if (deleted) {
-                        cache.remove(cellID);
-                    }
-                });
-
-                super.doLayout(dtMS);
-
+                }
             }
+
+
+            super.doLayout(dtMS);
+
         }
+
+
+
+        protected void doLayout(Surface s, short sx, short sy) {
+            float cx = dx + (sx - view.x + 0.5f) * cw;
+            float cy = dy + (sy - view.y + 0.5f) * ch;
+            cellVisible(s, cw, ch, cx, cy);
+        }
+
+        abstract protected X value(short sx, short sy);
+
+        protected void cellVisible(Surface s, float cw, float ch, float cx, float cy) {
+            s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
+        }
+
 
 
         @Override
@@ -477,45 +464,8 @@ public class ScrollGrid<X> extends Bordering {
             return true;
         }
 
-        @Override
-        public Surface tryTouch(Finger finger) {
-            Surface inner = super.tryTouch(finger);
-            final int moveDragButton = 1;
-            if ((inner == null || inner == this) && finger.pressing(moveDragButton)) {
-                if (finger.tryFingering(new FingerMove(moveDragButton,
-                        0.05f, 0.05f) {
-
-                    final float sx = view.x;
-                    final float sy = view.y;
-
-                    @Override
-                    public float xStart() {
-                        return sx;
-                    }
-
-                    @Override
-                    public float yStart() {
-                        return sy;
-                    }
-
-                    @Override
-                    public void move(float tx, float ty) {
-                        view(tx, ty);
-                    }
-                }))
-                    return this;
-            }
-            return inner;
-        }
-
-        @Override
-        public int childrenCount() {
-            return cache.size(); //may not be accurate
-        }
-
-        @Override
-        protected void clear() {
-            cache.clear();
+        public final void set(short x, short y, @Nullable X v) {
+            set(x, y, v, false);
         }
 
         /**
@@ -524,52 +474,20 @@ public class ScrollGrid<X> extends Bordering {
          * is a way to force rebuilding of a cell.)
          * returns if there was a change
          */
-        protected boolean set(short x, short y, @Nullable X nextValue, boolean force) {
-
+        protected CacheCell<Integer, X> set(short x, short y, @Nullable X nextValue, boolean force) {
             if (!force && !cellVisible(x, y))
-                return false; //ignore
+                return null;
 
-            GridCell<X> entry = cache.computeIfAbsent(short2Int(x, y), xy ->
-                    new GridCell<>(xy, null)
-            );
-
-            X currentValue = entry.value;
-            Surface existingSurface = entry.surface;
-
-            boolean create = false, delete = false;
-
-            if (existingSurface != null) {
-                if (nextValue == null) {
-                    //removal
-                    delete = true;
-                } else {
-                    if (Objects.equals(currentValue, nextValue)) {
-                        //equal value, dont re-create surface
-                    } else {
-                        delete = true;
-                        create = true;
-                    }
-                }
-            } else { //if (existingSurface == null) {
-                create = true;
-            }
-
-            if (delete) {
-                cache.remove(entry.cell);
-            }
-
-            if (create) {
-                if (nextValue!=null) {
-                    entry.value = nextValue;
-                    entry.surface = render.apply(x, y, nextValue);
-                } else {
-                    entry.value = null;
-                    entry.surface = null;
-                }
-            }
-
-            return create || delete;
+            return put(short2Int(x,y), nextValue, this::renderer);
         }
+
+        private Surface renderer(int cellID, X value) {
+            short sx = (short) (cellID >> 16);
+            short sy = (short) (cellID & 0xffff);
+            return surface(sx, sy, value);
+        }
+
+        abstract protected Surface surface(short x, short y, X nextValue);
 
     }
 }

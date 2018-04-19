@@ -1,7 +1,7 @@
 package spacegraph.space3d.test;
 
 import com.google.common.graph.SuccessorsFunction;
-import spacegraph.space3d.widget.SimpleGraph;
+import spacegraph.space3d.widget.SimpleGraph3D;
 
 import java.io.File;
 import java.util.List;
@@ -22,7 +22,7 @@ public class SimpleTreeTest {
     public static void main(String[] args)  {
 
 
-        SimpleGraph sg = new SimpleGraph();
+        SimpleGraph3D sg = new SimpleGraph3D();
         sg.commit(FILE_TREE, new File(
                 "nal/src/test/"));
 

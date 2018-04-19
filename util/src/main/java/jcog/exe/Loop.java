@@ -196,13 +196,14 @@ abstract public class Loop {
 
     protected final void loop() {
 
-        if (periodMS.intValue()<0)
-            return; //stopped
 
         if (!executing.compareAndSet(false, true))
             return; //already in-progress
 
         try {
+            if (periodMS.intValue()<0) {
+                return; //stopped
+            }
 
             beforeNext();
             try {
