@@ -30,6 +30,9 @@ import java.util.function.Consumer;
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
+    public int size() {
+        return model.size();
+    }
 
     abstract static class WheelModel {
         public final int wheels;
@@ -63,6 +66,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 timer.execute(r); //immediately
             }
         }
+
+        /** number of tasks currently in the wheel */
+        abstract public int size();
     }
 
     private final WheelModel model;

@@ -5,7 +5,6 @@ import jcog.list.BufferedCoWList;
 import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceBase;
 
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-public class MutableContainer extends Container {
+public class MutableContainer extends AbstractMutableContainer {
 
 
     final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
@@ -52,39 +51,6 @@ public class MutableContainer extends Container {
         return children.size();
     }
 
-    @Override
-    public boolean start(SurfaceBase parent) {
-        if (super.start(parent)) {
-            synchronized (this) {
-                //add pre-added
-                children.forEach(c -> {
-                    assert (c.parent == null): c + " has parent " + c.parent + " when trying to add to " + MutableContainer.this;
-                    c.start(this);
-                });
-            }
-            layout();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean stop() {
-        if (super.stop()) {
-            clear();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void doLayout(int dtMS) {
-
-        if (children instanceof BufferedCoWList)
-            ((BufferedCoWList)children).commit();
-
-        children.forEach(Surface::layout);
-    }
 
     public Surface get(int index) {
         return children.copy[index];

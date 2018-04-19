@@ -46,6 +46,6 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
     }
 
     public void setPeriodMS(int nextPeriodMS) {
-        periodNS = nextPeriodMS * 1_000_000;
+        periodNS = nextPeriodMS * 1_000_000L;
     }
 }

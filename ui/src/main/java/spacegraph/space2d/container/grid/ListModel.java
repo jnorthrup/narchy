@@ -59,14 +59,19 @@ abstract public class ListModel<X> implements GridModel<X> {
     abstract public X get(int index);
     abstract public int size();
 
+    /** thickenss of the table, one by default */
+    protected int depth() {
+        return 1;
+    }
+
     @Override
     public final int cellsX() {
-        return vertical ? 1 : size();
+        return vertical ? depth() : size();
     }
 
     @Override
     public final int cellsY() {
-        return vertical ? size() : 1;
+        return vertical ? size() : depth();
     }
 
     @Nullable
@@ -76,4 +81,18 @@ abstract public class ListModel<X> implements GridModel<X> {
             return null;
         return get(vertical ? y : x);
     }
+
+    //    public static class ListTableModel<X,Y> extends ListModel<Y> {
+//
+//        public ListTableModel(List<X> items, extractor...)
+//        @Override
+//        public X get(int index) {
+//            return null;
+//        }
+//
+//        @Override
+//        public int size() {
+//            return 0;
+//        }
+//    }
 }

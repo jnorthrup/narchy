@@ -1,5 +1,7 @@
 package jcog.exe.realtime;
 
+import jcog.TODO;
+
 /** TODO
  *  where each wheel is simply its own concurrent queue */
 public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
@@ -21,5 +23,10 @@ public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
     @Override
     public void reschedule(int wheel, TimedFuture r) {
 
+    }
+
+    @Override
+    public int size() {
+        throw new TODO();
     }
 }

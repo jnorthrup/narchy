@@ -5,6 +5,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.GridModel;
+import spacegraph.space2d.container.grid.KeyValueModel;
 import spacegraph.space2d.container.grid.ListModel;
 import spacegraph.space2d.container.grid.ScrollGrid;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -12,6 +13,8 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
+
+import java.util.Map;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -71,4 +74,18 @@ class ScrollGridTest {
                     , 800, 800);
         }
     }
+
+    static class MapTest1 {
+        public static void main(String[] args) {
+            SpaceGraph.window(
+                new ScrollGrid<>(
+                        new KeyValueModel(
+                            Map.of("wtf", "ok", "sdfj", "xcv", "sdf", "fdfs")
+                        ),
+                        (x, y, n)->
+                            x == 0 ? new Label(n.toString()) : new CheckBox(n.toString()))
+                , 800, 800);
+        }
+    }
+
 }

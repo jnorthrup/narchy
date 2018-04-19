@@ -10,14 +10,13 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMove;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
-import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Clipped;
-import spacegraph.space2d.container.EmptySurface;
-import spacegraph.space2d.container.MutableContainer;
+import spacegraph.space2d.container.*;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static jcog.Util.short2Int;
 
@@ -34,14 +33,13 @@ public class ScrollGrid<X> extends Bordering {
 
     private final GridModel<X> model;
     private final GridRenderer<X> render;
-    private final MutableContainer content;
+    private final ScrollGridContainer content;
 
-    private final ConcurrentFastIteratingHashMap<Integer, GridCell<X>> cache =
-            new ConcurrentFastIteratingHashMap(new GridCell[0]);
+
 
 
     /** proportional in scale to bounds */
-    static final float defaultScrollMargin = 0.15f;
+    static final float defaultScrollEdge = 0.12f;
 
     private final FloatSlider scrollX, scrollY, scaleW, scaleH;
 
@@ -69,115 +67,11 @@ public class ScrollGrid<X> extends Bordering {
      */
     public ScrollGrid(GridModel<X> model, GridRenderer<X> render) {
         super();
+        edge(defaultScrollEdge);
         this.model = model;
         this.render = render;
 
-        set(C, new Clipped(content = new MutableContainer(
-                true
-                //false
-        ) {
-            @Override
-            protected void doLayout(int dtMS) {
-                if (parent != null) {
-
-                    float dx = content.x();
-                    float dy = content.y();
-                    float ww = content.w();
-                    float hh = content.h();
-                    float cw = ww / view.w;
-                    float ch = hh / view.h;
-
-                    //refresh cache
-                    boolean changedContent = false;
-
-                    short cellVisXmax = ScrollGrid.this.cellVisXmax;
-                    short cellVisXmin = ScrollGrid.this.cellVisXmin;
-                    short cellVisYmax = ScrollGrid.this.cellVisYmax;
-                    short cellVisYmin = ScrollGrid.this.cellVisYmin;
-                    cellVisXmin = (short) Math.max(cellVisXmin, 0);
-                    cellVisYmin = (short) Math.max(cellVisYmin, 0);
-                    cellVisXmax = (short) Math.min(cellVisXmax, model.cellsX());
-                    cellVisYmax = (short) Math.min(cellVisYmax, model.cellsY());
-                    for (short sx = cellVisXmin; sx < cellVisXmax; sx++) {
-                        for (short sy = cellVisYmin; sy < cellVisYmax; sy++) {
-                            changedContent |= ScrollGrid.this.set(sx, sy, model.get(sx, sy), true);
-                        }
-                    }
-                    //remove or hibernate cache entry surfaces which are not visible
-                    //and set the layout positions of those which are
-                    cache.forEachValue(e -> {
-                        int cellID = e.cell;
-                        Surface s = e.surface;
-
-                        boolean deleted = false;
-                        if (s == null) { //remove the unused entry
-                            deleted = true;
-                        } else {
-                            short sx = (short) (cellID >> 16);
-                            short sy = (short) (cellID & 0xffff);
-                            if (!cellVisible(sx, sy)) {
-                                e.value = null;
-                                e.surface = null;
-                                content.remove(s); //remove the surface
-                                deleted = true;  //remove the entry
-                            } else {
-
-                                //layout(s, x, y);
-                                float cx = dx + (sx - view.x + 0.5f) * cw;
-                                float cy = dy + (sy - view.y + 0.5f) * ch;
-                                s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
-                            }
-                        }
-
-                        if (deleted) {
-                            cache.remove(cellID);
-                        }
-                    });
-
-
-                }
-
-                super.doLayout(dtMS);
-            }
-
-
-            @Override
-            public boolean tangible() {
-                return true;
-            }
-
-            @Override
-            public Surface tryTouch(Finger finger) {
-                Surface inner = super.tryTouch(finger);
-                final int moveDragButton = 1;
-                if ((inner == null || inner == this) && finger.pressing(moveDragButton)) {
-                    if (finger.tryFingering(new FingerMove(moveDragButton,
-                            0.05f, 0.05f) {
-
-                        final float sx = view.x;
-                        final float sy = view.y;
-
-                        @Override
-                        public float xStart() {
-                            return sx;
-                        }
-
-                        @Override
-                        public float yStart() {
-                            return sy;
-                        }
-
-                        @Override
-                        public void move(float tx, float ty) {
-                            view(tx, ty);
-                        }
-                    }))
-                        return this;
-                }
-                return inner;
-            }
-
-        }));
+        set(C, new Clipped(content = new ScrollGridContainer()));
 
         set(S, this.scrollX = new FloatSlider("X",
                 new FloatSlider.FloatSliderModel(0 /* left initial pos */) {
@@ -220,7 +114,10 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Math.min(model.cellsX(), MAX_DISPLAYED_CELLS_X);
+                                //TODO if constrain to bounds ...
+                                //  return Math.min(model.cellsX(), MAX_DISPLAYED_CELLS_X);
+                                //return MAX_DISPLAYED_CELLS_X;
+                                return Math.min(model.cellsX() * 1.25f, MAX_DISPLAYED_CELLS_X);
                             }
                         }
                 ),
@@ -238,7 +135,10 @@ public class ScrollGrid<X> extends Bordering {
 
                             @Override
                             public float max() {
-                                return Math.min(model.cellsY(), MAX_DISPLAYED_CELLS_Y);
+                                //TODO if constrain to bounds ...
+                                //  return Math.min(model.cellsX(), MAX_DISPLAYED_CELLS_Y);
+                                //return MAX_DISPLAYED_CELLS_Y;
+                                return Math.min(model.cellsY() * 1.25f, MAX_DISPLAYED_CELLS_Y);
                             }
                         }
                 ),
@@ -285,14 +185,14 @@ public class ScrollGrid<X> extends Bordering {
     public ScrollGrid<X> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
         if (xOrY) {
             scrollX.visible(scrollVisible);
-            edge(S, scrollVisible ? defaultScrollMargin : 0);
+            edge(S, scrollVisible ? defaultScrollEdge : 0);
             scaleW.visible(scaleVisible);
-            edge(N, scaleVisible ? defaultScrollMargin : 0);
+            edge(N, scaleVisible ? defaultScrollEdge : 0);
         } else {
             scrollY.visible(scrollVisible);
-            edge(E, scrollVisible ? defaultScrollMargin : 0);
+            edge(E, scrollVisible ? defaultScrollEdge : 0);
             scaleH.visible(scaleVisible);
-            edge(W, scaleVisible ? defaultScrollMargin : 0);
+            edge(W, scaleVisible ? defaultScrollEdge : 0);
         }
         return this;
     }
@@ -329,18 +229,21 @@ public class ScrollGrid<X> extends Bordering {
             x2 = 1;
             setScrollBar(true, false, false);
         } else {
-            w = Math.min(w, maxW);
-            x = ((((x / maxW) - 0.5f) * 2 /* -1..+1 */ * (1f - w / maxW)) / 2 + 0.5f) * maxW;
+            if (w < maxW) {
+                x = ((((x / maxW) - 0.5f) * 2 /* -1..+1 */ * (1f - w / maxW)) / 2 + 0.5f) * maxW;
+            } else {
+                x = maxW/2; //align center
+            }
             x1 = (x - w / 2);
             x2 = (x + w / 2);
-            if (x1 < 0) {
-                x1 = 0;
-                x2 = w;
-            }
-            if (x2 > maxW) {
-                x2 = maxW;
-                x1 = maxW - w;
-            }
+//            if (x1 < 0) {
+//                x1 = 0;
+//                x2 = w;
+//            }
+//            if (x2 > maxW) {
+//                x2 = maxW;
+//                x1 = maxW - w;
+//            }
         }
 
         float maxH = model.cellsY();
@@ -351,18 +254,23 @@ public class ScrollGrid<X> extends Bordering {
             setScrollBar(false, false, false);
         } else {
 
-            h = Math.min(h, maxH);
-            y = ((((y / maxH) - 0.5f) * 2 /* -1..+1 */ * (1f - h / maxH)) / 2 + 0.5f) * maxH;
+            //h = Math.min(h, maxH);
+            if (h < maxH) {
+                y = ((((y / maxH) - 0.5f) * 2 /* -1..+1 */ * (1f - h / maxH)) / 2 + 0.5f) * maxH;
+            } else {
+                //align center
+                y = maxH / 2;
+            }
             y1 = (y - h / 2);
             y2 = (y + h / 2);
-            if (y1 < 0) {
-                y1 = 0;
-                y2 = h;
-            }
-            if (y2 > maxH) {
-                y2 = maxH;
-                y1 = maxH - h;
-            }
+//            if (y1 < 0) {
+//                y1 = 0;
+//                y2 = h;
+//            }
+//            if (y2 > maxH) {
+//                y2 = maxH;
+//                y1 = maxH - h;
+//            }
         }
 
         RectFloat2D nextView = RectFloat2D.XYXY(x1, y1, x2, y2);
@@ -383,10 +291,10 @@ public class ScrollGrid<X> extends Bordering {
         short vRightI = (short) Math.ceil(Math.min(maxW+1, x2 + 1));
         short vBottomI = (short) Math.ceil(Math.min(maxH+1, y2 + 1));
 
-        if (invalidCoordinate(vLeftI) || invalidCoordinate(vRightI) || vRightI <= vLeftI)
-            throw new RuntimeException("non-positive width or x coordinate: " + vLeftI + ".." + vRightI);
-        if (invalidCoordinate(vTopI) || invalidCoordinate(vBottomI) || vBottomI <= vTopI)
-            throw new RuntimeException("non-positive height or y coordinate: " + vTopI + ".." + vBottomI);
+//        if (invalidCoordinate(vLeftI) || invalidCoordinate(vRightI) || vRightI <= vLeftI)
+//            throw new RuntimeException("non-positive width or x coordinate: " + vLeftI + ".." + vRightI);
+//        if (invalidCoordinate(vTopI) || invalidCoordinate(vBottomI) || vBottomI <= vTopI)
+//            throw new RuntimeException("non-positive height or y coordinate: " + vTopI + ".." + vBottomI);
 
         cellVisXmin = vLeftI;
         cellVisYmin = vTopI;
@@ -410,67 +318,9 @@ public class ScrollGrid<X> extends Bordering {
 
 
     public final boolean set(short x, short y, @Nullable X v) {
-        return set(x, y, v, false);
+        return content.set(x, y, v, false);
     }
 
-    /**
-     * allows a model to asynchronously report changes, which may be visible or not.
-     * set 'v' to null to remove an entry (followed by a subsequent non-null 'v'
-     * is a way to force rebuilding of a cell.)
-     * returns if there was a change
-     */
-    protected boolean set(short x, short y, @Nullable X nextValue, boolean force) {
-
-        if (!force && !cellVisible(x, y))
-            return false; //ignore
-
-        GridCell<X> entry = cache.computeIfAbsent(short2Int(x, y), xy ->
-            new GridCell<>(xy, null)
-        );
-
-        X currentValue = entry.value;
-        Surface existingSurface = entry.surface;
-
-        boolean create = false, delete = false;
-
-        if (existingSurface != null) {
-            if (nextValue == null) {
-                //removal
-                delete = true;
-            } else {
-                if (Objects.equals(currentValue, nextValue)) {
-                    //equal value, dont re-create surface
-                } else {
-                    delete = true;
-                    create = true;
-                }
-            }
-        } else { //if (existingSurface == null) {
-            create = true;
-        }
-
-        if (delete) {
-            if (existingSurface!=null) {
-                entry.value = null;
-                entry.surface = null;
-                content.remove(existingSurface);
-            }
-        }
-
-        if (create) {
-            if (nextValue!=null) {
-                entry.value = nextValue;
-                Surface ss = entry.surface = render.apply(x, y, nextValue);
-                if (ss != null)
-                    content.add(ss);
-            } else {
-                entry.value = null;
-                entry.surface = null;
-            }
-        }
-
-        return create || delete;
-    }
 
     /**
      * test if a cell is currently visible
@@ -535,6 +385,193 @@ public class ScrollGrid<X> extends Bordering {
 
     }
 
+    private class ScrollGridContainer extends AbstractMutableContainer {
+
+        private final ConcurrentFastIteratingHashMap<Integer, GridCell<X>> cache =
+                new ConcurrentFastIteratingHashMap(new GridCell[0]);
+
+        public ScrollGridContainer() {
+
+        }
+
+        @Override
+        public void forEach(Consumer<Surface> o) {
+            cache.forEachValue(e -> o.accept(e.surface));
+        }
+
+        @Override
+        public boolean whileEach(Predicate<Surface> o) {
+            return cache.whileEachValue(e -> o.test(e.surface));
+        }
+
+        @Override
+        public boolean whileEachReverse(Predicate<Surface> o) {
+            return cache.whileEachValueReverse(e -> o.test(e.surface));
+        }
+
+        @Override
+        protected void doLayout(int dtMS) {
+            if (parent != null) {
+
+                float dx = content.x();
+                float dy = content.y();
+                float ww = content.w();
+                float hh = content.h();
+                float cw = ww / view.w;
+                float ch = hh / view.h;
+
+                //refresh cache
+                boolean changedContent = false;
+
+                short cellVisXmax = ScrollGrid.this.cellVisXmax;
+                short cellVisXmin = ScrollGrid.this.cellVisXmin;
+                short cellVisYmax = ScrollGrid.this.cellVisYmax;
+                short cellVisYmin = ScrollGrid.this.cellVisYmin;
+                cellVisXmin = (short) Math.max(cellVisXmin, 0);
+                cellVisYmin = (short) Math.max(cellVisYmin, 0);
+                cellVisXmax = (short) Math.min(cellVisXmax, model.cellsX());
+                cellVisYmax = (short) Math.min(cellVisYmax, model.cellsY());
+                for (short sx = cellVisXmin; sx < cellVisXmax; sx++) {
+                    for (short sy = cellVisYmin; sy < cellVisYmax; sy++) {
+                        changedContent |= set(sx, sy, model.get(sx, sy), true);
+                    }
+                }
+                //remove or hibernate cache entry surfaces which are not visible
+                //and set the layout positions of those which are
+                cache.forEachValue(e -> {
+                    int cellID = e.cell;
+                    Surface s = e.surface;
+
+                    boolean deleted = false;
+                    if (s == null) { //remove the unused entry
+                        deleted = true;
+                    } else {
+                        short sx = (short) (cellID >> 16);
+                        short sy = (short) (cellID & 0xffff);
+                        if (!cellVisible(sx, sy)) {
+                            e.value = null;
+                            e.surface = null;
+                            deleted = true;  //remove the entry
+                        } else {
+
+                            //layout(s, x, y);
+                            float cx = dx + (sx - view.x + 0.5f) * cw;
+                            float cy = dy + (sy - view.y + 0.5f) * ch;
+                            s.pos(RectFloat2D.XYWH(cx, cy, cw, ch));
+                        }
+                    }
+
+                    if (deleted) {
+                        cache.remove(cellID);
+                    }
+                });
+
+                super.doLayout(dtMS);
+
+            }
+        }
+
+
+        @Override
+        public boolean tangible() {
+            return true;
+        }
+
+        @Override
+        public Surface tryTouch(Finger finger) {
+            Surface inner = super.tryTouch(finger);
+            final int moveDragButton = 1;
+            if ((inner == null || inner == this) && finger.pressing(moveDragButton)) {
+                if (finger.tryFingering(new FingerMove(moveDragButton,
+                        0.05f, 0.05f) {
+
+                    final float sx = view.x;
+                    final float sy = view.y;
+
+                    @Override
+                    public float xStart() {
+                        return sx;
+                    }
+
+                    @Override
+                    public float yStart() {
+                        return sy;
+                    }
+
+                    @Override
+                    public void move(float tx, float ty) {
+                        view(tx, ty);
+                    }
+                }))
+                    return this;
+            }
+            return inner;
+        }
+
+        @Override
+        public int childrenCount() {
+            return cache.size(); //may not be accurate
+        }
+
+        @Override
+        protected void clear() {
+            cache.clear();
+        }
+
+        /**
+         * allows a model to asynchronously report changes, which may be visible or not.
+         * set 'v' to null to remove an entry (followed by a subsequent non-null 'v'
+         * is a way to force rebuilding of a cell.)
+         * returns if there was a change
+         */
+        protected boolean set(short x, short y, @Nullable X nextValue, boolean force) {
+
+            if (!force && !cellVisible(x, y))
+                return false; //ignore
+
+            GridCell<X> entry = cache.computeIfAbsent(short2Int(x, y), xy ->
+                    new GridCell<>(xy, null)
+            );
+
+            X currentValue = entry.value;
+            Surface existingSurface = entry.surface;
+
+            boolean create = false, delete = false;
+
+            if (existingSurface != null) {
+                if (nextValue == null) {
+                    //removal
+                    delete = true;
+                } else {
+                    if (Objects.equals(currentValue, nextValue)) {
+                        //equal value, dont re-create surface
+                    } else {
+                        delete = true;
+                        create = true;
+                    }
+                }
+            } else { //if (existingSurface == null) {
+                create = true;
+            }
+
+            if (delete) {
+                cache.remove(entry.cell);
+            }
+
+            if (create) {
+                if (nextValue!=null) {
+                    entry.value = nextValue;
+                    entry.surface = render.apply(x, y, nextValue);
+                } else {
+                    entry.value = null;
+                    entry.surface = null;
+                }
+            }
+
+            return create || delete;
+        }
+
+    }
 }
 
 //package automenta.spacenet.space.object.data;

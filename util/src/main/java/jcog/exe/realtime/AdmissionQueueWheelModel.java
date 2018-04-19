@@ -4,10 +4,7 @@ import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.TODO;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -104,8 +101,14 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     }
 
-
-
+    @Override
+    public int size() {
+        int sum = 0;
+        for (Queue d : wheel) {
+            sum += d.size();
+        }
+        return sum;
+    }
 
     @Override public void schedule(TimedFuture<?> r) {
         boolean added = incoming.offer(r);

@@ -95,7 +95,7 @@ abstract public class Container extends Surface {
         if (!visible())
             return null;
 
-        if (childrenCount() > 0) {
+        if (childrenCount() > 0) { //isEmpty? accurate count may not be readily computable
 
             // Draw forward, propagate touch events backwards
             if (finger == null) {

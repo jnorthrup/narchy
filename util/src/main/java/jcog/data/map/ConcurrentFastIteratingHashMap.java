@@ -1,10 +1,14 @@
 package jcog.data.map;
 
+import jcog.TODO;
 import jcog.util.ArrayIterator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
 
@@ -20,7 +24,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
         public Y putIfAbsent(X key, Y value) {
             Y r;
             if ((r = super.putIfAbsent(key, value)) == null) {
-                list = null;
+                invalidate();
                 return null;
             }
             return r;
@@ -32,14 +36,14 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
         public Y remove(Object key) {
             Y r = super.remove(key);
             if (r != null)
-                list = null;
+                invalidate();
             return r;
         }
 
         @Override
         public boolean remove(Object key, Object value) {
             if (super.remove(key, value)) {
-                list = null;
+                invalidate();
                 return true;
             }
             return false;
@@ -48,7 +52,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
         @Override
         public void clear() {
             super.clear();
-            list = null;
+            invalidate();
         }
     };
 
@@ -71,6 +75,50 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X,Y> {
         Y[] x = valueArray();
         for (Y t : x)
             action.accept(t);
+    }
+
+    @Override
+    public Y compute(X key, BiFunction<? super X, ? super Y, ? extends Y> remappingFunction) {
+        throw new TODO();
+    }
+
+    @Override
+    public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
+        final boolean[] changed = {false};
+        Y prev = super.computeIfAbsent(key, (p) -> {
+            Y next = mappingFunction.apply(p);
+            if (next != p)
+                changed[0] = true;
+            return next;
+        });
+
+        if (changed[0]) {
+            invalidate();
+        }
+
+        return prev;
+    }
+
+    public void invalidate() {
+        list = null;
+    }
+
+    public boolean whileEachValue(Predicate<? super Y> action) {
+        Y[] x = valueArray();
+        for (int i = 0, xLength = x.length; i < xLength; i++) {
+            if (!action.test(x[i]))
+                return false;
+        }
+        return true;
+    }
+
+    public boolean whileEachValueReverse(Predicate<? super Y> action) {
+        Y[] x = valueArray();
+        for (int i = x.length-1; i >= 0; i--) {
+            if (!action.test(x[i]))
+                return false;
+        }
+        return true;
     }
 
     @Override

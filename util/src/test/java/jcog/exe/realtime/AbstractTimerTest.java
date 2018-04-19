@@ -1,6 +1,9 @@
 package jcog.exe.realtime;
 
 
+import jcog.Texts;
+import org.HdrHistogram.ConcurrentHistogram;
+import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -163,6 +166,52 @@ public abstract class AbstractTimerTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
         // time difference between the beginning of second tick and end of first one
         assertTrue(r.get(2) - r.get(1) >= 100);
+    }
+    @Test
+    public void fixedDelaySubsequentFireTest_40ms() throws InterruptedException {
+        fixedDelaySubsequentFireTest(40, 40);
+    }
+    @Test
+    public void fixedDelaySubsequentFireTest_20ms() throws InterruptedException {
+        fixedDelaySubsequentFireTest(20, 40);
+    }
+
+    void fixedDelaySubsequentFireTest(int delayMS, int count) throws InterruptedException {
+
+        int warmup = 1;
+
+        CountDownLatch latch = new CountDownLatch(count);
+        long start = System.nanoTime();
+        Histogram when = new ConcurrentHistogram(
+                1_000L, //1uS
+                1_000_000_000L * 4 /* 4 Sec */, 5);
+
+        final long[] last = {start};
+        timer.scheduleWithFixedDelay(() -> {
+                    long now = System.nanoTime();
+
+                    if (latch.getCount() < (count-warmup))
+                        when.recordValue(now - last[0]);
+
+                    last[0] = now;
+                    latch.countDown();
+                },
+                0,
+                delayMS,
+                TimeUnit.MILLISECONDS);
+
+        assertTrue(latch.await(count, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
+        assertTrue(1 >= timer.size(), "only one task in the entire wheel");
+
+        {
+            Histogram w = when.copy();
+            Texts.histogramPrint(w, System.out);
+            System.out.println("mean=" + Texts.timeStr(w.getMean()));
+            System.out.println("max=" + Texts.timeStr(w.getMaxValue()));
+            long delayNS = TimeUnit.MILLISECONDS.toNanos(delayMS);
+            assertTrue(Math.abs(delayNS - w.getMean()) < delayNS / 4);
+        }
+        //assertTrue(end - start >= 1000);
     }
 
     @Test
