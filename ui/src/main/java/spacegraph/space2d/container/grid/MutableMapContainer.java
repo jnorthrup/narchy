@@ -1,12 +1,14 @@
 package spacegraph.space2d.container.grid;
 
 import jcog.data.map.ConcurrentFastIteratingHashMap;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AbstractMutableContainer;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class MutableMapContainer<K, V> extends AbstractMutableContainer {
@@ -15,11 +17,19 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
             new ConcurrentFastIteratingHashMap<>(new CacheCell[0]);
 
     @Override
-    public void forEach(Consumer<Surface> o) {
+    public void forEach(Consumer<Surface> each) {
         cache.forEachValue(e -> {
             Surface s = e.surface;
             if (s != null)
-                o.accept(s);
+                each.accept(s);
+        });
+    }
+
+    public void forEachValue(Consumer<? super V> each) {
+        cache.forEachValue(e -> {
+            V s = e.value;
+            if (s != null)
+                each.accept(s);
         });
     }
 
@@ -53,46 +63,42 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         cache.invalidate();
     }
 
+    @Nullable public V getValue(K x) {
+        CacheCell<K, V> y = cache.get(x);
+        if (y !=null)
+            return y.value;
+        return null;
+    }
+
+
+    public CacheCell<K, V> compute(K key, Function<V,V> builder) {
+        CacheCell<K,V> entry = cache.computeIfAbsent(key, CacheCell::new);
+        return update(key, entry, entry.update(builder));
+    }
+
     public CacheCell<K, V> put(K key, V nextValue, BiFunction<K,V, Surface> renderer) {
 
         CacheCell<K,V> entry = cache.computeIfAbsent(key, CacheCell::new);
 
-        Surface existingSurface = entry.surface;
+        return update(key, entry, entry.update(nextValue, renderer));
 
-        boolean create = false, delete = false;
+    }
 
-        if (existingSurface != null) {
-            if (nextValue == null) {
-                delete = true;
-            } else {
-                if (Objects.equals(entry.value, nextValue)) {
-                    //equal value, dont re-create surface
-                } else {
-                    create = true; //replace
-                }
+    @Nullable
+    public MutableMapContainer.CacheCell<K, V> update(K key, CacheCell<K, V> entry, boolean keep) {
+        if (!keep) {
+            remove(key);
+            return null;
+        } else {
+
+            if (parent != null) {
+                Surface es = entry.surface;
+                if (es != null && es.parent == null)
+                    es.start(this);
             }
-            if (delete || create) {
-                //TODO different eviction policies
-                existingSurface.stop();
-            }
-        } else { //if (existingSurface == null) {
-            if (nextValue!=null)
-                create = true;
-            else
-                delete = true;
+
+            return entry;
         }
-
-        if (delete) {
-            remove(entry);
-        } else if (create) {
-            Surface newSurface = renderer.apply(key, entry.value = nextValue);
-            entry.surface = newSurface;
-            if (parent!=null) {
-                entry.surface.start(this);
-            }
-        }
-
-        return entry;
     }
 
 
@@ -130,5 +136,85 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
             surface = null;
             value = null;
         }
+
+        /** return true to keep or false to remove from the map */
+        public boolean update(V nextValue, BiFunction<K, V, Surface> renderer) {
+            Surface existingSurface = surface;
+
+            boolean create = false, delete = false;
+
+            if (existingSurface != null) {
+                if (nextValue == null) {
+                    delete = true;
+                } else {
+                    if (Objects.equals(value, nextValue)) {
+                        //equal value, dont re-create surface
+                    } else {
+                        create = true; //replace
+                    }
+                }
+                if (delete || create) {
+                    //TODO different eviction policies
+                    existingSurface.stop();
+                }
+            } else { //if (existingSurface == null) {
+                if (nextValue!=null)
+                    create = true;
+                else
+                    delete = true;
+            }
+
+            if (delete) {
+                return false;
+            } else if (create) {
+                Surface newSurface = renderer.apply(key, this.value = nextValue);
+                this.surface = newSurface;
+            }
+
+            return true;
+        }
+
+        /** return true to keep or false to remove from the map */
+        public boolean update(Function<V,V> update) {
+            V prev = value;
+
+            V next = update.apply(prev);
+
+            boolean create = false, delete = false;
+
+            if (prev != null) {
+
+                if (next == null) {
+                    delete = true;
+                } else {
+                    if (Objects.equals(value, prev)) {
+                        //equal value, dont re-create surface
+                    } else {
+                        create = true; //replace
+                    }
+                }
+                if (delete || create) {
+                    //TODO different eviction policies
+                    if (surface!=null)
+                        surface.stop();
+                }
+            } else { //if (existingSurface == null) {
+                if (next!=null)
+                    create = true;
+                else
+                    delete = true;
+            }
+
+            if (delete) {
+                return false;
+            } else if (create) {
+                this.value = next;
+                this.surface = (Surface)value;
+            }
+
+            return true;
+        }
     }
+
+
 }

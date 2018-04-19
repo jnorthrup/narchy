@@ -3,15 +3,57 @@ package spacegraph.space2d;
 import com.google.common.collect.Iterables;
 import com.google.common.graph.Graph;
 import com.google.common.graph.SuccessorsFunction;
+import com.jogamp.opengl.GL2;
+import jcog.bag.Bag;
 import jcog.data.graph.MapNodeGraph;
+import jcog.list.FasterList;
+import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.tree.rtree.rect.RectFloat2D;
+import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.MutableMapContainer;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.video.Draw;
 
 import java.util.List;
+import java.util.Random;
 import java.util.function.Function;
 
+import static com.jogamp.opengl.math.FloatUtil.sqrt;
+
 /** 2D directed/undirected graph widget */
-public class Graph2D<X> extends MutableMapContainer<X,X> {
+public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
+
+
+    static class NodeVis<X> extends Gridding {
+
+        final X id;
+        volatile NodeVis<X>[] edgeOut = null;
+
+        NodeVis(X id) {
+            this.id = id;
+
+            set(
+                new PushButton(id.toString())
+            );
+        }
+
+        @Override
+        protected void paintBelow(GL2 gl) {
+            NodeVis[] e = edgeOut;
+            if (e!=null) {
+                float x = cx();
+                float y = cy();
+                gl.glLineWidth(4f);
+                for (NodeVis b : e) {
+                    Draw.line(gl, x, y, b.x(), b.y());
+                }
+            }
+        }
+
+
+    }
+
 
     public Graph2D() {
         
@@ -20,7 +62,21 @@ public class Graph2D<X> extends MutableMapContainer<X,X> {
     @Override
     protected void doLayout(int dtMS) {
 
+        float w = w();
+        float h = h();
+        Random rng = new XoRoShiRo128PlusRandom(1);
+        float cw = sqrt(w);
+        float ch = sqrt(h);
+
+        //TODO model
+        forEach(s -> {
+            s.pos(RectFloat2D.XYWH(rng.nextFloat() * w, rng.nextFloat() * h, cw, ch));
+        });
         super.doLayout(dtMS);
+    }
+
+    public Graph2D<X> commit(Bag<?,X> g) {
+        return commit(g, (nothing)->null);
     }
 
     /** adapts guava Graph as input */
@@ -46,11 +102,14 @@ public class Graph2D<X> extends MutableMapContainer<X,X> {
                 ));
     }
 
-    public Graph2D<X> commit(Iterable<X> nodes, Function<X,Iterable<X>> edges) {
+    public Graph2D<X> commit(Iterable<X> nodes, @Nullable Function<X,Iterable<X>> edges) {
         return update(nodes, edges, false);
     }
 
-    public Graph2D<X> update(Iterable<X> nodes, Function<X,Iterable<X>> edges, boolean addOrReplace ) {
+    public Graph2D<X> update(Iterable<X> nodes, @Nullable Function<X,Iterable<X>> edges, boolean addOrReplace ) {
+
+        if (!addOrReplace)
+            clear();
 
         nodes.forEach((x)->{
             //g.nodes().forEach(x -> {
@@ -58,25 +117,27 @@ public class Graph2D<X> extends MutableMapContainer<X,X> {
             //c.termlinks().clear();
 
             //TODO computeIfAbsent and re-use existing model
-            put(x, x, (xx,xxx)->render(xx));
-
-//            edges.apply(x).forEach((X edge) ->
-//                    //g.successors(x).forEach((Term y) ->
-//                    src.edges.add(new EDraw<>(
-//                            src,
-//                            //cache.getOrAdd(edge, DefaultSpaceWidget::new)
-//                            cache.computeIfAbsent(edge, Graph2D.DefaultSpaceWidget::new)
-//                            , 0.5f))
-//            );
-
+            compute(x, xx -> {
+                if (xx == null)
+                    return new NodeVis(x);
+                else
+                    return xx; //re-use
+            });
         });
+
+        forEachValue((NodeVis<X> v) -> {
+            List<NodeVis<X>> outs = new FasterList();
+            edges.apply(v.id).forEach((X ve) -> {
+                outs.add( getValue(ve) );
+            });
+            v.edgeOut = ((FasterList<NodeVis<X>>) outs).toArrayRecycled(NodeVis[]::new);
+        });
+
 
         return this;
     }
 
-    private Surface render(X vertex) {
-        return new PushButton(vertex.toString());
-    }
+
 
 
 }
