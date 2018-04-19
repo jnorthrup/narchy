@@ -8,7 +8,7 @@ import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
 import jcog.data.array.Arrays;
 import jcog.decide.Roulette;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.math.random.SplitMix64Random;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jcog.util.AtomicFloat;
@@ -93,10 +93,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
     protected HijackBag(int initialCapacity, int reprobes) {
-        this.id = (serial.getAndIncrement());
+        this.id = serial.getAndIncrement();
+
         this.rng =
-                new XorShift128PlusRandom(id); //lighter-weight, non-atomic
+                new SplitMix64Random(id); //supposedly even faster
+                //new XorShift128PlusRandom(id); //lighter-weight, non-atomic
                 //new XoRoShiRo128PlusRandom(id);
+
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
 

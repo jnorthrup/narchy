@@ -31,13 +31,13 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 512);
+    public final IntRange conceptsPerIteration = new IntRange(4, 1, 512);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 2;
+    public int premisesPerConcept = 4;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
@@ -72,6 +72,8 @@ public class MatrixDeriver extends Deriver {
         /** temporary buffer for storing unique premises */
         ArrayHashSet<Premise> premiseBurst = d.premiseBuffer;
 
+        Random rng = d.random;
+
         while (totalPremisesRemain > 0) {
 
             int burstSize = Math.min(burstMax, totalPremisesRemain);
@@ -87,7 +89,7 @@ public class MatrixDeriver extends Deriver {
                     n.emotion.premiseBurstDuplicate.increment();
 
                 return true;
-            });
+            }, rng);
 
 
             int s = premiseBurst.size();
@@ -121,7 +123,7 @@ public class MatrixDeriver extends Deriver {
         }
 
     }
-    private void selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each) {
+    private void selectPremises(NAR nar, int premisesMax, BiPredicate<Task, PriReference<Term>> each, Random rng) {
 
         int premisesRemain[] = new int[]{premisesMax};
         int perConceptRemain[] = new int[1];
@@ -141,7 +143,7 @@ public class MatrixDeriver extends Deriver {
 
             premiseMatrix(a,
                     nar, continueHypothesizing,
-                    tasklinks, termLinksPerTaskLink);
+                    tasklinks, termLinksPerTaskLink, rng);
 
             return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
         });
@@ -152,7 +154,7 @@ public class MatrixDeriver extends Deriver {
     /**
      * hypothesize a matrix of premises, M tasklinks x N termlinks
      */
-    public void premiseMatrix(Activate conceptActivation, NAR nar, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink) {
+    public void premiseMatrix(Activate conceptActivation, NAR nar, BiPredicate<Task, PriReference<Term>> continueHypothesizing, int _tasklinks, int _termlinksPerTasklink, Random rng) {
 
         Concept concept = conceptActivation.id;
 
@@ -165,8 +167,6 @@ public class MatrixDeriver extends Deriver {
             return;
 
         int[] conceptTTL = { _tasklinks *  _termlinksPerTasklink };
-
-        Random rng = nar.random();
 
         //((TaskLinkCurveBag)tasklinks).compress(nar);
 

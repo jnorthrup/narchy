@@ -61,15 +61,6 @@ public class Taskify extends AbstractPred<Derivation> {
     public boolean test(Derivation d) {
 
         Truth tru = d.concTruth;
-        if (tru != null) {
-            float finalEvi = tru.evi() * d.concEviFactor;
-            if (d.eviMin > finalEvi) {
-                d.use(Param.TTL_EVI_INSUFFICIENT);
-                return true;
-            }
-
-            tru = tru.withEvi(finalEvi);
-        }
 
         Term x0 = d.derivedTerm.get();
         Term x = d.anon.get(x0).normalize();

@@ -27,14 +27,14 @@ public final class Termify extends AbstractPred<Derivation> {
 
     //    public final Set<Variable> uniqueVars;
     public final PremiseDeriverProto rule;
-    private final Occurrify.TaskTimeMerge timeJoin;
+    private final Occurrify.TaskTimeMerge time;
 
     public Termify(Term pattern, PremiseDeriverProto rule, Truthify solve, Occurrify.TaskTimeMerge time) {
         super($.func("derive", pattern, solve, time.term()));
         this.rule = rule;
         this.pattern = pattern;
 
-        this.timeJoin = time;
+        this.time = time;
 
 //        this.uniqueVars = pattern instanceof Compound ? ((PatternCompound)pattern).uniqueVars : Set.of();
     }
@@ -68,15 +68,13 @@ public final class Termify extends AbstractPred<Derivation> {
                 d.concTruth = d.concTruth.neg();
         }
 
-        d.concEviFactor = 1f;
         final long[] occ = d.concOcc;
         occ[0] = occ[1] = ETERNAL;
 
         Term c2;
         if (d.temporal) {
 
-            c2 = timeJoin.solve(d, c1);
-
+            c2 = time.solve(d, c1);
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
@@ -89,12 +87,13 @@ public final class Termify extends AbstractPred<Derivation> {
             }
 
 
-            if (occ[0] > occ[1]) {
-                //HACK swap the reversed occ
-                long x = occ[0];
-                occ[0] = occ[1];
-                occ[1] = x;
-            }
+            assert(occ[1] >= occ[0]);
+//            if (occ[0] > occ[1]) {
+//                //HACK swap the reversed occ
+//                long x = occ[0];
+//                occ[0] = occ[1];
+//                occ[1] = x;
+//            }
 
             if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single &&
                     Op.values()[d._beliefOp].temporal

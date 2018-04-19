@@ -241,11 +241,11 @@ public class Premise {
             }
 
 
-            if (unifiedBelief) {
-                Concept originalBeliefConcept = n.conceptualize(term());
-                if (originalBeliefConcept != null)
-                    linkVariable(originalBeliefConcept, beliefConcept);
-            }
+//            if (unifiedBelief) {
+//                Concept originalBeliefConcept = n.conceptualize(term());
+//                if (originalBeliefConcept != null)
+//                    linkVariable(originalBeliefConcept, beliefConcept);
+//            }
 
         }
         return belief;

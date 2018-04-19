@@ -16,6 +16,9 @@ abstract class TemporalStabilityTest {
     public void test(int cycles, @NotNull NAR n) {
 
 
+        n.termVolumeMax.set(20);
+        n.freqResolution.set(0.25f);
+        n.confResolution.set(0.05f);
 
         //n.log();
         n.onTask(this::validate);
@@ -47,7 +50,7 @@ abstract class TemporalStabilityTest {
 
     public void validate(Task t) {
         long ts = t.start();
-        long te = Math.max(t.start()+t.term().dtRange(), t.end());
+        long te = Math.max(ts+t.term().dtRange(), t.end());
         if (t.isInput()) {
             System.out.println("in: " + t);
             if (!t.isEternal()) {

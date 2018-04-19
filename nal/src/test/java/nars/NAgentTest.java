@@ -67,7 +67,7 @@ public class NAgentTest {
 //            }
 //        });
 
-        a.runSynch(2000);
+        a.runSynch(1000);
 
         assertTrue(a.avgReward() > 0.01f);
         assertTrue(a.dex.getMean() > 0f);
@@ -103,7 +103,7 @@ public class NAgentTest {
 
         init.accept(a);
 
-        a.runSynch(3000);
+        a.runSynch(500);
 
         assertTrue(-(-1-a.avgReward()) > 0.2f); //oscillation density
         assertTrue(a.dex.getMean() > 0.1f);

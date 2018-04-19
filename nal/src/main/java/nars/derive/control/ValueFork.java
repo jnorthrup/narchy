@@ -48,11 +48,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
         int before = d.now();
 
-        float[] weights = value.apply(d);
-        int N = weights.length;
-
-        assert (N > 0);
-        MutableRoulette.run(weights, d.random,
+        MutableRoulette.run(value.apply(d), d.random,
 
             wi -> wi / 2 /* harmonic decay */,
 

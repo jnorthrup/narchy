@@ -68,7 +68,9 @@ public class MutableRoulette {
 
         for (int i = 0; i < n; i++) {
             float wi = w[i];
-            assert(wi >= 0);
+            if (!(wi >= 0 && Float.isFinite(wi)))
+                throw new RuntimeException("invalid weight: " + wi);
+
             if (wi < EPSILON) {
                 w[i] = 0; //hard set to zero
                 remaining--;
@@ -77,7 +79,7 @@ public class MutableRoulette {
             }
         }
 
-        if (remaining == 0 || s < (n+1)* EPSILON) {
+        if (remaining == 0 || s < (n*n) * EPSILON) {
             //flat
             Arrays.fill(w, 1);
             s = remaining = n;
@@ -88,7 +90,7 @@ public class MutableRoulette {
     }
 
     public boolean next(IntPredicate select) {
-        return select.test(next()) && --remaining > 0;
+        return select.test(next()) && remaining > 0;
     }
 
     private int next() {
@@ -114,11 +116,19 @@ public class MutableRoulette {
             //boolean dir = rng.nextBoolean(); //randomize the direction
 
             int i = this.i;
+            int idle = 0;
+
 
             float wi;
             while ((distance = distance - (wi = w[i])) > EPSILON) {
                 //if (dir) {
                 if (++i == count) i = 0;
+
+                if (idle++ == count) {
+                    remaining = 0;
+                    break; //???
+                }
+
                 //} else {
                 //  if (--i == -1) i = count - 1;
                 //}
@@ -128,11 +138,15 @@ public class MutableRoulette {
             if (!Float.isFinite(nextWeight))
                 throw new RuntimeException("math error");
             if (nextWeight!=wi) {
+                assert(nextWeight >= 0);
                 float delta = nextWeight - wi;
                 w[i] = nextWeight;
                 weightSum += delta;
-                if (nextWeight < EPSILON)
+                if (nextWeight < EPSILON) {
                     remaining--;
+                    if (weightSum < EPSILON * (w.length+1))
+                        remaining = 0; //give up
+                }
             }
 
             this.i = i;

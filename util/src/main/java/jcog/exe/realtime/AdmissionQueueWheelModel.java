@@ -44,16 +44,13 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
             for (int i = 0; i < count; i++) {
                 TimedFuture b = buffer[i];
                 buffer[i] = null;
-                scheduleUnlessImmediate(b, c, timer);
+                schedule(b, c, timer);
             }
             Arrays.fill(buffer, 0, count, null);
         }
 
         // TODO: consider extracting processing until deadline for test purposes
         Queue<TimedFuture<?>> q = wheel[c];
-        if (q.isEmpty())
-            return;
-
         int n = q.size();
         switch (n) {
             case 0: break; //shoudlnt happen really
@@ -111,10 +108,12 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
     }
 
     @Override public void schedule(TimedFuture<?> r) {
+        if (r.state()==TimedFuture.Status.CANCELLED)
+            throw new RuntimeException("scheduling an already cancelled task");
+
         boolean added = incoming.offer(r);
-        if (!added) {
+        if (!added)
             throw new RuntimeException("incoming queue overloaded");
-        }
 
         incomingCount.incrementAndGet();
     }

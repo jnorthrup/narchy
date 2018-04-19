@@ -28,6 +28,7 @@ public class AIMATests {
     public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
+        n.termVolumeMax.set(16);
         n.freqResolution.set((float)truthRes);
 
         n.believe("(P ==> Q)",
@@ -38,7 +39,7 @@ public class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", 4000);
+        assertBelief(n, true, "Q", 150);
 
     }
 
@@ -124,7 +125,7 @@ public class AIMATests {
 
     static void assertBelief(NAR n, boolean expcted, String x, int time) {
 
-        final int metricPeriod = 150;
+        final int metricPeriod = time/4;
 
         PairedStatsAccumulator timeVsConf = new PairedStatsAccumulator();
 
@@ -147,7 +148,7 @@ public class AIMATests {
         }
 
 
-
+        assertTrue(!evis.isEmpty());
 
 
         for (char c : "ABLMPQ".toCharArray()) {

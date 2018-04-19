@@ -316,9 +316,11 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             //String currentTermString = termString;
             if (cc != null) {
                 draw(term, cc, gl, minT, maxT);
-                termString = cc.toString();
+                if (termString!=null)
+                    termString = cc.toString();
             } else {
-                termString = term.toString();
+                if (termString!=null)
+                    termString = term.toString();
             }
             //label.text(termString);
         });

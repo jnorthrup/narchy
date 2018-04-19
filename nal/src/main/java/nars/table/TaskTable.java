@@ -96,8 +96,8 @@ public interface TaskTable {
                 return;
             }
 
-            //roulette selection, softmax so negative values dont disturb the roulette weighting
-            float[] w = Util.map(t, Util.softmaxFunc(m.value(), 0.5f));
+
+            float[] w = Util.map(t, m.value());
 
             final int[] remain = {limit};
             MutableRoulette.run(w, rng, wi -> 0 /* unique */, (x)->{

@@ -33,21 +33,29 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
         return true;
     }
 
+    @Override
+    public int rounds() {
+        return getOffset(resolution) / wheels;
+    }
+
     @Override public int getOffset(long resolution) {
         return (int) Math.min(Integer.MAX_VALUE-1,
                 Math.round(((double)Math.max(resolution, periodNS)) / resolution)
         );
     }
 
-    void reset() {
-        this.rounds = getOffset(resolution)/wheels;
+
+    public void reset() {
+        this.rounds = rounds();
     }
 
     @Override
     public void run() {
         super.run();
-        reset();
-        rescheduleCallback.accept(this);
+        if (status != Status.CANCELLED) {
+            reset();
+            rescheduleCallback.accept(this);
+        }
     }
 
 

@@ -2,6 +2,7 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ArrayHashSet;
+import jcog.math.random.SplitMix64Random;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
 import nars.$;
@@ -92,7 +93,6 @@ public class Derivation extends PreDerivation {
      */
     public Truth concTruth;
     public byte concPunc;
-    public float concEviFactor;
     public final long[] concOcc = new long[2];
     public final Versioned<Term> derivedTerm;
 
@@ -299,6 +299,11 @@ public class Derivation extends PreDerivation {
 
         derivedTerm = new Versioned(this, 3);
 
+        //random generator local to this Derivation context.
+        //gets seeded by NAR rng every init
+        this.random =
+                //new XoRoShiRo128PlusRandom(1);
+                new SplitMix64Random(1);
 
         //anon = new Anon();
 //            @Override
@@ -332,106 +337,11 @@ public class Derivation extends PreDerivation {
 
     }
 
-    /**
-     * functors to be inserted in PatternIndex's for direct usage
-     */
-    static Termed[] ruleFunctors(NAR nar) {
-
-        return new Termed[]{
-
-                SetFunc.union,
-                SetFunc.differ,
-                SetFunc.intersect,
-
-                Subst.substitute,
-
-                ListFunc.sub,
-                ListFunc.subs,
-                ListFunc.append,
-
-                Image.imageNormalize,
-                Image.imageInt,
-                Image.imageExt,
-
-//                nar.get(Atomic.the("add")),
-//                nar.get(Atomic.the("mul")),
-
-                nar.get(Atomic.the("dropAnyEvent")),
-                nar.get(Atomic.the("dropAnySet")),
-                nar.get(Atomic.the("without")),
-                nar.get(Atomic.the("withoutPosOrNeg")),
-
-                nar.get(Atomic.the("conjWithout")),
-                nar.get(Atomic.the("conjWithoutPosOrNeg")),
-
-                nar.get(Atomic.the("conjDropIfEarliest")),
-                nar.get(Atomic.the("conjDropIfLatest")),
-                nar.get(Atomic.the("conjEvent")),
-                nar.get(Atomic.the("ifConjCommNoDepVars")),
-                nar.get(Atomic.the("indicesOf")),
-                nar.get(Atomic.the("substDiff")),
-                nar.get(Atomic.the("ifNeqRoot")),
-        };
-    }
-
-    /**
-     * only returns derivation-specific functors.  other functors must be evaluated at task execution time
-     */
-    @Override
-    public final Term transformAtomic(Term atomic) {
-
-        if (atomic instanceof Bool)//assert (!(x instanceof Bool));
-            return atomic;
-
-        if (atomic instanceof Atom) {
-            Termed f = derivationFunctors.get(atomic);
-            if (f != null)
-                return f.term();
-        }
-
-
-        Term y = xy(atomic);
-        if (y != null) {
-            return y; //an assigned substitution, whether a variable or other type of term
-        } else {
-            return atomic;
-        }
-
-//        else if (x.hasAny(substitutionVector)) {
-//            return super.applyTermIfPossible(x);
-//        } else {
-//            return x;
-//        }
-    }
-
-    public Derivation cycle(NAR nar, Deriver deri) {
-        NAR pnar = this.nar;
-        if (pnar != nar) {
-            init(nar);
-        }
-
-        long now = nar.time();
-        if (now != this.time) {
-            this.time = now;
-            this.dur = nar.dur();
-            this.ditherTime = nar.dtDitherCycles();
-            this.freqRes = nar.freqResolution.floatValue();
-            this.confRes = nar.confResolution.floatValue();
-            this.confMin = nar.confMin.floatValue();
-            this.eviMin = c2wSafe(confMin);
-            this.termVolMax = nar.termVolumeMax.intValue();
-            //transformsCache.cleanUp();
-        }
-
-        this.deriver = deri;
-
-        return this;
-    }
-
     void init(NAR nar) {
+
         this.clear();
+
         this.nar = nar;
-        this.random = nar.random();
 
         Termed[] derivationFunctors = new Termed[]{
                 uniSubAny,
@@ -439,6 +349,7 @@ public class Derivation extends PreDerivation {
                 polarizeFunc,
                 termlinkRandomProxy
         };
+
         Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
 
         for (Termed x : ruleFunctors(nar))
@@ -574,7 +485,7 @@ public class Derivation extends PreDerivation {
 //        }
         this.parentComplexitySum =
                 Util.sum(
-                //Math.max(
+                        //Math.max(
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 
@@ -601,7 +512,7 @@ public class Derivation extends PreDerivation {
             long[] beliefStamp = _belief.stamp();
             this.overlapDouble = Stamp.overlapsAny(this.taskStamp, beliefStamp);
 
-                    //Math.min(1, Util.sum(
+            //Math.min(1, Util.sum(
 //                    Util.or(
 //                            //Util.max(
 //                            overlapSingle,
@@ -653,7 +564,7 @@ public class Derivation extends PreDerivation {
 
 //        int now = now();
 //        try {
-            forEachMatch.test(this);
+        forEachMatch.test(this);
 //        } catch (Exception e) {
 //            logger.error("{} {}", this, e);
 //        }
@@ -662,6 +573,104 @@ public class Derivation extends PreDerivation {
         }*/
 
     }
+
+    /**
+     * functors to be inserted in PatternIndex's for direct usage
+     */
+    static Termed[] ruleFunctors(NAR nar) {
+
+        return new Termed[]{
+
+                SetFunc.union,
+                SetFunc.differ,
+                SetFunc.intersect,
+
+                Subst.substitute,
+
+                ListFunc.sub,
+                ListFunc.subs,
+                ListFunc.append,
+
+                Image.imageNormalize,
+                Image.imageInt,
+                Image.imageExt,
+
+//                nar.get(Atomic.the("add")),
+//                nar.get(Atomic.the("mul")),
+
+                nar.get(Atomic.the("dropAnyEvent")),
+                nar.get(Atomic.the("dropAnySet")),
+                nar.get(Atomic.the("without")),
+                nar.get(Atomic.the("withoutPosOrNeg")),
+
+                nar.get(Atomic.the("conjWithout")),
+                nar.get(Atomic.the("conjWithoutPosOrNeg")),
+
+                nar.get(Atomic.the("conjDropIfEarliest")),
+                nar.get(Atomic.the("conjDropIfLatest")),
+                nar.get(Atomic.the("conjEvent")),
+                nar.get(Atomic.the("ifConjCommNoDepVars")),
+                nar.get(Atomic.the("indicesOf")),
+                nar.get(Atomic.the("substDiff")),
+                nar.get(Atomic.the("ifNeqRoot")),
+        };
+    }
+
+    /**
+     * only returns derivation-specific functors.  other functors must be evaluated at task execution time
+     */
+    @Override
+    public final Term transformAtomic(Term atomic) {
+
+        if (atomic instanceof Bool)//assert (!(x instanceof Bool));
+            return atomic;
+
+        if (atomic instanceof Atom) {
+            Termed f = derivationFunctors.get(atomic);
+            if (f != null)
+                return f.term();
+        }
+
+
+        Term y = xy(atomic);
+        if (y != null) {
+            return y; //an assigned substitution, whether a variable or other type of term
+        } else {
+            return atomic;
+        }
+
+//        else if (x.hasAny(substitutionVector)) {
+//            return super.applyTermIfPossible(x);
+//        } else {
+//            return x;
+//        }
+    }
+
+    public Derivation cycle(NAR nar, Deriver deri) {
+        NAR pnar = this.nar;
+        if (pnar != nar) {
+            init(nar);
+        }
+
+        long now = nar.time();
+        if (now != this.time) {
+            this.time = now;
+            this.dur = nar.dur();
+            this.ditherTime = nar.dtDitherCycles();
+            this.freqRes = nar.freqResolution.floatValue();
+            this.confRes = nar.confResolution.floatValue();
+            this.confMin = nar.confMin.floatValue();
+            this.eviMin = c2wSafe(confMin);
+            this.termVolMax = nar.termVolumeMax.intValue();
+            this.random.setSeed(nar.random().nextLong());
+            //transformsCache.cleanUp();
+        }
+
+        this.deriver = deri;
+
+        return this;
+    }
+
 
     @Nullable
     public long[] evidenceSingle() {

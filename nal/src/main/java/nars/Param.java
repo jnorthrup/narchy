@@ -43,7 +43,7 @@ public abstract class Param {
     public static final boolean TERM_ARRAY_SHARE = true;
 
     /** softmax roulette parameter in trie deriver fork decisions */
-    public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
+    public static final float TRIE_DERIVER_TEMPERATURE = 1f;
 
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
@@ -184,7 +184,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(128, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(32, 0, 1024);
 
 
     /** estimate */

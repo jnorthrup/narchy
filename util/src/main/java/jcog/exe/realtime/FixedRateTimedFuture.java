@@ -2,6 +2,8 @@ package jcog.exe.realtime;
 
 import java.util.concurrent.Callable;
 
+import static jcog.exe.realtime.TimedFuture.Status.CANCELLED;
+
 public class FixedRateTimedFuture<T> extends AbstractTimedCallable<T> {
 
     /** adjustable while running */
@@ -17,9 +19,11 @@ public class FixedRateTimedFuture<T> extends AbstractTimedCallable<T> {
 
     @Override
     public void execute(HashedWheelTimer t) {
-        super.execute(t);
-        reset(t.resolution, t.wheels);
-        t._schedule(this);
+        if (status != CANCELLED) {
+            super.execute(t);
+            reset(t.resolution, t.wheels);
+            t._schedule(this);
+        }
     }
 
     @Override

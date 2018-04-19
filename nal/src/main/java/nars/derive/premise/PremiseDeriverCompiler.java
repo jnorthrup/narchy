@@ -129,20 +129,21 @@ public enum PremiseDeriverCompiler { ;
 
         ValueFork[] rootBranches = postChoices.toArrayRecycled(ValueFork[]::new);
         return new PremiseDeriver(compiledPaths,
-            new ValueFork(
-                rootBranches,
+            new ValueFork( rootBranches,
                 Stream.of(rootBranches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new),
 
                 //weight vector function
-                d ->
-                    Util.map(d.will.length, (int i) ->
-                        Util.softmax(
-                            // sum of downstream cause values
-                            Util.sum(
-                                    (Cause c) -> c.value(),
-                                rootBranches[d.will[i]].causes
-                            ), TRIE_DERIVER_TEMPERATURE),
-                        new float[d.will.length]),
+                d -> {
+                    short[] will = d.will;
+                    int n = will.length;
+                    return Util.map(n, (i) ->
+                        // sum of downstream cause values, applied to some activation function
+                        Util.sum(
+                            (Cause c) -> Util.softmax(c.value(), TRIE_DERIVER_TEMPERATURE),
+                            rootBranches[will[i]].causes
+                        ),
+                        new float[n]);
+                },
 
                 //choice -> branch mapping: mapped through the derivation's calculated possibilty set
                 (d,choice) -> rootBranches[d.will[choice]]

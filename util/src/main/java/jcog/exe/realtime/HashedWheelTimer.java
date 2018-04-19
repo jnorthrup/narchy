@@ -57,7 +57,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             int index = idx(c + r.getOffset(resolution) + 1);
             reschedule(index, r);
         }
-        public final void scheduleUnlessImmediate(TimedFuture r, int c, HashedWheelTimer timer) {
+        public final void schedule(TimedFuture r, int c, HashedWheelTimer timer) {
             int offset = r.getOffset(resolution);
             if (offset>-1 || r.isPeriodic()) {
                 int index = idx(c + offset + 1);

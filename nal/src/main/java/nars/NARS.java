@@ -255,13 +255,13 @@ public class NARS {
                 1f/Math.sqrt(((AbstractExec)nar.exe).active.capacity())
             );
 
-            nar.termVolumeMax.set(30);
+            nar.termVolumeMax.set(28);
             //nar.confMin.setValue(0.05f);
 
             nar.beliefPriDefault.set(0.5f);
             nar.questionPriDefault.set(0.5f);
-            nar.goalPriDefault.set(0.5f);
-            nar.questPriDefault.set(0.5f);
+            nar.goalPriDefault.set(0.25f);
+            nar.questPriDefault.set(0.25f);
 
 //            nar.emotion.want(Perceive, -0.1f);
 
