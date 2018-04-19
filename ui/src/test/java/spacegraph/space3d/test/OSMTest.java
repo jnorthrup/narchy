@@ -3,6 +3,7 @@ package spacegraph.space3d.test;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import jcog.User;
+import spacegraph.space2d.WidgetTest;
 import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.widget.OsmSpace;

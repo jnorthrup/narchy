@@ -8,7 +8,7 @@ import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 import spacegraph.space2d.phys.dynamics.FixtureDef;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 
 import static nars.experiment.racer.Vehicle2D.Wheel.PIXEL_TO_METER_RATIO_DEFAULT;
 
@@ -96,7 +96,7 @@ public class Racer {
 //        this.mScene = new Scene();
 //        this.mScene.setBackground(new Background(0, 0, 0));
 
-        PhyWall p = SpaceGraph.wall(800, 800);
+        Dyn2DSurface p = SpaceGraph.wall(800, 800);
 
         this.mPhysicsWorld =
                 p.W;

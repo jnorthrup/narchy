@@ -268,8 +268,12 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      * @param t1 the other tuple
      */
     public final Tuple2f subbed(Tuple2f t1) {
-        this.x -= t1.x;
-        this.y -= t1.y;
+        return subbed(t1.x, t1.y);
+    }
+
+    public Tuple2f subbed(float x, float y) {
+        this.x -= x;
+        this.y -= y;
         return this;
     }
 

@@ -1,4 +1,4 @@
-package spacegraph.space2d.test.fracture;
+package spacegraph.space2d.dyn2d.fracture;
 
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
@@ -6,7 +6,7 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
 import spacegraph.space2d.phys.particle.ParticleGroupDef;
-import spacegraph.space2d.test.ICase;
+import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 

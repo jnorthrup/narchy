@@ -8,7 +8,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.OmniBox;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ public class GUI {
         //            }, 800, 600);
 
 
-        PhyWall w = SpaceGraph.wall(800, 600);
+        Dyn2DSurface w = SpaceGraph.wall(800, 600);
         ((ZoomOrtho) w.root()).scaleMin = 100f;
         ((ZoomOrtho) w.root()).scaleMax = 1500;
 

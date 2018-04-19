@@ -8,7 +8,7 @@ import spacegraph.space3d.widget.SpaceWidget;
 
 import java.util.List;
 
-public class EdgeDirected extends ForceDirected {
+public class EdgeDirected3D extends ForceDirected3D {
 
     @Override
     public void solve(Broadphase b, List<Collidable> objects, float timeStep) {

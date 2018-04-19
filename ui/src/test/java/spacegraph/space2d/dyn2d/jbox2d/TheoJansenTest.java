@@ -1,4 +1,4 @@
-package spacegraph.space2d.test.jbox2d;
+package spacegraph.space2d.dyn2d.jbox2d;
 
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
@@ -8,7 +8,7 @@ import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.DistanceJointDef;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJoint;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
-import spacegraph.space2d.test.ICase;
+import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.util.math.v2;
 
 public class TheoJansenTest implements ICase {

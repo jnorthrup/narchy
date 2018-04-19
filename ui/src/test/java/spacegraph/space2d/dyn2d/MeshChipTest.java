@@ -1,4 +1,4 @@
-package spacegraph.space2d.test;
+package spacegraph.space2d.dyn2d;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.Util;
@@ -15,7 +15,7 @@ import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meter.BagChart;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.space2d.widget.windo.Port;
 
 import java.io.IOException;
@@ -95,7 +95,7 @@ public class MeshChipTest {
 
     public static void main(String[] args) throws IOException {
 
-        PhyWall p = SpaceGraph.wall(800, 800);
+        Dyn2DSurface p = SpaceGraph.wall(800, 800);
         p.put(new MessageChip(), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);
         p.put(new MeshChip(new UDPeer()), 1, 1);

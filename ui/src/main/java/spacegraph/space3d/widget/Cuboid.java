@@ -1,6 +1,7 @@
 package spacegraph.space3d.widget;
 
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.Util;
 import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,7 @@ import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.shape.SimpleBoxShape;
 import spacegraph.space3d.phys.shape.SphereShape;
+import spacegraph.util.animate.Animated;
 import spacegraph.util.math.v3;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglWindow;
@@ -217,7 +219,11 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     @Override
     public On onUpdate(Consumer<JoglWindow> c) {
-        //TODO ignored
-        return On.Dummy;
+        throw new TODO();
+    }
+
+    @Override
+    public On animate(Animated c) {
+        throw new TODO();
     }
 }

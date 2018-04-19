@@ -244,7 +244,7 @@ public class Body2D extends Transform {
     /**
      * call this if shape changes
      */
-    protected final void updateFixtures(Consumer<Fixture> tx) {
+    public final void updateFixtures(Consumer<Fixture> tx) {
         W.invoke(() -> {
             for (Fixture f = fixtures; f != null; f = f.next) {
 

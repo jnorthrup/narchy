@@ -203,6 +203,7 @@ public class PolygonShape extends Shape {
     }
 
     public static PolygonShape box(final float hx, final float hy) {
+
         return new PolygonShape(4).setAsBox(hx, hy);
     }
     public static PolygonShape box(float x1, float y1, float x2, float y2) {
@@ -638,6 +639,9 @@ public class PolygonShape extends Shape {
 
             I += (0.25f * k_inv3 * D) * (intx2 + inty2);
         }
+
+        //area = Math.abs(area);
+
 
         // Total mass
         massData.mass = density * area;

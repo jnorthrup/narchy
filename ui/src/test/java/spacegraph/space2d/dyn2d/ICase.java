@@ -1,4 +1,4 @@
-package spacegraph.space2d.test;
+package spacegraph.space2d.dyn2d;
 
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
 

@@ -242,7 +242,7 @@ public class Port extends Widget implements Wiring.Wireable {
     public boolean start(@Nullable SurfaceBase parent) {
 
         if (super.start(parent)) {
-            this.node = parent(PhyWall.class).links.addNode(this);
+            this.node = parent(Dyn2DSurface.class).links.addNode(this);
             IntObjectProcedure<Port> u = this.updater;
             if (u !=null)
                 u.value(0, this);
@@ -253,7 +253,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
     @Override
     public boolean stop() {
-        PhyWall p = parent(PhyWall.class);
+        Dyn2DSurface p = parent(Dyn2DSurface.class);
         if (super.stop()) {
             if (p!=null)
                 p.links.removeNode(this);

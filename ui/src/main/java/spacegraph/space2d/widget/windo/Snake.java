@@ -23,8 +23,8 @@ public class Snake {
 
         this.source = source;
         this.target = target;
-        this.sourceBody = source.parent(PhyWall.PhyWindow.class).body;
-        this.targetBody = target.parent(PhyWall.PhyWindow.class).body;
+        this.sourceBody = source.parent(Dyn2DSurface.PhyWindow.class).body;
+        this.targetBody = target.parent(Dyn2DSurface.PhyWindow.class).body;
 
 
         bodies = new FasterList(num);

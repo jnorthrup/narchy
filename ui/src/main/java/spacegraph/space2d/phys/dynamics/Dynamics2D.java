@@ -1857,12 +1857,13 @@ public class Dynamics2D {
 
     }
 
-    public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2) {
+
+    @Deprecated public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2) {
         staticBox(world, x1, y1, x2, y2, true, true, true, true);
     }
 
     /** TODO use one Body2D with 4 fixtures */
-    public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
+    @Deprecated public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
 
         float cx = (x1 + x2) / 2f;
         float cy = (y1 + y2) / 2f;

@@ -5,6 +5,7 @@ import com.google.common.graph.Graph;
 import com.google.common.graph.SuccessorsFunction;
 import com.jogamp.opengl.GL2;
 import jcog.bag.Bag;
+import jcog.data.graph.AdjGraph;
 import jcog.data.graph.MapNodeGraph;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -25,10 +26,10 @@ import static com.jogamp.opengl.math.FloatUtil.sqrt;
 public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
 
 
-    static class NodeVis<X> extends Gridding {
+    public static class NodeVis<X> extends Gridding {
 
-        final X id;
-        volatile NodeVis<X>[] edgeOut = null;
+        public final X id;
+        public volatile NodeVis<X>[] edgeOut = null;
 
         NodeVis(X id) {
             this.id = id;
@@ -57,6 +58,24 @@ public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
 
     public Graph2D() {
         
+    }
+
+    volatile Graph2DLayout<X> layout = (c,d)->{ };
+
+    @FunctionalInterface
+    public interface Graph2DLayout<X> {
+        void layout(Graph2D<X> g, int dtMS);
+    }
+
+    public Graph2D<X> setLayout(Graph2DLayout<X> layout) {
+        this.layout = layout;
+        return this;
+    }
+
+    @Override
+    public void prePaint(int dtMS) {
+        layout.layout(this, dtMS);
+        super.prePaint(dtMS);
     }
 
     @Override
@@ -92,6 +111,18 @@ public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
         return commit(new MapNodeGraph<>(s, start));
     }
 
+    public Graph2D<X> commit(AdjGraph<X,Object> g) {
+        return commit(
+            Iterables.transform(g.nodes.keySet(), t -> t.v),
+            (X x) -> {
+                List<X> adj = new FasterList();
+                g.neighborEdges(x, (v,e)->{
+                    adj.add(v);
+                });
+                return adj;
+            }
+        );
+    }
     public Graph2D<X> commit(MapNodeGraph<X,Object> g) {
         return commit(
                 Iterables.transform(g.nodes(), x-> x.id),
@@ -128,7 +159,7 @@ public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
         forEachValue((NodeVis<X> v) -> {
             List<NodeVis<X>> outs = new FasterList();
             edges.apply(v.id).forEach((X ve) -> {
-                outs.add( getValue(ve) );
+                outs.add( getValues(ve) );
             });
             v.edgeOut = ((FasterList<NodeVis<X>>) outs).toArrayRecycled(NodeVis[]::new);
         });

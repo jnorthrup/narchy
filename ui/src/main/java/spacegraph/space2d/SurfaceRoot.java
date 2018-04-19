@@ -3,6 +3,7 @@ package spacegraph.space2d;
 import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.util.SpaceLogger;
+import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglWindow;
 
 import java.util.function.Consumer;
@@ -46,5 +47,6 @@ public interface SurfaceRoot extends SurfaceBase, SpaceLogger {
 
     /** attaches an event handler for updates (less frequent than render cycle) */
     On onUpdate(Consumer<JoglWindow> c);
+    On animate(Animated c);
 
 }

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AbstractMutableContainer;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -25,6 +26,13 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         });
     }
 
+    public void forEachVisible(Consumer<Surface> each) {
+        forEach(x -> {
+            if (x.visible())
+                each.accept(x);
+        });
+    }
+
     public void forEachValue(Consumer<? super V> each) {
         cache.forEachValue(e -> {
             V s = e.value;
@@ -32,6 +40,13 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
                 each.accept(s);
         });
     }
+//    public void forEachVisiblesValue(Consumer<? super V> each) {
+//        cache.forEachValue(e -> {
+//            V s = e.value;
+//            if (s != null)
+//                each.accept(s);
+//        });
+//    }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
@@ -63,7 +78,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         cache.invalidate();
     }
 
-    @Nullable public V getValue(K x) {
+    @Nullable public V getValues(K x) {
         CacheCell<K, V> y = cache.get(x);
         if (y !=null)
             return y.value;
@@ -117,6 +132,10 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
             es.stop();
         }
         entry.clear();
+    }
+
+    public void getValues(Collection<V> l) {
+        forEachValue(l::add);
     }
 
     /**

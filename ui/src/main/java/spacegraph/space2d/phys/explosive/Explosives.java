@@ -11,7 +11,7 @@ import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
@@ -144,7 +144,7 @@ public class Explosives {
             Fixture f = fixtures;
             if (f != null) {
                 gl.glColor3f(0.75f, 0.75f, 0.75f);
-                Draw.poly(this, gl, (PolygonShape) f.shape);
+                Draw.poly(this, gl, 1f /* TODO W.scaling */, (PolygonShape) f.shape);
             }
         }
     }
@@ -208,7 +208,7 @@ public class Explosives {
 
 
     public static void main(String[] args) {
-        PhyWall p = SpaceGraph.wall(1200, 1000);
+        Dyn2DSurface p = SpaceGraph.wall(1200, 1000);
 
         Dynamics2D w = p.W;
         w.setContactListener(new ExplosionContacts());

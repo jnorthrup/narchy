@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AspectAlign;
-import spacegraph.space2d.container.EdgeDirected;
+import spacegraph.space2d.container.EdgeDirected3D;
 import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
@@ -481,7 +481,7 @@ abstract public class NAgentX extends NAgent {
                                                 sg = new DynamicConceptSpace(nar, () -> nar.exe.active().iterator(),
                                                         128, 16)
                                         );
-                                        EdgeDirected fd = new EdgeDirected();
+                                        EdgeDirected3D fd = new EdgeDirected3D();
                                         s.dyn.addBroadConstraint(fd);
                                         fd.attraction.set(fd.attraction.get() * 8);
 

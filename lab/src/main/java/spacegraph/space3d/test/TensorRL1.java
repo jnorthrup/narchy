@@ -27,7 +27,7 @@ import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.space2d.widget.windo.Port;
 
 import java.util.Random;
@@ -39,7 +39,7 @@ public class TensorRL1 {
     public static void main(String[] args) {
 
 
-        PhyWall p = SpaceGraph.wall(1200, 1000);
+        Dyn2DSurface p = SpaceGraph.wall(1200, 1000);
         ((ZoomOrtho) p.root()).scaleMin = 100f;
         ((ZoomOrtho) p.root()).scaleMax = 1500;
 
@@ -165,7 +165,7 @@ public class TensorRL1 {
         }
     }
 
-    static void noiseChip(PhyWall p) {
+    static void noiseChip(Dyn2DSurface p) {
         {
             final Random rng = new XoRoShiRo128PlusRandom(1);
             final TensorFunc randomVector = Tensor.randomVectorGauss(16, 0, 1, rng);

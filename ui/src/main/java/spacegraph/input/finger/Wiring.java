@@ -3,7 +3,7 @@ package spacegraph.input.finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.widget.meta.SketchedPath;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.util.Path2D;
 
 import javax.annotation.Nullable;
@@ -24,11 +24,11 @@ public class Wiring extends FingerDragging {
     private SketchedPath pathVis;
     protected Surface end = null;
 
-    public PhyWall.PhyWindow source() {
-        return start.parent(PhyWall.PhyWindow.class);
+    public Dyn2DSurface.PhyWindow source() {
+        return start.parent(Dyn2DSurface.PhyWindow.class);
     }
-    public PhyWall.PhyWindow target() {
-        return end!=null ? end.parent(PhyWall.PhyWindow.class) : null;
+    public Dyn2DSurface.PhyWindow target() {
+        return end!=null ? end.parent(Dyn2DSurface.PhyWindow.class) : null;
     }
 
     public Wiring(Surface start) {

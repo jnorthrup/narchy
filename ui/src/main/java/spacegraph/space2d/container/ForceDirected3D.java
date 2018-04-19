@@ -15,7 +15,7 @@ import static spacegraph.util.math.v3.v;
 /**
  * Created by me on 8/24/16.
  */
-public class ForceDirected implements spacegraph.space3d.phys.constraint.BroadConstraint {
+public class ForceDirected3D implements spacegraph.space3d.phys.constraint.BroadConstraint {
 
     private final int iterations;
     boolean center = true;
@@ -51,7 +51,7 @@ public class ForceDirected implements spacegraph.space3d.phys.constraint.BroadCo
 //            graph.getEdge(x, y);
 //        }
 
-    public ForceDirected() {
+    public ForceDirected3D() {
         float r = 800;
         boundsMin = v(-r, -r, -r);
         boundsMax = v(+r, +r, +r);

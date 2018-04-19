@@ -1,6 +1,6 @@
 package spacegraph.space3d.widget;
 
-import spacegraph.space2d.container.EdgeDirected;
+import spacegraph.space2d.container.EdgeDirected3D;
 import spacegraph.space2d.container.Flatten;
 import spacegraph.space3d.AbstractSpace;
 import spacegraph.space3d.SpaceGraphPhys3D;
@@ -99,7 +99,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
                 ss
         );
 
-        EdgeDirected fd = new EdgeDirected();
+        EdgeDirected3D fd = new EdgeDirected3D();
         s.dyn.addBroadConstraint(fd);
         fd.attraction.set(fd.attraction.get() * 8);
 

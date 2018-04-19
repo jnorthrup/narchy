@@ -1,9 +1,9 @@
-package spacegraph.space2d.test.fracture;
+package spacegraph.space2d.dyn2d.fracture;
 
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.fracture.materials.Diffusion;
-import spacegraph.space2d.test.ICase;
+import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.util.math.v2;
 
 /**
@@ -11,29 +11,29 @@ import spacegraph.util.math.v2;
  *
  * @author Marek Benovic
  */
-public class Cube implements ICase {
+public class RotatedBody implements ICase {
     @Override
     public void init(Dynamics2D w) {
         {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;
-            bodyDef2.position.set(10.0f, 10.0f); //pozicia
-            bodyDef2.angle = -0.6f; // otocenie
+            bodyDef2.position.set(10.0f, 20.0f); //pozicia
             bodyDef2.linearVelocity = new v2(0.0f, 0.0f); // smer pohybu
-            bodyDef2.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
+            bodyDef2.angularVelocity = 10.0f; //rotacia (rychlost rotacie)
             Body2D newBody = w.addBody(bodyDef2);
-            PolygonShape shape2 = new PolygonShape();
-            shape2.setAsBox(2.5f, 2.5f);
-            Fixture f = newBody.addFixture(shape2, 1.0f);
-            f.friction = 0.5f; // trenie
+            PolygonShape shape3 = new PolygonShape();
+            shape3.setAsBox(1.0f, 10.0f);
+
+            Fixture f = newBody.addFixture(shape3, 1.0f);
+            f.friction = 0.2f; // trenie
             f.restitution = 0.0f; //odrazivost
             f.material = new Diffusion();
-            f.material.m_rigidity = 8.0f;
+            f.material.m_rigidity = 32.0f;
         }
     }
 
     @Override
     public String toString() {
-        return "Cube";
+        return "Rotated body";
     }
 }

@@ -472,7 +472,7 @@ public class SingletonVD {
         double vy = v.y;
         double g = (bx - ax) * (vy - by);
         double h = (vx - bx) * (by - ay);
-        return Double.compare(g, h);
+        return g > h ? 1 : g == h ? 0 : -1;
 
     }
 

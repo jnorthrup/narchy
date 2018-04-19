@@ -1,4 +1,4 @@
-package spacegraph.space2d.test;
+package spacegraph.space2d.dyn2d;
 
 import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
@@ -26,7 +26,7 @@ import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.space2d.widget.windo.Port;
 import spacegraph.space2d.widget.windo.TogglePort;
 import spacegraph.util.math.v2;
@@ -43,7 +43,7 @@ public class TensorGlow {
 
     public static void main(String[] args) {
 
-        PhyWall p = SpaceGraph.wall(1200, 1000);
+        Dyn2DSurface p = SpaceGraph.wall(1200, 1000);
 
         p.W.setGravity(new v2(0, -2.8f));
         staticBox(p.W, -5, -8, +5, 2f, false, true, true, true);
@@ -71,7 +71,7 @@ public class TensorGlow {
             p.W.setContactListener(new Explosives.ExplosionContacts());
 
             TheoJansen t = new TheoJansen(p.W, 0.35f);
-            PhyWall.PhyWindow pw = p.put(new Gridding(0.5f, new Port((float[] v) -> {
+            Dyn2DSurface.PhyWindow pw = p.put(new Gridding(0.5f, new Port((float[] v) -> {
                 //System.out.println(v);
                 t.motorJoint.setMotorSpeed(v[0]*2 - v[1]*2);
                 t.motorJoint.setMaxMotorTorque(v[2]);
@@ -111,7 +111,7 @@ public class TensorGlow {
         final FloatRange lerpRate = new FloatRange(0.01f, 0, 1f);
         final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
-        PhyWall.PhyWindow w = p.put(new Gridding(0.25f,
+        Dyn2DSurface.PhyWindow w = p.put(new Gridding(0.25f,
                         new AutoUpdateMatrixView(
                                 lerpVector.data
                         ),
@@ -130,7 +130,7 @@ public class TensorGlow {
 
         p.put(new TogglePort(), 0.25f, 0.25f);
 
-        PhyWall.PhyWindow qw = p.put(
+        Dyn2DSurface.PhyWindow qw = p.put(
                 new Gridding(
                         new Label("HaiQ"),
                         new AutoSurface<>(q),

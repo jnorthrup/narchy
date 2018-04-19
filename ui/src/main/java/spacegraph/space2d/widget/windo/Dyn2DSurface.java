@@ -57,26 +57,126 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
  */
-public class PhyWall extends Wall implements Animated {
+public class Dyn2DSurface extends Wall implements Animated {
 
     static final float SHAPE_SIZE_EPSILON = 0.0001f;
-
-    private final float linearDampening = 0.9f;
-
+    final static int MOUSE_JOINT_BUTTON = 0;
+    public final Dynamics2D W = new Dynamics2D(new v2(0, 0));
+    public final Random rng = new XoRoShiRo128PlusRandom(1);
     /**
      * increase for more physics precision
      */
     final int solverIterations = 8;
-
-    public final Dynamics2D W = new Dynamics2D(new v2(0, 0));
-    private On on;
-
     /**
      * TODO use more efficient graph representation
      */
     final MapNodeGraph<Surface, Wire> links = new MapNodeGraph();
+    final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
+    private final float linearDampening = 0.9f;
+    FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
 
-    public PhyWall() {
+        final Body2D ground = W.addBody(new BodyDef(BodyType.STATIC),
+                new FixtureDef(PolygonShape.box(0, 0), 0, 0).noCollide());
+
+        private volatile MouseJoint mj;
+
+        @Override
+        public boolean start(Finger f) {
+            boolean b = super.start(f);
+            if (b) {
+
+                Body2D touched2D;
+                if (((touched2D = pick(f)) != null)) {
+                    MouseJointDef def = new MouseJointDef();
+
+                    def.bodyA = ground;
+                    def.bodyB = touched2D;
+                    def.collideConnected = true;
+
+
+                    def.target.set(f.pos);
+
+                    def.maxForce = 500f * touched2D.getMass();
+                    def.dampingRatio = 0;
+
+                    mj = (MouseJoint) W.addJoint(new MouseJoint(W.pool, def));
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
+        public Body2D pick(Finger ff) {
+            v2 p = ff.pos.scale(scaling);
+            //v2 p = ff.relativePos(Dyn2DSurface.this).scale(scaling);
+
+            float w = 0;
+            float h = 0;
+
+
+            final Fixture[] found = {null};
+            W.queryAABB((Fixture f) -> {
+                if (f.body.type != BodyType.STATIC &&
+                        f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
+                    found[0] = f;
+                    return false;
+                }
+
+                return true;
+            }, new AABB(new v2(p.x - w, p.y - h), new v2(p.x + w, p.y + h), false));
+
+//            //TODO use queryAABB
+//            for (Body2D b = W.bodies(); b != null; b = b.next) {
+//
+//                if (b.type==BodyType.STATIC) continue; //dont grab statics
+//
+//                for (Fixture f = b.fixtures(); f != null; f = f.next) {
+//                    if (f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
+//                        return b;
+//                    }
+//                }
+//            }
+            return found[0] != null ? found[0].body : null;
+        }
+
+        @Override
+        public void stop(Finger finger) {
+            super.stop(finger);
+            if (mj != null) {
+                W.removeJoint(mj);
+                mj = null;
+            }
+        }
+
+        @Override
+        protected boolean drag(Finger f) {
+            if (mj != null) {
+                v2 p = f.pos.scale(scaling);
+                //v2 p = f.relativePos(Dyn2DSurface.this).scale(scaling);
+                /*if (clickedPoint != null)*/
+
+//                v2 clickedPoint = f.hitOnDown[MOUSE_JOINT_BUTTON];
+//                p.x -= clickedPoint.x;
+//                p.y -= clickedPoint.y;
+                mj.setTarget(p);
+            }
+//                center.x = startCenter.x - p.x / zoom;
+//                center.y = startCenter.y + p.y / zoom;
+//            } else {
+//                if (mj != null) {
+//                    mj.setTarget(mousePosition);
+//                }
+//            }
+            return true;
+
+        }
+
+    };
+    private On on;
+    private float scaling = 1f;
+
+    public Dyn2DSurface() {
         super();
 
         W.setParticleRadius(0.2f);
@@ -88,16 +188,26 @@ public class PhyWall extends Wall implements Animated {
         //W.setSubStepping(true);
     }
 
+    /**
+     * create a static box around the content, which moves along with the surface's bounds
+     */
+    public Dyn2DSurface enclose() {
+        new StaticBox(this::bounds);
+        return this;
+    }
+
+    public RectFloat2D bounds() {
+        return bounds;
+    }
+
     @Override
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
-            on = ((Ortho) root()).onUpdate(this);
+            on = ((Ortho) root()).animate(this);
             return true;
         }
         return false;
     }
-
-
 
     @Override
     public boolean animate(float dt) {
@@ -115,11 +225,17 @@ public class PhyWall extends Wall implements Animated {
 
         long now = System.currentTimeMillis();
 
+        //gl.glPushMatrix();
+
+
+
         w.joints(j -> drawJoint(j, gl, now));
 
         w.bodies(b -> drawBody(b, gl));
 
         drawParticleSystem(gl, w.particles);
+
+        //gl.glPopMatrix();
     }
 
     private void drawParticleSystem(GL2 gl, ParticleSystem system) {
@@ -144,7 +260,7 @@ public class PhyWall extends Wall implements Animated {
     private void drawJoint(Joint joint, GL2 g, long now) {
         Object data = joint.data();
         if (data instanceof ObjectLongProcedure) {
-            ((ObjectLongProcedure)data).accept(g, now);
+            ((ObjectLongProcedure) data).accept(g, now);
         } else {
 
             Draw.colorHash(g, joint.getClass().hashCode(), 0.5f);
@@ -157,7 +273,7 @@ public class PhyWall extends Wall implements Animated {
                 joint.getAnchorB(v2);
                 break;
         }
-        Draw.line(g, v1.x, v1.y, v2.x, v2.y);
+        Draw.line(g, v1.x*scaling, v1.y*scaling, v2.x*scaling, v2.y*scaling);
 
     }
 
@@ -190,8 +306,7 @@ public class PhyWall extends Wall implements Animated {
                 Shape shape = f.shape();
                 switch (shape.m_type) {
                     case POLYGON:
-
-                        Draw.poly(body, gl, (PolygonShape) shape);
+                        Draw.poly(body, gl, scaling, (PolygonShape) shape);
                         break;
                     case CIRCLE:
 
@@ -199,17 +314,18 @@ public class PhyWall extends Wall implements Animated {
                         float r = circle.radius;
                         v2 v = new v2();
                         body.getWorldPointToOut(circle.center, v);
+                        v.scale(scaling);
                         //Point p = getPoint(v);
                         //int wr = (int) (r * zoom);
                         //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
-                        Draw.circle(gl, v, true, r, 9);
+                        Draw.circle(gl, v, true, r*scaling, 9);
                         break;
                     case EDGE:
                         EdgeShape edge = (EdgeShape) shape;
                         Tuple2f p1 = edge.m_vertex1;
                         Tuple2f p2 = edge.m_vertex2;
                         gl.glLineWidth(4f);
-                        Draw.line(gl, p1.x, p1.y, p2.x, p2.y);
+                        Draw.line(gl, p1.x*scaling, p1.y*scaling, p2.x*scaling, p2.y*scaling);
                         break;
                 }
             }
@@ -231,7 +347,6 @@ public class PhyWall extends Wall implements Animated {
 //                        }
     }
 
-
     @Override
     public boolean stop() {
         if (super.stop()) {
@@ -241,9 +356,6 @@ public class PhyWall extends Wall implements Animated {
         }
         return false;
     }
-
-
-    public final Random rng = new XoRoShiRo128PlusRandom(1);
 
     public float rngPolar(float scale) {
         return //2f*(rng.nextFloat()*scale-0.5f);
@@ -261,7 +373,6 @@ public class PhyWall extends Wall implements Animated {
         Ortho view = (Ortho) root();
         return put(content, RectFloat2D.XYWH(view.x(), view.y(), w, h));
     }
-
 
     public PhyWindow put(Surface content, RectFloat2D initialBounds) {
         return put(content, initialBounds, true);
@@ -292,11 +403,11 @@ public class PhyWall extends Wall implements Animated {
         float EXPAND_SCALE_FACTOR = 4;
 
         PushButton deleteButton = new PushButton("x");
-        Surface menu = new TabPane(ButtonSet.Mode.Multi, Map.of("o", ()->new Gridding(
+        Surface menu = new TabPane(ButtonSet.Mode.Multi, Map.of("o", () -> new Gridding(
                 new Label(source.toString()),
                 new Label(target.toString()),
                 deleteButton
-        )), (l)->new CheckBox(l) {
+        )), (l) -> new CheckBox(l) {
             @Override
             protected String label(String text, boolean on) {
                 return text; //override just display the 'o'
@@ -353,7 +464,7 @@ public class PhyWall extends Wall implements Animated {
         int jj = 0;
         for (Joint j : s.joints) {
 
-            float p = ((float)jj)/(segments-1);
+            float p = ((float) jj) / (segments - 1);
 
             //custom joint renderer: color coded indicate activity and type of data
             j.setData((ObjectLongProcedure<GL2>) (g, now) -> {
@@ -362,7 +473,7 @@ public class PhyWall extends Wall implements Animated {
                 boolean side = p < 0.5f;
                 float activity =
                         wire.activity(side, now, TIME_DECAY_MS);
-                        //Util.lerp(p, wire.activity(false, now, TIME_DECAY_MS), wire.activity(true, now, TIME_DECAY_MS));
+                //Util.lerp(p, wire.activity(false, now, TIME_DECAY_MS), wire.activity(true, now, TIME_DECAY_MS));
 
 
                 int th = wire.typeHash(side);
@@ -390,7 +501,7 @@ public class PhyWall extends Wall implements Animated {
         jd.collideConnected = true;
         jd.maxLength = Float.NaN; //should be effectively ignored by the implementation below
 
-        RopeJoint ropeJoint = new RopeJoint(PhyWall.this.W.pool, jd) {
+        RopeJoint ropeJoint = new RopeJoint(Dyn2DSurface.this.W.pool, jd) {
 
             float lengthScale = 2.05f;
 
@@ -444,6 +555,106 @@ public class PhyWall extends Wall implements Animated {
         return n != null ? n.edges(true, true) : Collections.emptyList();
     }
 
+    @Override
+    public Surface tryTouch(Finger finger) {
+
+        Surface s = super.tryTouch(finger);
+        if (s != null && s != this && !(s instanceof PhyWindow))
+            return s; //some other content, like an inner elmeent of a window but not a window itself
+
+        if (finger.tryFingering(jointDrag))
+            return this;
+
+        if (doubleClicking.update(finger))
+            return this;
+
+        return s != null ? s : this;
+        //return s;
+    }
+
+    void doubleClick(v2 pos) {
+        put(
+                new WizardFrame(new ProtoWidget()) {
+                    @Override
+                    protected void become(Surface next) {
+                        super.become(next);
+
+                        PhyWindow pp = parent(PhyWindow.class);
+                        if (next instanceof ProtoWidget) {
+                            pp.setCollidable(false);
+                        } else {
+                            pp.setCollidable(true);
+                        }
+
+                    }
+                },
+                RectFloat2D.XYWH(pos.x, pos.y, 1, 1), false);
+    }
+
+    public Dyn2DSurface scale(float v) {
+        scaling = v;
+        return this;
+    }
+
+    class StaticBox {
+
+        private final Body2D body;
+        private final Fixture bottom;
+        private final Fixture top;
+        private final Fixture left;
+        private final Fixture right;
+
+        public StaticBox(Supplier<RectFloat2D> bounds) {
+
+            float w = 1, h = 1, thick = 0.5f; //temporary for init
+
+            body = W.addBody(new Body2D(new BodyDef(BodyType.STATIC), W) {
+                @Override
+                public boolean preUpdate() {
+                    update(bounds.get());
+                    synchronizeFixtures();
+                    return true;
+                }
+            });
+            bottom = body.addFixture(
+                    new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
+                            0, 0)
+            );
+            top = body.addFixture(
+                    new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
+                            0, 0)
+            );
+            left = body.addFixture(
+                    new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
+                            1, 0)
+            );
+            right = body.addFixture(
+                    new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
+                            1, 0)
+            );
+
+
+        }
+
+        protected void update(RectFloat2D bounds) {
+
+            body.updateFixtures(f -> {
+
+                float cx = bounds.cx()/scaling;
+                float cy = bounds.cy()/scaling;
+                float thick = Math.min(bounds.w, bounds.h) / 16f/scaling;
+
+                float W = bounds.w / scaling;
+                float H = bounds.h / scaling;
+                ((PolygonShape)top.shape).setAsBox(W, thick, new v2(cx/2, +H), 0);
+                ((PolygonShape)right.shape).setAsBox(thick, H, new v2(+W, cy/2), 0);
+                ((PolygonShape)bottom.shape).setAsBox(W, thick, new v2(cx, 0), 0);
+                ((PolygonShape)left.shape).setAsBox(thick, H, new v2(0, cy), 0);
+            });
+
+        }
+    }
+
     public class PhyWindow extends Windo {
         public final Body2D body;
         private final PolygonShape shape;
@@ -453,7 +664,6 @@ public class PhyWall extends Wall implements Animated {
         PhyWindow(RectFloat2D initialBounds, boolean collides) {
             super();
             pos(initialBounds);
-
 
 
             this.shape =
@@ -477,7 +687,7 @@ public class PhyWall extends Wall implements Animated {
         }
 
         public void setCollidable(boolean c) {
-            W.invoke(()->{
+            W.invoke(() -> {
                 body.fixtures.filter.maskBits = (c ? 0xffff : 0);
                 body.setGravityScale(c ? 1f : 0f);
                 body.setAwake(true);
@@ -498,7 +708,7 @@ public class PhyWall extends Wall implements Animated {
                 links.removeNode(this);
             }
             W.removeBody(this.body);
-            PhyWall.this.remove(this);
+            Dyn2DSurface.this.remove(this);
         }
 
 
@@ -619,9 +829,9 @@ public class PhyWall extends Wall implements Animated {
             synchronized (links) {
                 Wire wire = new Wire(source, target);
                 NodeGraph.Node<Surface, Wire> an = links.node(wire.a);
-                if (an!=null) {
+                if (an != null) {
                     NodeGraph.Node<Surface, Wire> bn = links.node(wire.b);
-                    if (bn!=null) {
+                    if (bn != null) {
                         boolean removed = links.edgeRemove(new ImmutableDirectedEdge<>(
                                 an, bn, wire)
                         );
@@ -671,7 +881,6 @@ public class PhyWall extends Wall implements Animated {
 
                 NodeGraph.MutableNode<Surface, Wire> B = links.addNode(bb);
                 links.addEdge(A, wire, B);
-
 
 
                 W.invoke(() -> {
@@ -759,13 +968,17 @@ public class PhyWall extends Wall implements Animated {
             sproutBranch(label, scale, childScale, () -> ArrayIterator.get(children.get()));
         }
 
+        @Override
+        public boolean tangible() {
+            return true;
+        }
 
         private class WallBody extends Body2D {
 
             RectFloat2D physBounds = null;
 
             public WallBody(float cx, float cy) {
-                super(new BodyDef(BodyType.DYNAMIC, new v2(cx, cy)), PhyWall.this.W);
+                super(new BodyDef(BodyType.DYNAMIC, new v2(cx/scaling, cy/scaling)), Dyn2DSurface.this.W);
 
                 setData(this);
 
@@ -791,8 +1004,8 @@ public class PhyWall extends Wall implements Animated {
                             //HACK assumes the first is the only one
                             //if (f.m_shape == shape) {
                             f.setShape(
-                                shape.setAsBox(r.w / 2, r.h / 2)
-                                //shape.lerpAsBox(r.w / 2, r.h / 2, 0.1f)
+                                    shape.setAsBox(r.w / 2 / scaling, r.h / 2 / scaling)
+                                    //shape.lerpAsBox(r.w / 2, r.h / 2, 0.1f)
                             );
                             //}
 
@@ -801,7 +1014,7 @@ public class PhyWall extends Wall implements Animated {
                     }
 
 
-                    v2 target = new v2(r.cx(), r.cy());
+                    v2 target = new v2(r.cx()/ scaling, r.cy()/ scaling);
 
                     if (setTransform(target, 0, EPSILON))
                         setAwake(true);
@@ -820,159 +1033,14 @@ public class PhyWall extends Wall implements Animated {
 
                 float w = w(), h = h(); //HACK re-use the known width/height assumes that the physics engine cant change the shape's size
 
-                RectFloat2D r = RectFloat2D.XYWH(p.x, p.y, w, h);
+                RectFloat2D r = RectFloat2D.XYWH(p.x*scaling, p.y*scaling, w, h);
                 if (!r.equals(physBounds, EPSILON)) {
                     pos(physBounds = r);
                 }
 
             }
         }
-
-        @Override
-        public boolean tangible() {
-            return true;
-        }
     }
-
-
-    final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
-
-    @Override
-    public Surface tryTouch(Finger finger) {
-
-        Surface s = super.tryTouch(finger);
-        if (s != null && s != this && !(s instanceof PhyWindow))
-            return s; //some other content, like an inner elmeent of a window but not a window itself
-
-        if (finger.tryFingering(jointDrag))
-            return this;
-
-        if (doubleClicking.update(finger))
-            return this;
-
-        return s!=null ? s : this;
-        //return s;
-    }
-
-    void doubleClick(v2 pos) {
-        put(
-                new WizardFrame(new ProtoWidget()) {
-                    @Override
-                    protected void become(Surface next) {
-                        super.become(next);
-
-                        PhyWindow pp = parent(PhyWindow.class);
-                        if (next instanceof ProtoWidget) {
-                            pp.setCollidable(false);
-                        } else {
-                            pp.setCollidable(true);
-                        }
-
-                    }
-                },
-                RectFloat2D.XYWH(pos.x, pos.y, 1, 1), false);
-    }
-
-    final static int MOUSE_JOINT_BUTTON = 0;
-    FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
-
-        final Body2D ground = W.addBody(new BodyDef(BodyType.STATIC),
-                new FixtureDef(PolygonShape.box(0, 0), 0, 0).noCollide());
-
-        @Override
-        public boolean start(Finger f) {
-            boolean b = super.start(f);
-            if (b) {
-
-                Body2D touched2D;
-                if (((touched2D = pick(f)) != null)) {
-                    MouseJointDef def = new MouseJointDef();
-
-                    def.bodyA = ground;
-                    def.bodyB = touched2D;
-                    def.collideConnected = true;
-
-
-                    def.target.set(f.pos);
-
-                    def.maxForce = 500f * touched2D.getMass();
-                    def.dampingRatio = 0;
-
-                    mj = (MouseJoint) W.addJoint(new MouseJoint(W.pool, def));
-                    return true;
-                }
-
-            }
-            return false;
-        }
-
-        public Body2D pick(Finger ff) {
-            v2 p = ff.pos;
-
-            float w = 0;
-            float h = 0;
-
-
-            final Fixture[] found = {null};
-            W.queryAABB((Fixture f) -> {
-                if (f.body.type != BodyType.STATIC &&
-                        f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
-                    found[0] = f;
-                    return false;
-                }
-
-                return true;
-            }, new AABB(new v2(p.x - w, p.y - h), new v2(p.x + w, p.y + h), false));
-
-//            //TODO use queryAABB
-//            for (Body2D b = W.bodies(); b != null; b = b.next) {
-//
-//                if (b.type==BodyType.STATIC) continue; //dont grab statics
-//
-//                for (Fixture f = b.fixtures(); f != null; f = f.next) {
-//                    if (f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
-//                        return b;
-//                    }
-//                }
-//            }
-            return found[0] != null ? found[0].body : null;
-        }
-
-        @Override
-        public void stop(Finger finger) {
-            super.stop(finger);
-            if (mj != null) {
-                W.removeJoint(mj);
-                mj = null;
-            }
-        }
-
-        @Override
-        protected boolean drag(Finger f) {
-            if (mj != null) {
-                v2 p = f.pos;
-                /*if (clickedPoint != null)*/
-
-//                v2 clickedPoint = f.hitOnDown[MOUSE_JOINT_BUTTON];
-//                p.x -= clickedPoint.x;
-//                p.y -= clickedPoint.y;
-                mj.setTarget(p);
-            }
-//                center.x = startCenter.x - p.x / zoom;
-//                center.y = startCenter.y + p.y / zoom;
-//            } else {
-//                if (mj != null) {
-//                    mj.setTarget(mousePosition);
-//                }
-//            }
-            return true;
-
-        }
-
-
-        private volatile MouseJoint mj;
-
-    };
 }
 
 //    private void initMouse() {

@@ -1,4 +1,4 @@
-package spacegraph.space2d.test;
+package spacegraph.space2d.dyn2d;
 
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
@@ -13,11 +13,11 @@ import spacegraph.space2d.phys.dynamics.joints.MouseJointDef;
 import spacegraph.space2d.phys.fracture.Material;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.fracture.util.MyList;
-import spacegraph.space2d.test.fracture.*;
-import spacegraph.space2d.test.jbox2d.BlobTest4;
-import spacegraph.space2d.test.jbox2d.ChainTest;
-import spacegraph.space2d.test.jbox2d.TheoJansenTest;
-import spacegraph.space2d.test.jbox2d.VerletTest;
+import spacegraph.space2d.dyn2d.fracture.*;
+import spacegraph.space2d.dyn2d.jbox2d.BlobTest4;
+import spacegraph.space2d.dyn2d.jbox2d.ChainTest;
+import spacegraph.space2d.dyn2d.jbox2d.TheoJansenTest;
+import spacegraph.space2d.dyn2d.jbox2d.VerletTest;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 

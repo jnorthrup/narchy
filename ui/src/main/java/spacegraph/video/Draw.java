@@ -978,16 +978,16 @@ public enum Draw {
         c[0] = r; c[1] = g; c[2] = b; c[3] = a;
     }
 
-    public static void poly(Body2D body, GL2 gl, PolygonShape shape) {
+    public static void poly(Body2D body, GL2 gl, float preScale, PolygonShape shape) {
         PolygonShape poly = shape;
 
         gl.glBegin(GL_TRIANGLE_FAN);
         int n = poly.vertices;
         Tuple2f[] pv = poly.vertex;
-        float preScale = 1.1f;
 
         for (int i = 0; i < n; ++i)
             body.getWorldPointToGL(pv[i], preScale, gl);
+
         body.getWorldPointToGL(pv[0], preScale, gl); //close
 
         gl.glEnd();

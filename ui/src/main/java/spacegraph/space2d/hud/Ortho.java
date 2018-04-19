@@ -152,7 +152,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public On onUpdate(Consumer<JoglWindow> c) {
         return window.onUpdate(c);
     }
-    public On onUpdate(Animated c) {
+    public On animate(Animated c) {
         return window.onUpdate(c);
     }
 
@@ -195,9 +195,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             s.addKeyListener(this);
 
-            onUpdate(scale);
-            onUpdate((Animated) cam);
-            onUpdate(fingerUpdate);
+            animate(scale);
+            animate((Animated) cam);
+            animate(fingerUpdate);
 
             windowResized(null);
 

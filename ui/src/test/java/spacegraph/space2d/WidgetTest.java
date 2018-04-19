@@ -1,4 +1,4 @@
-package spacegraph.space3d.test;
+package spacegraph.space2d;
 
 import jcog.Texts;
 import jcog.Util;

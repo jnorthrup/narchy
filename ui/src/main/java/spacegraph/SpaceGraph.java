@@ -6,7 +6,7 @@ import spacegraph.space2d.SpaceGraphFlat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.AutoSurface;
-import spacegraph.space2d.widget.windo.PhyWall;
+import spacegraph.space2d.widget.windo.Dyn2DSurface;
 import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.video.JoglSpace;
@@ -56,8 +56,8 @@ public enum SpaceGraph { ;
 
 
     /** creates window with new 2d physics "wall" containing the provided widgets */
-    public static PhyWall wall(int width, int height) {
-        PhyWall s = new PhyWall();
+    public static Dyn2DSurface wall(int width, int height) {
+        Dyn2DSurface s = new Dyn2DSurface();
         s.pos(-1, -1, 1, 1);
 
         //SpaceLogConsole log = new SpaceLogConsole();
