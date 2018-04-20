@@ -39,7 +39,7 @@ public class MovingRectFloat2D extends RectFloat2D {
         return this;
     }
 
-    public RectFloat2D get(float maxMovement, RectFloat2D limits) {
+    public RectFloat2D get(float ox, float oy, float gw, float gh) {
         float dx = this.dx;
         float dy = this.dy;
 //        float lx1 = limits.left();
@@ -62,10 +62,24 @@ public class MovingRectFloat2D extends RectFloat2D {
 //        if (y2 + dy > ly2) {
 //            dy = ly2 - y2; //bounce bottom
 //        }
-        dx = Util.clamp(dx, -maxMovement, +maxMovement);
-        dy = Util.clamp(dy, -maxMovement, +maxMovement);
-        return super.move(dx, dy, 0);
+//        dx = Util.clamp(dx, -maxMovement, +maxMovement);
+//        dy = Util.clamp(dy, -maxMovement, +maxMovement);
+        return RectFloat2D.XYWH(
+                ox + Util.clamp(x + dx, 0, gw),
+                oy + Util.clamp(y + dy,  0, gh),
+                w, h);
     }
 
-
+    public float tcx() {
+        return tx() + w/2;
+    }
+    public float tcy() {
+        return ty() + h/2;
+    }
+    public float tx() {
+        return x + dx;
+    }
+    public float ty() {
+        return y + dy;
+    }
 }

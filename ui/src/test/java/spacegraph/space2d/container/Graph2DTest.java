@@ -31,7 +31,7 @@ public class Graph2DTest {
             h.addEdge(("w"), ("wy"), ("y"));
 
             Graph2D<Object> sg = new Graph2D<>();
-            sg.setLayout(new ForceDirected2D());
+            sg.layout(new ForceDirected2D());
             //sg.commit(g);
             sg.commit(h);
 

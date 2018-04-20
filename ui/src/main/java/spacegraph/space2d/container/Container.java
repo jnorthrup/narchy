@@ -129,7 +129,7 @@ abstract public class Container extends Surface {
                     if (!c.visible())
                         return true; //continue
 
-                    if (!clipTouchBounds || (
+                    if ((c instanceof Container && !((Container)c).clipTouchBounds) || (
                             fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
 
 
