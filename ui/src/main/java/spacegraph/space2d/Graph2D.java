@@ -9,7 +9,6 @@ import jcog.data.graph.AdjGraph;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.pool.DequePool;
 import jcog.list.FasterList;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
@@ -19,11 +18,8 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-
-import static com.jogamp.opengl.math.FloatUtil.sqrt;
 
 /**
  * 2D directed/undirected graph widget
@@ -31,8 +27,7 @@ import static com.jogamp.opengl.math.FloatUtil.sqrt;
 public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
-    volatile Graph2DLayout<X> layout = (c, d) -> {
-    };
+    volatile Graph2DLayout<X> layout = (c, d) -> { };
 
     public Graph2D() {
 
@@ -52,17 +47,17 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Override
     protected void doLayout(int dtMS) {
 
-        float w = w();
-        float h = h();
-        Random rng = new XoRoShiRo128PlusRandom(1);
-        float cw = sqrt(w);
-        float ch = sqrt(h);
 
-        //TODO model
-        forEach(s -> {
-            s.pos(RectFloat2D.XYWH(rng.nextFloat() * w, rng.nextFloat() * h, cw, ch));
-        });
-        super.doLayout(dtMS);
+//        float w = w();
+//        float h = h();
+//        Random rng = new XoRoShiRo128PlusRandom(1);
+//        float cw = sqrt(w);
+//        float ch = sqrt(h);
+//
+//        //TODO model
+//        forEach(s -> {
+//            s.pos(RectFloat2D.XYWH(rng.nextFloat() * w, rng.nextFloat() * h, cw, ch));
+//        });
     }
 
     public Graph2D<X> commit(Bag<?, X> g) {
@@ -113,6 +108,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public <Y> Graph2D<X> update(Iterable<X> nodes, @Nullable Function<X, Iterable<Y>> edges, BiFunction<Y,Link<X>,X> eachLink, boolean addOrReplace) {
 
+        if (parent == null)
+            return this; //wait for ready
+
         if (!addOrReplace)
             clear();
 
@@ -126,15 +124,21 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
             //TODO computeIfAbsent and re-use existing model
             compute(x, xx -> {
-                if (xx == null)
-                    return new NodeVis(x);
-                else
+                if (xx == null) {
+                    NodeVis n = new NodeVis(x);
+                    n.pos(RectFloat2D.XYWH(
+                            (float)Math.random() * Graph2D.this.w(),
+                            (float)Math.random() * Graph2D.this.h(),
+                            50, 50
+                    ));
+                    return n;
+                } else
                     return xx; //re-use
             });
         });
 
         forEachValue((NodeVis<X> v) -> {
-            List<Link> edgesNext = v.edgeOut.write();
+            List<Link<X>> edgesNext = v.edgeOut.write();
             edgesNext.forEach(links::put);
             edgesNext.clear();
             edges.apply(v.id).forEach((Y ve) -> {
@@ -198,7 +202,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
         public final X id;
-        public final Flip<List<Link>> edgeOut = new Flip(() -> new FasterList());
+        public final Flip<List<Link<X>>> edgeOut = new Flip<>(() -> new FasterList<>());
 
         NodeVis(X id) {
             this.id = id;
@@ -206,6 +210,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             set(
                     new PushButton(id.toString())
             );
+
         }
 
         @Override

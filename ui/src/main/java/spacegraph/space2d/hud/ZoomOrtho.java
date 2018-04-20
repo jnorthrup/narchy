@@ -18,26 +18,11 @@ public class ZoomOrtho extends Ortho {
 
     private final Surface content;
     float zoomRate = 0.2f;
-    float pressZoomOutRate = zoomRate*2;
-
-
 
     public final static short PAN_BUTTON = 0;
-    final static short ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON = 2;
     final static short MOVE_WINDOW_BUTTON = 1;
 
-    @Deprecated private final int[] windowStart = new int[2];
-
     final HUD hud = new HUD();
-
-
-
-
-    private int[] panStart = null;
-
-    private boolean zoomingOut = false;
-    private boolean panning;
-
 
     public ZoomOrtho(Surface content) {
         super();
@@ -86,7 +71,6 @@ public class ZoomOrtho extends Ortho {
     @Override
     public void mouseReleased(MouseEvent e) {
         hud.dragMode = null;
-        panStart = null;
         super.mouseReleased(e);
     }
 
@@ -155,119 +139,6 @@ public class ZoomOrtho extends Ortho {
 
 
 
-    protected void _updatePan() {
-        if (!finger.isFingering()) {
-
-
-
-            panning = false;
-
-            if (!zoomingOut && (finger.pressing(PAN_BUTTON) || finger.pressing(MOVE_WINDOW_BUTTON))) {
-                //int mx = e.getX();
-                //int my = window.getHeight() - e.getY();
-                int mx = Finger.pointer.getX();
-                int my = Finger.pointer.getY();
-                if (panStart == null && finger.pressing(PAN_BUTTON) /* rising edge */) {
-
-                    panStart = new int[2];
-                    panStart[0] = mx;
-                    panStart[1] = my;
-
-                    if (finger.pressing(MOVE_WINDOW_BUTTON)) {
-                        //TODO compute this in the EDT on the first invocation
-                        //Point p = new Point();
-
-                        windowStart[0] = window.windowX;
-                        windowStart[1] = window.windowY;
-                        //window.window.getInsets();
-
-                        //TODO
-                        //hud.dragMode = hud.potentialDragMode;
-
-                        //System.out.println("window drag mode: " + dragMode);
-                    }
-
-                } else if (panStart!=null) {
-
-                    //TODO use FingerDragging to implement this
-
-                    int dx = mx - panStart[0];
-                    int dy = my - panStart[1];
-                    if (dx == 0 && dy == 0) {
-
-                    } else {
-
-                        if (finger.pressing(PAN_BUTTON)) {
-
-                            cam.add(-dx / scale.x, +dy / scale.x);
-                            panStart[0] = mx;
-                            panStart[1] = my;
-                            panning = true;
-
-                        } else if (finger.pressing(MOVE_WINDOW_BUTTON)) {
-
-                            //TODO use FingerDragging to implement this
-
-                            if (hud.potentialDragMode == Windo.DragEdit.MOVE) {
-                                //if (windowMoving.compareAndSet(false, true)) {
-                                window.setPosition(windowStart[0] + dx, windowStart[1] + dy);
-
-                                //}
-                            }
-
-//                        } else if (hud.dragMode == Windo.WindowDragging.RESIZE_SE) {
-//
-//                            int windowWidth = window.getWidth();
-//                            int windowHeight = window.getHeight();
-//
-//                            windowStart[0] = window.windowX;
-//                            windowStart[1] = window.windowY;
-//
-//                            moveTarget[0] = windowStart[0];
-//                            moveTarget[1] = windowStart[1];
-//
-//
-//                            resizeTarget[0] = Math.min(window.window.getScreen().getWidth(), Math.max(windowMinWidth, windowWidth + dx));
-//                            resizeTarget[1] = Math.min(window.window.getScreen().getHeight(), Math.max(windowMinHeight, windowHeight + dy));
-//
-//                            if (windowMoving.compareAndSet(false, true)) {
-//
-//                                window.window.getScreen().getDisplay().getEDTUtil().invoke(true, () ->
-//                                        resizeWindow(windowStart[0], windowStart[1], resizeTarget[0], resizeTarget[1]));
-//                                //this::resizeWindow);
-//                                if (panStart != null) {
-//                                    panStart[0] = mx;
-//                                    panStart[1] = my;
-//                                }
-//                            }
-//
-//                        }
-//
-                        }
-                    }
-                }
-            } else {
-
-                panStart = null;
-                hud.dragMode = null;
-
-            }
-
-            if (finger.pressing(ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON) && Math.max(scale.x,scale.y) > scaleMin) {
-                if (finger.touching==null) {
-
-                    panStart = null;
-                    scale.scaled(1f * (1f - pressZoomOutRate));
-
-                    zoomingOut = true;
-                    hud.dragMode = null; //HACK TODO properly integrate this with the above event handling
-                }
-
-            } else {
-                zoomingOut = false;
-            }
-        }
-    }
 
     @Override
     public void mouseExited(MouseEvent e) {

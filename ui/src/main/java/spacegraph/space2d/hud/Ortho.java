@@ -57,7 +57,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
 
-    //private final AtomicBoolean fingerMoved = new AtomicBoolean(true);
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
 
     public Ortho() {

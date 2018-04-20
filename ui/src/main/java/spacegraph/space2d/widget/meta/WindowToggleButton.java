@@ -40,7 +40,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
 
     @Override
-    public void toggle() {
+    public synchronized void toggle() {
 
         if (this.space == null) {
 
@@ -61,13 +61,11 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
             //space.show(this.toString(), width,height, nx, ny);
             //space.window.setTitle(label.value());
 
-            set(true);
         } else if (space != null) {
 
             this.space.off();
             this.space = null;
 
-            set(false);
         }
 
     }

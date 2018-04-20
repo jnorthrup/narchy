@@ -1,8 +1,8 @@
 package spacegraph.space2d.container;
 
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.tree.rtree.rect.MovingRectFloat2D;
-import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Graph2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
@@ -18,10 +18,10 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
 
     int iterations = 1; //TODO problem with immutable bounds being updated after multiple iterations
 
-    float repelSpeed = 5;
+    float repelSpeed = 2;
     float attractSpeed= 2;
     float maxDist, maxMovement;
-    float idealDist;
+    float idealDistProportionalToRadii;
 
     @Override
     public void layout(Graph2D<X> g, int dtMS) {
@@ -35,12 +35,14 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
                 bounds.add(new MovingRectFloat2D(v.bounds));
             }
         });
-
         int n = nodes.size();
+        if (n == 0)
+            return;
+
 
         maxDist = Math.max(g.w(), g.h()) * 1f; //TODO use diagonal, sqrt(2)/2 or something
         maxMovement = Math.max(g.w(), g.h()) * 0.25f;
-        idealDist = (float) (Math.max(g.w(), g.h()) / (4 * Math.sqrt(n))); //TODO
+        idealDistProportionalToRadii = 1.5f;
 
         for (int ii = 0; ii < iterations; ii++) {
             for (int x = 0; x < n; x++)
@@ -51,31 +53,48 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
                 attract(nodes.get(a), bounds.get(a));
         }
 
-        RectFloat2D limit = g.bounds;
+        v2 center = new v2();
+        for (int a = 0; a < n; a++) {
+            MovingRectFloat2D A = bounds.get(a);
+            center.add(A.cx(), A.cy());
+        }
+        center.scaled(1/n);
+        center.normalize();
+        float centerSpeed = 5f;
+        center.scaled(centerSpeed);
+        float recenterX = -center.x, recenterY = -center.y;
+        for (int a = 0; a < n; a++) {
+            bounds.get(a).move(recenterX, recenterY);
+        }
+
+
+
         for (int i = 0; i < n; i++) {
             MovingRectFloat2D b = bounds.get(i);
             if (!b.isZeroMotion()) {
                 //nodes.get(i).pos(b.get(maxMovement, limit));
-                nodes.get(i).pos(b.get(maxMovement));
+                nodes.get(i).pos(b.get(maxMovement, g.bounds));
             }
         }
     }
 
-    private void attract(Graph2D.NodeVis<X> x, MovingRectFloat2D b) {
+    private void attract(Graph2D.NodeVis<X> from, MovingRectFloat2D b) {
         v2 p = v(b.cx(), b.cy());
         v2 delta = new v2();
 
-        for (Graph2D.Link<X> l : x.edgeOut.read()) {
+        float fromRad = from.radius();
 
-            Graph2D.NodeVis<X> n = l.to;
+        for (Graph2D.Link<X> l : from.edgeOut.read()) {
 
-            delta.set(p).subbed(n.cx(), n.cy());
+            Graph2D.NodeVis<X> to = l.to;
+
+            delta.set(p).subbed(to.cx(), to.cy());
 
             float lenSq = delta.lengthSquared();
             if (!Float.isFinite(lenSq))
                 return;
 
-            if (lenSq < idealDist*idealDist)
+            if (lenSq < Util.sqr(idealDistProportionalToRadii *(fromRad +to.radius()) ))
                 return;
 
 
@@ -101,7 +120,7 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
         Tuple2f delta = new v2(a.cx(), a.cy()).subbed(b.cx(), b.cy());
 
         float len = delta.normalize();
-        len -= (a.radius() + b.radius());
+        len -= idealDistProportionalToRadii * (a.radius() + b.radius());
         if (len < 0)
             len = 0;
         else if (len >= maxDist)

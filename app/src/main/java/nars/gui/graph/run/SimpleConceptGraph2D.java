@@ -1,5 +1,6 @@
 package nars.gui.graph.run;
 
+import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.NARS;
@@ -26,19 +27,18 @@ public class SimpleConceptGraph2D {
             800, 800
         );
         n.onCycle(()->{
-            g.update(()->n.conceptsActive().map(x->x.get()).iterator(),
-                (c)->{
-                    return c.termlinks();
-            }, (PriReference<Term> l, Graph2D.Link<Concept> link)->{
+            g.update(()->n.conceptsActive().map(PLink::get).iterator(),
+            c->{ return c.termlinks(); },
+            (PriReference<Term> l, Graph2D.Link<Concept> link)->{
                 Concept tgt = n.concept(l.get());
                 if (tgt!=null) {
                     float p = l.priElseZero();
-                    link.color(p, p/2f, 0);
+                    link.color(p, 0, 1-p);
                     return tgt;
                 }
                 return null;
             }, true);
         });
-        n.startFPS(2f);
+        n.startFPS(15f);
     }
 }

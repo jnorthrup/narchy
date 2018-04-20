@@ -99,11 +99,16 @@ public class MutableContainer extends AbstractMutableContainer {
         
         for (Surface x : s)
             _add(x);
-        layout();
+
+        if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+            layout();
     }
 
     public void add(Surface s) {
         _add(s);
+
+        if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+            layout();
     }
 
     private void _add(Surface s) {
@@ -113,8 +118,6 @@ public class MutableContainer extends AbstractMutableContainer {
             } else {
                 if (s.start(this)) {
                     children.add(s); //assume it was added to the list
-                    if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
-                        layout();
                 }
             }
         }
@@ -179,6 +182,7 @@ public class MutableContainer extends AbstractMutableContainer {
                             add(n);
                     }
 
+                    layout();
                 }
             }
 

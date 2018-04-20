@@ -1,6 +1,5 @@
 package spacegraph.space2d.container;
 
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 
 public abstract class AbstractMutableContainer extends Container {
@@ -15,7 +14,6 @@ public abstract class AbstractMutableContainer extends Container {
                 c.start(this);
             });
 
-            //layout();
             return true;
         }
         return false;
@@ -23,7 +21,7 @@ public abstract class AbstractMutableContainer extends Container {
 
     @Override
     protected void doLayout(int dtMS) {
-        forEach(Surface::layout);
+
     }
 
     @Override

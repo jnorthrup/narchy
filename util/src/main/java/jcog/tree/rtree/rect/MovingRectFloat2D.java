@@ -42,32 +42,30 @@ public class MovingRectFloat2D extends RectFloat2D {
     public RectFloat2D get(float maxMovement, RectFloat2D limits) {
         float dx = this.dx;
         float dy = this.dy;
-        float lx1 = limits.left();
-        float x1 = left();
-        if (x1 +dx < lx1) {
-            dx = x1 - lx1; //bounce left
-        }
-        float ly1 = limits.top();
-        float y1 = top();
-        if (y1 + dy < ly1) {
-            dy = y1 - ly1; //bounce top
-        }
-        float lx2 = limits.right();
-        float x2 = right();
-        if (x2 + dx > lx2) {
-            dx = lx2 - x2; //bounce right
-        }
-        float ly2 = limits.bottom();
-        float y2 = bottom();
-        if (y2 + dy > ly2) {
-            dy = ly2 - y2; //bounce bottom
-        }
-        return get(maxMovement);
-    }
-
-    public RectFloat2D get(float maxMovement) {
+//        float lx1 = limits.left();
+//        float x1 = left();
+//        if (x1 +dx < lx1) {
+//            dx = x1 - lx1; //bounce left
+//        }
+//        float ly1 = limits.top();
+//        float y1 = top();
+//        if (y1 + dy < ly1) {
+//            dy = y1 - ly1; //bounce top
+//        }
+//        float lx2 = limits.right();
+//        float x2 = right();
+//        if (x2 + dx > lx2) {
+//            dx = lx2 - x2; //bounce right
+//        }
+//        float ly2 = limits.bottom();
+//        float y2 = bottom();
+//        if (y2 + dy > ly2) {
+//            dy = ly2 - y2; //bounce bottom
+//        }
         dx = Util.clamp(dx, -maxMovement, +maxMovement);
         dy = Util.clamp(dy, -maxMovement, +maxMovement);
         return super.move(dx, dy, 0);
     }
+
+
 }
