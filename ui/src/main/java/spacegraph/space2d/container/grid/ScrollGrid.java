@@ -335,7 +335,7 @@ public class ScrollGrid<X> extends Bordering {
     @Override
     public boolean stop() {
         if (super.stop()) {
-            model.stop();
+            model.stop(this);
             return true;
         }
         return false;

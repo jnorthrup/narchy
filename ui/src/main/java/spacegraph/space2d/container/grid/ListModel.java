@@ -44,7 +44,7 @@ abstract public class ListModel<X> implements GridModel<X> {
     }
 
     @Override
-    public void stop() {
+    public void stop(ScrollGrid<X> x) {
         this.surface = null;
     }
 

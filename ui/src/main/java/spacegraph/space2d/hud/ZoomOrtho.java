@@ -3,12 +3,11 @@ package spacegraph.space2d.hud;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerResize;
-import spacegraph.input.finger.FingerResizeWindow;
+import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
+import spacegraph.util.math.v3;
 import spacegraph.video.Draw;
 import spacegraph.video.JoglSpace;
 
@@ -27,11 +26,7 @@ public class ZoomOrtho extends Ortho {
     final static short ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON = 2;
     final static short MOVE_WINDOW_BUTTON = 1;
 
-    private final int[] moveTarget = new int[2];
-    @Deprecated
-//    private final int[] resizeTarget = new int[2];
-    private final int[] windowStart = new int[2];
-//    private InsetsImmutable windowInsets;
+    @Deprecated private final int[] windowStart = new int[2];
 
     final HUD hud = new HUD();
 
@@ -96,20 +91,76 @@ public class ZoomOrtho extends Ortho {
     }
 
 
+    final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
+
+        private v3 camStart;
+        float speed = 2f;
+
+        @Override
+        protected JoglSpace window() {
+            return window;
+        }
+
+        @Override
+        public void startDrag() {
+            super.startDrag();
+            camStart = new v3(cam);
+        }
+
+        @Override
+        public void move(float dx, float dy) {
+            cam.set(camStart.x - dx / scale.x * speed,
+                    camStart.y + dy / scale.x * speed);
+        }
+
+    };
+
+    final Fingering fingerWindowMove = new FingerMovePixels(MOVE_WINDOW_BUTTON) {
+
+        @Override
+        protected JoglSpace window() {
+            return window;
+        }
+
+        @Override
+        public void move(float dx, float dy) {
+            window.setPosition(Math.round(windowStartX + dx), Math.round(windowStartY + dy));
+        }
+    };
+
+
+    final Fingering fingerWindowResize = new FingerDragging(MOVE_WINDOW_BUTTON) {
+
+        @Override
+        protected boolean drag(Finger f) {
+            return false;
+        }
+    };
+
     @Override
-    Surface finger() {
+    protected boolean finger(float dt) {
 
-        Surface s = super.finger();
+        super.finger(dt);
 
-        if (s == null || (zoomingOut || panStart!=null))
-            updatePan();
+        if (!finger.isFingering() && finger.touching==null) {
+            if (!finger.tryFingering(fingerWindowResize))
+                if (!finger.tryFingering(fingerWindowMove))
+                    if (!finger.tryFingering(fingerContentPan)) {
 
-        return s;
+            }
+        }
+
+
+
+        //if (zoomingOut || panStart!=null)
+            //updatePan();
+
+        return true;
     }
 
 
 
-    protected void updatePan() {
+    protected void _updatePan() {
         if (!finger.isFingering()) {
 
 

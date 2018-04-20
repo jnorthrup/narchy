@@ -3,7 +3,6 @@ package nars;
 
 import com.google.common.collect.Iterators;
 import com.google.common.primitives.Longs;
-import jcog.Service;
 import jcog.Services;
 import jcog.Texts;
 import jcog.Util;
@@ -94,7 +93,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
     public final Topic<Task> eventTask = new ListTopic<>();
-    public final Services<Term, NAR> services;
+    public final Services<NAR, Term, NARService> services;
 
     public final Time time;
     private final AtomicBoolean busy = new AtomicBoolean(false);
@@ -129,8 +128,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.concepts = concepts;
 
-        this.time = time;
-        time.reset();
+        (this.time = time).reset();
 
         this.exe = exe;
 
@@ -142,7 +140,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
 
-        newChannel("input"); //generic non-self source of input
+        //newChannel("input"); //generic non-self source of input
 
         //if (concepts.nar == null) { //HACK dont reinitialize if already initialized, for sharing
             concepts.init(this);
@@ -1609,7 +1607,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return c;
     }
 
-    public Stream<Service<NAR>> services() {
+    public Stream<NARService> services() {
         return services.stream();
     }
 

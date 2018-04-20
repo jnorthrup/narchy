@@ -207,7 +207,7 @@ public class AutoSurface<X> extends Gridding {
     }
 
     private class AutoServices extends Widget {
-        public AutoServices(Services<?, ?> x) {
+        public AutoServices(Services<?, ?, ?> x) {
 
             List<Surface> l = new FasterList(x.size());
 

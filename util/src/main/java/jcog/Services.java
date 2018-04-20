@@ -83,24 +83,30 @@ import java.util.stream.Stream;
  *
  * @author Luke Sandberg (original)
  */
-public class Services<X, C>  {
+public class Services<C /* context */, K /* service key */, S extends Service>  {
 
     final Logger logger;
     public final C id;
     private final Executor exe;
-    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
-    private final ConcurrentMap<X, Service<C>> services;
+    public final Topic<ObjectBooleanPair<? extends S>> change = new ListTopic<>();
+    private final ConcurrentMap<K, S> services;
 
     enum ServiceState {
         Off {
             @Override public String toString() { return "-"; }
         },
-        OffToOn,
+        OffToOn {
+            @Override public String toString() { return "-+"; }
+        },
         On {
             @Override public String toString() { return "+"; }
         },
-        OnToOff,
-        Deleted
+        OnToOff {
+            @Override public String toString() { return "+-"; }
+        },
+        Deleted {
+            @Override public String toString() { return "."; }
+        }
     }
 
 
@@ -123,20 +129,20 @@ public class Services<X, C>  {
         this.services = new ConcurrentHashMap<>(64);
     }
 
-    public Stream<Service<C>> stream() {
+    public Stream<S> stream() {
         return services.values().stream();
     }
 
-    public Set<Map.Entry<X, Service<C>>> entrySet() {
+    public Set<Map.Entry<K, S>> entrySet() {
         return services.entrySet();
     }
 
-    public void add(X key, Service<C> s) {
+    public void add(K key, S s) {
         add(key, s, true);
     }
 
-    public void add(X key, Service<C> s, boolean start) {
-        Service<C> removed = services.put(key, s);
+    public void add(K key, S s, boolean start) {
+        S removed = services.put(key, s);
 
         if (removed == s)
             return; //no change
@@ -151,12 +157,10 @@ public class Services<X, C>  {
         }
     }
 
-    public void remove(X serviceID) {
-        Service<C> s = services.get(serviceID);
+    public void remove(K serviceID) {
+        S s = services.get(serviceID);
         if (s!=null) {
-            s.stop(this, exe, ()->{
-                services.remove(serviceID);
-            });
+            s.stop(this, exe, ()-> services.remove(serviceID));
         } else {
             logger.error("can not remove unknown service: {}", serviceID);
         }
@@ -168,8 +172,8 @@ public class Services<X, C>  {
      *
      * @return this
      */
-    public Services<X,C> stop() {
-        for (Service<C> service : services.values()) {
+    public Services<C, K, S> stop() {
+        for (S service : services.values()) {
             service.stop(this, exe, null);
         }
         return this;

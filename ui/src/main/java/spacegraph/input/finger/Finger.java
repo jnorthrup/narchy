@@ -21,8 +21,10 @@ public class Finger {
 
     /**
      * global pointer screen coordinate, set by window the (main) cursor was last active in
+     * needs replaced with per-finger pointer tracking to support multitouch
      */
-    public final static Point pointer = new Point();
+    @Deprecated public final static Point pointer = new Point();
+
     final static int MAX_BUTTONS = 5;
     /**
      * TODO scale this to pixel coordinates, this spatial coordinate is tricky and resolution dependent anyway
@@ -304,5 +306,6 @@ public class Finger {
     public v2 relativePos(Surface c) {
         return relative(pos, c);
     }
+
 
 }

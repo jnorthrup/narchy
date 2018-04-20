@@ -1,7 +1,7 @@
 package nars.exe;
 
-import jcog.Service;
 import nars.NAR;
+import nars.control.NARService;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +28,7 @@ public class UniExec extends AbstractExec {
 
             List<Causable> can = n.services().map(x -> x instanceof Causable ? ((Causable) x) : null).filter(Objects::nonNull).collect(Collectors.toList());
             n.services.change.on((xb) -> {
-                Service<NAR> s = xb.getOne();
+                NARService s = xb.getOne();
                 if (s instanceof Causable) {
                     if (xb.getTwo())
                         can.add((Causable) s);

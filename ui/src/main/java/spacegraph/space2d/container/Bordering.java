@@ -125,7 +125,7 @@ public class Bordering extends MutableContainer {
                 default:
                     throw new TODO();
             }
-            assert (x2 >= x1 && y2 >= y1);
+            //assert (x2 >= x1 && y2 >= y1);
             c.pos(X + x1, Y + y1, X + x2, Y + y2);
         }
 

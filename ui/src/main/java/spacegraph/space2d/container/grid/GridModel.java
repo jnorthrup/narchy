@@ -15,6 +15,6 @@ public interface GridModel<X> {
     default void start(ScrollGrid<X> x) {
     }
 
-    default void stop() {
+    default void stop(ScrollGrid<X> x) {
     }
 }

@@ -90,13 +90,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         this.surface = content;
 
-        this.fingerUpdate = dt -> {
-//            if (/*hasFocus() ||*/
-//                    fingerMoved.compareAndSet(true, false)) {
-                finger();
-//            }
-            return true;
-        };
+        this.fingerUpdate = this::finger;
     }
 
 
@@ -399,6 +393,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public void mouseReleased(MouseEvent e) {
 //        if (e.isConsumed())
 //            return;
+        System.out.println("released: " + e);
         short[] bd = e.getButtonsDown();
 
         //invert to negative value to indicate release
@@ -475,20 +470,23 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * the picked surface even in-between pick updates which are invoked
      * during the update loop.
      * */
-    Surface finger() {
+    protected boolean finger(float dt) {
 
         /*if (e == null) {
             off();
         } else {*/
 
-        finger.update();
+
 
         Surface touching = finger.touching;
         Surface touchedNext = finger.on(surface);
+
+        finger.update();
+
         if (touchedNext!=null && touchedNext!=touching) {
             debug(this, 1f, ()->"touch(" + touchedNext + ')');
         }
-        return touchedNext;
+        return true;
     }
 
 

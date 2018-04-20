@@ -32,7 +32,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
         return nameString + ':' + super.toString();
     }
 
-    public final void start(Services<?,C> x, Executor exe) {
+    public final <S extends Services<C,?,Service<C>>> void start(S x, Executor exe) {
         if (compareAndSet(Services.ServiceState.Off, Services.ServiceState.OffToOn)) {
             exe.execute(() -> {
                 try {
@@ -48,11 +48,10 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
         }
     }
 
-    public final void stop(Services<?,C> x, Executor exe, @Nullable Runnable afterDelete) {
+    public final <S extends Services<C,?,Service<C>>>  void stop(S x, Executor exe, @Nullable Runnable afterDelete) {
         if (compareAndSet(Services.ServiceState.On, Services.ServiceState.OnToOff)) {
             exe.execute(() -> {
                 try {
-                    x.change.emit(pair(this, false));
                     stop(x.id);
                     boolean toggledOff = compareAndSet(Services.ServiceState.OnToOff, Services.ServiceState.Off);
                     assert toggledOff;
@@ -60,6 +59,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
                         set(Services.ServiceState.Deleted);
                         afterDelete.run();
                     }
+                    x.change.emit(pair(this, false));
 
                 } catch (Throwable e) {
                     set(Services.ServiceState.Deleted);
