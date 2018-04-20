@@ -67,6 +67,12 @@ public class Dyn2DSurface extends Wall implements Animated {
      * increase for more physics precision
      */
     final int solverIterations = 8;
+
+    @Override
+    public boolean tangible() {
+        return true;
+    }
+
     /**
      * TODO use more efficient graph representation
      */
@@ -562,11 +568,12 @@ public class Dyn2DSurface extends Wall implements Animated {
         if (s != null && s != this && !(s instanceof PhyWindow))
             return s; //some other content, like an inner elmeent of a window but not a window itself
 
+        if (doubleClicking.update(finger))
+            return this;
+
         if (finger.tryFingering(jointDrag))
             return this;
 
-        if (doubleClicking.update(finger))
-            return this;
 
         return s != null ? s : this;
         //return s;

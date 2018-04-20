@@ -11,7 +11,7 @@ public abstract class AbstractMutableContainer extends Container {
 
             //add pre-added
             forEach(c -> {
-                assert (c.parent == null) : c + " has parent " + c.parent + " when trying to add to " + AbstractMutableContainer.this;
+                assert (c.parent == null || c.parent == AbstractMutableContainer.this) : c + " has parent " + c.parent + " when trying to add to " + AbstractMutableContainer.this;
                 c.start(this);
             });
 

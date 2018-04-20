@@ -2,7 +2,6 @@ package nars.control;
 
 import nars.NAR;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
     }
 
 
-    protected DurService(@NotNull NAR nar) {
+    protected DurService(NAR nar) {
         this(nar, new MutableFloat(1f));
     }
 

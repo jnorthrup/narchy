@@ -54,6 +54,11 @@ abstract public class DurSurface extends UnitContainer {
             protected void update() {
                 eachDur.accept(n);
             }
+
+            @Override
+            public String toString() {
+                return "DurSurface[" + x + "," + eachDur + "]";
+            }
         };
     }
 

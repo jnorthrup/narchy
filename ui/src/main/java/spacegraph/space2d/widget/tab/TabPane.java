@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.tab;
 
-import jcog.exe.Loop;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -48,34 +47,38 @@ public class TabPane extends Splitting {
             Supplier<Surface> creator = x.getValue();
             String label = x.getKey();
             ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
-                Loop.invokeLater(() -> {
-                    if (a) {
-                        Surface cx;
-                        try {
-                            cx = creator.get();
-                        } catch (Throwable t) {
-                            String msg = t.getMessage();
-                            if (msg == null)
-                                msg = t.toString();
-                            cx = new Label(msg);
+                synchronized(TabPane.this) {
+                    {
+                        //Loop.invokeLater(() -> {
+                        if (a) {
+                            Surface cx;
+                            try {
+                                cx = creator.get();
+                            } catch (Throwable t) {
+                                String msg = t.getMessage();
+                                if (msg == null)
+                                    msg = t.toString();
+                                cx = new Label(msg);
+                            }
+
+
+                            content.add(created[0] = cx);
+                            split(CONTENT_VISIBLE_SPLIT); //hide empty content area
+
+                        } else {
+
+                            if (created[0] != null) {
+                                content.remove(created[0]);
+                                created[0] = null;
+                            }
+                            if (content.isEmpty()) {
+                                split(0f); //hide empty content area
+                            }
+
                         }
-
-
-                        content.add(created[0] = cx);
-                        split(CONTENT_VISIBLE_SPLIT); //hide empty content area
-
-                    } else {
-
-                        if (created[0] != null) {
-                            content.remove(created[0]);
-                            created[0] = null;
-                        }
-                        if (content.isEmpty()) {
-                            split(0f); //hide empty content area
-                        }
-
+                        //});
                     }
-                });
+                }
             };
 
             ToggleButton bb = buttonBuilder.apply(label);

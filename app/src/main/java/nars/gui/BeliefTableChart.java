@@ -39,7 +39,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     @Deprecated
     private final boolean showEternal = false;
     private TaskConcept cc; //cached concept
-    private float cp; //cached priority
+//    private float cp; //cached priority
     private float beliefTheta, goalTheta;
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
@@ -181,7 +181,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         }
 
         if (cc != null) {
-            cp = 1f; /*nar.pri(cc);*/
+//            cp = 1f; /*nar.pri(cc);*/
 
             long nowEnd = now + dur / 2;
             long nowStart = now - dur / 2;
@@ -198,7 +198,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             }
 
         } else {
-            cp = 0;
+//            cp = 0;
             beliefs.clear();
             beliefs.current = null;
             goals.clear();
@@ -208,6 +208,11 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         }
 
 
+    }
+
+    @Override
+    public String toString() {
+        return "BeliefTableChart[" + term + "]";
     }
 
     protected void draw(Termed tt, Concept cc, GL2 gl, long minT, long maxT) {

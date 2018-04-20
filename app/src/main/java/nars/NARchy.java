@@ -2,14 +2,12 @@ package nars;
 
 import jcog.User;
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import nars.audio.NARAudio;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
 import nars.time.RealTime;
-import nars.video.NARVideo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.audio.speech.NativeSpeechDispatcher;
@@ -55,9 +53,9 @@ public class NARchy extends NARS {
 
             User u = User.the();
 
-            new NARAudio(nar);
-
-            new NARVideo(nar);
+//            new NARAudio(nar);
+//
+//            new NARVideo(nar);
 
             NARHear.readURL(nar);
 

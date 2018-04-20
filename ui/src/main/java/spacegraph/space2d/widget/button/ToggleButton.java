@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.button;
 
-import jcog.exe.Loop;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -57,7 +56,7 @@ public abstract class ToggleButton extends AbstractButton {
 
     @Override
     protected void onClick() {
-        Loop.invokeLater(this::toggle);
+        toggle();
     }
 
     public void toggle() {

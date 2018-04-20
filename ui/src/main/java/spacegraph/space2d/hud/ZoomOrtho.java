@@ -129,13 +129,13 @@ public class ZoomOrtho extends Ortho {
     };
 
 
-    final Fingering fingerWindowResize = new FingerDragging(MOVE_WINDOW_BUTTON) {
-
-        @Override
-        protected boolean drag(Finger f) {
-            return false;
-        }
-    };
+//    final Fingering fingerWindowResize = new FingerResizeWindow(MOVE_WINDOW_BUTTON) {
+//
+//        @Override
+//        protected boolean drag(Finger f) {
+//            return false;
+//        }
+//    };
 
     @Override
     protected boolean finger(float dt) {
@@ -143,17 +143,12 @@ public class ZoomOrtho extends Ortho {
         super.finger(dt);
 
         if (!finger.isFingering() && finger.touching==null) {
-            if (!finger.tryFingering(fingerWindowResize))
+//            if (!finger.tryFingering(fingerWindowResize))
                 if (!finger.tryFingering(fingerWindowMove))
                     if (!finger.tryFingering(fingerContentPan)) {
 
             }
         }
-
-
-
-        //if (zoomingOut || panStart!=null)
-            //updatePan();
 
         return true;
     }

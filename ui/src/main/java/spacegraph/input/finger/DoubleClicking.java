@@ -28,8 +28,7 @@ public class DoubleClicking {
 
 
     public boolean update(Finger finger) {
-        //TODO encapsulate in Finger.DoubleClicking class
-        if (finger!=null && finger.clickedNow(button)) {
+        if (finger!=null && finger.pressing /*clickedNow*/(button)) {
             //System.out.println("click " + doubleClickSpot + " " + finger.hitOnDown[0] + " " + (System.currentTimeMillis() - doubleClickTime));
             v2 downHit = finger.hitOnDownGlobal[button];
             if (downHit!=null && doubleClickSpot!=null && doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD) && System.currentTimeMillis() - doubleClickTime < maxDoubleClickTime) {

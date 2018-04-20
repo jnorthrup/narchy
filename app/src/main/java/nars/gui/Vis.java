@@ -1,9 +1,7 @@
 package nars.gui;
 
-import jcog.Service;
 import jcog.pri.PriReference;
 import nars.NAR;
-import nars.control.DurService;
 import nars.term.Termed;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -13,6 +11,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -309,12 +308,15 @@ public class Vis {
                                 "nar", () -> new AutoSurface<>(n),
                                 "exe", () -> ExeCharts.exePanel(n),
                                 "can", () -> ExeCharts.causePanel(n),
-                                "svc", () -> new AutoSurface(n.services) {
-                                    @Override
-                                    protected boolean addService(Service x) {
-                                        return !(x instanceof DurService) && super.addService(x);
-                                    }
-                                },
+
+                                "svc", () -> new ServicesTable(n.services),
+//                                "svc", () -> new AutoSurface(n.services) {
+//                                    @Override
+//                                    protected boolean addService(Service x) {
+//                                        return !(x instanceof DurService) && super.addService(x);
+//                                    }
+//                                },
+
                                 "cpt", () -> bagHistogram((Iterable)()->n.conceptsActive().iterator(), 8, n)
                         )), 0.9f);
     }

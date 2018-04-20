@@ -393,7 +393,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public void mouseReleased(MouseEvent e) {
 //        if (e.isConsumed())
 //            return;
-        System.out.println("released: " + e);
+
         short[] bd = e.getButtonsDown();
 
         //invert to negative value to indicate release
@@ -477,11 +477,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         } else {*/
 
 
+        finger.update();
 
         Surface touching = finger.touching;
         Surface touchedNext = finger.on(surface);
 
-        finger.update();
 
         if (touchedNext!=null && touchedNext!=touching) {
             debug(this, 1f, ()->"touch(" + touchedNext + ')');

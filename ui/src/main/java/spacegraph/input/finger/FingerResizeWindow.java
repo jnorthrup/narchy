@@ -26,6 +26,7 @@ public class FingerResizeWindow extends FingerResize {
         originalSize = RectFloat2D.XYXY((float) sx, (float) sy, (float) (sw + sx), (float) (sh + sy));
     }
 
+
     @Override
     protected v2 pos(Finger finger) {
         return new v2(finger.pointer.getX(), -finger.pointer.getY());

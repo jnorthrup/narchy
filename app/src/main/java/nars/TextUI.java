@@ -56,6 +56,9 @@ public class TextUI {
 
     final Set<TextGUI> sessions = Sets.newConcurrentHashSet();
 
+    /** HACK because Lanterna's Component.onRemove doesnt get called reliably */
+    private Set<DurService> updaters = Sets.newConcurrentHashSet();
+
     public TextUI(NAR n) {
         this.nar = n;
     }
@@ -274,6 +277,24 @@ public class TextUI {
 
         @Override
         protected void stopping(NAR nar) {
+            updaters.forEach(DurService::off);
+            updaters.clear();
+
+            Collection<Window> w = tui.getWindows();
+//            w.forEach(c -> {
+//                Component cc = c.getComponent();
+//
+//                cc.onRemoved(null);
+//                if (cc instanceof Panel) {
+//                    ((Panel) cc).removeAllComponents(); //note this may only affect the first layer only
+//                }
+//            });
+
+            w.forEach(Window::close);
+            w.forEach(tui::removeWindow);
+
+            sessions.remove(this);
+
             if (screen != null) {
                 try {
                     screen.stopScreen();
@@ -282,25 +303,12 @@ public class TextUI {
                 }
             }
 
-            Collection<Window> w = tui.getWindows();
-            w.forEach(c -> {
-                Component cc = c.getComponent();
-                cc.onRemoved(null);
-                if (cc instanceof Panel) {
-                    ((Panel) cc).removeAllComponents(); //note this may only affect the first layer only
-                }
-            });
-            w.forEach(Window::close);
-            w.forEach(tui::removeWindow);
-
             synchronized (terminal) {
                 if (thread != null) {
                     thread.interrupt();
                     thread = null;
                 }
             }
-
-            sessions.remove(this);
 
         }
 
@@ -348,7 +356,9 @@ public class TextUI {
 
 
         DurService newGUIUpdate(Runnable r) {
-            return DurService.on(nar, r);
+            DurService u = DurService.on(nar, r);
+            updaters.add(u);
+            return u;
 //            return nar.eventCycle.on(
 //                    System::currentTimeMillis,
 //                    () -> Math.round(1000f / guiUpdateFPS.asFloat()),
@@ -423,9 +433,10 @@ public class TextUI {
 
             @Override
             public synchronized void onRemoved(Container container) {
+                on.off();
+                updaters.remove(on);
                 super.onRemoved(container);
                 removeAllComponents();
-                on.off();
             }
 
             private final StringBuilder sb = new StringBuilder(1024);
@@ -516,6 +527,7 @@ public class TextUI {
             @Override
             public synchronized void onRemoved(Container container) {
                 update.off();
+                updaters.remove(update);
                 super.onRemoved(container);
                 clearItems();
             }
@@ -547,6 +559,7 @@ public class TextUI {
             @Override
             public synchronized void onRemoved(Container container) {
                 onTask.off();
+                updaters.remove(onTask);
                 super.onRemoved(container);
                 clearItems();
             }
