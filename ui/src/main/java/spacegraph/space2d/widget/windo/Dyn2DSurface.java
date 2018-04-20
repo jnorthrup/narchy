@@ -8,6 +8,7 @@ import jcog.data.graph.NodeGraph;
 import jcog.event.On;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.ArrayIterator;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
@@ -820,7 +821,7 @@ public class Dyn2DSurface extends Wall implements Animated {
             float dx = cx() + (float) (minRadius * Math.cos(a));
             float dy = cy() + (float) (minRadius * Math.sin(a));
 
-            return put(target, sproutSize.move(dx, dy, EPSILON));
+            return put(target, sproutSize.move(dx, dy, Spatialization.EPSILONf));
         }
 
 
@@ -1023,7 +1024,7 @@ public class Dyn2DSurface extends Wall implements Animated {
 
                     v2 target = new v2(r.cx()/ scaling, r.cy()/ scaling);
 
-                    if (setTransform(target, 0, EPSILON))
+                    if (setTransform(target, 0, Spatialization.EPSILONf))
                         setAwake(true);
                 }
 
@@ -1041,7 +1042,7 @@ public class Dyn2DSurface extends Wall implements Animated {
                 float w = w(), h = h(); //HACK re-use the known width/height assumes that the physics engine cant change the shape's size
 
                 RectFloat2D r = RectFloat2D.XYWH(p.x*scaling, p.y*scaling, w, h);
-                if (!r.equals(physBounds, EPSILON)) {
+                if (!r.equals(physBounds, Spatialization.EPSILONf)) {
                     pos(physBounds = r);
                 }
 

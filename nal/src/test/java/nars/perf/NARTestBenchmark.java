@@ -1,6 +1,5 @@
 package nars.perf;
 
-import jcog.Util;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
@@ -9,26 +8,17 @@ import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
 import nars.nal.nal8.NAL8Test;
 import org.junit.jupiter.api.Disabled;
-import org.junit.platform.engine.discovery.ClassSelector;
-import org.junit.platform.engine.discovery.DiscoverySelectors;
-import org.junit.platform.launcher.Launcher;
-import org.junit.platform.launcher.LauncherDiscoveryRequest;
-import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
-import org.junit.platform.launcher.core.LauncherFactory;
-import org.junit.platform.launcher.listeners.LoggingListener;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
 
 import static nars.perf.JmhBenchmark.perf;
 
-/**
- * Created by me on 4/24/17.
- */
+
 @State(Scope.Thread)
 @Disabled
 public class NARTestBenchmark {
 
-    static final Class[] tests = {
+    public static final Class[] tests = {
             NAL1Test.class,
             NAL2Test.class,
             NAL3Test.class,
@@ -48,7 +38,7 @@ public class NARTestBenchmark {
     @Fork(0)
     public void testX() {
 
-        junit(tests);
+        JUnitNAR.junit(tests);
     }
 
 
@@ -61,31 +51,6 @@ public class NARTestBenchmark {
 //
 //        junit(testclass);
 //    }
-
-    static void junit(Class... testClasses) {
-        LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(
-                        //selectPackage("com.example.mytests"),
-                        (ClassSelector[])Util.map(
-                                DiscoverySelectors::selectClass,
-                                new ClassSelector[testClasses.length], testClasses)
-
-                        //selectClass(FastCompoundNAL1Test.class)
-                )
-                // .filters( includeClassNamePatterns(".*Tests")  )
-                .build();
-
-
-        Launcher launcher = LauncherFactory.create();
-
-
-        //SummaryGeneratingListener listener = new SummaryGeneratingListener();
-        LoggingListener listener = LoggingListener.forJavaUtilLogging();
-        launcher.registerTestExecutionListeners(listener);
-        launcher.execute(request, listener);
-
-        //listener.getSummary().printTo(new PrintWriter(System.out));
-    }
 
     public static void main(String[] args) throws RunnerException {
 

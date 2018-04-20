@@ -2,8 +2,7 @@ package nars.derive.premise;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Streams;
-import jcog.memoize.Memoize;
-import jcog.memoize.SoftMemoize;
+import jcog.memoize.QuickMemoize;
 import nars.NAR;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +24,7 @@ import java.util.stream.Stream;
 public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
 
 
-    public final static Memoize<String, List<PremiseDeriverSource>> ruleCache = new SoftMemoize<>((String n) -> {
+    public final static QuickMemoize<String, List<PremiseDeriverSource>> ruleCache = new QuickMemoize<>(32, (String n) -> {
         InputStream nn = null;
         try {
             nn = ClassLoader.getSystemResource(n).openStream();
@@ -46,7 +45,7 @@ public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
         return PremiseDeriverSource.parse(load(bb)).distinct().collect(Collectors.toList());
 
 
-    }, 32, true);
+    });
 
     public final NAR nar;
 

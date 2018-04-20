@@ -38,8 +38,8 @@ public class DefaultTermizer implements Termizer {
 //    final Map<Class, Term> classes = new HashMap();
 
 
-    final Map<Term, Object> termToObj = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG /*SOFT*/, IDENTITY, 64); //cache: (class,method) -> Method
-    final Map<Object, Term> objToTerm = new CustomConcurrentHashMap(STRONG /*SOFT*/, IDENTITY, STRONG, EQUALS, 64); //cache: (class,method) -> Method
+    final Map<Term, Object> termToObj = new CustomConcurrentHashMap<>(STRONG, EQUALS, STRONG /*SOFT*/, IDENTITY, 64); //cache: (class,method) -> Method
+    final Map<Object, Term> objToTerm = new CustomConcurrentHashMap<>(STRONG /*SOFT*/, IDENTITY, STRONG, EQUALS, 64); //cache: (class,method) -> Method
 
     /*final HashMap<Term, Object> instances = new HashMap();
     final HashMap<Object, Term> objects = new HashMap();*/
@@ -69,22 +69,22 @@ public class DefaultTermizer implements Termizer {
 
     public void put(Term x, Object y) {
         assert(x!=y);
-        synchronized (termToObj) {
+        //synchronized (termToObj) {
             termToObj.put(x, y);
             objToTerm.put(y, x);
-        }
+        //}
     }
     public void remove(Term x) {
-        synchronized (termToObj) {
+        //synchronized (termToObj) {
             Object y = termToObj.remove(x);
             objToTerm.remove(y);
-        }
+        //}
     }
     public void remove(Object x) {
-        synchronized (termToObj) {
+        //synchronized (termToObj) {
             Term y = objToTerm.remove(x);
             termToObj.remove(y);
-        }
+        //}
     }
 
     /** dereference a term to an object (but do not un-termize) */

@@ -6,6 +6,7 @@ import jcog.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.MutableMapContainer;
 import spacegraph.space2d.widget.button.PushButton;
@@ -26,22 +27,33 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         public final X id;
         public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(() -> new FasterList<>());
+        private float r, g, b;
 
         NodeVis(X id) {
             this.id = id;
 
             set(
-                new PushButton(id.toString())
+                new Scale(new PushButton(id.toString()), 0.5f)
             );
 
         }
 
-        @Override
-        protected void paintBelow(GL2 gl) {
+
+        protected void paintEdges(GL2 gl) {
             edgeOut.read().forEach(x -> x.draw(gl, this));
         }
 
+        @Override
+        protected void paintBelow(GL2 gl) {
+            gl.glColor3f(r, g, b);
+            Draw.rect(gl, bounds);
+        }
 
+        public void color(float r, float g, float b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
     }
 
     public static class EdgeVis<X> {
@@ -133,7 +145,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         super.prePaint(dtMS);
     }
 
-//    public Graph2D<X> commit(Bag<?, X> g) {
+    @Override
+    protected void paintBelow(GL2 gl) {
+        forEachValue(n -> {
+            if (n.visible()) {
+                n.paintEdges(gl);
+            }
+        });
+    }
+
+    //    public Graph2D<X> commit(Bag<?, X> g) {
 //        return commit(g, (nothing) -> null);
 //    }
 //
@@ -174,7 +195,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Nullable protected EdgeVis<X> edgeBuilder(X target) {
         @Nullable NodeVis<X> t = getValue(target);
-        if (t == null) {
+        if (t == null || !t.visible()) {
             return null;
         } else {
             EdgeVis<X> e = edgePool.get();

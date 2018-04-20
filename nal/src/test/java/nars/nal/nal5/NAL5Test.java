@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.TestNAR;
 import nars.util.NALTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -14,13 +15,19 @@ import static nars.util.time.Tense.ETERNAL;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 600;
+    final int cycles = 400;
 
     @Override
     protected NAR nar() {
-        return NARS.tmp(6);
+
+        NAR n = NARS.tmp(6);
+        n.termVolumeMax.set(14);
+        return n;
     }
 
+    @BeforeEach void setup() {
+        test.confTolerance(0.12f);
+    }
 
     @Test
     public void revision() {

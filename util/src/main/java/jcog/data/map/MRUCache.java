@@ -11,7 +11,7 @@ public class MRUCache<K, V> extends LinkedHashMap<K, V> {
     protected int capacity;
 
     public MRUCache(int capacity) {
-        super(capacity + 1, 0.99f, true);
+        super(capacity, 0.99f, true);
         this.capacity = capacity;
     }
 

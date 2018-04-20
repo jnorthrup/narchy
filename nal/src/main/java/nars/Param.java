@@ -43,10 +43,10 @@ public abstract class Param {
     public static final boolean TERM_ARRAY_SHARE = true;
 
     /** softmax roulette parameter in trie deriver fork decisions */
-    public static final float TRIE_DERIVER_TEMPERATURE = 1f;
+    public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
 
 
-    public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
+//    public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
 
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
@@ -59,7 +59,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 12;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
 
 //    public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
@@ -74,7 +74,7 @@ public abstract class Param {
 //    public static final int MAX_TASK_FORWARD_HOPS = 4;
 
 
-    public final ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
+    public ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
 
     /**
      * controls interpolation policy:
@@ -184,7 +184,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(32, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(192, 0, 1024);
 
 
     /** estimate */

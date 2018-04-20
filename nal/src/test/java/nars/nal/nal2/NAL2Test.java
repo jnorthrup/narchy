@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 850;
+    static final int cycles = 250;
 
 
     @Override
@@ -288,8 +288,8 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
         tester.believe("<planetX --> [earthly,saturny]>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles*4, "<planetX --> [marsy,earthly,saturny,venusy]>", 0.1f ,0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-        tester.mustBelieve(cycles*4, "<planetX --> [marsy,venusy]>", 0.90f ,0.81f); //.en("PlanetX is either Mars or Venus.");
+        tester.mustBelieve(cycles*2, "<planetX --> [marsy,earthly,saturny,venusy]>", 0.1f ,0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
+        tester.mustBelieve(cycles*2, "<planetX --> [marsy,venusy]>", 0.90f ,0.81f); //.en("PlanetX is either Mars or Venus.");
     }
 
     @Test
@@ -317,8 +317,8 @@ public class NAL2Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");
         tester.believe("<{Pluto,Saturn} --> planetX>", 0.1f, 0.9f); //.en("PlanetX is probably neither Pluto nor Saturn.");
-        tester.mustBelieve(cycles * 3, "<{Mars,Pluto,Saturn,Venus} --> planetX>", 0.1f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
-        tester.mustBelieve(cycles * 3, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f); //.en("PlanetX is either Mars or Venus.");
+        tester.mustBelieve(cycles * 2, "<{Mars,Pluto,Saturn,Venus} --> planetX>", 0.1f, 0.81f); //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
+        tester.mustBelieve(cycles * 2, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f); //.en("PlanetX is either Mars or Venus.");
     }
 
 }

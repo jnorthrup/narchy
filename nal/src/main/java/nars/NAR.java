@@ -22,6 +22,7 @@ import nars.concept.Operator;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
+import nars.concept.util.DefaultConceptBuilder;
 import nars.control.Activate;
 import nars.control.Cause;
 import nars.control.MetaGoal;
@@ -376,7 +377,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Nullable
     public final Concept conceptualize(String conceptTerm) throws NarseseException {
-        return conceptualize($.$(conceptTerm));
+        return conceptualize($(conceptTerm));
     }
 
     /**
@@ -384,7 +385,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public Task question( String termString) throws NarseseException {
         //TODO remove '?' if it is attached at end
-        return question($.$(termString));
+        return question($(termString));
     }
 
     /**
@@ -450,7 +451,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     
     public NAR believe( String term,  Tense tense, float freq, float conf) {
         try {
-            believe(priDefault(BELIEF), $.$(term), time(tense), freq, conf);
+            believe(priDefault(BELIEF), $(term), time(tense), freq, conf);
         } catch (NarseseException e) {
             throw new RuntimeException(e);
         }
@@ -462,13 +463,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public NAR believe(String termString, float freq, float conf) throws NarseseException {
-        believe($.$(termString), freq, conf);
+        believe($(termString), freq, conf);
         return this;
     }
 
     public Task goal(String termString) {
         try {
-            return goal($.$(termString), true);
+            return goal($(termString), true);
         } catch (NarseseException e) {
             throw new RuntimeException(e);
         }
@@ -484,13 +485,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     
     public NAR believe( String termString, boolean isTrue) throws NarseseException {
-        believe($.$(termString), isTrue);
+        believe($(termString), isTrue);
         return this;
     }
 
     
     public Task goal( String termString, boolean isTrue) throws NarseseException {
-        return goal($.$(termString), isTrue);
+        return goal($(termString), isTrue);
     }
 
     
@@ -1093,8 +1094,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return eventCycle.onWeak(each);
     }
 
-    public On onTask(@NotNull Consumer<Task> o) {
-        return eventTask.on(o);
+    public On onTask(@NotNull Consumer<Task> listener) {
+        return eventTask.on(listener);
     }
 
     @NotNull
@@ -1321,7 +1322,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public final Task belief(String c, long when) throws NarseseException {
-        return belief($.$(c), when);
+        return belief($(c), when);
     }
     public final Task belief(Termed c, long when) {
         return belief(c, when, when);
@@ -1408,6 +1409,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public float value(short[] effect) {
         return MetaGoal.privaluate(causes, effect);
+    }
+
+    /** changes the concept builder */
+    public NAR conceptBuilder(@NotNull ConceptBuilder cb) {
+        conceptBuilder = cb;
+        return this;
     }
 
 //    /**

@@ -48,15 +48,19 @@ public interface TruthOperator {
 
     abstract class ProxyTruthOperator implements TruthOperator {
         @NotNull protected final TruthOperator o;
+        private final boolean allowOverlap, single;
 
         protected ProxyTruthOperator(TruthOperator o) {
+
             this.o = o;
+            this.allowOverlap = o.allowOverlap();
+            this.single = o.single();
         }
 
-        @Override public boolean allowOverlap() {  return o.allowOverlap();         }
+        @Override public final boolean allowOverlap() {  return allowOverlap;         }
 
-        @Override public boolean single() {
-            return o.single();
+        @Override public final boolean single() {
+            return single;
         }
 
     }

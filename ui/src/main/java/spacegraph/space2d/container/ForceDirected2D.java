@@ -1,10 +1,9 @@
 package spacegraph.space2d.container;
 
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
-import jcog.tree.rtree.rect.MovingRectFloat2D;
 import spacegraph.space2d.Graph2D;
+import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
@@ -17,10 +16,12 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
     final List<Graph2D.NodeVis<X>> nodes = new FasterList();
     final List<MovingRectFloat2D> bounds = new FasterList();
 
-    int iterations = 1; //TODO problem with immutable bounds being updated after multiple iterations
+    int iterations =1; //TODO problem with immutable bounds being updated after multiple iterations
 
-    public final FloatRange repelSpeed =new FloatRange(0.001f, 0, 10f);
-    public final FloatRange attractSpeed =new FloatRange(0.001f, 0, 1f);
+    public final FloatRange repelSpeed =new FloatRange(2f, 0, 5f);
+
+    /** attractspeed << 0.5 */
+    public final FloatRange attractSpeed =new FloatRange(0.005f, 0, 0.05f);
     float maxRepelDist;
 
     float minAttractDistRelativeToRadii;
@@ -47,83 +48,76 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
         if (n == 0)
             return;
 
+        maxRepelDist = g.radius()*8;
 
-        maxRepelDist = Math.max(g.w(), g.h()) * 0.25f; //TODO use diagonal, sqrt(2)/2 or something
+        minAttractDistRelativeToRadii = 1f;
 
-        minAttractDistRelativeToRadii = 1.1f;
-
-        float repelSpeed = this.repelSpeed.floatValue();
-        float attractSpeed = this.attractSpeed.floatValue();
+        int iterations = this.iterations;
+        float repelSpeed = this.repelSpeed.floatValue()/iterations;
+        float attractSpeed = this.attractSpeed.floatValue()/iterations;
         for (int ii = 0; ii < iterations; ii++) {
-            for (int x = 0; x < n; x++)
+            v2 center = new v2();
+            for (int x = 0; x < n; x++) {
+                MovingRectFloat2D bx = bounds.get(x);
+                attract(nodes.get(x), bx, attractSpeed);
                 for (int y = x + 1; y < n; y++)
-                    repel(bounds.get(x), bounds.get(y), repelSpeed);
+                    repel(bx, bounds.get(y), repelSpeed);
 
-            for (int a = 0; a < n; a++)
-                attract(nodes.get(a), bounds.get(a), attractSpeed);
+                center.add(bx.cx(), bx.cy());
+            }
+
+            center.scaled(1f/n); //average
+            for (int x = 0; x < n; x++) {
+                bounds.get(x).move(-center.x, -center.y);
+            }
+
+
         }
 
-        v2 center = new v2();
-        for (int a = 0; a < n; a++) {
-            MovingRectFloat2D A = bounds.get(a);
-            center.add(A.cx(), A.cy());
-        }
-        center.scaled(1f/n); //average
-        float recenterX = -center.x + ox + g.bounds.w/2,
-                recenterY = -center.y + oy + g.bounds.h/2;
+
+        float recenterX =  + ox + g.bounds.w/2,
+                recenterY = + oy + g.bounds.h/2;
 //        for (int a = 0; a < n; a++) {
 //            bounds.get(a).move(recenterX, recenterY);
 //        }
 
 //        float ocx = g.bounds.cx();
 //        float ocy = g.bounds.cy();
-        float gw = g.bounds.w;
-        float gh = g.bounds.h;
         for (int i = 0; i < n; i++) {
-            MovingRectFloat2D b = bounds.get(i);
             //if (!b.isZeroMotion()) {
                 //nodes.get(i).pos(b.get(maxMovement, limit));
-                nodes.get(i).pos(b.get(recenterX, recenterY, gw, gh));
+            nodes.get(i).pos(bounds.get(i).get(recenterX, recenterY));
             //}
         }
     }
 
     private void attract(Graph2D.NodeVis<X> from, MovingRectFloat2D b, float attractSpeed) {
-        v2 p = v(b.cx(), b.cy());
+        float px = b.cx(); float py = b.cy();
         v2 delta = new v2();
 
         float fromRad = from.radius();
 
-        for (Graph2D.EdgeVis<X> l : from.edgeOut.read()) {
+        List<Graph2D.EdgeVis<X>> read = from.edgeOut.read();
 
-            Graph2D.NodeVis<X> to = l.to;
+        for (int i = 0, readSize = read.size(); i < readSize; i++) {
 
-            delta.set(to.cx(), to.cy()).subbed(p);
+            Graph2D.NodeVis<X> to = read.get(i).to;
+
+            delta.set(to.cx(), to.cy()).subbed(px, py);
 
             float lenSq = delta.lengthSquared();
             if (!Float.isFinite(lenSq))
-                return;
+                continue;
 
-            lenSq -= Util.sqr(minAttractDistRelativeToRadii *(fromRad +to.radius()) );
-            if (lenSq <= 0)
-                return;
+            float len = (float) Math.sqrt(lenSq);
+            len -= (minAttractDistRelativeToRadii * (fromRad + to.radius()));
+            if (len <= 0)
+                continue;
 
+            //delta.normalize();
 
-            delta.normalize();
-
-            //constant speed
-            //delta.scale( speed );
-
-            //speed proportional to length
-            //float len = (float) Math.sqrt(lenSq);
-            //delta.scaled( Math.min(len, len * attractSpeed) );
-            delta.scaled( attractSpeed );
-
-            b.move(delta.x, delta.y);
-//                    //delta2.scale(-(speed * (yp.mass() /* + yp.mass()*/) ) * len  );
-//                    delta.scale(-1 );
-//                    ((Body3D) y).velAdd(delta);
-
+            float s = attractSpeed;// * len;
+            b.move(delta.x * s, delta.y * s);
         }
     }
 
@@ -132,23 +126,24 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
         Tuple2f delta = new v2(a.cx(), a.cy()).subbed(b.cx(), b.cy());
 
         float len = delta.normalize();
-        len -= minAttractDistRelativeToRadii * (a.radius() + b.radius());
+
+        float ar = a.radius();
+        float br = b.radius();
+        float abr = (ar + br);
+
+        len -= (abr);
         if (len < 0)
             len = 0;
         else if (len >= maxRepelDist)
             return;
 
-        float s = repelSpeed / (1 +
-                (len * len)
-        );
+        float s = repelSpeed / ( 1 + (len * len) );
 
-        v2 v = v(delta.x * s / 2f, delta.y * s / 2f);
-        float ar = a.radius();
-        float br = b.radius();
-        float abr = (ar + br);
-        double baRad = br / abr;
+        v2 v = v(delta.x * s, delta.y * s);
+
+        double baRad = 1; //br / abr;
         a.move(v.x * baRad, v.y * baRad);
-        double abRad = -ar / abr;
+        double abRad = -1; //-ar / abr;
         b.move(v.x * abRad, v.y * abRad);
 
     }

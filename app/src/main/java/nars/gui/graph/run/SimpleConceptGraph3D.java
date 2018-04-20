@@ -5,6 +5,8 @@ import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.control.Activate;
+import nars.derive.Derivers;
+import nars.derive.deriver.MatrixDeriver;
 import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.SubOrtho;
@@ -16,17 +18,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
-public class SimpleConceptGraph1 extends DynamicConceptSpace {
+public class SimpleConceptGraph3D extends DynamicConceptSpace {
 
     private final AtomicBoolean reloadReady = new AtomicBoolean(false);
     private final TextEdit inputbox;
 
-    private SimpleConceptGraph1(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
+    private SimpleConceptGraph3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
         this(nar, () -> nar.exe.active().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
     }
 
-    private SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
+    private SimpleConceptGraph3D(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
         SpaceGraphPhys3D sg = show(1400, 1000, false);
@@ -92,12 +94,14 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        Param.DEBUG = true;
         //Param.TRACE = true;
         NAR n = NARS.threadSafe();
+        new MatrixDeriver(Derivers.nal(1, 8, n));
+
+        n.startFPS(10f);
+
+//        new DeductiveChainTest(n, 8,  2048, inh);
 
 
-        //new DeductiveChainTest(n, 8,  2048, inh);
-
-
-        SimpleConceptGraph1 g = new SimpleConceptGraph1(n,
+        SimpleConceptGraph3D g = new SimpleConceptGraph3D(n,
                 /* TODO */ 128, 5);
 
 

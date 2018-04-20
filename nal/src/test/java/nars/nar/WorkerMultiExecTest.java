@@ -63,7 +63,7 @@ public class WorkerMultiExecTest {
         System.out.println(c.executed.get());
         System.out.println(exe.focus);
 
-        assertEquals(3+1, exe.focus.choice.size());
+        assertEquals(3, exe.focus.choice.size());
 
         assertEquals(expectedDuty(a) / expectedDuty(b), ((float)a.executed.get()) / b.executed.get(), 0.5f);
         assertEquals(expectedDuty(a) / expectedDuty(c)/2, ((float)a.executed.get()) / c.executed.get(), 0.5f);

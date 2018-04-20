@@ -63,7 +63,6 @@ public class FloatSlider extends Widget {
                 new Scale(slider = m, 0.95f),
                 label.scale(0.85f).align(AspectAlign.Align.Center)
         ));
-        updateText();
     }
 
 
@@ -119,18 +118,30 @@ public class FloatSlider extends Widget {
             p(v);
         }
 
-        public abstract float min();
-        public abstract float max();
-
         @Override
-        protected void paint(GL2 gl, int dtMS) {
+        public boolean start(SurfaceBase parent) {
+            if (super.start(parent)) {
+                update();
+                return true;
+            }
+            return false;
+        }
 
+        protected void update() {
             FloatSlider p = parent(FloatSlider.class);
             if (p!=null) {
                 FloatSupplier input = p.input; //HACK
                 if (input != null)
                     super.value(input.asFloat());
             }
+        }
+
+        public abstract float min();
+        public abstract float max();
+
+        @Override
+        protected void paint(GL2 gl, int dtMS) {
+
 
             super.paint(gl, dtMS);
         }

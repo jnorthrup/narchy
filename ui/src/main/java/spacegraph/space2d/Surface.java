@@ -3,6 +3,7 @@ package spacegraph.space2d;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
+import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.AspectAlign;
@@ -18,11 +19,6 @@ import java.util.function.Predicate;
  * (fractal) 2D Surface embedded relative to a parent 2D surface or 3D space
  */
 abstract public class Surface implements SurfaceBase {
-
-    /**
-     * smallest recognizable dimension change
-     */
-    public static final float EPSILON = 0.00001f;
 
     private final static AtomicInteger serial = new AtomicInteger();
 
@@ -99,7 +95,7 @@ abstract public class Surface implements SurfaceBase {
 
     protected final boolean posChanged(RectFloat2D r) {
         RectFloat2D b = this.bounds;
-        if (!b.equals(r, Surface.EPSILON)) {
+        if (!b.equals(r, Spatialization.EPSILONf)) {
             this.bounds = r;
             return true;
         }
@@ -177,7 +173,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public Surface move(float dx, float dy) {
-        pos(bounds.move(dx, dy, EPSILON));
+        pos(bounds.move(dx, dy, Spatialization.EPSILONf));
         return this;
     }
 
@@ -235,7 +231,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public boolean visible() {
-        return visible;
+        return parent!=null && visible;
     }
 
     public float radius() {

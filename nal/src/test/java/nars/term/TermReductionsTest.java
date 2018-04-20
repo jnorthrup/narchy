@@ -73,7 +73,7 @@ public class TermReductionsTest extends NarseseTest {
         // (|,R,(|,P,Q)) = (|,P,Q,R)
         assertEquals("(|,P,Q,R)", SECTi.the(r, SECTi.the(p, q)).toString());
         assertReduction("(|,P,Q,R)", "(|,R,(|,P,Q))");
-    }
+    } // 1*2*3
 
     @Test
     public void testIntersectIntReduction2() {

@@ -71,19 +71,19 @@ public enum JmhBenchmark {
 
 
 		Collection<RunResult> result = new Runner(opt.build()).run();
-		result.forEach(r -> {
-			r.getSecondaryResults().forEach((k,v)->{
-				if (v instanceof StackProfiler2.StackResult) {
-				}
-//				if (v instanceof StackProfiler.StackResult) {
-//					StackProfiler.StackResult s = (StackProfiler.StackResult)v;
-//					s.getStack(Thread.State.RUNNABLE)
-//				}
-			});
-			System.out.println(r.getPrimaryResult().getClass());
-//			System.out.println(r.getBenchmarkResults().forEach );
-//			System.out.println(r.getAggregatedResult());
-		});
+//		result.forEach(r -> {
+////			r.getSecondaryResults().forEach((k,v)->{
+////				if (v instanceof StackProfiler2.StackResult) {
+////				}
+//////				if (v instanceof StackProfiler.StackResult) {
+//////					StackProfiler.StackResult s = (StackProfiler.StackResult)v;
+//////					s.getStack(Thread.State.RUNNABLE)
+//////				}
+////			});
+//			System.out.println(r.getPrimaryResult().getClass());
+////			System.out.println(r.getBenchmarkResults().forEach );
+////			System.out.println(r.getAggregatedResult());
+//		});
 
 
 	}

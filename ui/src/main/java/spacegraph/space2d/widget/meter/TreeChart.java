@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.list.CircularArrayList;
 import jcog.list.FasterList;
+import jcog.tree.rtree.Spatialization;
 import jcog.util.Flip;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.Surface;
@@ -155,7 +156,7 @@ public class TreeChart<X> extends Surface {
         double worstConcat = worst(concatRow, w);
         double worstRow = worst(row, w);
 
-        if (row.isEmpty() || (worstRow > worstConcat || Util.equals(worstRow, worstConcat, EPSILON))) {
+        if (row.isEmpty() || (worstRow > worstConcat || Util.equals(worstRow, worstConcat, Spatialization.EPSILONf))) {
 
             if (remaining.isEmpty()) {
                 layoutrow(concatRow, w);
@@ -225,7 +226,7 @@ public class TreeChart<X> extends Surface {
             //this.heightLeft -= w;
             left += rowWidth;
             double minimumSide = minimumSide();
-            if (!Util.equals(minimumSide, heightLeft, EPSILON)) {
+            if (!Util.equals(minimumSide, heightLeft, Spatialization.EPSILONf)) {
                 changeLayout();
             }
         } else {
@@ -250,7 +251,7 @@ public class TreeChart<X> extends Surface {
             top += rowHeight;
 
             double minimumSide = minimumSide();
-            if (!Util.equals(minimumSide, widthLeft, EPSILON)) {
+            if (!Util.equals(minimumSide, widthLeft, Spatialization.EPSILONf)) {
                 changeLayout();
             }
         }

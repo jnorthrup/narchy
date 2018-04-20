@@ -17,6 +17,7 @@ import nars.table.*;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static nars.Op.goalable;
@@ -67,9 +68,8 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
 
-    static Map newBagMap(int volume) {
-        int initialCap = 2;
-        float loadFactor = 0.75f;
+    protected Map newBagMap(int volume) {
+
 
 //        if (concurrent()) {
 ////            //return new ConcurrentHashMap(defaultInitialCap, 1f);
@@ -89,8 +89,12 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 ////            }
 //        } else {
 
-        return new UnifiedMap(initialCap, loadFactor);
-        //return new HashMap(initialCap, loadFactor);
+        float loadFactor = 0.99f;
+        if (volume < 10) {
+            return new HashMap(2, loadFactor);
+        } else {
+            return new UnifiedMap(2, loadFactor);
+        }
 //        }
 
     }

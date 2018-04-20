@@ -86,9 +86,6 @@ public class InterNARTest {
 
         System.out.println("disconnecting..");
 
-//        ai.off();
-//        bi.off();
-
         /* init */
         for (int i = 0; i < postCycles; i++) {
             a.run(1);
@@ -102,17 +99,17 @@ public class InterNARTest {
 
     }
 
-    @Test
-    public void testInterNAR1() {
+    /** direct question answering */
+    @Test public void testInterNAR1() {
         AtomicBoolean aRecvQuestionFromB = new AtomicBoolean();
 
         testAB((a, b) -> {
 
-            a.onTask(tt -> {
-                //System.out.println(b + ": " + tt);
-                if (tt.toString().contains("(?1-->y)"))
+            a.onTask(task -> {
+                if (task.toString().contains("(?1-->y)"))
                     aRecvQuestionFromB.set(true);
             });
+
 
             try {
                 b.believe("(X --> y)");
@@ -120,11 +117,7 @@ public class InterNARTest {
                 fail(e);
             }
 
-
-            //a.log();
-
         }, (a, b) -> {
-
 
             try {
                 a.input("(?x --> y)?");
@@ -148,18 +141,20 @@ public class InterNARTest {
 
         testAB((a, b) -> {
 
-            a.onTask(at -> {
-                System.out.println(a + ": " + at);
-            });
+//            a.onTask(at -> {
+//                System.out.println(a + ": " + at);
+//            });
 
             b.onTask(bt -> {
-                System.out.println(b + ": " + bt);
+//                System.out.println(b + ": " + bt);
                 if (bt.isBelief() && bt.toString().contains("(a-->d)"))
                     recv.set(true);
             });
 
         }, (a, b) -> {
 
+            //Term bIsAC = Op.INH.the($.the("b"), $.the("c"));
+            //-->(b,c)
             a.believe($$("(b --> c)"));
 
             b.believe($$("(a --> b)"));
