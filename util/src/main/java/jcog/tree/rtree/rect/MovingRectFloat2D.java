@@ -45,12 +45,12 @@ public class MovingRectFloat2D extends RectFloat2D {
         float lx1 = limits.left();
         float x1 = left();
         if (x1 +dx < lx1) {
-            dx = lx1 - x1; //bounce left
+            dx = x1 - lx1; //bounce left
         }
         float ly1 = limits.top();
         float y1 = top();
         if (y1 + dy < ly1) {
-            dy = ly1 - y1; //bounce top
+            dy = y1 - ly1; //bounce top
         }
         float lx2 = limits.right();
         float x2 = right();
@@ -62,8 +62,12 @@ public class MovingRectFloat2D extends RectFloat2D {
         if (y2 + dy > ly2) {
             dy = ly2 - y2; //bounce bottom
         }
+        return get(maxMovement);
+    }
+
+    public RectFloat2D get(float maxMovement) {
         dx = Util.clamp(dx, -maxMovement, +maxMovement);
         dy = Util.clamp(dy, -maxMovement, +maxMovement);
-        return super.move(dx, dy);
+        return super.move(dx, dy, 0);
     }
 }

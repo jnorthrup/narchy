@@ -18,8 +18,8 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
 
     int iterations = 1; //TODO problem with immutable bounds being updated after multiple iterations
 
-    float repelSpeed = 1;
-    float attractSpeed= 5;
+    float repelSpeed = 5;
+    float attractSpeed= 2;
     float maxDist, maxMovement;
     float idealDist;
 
@@ -55,7 +55,8 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
         for (int i = 0; i < n; i++) {
             MovingRectFloat2D b = bounds.get(i);
             if (!b.isZeroMotion()) {
-                nodes.get(i).pos(b.get(maxMovement, limit));
+                //nodes.get(i).pos(b.get(maxMovement, limit));
+                nodes.get(i).pos(b.get(maxMovement));
             }
         }
     }
@@ -64,7 +65,9 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
         v2 p = v(b.cx(), b.cy());
         v2 delta = new v2();
 
-        for (Graph2D.NodeVis<X> n : x.edgeOut) {
+        for (Graph2D.Link<X> l : x.edgeOut.read()) {
+
+            Graph2D.NodeVis<X> n = l.to;
 
             delta.set(p).subbed(n.cx(), n.cy());
 

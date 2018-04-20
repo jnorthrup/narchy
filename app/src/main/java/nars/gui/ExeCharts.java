@@ -95,7 +95,7 @@ public class ExeCharts {
                             }
                         }
                                 .text(MetaGoal.values()[w].name())
-                                .type(SliderModel.Knob)
+                                .type(SliderModel.KnobHoriz)
                                 .on((s, v) -> {
                                     if (!auto.on())
                                         want[w] = v;

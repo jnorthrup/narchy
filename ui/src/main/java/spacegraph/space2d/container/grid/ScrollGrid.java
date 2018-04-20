@@ -15,6 +15,7 @@ import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 
 import static jcog.Util.short2Int;
+import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
 
 /** see also:
  *      https://www.youtube.com/watch?v=ffMpyLQ9YA0
@@ -121,7 +122,7 @@ public class ScrollGrid<X> extends Bordering {
                         return model.cellsX();
                     }
                 }
-        ).type(SliderModel.Knob));
+        ).type(SliderModel.KnobHoriz));
 
         set(E, this.scrollY = new FloatSlider("Y",
                 new FloatSlider.FloatSliderModel(0) {
@@ -135,7 +136,7 @@ public class ScrollGrid<X> extends Bordering {
                         return model.cellsY();
                     }
                 }
-        ).type(SliderModel.Knob)); //TODO make vertical
+        ).type(KnobVert)); //TODO make vertical
 
 
         set(N, new Gridding(
@@ -177,7 +178,7 @@ public class ScrollGrid<X> extends Bordering {
                                 return Math.min(model.cellsY() * 1.25f, MAX_DISPLAYED_CELLS_Y);
                             }
                         }
-                ),
+                ).type(KnobVert),
                 new EmptySurface()  //HACK
         ));
         scrollX.on((sx, x) -> view(x, view.y));

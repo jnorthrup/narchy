@@ -72,13 +72,13 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     @Override
     protected void clear() {
         cache.values().removeIf(e -> {
-            remove(e);
+            e.clear();
             return true;
         });
         cache.invalidate();
     }
 
-    @Nullable public V getValues(K x) {
+    @Nullable public V getValue(K x) {
         CacheCell<K, V> y = cache.get(x);
         if (y !=null)
             return y.value;
@@ -120,18 +120,10 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     public boolean remove(K key) {
         CacheCell<K, V> entry = cache.remove(key);
         if (entry!=null) {
-            remove(entry);
+            entry.clear();
             return true;
         }
         return false;
-    }
-
-    public void remove(CacheCell<K, V> entry) {
-        Surface es = entry.surface;
-        if (es!=null) {
-            es.stop();
-        }
-        entry.clear();
     }
 
     public void getValues(Collection<V> l) {
@@ -152,8 +144,11 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         }
 
         public void clear() {
-            surface = null;
             value = null;
+            Surface es = this.surface;
+            surface = null;
+            if (es!=null)
+                es.stop();
         }
 
         /** return true to keep or false to remove from the map */

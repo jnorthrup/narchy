@@ -56,7 +56,7 @@ public class WidgetTest {
                         col(
                                 new Label("label"),
                                 new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
-                                new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.Knob)
+                                new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)
                         ),
                         new XYSlider(),//.state(Widget.META),
                         new DummyConsole().surface(),

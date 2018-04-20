@@ -7,9 +7,11 @@ import com.jogamp.opengl.GL2;
 import jcog.bag.Bag;
 import jcog.data.graph.AdjGraph;
 import jcog.data.graph.MapNodeGraph;
+import jcog.data.pool.DequePool;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.MutableMapContainer;
@@ -18,53 +20,22 @@ import spacegraph.video.Draw;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static com.jogamp.opengl.math.FloatUtil.sqrt;
 
-/** 2D directed/undirected graph widget */
-public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
+/**
+ * 2D directed/undirected graph widget
+ */
+public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
-    public static class NodeVis<X> extends Gridding {
-
-        public final X id;
-        public volatile NodeVis<X>[] edgeOut = null;
-
-        NodeVis(X id) {
-            this.id = id;
-
-            set(
-                new PushButton(id.toString())
-            );
-        }
-
-        @Override
-        protected void paintBelow(GL2 gl) {
-            NodeVis[] e = edgeOut;
-            if (e!=null) {
-                float x = cx();
-                float y = cy();
-                gl.glLineWidth(4f);
-                for (NodeVis b : e) {
-                    Draw.line(gl, x, y, b.x(), b.y());
-                }
-            }
-        }
-
-
-    }
-
+    volatile Graph2DLayout<X> layout = (c, d) -> {
+    };
 
     public Graph2D() {
-        
-    }
 
-    volatile Graph2DLayout<X> layout = (c,d)->{ };
-
-    @FunctionalInterface
-    public interface Graph2DLayout<X> {
-        void layout(Graph2D<X> g, int dtMS);
     }
 
     public Graph2D<X> setLayout(Graph2DLayout<X> layout) {
@@ -94,11 +65,13 @@ public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
         super.doLayout(dtMS);
     }
 
-    public Graph2D<X> commit(Bag<?,X> g) {
-        return commit(g, (nothing)->null);
+    public Graph2D<X> commit(Bag<?, X> g) {
+        return commit(g, (nothing) -> null);
     }
 
-    /** adapts guava Graph as input */
+    /**
+     * adapts guava Graph as input
+     */
     public Graph2D<X> commit(Graph<X> g) {
         return commit(g.nodes(), g::successors);
     }
@@ -111,41 +84,45 @@ public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
         return commit(new MapNodeGraph<>(s, start));
     }
 
-    public Graph2D<X> commit(AdjGraph<X,Object> g) {
+    public Graph2D<X> commit(AdjGraph<X, Object> g) {
         return commit(
-            Iterables.transform(g.nodes.keySet(), t -> t.v),
-            (X x) -> {
-                List<X> adj = new FasterList();
-                g.neighborEdges(x, (v,e)->{
-                    adj.add(v);
-                });
-                return adj;
-            }
+                Iterables.transform(g.nodes.keySet(), t -> t.v),
+                (X x) -> {
+                    List<X> adj = new FasterList();
+                    g.neighborEdges(x, (v, e) -> {
+                        adj.add(v);
+                    });
+                    return adj;
+                }
         );
     }
-    public Graph2D<X> commit(MapNodeGraph<X,Object> g) {
+
+    public Graph2D<X> commit(MapNodeGraph<X, Object> g) {
         return commit(
-                Iterables.transform(g.nodes(), x-> x.id),
-                x-> Iterables.transform(
-                        g.node(x).edges(false,true),
+                Iterables.transform(g.nodes(), x -> x.id),
+                x -> Iterables.transform(
+                        g.node(x).edges(false, true),
                         //zz -> zz.id //edge label
                         zz -> zz.to.id //edge target
                 ));
     }
 
-    public Graph2D<X> commit(Iterable<X> nodes, @Nullable Function<X,Iterable<X>> edges) {
-        return update(nodes, edges, false);
+    public Graph2D<X> commit(Iterable<X> nodes, @Nullable Function<X, Iterable<X>> edges) {
+        return update(nodes, edges, null, false);
     }
 
-    public Graph2D<X> update(Iterable<X> nodes, @Nullable Function<X,Iterable<X>> edges, boolean addOrReplace ) {
+    public <Y> Graph2D<X> update(Iterable<X> nodes, @Nullable Function<X, Iterable<Y>> edges, BiFunction<Y,Link<X>,X> eachLink, boolean addOrReplace) {
 
         if (!addOrReplace)
             clear();
 
-        nodes.forEach((x)->{
+        nodes.forEach((x) -> {
             //g.nodes().forEach(x -> {
             //HACK todo use proxyterms in a cache
             //c.termlinks().clear();
+
+            if (x == null)
+                return;
 
             //TODO computeIfAbsent and re-use existing model
             compute(x, xx -> {
@@ -157,18 +134,87 @@ public class Graph2D<X> extends MutableMapContainer<X,Graph2D.NodeVis<X>> {
         });
 
         forEachValue((NodeVis<X> v) -> {
-            List<NodeVis<X>> outs = new FasterList();
-            edges.apply(v.id).forEach((X ve) -> {
-                outs.add( getValues(ve) );
+            List<Link> edgesNext = v.edgeOut.write();
+            edgesNext.forEach(links::put);
+            edgesNext.clear();
+            edges.apply(v.id).forEach((Y ve) -> {
+                Link<X> nextLink = links.get();
+                X to = eachLink!=null ? eachLink.apply(ve, nextLink) : (X)ve;
+                if (to!=null) {
+                    nextLink.to = getValue(to);
+                    edgesNext.add(nextLink);
+                } else {
+                    links.put(nextLink);
+                }
             });
-            v.edgeOut = ((FasterList<NodeVis<X>>) outs).toArrayRecycled(NodeVis[]::new);
+            v.edgeOut.commit();
         });
 
 
         return this;
     }
 
+    @FunctionalInterface
+    public interface Graph2DLayout<X> {
+        void layout(Graph2D<X> g, int dtMS);
+    }
 
+    final DequePool<Link<X>> links = new DequePool<>(1024) {
+
+        @Override
+        public Link<X> create() {
+            return new Link();
+        }
+    };
+
+    public static class Link<X> {
+        public NodeVis<X> to;
+        public float r = 0.5f,
+              g = 0.5f,
+              b = 0.5f;
+
+        public Link<X> to(NodeVis<X> n) {
+            this.to = n;
+            return this;
+        }
+
+        public Link<X> color(float r, float g, float b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            return this;
+        }
+
+        public void draw(GL2 gl, NodeVis<X> from) {
+            float x = from.cx();
+            float y = from.cy();
+            gl.glLineWidth(4f);
+            gl.glColor3f(r, g, b);
+            Draw.line(gl, x, y, to.cx(), to.cy());
+        }
+    }
+
+    public static class NodeVis<X> extends Gridding {
+
+
+        public final X id;
+        public final Flip<List<Link>> edgeOut = new Flip(() -> new FasterList());
+
+        NodeVis(X id) {
+            this.id = id;
+
+            set(
+                    new PushButton(id.toString())
+            );
+        }
+
+        @Override
+        protected void paintBelow(GL2 gl) {
+            edgeOut.read().forEach(x -> x.draw(gl, this));
+        }
+
+
+    }
 
 
 }

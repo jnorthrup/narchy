@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
@@ -91,7 +90,7 @@ public class FloatSlider extends Widget {
         return this.labelText + Texts.n2(slider.value());
     }
 
-    public FloatSlider type(FloatObjectProcedure<GL2> t) {
+    public FloatSlider type(SliderModel.SliderUI t) {
         slider.type(t);
         return this;
     }

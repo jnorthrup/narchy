@@ -2,18 +2,13 @@ package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
-
-import static spacegraph.space2d.container.grid.Gridding.col;
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * abstract 1D slider/scrollbar
@@ -44,13 +39,21 @@ public class SliderModel extends Surface {
 
     @Override
     protected void paint(GL2 gl, int dtMS) {
-        Draw.bounds(gl, bounds, (g)-> draw.value(this.p, g));
+        Draw.bounds(gl, bounds, (g)-> ui.draw(this.p, g));
     }
 
-    FloatObjectProcedure<GL2> draw = SolidLeft;
+    SliderUI ui = SolidLeft;
 
-    public SliderModel type(FloatObjectProcedure<GL2> draw) {
-        this.draw = draw;
+    public interface SliderUI {
+        void draw(float p, GL2 gl);
+
+        /** resolves the 2d hit point to a 1d slider value */
+        float p(v2 hitPoint);
+
+    }
+
+    public SliderModel type(SliderUI draw) {
+        this.ui = draw;
         return this;
     }
 
@@ -62,9 +65,7 @@ public class SliderModel extends Surface {
             if (finger.tryFingering(new FingerDragging(0) {
                 @Override protected boolean drag(Finger f) {
                     v2 hitPoint = finger.relativePos(SliderModel.this);
-                    if (hitPoint.inUnit()) {
-                        _set(p(hitPoint));
-                    }
+                    _set(ui.p(hitPoint));
                     return true;
                 }
             }))
@@ -105,73 +106,91 @@ public class SliderModel extends Surface {
      * unnormalize: gets proportion from external value
      */
     protected float p(float v) {
-
         return v;
     }
 
-    //    public static void main(String[] args) {
-//        new GraphSpace<Surface>(
-//
-//                (Surface vt) -> new SurfaceMount(null, vt),
-//
-//                new XYPadSurface()
-//
-//        ).show(800,800);
-//    }
-    public static void main(String[] args) {
-
-        SpaceGraph.window(
-                grid(
-                        new XYSlider(), new XYSlider(), new XYSlider(),
-                        col(
-                                new SliderModel(0.75f),
-                                new SliderModel(0.25f),
-                                new SliderModel(0.5f)
-                        )
-                )
-                , 800, 800);
-    }
-
-    private static float p(v2 hitPoint) {
-
-        //TODO interpret point coordinates according to the current drawn model, which could be a knob etc
-
+    static float pHorizontal(v2 hitPoint) {
         float x = hitPoint.x;
         if (x <= margin)
             return 0;
         else if (x >= (1f-margin))
             return 1f;
         else
-            return hitPoint.x;
+            return x;
+    }
+    static float pVertical(v2 hitPoint) {
+        float y = hitPoint.y;
+        if (y <= margin)
+            return 0;
+        else if (y >= (1f-margin))
+            return 1f;
+        else
+            return y;
     }
 
-    public static final FloatObjectProcedure<GL2> SolidLeft = (p, gl) -> {
-        float W = 1; //TODO use correct w() and h()
-        float H = 1;
-        float barSize = W * p;
+    static final SliderUI SolidLeft = new SliderUI() {
+        @Override
+        public void draw(float p, GL2 gl) {
+            float W = 1; //TODO use correct w() and h()
+            float H = 1;
+            float barSize = W * p;
 
-        //inset
-        gl.glColor4f(0f, 0f, 0f, 0.5f);
-        Draw.rect(gl, barSize, 0, W-barSize, H);
+            //inset
+            gl.glColor4f(0f, 0f, 0f, 0.5f);
+            Draw.rect(gl, barSize, 0, W-barSize, H);
 
-        //growing knob from left
-        gl.glColor4f(0.75f * 1f - p, 0.75f * p, 0f, 0.8f);
-        Draw.rect(gl, 0, 0, barSize, H);
+            //growing knob from left
+            gl.glColor4f(0.75f * 1f - p, 0.75f * p, 0f, 0.8f);
+            Draw.rect(gl, 0, 0, barSize, H);
+        }
+
+        @Override
+        public float p(v2 hitPoint) {
+            return pHorizontal(hitPoint);
+        }
     };
 
-    public static final FloatObjectProcedure<GL2> Knob = (p, gl) -> {
 
-        float knobWidth = 0.05f;
-        float W = 1;
-        float H = 1;
-        float x = W * p;
+    public static final SliderUI KnobHoriz = new SliderUI() {
+        @Override
+        public void draw(float p, GL2 gl) {
+            float knobWidth = 0.05f;
+            float W = 1;
+            float H = 1;
+            float x = W * p;
 
-        gl.glColor4f(0f, 0f, 0f, 0.5f);
-        Draw.rect(gl, 0, 0, W, H);
+            gl.glColor4f(0f, 0f, 0f, 0.5f);
+            Draw.rect(gl, 0, 0, W, H);
 
-        gl.glColor4f(1f - p, p, 0f, 0.75f);
-        Draw.rect(gl, x-knobWidth/2f, 0, knobWidth, H);
+            gl.glColor4f(1f - p, p, 0f, 0.75f);
+            Draw.rect(gl, x-knobWidth/2f, 0, knobWidth, H);
+        }
 
+        @Override
+        public float p(v2 hitPoint) {
+            return pHorizontal(hitPoint);
+        }
+    };
+
+    public static final SliderUI KnobVert = new SliderUI() {
+        @Override
+        public void draw(float p, GL2 gl) {
+            float knobWidth = 0.05f;
+            float W = 1;
+            float H = 1;
+            float x = W * p;
+
+            gl.glColor4f(0f, 0f, 0f, 0.5f);
+            Draw.rect(gl, 0, 0, W, H);
+
+            gl.glColor4f(1f - p, p, 0f, 0.75f);
+            Draw.rect(gl, 0, x-knobWidth/2f, W, knobWidth);
+        }
+
+        @Override
+        public float p(v2 hitPoint) {
+            return pVertical(hitPoint);
+        }
     };
 
 
