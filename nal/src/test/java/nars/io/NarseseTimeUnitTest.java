@@ -42,6 +42,9 @@ public class NarseseTimeUnitTest {
         Task plusHour = n.inputTask("<a --> b>. +1h");
         assertEquals(plusHour.start() - n.time(), 60*60*1000, 1000);
 
+        Task plusHour2 = n.inputTask("<a --> b>. +1hr");
+        assertEquals(plusHour2, plusHour);
+
         Task minusHour = n.inputTask("<a --> b>. -1h");
         assertEquals(minusHour.start() - n.time(), -60*60*1000, 10000);
 
@@ -64,4 +67,13 @@ public class NarseseTimeUnitTest {
 //            n.inputTask("(a &&+1day b).").toString()
 //        );
     }
+
+//    @Test
+//    public void parsedCorrectOccurrenceTime() throws Narsese.NarseseException {
+//        long now = n.time();
+//        Task t = n.inputTask("b:a. :\\:");
+//        assertEquals(now, t.creation());
+//        assertEquals(now - 1, t.start());
+//    }
+
 }

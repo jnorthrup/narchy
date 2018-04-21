@@ -21,7 +21,7 @@ public interface TaskMatch {
     FloatFunction<Task> value();
 
     /** the RNG used if to apply random sampling, null to disable sampling (max first descending) */
-    default @Nullable Random sample() {
+    default @Nullable Random random() {
         return null;
     }
 
@@ -112,7 +112,7 @@ public interface TaskMatch {
         }
 
         @Override
-        public @Nullable Random sample() {
+        public @Nullable Random random() {
             return random;
         }
     }

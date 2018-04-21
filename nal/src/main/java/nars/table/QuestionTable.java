@@ -109,11 +109,11 @@ public interface QuestionTable extends TaskTable {
 
         @Override
         protected void onEvict(Map.Entry<Task, Task> entry) {
-            Task x = entry.getKey();
-            Task y = entry.getValue();
-            x.delete();
-            if (y != x)
-                y.delete();
+//            Task x = entry.getKey();
+//            Task y = entry.getValue();
+//            x.delete();
+//            if (y != x)
+//                y.delete();
         }
 
         @Override
@@ -132,7 +132,7 @@ public interface QuestionTable extends TaskTable {
 
             if (u != t) {
                 //absorbed
-                t.delete();
+                //t.delete();
             }
 
             return true;

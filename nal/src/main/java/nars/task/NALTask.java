@@ -181,8 +181,8 @@ public class NALTask extends Pri implements Task {
             if (Param.DEBUG) {
                 //dont clear meta if debugging
             } else {
-                CompactArrayMap<String, Object> m = this.meta;
-                m.clearExcept("@");
+//                CompactArrayMap<String, Object> m = this.meta;
+//                m.clearExcept("@");
             }
             return true;
         }
@@ -232,14 +232,12 @@ public class NALTask extends Pri implements Task {
 
     @Override
     public <X> X meta(String key, Function<String,Object> valueIfAbsent) {
-        if (key.equals("@")) return null; //HACK filter these for now
         CompactArrayMap<String, Object> m = this.meta;
         return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
     }
 
     @Override
     public void meta(String key, Object value) {
-        if (key.equals("@")) return; //HACK filter these for now
         CompactArrayMap<String, Object> m = this.meta;
         if (m!=null) m.put(key, value);
     }

@@ -1,7 +1,9 @@
 package nars.concept.dynamic;
 
+import jcog.TODO;
 import jcog.list.FasterList;
 import jcog.math.FloatSupplier;
+import jcog.sort.Top2;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -9,6 +11,7 @@ import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.proto.TaskLinkTask;
 import nars.link.TaskLink;
+import nars.table.TaskMatch;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -16,6 +19,7 @@ import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -26,16 +30,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static nars.util.time.Tense.ETERNAL;
-
 /**
  * dynamically computes matching truths and tasks according to
  * a lossy 1-D wave updated directly by a signal input
  */
 public class ScalarBeliefTable extends DynamicBeliefTable {
 
-    /** if true, a time-series match from this table overrides anything stored in the superclass's tables */
-    private static final boolean SERIES_OVERRIDES = false;
 
     /**
      * prioritizes generated tasks
@@ -80,32 +80,6 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
     }
 
-    /**
-     * naive implementation using a NavigableMap of indxed time points. not too smart since it cant represent mergeable flat ranges
-     *
-     */
-
-    final static int SAMPLE_BATCH_SIZE = 4;
-
-    @Override
-    public Task sample(long start, long end, Term template, NAR nar) {
-        Task x = super.sample(start, end, template, nar);
-        if (start != ETERNAL) {
-            FasterList<Task> batch = series.toList(start, end, SAMPLE_BATCH_SIZE);
-            //TODO fair roulette select according to task value
-            Task seriesTask = !batch.isEmpty() ? batch.get(nar.random()) : null;
-            if (SERIES_OVERRIDES && seriesTask!=null) {
-                return seriesTask;
-            }
-            return Task.eviMax(
-                    seriesTask,
-                        x,
-                        start, end);
-        } else {
-            return x;
-        }
-
-    }
 
     static class DefaultTimeSeries implements TimeSeries {
 
@@ -316,12 +290,38 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         super(c, beliefOrGoal, t);
         this.series = series;
     }
+    @Override
+    public Task sample(long start, long end, Term template, NAR nar) {
+        return matchThe(TaskMatch.sampled(start, end, nar.random()));
+    }
 
     @Override
     public int size() {
         return super.size() + series.size();
     }
 
+    @Override
+    public void match(TaskMatch m, Consumer<Task> target) {
+        long s = m.start();
+        long e = m.end();
+        FloatFunction<Task> value = m.value();
+        Top2<Task> ss = new Top2<>(value);
+        series.forEach(s, e, false, ss::add);
+        if (ss.isEmpty()) {
+            temporal.match(m, target);
+        } else {
+            temporal.match(m, ss::add);
+
+            //combine results from sensor series and from the temporal table
+            if (ss.size()==1) {
+                target.accept(ss.a); //simple case
+            } else {
+                if (m.limit() > 1)
+                    throw new TODO();
+                ss.sample(target, m.value(), m.random());
+            }
+        }
+    }
 
     protected Truthed eval(boolean taskOrJustTruth, long start, long end, NAR nar) {
         int dur = nar.dur();

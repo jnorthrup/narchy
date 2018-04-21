@@ -98,11 +98,11 @@ public class TemporalInductionTest {
         n.log();
         //TextOutput.out(n);
 
-        n.input("a:b. %1.0|0.9%");
+        n.input("a:b. :|: %1.0;0.9%");
         n.run(5);
-        n.input("a:b. %0.0|0.9%");
+        n.input("a:b. :|: %0.0;0.9%");
         n.run(5);
-        n.input("a:b. %0.5|0.9%");
+        n.input("a:b. :|: %0.5;0.9%");
         n.run(1);
 
         //n.forEachConcept(Concept::print);
@@ -120,13 +120,15 @@ public class TemporalInductionTest {
 
         //most current relevant overall:
         assertEquals(
-                "(b-->a). 5 %0.0;.90%"
+                //"(b-->a). 5 %0.0;.90%"
+                "(b-->a). 5 %.19;.92%"
                 , n.belief(c.term(), 5).toStringWithoutBudget());
 
 
         //least relevant
         assertEquals(
-                "(b-->a). 0 %1.0;.90%"
+                //"(b-->a). 0 %1.0;.90%"
+                "(b-->a). 0 %.83;.92%"
                 , n.belief(c.term(), 0).toStringWithoutBudget());
 
     }

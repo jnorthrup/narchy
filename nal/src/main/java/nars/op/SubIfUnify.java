@@ -172,9 +172,12 @@ public class SubIfUnify extends Functor {
         protected boolean tryMatch(Term result) {
             if (!strict || !result.equals(transformed)) {
                 //adjust the substitution map for temporalization and other usages of reverse resolution
+
+                this.xy.forEach(parent.untransform::put);
                 //this.xy.forEach(parent::replaceXY);
+
                 //parent.replaceXY(transformed, result);
-                parent.replaceXY(result, transformed);
+                //parent.replaceXY(result, transformed);
                 return true;
             }
             return false;

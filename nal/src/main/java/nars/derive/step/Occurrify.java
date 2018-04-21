@@ -541,28 +541,29 @@ public class Occurrify extends TimeGraph {
     }
 
     @Override
-    public Event know(Term t, long start, long end) {
+    public Event event(Term t, long start, long end, boolean add) {
+        int before = add? byTerm.keys().size() : 0;
+        Event e = super.event(t, start, end, add);
+        int after = add? byTerm.keySet().size() : 0;
 
-        int before = byTerm.size();
-        Event e = super.know(t, start, end);
-        int after = byTerm.size();
+        if (add) {
+            boolean tryTransforms =
+                    after > before; //new event, add transformed variations
+            if (tryTransforms) {
+                Term u = d.untransform(t);
+                if (u != null && !(u instanceof Bool) && !u.equals(t)) {
+                    //resolved differently
+                    //super.know(u, start, end);
+                    link(e, 0, know(u));
+                }
 
-        boolean tryTransforms = after > before; //new event, add transformed variations
+                Term v = Image.imageNormalize(t);
+                if (!v.equals(t)) {
+                    //super.know(v, start, end);
+                    link(e, 0, know(v));
+                }
 
-        if (tryTransforms) {
-            Term u = t.transform(d);
-            if (u != null && !u.equals(t)) {
-                //resolved differently
-                //super.know(u, start, end);
-                link(e, 0, event(u, TIMELESS));
             }
-
-            Term v = Image.imageNormalize(t);
-            if (!v.equals(t)) {
-                //super.know(v, start, end);
-                link(e, 0, event(v, TIMELESS));
-            }
-
         }
 
         return e;

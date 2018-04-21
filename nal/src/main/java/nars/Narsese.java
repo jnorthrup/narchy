@@ -239,7 +239,6 @@ public class Narsese {
     /**
      * parse one task
      */
-    @NotNull
     static public Task task(String input, NAR n) throws NarseseException {
         List<Task> tt = tasks(input, n);
         if (tt.size() != 1)
@@ -247,9 +246,7 @@ public class Narsese {
         return tt.get(0);
     }
 
-    /**
-     * returns null if the Task is invalid (ex: invalid term)
-     */
+
     static Task decodeTask(NAR nar, Object[] x) {
         if (x.length == 1 && x[0] instanceof Task) {
             return (Task) x[0];
@@ -269,9 +266,18 @@ public class Narsese {
                         :
                         (byte) (((Character) x[2]).charValue());
 
-        Truth t = (Truth) x[3];
-        if (t != null && !Float.isFinite(t.conf()))
-            t = $.t(t.freq(), nar.confDefault(punct));
+        Object _t = x[3];
+        Truth t;
+
+        if (_t instanceof Truth) {
+            t = (Truth)_t;
+        } else if (_t instanceof Float)  {
+            //frequency, default confidence
+            t = $.t((Float)_t, nar.confDefault(punct));
+        } else {
+            t = null;
+        }
+
 
 
         if (t == null && (punct == BELIEF || punct == GOAL)) {

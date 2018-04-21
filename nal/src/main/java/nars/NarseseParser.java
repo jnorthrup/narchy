@@ -17,7 +17,6 @@ import nars.term.atom.Atomic;
 import nars.term.obj.QuantityTerm;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.PreciseTruth;
-import nars.truth.Truth;
 import nars.unify.match.Ellipsis;
 import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
@@ -80,7 +79,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
         Var<Float> budget = new Var();
         Var<Character> punc = new Var(Op.COMMAND);
-        Var<Truth> truth = new Var();
+        Var<Object> truth = new Var();
         Var<Object> occurr = new Var(ETERNAL_ETERNAL);
 
         return sequence(
@@ -102,7 +101,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         );
     }
 
-    static Object newTask(Float budget, Character punc, Term term, Truth truth, Object occ) {
+    static Object newTask(Float budget, Character punc, Term term, Object truth, Object occ) {
         return new Object[]{budget, term, punc, truth, occ };
     }
 
@@ -149,25 +148,28 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 //        );
 //    }
 
-    public Rule Truth(Var<Truth> truth) {
+    public Rule Truth(Var<Object> truth) {
         return sequence(
 
                 TRUTH_VALUE_MARK,
 
                 ShortFloat(), //Frequency
 
-                //firstOf(
+                firstOf(
 
-                sequence(
+                    sequence(
 
-                        //TruthTenseSeparator(VALUE_SEPARATOR, tense), // separating ;,|,/,\
-                        ";",
+                            //TruthTenseSeparator(VALUE_SEPARATOR, tense), // separating ;,|,/,\
+                            ";",
 
-                        ShortFloat(), //Conf
+                            ShortFloat(), //Conf
 
-                        optional(TRUTH_VALUE_MARK), //tailing '%' is optional
+                            optional(TRUTH_VALUE_MARK), //tailing '%' is optional
 
-                        swap() && truth.set(new PreciseTruth((float) pop(), (float) pop()))
+                            swap() && truth.set(new PreciseTruth((float) pop(), (float) pop()))
+                    ),
+
+                    seq(TRUTH_VALUE_MARK, truth.set((float) pop() ))
                 )
                         /*,
 
@@ -419,8 +421,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return
 
                     firstOf(
-                            seq("-", TimeUnit(), push(new QuantityTerm(((Quantity)pop()).multiply(-1) ))),
-                            seq("+", TimeUnit(), push(new QuantityTerm((Quantity)pop()))),
+                            TimeUnit(),
 
                             seq("+-", push(Tense.XTERNAL)),
                             seq('+', oneOrMore(digit()),
@@ -432,12 +433,31 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                     );
 
     }
+
     public Rule TimeUnit() {
+        return firstOf(
+            seq("-", TimeUnit(true)),
+            seq("+", TimeUnit(false))
+        );
+    }
+
+    public Rule TimeUnit(boolean negate) {
         return
             seq(oneOrMore(firstOf(digit(),".")), push(match()),
-                oneOrMore(alpha()), push(1, match()),
-                push(AbstractQuantity.parse(pop() + " " + pop())) )
+                oneOrMore(alpha()), push(1, timeUnitize(match())),
+                push(AbstractQuantity.parse(pop() + " " + pop())),
+                    push(((Quantity)new QuantityTerm((Quantity)pop())).multiply(negate? -1 : +1))
+                    )
         ;
+    }
+
+    /** translate missing time units */
+    protected static String timeUnitize(String s) {
+        switch (s) {
+            case "hr": return "h"; //hour
+            default:
+                return s;
+        }
     }
 
     public Rule TimeAbsolute(Var<Object> occurr) {
@@ -446,8 +466,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         /*@Deprecated*/ seq(":|:", s(), occurr.set(Tense.Present)),
                         seq("|", s(), occurr.set(Tense.Present)), //shorthand
                         //seq("now", occurr.set(Tense.Present)),
-                        seq("-", TimeUnit(), occurr.set(((Quantity)pop()).multiply(-1)) ),
-                        seq("+", TimeUnit(), occurr.set(pop())),
+                        TimeUnit(),
                         seq("-", oneOrMore(digit()), occurr.set(-Texts.i(match()))),
                         seq("+", oneOrMore(digit()), occurr.set(Texts.i(match()))),
 //                        seq("tomorrow", push("Tomorrow")),

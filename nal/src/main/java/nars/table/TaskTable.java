@@ -1,9 +1,8 @@
 package nars.table;
 
-import jcog.Util;
-import jcog.decide.MutableRoulette;
 import jcog.sort.CachedTopN;
 import jcog.sort.Top;
+import jcog.sort.Top2;
 import jcog.sort.TopN;
 import nars.NAR;
 import nars.Task;
@@ -65,11 +64,11 @@ public interface TaskTable {
             return;
 
         //TODO expand here
-        Random rng = m.sample();
+        int limit = m.limit();
+        Random rng = m.random();
         if (rng == null) {
             //strongest
             //prefer temporally relevant, and original
-            int limit = m.limit();
             assert (limit > 0);
             if (limit == 1) {
                 Top<Task> q = new Top<>(m.value());
@@ -83,28 +82,22 @@ public interface TaskTable {
                 q.forEach(target);
             }
         } else {
-            //sampled
-            Task[] t = toArray();
-            if (t.length == 0)
-                return;
 
-            int limit = m.limit();
-            if (t.length <= limit) {
-                //provide all
-                for (Task x : t)
-                    target.accept(x);
-                return;
+            int s = size();
+            if (s == 1) {
+                target.accept(streamTasks().findFirst().get());
+            } else {
+
+                Top2<Task> t = new Top2<>(m.value());
+                forEachTask(t::add);
+
+                if (t.size() <= limit) {
+                    t.forEach(target); //provide all
+                } else {
+                    t.sample(target, m.value(), rng);
+                }
+
             }
-
-
-            float[] w = Util.map(t, m.value());
-
-            final int[] remain = {limit};
-            MutableRoulette.run(w, rng, wi -> 0 /* unique */, (x)->{
-                target.accept(t[x]);
-                return --remain[0] >0;
-            });
-
         }
 
     }

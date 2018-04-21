@@ -81,6 +81,8 @@ public class Derivation extends PreDerivation {
             //new Anon(ANON_CAPACITY);
             new CachedAnon(ANON_CAPACITY, 16*1024);
 
+    /** temporary un-transform map */
+    public Map<Term,Term> untransform = new HashMap<>();
 
 
     private ImmutableMap<Term, Termed> derivationFunctors;
@@ -755,9 +757,11 @@ public class Derivation extends PreDerivation {
 
             if (y != null && !(y instanceof Bool)) {
 
+                //replaceXY(replaced, replacement);
+                untransform.put(replaced, replacement);
 
 //                replaceXY(xx.sub(0), y);
-                replaceXY(y, input);
+                //replaceXY(y, input);
 
 //                Term a = xx.sub(1);
 //                Term b = replacement;
@@ -769,6 +773,10 @@ public class Derivation extends PreDerivation {
             return y;
         }
     };
+
+    public Term untransform(Term t) {
+        return t.replace(untransform);
+    }
 
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");

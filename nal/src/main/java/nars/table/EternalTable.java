@@ -238,7 +238,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 //        if (t instanceof NALTask) //HACK
 //            ((NALTask) t).delete(/*strongest()*/);
 //        else
-        t.delete();
+        //t.delete();
     }
 
     /**
@@ -450,15 +450,15 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 if (insert(input)) {
                     return true; //accepted input
                 } else {
-                    input.delete();
+                    //input.delete();
                     return false; //rejected
                 }
             } else {
 
                 if (revised.equals(input)) {
                     //input is a duplicate of existing item
-                    if (revised!=input)
-                        input.delete();
+//                    if (revised!=input)
+//                        input.delete();
                     return true;
                 } else {
 
@@ -472,9 +472,9 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
                         if (insert(input)) {
                             //accept input also
-                        } else {
+                        } /*else {
                             input.delete(); //delete the input, but got the revision
-                        }
+                        }*/
 
                     }
 

@@ -46,11 +46,11 @@ public class NarseseBaseTest extends NarseseTest {
     @Test
     public void testTaskTruthParsing2() throws Narsese.NarseseException {
 
-        {
+
             Task u = task("(y,())! %0.55%");
             assertEquals(0.55f, u.freq(), 0.001f);
             assertEquals(0.9f, u.conf(), 0.001f);
-        }
+
     }
 
 

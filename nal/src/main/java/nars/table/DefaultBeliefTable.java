@@ -3,6 +3,7 @@ package nars.table;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
+import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -122,8 +123,12 @@ public class DefaultBeliefTable implements BeliefTable {
     @Override
     public Task sample(long start, long end, Term template, NAR nar) {
         Task ete = eternal.sample(start, end, template, nar);
-        Task tmp = temporal.sample(start, end, template, nar);
-        return Task.eviMax(ete, tmp, start, end);
+        Task tmp = temporal.sample(start, end, template, nar); //invokes local sample method
+        if (ete == null) return tmp;
+        if (tmp == null) return ete;
+        float e = Revision.eviInteg(ete,start,end,1);
+        float t = Revision.eviInteg(tmp,start,end,1);
+        return nar.random().nextFloat() < (t/Math.max(Float.MIN_NORMAL, (e+t))) ? tmp : ete;
     }
 
     @Override

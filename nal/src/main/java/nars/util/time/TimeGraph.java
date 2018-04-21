@@ -253,8 +253,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
 
             if (autoNeg.test(eventTerm)) {
-                //link(event, 0, know(eventTerm.neg())); //WEAK
-                link(know(eventTerm), 0, know(eventTerm.neg())); //WEAK
+                link(event, 0, know(eventTerm.neg())); //WEAK
+                //link(know(eventTerm), 0, know(eventTerm.neg())); //WEAK
+
             }
         }
 
@@ -289,8 +290,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             case IMPL:
 
                 Term subj = eventTerm.sub(0);
-                //Event pe = know(subj);
-                Event se = know(subj, event.start(), event.end()); //subject at the event time
+                Event se;
+//                if (event instanceof Absolute && event.start()!=ETERNAL) {
+//                    se = know(subj, event.start(), event.end()); //subject at the event time
+//                } else {
+                    se = know(subj);
+//
+//                }
+//                link(se, 0, event);
                 Term pred = eventTerm.sub(1);
                 Event pe = know(pred);
                 if (eventDT == DTERNAL) {
@@ -1131,7 +1138,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
         protected AbsoluteRange(Term t, long start, long end) {
             super(t, start, Util.hashCombine(t.hashCode(), Long.hashCode(start), Long.hashCode(end)));
-            assert (end >= start);
+            assert (end >= start && start!=ETERNAL && end!=XTERNAL);
             this.end = end;
         }
 

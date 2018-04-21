@@ -46,6 +46,8 @@ public final class Termify extends AbstractPred<Derivation> {
 
         nar.emotion.deriveEval.increment();
 
+        d.untransform.clear();
+
         Term c1 = pattern.eval(d);
 
         if (c1.volume() > d.termVolMax) {

@@ -24,13 +24,6 @@ public class TemporalTermTest {
 
     final NAR n = NARS.shell();
 
-    @Test
-    public void parsedCorrectOccurrenceTime() throws Narsese.NarseseException {
-        long now = n.time();
-        Task t = n.inputTask("b:a. :\\:");
-        assertEquals(now, t.creation());
-        assertEquals(now - 1, t.start());
-    }
 
     @Test
     public void testCoNegatedSubtermConceptConj() throws Narsese.NarseseException {

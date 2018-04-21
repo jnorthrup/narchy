@@ -2116,6 +2116,10 @@ public enum Util {
     }
 
 
+    public static float[] map(IntToFloatFunction build, @Nullable float[] reuse) {
+        return map(reuse.length, build, reuse);
+    }
+
     public static float[] map(int num, IntToFloatFunction build, @Nullable float[] reuse) {
         float[] f = (reuse != null && reuse.length == num) ? reuse : new float[num];
         for (int i = 0; i < num; i++) {

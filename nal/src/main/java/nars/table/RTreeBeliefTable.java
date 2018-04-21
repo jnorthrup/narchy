@@ -1,5 +1,7 @@
 package nars.table;
 
+import jcog.Util;
+import jcog.decide.MutableRoulette;
 import jcog.list.FasterList;
 import jcog.pri.Deleteable;
 import jcog.sort.CachedTopN;
@@ -61,6 +63,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      */
     private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
     private static final int COMPLEX_EVENT_MATCH_LIMIT = Math.max(1, SIMPLE_EVENT_MATCH_LIMIT / 2);
+
+    private static final int SAMPLE_MATCH_LIMIT = TRUTHPOLATION_LIMIT/2;
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
@@ -165,7 +169,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     /**
      * TODO use the same heuristics as task strength
      */
-    private static FloatFunction<TaskRegion> regionWeakness(long when, long tableDur, long perceptDur) {
+    private static FloatFunction<TaskRegion> regionWeakness(long when, long perceptDur) {
 
         return (TaskRegion r) -> {
 
@@ -322,7 +326,38 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
-//    /**
+    @Override
+    public void match(TaskMatch m, Consumer<Task> target) {
+
+        if (isEmpty())
+            return;
+
+        FloatFunction<Task> value = m.value();
+
+        ScanFilter tt = new ScanFilter(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
+                task(m.value()),
+                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
+                null)
+                .scan(this, m.start(), m.end());
+
+        int tts = tt.size();
+        if (tts > 0) {
+            if (tts == 1) {
+                target.accept((Task) tt.list[0]); //simple case
+            } else {
+
+                final int[] limit = {m.limit()};
+                float[] ww = Util.map(y -> value.floatValueOf((Task)(tt.list[y])), new float[tts]);
+                MutableRoulette.run(ww, m.random(), t -> 0, y -> {
+                    target.accept((Task) tt.list[y]);
+                    return --limit[0] > 0;
+                });
+            }
+        }
+
+    }
+
+    //    /**
 //     * measures only temporal proximity to the given range
 //     */
 //    private FloatFunction<Task> taskRelevance(long start, long end) {
@@ -404,7 +439,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         while (treeRW.size() > cap) {
             if (!compress(treeRW, e == 0 ? inputRegion : null /** only limit by inputRegion first */,
                     taskStrength, added, cap,
-                    now, (long) Math.ceil(tableDur()), perceptDur, nar))
+                    now + nar.dur() /* compress ahead for next duration */,
+                    //(long) Math.ceil(tableDur()),
+                    perceptDur, nar))
                 return false;
             e++;
         }
@@ -417,13 +454,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, Consumer<Tasked> added, int cap, long now, long tableDur, int perceptDur, NAR nar) {
+    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, Consumer<Tasked> added, int cap, long now, int perceptDur, NAR nar) {
 
 
         float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
 
         FloatFunction<TaskRegion> leafRegionWeakness =
-                /*new CachedFloatFunction*/(regionWeakness(now, tableDur, perceptDur));
+                /*new CachedFloatFunction*/(regionWeakness(now, perceptDur));
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
         Top2<Leaf<TaskRegion>> weakLeaf = new Top2(leafWeakness);
@@ -432,7 +469,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 -taskStrength.floatValueOf((Task) t));
 
         Top<TaskRegion> closest = input!=null ? new Top<>(
-                TemporalBeliefTable.mergabilityWith(input, tableDur)
+                TemporalBeliefTable.mergabilityWith(input, perceptDur)
         ) : null;
         Top<TaskRegion> weakest = new Top<>(
                 weakestTask
@@ -567,21 +604,21 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             case EvictWeakest: {
                 treeRW.remove(W);
-                W.delete();
+                //W.delete();
                 return true;
             }
 
             case RejectInput: {
-                I.delete();
+                //I.delete();
                 return false;
             }
 
             case MergeInputClosest: {
 
-                I.delete();
+                //I.delete();
 
                 treeRW.remove(C);
-                C.delete();
+                //C.delete();
 
                 if (treeRW.add(IC))
                     added.accept(IC);
@@ -593,15 +630,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 if (treeRW.add(AB)) {
                     treeRW.remove(A);
-                    A.delete(/*fwd: c*/);
+                    //A.delete(/*fwd: c*/);
                     treeRW.remove(B);
-                    B.delete(/*fwd: c*/);
+                    //B.delete(/*fwd: c*/);
 
                     added.accept(AB);
                     return true;
                 } else {
-                    if (I!=null)
-                        I.delete();
+//                    if (I!=null)
+//                        I.delete();
                     return false; //?? not sure why this might happen but in case it does, reject the input
                 }
             }

@@ -5,10 +5,7 @@ import com.google.common.collect.Lists;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.AbstractCollection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -110,4 +107,13 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
     public final void accept(T t) {
         add(t);
     }
+
+    public void sample(Consumer<T> target, FloatFunction<T> value, Random random) {
+        float wa = value.floatValueOf(a);
+        float wb = value.floatValueOf(b);
+        target.accept(
+                random.nextFloat() < (wa/Math.max(Float.MIN_NORMAL, wa+wb)) ? a : b
+        );
+    }
+
 }
