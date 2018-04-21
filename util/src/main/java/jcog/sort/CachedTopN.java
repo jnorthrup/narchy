@@ -10,29 +10,25 @@ import java.util.function.IntFunction;
  */
 public class CachedTopN<X> extends TopN<X> {
 
-    final ObjectFloatHashMap<X> seen = new ObjectFloatHashMap(8);
+    final ObjectFloatHashMap<X> seen = new ObjectFloatHashMap<>(8);
 
     public CachedTopN(X[] target, FloatFunction<X> rank) {
         super(target, rank);
     }
 
     @Override
-    public float rank(X x) {
-        return seen.getIfAbsentPutWithKey(x, super::rank);
-    }
-
-    @Override
     public boolean add(X x) {
-        if (seen.containsKey(x))
+        final boolean[] adding = {false};
+        float rank = seen.getIfAbsentPutWithKey(x, (xx)->{
+            float r = rank(xx);
+            adding[0] = (r == r); //add if valid
+            return r;
+        });
+        if (!adding[0]/* || rank!=rank*/)
             return false; //may already be in the top list, but this is signaling here that nothing was added during this call
 
-        return addUnique(x);
+        return add(x, rank, seen::get)>=0;
     }
-
-    protected boolean addUnique(X x) {
-        return super.add(x);
-    }
-
 
     @Override
     public void clear() {

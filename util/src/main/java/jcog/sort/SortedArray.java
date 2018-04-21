@@ -173,7 +173,10 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
 
     public final int add(final E element, FloatFunction<E> cmp) {
         float elementRank = cmp.floatValueOf(element);
+        return add(element, cmp, elementRank);
+    }
 
+    public final int add(E element, FloatFunction<E> cmp, float elementRank) {
         //NaN cancels
         return elementRank != elementRank ? -1 : add(element, elementRank, cmp);
     }
@@ -196,7 +199,6 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
     private int insert(E element, int index, float elementRank, FloatFunction<E> cmp, int size) {
         final E last = list[size - 1];
 
-        boolean added;
         if (index == size || Util.fastCompare(cmp.floatValueOf(last), elementRank) < 0) {
             return addEnd(element);
         } else {
@@ -226,7 +228,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         return true;
     }
 
-    public int addEnd(E e) {
+    int addEnd(E e) {
         int s = this.size;
         Object[] l = this.list;
         if (l.length == s) {
@@ -248,7 +250,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         return list;
     }
 
-    public int addInternal(int index, E e) {
+    protected int addInternal(int index, E e) {
         int s = this.size;
         if (index > -1 && index < s) {
             this.addAtIndex(index, e);

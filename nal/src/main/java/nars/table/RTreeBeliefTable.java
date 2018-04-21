@@ -912,19 +912,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         @Override
         public boolean test(TaskRegion x) {
             add(x);
-            return attemptsRemain > 0;
+            return --attemptsRemain > 0;
         }
 
         @Override
-        protected boolean addUnique(TaskRegion x) {
-            --attemptsRemain;
-            return ((!(x instanceof Task)) || validTask((Task) x))
-                    &&
-                    super.addUnique(x);
-        }
-
-        private boolean validTask(Task x) {
-            return !x.isDeleted() && (filter == null || filter.test(x));
+        public float rank(TaskRegion x) {
+            if ((!(x instanceof Task)) || (filter == null || filter.test((Task) x)))
+                return super.rank(x);
+            else
+                return Float.NaN;
         }
 
         boolean continueScan(TimeRange t) {

@@ -103,12 +103,14 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         if (!busy.compareAndSet(false, true))
             return;
 
-        long now = nar.time();
+        long atStart = nar.time();
         int dur = nar.dur();
         long durCycles = Math.round(durations.floatValue() * dur);
 
+
         try {
-            long delta = now - this.lastStarted;
+            long delta = atStart - this.lastStarted;
+            this.lastStarted = atStart;
             if (delta >= durCycles) {
                 run(nar, delta);
             } else {
@@ -117,9 +119,8 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
         } catch (Throwable e) {
             logger.error("{} {}", this, e);
         } finally {
-            now = (this.lastStarted = nar.time());
             if (!isOff()) {
-                nar.runAt(now + durCycles, this);
+                nar.runAt(atStart + durCycles, this);
             }
             busy.set(false); //must be LAST
         }

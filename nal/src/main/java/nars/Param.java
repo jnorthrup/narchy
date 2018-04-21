@@ -59,7 +59,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
 
 //    public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
@@ -184,7 +184,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(32, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(64, 0, 1024);
 
 
     /** estimate */
