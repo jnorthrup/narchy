@@ -158,18 +158,19 @@ public interface LongInterval {
     default long minDistanceTo(long when) {
 
         long s = start();
-        if (s == ETERNAL)
+        if (s == ETERNAL || s == when)
             return 0;
 
         assert (when != ETERNAL);
         long e = end();
-        if (s <= when && e >= when)
-            return 0;
-        long d = Math.abs(s - when);
-        if (s == e)
-            return d;
-        else
-            return Math.min(d, Math.abs(e - when));
+        if (s == e) {
+            return Math.abs(s - when);
+        } else {
+            if (s <= when && e >= when)
+                return 0;
+            else
+                return Math.min(Math.abs(s - when), Math.abs(e - when));
+        }
     }
 
     default long maxDistanceTo(long a, long b) {

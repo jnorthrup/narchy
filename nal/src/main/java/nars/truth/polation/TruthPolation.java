@@ -11,7 +11,9 @@ import nars.task.Revision;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,16 +101,32 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
      * removes the weakest components sharing overlapping evidence with stronger ones.
      * should be called after all entries are added
      */
-    public final LongHashSet filterCyclic() {
+    public final LongSet filterCyclic() {
         filter();
 
-        sortThisByFloat(tc -> -tc.evi); //descending by strength
-        //TODO maybe factor in originality to reduce overlap so evidence can be combined better
+        int s = size();
+
+        if (s > 1) {
+            sortThisByFloat(tc -> -tc.evi); //descending by strength
+            //TODO maybe factor in originality to reduce overlap so evidence can be combined better
+
+            if (s == 2) {
+                //quick overlap test
+                if (Stamp.overlapsAny(get(0).task.stamp(), get(1).task.stamp())) {
+                    remove(1);
+                }
+            }
+        }
+
+        if (s == 1)
+            return Stamp.toSet(get(0).task);
 
         //remove the weaker holder of any overlapping evidence
-        LongHashSet e = new LongHashSet(size() * 2);
+
+        LongHashSet e = new LongHashSet(s * 4);
         removeIf(tc -> {
             long[] stamp = tc.task.stamp();
+
 
             for (long ss : stamp) {
                 if (!e.add(ss))

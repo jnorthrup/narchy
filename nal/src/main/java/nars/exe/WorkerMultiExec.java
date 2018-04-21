@@ -5,7 +5,7 @@ import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.Util;
 import jcog.exe.BusyPool;
 import jcog.math.MutableInteger;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.math.random.SplitMix64Random;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -141,7 +141,7 @@ public class WorkerMultiExec extends AbstractExec {
             ) {
                 @Override
                 protected WorkLoop newWorkLoop(ConcurrentQueue<Runnable> q) {
-                    return new MyWorkLoop(q, nar);
+                    return new MyWorkLoop(q);
                 }
 
                 @Override
@@ -152,8 +152,11 @@ public class WorkerMultiExec extends AbstractExec {
                     Object next;
                     while (((next = q.poll())!=null) && qSize-- > 0) {
                         executeNow(next);
+                        if (q.offer(x))
+                            return; //ok
                     }
                     if (!q.offer(x)) {
+                        Thread.yield();
                         //emergency defer to ForkJoin commonPool
                         ForkJoinPool.commonPool().execute(x instanceof Runnable ? ((Runnable)x) : ()->executeNow(x));
                     }
@@ -184,44 +187,30 @@ public class WorkerMultiExec extends AbstractExec {
 
     private class MyWorkLoop extends BusyPool.WorkLoop {
 
-        /** dummy Causable each worker schedules at the 0th position of the process table,
-         * in which a worker will attempt to drain some or all of the queued work before returning to playing */
-
         /**
          * TODO use non-atomic version of this, slightly faster
          */
         final Random rng;
-        private final NAR nar;
-        int idles = 0;
-        long now;
 
-        public MyWorkLoop(ConcurrentQueue q, NAR nar) {
+        public MyWorkLoop(ConcurrentQueue q) {
             super(q);
-            this.nar = nar;
 
-            rng = new XoRoShiRo128PlusRandom(System.nanoTime());
-            now = nar.time();
+            rng = //new XoRoShiRo128PlusRandom(System.nanoTime());
+                    new SplitMix64Random(System.nanoTime());
         }
 
         @Override
-        protected void run(Object next) {
-            executeNow(next);
-        }
+        public void run() {
+
+            focus.decide(rng, x -> {
+
+                Object next;
+                while ((next = pollNext())!=null) {
+                    executeNow(next);
+                }
 
 
-        protected void idle() {
-            int done = 0;
-            Object next;
-            while ((next = pollNext())!=null) {
-                executeNow(next);
-                done++;
-                this.idles = 0;
-            }
-
-            if (done == 0 && idles++ > 0)
-                Util.pauseNext(idles);
-
-            //TODO throttling
+                //TODO throttling
 //            long next = nar.time();
 //            if (next != now) {
 //                now = next;
@@ -231,44 +220,15 @@ public class WorkerMultiExec extends AbstractExec {
 //                }
 //            }
 
-        }
+                focus.tryRun(x);
 
-        @Override
-        public void run() {
 
-            focus.decide(rng, x -> {
-
-                idle();
-
-                if (focus.tryRun(x))
-                    idles = 0;
+//                if (done == 0 && idles++ > 0)
+//                    Util.pauseNext(idles);
 
                 return true;
             });
 
         }
-
-
-//                        protected long next() {
-//
-//                            int loopMS = nar.loop.periodMS.intValue();
-//                            if (loopMS < 0) {
-//                                loopMS = IDLE_PERIOD_MS;
-//                            }
-//                            long dutyMS =
-//                                    Math.round(nar.loop.throttle.floatValue() * loopMS);
-//
-//                            //if (rng.nextInt(100) == 0)
-//                            //    System.out.println(this + " " + Texts.timeStr(timeSinceLastBusyNS) + " since busy, " + Texts.timeStr(dutyMS*1E6) + " loop time" );
-//
-//                            if (dutyMS > 0) {
-//                                return Math.round(nar.loop.jiffy.doubleValue() * dutyMS * 1E6);
-//                            } else {
-//                                return 0; //empty batch
-//                            }
-//
-//                        }
-
-
     }
 }

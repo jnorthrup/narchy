@@ -243,13 +243,13 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         super.add(newItem);
 
         if (newItem!=null) {
-            long[] stamp = newItem.task().stamp();
+            long[] stamp = ((Task)newItem).stamp();
 
             if (evi == null)
                 evi = new LongHashSet(stamp.length * 2 /* estimate */);
 
             evi.addAll(stamp);
-            evi.compact(); //because it may be compared against frequently
+            //evi.compact(); //because it may be compared against frequently
         }
 
         return true;

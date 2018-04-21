@@ -60,11 +60,11 @@ public class NarseseExtendedTest extends NarseseTest {
     /** compact representation combining truth and tense */
     @Test public void testTruthTense() throws Narsese.NarseseException {
 
-
-        tensed(task("(a & b). %1.0|0.7%"), Present);
-
-        tensed(task("(a & b). %1.0/0.7%"), Future);
-        tensed(task("(a & b). %1.0\\0.7%"), Past);
+//
+//        tensed(task("(a & b). %1.0|0.7%"), Present);
+//
+//        tensed(task("(a & b). %1.0/0.7%"), Future);
+//        tensed(task("(a & b). %1.0\\0.7%"), Past);
         eternal(task("(a & b). %1.0;0.7%"));
 
         /*tensed(task("(a & b). %1.0|"), Present);

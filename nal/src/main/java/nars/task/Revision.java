@@ -22,8 +22,8 @@ import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import nars.util.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -594,7 +594,7 @@ public class Revision {
         }
 
         TruthPolation T = Param.truth(start, end, dur).add(tasks);
-        LongHashSet stamp = T.filterCyclic();
+        LongSet stamp = T.filterCyclic();
         if (!forceProjection && T.size() == 1) {
             //can't do better than the only remaining task, unless you want to force reprojection to the specified start,end range (ie. eternalize)
             return defaultTask;

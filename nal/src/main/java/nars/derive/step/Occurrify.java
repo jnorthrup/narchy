@@ -14,7 +14,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
 import nars.term.compound.util.Image;
-import nars.truth.Truth;
 import nars.util.time.Tense;
 import nars.util.time.TimeGraph;
 import org.eclipse.collections.api.tuple.Pair;
@@ -225,44 +224,24 @@ public class Occurrify extends TimeGraph {
         }
 
         if (!single) {
-            boolean taskTime, beliefTime;
-//            Op tto = tt.op();
-//            Op bbo = bb.op();
-//            if (tto==IMPL && bbo!=IMPL && !(task.isEternal() && !belief.isEternal())) {
-//                beliefTime = true;
-//                taskTime = false;
-//            } else
 
-//                if (tto!=IMPL && bbo==IMPL && !(belief.isEternal() && !task.isEternal())) {
-//                beliefTime = false;
-//                taskTime = true;
-//            } else
-
-            {
-                beliefTime = taskTime = true;
-            }
-
-            if (taskTime) {
-                know(task, d.taskTruth, d.taskAt);
+            if (task.isGoal() && task.isEternal() && !belief.isEternal()) {
+                //if belief is non-eternal against an eternal goal, pretend the goal occurrs now to provide an overriding time for the belief
+                know(task, d.time);
             } else {
-                know(tt);
+                know(task, d.taskAt);
             }
-
 
             if (!d.belief.equals(d.task)) {
-                if (beliefTime) {
-                    if (d.beliefAt==TIMELESS) {
-                        //wtf
-                        know(bb);
-                    } else {
-                        know(belief, d.beliefTruth, d.beliefAt);
-                    }
+                if (task.isGoal() && !task.isEternal()) {
+                    //allow non-eternal goal occurrence to override any belief occurrence
+                    know(belief.term());
                 } else {
-                    know(bb);
+                    know(belief, d.beliefAt);
                 }
             }
         } else {
-            know(task, d.taskTruth, d.taskAt);
+            know(task, d.taskAt);
         }
 
 
@@ -445,32 +424,15 @@ public class Occurrify extends TimeGraph {
 //        return null;
 //    }
 
-    public void know(Task t, Truth tr, long when) {
+    public void know(Task t, long when) {
         if (when == TIMELESS)
             throw new RuntimeException();
         //assert (when != TIMELESS);
 
         Term tt = t.term();
 
-
-//        int taken = 0;
-//        if (when != ETERNAL && (!t.isEternal() && t.range() > 1)) {
-//            LongHashSet sampled = new LongHashSet(3);
-//
-//            //HACK all points in time where the task's truth (used in the derivation's truth calculation) is constant are eligible to be sampled
-//            //TODO parameter for max subsampling
-//            long ts = t.start();
-//            taken += knowIfSameTruth(t, tt, tr, ts, sampled);
-//
-//            long te = t.end();
-//            taken += knowIfSameTruth(t, tt, tr, te, sampled);
-//
-//            long tm = t.mid();
-//            taken += knowIfSameTruth(t, tt, tr, tm, sampled);
-//        }
-
         long range;
-        if (when==ETERNAL || when == TIMELESS || ((range = t.range()-1) == 0)) {
+        if (when == ETERNAL || t.isEternal() || (range = t.range() - 1) == 0) {
             event(tt, when, true);
         } else {
             event(tt, when, when + range, true);

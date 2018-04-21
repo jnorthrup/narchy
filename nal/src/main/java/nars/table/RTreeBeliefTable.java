@@ -27,7 +27,7 @@ import nars.truth.polation.TruthPolation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.eclipse.collections.api.set.primitive.LongSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -282,7 +282,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 TruthPolation t = Param.truth(start, end, dur).add(temporalTasks);
 
-                LongHashSet temporalStamp = t.filterCyclic();
+                LongSet temporalStamp = t.filterCyclic();
                 if (eternal != null && !eternal.isEmpty()) {
                     Task ee = eternal.select(ete -> !Stamp.overlapsAny(temporalStamp, ete.stamp()));
                     if (ee != null) {
@@ -980,13 +980,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     //TODO use different CONF divisions strategy for eternal to select highest confidence tasks irrespective of their time
 
 
-                    confDivisions = Math.max(1, Math.min(SCAN_CONF_OCTAVES_MAX, ss));
                     timeDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX, ss));
+                    confDivisions = Math.max(1, Math.min(SCAN_CONF_OCTAVES_MAX,
+                            ss/Util.sqr(1+timeDivisions)));
                 } else {
                     scanStart = boundsStart;
                     scanEnd = boundsEnd;
 
-                    confDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX /* yes TIME here, ie. the axes are switched */, ss));
+                    confDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX /* yes TIME here, ie. the axes are switched */,
+                            Math.max(1,ss-minResults)));
                     timeDivisions = 1;
                 }
 
@@ -1002,7 +1004,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 boolean leftComplete = false, rightComplete = false;
                 //TODO float complete and use this as the metric for limiting with scan quality parameter
 
-                TimeConfRange r = new TimeConfRange(); //recycled
+                TimeRange r = confDivisions > 1 ?
+                        new TimeConfRange() :
+                        new TimeRange();
 
 
                 float maxConf = bounds.confMax();
@@ -1013,19 +1017,34 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 boolean done = false;
                 do {
 
-                    float cMax = maxConf;
-                    float cDelta =
-                            Math.max((maxConf - minConf) / Math.min(s, confDivisions), Param.TRUTH_EPSILON);
-                    float cMin = maxConf - cDelta;
+                    float cMax, cDelta, cMin;
+                    if (confDivisions == 1) {
+                        cMax = 1; cMin = 0; cDelta = 0; //unused
+                    } else {
+                        cMax = maxConf;
+                        cDelta =
+                                Math.max((maxConf - minConf) / Math.min(s, confDivisions), Param.TRUTH_EPSILON);
+                        cMin = maxConf - cDelta;
+                    }
 
                     for (int cLayer = 0;
                          cLayer < confDivisions && !(done = !continueScan(r.set(leftStart, rightEnd)));
                          cLayer++, cMax -= cDelta, cMin -= cDelta) {
 
-                        if (!leftComplete)
-                            tree.whileEachIntersecting(r.set(leftStart, leftMid, cMin, cMax), this);
-                        if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
-                            tree.whileEachIntersecting(r.set(rightMid, rightEnd, cMin, cMax), this);
+                        if (!leftComplete) {
+                            if (confDivisions > 1)
+                                ((TimeConfRange)r).set(leftStart, leftMid, cMin, cMax);
+                            else
+                                r.set(leftStart, leftMid);
+                            tree.whileEachIntersecting(r, this);
+                        }
+                        if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd)) {
+                            if (confDivisions > 1)
+                                ((TimeConfRange)r).set(rightMid, rightEnd, cMin, cMax);
+                            else
+                                r.set(rightMid, rightEnd);
+                            tree.whileEachIntersecting(r, this);
+                        }
 
                         if (count++ == FATAL_LIMIT) {
                             throw new RuntimeException("livelock in rtree scan");

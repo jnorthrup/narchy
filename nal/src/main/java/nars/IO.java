@@ -387,7 +387,7 @@ public class IO {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
         } else {
-            DynBytes d = new DynBytes(t.volume() * 3 /* estimate */);
+            DynBytes d = new DynBytes(t.volume() * 6 /* estimate */);
             t.append((ByteArrayDataOutput) d);
             return d.array();
         }

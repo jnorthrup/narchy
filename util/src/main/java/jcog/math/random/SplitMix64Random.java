@@ -35,7 +35,6 @@ import java.util.Random;
  * @see SplitMix64RandomGenerator
  */
 public class SplitMix64Random extends Random {
-    private static final long serialVersionUID = 1L;
     /**
      * 2<sup>64</sup> &middot; &phi;, &phi; = (&#x221A;5 &minus; 1)/2.
      */

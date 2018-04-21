@@ -31,17 +31,17 @@ public class StampTest {
     public void testOverlap() {
 
 
-        assertTrue(overlapping(a(1, 2), a(2)));
-        assertTrue(overlapping(a(1), a(1, 2)));
-        assertFalse(overlapping(a(1), a(2)));
-        assertFalse(overlapping(a(2), a(1)));
-        assertFalse(overlapping(a(1, 2), a(3, 4)));
-        assertTrue(overlapping(a(1, 2), a(2, 3)));
-        assertTrue(overlapping(a(2, 3), a(1, 2)));
-        assertFalse(overlapping(a(2, 3), a(1)));
+        assertTrue(Stamp.overlapsAny(a(1, 2), a(2)));
+        assertTrue(Stamp.overlapsAny(a(1), a(1, 2)));
+        assertFalse(Stamp.overlapsAny(a(1), a(2)));
+        assertFalse(Stamp.overlapsAny(a(2), a(1)));
+        assertFalse(Stamp.overlapsAny(a(1, 2), a(3, 4)));
+        assertTrue(Stamp.overlapsAny(a(1, 2), a(2, 3)));
+        assertTrue(Stamp.overlapsAny(a(2, 3), a(1, 2)));
+        assertFalse(Stamp.overlapsAny(a(2, 3), a(1)));
 
-        assertFalse(overlapping(a(1), a(2, 3, 4, 5, 6)));
-        assertFalse(overlapping(a(2, 3, 4, 5, 6), a(1)));
+        assertFalse(Stamp.overlapsAny(a(1), a(2, 3, 4, 5, 6)));
+        assertFalse(Stamp.overlapsAny(a(2, 3, 4, 5, 6), a(1)));
 
 
     }

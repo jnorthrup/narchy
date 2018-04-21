@@ -292,8 +292,8 @@ public interface Stamp {
     }
 
     @Deprecated
-    static boolean overlapping(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
-        return ((a == b) || overlapping(a.stamp(), b.stamp()));
+    static boolean overlapsAny(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
+        return ((a == b) || overlapsAny(a.stamp(), b.stamp()));
     }
 
     /**
@@ -303,8 +303,7 @@ public interface Stamp {
      * @param a evidence stamp in sorted order
      * @param b evidence stamp in sorted order
      */
-    @Deprecated
-    static boolean overlapping(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
+    static boolean overlapsAny(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
 
         if (Param.DEBUG) {
 //            if (a == null || b == null)
@@ -554,14 +553,16 @@ public interface Stamp {
         return pair(e, Util.unitize(overlap));
     }
 
-    static long[] sample(int max, LongHashSet evidence, Random rng) {
+    static long[] sample(int max, LongSet evidence, Random rng) {
         long[] e = evidence.toArray();
-        if (evidence.size() > max) {
+        if (e.length > max) {
             ArrayUtils.shuffle(e, rng);
             e = ArrayUtils.subarray(e, 0, max);
         }
 
-        Arrays.sort(e);
+        if (e.length > 1)
+            Arrays.sort(e);
+
         return e;
     }
 
