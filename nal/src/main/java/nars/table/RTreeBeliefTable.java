@@ -327,7 +327,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
     @Override
-    public void match(TaskMatch m, Consumer<Task> target) {
+    public void match(TaskMatch m, NAR nar, Consumer<Task> target) {
 
         if (isEmpty())
             return;

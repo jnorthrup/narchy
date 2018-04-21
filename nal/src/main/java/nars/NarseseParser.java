@@ -446,7 +446,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             seq(oneOrMore(firstOf(digit(),".")), push(match()),
                 oneOrMore(alpha()), push(1, timeUnitize(match())),
                 push(AbstractQuantity.parse(pop() + " " + pop())),
-                    push(((Quantity)new QuantityTerm((Quantity)pop())).multiply(negate? -1 : +1))
+                    push(new QuantityTerm(((Quantity)pop()).multiply(negate? -1 : +1)))
                     )
         ;
     }

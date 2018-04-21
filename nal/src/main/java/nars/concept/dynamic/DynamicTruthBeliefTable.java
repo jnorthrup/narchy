@@ -13,6 +13,8 @@ import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
+
 import static nars.util.time.Tense.DTERNAL;
 import static nars.util.time.Tense.XTERNAL;
 
@@ -60,7 +62,13 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         }
     }
 
-
+    @Override
+    public void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar) {
+        //TODO handle a template term, the method overriding is all fuct
+        Task x = taskDynamic(start, end, term, nar);
+        if (x!=null)
+            n.accept(x);
+    }
 
     @Override
     protected @Nullable Truth truthDynamic(long start, long end, Term template, NAR nar) {

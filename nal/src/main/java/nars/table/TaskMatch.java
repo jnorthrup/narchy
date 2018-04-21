@@ -1,6 +1,8 @@
 package nars.table;
 
 import nars.Task;
+import nars.task.Revision;
+import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,6 +30,9 @@ public interface TaskMatch {
     /** answer the strongest available task within the specified range */
     static TaskMatch best(long start, long end) {
         return new Best(start, end);
+    }
+    static TaskMatch best(long start, long end, Term template) {
+        return best(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.term())));
     }
 
     static TaskMatch best(long start, long end, FloatFunction<Task> factor) {

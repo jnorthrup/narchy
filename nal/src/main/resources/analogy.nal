@@ -3,10 +3,12 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
-  X, (X<->Y)                      |- Y, (Belief:Analogy, Goal:Strong)
-  X, (X<->Y)                      |- --Y, (Belief:AnalogyN, Goal:StrongN)
-  X, (--X<->Y)                    |- Y, (Belief:AnalogyN, Goal:StrongN)
-  Z, (X <-> Y), in(Z,X), neq(Z,Y) |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:Strong)
+  X, (X<->Y)                        |- Y, (Belief:Analogy, Goal:Strong)
+  X, (X<->Y)                        |- --Y, (Belief:AnalogyN, Goal:StrongN)
+  X, (--X<->Y)                      |- Y, (Belief:AnalogyN, Goal:StrongN)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, strict), (Belief:Analogy, Goal:Strong)
+  Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:Weak)
+  Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
 
   //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Strong)
   //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Strong)
@@ -23,7 +25,6 @@
 
 
     //Z, (X<->Y), inNeg(Z,X)             |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
-    //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:Weak)
     //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, --X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
       //X, (X<->Y)                 |- (--,Y), (Goal:WeakPN)
       //X, (--X<->Y)               |- (--,Y), (Goal:WeakNN)

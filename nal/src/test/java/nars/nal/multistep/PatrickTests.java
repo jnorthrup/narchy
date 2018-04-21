@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
-import static nars.Op.GOAL;
-import static nars.util.time.Tense.ETERNAL;
 
 /**
  * see Natural_Language_Processing2.md
@@ -160,7 +158,7 @@ public class PatrickTests extends NALTest {
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.3f,
                 (t) -> t >= -dur/2 && t <= +dur/2 /* centered at zero */);
-        tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, t-> t==ETERNAL || (t>dur/2 || t <-dur/2) );
+        //tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, t-> t==ETERNAL || (t>dur/2 || t <-dur/2) );
 
 
 

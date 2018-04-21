@@ -224,7 +224,7 @@ public class NAL6Test extends NALTest {
         //0.43f);
     }
     @Test
-    public void variable_elimination_sim_pred() {
+    public void variable_elimination_analogy_substIfUnify() {
 
         TestNAR tester = test;
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
@@ -233,6 +233,17 @@ public class NAL6Test extends NALTest {
                 0.81f);
         //0.43f);
     }
+    @Test
+    public void variable_elimination_analogy_substIfUnify_Neg() {
+
+        TestNAR tester = test;
+        tester.believe("(--(x --> $1) <-> (z --> $1))");
+        tester.believe("(x --> y)", 0.10f, 0.9f);
+        tester.mustBelieve(cycles, "(z --> y)", 0.9f,
+                0.81f);
+
+    }
+
     @Test
     public void variable_elimination5() {
 
@@ -332,9 +343,9 @@ public class NAL6Test extends NALTest {
         tester.believe("({lock1} --> lock)"); //en("Lock-1 is a lock.");
         tester.mustBelieve(cycles, "(<#1 --> key> && open(#1,{lock1}))",
                 1.00f,
-                //0.43f
+                0.43f
                 //0.81f
-                0.73f
+                //0.73f
         ); //en("I guess there is a key that can open Lock-1.");
     }
 

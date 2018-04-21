@@ -758,7 +758,8 @@ public class Derivation extends PreDerivation {
             if (y != null && !(y instanceof Bool)) {
 
                 //replaceXY(replaced, replacement);
-                untransform.put(replaced, replacement);
+                //untransform.put(replaced, replacement);
+                untransform.put(y, input);
 
 //                replaceXY(xx.sub(0), y);
                 //replaceXY(y, input);
@@ -775,6 +776,8 @@ public class Derivation extends PreDerivation {
     };
 
     public Term untransform(Term t) {
+//        if (untransform.containsValue(t))
+//            return t; //dont try to transform, risks infinite loop
         return t.replace(untransform);
     }
 

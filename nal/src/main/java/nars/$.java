@@ -590,11 +590,22 @@ public enum $ {
             return ((Term) o);
 
         if (o instanceof Number) {
-            if (o instanceof Integer)
+            if (o instanceof Integer) {
                 return Int.the((Integer) o);
+            } else if (o instanceof Short) {
+                return Int.the((Short) o);
+            } else if (o instanceof Byte) {
+                return Int.the((Byte) o);
+            } else {
+                Number n = (Number) o;
+                double d = n.doubleValue();
+                int id = (int)d;
+                if (d == d && Util.equals(d, id, Double.MIN_NORMAL))
+                    return Int.the(id); //practically an int
+            }
         }
 
-        return Atomic.the(o.toString());
+        return Atomic.the(o.toString()); //default, store as a (probably quoted) string
     }
 
     /**

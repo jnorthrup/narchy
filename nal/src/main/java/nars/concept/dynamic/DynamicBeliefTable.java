@@ -1,17 +1,22 @@
 package nars.concept.dynamic;
 
+import jcog.TODO;
 import jcog.sort.Top;
+import jcog.sort.Top2;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.table.DefaultBeliefTable;
+import nars.table.TaskMatch;
 import nars.table.TemporalBeliefTable;
 import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public abstract class DynamicBeliefTable extends DefaultBeliefTable {
@@ -107,6 +112,38 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
     protected final Truth truthStored(long start, long end, Term template, NAR nar) {
         return super.truth(start, end, template, nar);
+    }
+
+    @Override
+    public Task sample(long start, long end, Term template, NAR nar) {
+        return matchThe(TaskMatch.sampled(start, end, nar.random()), nar);
+    }
+
+    abstract public void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar);
+
+    @Override
+    public void match(TaskMatch m, NAR nar, Consumer<Task> target) {
+        long s = m.start();
+        long e = m.end();
+        FloatFunction<Task> value = m.value();
+        Top2<Task> ss = new Top2<>(value);
+        //TODO include eternal
+        sampleDynamic(s, e, ss::add, nar);
+        eternal.match(m, nar, ss::add);
+        if (ss.isEmpty()) {
+            temporal.match(m, nar, target);
+        } else {
+            temporal.match(m, nar, ss::add);
+
+            //combine results from sensor series and from the temporal table
+            if (ss.size()==1) {
+                target.accept(ss.a); //simple case
+            } else {
+                if (m.limit() > 1)
+                    throw new TODO();
+                ss.sample(target, m.value(), m.random());
+            }
+        }
     }
 
 

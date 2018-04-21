@@ -7,7 +7,6 @@ import jcog.sort.TopN;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.task.Revision;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,7 +58,7 @@ public interface TaskTable {
         return streamTasks().toArray(Task[]::new);
     }
 
-    default void match(TaskMatch m, Consumer<Task> target) {
+    default void match(TaskMatch m, NAR nar, Consumer<Task> target) {
         if (isEmpty())
             return;
 
@@ -102,9 +101,9 @@ public interface TaskTable {
 
     }
 
-    default int match(TaskMatch m, Task[] target) {
+    default int match(TaskMatch m, NAR nar, Task[] target) {
         final int[] i = {0};
-        match(m, (x)->{
+        match(m, nar, x->{
             if (x!=null) //HACK
                 target[i[0]++] = x;
         });
@@ -112,10 +111,10 @@ public interface TaskTable {
     }
 
     @Nullable
-    default Task matchThe(TaskMatch m) {
+    default Task matchThe(TaskMatch m, NAR nar) {
         assert(m.limit()==1);
         Task[] x = new Task[1];
-        int r = match(m, x);
+        int r = match(m, nar, x);
         if (r == 0)
             return null;
         else
@@ -135,10 +134,9 @@ public interface TaskTable {
         TaskMatch m =
                 template == null || (!template.isTemporal()) ?
                     TaskMatch.best(start, end) :
-                    TaskMatch.best(start, end,
-                            t-> 1 / (1 + Revision.dtDiff(template, t.term())));
+                    TaskMatch.best(start, end, template);
 
-        return matchThe(m);
+        return matchThe(m, nar);
     }
 
     default Task sample(long start, long end, Term template, NAR nar) {
@@ -147,6 +145,6 @@ public interface TaskTable {
             return null;
 
         //TODO include template in value function
-        return matchThe(TaskMatch.sampled(start, end, nar.random()));
+        return matchThe(TaskMatch.sampled(start, end, nar.random()), nar);
     }
 }

@@ -1,9 +1,7 @@
 package nars.concept.dynamic;
 
-import jcog.TODO;
 import jcog.list.FasterList;
 import jcog.math.FloatSupplier;
-import jcog.sort.Top2;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -11,7 +9,6 @@ import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.proto.TaskLinkTask;
 import nars.link.TaskLink;
-import nars.table.TaskMatch;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -19,7 +16,6 @@ import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -290,37 +286,11 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         super(c, beliefOrGoal, t);
         this.series = series;
     }
-    @Override
-    public Task sample(long start, long end, Term template, NAR nar) {
-        return matchThe(TaskMatch.sampled(start, end, nar.random()));
-    }
+
 
     @Override
     public int size() {
         return super.size() + series.size();
-    }
-
-    @Override
-    public void match(TaskMatch m, Consumer<Task> target) {
-        long s = m.start();
-        long e = m.end();
-        FloatFunction<Task> value = m.value();
-        Top2<Task> ss = new Top2<>(value);
-        series.forEach(s, e, false, ss::add);
-        if (ss.isEmpty()) {
-            temporal.match(m, target);
-        } else {
-            temporal.match(m, ss::add);
-
-            //combine results from sensor series and from the temporal table
-            if (ss.size()==1) {
-                target.accept(ss.a); //simple case
-            } else {
-                if (m.limit() > 1)
-                    throw new TODO();
-                ss.sample(target, m.value(), m.random());
-            }
-        }
     }
 
     protected Truthed eval(boolean taskOrJustTruth, long start, long end, NAR nar) {
@@ -370,6 +340,11 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     @Override
     protected @Nullable Truth truthDynamic(long start, long end, Term templateIgnored, NAR nar) {
         return (Truth) (eval(false, start, end, nar));
+    }
+
+    @Override
+    public void sampleDynamic(long s, long e, Consumer<Task> c, NAR nar) {
+        series.forEach(s, e, false, c);
     }
 
     public void pri(FloatSupplier pri) {
