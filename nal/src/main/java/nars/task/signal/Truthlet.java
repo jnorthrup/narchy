@@ -53,10 +53,39 @@ abstract public class Truthlet implements Truth {
         return evi(mid());
     }
 
-    @Deprecated public float freq(long when) {
+    /** computes the average frequency over the interval */
+    public float freq(long start, long end) {
+        float fStart = freq(start);
+        if (fStart!=fStart)
+            return Float.NaN;
+        if (start == end) {
+            return fStart;
+        } else {
+            //TODO use the N-point approximation, and weight by the evidence because it may not be constant
+
+            float fEnd = freq(end);
+            if (fEnd != fEnd)
+                return Float.NaN;
+
+
+            if (end - start > 1) {
+                //interpolate using 3 points:
+                float fMid = freq((start+end)/2L);
+                if (fMid==fMid) {
+                    return Util.mean(fStart, fMid, fEnd);
+                }
+            }
+
+            //interpolate using 2 points:
+            return Util.mean(fStart, fEnd);
+
+        }
+    }
+
+    public float freq(long when) {
         return truth(when)[0];
     }
-    @Deprecated public float evi(long when) {
+    public float evi(long when) {
         return truth(when)[1];
     }
 
@@ -115,5 +144,6 @@ abstract public class Truthlet implements Truth {
     public static LinearTruthlet slope(long start, float startFreq, long end, float endFreq, float evi) {
         return new LinearTruthlet(start, startFreq, end, endFreq, evi);
     }
+
 
 }

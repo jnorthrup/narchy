@@ -26,16 +26,23 @@ public interface TemporalBeliefTable extends TaskTable {
 
     /**
      * range will be between 0 and 1
+     * should return non-negative values only
      */
-    static float value(Task t, long start, long end, int dur) {
+    static float value(Task t, long start, long end, long dur) {
 
-        float focusedEvi = Revision.eviInteg(t, start, end, dur);
-        float absDistance = t.midDistanceTo((start + end) / 2L) / ((float)dur);
-        float ownEvi = Revision.eviInteg(t, t.start(), t.end(), dur);
+//        float focusedEvi = Revision.eviInteg(t, start, end, dur);
+        float absDistance =
+                t.midDistanceTo((start + end) / 2L);
+                //t.minDistanceTo(start, end) / ((float)dur);
+                //t.maxDistanceTo(start, end);
+        float ownEvi =
+                Revision.eviInteg(t, t.start(), t.end(), dur);
+                //0;
 
         //the ownEvi * 0.5 might be somewhat of an analog of the HORIZON parameter, reducing the strength of old evidence in relation to newer
-        return (1 + focusedEvi) * (1 + ownEvi * 0.5f) / (1 + absDistance);
-
+//        return (1 + focusedEvi) * (1 + ownEvi * 0.5f) / (1 + absDistance);
+        return (float) ( ownEvi / (1 + Math.log(1+absDistance/((float)dur))));
+//        return focusedEvi;
 
 //        if (t.isDeleted())
 //            return Float.NEGATIVE_INFINITY;
@@ -124,6 +131,10 @@ public interface TemporalBeliefTable extends TaskTable {
                     //* (1f + weakConfFactor * (1f - y.conf())) //prefer weak
             ;
         };
+    }
+
+    public static float costDtDiff(Term template, Task x, int dur) {
+        return 1f + Revision.dtDiff(template, x.term()) / (dur * dur);
     }
 
     /** finds or generates the strongest match to the specified parameters.

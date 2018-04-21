@@ -21,8 +21,8 @@ public class TaskProxy implements Task {
     }
 
     @Override
-    public float freq(long w, int dur) {
-        return task.freq(w, dur);
+    public float freq(long start, long end) {
+        return task.freq(start, end);
     }
 
     @Override

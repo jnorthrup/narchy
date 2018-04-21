@@ -172,6 +172,39 @@ public interface LongInterval {
             return Math.min(d, Math.abs(e - when));
     }
 
+    default long maxDistanceTo(long a, long b) {
+        assert (b >= a): a + " > " + b;
+
+        if (a == ETERNAL) {
+            return 0;
+        }
+
+        long s = start();
+        if (s == ETERNAL)
+            return 0;
+
+        long e = end();
+        if (intersects(a, b)) {
+            return 0; //contains that interval
+        } else {
+            long sa = Math.abs(s - a);
+            if (a == b) {
+                if (s == e) {
+                    return sa;
+                } else {
+                    return Math.max(sa, Math.abs(e - b));
+                }
+            } else {
+                long sab = Math.max(sa, Math.abs(s - b));
+                if (s == e) {
+                    return sab;
+                } else {
+                    return Math.max(sab, Math.max(Math.abs(e - a), Math.abs(e - b)));
+                }
+            }
+        }
+    }
+
     /** if the task intersects (ex: occurrs during) the specified interval,
      *  returned distance is zero, regardless of how far it may extend before or after it */
     default long minDistanceTo(long a, long b) {

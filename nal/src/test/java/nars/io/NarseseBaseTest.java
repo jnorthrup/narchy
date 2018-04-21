@@ -388,14 +388,6 @@ public class NarseseBaseTest extends NarseseTest {
 
     }
 
-    @Test
-    public void testTenses() throws Narsese.NarseseException {
-        Task now = task("<a --> b>. :|:");
-        Task f = task("<a --> b>. :/:");
-        Task p = task("<a --> b>. :\\:");
-        assertTrue(now.start() > p.start());
-        assertTrue(now.start() < f.start());
-    }
 
     @Test
     public void testQuoteEscape() throws Narsese.NarseseException {

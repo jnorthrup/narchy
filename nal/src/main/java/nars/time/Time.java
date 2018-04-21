@@ -8,6 +8,7 @@ import nars.NAR;
 import nars.task.NativeTask.SchedTask;
 import org.jetbrains.annotations.Nullable;
 
+import javax.measure.Quantity;
 import java.io.Serializable;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -182,4 +183,8 @@ public abstract class Time implements Clock, Serializable {
     }
 
     protected abstract String durationString(long time);
+
+    public long toCycles(Quantity q) {
+        throw new UnsupportedOperationException("Only in RealTime implementations");
+    }
 }

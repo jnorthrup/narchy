@@ -20,4 +20,5 @@ public class QuantityTerm extends ProxyTerm {
         return new QuantityTerm(q);
     }
 
+
 }

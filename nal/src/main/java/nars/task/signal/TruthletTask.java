@@ -105,7 +105,7 @@ public class TruthletTask extends SignalTask {
 
 
 
-    public @Nullable Truth truth(long when) {
+    @Deprecated public @Nullable Truth truth(long when) {
         float[] tl = truthlet.truth(when);
         float f = tl[0];
         if (f!=f)
@@ -133,8 +133,8 @@ public class TruthletTask extends SignalTask {
     }
 
     @Override
-    public float freq(long w, int durIgnored) {
-        return truthlet.freq(w);
+    public float freq(long start, long end) {
+        return truthlet.freq(start, end);
     }
 
     public void updateEnd(Concept c, long nextEnd) {

@@ -10,7 +10,6 @@ import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
@@ -21,7 +20,6 @@ import nars.util.time.TimeGraph;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongLongPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
@@ -302,21 +300,21 @@ public class Occurrify extends TimeGraph {
 //            return this;
 //        }
 //    }
-
-    Term ifDynamic(Termed xt) {
-        Term x = xt.term();
-        Term y = x.eval(d);
-        if (y != null && !(y instanceof Bool) && !y.equals(x)) {
-            Collection<Event> existing = byTerm.get(y);
-            for (Event ee : existing)
-                if (ee instanceof Absolute)
-                    return null; //transformed but already known (maybe only return 'x' if absolute times are known here)
-
-            return y;
-        } else {
-            return null;
-        }
-    }
+//
+//    Term ifDynamic(Termed xt) {
+//        Term x = xt.term();
+//        Term y = x.eval(d);
+//        if (y != null && !(y instanceof Bool) && !y.equals(x)) {
+//            Collection<Event> existing = byTerm.get(y);
+//            for (Event ee : existing)
+//                if (ee instanceof Absolute)
+//                    return null; //transformed but already known (maybe only return 'x' if absolute times are known here)
+//
+//            return y;
+//        } else {
+//            return null;
+//        }
+//    }
 
 
     @Override
@@ -471,21 +469,24 @@ public class Occurrify extends TimeGraph {
 //            taken += knowIfSameTruth(t, tt, tr, tm, sampled);
 //        }
 
-//        if (taken == 0) {
-            //use the direct point only
+        long range;
+        if (when==ETERNAL || when == TIMELESS || ((range = t.range()-1) == 0)) {
             event(tt, when, true);
+        } else {
+            event(tt, when, when + range, true);
+        }
 //        }
     }
 
-    private int knowIfSameTruth(Task t, Term tt, Truth tr, long w, LongHashSet sampled) {
-        if (sampled.add(w)) {
-            if (t.isQuestionOrQuest() || tr.equalsIn(t.truth(w, d.dur), d.nar)) {
-                event(tt, w, true);
-                return 1;
-            }
-        }
-        return 0;
-    }
+//    private int knowIfSameTruth(Task t, Term tt, Truth tr, long w, LongHashSet sampled) {
+//        if (sampled.add(w)) {
+//            if (t.isQuestionOrQuest() || tr.equalsIn(t.truth(w, d.dur), d.nar)) {
+//                event(tt, w, true);
+//                return 1;
+//            }
+//        }
+//        return 0;
+//    }
 
 
 //    public void know(Task t) {
@@ -523,6 +524,12 @@ public class Occurrify extends TimeGraph {
 //        long[] occ = d.concOcc;
 
 
+//        @Nullable Term p1 = pattern.transform(d);
+//        if (p1!=null && !p1.equals(pattern)) {
+//            //transformed
+//            link(event(p1, TIMELESS), 0, event(pattern, TIMELESS));
+//        }
+
         //Supplier<Term> solution = cache != null ? solveCached(pattern) : solveAll(pattern);
         Supplier<Term> solution = solveAll(pattern);
         if (solution == null)
@@ -534,10 +541,10 @@ public class Occurrify extends TimeGraph {
     }
 
     @Override
-    public Event know(Term t, long start) {
+    public Event know(Term t, long start, long end) {
 
         int before = byTerm.size();
-        Event e = super.know(t, start);
+        Event e = super.know(t, start, end);
         int after = byTerm.size();
 
         boolean tryTransforms = after > before; //new event, add transformed variations
@@ -546,12 +553,14 @@ public class Occurrify extends TimeGraph {
             Term u = t.transform(d);
             if (u != null && !u.equals(t)) {
                 //resolved differently
-                super.know(u, start);
+                //super.know(u, start, end);
+                link(e, 0, event(u, TIMELESS));
             }
 
             Term v = Image.imageNormalize(t);
             if (!v.equals(t)) {
-                super.know(v, start);
+                //super.know(v, start, end);
+                link(e, 0, event(v, TIMELESS));
             }
 
         }
@@ -563,13 +572,14 @@ public class Occurrify extends TimeGraph {
     Term solveThe(Event event) {
         Term st = event.id;
 
-        long es = event.when();
+        long es = event.start();
         if (es == TIMELESS) {
             return solveRaw(st);
         } else {
             if (!eternalCheck(es))
                 return null; //??
-            d.concOcc[0] = d.concOcc[1] = es;
+            d.concOcc[0] = es;
+            d.concOcc[1] = event.end();
             return st;
         }
     }
@@ -586,7 +596,7 @@ public class Occurrify extends TimeGraph {
             List<Event> list = solutions.list;
             for (int i = 0, listSize = list.size(); i < listSize; i++) {
                 Event e = list.get(i);
-                long w = e.when();
+                long w = e.start();
                 if (w!=TIMELESS) {
                     if (c == null)
                         c = new Conj(); //lazy
@@ -617,7 +627,7 @@ public class Occurrify extends TimeGraph {
 
         SortedSetMultimap<Term, LongLongPair> m = MultimapBuilder.hashKeys(ss).treeSetValues().build();
         solutions.forEach(x -> {
-            long w = x.when();
+            long w = x.start();
             if (w != TIMELESS)
                 m.put(x.id, PrimitiveTuples.pair(w, w));
         });
@@ -864,7 +874,7 @@ public class Occurrify extends TimeGraph {
 
 
     protected Supplier<Term> solveAll(Term pattern) {
-        ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS*4);
+        ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS*2);
 
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
         //final boolean[] rejectRelative = {false};
@@ -917,11 +927,21 @@ public class Occurrify extends TimeGraph {
             return () -> solveRaw(pattern);
         }
 
+        //can only prefer occurrence range if the events all have the same term
+//        if (ss > 1) { //prefer occurence range
+//            int occurrenceSolvedRange = ((FasterList<Event>) solutions.list).count(t -> t instanceof AbsoluteRange);
+//            if (occurrenceSolvedRange > 0 && occurrenceSolvedRange < ss) {
+//                if (solutions.removeIf(t -> !(t instanceof AbsoluteRange))) //filter non-ranged
+//                    ss = solutions.size();
+//            }
+//        }
 
-        int timed = ((FasterList) solutions.list).count(t -> t instanceof Absolute);
-        if (timed > 0 && timed < ss) {
-            if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
-                ss = solutions.size();
+        if (ss > 1) { //prefer occurrence point
+            int occurrenceSolved = ((FasterList<Event>) solutions.list).count(t -> t instanceof Absolute);
+            if (occurrenceSolved > 0 && occurrenceSolved < ss) {
+                if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
+                    ss = solutions.size();
+            }
         }
 
         switch (ss) {
@@ -1099,9 +1119,9 @@ public class Occurrify extends TimeGraph {
         if (bt.hasXternal() && !at.hasXternal())
             return a;
 
-        long bstart = b.when();
+        long bstart = b.start();
         if (bstart != TIMELESS) {
-            long astart = a.when();
+            long astart = a.start();
             if (astart == TIMELESS)
                 return b;
 

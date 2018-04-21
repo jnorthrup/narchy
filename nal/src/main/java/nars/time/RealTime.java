@@ -4,7 +4,9 @@ import jcog.Texts;
 import jcog.exe.Loop;
 import nars.NAR;
 import org.jetbrains.annotations.NotNull;
+import tec.uom.se.quantity.time.TimeQuantities;
 
+import javax.measure.Quantity;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -14,7 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class RealTime extends Time {
 
 
-    private final int unitsPerSecod;
+    private final int unitsPerSecond;
     /*volatile */ long t;
     private long start;
 
@@ -25,9 +27,11 @@ public abstract class RealTime extends Time {
     private int dur = 1;
     private long t0;
 
+
+
     protected RealTime(int unitsPerSecond, boolean relativeToStart) {
         super();
-        this.unitsPerSecod = unitsPerSecond;
+        this.unitsPerSecond = unitsPerSecond;
         this.t = this.t0 = this.start = relativeToStart ? realtime() : 0L;
         reset();
     }
@@ -73,7 +77,7 @@ public abstract class RealTime extends Time {
     }
 
     protected final double unitsToSeconds(long l) {
-        return l / ((double)unitsPerSecod);
+        return l / ((double) unitsPerSecond);
     }
 
     @Override
@@ -130,6 +134,12 @@ public abstract class RealTime extends Time {
     /** set real-time frames per duration */
     public void durRatio(Loop l, float ratio) {
         durSeconds(ratio / l.getFPS());
+    }
+
+    @Override
+    public long toCycles(Quantity q) {
+        double s = TimeQuantities.toTimeUnitSeconds(q).doubleValue(null);
+        return Math.round(s * unitsPerSecond);
     }
 
     /** decisecond (0.1) accuracy */

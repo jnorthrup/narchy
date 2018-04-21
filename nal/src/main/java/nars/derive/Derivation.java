@@ -756,14 +756,15 @@ public class Derivation extends PreDerivation {
             if (y != null && !(y instanceof Bool)) {
 
 
-                replaceXY(xx.sub(0), y);
+//                replaceXY(xx.sub(0), y);
+                replaceXY(y, input);
 
-                Term a = xx.sub(1);
-                Term b = replacement;
-                if (!a.equals(b)) {
+//                Term a = xx.sub(1);
+//                Term b = replacement;
+//                if (!a.equals(b)) {
 //                    replaceXY(a, b); //also include the subterms in case the structure of the compound changed signficantly the events may still hold the clue
-//                    //replaceXY(b, a); //reverse mapping
-                }
+//                    replaceXY(b, a); //reverse mapping
+//                }
             }
             return y;
         }

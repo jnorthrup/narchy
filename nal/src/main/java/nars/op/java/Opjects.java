@@ -104,9 +104,7 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
     /** determines evidence weighting for reporting assumed feedback assumptions */
     float doubtEviFactor = 0.75f;
     float uninvokeEviFactor = 1;
-    float doubtFreq =
-            //0.5f
-            1f - beliefFreq;
+    float doubtFreq =  0.5f; //has to be 0.5 to contrast with negation results
     float uninvokeFreq = 1f - invokeFreq;
 
     /** cached; updated at most each duration */

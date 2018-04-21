@@ -184,7 +184,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(192, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(64, 0, 1024);
 
 
     /** estimate */

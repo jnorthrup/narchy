@@ -9,7 +9,7 @@ import com.github.fge.grappa.stack.ValueStack;
 import com.github.fge.grappa.transform.ParserTransformer;
 import com.github.fge.grappa.transform.base.ParserClassNode;
 import jcog.Util;
-import nars.task.TaskBuilder;
+import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -19,6 +19,7 @@ import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.measure.Quantity;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -249,7 +250,7 @@ public class Narsese {
     /**
      * returns null if the Task is invalid (ex: invalid term)
      */
-    static Task decodeTask(NAR m, Object[] x) {
+    static Task decodeTask(NAR nar, Object[] x) {
         if (x.length == 1 && x[0] instanceof Task) {
             return (Task) x[0];
         }
@@ -270,38 +271,41 @@ public class Narsese {
 
         Truth t = (Truth) x[3];
         if (t != null && !Float.isFinite(t.conf()))
-            t = $.t(t.freq(), m.confDefault(punct));
+            t = $.t(t.freq(), nar.confDefault(punct));
 
 
         if (t == null && (punct == BELIEF || punct == GOAL)) {
-            t = $.t(1, m.confDefault(punct));
+            t = $.t(1, nar.confDefault(punct));
         }
 
         Task y = Task.tryTask(content, punct, t, (C, tr) -> {
             //TODO construct directly and remove TaskBuilder
-            TaskBuilder ttt =
-                    new TaskBuilder(C, punct, tr)
-                            .time(
-                                    m.time(), //creation time
-                                    Tense.getRelativeOccurrence(
-                                            (Tense) x[4],
-                                            m
-                                    ));
-            //long st = ttt.start();
-            //        if (ttt.start() != ETERNAL && content.op() == CONJ) {
-            //            int dtRange = content.dtRange();
-            //            if (dtRange > 0) {
-            //                ttt.time(ttt.creation(), st, st + dtRange); //extend
-            //            }
-            //        }
-
-            if (x[0] == null)  /* do not set, Memory will apply defaults */
-                ttt.priSet(m.priDefault(punct));
-            else
-                ttt.priSet((Float) x[0]);
 
 
-            return ttt.apply(m).log(NARSESE_TASK_TAG);
+            long[] occ;
+            Object O = x[4];
+
+            if (O instanceof Tense) {
+                long o = Tense.getRelativeOccurrence((Tense) O, nar);
+                occ = new long[] { o, o };
+            } else if (O instanceof Quantity) {
+                long qCycles = nar.time.toCycles((Quantity)O);
+                long o = nar.time() + qCycles;
+                occ = new long[] { o, o };
+            } else if (O instanceof Integer) {
+                //cycle time, or default time unit
+                long o = (Integer)O;
+                occ = new long[] { o, o };
+            } else if (O instanceof Quantity) { //if (x[4] instanceof long[]) {
+
+                throw new RuntimeException("" + ((Quantity)O).getUnit());
+            } else {
+                occ = (long[]) O;
+            }
+            NALTask yy = new NALTask(C, punct, tr, nar.time(), occ[0], occ[1], nar.time.nextStampArray());
+            yy.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
+            yy.log(NARSESE_TASK_TAG);
+            return yy;
         });
 
         if (y == null) {
@@ -309,8 +313,6 @@ public class Narsese {
         }
 
         return y;
-
-
 
     }
 

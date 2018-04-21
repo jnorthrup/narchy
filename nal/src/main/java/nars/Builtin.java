@@ -19,6 +19,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import nars.term.compound.util.Conj;
 import nars.term.compound.util.Image;
+import nars.term.obj.QuantityTerm;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -245,6 +246,31 @@ public class Builtin {
             nar.on(t);
         }
 
+        /** dynamic term builder - useful for NAR specific contexts like clock etc.. */
+        nar.on(Functor.f("term", (Subterms s)->{
+            Op o = Op.stringToOperator.get($.unquote(((Atom)s.sub(0))));
+            Term[] args = s.sub(1).subterms().arrayClone();
+            if (s.subs() > 2) {
+                if (o.temporal) {
+                    //decode DT field
+                    Term dtTerm = s.sub(2);
+                    if (dtTerm instanceof QuantityTerm) {
+
+                        long dt = nar.time.toCycles(((QuantityTerm) dtTerm).quant);
+                        if (Math.abs(dt) < Integer.MAX_VALUE-2) {
+                            return o.the((int)dt, args);
+                        } else {
+                            throw new UnsupportedOperationException("time unit too large for 32-bit DT interval");
+                        }
+                    }
+                }
+
+                throw new UnsupportedOperationException("unrecognized modifier argument: " + s);
+            }
+
+            return o.the(args);
+
+        }));
 
         nar.on(Functor.f1("varIntro", (x) -> {
             Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());

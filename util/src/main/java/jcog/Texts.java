@@ -175,6 +175,44 @@ public enum Texts {
     }
      */
 
+    static final ThreadLocal<Format> oneDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0"));
+
+    //    /**
+//     * Change the first min(|s|, |t|) characters of s to t
+//     * TODO must reset the hashcode field
+//     * TODO this is untested and probably not yet functional
+//     */
+//    public static void overwrite(CharSequence s, CharSequence t) {
+//        try {
+//            char[] value = (char[]) StringHack.val.get(s);
+//
+//            for (int i = 0; i < Math.min(s.length(), t.length()); i++) {
+//                value[i] = t.charAt(i);
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+//
+//    public static boolean containsChar(CharSequence n, char c) {
+//        if (n instanceof String)
+//            return ((String) n).indexOf(c) != -1;
+//
+//        int l = n.length();
+//        for (int i = 0; i < l; i++)
+//            if (n.charAt(i) == c)
+//                return true;
+//        return false;
+//    }
+    static final ThreadLocal<Format> threeDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.000"));
+    static final ThreadLocal<Format> fourDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0000"));
+
+    //    public static String n1char(double x) {
+//        return oneDecimal.get().format(x);
+//    }
+    @Deprecated
+    static final ThreadLocal<DecimalFormat> twoDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.00"));
+
     /**
      * @author http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Java
      */
@@ -210,47 +248,9 @@ public enum Texts {
         return cost[len0 - 1];
     }
 
-//    /**
-//     * Change the first min(|s|, |t|) characters of s to t
-//     * TODO must reset the hashcode field
-//     * TODO this is untested and probably not yet functional
-//     */
-//    public static void overwrite(CharSequence s, CharSequence t) {
-//        try {
-//            char[] value = (char[]) StringHack.val.get(s);
-//
-//            for (int i = 0; i < Math.min(s.length(), t.length()); i++) {
-//                value[i] = t.charAt(i);
-//            }
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-//
-//    public static boolean containsChar(CharSequence n, char c) {
-//        if (n instanceof String)
-//            return ((String) n).indexOf(c) != -1;
-//
-//        int l = n.length();
-//        for (int i = 0; i < l; i++)
-//            if (n.charAt(i) == c)
-//                return true;
-//        return false;
-//    }
-
-
-    static final ThreadLocal<Format> oneDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0"));
-
     public static String n1(float x) {
         return oneDecimal.get().format(x);
     }
-
-//    public static String n1char(double x) {
-//        return oneDecimal.get().format(x);
-//    }
-
-
-    static final ThreadLocal<Format> threeDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.000"));
 
     public static String n3(float x) {
         return threeDecimal.get().format(x);
@@ -259,8 +259,6 @@ public enum Texts {
     public static String n3(double x) {
         return threeDecimal.get().format(x);
     }
-
-    static final ThreadLocal<Format> fourDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0000"));
 
     public static String n4(float x) {
         if (x != x)
@@ -272,10 +270,6 @@ public enum Texts {
     public static String n4(double x) {
         return fourDecimal.get().format(x);
     }
-
-
-    @Deprecated
-    static final ThreadLocal<DecimalFormat> twoDecimal = ThreadLocal.withInitial(()->new DecimalFormat("0.00"));
 
 //    public static final String n2Slow(final float x) {
 //        return twoDecimal.format(x);
@@ -386,21 +380,31 @@ public enum Texts {
      * fast parse an int under certain conditions, avoiding Integer.parse if possible
      */
     public static int i(String s) throws NumberFormatException {
-        int sl = s.length();
-        if (sl == 1) {
-            char c = s.charAt(0);
-            int i = i(c);
-            if (i != -1) return i;
-        } else if (sl == 2) {
-            int dig1 = i(s.charAt(1));
-            if (dig1 != -1) {
-                int dig10 = i(s.charAt(0));
-                if (dig10 != -1)
-                    return dig10 * 10 + dig1;
+
+        switch (s.length()) {
+            case 0:
+                throw new UnsupportedOperationException();
+            case 1: {
+                char c = s.charAt(0);
+                int i = i(c);
+                if (i != -1) return i;
             }
+            break;
+            case 2: {
+                int dig1 = i(s.charAt(1));
+                if (dig1 != -1) {
+                    int dig10 = i(s.charAt(0));
+                    if (dig10 != -1)
+                        return dig10 * 10 + dig1;
+                }
+            }
+            break;
         }
+
         return Integer.parseInt(s);
+
     }
+
     /**
      * fast parse an int under certain conditions, avoiding Integer.parse if possible
      */
@@ -591,7 +595,7 @@ public enum Texts {
     }
 
     public static String n2(float... v) {
-        assert(v.length > 0);
+        assert (v.length > 0);
         StringBuilder sb = new StringBuilder(v.length * 4 + 2 /* approx */);
         int s = v.length;
         for (int i = 0; i < s; i++) {
@@ -601,7 +605,9 @@ public enum Texts {
         return sb.toString();
     }
 
-    /** prints an array of numbers separated by tab, suitable for a TSV line */
+    /**
+     * prints an array of numbers separated by tab, suitable for a TSV line
+     */
     public static String n4(double... v) {
         StringBuilder sb = new StringBuilder(v.length * 6 + 2 /* approx */);
         int s = v.length;
@@ -612,7 +618,9 @@ public enum Texts {
         return sb.toString();
     }
 
-    /** prints an array of numbers separated by tab, suitable for a TSV line */
+    /**
+     * prints an array of numbers separated by tab, suitable for a TSV line
+     */
     public static String n4(float... v) {
         StringBuilder sb = new StringBuilder(v.length * 6 + 2 /* approx */);
         int s = v.length;
@@ -623,7 +631,9 @@ public enum Texts {
         return sb.toString();
     }
 
-    /** prints an array of numbers separated by tab, suitable for a TSV line */
+    /**
+     * prints an array of numbers separated by tab, suitable for a TSV line
+     */
     public static String n2(byte... v) {
         StringBuilder sb = new StringBuilder(v.length * 3);
         int s = v.length;
@@ -680,8 +690,8 @@ public enum Texts {
      */
     public static String timeStr(double ns) {
         if (ns < 1000) return n4(ns) + "ns";
-        if (ns < 1_000_000) return n4(ns/1_000d) + "us";
-        if (ns < 1_000_000_000) return n4(ns/1_000_000d) + "ms";
+        if (ns < 1_000_000) return n4(ns / 1_000d) + "us";
+        if (ns < 1_000_000_000) return n4(ns / 1_000_000d) + "ms";
         //if (ns < 3_000_000_000_000d) return String.format("%.2f", ns / 1_000_000_000d);
         if (ns < 1_000_000_000_000d) return n2(ns / 1_000_000_000d) + "s";
         long sec = Math.round(ns / 1_000_000_000d);
@@ -723,7 +733,8 @@ public enum Texts {
         return ret.toString();
     }
 
-    /** pad with leading zeros
+    /**
+     * pad with leading zeros
      * TODO can be made faster
      */
     public static String iPad(long v, int digits) {
@@ -765,8 +776,8 @@ public enum Texts {
 
     public static void histogramPrint(AbstractHistogram h, PrintStream out) {
         out.println("mean=" + h.getMean() + ", min=" + h.getMinValue() + ", max=" + h.getMaxValue() + ", stdev=" + h.getStdDeviation());
-        histogramDecode(h, "", (label, value)->{
-           out.println(label + " " + value);
+        histogramDecode(h, "", (label, value) -> {
+            out.println(label + " " + value);
         });
     }
 }

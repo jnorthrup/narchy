@@ -121,7 +121,7 @@ public class NALTask extends Pri implements Task {
     }
 
     @Override
-    public float freq(long w, int dur) {
+    public float freq(long start, long end) {
         return truth.freq();
     }
 

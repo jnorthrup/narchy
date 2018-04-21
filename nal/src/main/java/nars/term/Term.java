@@ -24,10 +24,7 @@ package nars.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.list.FasterList;
-import nars.$;
-import nars.Op;
-import nars.Param;
-import nars.The;
+import nars.*;
 import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -622,7 +619,9 @@ public interface Term extends Termed, Comparable<Termed> {
     default Term eval(Evaluation.TermContext context) {
         return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
     }
-
+    default Term eval(NAR nar) {
+        return eval(nar.concepts.functors);
+    }
     /*@NotNull*/
 
     /**

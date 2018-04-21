@@ -184,8 +184,9 @@ public class NARS {
     }
 
 
+    /** milliseconds realtime */
     public static NARS realtime(float durFPS) {
-        return new DefaultNAR(0, true).time(new RealTime.CS().durFPS(durFPS));
+        return new DefaultNAR(0, true).time(new RealTime.MS().durFPS(durFPS));
     }
 
     /**

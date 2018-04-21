@@ -84,7 +84,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 tc.evi = -1;
                 return null; //no evidence; remove
             } else {
-                tc.freq = task.freq();
+                tc.freq = task.freq(start, end);
                 tc.evi = eTotal;
                 return tc;
             }

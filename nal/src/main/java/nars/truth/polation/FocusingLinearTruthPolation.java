@@ -55,7 +55,7 @@ public class FocusingLinearTruthPolation extends TruthPolation {
             eviFactor *= intermpolate(nar);
             if (eviFactor < Param.TRUTH_MIN_EVI)
                 return null; //intermpolate failure
-        }
+        } //ELSE: maybe fail if all the tasks dont share the exact same term
 
 
         int s = size();

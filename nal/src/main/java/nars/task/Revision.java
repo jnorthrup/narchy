@@ -565,10 +565,10 @@ public class Revision {
 //        return mergeTemporal(nar, tt);
 //    }
 
-    @Nullable
-    public static Task mergeTasks(NAR nar, TaskRegion... tt) {
+    /** forces projection */
+    @Nullable public static Task mergeTasks(NAR nar, TaskRegion... tt) {
         long[] u = Tense.union(tt);
-        return mergeTasks(nar, u[0], u[1], tt);
+        return mergeTasks(nar, nar.dur(), u[0], u[1], true, tt);
     }
 
     @Nullable
@@ -659,7 +659,7 @@ public class Revision {
     /**
      * convenience method for selecting evidence integration strategy
      */
-    public static float eviInteg(Task x, long start, long end, int dur) {
+    public static float eviInteg(Task x, long start, long end, long dur) {
         if (start == end) {
             //point in time or eternity
             return x.evi(start, dur);

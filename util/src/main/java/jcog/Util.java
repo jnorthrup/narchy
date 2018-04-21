@@ -593,6 +593,11 @@ public enum Util {
     public static float mean(float a, float b) {
         return (a + b) / 2;
     }
+
+    public static float mean(float a, float b, float c) {
+        return (a + b + c) / 3;
+    }
+
     public static double mean(double a, double b) {
         return (a + b) / 2;
     }

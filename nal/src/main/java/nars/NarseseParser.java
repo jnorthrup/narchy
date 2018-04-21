@@ -14,6 +14,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.obj.QuantityTerm;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -21,11 +22,14 @@ import nars.unify.match.Ellipsis;
 import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tec.uom.se.AbstractQuantity;
 
+import javax.measure.Quantity;
 import java.util.List;
 
 import static nars.Op.*;
 import static nars.util.time.Tense.DTERNAL;
+import static nars.util.time.Tense.ETERNAL_ETERNAL;
 
 public class NarseseParser extends BaseParser<Object> implements Narsese.INarseseParser {
 
@@ -47,65 +51,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         );
     }
 
-    //    /**
-    //     * {Premise1,Premise2} |- Conclusion.
-    //     */
-    //    public Rule TaskRule() {
-    //
-    //        //use a var to count how many rule conditions so that they can be pulled off the stack without reallocating an arraylist
-    //        return sequence(
-    //                STATEMENT_OPENER, s(),
-    //                push(PremiseRule.class),
-    //
-    //                Term(), //cause
-    //
-    //                zeroOrMore(sepArgSep(), Term()),
-    //                s(), TASK_RULE_FWD, s(),
-    //
-    //                push(PremiseRule.class), //stack marker
-    //
-    //                Term(), //effect
-    //
-    //                zeroOrMore(sepArgSep(), Term()),
-    //                s(), STATEMENT_CLOSER, s(),
-    //
-    //                eof(),
-    //
-    //                push(popTaskRule())
-    //        );
-    //    }
-
-
-    //    @Nullable
-    //    public PremiseRule popTaskRule() {
-    //        //(Term)pop(), (Term)pop()
-    //
-    //        List<Term> r = $.newArrayList(16);
-    //        List<Term> l = $.newArrayList(16);
-    //
-    //        Object popped;
-    //        while ((popped = pop()) != PremiseRule.class) { //lets go back till to the start now
-    //            r.add(the(popped));
-    //        }
-    //        if (r.isEmpty()) //empty premise list is invalid
-    //            return null;
-    //
-    //        while ((popped = pop()) != PremiseRule.class) {
-    //            l.add(the(popped));
-    //        }
-    //        if (l.isEmpty()) //empty premise list is invalid
-    //            return null;
-    //
-    //
-    //        Collections.reverse(l);
-    //        Collections.reverse(r);
-    //
-    //        Compound premise = $.p(l);
-    //        Compound conclusion = $.p(r);
-    //
-    //        return new PremiseRule(premise, conclusion);
-    //    }
-
     public Rule LineComment() {
         return sequence(
                 s(),
@@ -122,46 +67,12 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         );
     }
 
-    //    public Rule LineCommentEchoed() {
-    //        //return Atom.the(Utf8.toUtf8(name));
-    //
-    //        //return $.the('"' + t + '"');
-    //
-    ////        int olen = name.length();
-    ////        switch (olen) {
-    ////            case 0:
-    ////                throw new RuntimeException("empty atom name: " + name);
-    ////
-    //////            //re-use short term names
-    //////            case 1:
-    //////            case 2:
-    //////                return theCached(name);
-    ////
-    ////            default:
-    ////                if (olen > Short.MAX_VALUE/2)
-    ////                    throw new RuntimeException("atom name too long");
-    //
-    //        //  }
-    //        return sequence(
-    //                zeroOrMore(noneOf("\n")),
-    //                push(ImmediateOperator.command(echo.class, $.quote(match())))
-    //        );
-    //    }
-
-    //    public Rule PauseInput() {
-    //        return sequence( s(), IntegerNonNegative(),
-    //                push( PauseInput.pause( (Integer) pop() ) ), sNonNewLine(),
-    //                "\n" );
-    //    }
-
-
-
     public Rule TermCommandTask() {
         return sequence(
                 Term(),
                 s(),
                 eof(),
-                push(newTask(1f,';', the(pop()), null, Tense.Eternal))
+                push(newTask(1f,';', the(pop()), null, ETERNAL_ETERNAL))
         );
     }
 
@@ -170,7 +81,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         Var<Float> budget = new Var();
         Var<Character> punc = new Var(Op.COMMAND);
         Var<Truth> truth = new Var();
-        Var<Tense> tense = new Var(Tense.Eternal);
+        Var<Object> occurr = new Var(ETERNAL_ETERNAL);
 
         return sequence(
 
@@ -182,17 +93,17 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 SentencePunctuation(punc), s(),
 
-                optional(Tense(tense), s()),
+                optional(TimeAbsolute(occurr)),
 
-                optional(Truth(truth, tense), s()),
+                optional(Truth(truth), s()),
 
-                push(newTask(budget.get(), punc.get(),  the(pop()), truth.get(), tense.get()))
+                push(newTask(budget.get(), punc.get(),  the(pop()), truth.get(), occurr.get()))
 
         );
     }
 
-    public static Object newTask(Float budget, Character punc, Term term, Truth truth, Tense tense) {
-        return new Object[]{budget, term, punc, truth, tense };
+    static Object newTask(Float budget, Character punc, Term term, Truth truth, Object occ) {
+        return new Object[]{budget, term, punc, truth, occ };
     }
 
 
@@ -230,15 +141,15 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     //        );
     //    }
 
-    public Rule Tense(Var<Tense> tense) {
-        return firstOf(
-                sequence(TENSE_PRESENT, tense.set(Tense.Present)),
-                sequence(TENSE_PAST, tense.set(Tense.Past)),
-                sequence(TENSE_FUTURE, tense.set(Tense.Future))
-        );
-    }
+//    public Rule Tense(Var<Tense> tense) {
+//        return firstOf(
+//                sequence(TENSE_PRESENT, tense.set(Tense.Present)),
+//                sequence(TENSE_PAST, tense.set(Tense.Past)),
+//                sequence(TENSE_FUTURE, tense.set(Tense.Future))
+//        );
+//    }
 
-    public Rule Truth(Var<Truth> truth, Var<Tense> tense) {
+    public Rule Truth(Var<Truth> truth) {
         return sequence(
 
                 TRUTH_VALUE_MARK,
@@ -249,7 +160,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 sequence(
 
-                        TruthTenseSeparator(VALUE_SEPARATOR, tense), // separating ;,|,/,\
+                        //TruthTenseSeparator(VALUE_SEPARATOR, tense), // separating ;,|,/,\
+                        ";",
 
                         ShortFloat(), //Conf
 
@@ -472,7 +384,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 Term(),
                 s(),
                 firstOf(
-                        seq(OpTemporal(), CycleDelta()),
+                        seq(OpTemporal(), TimeDelta()),
                         seq(OpTemporalParallel(), push(0) /* dt=0 */)
                 ),
                 s(),
@@ -482,30 +394,66 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
 
                 push(TemporalRelationBuilder(the(pop()) /* pred */,
-                        (Integer) pop() /*cycleDelta*/, (Op) pop() /*relation*/, the(pop()) /* subj */))
+                        pop() /*cycleDelta*/, (Op) pop() /*relation*/, the(pop()) /* subj */))
         );
     }
 
     @Nullable
-    static Term TemporalRelationBuilder(Term pred, int cycles, Op o, Term subj) {
+    static Term TemporalRelationBuilder(Term pred, Object timeDelta, Op o, Term subj) {
         if (subj == null || subj == Null || pred == null || pred == Null)
             return null;
-        else
-            return o.the(cycles, subj, pred);
+        else {
+            if (timeDelta instanceof Integer) {
+                return o.the((int)timeDelta, subj, pred);
+            } else {
+                //encode as a term that will be dynamically decoded as a functor by the receiving NAR according to its clock
+                QuantityTerm q = (QuantityTerm)timeDelta;
+                return $.func("term", o.strAtom, $.pFast(subj, pred), q);
+            }
+        }
     }
 
     public final static String invalidCycleDeltaString = Integer.toString(Integer.MIN_VALUE);
 
-    public Rule CycleDelta() {
+    public Rule TimeDelta() {
+        return
+
+                    firstOf(
+                            seq("-", TimeUnit(), push(new QuantityTerm(((Quantity)pop()).multiply(-1) ))),
+                            seq("+", TimeUnit(), push(new QuantityTerm((Quantity)pop()))),
+
+                            seq("+-", push(Tense.XTERNAL)),
+                            seq('+', oneOrMore(digit()),
+                                    push(Texts.i(matchOrDefault(invalidCycleDeltaString)))
+                            ),
+                            seq('-', oneOrMore(digit()),
+                                    push(-Texts.i(matchOrDefault(invalidCycleDeltaString)))
+                            )
+                    );
+
+    }
+    public Rule TimeUnit() {
+        return
+            seq(oneOrMore(firstOf(digit(),".")), push(match()),
+                oneOrMore(alpha()), push(1, match()),
+                push(AbstractQuantity.parse(pop() + " " + pop())) )
+        ;
+    }
+
+    public Rule TimeAbsolute(Var<Object> occurr) {
         return
                 firstOf(
-                        seq("+-", push(Tense.XTERNAL)),
-                        seq('+', oneOrMore(digit()),
-                                push(Integer.parseInt(matchOrDefault(invalidCycleDeltaString)))
-                        ),
-                        seq('-', oneOrMore(digit()),
-                                push(-Integer.parseInt(matchOrDefault(invalidCycleDeltaString)))
-                        )
+                        /*@Deprecated*/ seq(":|:", s(), occurr.set(Tense.Present)),
+                        seq("|", s(), occurr.set(Tense.Present)), //shorthand
+                        //seq("now", occurr.set(Tense.Present)),
+                        seq("-", TimeUnit(), occurr.set(((Quantity)pop()).multiply(-1)) ),
+                        seq("+", TimeUnit(), occurr.set(pop())),
+                        seq("-", oneOrMore(digit()), occurr.set(-Texts.i(match()))),
+                        seq("+", oneOrMore(digit()), occurr.set(Texts.i(match()))),
+//                        seq("tomorrow", push("Tomorrow")),
+//                        seq("yesterday", push("Yesterday"))
+                        ///etc
+                        seq(empty(), occurr.set(Tense.Eternal))
                 )
                 ;
     }

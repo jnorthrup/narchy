@@ -1132,7 +1132,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * https://www.intmath.com/integration/5-trapezoidal-rule.php
      * long[] points needs to be sorted, unique, and not contain any ETERNALs
      */
-    default float eviInteg(int dur, long... times) {
+    default float eviInteg(long dur, long... times) {
         assert (times.length > 1);
 
         int n = times.length;
@@ -1170,7 +1170,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return this;
     }
 
-    float freq(long w, int dur);
+    /** computes the average frequency during the given interval */
+    float freq(long start, long end);
 
 //    default float freqMean(int dur, long... when) {
 //

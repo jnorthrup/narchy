@@ -109,8 +109,8 @@ public class NarseseTest {
         //TODO punctuation:
     }
 
-    @NotNull
-    List<Task> tasks(@NotNull String s) throws Narsese.NarseseException {
+
+    static List<Task> tasks(@NotNull String s) throws Narsese.NarseseException {
         //TODO n.task(s) when the parser is replaced
         //return p.parseTask(s, true);
         List<Task> l = $.newArrayList(1);
@@ -119,7 +119,7 @@ public class NarseseTest {
     }
 
 
-    Task task(@NotNull String s) throws Narsese.NarseseException {
+    static Task task(@NotNull String s) throws Narsese.NarseseException {
         List<Task> l = tasks(s);
         if (l.size() != 1)
             throw new RuntimeException("Expected 1 task, got: " + l);

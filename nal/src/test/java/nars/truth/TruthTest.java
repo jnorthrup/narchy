@@ -112,7 +112,7 @@ public class TruthTest {
     @Test public void testTruthHashUnhash() {
         XorShift128PlusRandom rng = new XorShift128PlusRandom(2);
         for (int i = 0; i < 1000; i++)
-            hashUnhash(rng.nextFloat(), Param.TRUTH_EPSILON*2 + rng.nextFloat() * (1f-Param.TRUTH_EPSILON*2));
+            hashUnhash(rng.nextFloat(), rng.nextFloat() * (1f-Param.TRUTH_EPSILON*2));
     }
 
     static void hashUnhash(float f, float c) {

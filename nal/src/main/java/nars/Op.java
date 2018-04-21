@@ -12,6 +12,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -625,6 +626,8 @@ public enum Op {
     };
 
 
+    public final Atom strAtom;
+
     final static class ImDep extends VarDep {
 
         private final String str;
@@ -894,12 +897,13 @@ public enum Op {
 
         this.id = (byte) (ordinal());
         this.str = string;
+        this.ch = string.length() == 1 ? string.charAt(0) : 0;
+        this.strAtom = ch!='.' ? (Atom) Atomic.the("\"" + str + "\"") : null /* dont compute for ATOM, infinite loops */;
 
         this.commutative = commutative;
         this.minLevel = minLevel;
         this.type = type;
 
-        this.ch = string.length() == 1 ? string.charAt(0) : 0;
 
         this.minSize = size.getOne();
         this.maxSize = size.getTwo();
