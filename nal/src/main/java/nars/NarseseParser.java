@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tec.uom.se.AbstractQuantity;
 
-import javax.measure.Quantity;
 import java.util.List;
 
 import static nars.Op.*;
@@ -445,9 +444,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return
             seq(oneOrMore(firstOf(digit(),".")), push(match()),
                 oneOrMore(alpha()), push(1, timeUnitize(match())),
-                push(AbstractQuantity.parse(pop() + " " + pop())),
-                    push(new QuantityTerm(((Quantity)pop()).multiply(negate? -1 : +1)))
-                    )
+                push(new QuantityTerm(
+                    AbstractQuantity.parse(
+                        pop() + " " + pop()
+                    ).multiply(negate? -1 : +1))
+                ))
         ;
     }
 
@@ -466,7 +467,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         /*@Deprecated*/ seq(":|:", s(), occurr.set(Tense.Present)),
                         seq("|", s(), occurr.set(Tense.Present)), //shorthand
                         //seq("now", occurr.set(Tense.Present)),
-                        TimeUnit(),
+                        seq(TimeUnit(), occurr.set(pop())),
                         seq("-", oneOrMore(digit()), occurr.set(-Texts.i(match()))),
                         seq("+", oneOrMore(digit()), occurr.set(Texts.i(match()))),
 //                        seq("tomorrow", push("Tomorrow")),

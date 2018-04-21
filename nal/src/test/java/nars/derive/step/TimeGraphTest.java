@@ -77,7 +77,7 @@ public class TimeGraphTest {
 
         assertSolved("(two &&+- three)", A,
 
-                "(two &&+1 three)", "(two &&+1 three)@2", "(two &&+1 three)@20");
+                "(two &&+17 three)@3", "(two &&+1 three)@2", "(two &&+1 three)@2", "(two &&+1 three)@20");
 
     }
 
@@ -115,7 +115,7 @@ public class TimeGraphTest {
         cc1.know($.$("(a &&+5 b)"), 1);
         cc1.print();
         assertSolved("(a &&+- b)", cc1,
-                "(a &&+5 b)", "(a &&+5 b)@1");
+                "(a &&+5 b)@1");
     }
 
     @Test public void testLinkedTemporalConj() throws Narsese.NarseseException {
@@ -125,7 +125,7 @@ public class TimeGraphTest {
         cc1.know($.$("(b &&+5 c)"), 6);
         cc1.print();
         assertSolved("((b &&+5 c) &&+- (a &&+5 b))", cc1,
-                "((a &&+5 b) &&+5 c)", "((a &&+5 b) &&+5 c)@1");
+                "((a &&+5 b) &&+5 c)@1");
     }
 
     @Test
@@ -196,7 +196,7 @@ public class TimeGraphTest {
         C.print();
         System.out.println();
         assertSolved("(--x ==>+- y)", C,
-                "((--,x) ==>+1 y)", "((--,x) ==>+1 y)@1");
+                "((--,x) ==>+1 y)@1");
         C.print();
     }
     @Test

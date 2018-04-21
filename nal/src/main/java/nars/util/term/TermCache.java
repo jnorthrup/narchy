@@ -6,7 +6,7 @@ import nars.term.Term;
 public class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound, Term> {
 
     public TermCache(int capacity, int reprobes, boolean soft) {
-        super(InternedCompound::term, capacity, reprobes, soft);
+        super(InternedCompound::compute, capacity, reprobes, soft);
     }
 
     @Override
@@ -20,13 +20,4 @@ public class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<Int
         xy.priSet(value(xy));
         return xy;
     }
-
-    //        @Override
-//        protected void onIntern(InternedCompound x) {
-//            x.compact(this::getIfPresent);
-//        }
-
-//        @Override
-//        public void onRemove(Computation<InternedCompound, Term> x) {
-//        }
 }

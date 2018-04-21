@@ -22,7 +22,6 @@ import nars.concept.Operator;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.ConceptState;
-import nars.concept.util.DefaultConceptBuilder;
 import nars.control.Activate;
 import nars.control.Cause;
 import nars.control.MetaGoal;
@@ -296,8 +295,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Util.toMap( clazz, "concept class", x::put);
 
-        x.put("term cache (eternal)", Op.cache.summary());
-        x.put("term cache (temporal)", Op.cacheTemporal.summary());
+        x.put("term cache (eternal)", Op.cacheTerms.summary());
+        x.put("term cache (temporal)", Op.cacheTemporalTerms.summary());
 
         return x;
 

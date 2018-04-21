@@ -107,7 +107,7 @@ public class NALTask extends Pri implements Task {
     /**
      * combine cause: should be called in all Task bags and belief tables on merge
      */
-    public NALTask causeMerge(Task incoming) {
+    public Task causeMerge(Task incoming) {
         if (incoming == this) return this;
 
         Param.taskMerge.merge(this, incoming);

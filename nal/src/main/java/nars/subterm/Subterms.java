@@ -18,6 +18,7 @@ import nars.term.var.Variable;
 import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
+import nars.util.term.InternedSubterms;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.set.MutableSet;
@@ -31,7 +32,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static nars.Op.PROD;
 import static nars.Op.internable;
 
 
@@ -68,11 +68,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return subtermsInterned(s.toArray(new Term[s.size()]));
     }
 
-    public static Subterms subtermsInterned(Term... s) {
+    static Subterms subtermsInterned(Term... s) {
         //return The.Subterms.the.apply(s);
         //return compound(PROD, s).subterms();
         if (internable(s))
-            return PROD.the(s).subterms();
+            return Op.subtermsCache.apply(new InternedSubterms(s));
         else
             return subtermsInstance(s);
     }

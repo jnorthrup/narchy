@@ -43,7 +43,7 @@ public class NarseseTimeUnitTest {
         assertEquals(plusHour.start() - n.time(), 60*60*1000, 1000);
 
         Task plusHour2 = n.inputTask("<a --> b>. +1hr");
-        assertEquals(plusHour2, plusHour);
+        assertEquals(plusHour2.toString(), plusHour.toString());
 
         Task minusHour = n.inputTask("<a --> b>. -1h");
         assertEquals(minusHour.start() - n.time(), -60*60*1000, 10000);

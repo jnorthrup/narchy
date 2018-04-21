@@ -13,13 +13,12 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.obj.QuantityTerm;
 import nars.truth.Truth;
 import nars.util.SoftException;
 import nars.util.time.Tense;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.measure.Quantity;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -294,21 +293,18 @@ public class Narsese {
             if (O instanceof Tense) {
                 long o = Tense.getRelativeOccurrence((Tense) O, nar);
                 occ = new long[] { o, o };
-            } else if (O instanceof Quantity) {
-                long qCycles = nar.time.toCycles((Quantity)O);
+            } else if (O instanceof QuantityTerm) {
+                long qCycles = nar.time.toCycles(((QuantityTerm)O).quant);
                 long o = nar.time() + qCycles;
                 occ = new long[] { o, o };
             } else if (O instanceof Integer) {
                 //cycle time, or default time unit
                 long o = (Integer)O;
                 occ = new long[] { o, o };
-            } else if (O instanceof Quantity) { //if (x[4] instanceof long[]) {
-
-                throw new RuntimeException("" + ((Quantity)O).getUnit());
             } else {
                 occ = (long[]) O;
             }
-            NALTask yy = new NALTask(C, punct, tr, nar.time(), occ[0], occ[1], nar.time.nextStampArray());
+            Task yy = new NALTask(C, punct, tr, nar.time(), occ[0], occ[1], nar.time.nextStampArray());
             yy.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
             yy.log(NARSESE_TASK_TAG);
             return yy;

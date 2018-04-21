@@ -27,6 +27,7 @@ import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.InternedCompound;
+import nars.util.term.SubtermsCache;
 import nars.util.term.TermCache;
 import nars.util.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -692,9 +693,11 @@ public enum Op {
     public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
             c -> !c.isAny(relationDelimeterStrong);
 
-    final static TermCache cache = new TermCache(256 * 1024, 4, false);
+    final static TermCache cacheTerms = new TermCache(128 * 1024, 4, false);
 
-    final static TermCache cacheTemporal = new TermCache(192 * 1024, 4, false);
+    final static TermCache cacheTemporalTerms = new TermCache(128 * 1024, 4, false);
+
+    public final static SubtermsCache subtermsCache = new SubtermsCache(64 * 1024, 4, false);
 
     /**
      * specifier for any NAL level
@@ -1494,15 +1497,7 @@ public enum Op {
 
         }
 
-        Subterms ss;
-        if (o != PROD) {
-            //cache.get ?
-            ss = Subterms.subtermsInterned(u);
-        } else {
-            ss = Subterms.subtermsInstance(u);
-        }
-
-        return CachedCompound.the(o, dt, ss);
+        return CachedCompound.the(o, dt, Subterms.subtermsInterned(u));
     }
 
     static boolean in(int needle, int haystack) {
@@ -2326,7 +2321,7 @@ public enum Op {
 
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
-                (dt == DTERNAL ? cache : cacheTemporal).apply(new InternedCompound(this, dt, u)) :
+                (dt == DTERNAL ? cacheTerms : cacheTemporalTerms).apply(new InternedCompound(this, dt, u)) :
                 instance(dt, u);
     }
 

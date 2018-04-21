@@ -5,6 +5,7 @@ import jcog.data.byt.HashCachedBytes;
 import jcog.memoize.HijackMemoize;
 import jcog.pri.AbstractPLink;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 
 import java.util.Arrays;
@@ -124,9 +125,10 @@ public final class InternedCompound extends AbstractPLink<Term> implements Hijac
 //            }
     }
 
-    public Term term() {
+    public Term compute() {
         Term[] rawSubs = this.rawSubs;
         this.rawSubs = null;
         return op.instance(dt, rawSubs);
     }
+
 }
