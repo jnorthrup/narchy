@@ -52,6 +52,7 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -323,10 +324,10 @@ abstract public class NAgentX extends NAgent {
 //        ), 800, 600);
 
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 32);
-        //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 8, 64);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 32);
 
-        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 16);
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
 
         //ArithmeticIntroduction arith = new ArithmeticIntroduction(4, n);
 
