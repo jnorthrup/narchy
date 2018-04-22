@@ -6,7 +6,6 @@ import jcog.list.FasterList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.BlockingQueue;
@@ -126,7 +125,7 @@ public abstract class BusyPool extends AbstractExecutorService {
 
     public abstract static class WorkLoop implements Runnable {
 
-        final ConcurrentQueue q;
+        protected final ConcurrentQueue q;
 //        final Queue localQ = new ArrayDeque();
 
         protected WorkLoop(ConcurrentQueue q) {
@@ -144,10 +143,10 @@ public abstract class BusyPool extends AbstractExecutorService {
 //                logger.error("{} {}", next, t);
 //            }
 //        }
-
-        protected Object pollNext() {
-            return q.poll();
-        }
+//
+//        protected Object pollNext() {
+//            return q.poll();
+//        }
 
 
 
@@ -162,15 +161,15 @@ public abstract class BusyPool extends AbstractExecutorService {
 
     }
 
-
-    public void printInfo() {
-        Iterator<Thread> iterator = workers.iterator();
-        while (iterator.hasNext()) {
-            Thread thread = iterator.next();
-            System.out.println(thread.toString() + thread.getState().name());
-        }
-        System.out.println(q.size());
-    }
+//
+//    public void printInfo() {
+//        Iterator<Thread> iterator = workers.iterator();
+//        while (iterator.hasNext()) {
+//            Thread thread = iterator.next();
+//            System.out.println(thread.toString() + thread.getState().name());
+//        }
+//        System.out.println(q.size());
+//    }
 
 //    private static class ProxyProduce implements InvocationHandler{
 //        private Runnable runnable;

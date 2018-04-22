@@ -90,11 +90,12 @@ public class NarseseBaseTest extends NarseseTest {
     @Test
     public void testPropertyInstance2() throws Narsese.NarseseException {
         taskParses("(a -]- b).");
-        assertEquals("", $.$("(a -]- b)").toString());
+        assertEquals("(a-->[b])", $.$("(a -]- b)").toString());
     }
     @Test
     public void testPropertyInstance3() throws Narsese.NarseseException {
         taskParses("(a {-] b).");
+        assertEquals("({a}-->[b])", $.$("(a {-] b)").toString());
     }
 
     @Test

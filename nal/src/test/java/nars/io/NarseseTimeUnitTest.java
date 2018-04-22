@@ -30,6 +30,7 @@ public class NarseseTimeUnitTest {
         assertEquals(now1.start()+1 , next.start());
         assertEquals(now1.start()-1 , prev.start());
     }
+
     @Test
     public void testRealtimeOccurrence() throws Narsese.NarseseException {
         Task day = n.inputTask("<a --> b>. +1day");
@@ -37,7 +38,6 @@ public class NarseseTimeUnitTest {
 
         Task minusDay = n.inputTask("<a --> b>. -1day");
         assertEquals(minusDay.start() - n.time(), -8.64E7, 10000);
-
 
         Task plusHour = n.inputTask("<a --> b>. +1h");
         assertEquals(plusHour.start() - n.time(), 60*60*1000, 1000);
@@ -52,10 +52,36 @@ public class NarseseTimeUnitTest {
         assertEquals(year.start() - n.time(), 3.15569521E10, 10000);
 
     }
+    @Test
+    public void testRealtimeRelativeOccurrenceRange() throws Narsese.NarseseException {
 
+        {
+            Task x = n.inputTask("<a --> b>. |..+5m");
+            assertEquals(x.start() - n.time(), 0, 1000);
+            assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
+        }
+
+        {
+            Task x = n.inputTask("<a --> b>. -2h..+5m");
+            assertEquals(x.start() - n.time(), 0, 1000);
+            assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
+        }
+        {
+            Task x = n.inputTask("<a --> b>. +2h..+7h");
+            assertEquals(x.start() - n.time(), 0, 1000);
+            assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
+        }
+
+        {
+            Task x = n.inputTask("<a --> b>. -2h..|");
+            assertEquals(x.start() - n.time(), 0, 1000);
+            assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
+        }
+
+    }
 
     @Test
-    public void testTimeDeltaUnits() throws Narsese.NarseseException {
+    public void testTimeDeltaUnits() {
         assertEquals(
             "term(\"&&\",(a,b),(day,1))",
             $$("(a &&+1day b)").toString()

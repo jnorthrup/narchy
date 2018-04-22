@@ -137,6 +137,7 @@ public class WorkerMultiExec extends AbstractExec {
 
             this.pool = new BusyPool(threads.intValue(),
                     new MultithreadConcurrentQueue(qSize) //(disruptor) fastest but unsafe (overflow trainwrecks)
+                    //new MPMCBlockingQueue<>(qSize)
                     //Util.blockingQueue(qSize) //(disruptor) fast, and safe (overflows gracefully, with warning too)
             ) {
                 @Override
@@ -192,8 +193,13 @@ public class WorkerMultiExec extends AbstractExec {
          */
         final Random rng;
 
+        private Object[] qBatch;
+
         public MyWorkLoop(ConcurrentQueue q) {
             super(q);
+
+            //TODO resize this by analyzing the average queue size each cycle, divide by # of workers , divide by a granularity constant
+            qBatch = new Object[64];
 
             rng = //new XoRoShiRo128PlusRandom(System.nanoTime());
                     new SplitMix64Random(System.nanoTime());
@@ -204,11 +210,14 @@ public class WorkerMultiExec extends AbstractExec {
 
             focus.decide(rng, x -> {
 
-                Object next;
-                while ((next = pollNext())!=null) {
-                    executeNow(next);
+                int next = q.remove(qBatch);
+//                if (next > 0)
+//                    System.out.println(next + " " + Arrays.toString(qBatch));
+                for (int i = 0; i < next; i++) {
+                    Object qqq = qBatch[i];
+                    qBatch[i] = null;
+                    executeNow(qqq);
                 }
-
 
                 //TODO throttling
 //            long next = nar.time();

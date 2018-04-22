@@ -295,15 +295,15 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                                                 COMPOUND_TERM_CLOSER, push(EmptyProduct)
                                         ),
 
+                                        CompoundPrefix(),
+
+                                        CompoundInfix(),
+
                                         MultiArgTerm(null, COMPOUND_TERM_CLOSER, true, false),
-                                        Disj(),
 
                                         //default to product if no operator specified in ( )
-                                        MultiArgTerm(null, COMPOUND_TERM_CLOSER, false, false),
+                                        MultiArgTerm(null, COMPOUND_TERM_CLOSER, false, false)
 
-                                        MultiArgTerm(null, COMPOUND_TERM_CLOSER, false, true),
-
-                                        ConjunctionParallel()
 
                                 )
 
@@ -315,6 +315,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         AtomStr(),
 
                         Variable(),
+
                         //negation shorthand
                         seq(NEG.str, Term(), push(($.the(pop())).neg())),
 
@@ -355,25 +356,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
 
-    //TODO not working right
-    public Rule ConjunctionParallel() {
-        return seq(
-
-                "&|", s(), ",", s(),
-
-                Term(),
-                oneOrMore(sequence(
-
-                        sepArgSep(),
-
-                        Term()
-                )),
-                s(),
-                COMPOUND_TERM_CLOSER,
-
-                push(CONJ.the(0, popTerms(null)) /* HACK construct a dt=0 copy */)
-        );
-    }
 
     @Deprecated
     public Rule TemporalRelation() {
@@ -384,10 +366,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 s(),
                 Term(),
                 s(),
-                firstOf(
-                        seq(OpTemporal(), TimeDelta()),
-                        seq(OpTemporalParallel(), push(0) /* dt=0 */)
-                ),
+
+                seq(OpTemporal(), TimeDelta()),
+
+
                 s(),
                 Term(),
                 s(),
@@ -657,11 +639,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         IMPL.str,
 
                         CONJ.str
-
-
                 ),
 
-                push(Op.the(match()))
+                push(Op.theIfPresent(match()))
         );
     }
 
@@ -675,13 +655,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         );
     }
 
-    Rule OpTemporalParallel() {
-        return firstOf(
-                //                seq("<|>", push(EQUI)),
-                seq("=|>", push(IMPL)),
-                seq("&|", push(CONJ))
-        );
-    }
 
     Rule sepArgSep() {
         return firstOf(
@@ -696,7 +669,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     /**
      * list of terms prefixed by a particular compound term operate
      */
-    Rule MultiArgTerm(@Nullable Op defaultOp, char close, boolean initialOp, boolean allowInternalOp) {
+    @Deprecated Rule MultiArgTerm(@Nullable Op defaultOp, char close, boolean initialOp, boolean allowInternalOp) {
 
         return sequence(
 
@@ -731,13 +704,18 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     /**
      * HACK
      */
-    Rule Disj() {
+    @Cached Rule CompoundPrefix() {
 
         return sequence(
 
-                push(Compound.class),
+                firstOf(
+                    Op.DISJstr,
+                        "&|",
+                        Op.SECTe.str
+                ), push(match()),
 
-                "||", s(),push(Op.PROD),
+                push(Compound.class),
+                push(Op.PROD),
 
                 oneOrMore(sequence(
                         sepArgSep(),
@@ -746,16 +724,71 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 s(),
 
-                ')',
+                COMPOUND_TERM_CLOSER,
 
-                push(conj2disj(popTerms(new Op[] { PROD } /* HACK */)))
+                push(buildCompound(popTerms(new Op[] { PROD } /* HACK */), (String)pop()))
         );
     }
 
-    static Term conj2disj(List<Term> subterms) {
-        subterms.replaceAll(Term::neg);
-        return CONJ.the(DTERNAL, subterms).neg();
+    static Term buildCompound(List<Term> subs, String op) {
+        switch (op) {
+            case DISJstr:
+                subs.replaceAll(Term::neg);
+                return CONJ.the(DTERNAL, subs).neg();
+            case "&|":
+                return CONJ.the(0, subs);
+            case "=|>":
+                return IMPL.the(0, subs);
+            case "-{-":
+                return subs.size() != 2 ? Null : $.inst(subs.get(0), subs.get(1));
+            case "-]-":
+                return subs.size() != 2 ? Null : $.prop(subs.get(0), subs.get(1));
+            case "{-]":
+                return subs.size() != 2 ? Null : $.instprop(subs.get(0), subs.get(1));
+            default: {
+                Op o = Op.stringToOperator.get(op);
+                if (o == null)
+                    throw new UnsupportedOperationException();
+                return o.the(subs);
+            }
+        }
     }
+
+    @Cached Rule CompoundInfix() {
+
+        return sequence(
+
+
+                push(Compound.class),
+
+                Term(),
+                s(),
+                firstOf(
+                        Op.DISJstr,
+                        Op.SECTi.str,
+                        Op.SECTe.str,
+                        Op.INH.str,
+                        Op.SIM.str,
+                        Op.IMPL.str,
+                        Op.DIFFi.str,
+                        Op.DIFFe.str,
+                        Op.PROD.str,
+                        Op.CONJ.str,
+                        "&|",
+                        "=|>",
+                        "-{-",
+                        "-]-",
+                        "{-]"
+                    ), push(2, match()),
+                s(),
+                Term(),
+                s(),
+                COMPOUND_TERM_CLOSER,
+
+                push(buildCompound(popTerms(new Op[] { PROD } /* HACK */), (String)pop()))
+        );
+    }
+
     //    /**
     //     * operation()
     //     */
@@ -828,12 +861,14 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     FasterList<Term> popTerms(Op[] op /* hint */) {
 
-        FasterList tt = new FasterList(8);
+        FasterList<Term> tt = new FasterList(8);
 
         ArrayValueStack<Object> stack = (ArrayValueStack) getContext().getValueStack();
 
+
         //        if (stack.isEmpty())
         //            return null;
+
 
 
         while (!stack.isEmpty()) {
@@ -869,7 +904,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                     stack.clear();
                     return new FasterList(1).addingAll(Null);
                 }
-                tt.add(p);
+                tt.add((Term)p);
             } else if (p instanceof Op) {
 
                 //                if (op != null) {
@@ -885,6 +920,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         }
 
         tt.reverse();
+
 
         return tt;
     }

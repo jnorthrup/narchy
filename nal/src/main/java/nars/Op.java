@@ -568,7 +568,6 @@ public enum Op {
             return this;
         }
     };
-
     /**
      * tautological absolute false
      */
@@ -596,8 +595,6 @@ public enum Op {
             return True;
         }
     };
-
-
     /**
      * tautological absolute true
      */
@@ -625,56 +622,8 @@ public enum Op {
             return True; //doesnt change
         }
     };
-
-
-    public final Atom strAtom;
-
-    final static class ImDep extends VarDep {
-
-        private final String str;
-        private final char symChar;
-        private final int rank;
-
-        public ImDep(byte id, byte sym) {
-            super(id);
-            this.str = String.valueOf((char)sym);
-            this.symChar = (char)sym;
-            this.rank = Term.opX(VAR_DEP, (short)id);
-        }
-
-        @Override
-        public Term concept() {
-            return Null;
-        }
-
-        @Override public int opX() { return rank;    }
-
-        @Override
-        public @Nullable NormalizedVariable normalize(byte vid) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean unify(Term y, Unify u) {
-            return y == this;
-        }
-
-        @Override
-        public final void append(Appendable w) throws IOException {
-            w.append(symChar);
-        }
-
-        @Override
-        public final String toString() {
-            return str;
-        }
-
-    }
-
-    public static final VarDep imInt = new ImDep((byte)126, (byte)'\\');
-    public static final VarDep imExt = new ImDep((byte)127, (byte)'/');
-
-
+    public static final VarDep imInt = new ImDep((byte) 126, (byte) '\\');
+    public static final VarDep imExt = new ImDep((byte) 127, (byte) '/');
     public static final int DiffBits = Op.DIFFe.bit | Op.DIFFi.bit;
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
@@ -682,6 +631,7 @@ public enum Op {
     public static final Compound EmptyProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
+    public final static SubtermsCache subtermsCache = new SubtermsCache(64 * 1024, 4, false);
     static final ImmutableMap<String, Op> stringToOperator;
     /**
      * ops across which reflexivity of terms is allowed
@@ -692,19 +642,12 @@ public enum Op {
     final static int relationDelimeterStrong = Op.or(Op.PROD, Op.SETe, Op.NEG);
     public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
             c -> !c.isAny(relationDelimeterStrong);
-
     final static TermCache cacheTerms = new TermCache(128 * 1024, 4, false);
-
     final static TermCache cacheTemporalTerms = new TermCache(128 * 1024, 4, false);
-
-    public final static SubtermsCache subtermsCache = new SubtermsCache(64 * 1024, 4, false);
-
     /**
      * specifier for any NAL level
      */
     private static final int ANY_LEVEL = 0;
-
-
     //    public interface TermInstancer {
 //
 //
@@ -822,6 +765,7 @@ public enum Op {
 //        }
     }
 
+    public final Atom strAtom;
     public final boolean indepVarParent;
     public final boolean depVarParent;
     /**
@@ -858,16 +802,16 @@ public enum Op {
     public final boolean var;
     public final boolean atomic;
     public final boolean statement;
+    /**
+     * whether this involves an additional numeric component: 'dt' (for temporals) or 'relation' (for images)
+     */
+    public final boolean hasNumeric;
 
     /*
     used only by Termlike.hasAny
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }*/
-    /**
-     * whether this involves an additional numeric component: 'dt' (for temporals) or 'relation' (for images)
-     */
-    public final boolean hasNumeric;
     public final byte id;
 
     Op(char c, int minLevel, OpType type) {
@@ -878,7 +822,6 @@ public enum Op {
         this(s, commutative, minLevel, OpType.Other, size);
     }
 
-
     Op(char c, int minLevel, OpType type, @NotNull IntIntPair size) {
         this(Character.toString(c), minLevel, type, size);
     }
@@ -887,6 +830,7 @@ public enum Op {
     Op(@NotNull String string, int minLevel, @NotNull IntIntPair size) {
         this(string, minLevel, OpType.Other, size);
     }
+
 
     Op(@NotNull String string, int minLevel, OpType type) {
         this(string, false /* non-commutive */, minLevel, type, Args.None);
@@ -901,7 +845,7 @@ public enum Op {
         this.id = (byte) (ordinal());
         this.str = string;
         this.ch = string.length() == 1 ? string.charAt(0) : 0;
-        this.strAtom = ch!='.' ? (Atom) Atomic.the("\"" + str + "\"") : null /* dont compute for ATOM, infinite loops */;
+        this.strAtom = ch != '.' ? (Atom) Atomic.the("\"" + str + "\"") : null /* dont compute for ATOM, infinite loops */;
 
         this.commutative = commutative;
         this.minLevel = minLevel;
@@ -931,7 +875,7 @@ public enum Op {
         conceptualizable = !var &&
                 !str.equals("B") /* Bool */
 
-                //str.equals("+") /* INT */ ||
+        //str.equals("+") /* INT */ ||
         ;
 
         goalable = conceptualizable && !isImpl;
@@ -942,9 +886,6 @@ public enum Op {
         depVarParent = isConj;
 
     }
-
-    //CaffeineMemoize.builder(buildTerm, -1 /* softref */, true /* Param.DEBUG*/);
-    //new NullMemoize<>(buildTerm);
 
     /**
      * TODO option for instantiating CompoundLight base's in the bottom part of this
@@ -986,12 +927,19 @@ public enum Op {
 //        }
     }
 
+    //CaffeineMemoize.builder(buildTerm, -1 /* softref */, true /* Param.DEBUG*/);
+    //new NullMemoize<>(buildTerm);
+
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }
 
     public static boolean hasAll(int existing, int possiblyIncluded) {
         return ((existing | possiblyIncluded) == existing);
+    }
+
+    public static boolean isTrueOrFalse(Term x) {
+        return x == True || x == False;
     }
 
 //    /*@NotNull*/
@@ -1098,10 +1046,6 @@ public enum Op {
 ////        }
 //
 //    }
-
-    public static boolean isTrueOrFalse(Term x) {
-        return x == True || x == False;
-    }
 
     public static boolean concurrent(int dt) {
         return (dt == DTERNAL) || (dt == 0);
@@ -1254,7 +1198,6 @@ public enum Op {
         }
     }
 
-
     static boolean hasNull(Term[] t) {
         for (Term x : t)
             if (x == Null)
@@ -1272,7 +1215,6 @@ public enum Op {
         //if (t.length >= 2 && Util.and((Term tt) -> tt.op() == PROD && tt.subs()==1, t)) {
         //return $.p(differ())
         //}
-
 
 
         switch (t.length) {
@@ -1296,7 +1238,7 @@ public enum Op {
 
                 //the difference of something with its negation; depends if the first argument is positive or not
                 if (et1.neg().equals(et0)) {
-                    if (et0.op()==NEG || et0 == False)
+                    if (et0.op() == NEG || et0 == False)
                         return False;
                     else
                         return True;
@@ -1340,13 +1282,13 @@ public enum Op {
         // (c --> ((a & x)-(b & x)))  ===>  (c --> ((a-b)&x))
         // (((a | x)~(b | x)) --> c)  ===>  (((a~b)|x) --> c)
         Op ao = a.op();
-        if (((diffOp == DIFFi && ao == SECTe) || (diffOp==DIFFe && ao==SECTi)) && (b.op()==ao)) {
+        if (((diffOp == DIFFi && ao == SECTe) || (diffOp == DIFFe && ao == SECTi)) && (b.op() == ao)) {
             Subterms aa = a.subterms();
             Subterms bb = b.subterms();
             MutableSet<Term> common = Subterms.intersect(aa, bb);
-            if (common!=null) {
+            if (common != null) {
                 int cs = common.size();
-                if (aa.subs()==cs || bb.subs()==cs)
+                if (aa.subs() == cs || bb.subs() == cs)
                     return Null; //completely contained by the other
                 return ao.the(common.with(
                         diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
@@ -1358,13 +1300,13 @@ public enum Op {
         // (c --> ((a | x)-(b | x)))  ===>  (c --> ((a-b)|(--,x)))
         // (((a & x)~(b & x)) --> c)  ===>  (((a~b)&(--,x)) --> c)
         // TODO
-        if (((diffOp == DIFFi && ao == SECTi) || (diffOp==DIFFe && ao==SECTe)) && (b.op()==ao)) {
+        if (((diffOp == DIFFi && ao == SECTi) || (diffOp == DIFFe && ao == SECTe)) && (b.op() == ao)) {
             Subterms aa = a.subterms();
             Subterms bb = b.subterms();
             MutableSet<Term> common = Subterms.intersect(aa, bb);
-            if (common!=null) {
+            if (common != null) {
                 int cs = common.size();
-                if (aa.subs()==cs || bb.subs()==cs)
+                if (aa.subs() == cs || bb.subs() == cs)
                     return Null; //completely contained by the other
                 return ao.the(common.collect(Term::neg).with(
                         diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
@@ -1374,12 +1316,6 @@ public enum Op {
 
         return Op.instance(diffOp, a, b);
     }
-
-
-//        else
-//            return compound(new NewCompound(op, subterms), dt);
-
-
 
     /*@NotNull*/
     public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
@@ -1426,6 +1362,10 @@ public enum Op {
         }
 
     }
+
+
+//        else
+//            return compound(new NewCompound(op, subterms), dt);
 
     /**
      * decode a term which may be a functor, return null if it isnt
@@ -1504,16 +1444,16 @@ public enum Op {
         return (needle & haystack) == needle;
     }
 
-//    public static final Predicate<Term> onlyTemporal =
-//            c -> concurrent(c.dt());
-    //c.op()!=CONJ || concurrent(c.dt()); //!c.op().temporal || concurrent(c.dt());
-
     public static int or(/*@NotNull*/ Op... o) {
         int bits = 0;
         for (Op n : o)
             bits |= n.bit;
         return bits;
     }
+
+//    public static final Predicate<Term> onlyTemporal =
+//            c -> concurrent(c.dt());
+    //c.op()!=CONJ || concurrent(c.dt()); //!c.op().temporal || concurrent(c.dt());
 
     /*@NotNull*/
     static Term statement(/*@NotNull*/ Op op, int dt, final Term subject, final Term predicate) {
@@ -1896,6 +1836,17 @@ public enum Op {
         return instance(op, dt, subject, predicate);
     }
 
+    public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
+        int xv = x.volume();
+        int yv = y.volume();
+        if (xv == yv)
+            return x.containsRecursively(y, true, delim) || y.containsRecursively(x, true, delim);
+        else if (xv > yv)
+            return x.containsRecursively(y, true, delim);
+        else
+            return y.containsRecursively(x, true, delim);
+    }
+
 //    private static Term conjDrop(Term conj, int i) {
 //        TermContainer cs = conj.subterms();
 //        if (cs.subs() == 2) {
@@ -1920,22 +1871,18 @@ public enum Op {
 //        return containEachOther(x, y, recursiveCommonalityDelimeterStrong);
 //    }
 
-    public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
-        int xv = x.volume();
-        int yv = y.volume();
-        if (xv == yv)
-            return x.containsRecursively(y, true, delim) || y.containsRecursively(x, true, delim);
-        else if (xv > yv)
-            return x.containsRecursively(y, true, delim);
-        else
-            return y.containsRecursively(x, true, delim);
-    }
-
     @Nullable
     public static Op the(String s) {
         return stringToOperator.get(s);
     }
 
+    public static Object theIfPresent(String s) {
+        Op x = stringToOperator.get(s);
+        if (x != null)
+            return x;
+        else
+            return s;
+    }
 
     private static Term intersect(Term[] t, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
 
@@ -2328,8 +2275,8 @@ public enum Op {
     /**
      * entry point into the term construction process.
      * this call tree eventually ends by either:
-     *      - instance(..)
-     *      - reduction to another term or True/False/Null
+     * - instance(..)
+     * - reduction to another term or True/False/Null
      */
     public Term instance(int dt, Term[] u) {
 
@@ -2381,14 +2328,56 @@ public enum Op {
 
     }
 
+    final static class ImDep extends VarDep {
+
+        private final String str;
+        private final char symChar;
+        private final int rank;
+
+        public ImDep(byte id, byte sym) {
+            super(id);
+            this.str = String.valueOf((char) sym);
+            this.symChar = (char) sym;
+            this.rank = Term.opX(VAR_DEP, (short) id);
+        }
+
+        @Override
+        public Term concept() {
+            return Null;
+        }
+
+        @Override
+        public int opX() {
+            return rank;
+        }
+
+        @Override
+        public @Nullable NormalizedVariable normalize(byte vid) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean unify(Term y, Unify u) {
+            return y == this;
+        }
+
+        @Override
+        public final void append(Appendable w) throws IOException {
+            w.append(symChar);
+        }
+
+        @Override
+        public final String toString() {
+            return str;
+        }
+
+    }
+
     public static class InvalidPunctuationException extends RuntimeException {
         public InvalidPunctuationException(byte c) {
             super("Invalid punctuation: " + c);
         }
     }
-
-
-
 
 
 //        /**
