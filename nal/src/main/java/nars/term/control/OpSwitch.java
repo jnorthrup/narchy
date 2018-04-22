@@ -1,6 +1,5 @@
 package nars.term.control;
 
-import jdk.internal.vm.annotation.Stable;
 import nars.$;
 import nars.Op;
 import nars.derive.premise.PreDerivation;

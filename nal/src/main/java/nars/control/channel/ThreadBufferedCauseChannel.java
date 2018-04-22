@@ -29,9 +29,7 @@ public class ThreadBufferedCauseChannel<X extends Priority> extends ThreadLocal<
     public void input(X x) {
         get().input(x);
     }
-    public void input(X... x) {
-        get().input(x);
-    }
+    public void input(X... x) { get().input((Object[])x);    }
     public void input(Iterable<? extends X> x) {
         get().input(x);
     }

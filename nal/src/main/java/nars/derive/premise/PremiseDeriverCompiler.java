@@ -10,7 +10,6 @@ import nars.derive.Derivation;
 import nars.derive.control.ValueFork;
 import nars.derive.step.Branchify;
 import nars.derive.step.Taskify;
-import nars.derive.step.Truthify;
 import nars.term.Term;
 import nars.term.control.AndCondition;
 import nars.term.control.Fork;

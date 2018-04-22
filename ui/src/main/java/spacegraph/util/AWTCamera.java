@@ -1,12 +1,19 @@
 package spacegraph.util;
 
 
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /*
  *  Convenience class to create and optionally save to a file a
@@ -48,6 +55,8 @@ public class AWTCamera {
         return get(component, image, null);
     }
 
+    final static Map<Component,Pair<AtomicBoolean,Graphics2D>> graphicsDrawers = new WeakHashMap<>();
+
     /*
      *  Create a BufferedImage for Swing components.
      *  The entire component will be captured to an image.
@@ -56,57 +65,70 @@ public class AWTCamera {
      *  @return	image the image for the given region
      */
     public static BufferedImage get(Component component, @Nullable BufferedImage image, @Nullable Rectangle region) {
-        Dimension d = component.getSize();
+        Pair<AtomicBoolean, Graphics2D> pair = graphicsDrawers.get(component);
+        if (!((pair == null || pair.getOne().compareAndSet(false, true))))
+            return image; //busy
+        try {
+            Dimension d = component.getSize();
 
-        if (d.width == 0 || d.height == 0) {
-            d = component.getPreferredSize();
-            component.setSize(d);
-        }
-
-        if ((region == null) || (region.width != d.width) || (region.height != d.height))
-            region = new Rectangle(0, 0, d.width, d.height);
-
-        //  Make sure the component has a size and has been layed out.
-        //  (necessary check for components not added to a realized frame)
-
-        if (!component.isDisplayable()) {
-            Dimension d1 = component.getSize();
-
-            if (d1.width == 0 || d1.height == 0) {
-                d1 = component.getPreferredSize();
-                component.setSize(d1);
+            if (d.width == 0 || d.height == 0) {
+                d = component.getPreferredSize();
+                component.setSize(d);
             }
 
-            layoutComponent(component);
-        }
+            if ((region == null) || (region.width != d.width) || (region.height != d.height))
+                region = new Rectangle(0, 0, d.width, d.height);
 
-        if ((region.width <= 0 || region.height <= 0))
-            return null;
+            //  Make sure the component has a size and has been layed out.
+            //  (necessary check for components not added to a realized frame)
 
-        if (image == null || image.getWidth() != region.width || image.getHeight() != region.height) {
-            GraphicsConfiguration gc = component.getGraphicsConfiguration();
-            if (gc != null) {
-                image = gc.createCompatibleImage(region.width, region.height);
-            } else {
-                image = new BufferedImage(region.width, region.height, BufferedImage.TYPE_INT_ARGB);
+            if (!component.isDisplayable()) {
+                Dimension d1 = component.getSize();
+
+                if (d1.width == 0 || d1.height == 0) {
+                    d1 = component.getPreferredSize();
+                    component.setSize(d1);
+                }
+
+                layoutComponent(component);
             }
+
+            if ((region.width <= 0 || region.height <= 0))
+                return null;
+
+
+            Graphics2D g2d = pair != null ? pair.getTwo() : null;
+            if (g2d == null || image == null || image.getWidth() != region.width || image.getHeight() != region.height) {
+                if (g2d != null)
+                    g2d.dispose();
+                GraphicsConfiguration gc = component.getGraphicsConfiguration();
+                if (gc != null) {
+                    image = gc.createCompatibleImage(region.width, region.height);
+                } else {
+                    image = new BufferedImage(region.width, region.height, BufferedImage.TYPE_INT_ARGB);
+                }
+                g2d = (Graphics2D) image.getGraphics();
+                graphicsDrawers.put(component, pair = pair(new AtomicBoolean(), g2d));
+            }
+
+            //Graphics2D g2d = image.createGraphics();
+
+
+            //  Paint a background for non-opaque components,
+            //  otherwise the background will be black
+
+            if (!component.isOpaque()) {
+                g2d.setColor(component.getBackground());
+                g2d.fillRect(region.x, region.y, region.width, region.height);
+            }
+            g2d.setTransform(AffineTransform.getTranslateInstance(0, 0));
+            g2d.translate(-region.x, -region.y);
+            component.paint(g2d);
+
+            return image;
+        } finally {
+            pair.getOne().set(false);
         }
-
-        //Graphics2D g2d = image.createGraphics();
-        Graphics2D g2d = (Graphics2D) image.getGraphics();
-
-        //  Paint a background for non-opaque components,
-        //  otherwise the background will be black
-
-        if (!component.isOpaque()) {
-            g2d.setColor(component.getBackground());
-            g2d.fillRect(region.x, region.y, region.width, region.height);
-        }
-
-        g2d.translate(-region.x, -region.y);
-        component.paint(g2d);
-        g2d.dispose();
-        return image;
     }
 
     /**

@@ -2,6 +2,7 @@ package nars;
 
 import com.google.common.collect.Iterables;
 import jcog.TODO;
+import jcog.Util;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.*;
@@ -388,7 +389,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         happy.update(last, now, dur, nar);
 
-        FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
+        FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
         sensors.forEach((key, value) -> value.input(key.update(last, now, truther, dur, nar)));
 
         always( motivation.floatValue() );

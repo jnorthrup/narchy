@@ -46,7 +46,7 @@ public class WorkerMultiExec extends AbstractExec {
 
 
     public WorkerMultiExec(Revaluator revaluator, int conceptCapacity, int qSize) {
-        this(revaluator, Util.defaultConcurrency(), conceptCapacity, qSize);
+        this(revaluator, Util.concurrencyDefault(), conceptCapacity, qSize);
     }
 
     public WorkerMultiExec(Revaluator r, int threads, int conceptCapacity, int qSize) {

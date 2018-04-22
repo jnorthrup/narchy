@@ -19,7 +19,7 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(30);
+        n.termVolumeMax.set(17);
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.01f);
         n.time.dur(1);

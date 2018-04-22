@@ -1,12 +1,11 @@
 package nars.exe;
 
+import jcog.Util;
 import nars.NAR;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RunnableFuture;
-
-import static jcog.Util.defaultConcurrency;
 
 /**
  * uses global ForkJoinPool for scheduling execution
@@ -18,7 +17,7 @@ public class PoolMultiExec extends AbstractExec {
     private Focus focus;
 
     public PoolMultiExec(Revaluator revaluator, int capacity) {
-        this(defaultConcurrency(), capacity, revaluator);
+        this(Util.concurrencyDefault(), capacity, revaluator);
     }
 
     public PoolMultiExec(int parallelization, int capacity, Revaluator revaluator) {

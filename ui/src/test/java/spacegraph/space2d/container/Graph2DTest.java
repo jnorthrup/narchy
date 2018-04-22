@@ -32,8 +32,9 @@ public class Graph2DTest {
 
             Graph2D<Object> sg = new Graph2D<>();
             sg.layout(new ForceDirected2D());
+            //sg.update(g.nodes(), g::incidentEdges)
             //sg.commit(g);
-            sg.commit(h);
+//            sg.commit(h);
 
 
             SpaceGraph.window(sg, 800, 800);

@@ -21,7 +21,6 @@
 package nars.term.var;
 
 
-import jdk.internal.vm.annotation.Stable;
 import nars.$;
 import nars.Op;
 import nars.Param;

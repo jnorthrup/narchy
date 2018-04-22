@@ -121,7 +121,6 @@ public class TestNAR {
 //        return this;
 //    }
 
-    @NotNull
     public TestNAR run(long finalCycle, boolean testAndPrintReport /* for use with JUnit */) {
 
 
@@ -637,7 +636,6 @@ public class TestNAR {
     }
 
 
-    @NotNull
     public TestNAR test() {
         return test(trace);
     }
@@ -680,7 +678,6 @@ public class TestNAR {
 //    }
 
 
-    @NotNull
     public TestNAR test(boolean testAndPrintReport /* for use with JUnit */) {
         return run(0, testAndPrintReport);
     }

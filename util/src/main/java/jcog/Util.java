@@ -2376,11 +2376,11 @@ public enum Util {
         };
     }
 
-    public static int defaultConcurrency() {
-        return defaultConcurrency(1);
+    public static int concurrencyDefault() {
+        return concurrencyDefault(1);
     }
 
-    public static int defaultConcurrency(int reserveForOtherThreads) {
+    public static int concurrencyDefault(int reserveForOtherThreads) {
         return Math.max(1, Runtime.getRuntime().availableProcessors() - reserveForOtherThreads);
     }
 

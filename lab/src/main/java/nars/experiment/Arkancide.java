@@ -7,7 +7,6 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.util.signal.Bitmap2DConcepts;
-import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
 
@@ -24,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Arkancide extends NAgentX {
 
     static boolean numeric = true;
-    static boolean cam = false;
+    static boolean cam = true;
 
     public final FloatRange ballSpeed = new FloatRange(0.75f, 0.04f, 6f);
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
@@ -66,7 +65,7 @@ public class Arkancide extends NAgentX {
 
             return a;
 
-        }, 30);
+        }, 30, 30);
 
 
 //        nar.forEachActiveConcept(c -> {
@@ -108,18 +107,25 @@ public class Arkancide extends NAgentX {
         paddleSpeed = 50 * noid.BALL_VELOCITY;
 
         //initBipolarDirect();
-        initBipolarRelative();
+        //initBipolarRelative();
         //initUnipolar();
-        //initToggle();
+        initToggle();
 
         float resX = 0.01f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
         float resY = 0.01f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
 
         if (cam) {
 
-            BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH).blur();
-            Bitmap2DConcepts cc = senseCamera(id.toString(), sw, visW, visH)
-                    .resolution(0.1f);
+            Bitmap2DConcepts<Scale> cc = senseCamera(id /*$.the("cam")*/, new Scale(
+                    new SwingBitmap2D(noid)
+                    //32, 24
+                    , visW, visH
+                    //10,4
+                    //16,8
+            )/*.blur()*/).resolution(0.02f);
+//            BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid.canvas), visW, visH).blur();
+//            Bitmap2DConcepts cc = senseCamera(id.toString(), sw, visW, visH)
+//                    .resolution(0.1f);
 //            CameraSensor ccAe = senseCameraReduced($.the("noidAE"), sw, 16)
 //                    .resolution(0.25f);
 
@@ -279,11 +285,11 @@ public class Arkancide extends NAgentX {
     /**
      * https://gist.github.com/Miretz/f10b18df01f9f9ebfad5
      */
-    public static class Arkanoid extends JFrame implements KeyListener {
-
-        private final Canvas canvas;
+    public static class Arkanoid extends Frame implements KeyListener {
 
         int score;
+
+        final static int FPS = 50;
 
         public static final int SCREEN_WIDTH = 360;
         public static final int SCREEN_HEIGHT = 250;
@@ -308,7 +314,43 @@ public class Arkancide extends NAgentX {
 
         /* GAME VARIABLES */
 
+        public Arkanoid(boolean visible) {
 
+//            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            this.setUndecorated(false);
+            this.setResizable(false);
+
+
+//            this.setLocationRelativeTo(null);
+            //setIgnoreRepaint(true);
+//            addKeyListener(this);
+            if (visible)
+                this.setVisible(true);
+
+            paddle.x = SCREEN_WIDTH / 2;
+
+
+            setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+            new Timer(1000/FPS, (e)->{
+               repaint();
+            }).start();
+
+            reset();
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            g.setColor(Color.black);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
+            ball.draw(g);
+            paddle.draw(g);
+            for (Brick brick : bricks) {
+                brick.draw(g);
+            }
+        }
 
         public final Paddle paddle = new Paddle(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PADDLE_HEIGHT);
         public final Ball ball = new Ball(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
@@ -596,34 +638,6 @@ public class Arkancide extends NAgentX {
             //}
         }
 
-        public Arkanoid(boolean visible) {
-
-            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            this.setUndecorated(false);
-            this.setResizable(false);
-
-//            this.setLocationRelativeTo(null);
-            //setIgnoreRepaint(true);
-
-            canvas = new Canvas();
-            canvas.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-            JPanel jc = new JPanel(new BorderLayout());
-            jc.add(canvas);
-            setContentPane(jc);
-            pack();
-
-            canvas.addKeyListener(this);
-
-            if (visible)
-                this.setVisible(true);
-
-            //this.createBufferStrategy(2);
-
-            paddle.x = SCREEN_WIDTH / 2;
-
-            reset();
-
-        }
 
         public void reset() {
             initializeBricks(bricks);
@@ -671,21 +685,9 @@ public class Arkancide extends NAgentX {
 
             //}
 
-            SwingUtilities.invokeLater(()->{
-                Graphics g = canvas.getGraphics();
-                g.setColor(Color.black);
-                g.fillRect(0, 0, getWidth(), getHeight());
-
-                ball.draw(g);
-                paddle.draw(g);
-                for (Brick brick : bricks) {
-                    brick.draw(g);
-                }
-            });
-
-
             return score;
         }
+
 
 
         @Override

@@ -4,6 +4,7 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
 import com.jogamp.newt.event.WindowUpdateEvent;
 import com.jogamp.newt.opengl.GLWindow;
+import jcog.exe.Loop;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -39,30 +40,41 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
     }
 
 
+    volatile boolean busy = false;
+
     @Override
-    public void toggle() {
+    protected void onClick() {
         synchronized (this) {
 
-            if (this.space == null) {
+            if (!busy && this.space == null) {
+
+                busy = true;
+
+                set(true);
 
                 this.space = SpaceGraph.window(spacer.get(), width, height);
 
                 space.pre(s -> {
                     GLWindow w = s.window;
                     //if (w != null) {
-                        space.addWindowListener(this);
+                        w.addWindowListener(this);
                         int sx = Finger.pointer.getX();
                         int sy = Finger.pointer.getY();
                         int nx = sx - width / 2;
                         int ny = sy - height / 2;
                         s.setPosition(nx, ny);
                     //}
+                    Loop.invokeLater(()-> {
+                        busy = false; //allow window to be destroyed by clicking again
+                    });
                 });
 
                 //space.show(this.toString(), width,height, nx, ny);
                 //space.window.setTitle(label.value());
 
-            } else if (space != null) {
+            } else if (!busy && space != null) {
+
+                set(false);
 
                 this.space.off();
                 this.space = null;

@@ -6,8 +6,6 @@ import nars.control.MetaGoal;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.TestReporter;
 import org.slf4j.LoggerFactory;
 
 import java.util.function.Supplier;
@@ -22,25 +20,13 @@ public abstract class NALTest {
     public final TestNAR test;
     public final MetaGoal.Report metagoals = new MetaGoal.Report();
 
-    private TestInfo testInfo;
+    //private TestInfo testInfo;
 
     protected NALTest() {
-        test = new TestNAR(nar()) {
-            @Override
-            protected void assertSuccess(boolean success) {
-                afterTest(testInfo);
-                super.assertSuccess(success);
-            }
-        };
+        test = new TestNAR(nar());
     }
     protected NALTest(Supplier<NAR> s) {
-        test = new TestNAR(s.get()) {
-            @Override
-            protected void assertSuccess(boolean success) {
-                afterTest(testInfo);
-                super.assertSuccess(success);
-            }
-        };
+        test = new TestNAR(s.get());
     }
 
     @BeforeEach
@@ -55,9 +41,7 @@ public abstract class NALTest {
 
 
     @AfterEach
-    public void end(TestInfo i, TestReporter c) {
-
-        this.testInfo = i;
+    public void end() {
 
         test.nar.synch();
 
@@ -75,8 +59,6 @@ public abstract class NALTest {
 //            metagoals.add(n.metagoals);
     }
 
-    protected void afterTest(TestInfo testInfo) {
 
-    }
 
 }

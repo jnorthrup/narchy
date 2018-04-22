@@ -2,7 +2,6 @@ package nars.subterm;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.util.ArrayIterator;
-import jdk.internal.vm.annotation.Stable;
 import nars.Param;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;

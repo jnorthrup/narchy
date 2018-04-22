@@ -3,7 +3,6 @@ package nars.derive.premise;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
-import jdk.internal.vm.annotation.Stable;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.term.control.PrediTerm;

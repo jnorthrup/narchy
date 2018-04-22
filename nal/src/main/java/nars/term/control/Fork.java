@@ -1,6 +1,5 @@
 package nars.term.control;
 
-import jdk.internal.vm.annotation.Stable;
 import nars.$;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;

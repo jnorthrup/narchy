@@ -1,7 +1,6 @@
 package nars.term.anon;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jdk.internal.vm.annotation.Stable;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
