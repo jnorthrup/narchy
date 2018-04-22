@@ -17,8 +17,8 @@ abstract class TemporalStabilityTest {
 
 
         n.termVolumeMax.set(20);
-        n.freqResolution.set(0.25f);
-        n.confResolution.set(0.05f);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.02f);
 
         //n.log();
         n.onTask(this::validate);

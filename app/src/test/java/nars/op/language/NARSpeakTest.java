@@ -39,7 +39,7 @@ public class NARSpeakTest {
         n.freqResolution.set(0.1f);
         n.confMin.set(0.1f);
 
-        Param.DEBUG = true;
+
 
         n.startFPS(40f);
 

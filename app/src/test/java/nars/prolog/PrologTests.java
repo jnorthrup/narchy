@@ -145,7 +145,7 @@
 //
 //
 //
-//        Param.DEBUG = true;
+//
 //
 //        NAR n = new Default();
 //        n.DEFAULT_BELIEF_PRIORITY = 0.1f;

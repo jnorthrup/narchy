@@ -32,8 +32,11 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
     @Nullable
     public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, NAR n) {
 
-        assert(superterm.dt()!=XTERNAL);
         assert(superterm.op()!=NEG);
+
+        int superDT = superterm.dt();
+
+        boolean flexible = (superDT ==XTERNAL || superDT == DTERNAL);
 
         DynTruth d = new DynTruth(4);
 
@@ -61,7 +64,13 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                     x.intersects(subStart, subEnd) && d.doesntOverlap(x), n
                 );
                 if (bt != null) {
-                    bt = Task.project(bt, subStart, subEnd, n, negated);
+                    if (!flexible) {
+                        /** project to a specific time, and apply negation if necessary */
+                        bt = Task.project(bt, subStart, subEnd, n, negated);
+                    } else  {
+                        if (negated)
+                            bt = Task.negated(bt);
+                    }
                 } else {
                     bt = null; //missing truth, but yet still may be able to conclude a result
                 }
@@ -152,18 +161,18 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 float fx = tt.freq();
                 f *= f(fx);
                 considered++;
-                if (f < freqRes) {
-                    f = 0;
-                    //short-circuit
-                    if (i < n - 1) {
-                        //delete the tasks (evidence) from the dyntruth which are not involved
-                        for (int j = i + 1; j < n; j++) {
-                            int oj = order[j];
-                            l.set(oj, null);
-                        }
-                    }
-                    break;
-                }
+//                if (f < freqRes) {
+//                    f = 0;
+//                    //short-circuit
+//                    if (i < n - 1) {
+//                        //delete the tasks (evidence) from the dyntruth which are not involved
+//                        for (int j = i + 1; j < n; j++) {
+//                            int oj = order[j];
+//                            l.set(oj, null);
+//                        }
+//                    }
+//                    break;
+//                }
             }
             if (considered == 0)
                 return null;

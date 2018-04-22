@@ -755,7 +755,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         //assert (concept.op().conceptualizable) : "asking for truth of unconceptualizable: " + concept; //filter NEG etc
 
         @Nullable Concept c = conceptualize(concept);
-        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, this) : null;
+        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, concept.term(), this) : null;
     }
 
     @Nullable

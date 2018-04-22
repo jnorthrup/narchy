@@ -1,5 +1,6 @@
 package nars.term.control;
 
+import jdk.internal.vm.annotation.Stable;
 import nars.$;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,7 @@ import java.util.function.Function;
  */
 public class Fork<X> extends AbstractPred<X> {
 
+    @Stable
     public final PrediTerm<X>[] branch;
 
     public Fork(PrediTerm<X>[] actions) {

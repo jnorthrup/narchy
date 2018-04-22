@@ -290,7 +290,7 @@
 //
 //        CameraTrack cam = new CameraTrack(256, 256, 16, 16, nar);
 //
-//        Param.DEBUG = true;
+//
 //        //nar.log();
 //
 ////        nar.run(16512);

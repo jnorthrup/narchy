@@ -148,7 +148,7 @@ public class KIFInput {
     }
 
     public static void main(String[] args) throws Exception {
-        Param.DEBUG = true;
+
 
         NAR nar = NARS.tmp();
         //MetaGoal.Perceive.set(e.emotion.want, -0.1f);

@@ -1,6 +1,7 @@
 package nars.term.control;
 
 import jcog.Util;
+import jdk.internal.vm.annotation.Stable;
 import nars.$;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 public final class AndCondition<D> extends AbstractPred<D> {
 
+    @Stable
     public final PrediTerm[] cond;
 
     @Override

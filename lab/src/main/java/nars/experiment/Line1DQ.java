@@ -10,7 +10,7 @@ public class Line1DQ {
 
 
     public static void main(String[] args) {
-        //Param.DEBUG = true;
+        //
 
         NAR n = new NARS().get();
         //n.log();

@@ -42,7 +42,7 @@ public class FZero extends NAgentX {
 
     public static void main(String[] args) {
 
-        //Param.DEBUG = true;
+        //
 
 
         NAgentX.runRT((n) -> {

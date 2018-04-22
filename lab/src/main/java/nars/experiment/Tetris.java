@@ -524,7 +524,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 //        }
 
     public static void main(String[] args) {
-        //Param.DEBUG = true;
+        //
 
 
         NAR nn = NAgentX.runRT((n) -> {
@@ -796,7 +796,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     public static class OfflineTetris {
         public static void main(String[] args) throws Narsese.NarseseException {
-            Param.DEBUG = true;
+
 
             NAR n = NARS.tmp();
             n.time.dur(4);

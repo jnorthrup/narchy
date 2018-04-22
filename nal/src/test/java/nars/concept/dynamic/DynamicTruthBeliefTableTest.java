@@ -3,11 +3,15 @@ package nars.concept.dynamic;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.link.TaskLink;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Int;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static nars.$.$;
 import static nars.$.$$;
@@ -31,20 +35,21 @@ public class DynamicTruthBeliefTableTest {
         long now = n.time();
 
         assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now)); //truth only
-        assertEquals($.t(0f, 0.90f), n.beliefTruth("(a:x && (--,a:y))", now));
+        //assertEquals($.t(0f, 0.90f), n.beliefTruth("(a:x && (--,a:y))", now));
+        assertEquals($.t(0f, 0.81f), n.beliefTruth("(a:x && (--,a:y))", now));
 
         assertEquals($.t(1f, 0.81f), n.belief($("(a:x && a:y)"), now).truth()); //matched task
 
-        assertEquals($.t(0f, 0.90f), n.beliefTruth("(b:x && a:y)", now));
+        assertEquals($.t(0f, 0.81f), n.beliefTruth("(b:x && a:y)", now));
         assertEquals($.t(1f, 0.81f), n.beliefTruth("((--,b:x) && a:y)", now));
-        assertEquals($.t(0f, 0.90f), n.beliefTruth("((--,b:x) && (--,a:y))", now));
+        assertEquals($.t(0f, 0.81f), n.beliefTruth("((--,b:x) && (--,a:y))", now));
     }
 
     @Test
     public void testDynamicConjunctionEternalOverride() throws Narsese.NarseseException {
         NAR n = NARS.shell()
-         .believe($$("a:x"), 0)
-         .believe($$("a:y"), 0);
+                .believe($$("a:x"), 0)
+                .believe($$("a:y"), 0);
 
         long now = n.time();
         assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now)); //truth only
@@ -57,10 +62,10 @@ public class DynamicTruthBeliefTableTest {
         Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
         assertTrue($.t(0.32f, 0.93f).equalsIn(tNow, n));
 
-        Truth tAfter = n.beliefTruth($("(a:x && a:y)"), now+2);
+        Truth tAfter = n.beliefTruth($("(a:x && a:y)"), now + 2);
         assertTrue($.t(0.11f, 0.91f).equalsIn(tAfter, n));
 
-        Truth tLater = n.beliefTruth($("(a:x && a:y)"), now+5);
+        Truth tLater = n.beliefTruth($("(a:x && a:y)"), now + 5);
         assertTrue($.t(0.05f, 0.9f).equalsIn(tLater, n)); //more certainly negative because the eternal will override
     }
 
@@ -78,7 +83,7 @@ public class DynamicTruthBeliefTableTest {
 
         //n.concept("(a:x && a:y)").beliefs().print();
         Truth tt = n.belief($("(a:x && a:y)"), now).truth();
-        assertTrue($.t(0f, 0.93f).equalsIn(tt, n), ()-> tt.toString());
+        assertTrue($.t(0.32f, 0.93f).equalsIn(tt, n), () -> tt.toString());
     }
 
     @Test
@@ -96,16 +101,16 @@ public class DynamicTruthBeliefTableTest {
         for (long now : new long[]{0, n.time() /* 2 */, ETERNAL}) {
             assertTrue(n.conceptualize($("((x|y)-->a)")).beliefs() instanceof DynamicTruthBeliefTable);
             assertEquals($.t(1f, 0.81f), n.beliefTruth("((x|y)-->a)", now));
-            assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("((x|z)-->a)")), now));
-            assertEquals($.t(1f, 0.90f), n.beliefTruth(n.conceptualize($("((x&z)-->a)")), now));
-            assertEquals($.t(1f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x|y))")), now));
-            assertEquals($.t(1f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x|z))")), now));
-            assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x&z))")), now));
+            assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("((x|z)-->a)")), now));
+            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x&z)-->a)")), now));
+            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x|y))")), now));
+            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x|z))")), now));
+            assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x&z))")), now));
 
             Concept xIntNegY = n.conceptualize($("((x|--y)-->a)"));
             assertTrue(xIntNegY.beliefs() instanceof DynamicTruthBeliefTable);
             assertTrue(xIntNegY.goals() instanceof DynamicTruthBeliefTable);
-            assertEquals($.t(0f, 0.90f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
+            assertEquals($.t(0f, 0.81f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
             assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x|--z)-->a)")), now));
         }
     }
@@ -174,13 +179,12 @@ public class DynamicTruthBeliefTableTest {
         {
             Task t = n.belief(ccn.term());
             assertNotNull(t);
-            assertEquals($("a:y"), t.term()); //the critical component
-            assertEquals(1f, t.freq());
+            assertEquals(0f, t.freq());
         }
 
         assertTrue(ccn instanceof TaskConcept);
         Truth nown = n.beliefTruth(ccn, n.time());
-        assertEquals("%0.0;.90%", nown.toString());
+        assertEquals("%0.0;.73%", nown.toString());
 
         n.clear();
 
@@ -210,7 +214,7 @@ public class DynamicTruthBeliefTableTest {
 
         for (long w : new long[]{ETERNAL, 0, 1}) { //since it's eternal, it will be equal to any time calculated
             assertEquals($.t(1, 0.81f), n.truth($("(x && y)"), BELIEF, w));
-            assertEquals($.t(0, 0.90f), n.truth($("(x && --y)"), BELIEF, w));
+            assertEquals($.t(0, 0.81f), n.truth($("(x && --y)"), BELIEF, w));
             assertEquals($.t(1, 0.81f), n.truth($("(x && --z)"), BELIEF, w));
         }
     }
@@ -268,7 +272,7 @@ public class DynamicTruthBeliefTableTest {
     }
 
     @Test
-    public void testDynamicConjunctionShortCircuit() throws Narsese.NarseseException {
+    public void testDynamicConjunctionXYZ() throws Narsese.NarseseException {
         //only needs to consider the evidence which effectively short-circuits the result
         //ie. once Intersection hits zero frequency it can not go any higher.
 
@@ -278,16 +282,15 @@ public class DynamicTruthBeliefTableTest {
         n.believe("z", 0f, 0.81f);
         n.run(1);
         assertEquals(
-                "%0.0;.81%", n.beliefTruth(
+                "%0.0;.20%", n.beliefTruth(
                         n.conceptualize($("(&&,x,y,z)")
                         ), n.time()).toString()
         );
         {
             //reduced
             Task bXYZ = n.belief($("(&&,x,y,z)"), n.time());
-            assertEquals("z", bXYZ.term().toString()); //only z term mattered
-            assertEquals(1, bXYZ.stamp().length);
-            assertEquals(3, bXYZ.stamp()[0]); //should be stamp #3
+            assertEquals("(&&,x,y,z)", bXYZ.term().toString()); //only z term mattered
+            assertEquals(3, bXYZ.stamp().length);
         }
         {
             //normal
@@ -303,7 +306,7 @@ public class DynamicTruthBeliefTableTest {
         }
 
         assertEquals(
-                "%0.0;.81%", n.beliefTruth(
+                "%0.0;.41%", n.beliefTruth(
                         n.conceptualize($("(&&,y,z)")
                         ), n.time()).toString()
         );
@@ -314,43 +317,44 @@ public class DynamicTruthBeliefTableTest {
         );
     }
 
+//    @Test
+//    public void testDynamicConjunctionShortCircuitEvenWithMissing() throws Narsese.NarseseException {
+//
+//        NAR n = NARS.shell();
+//        n.believe("x", 1f, 0.50f);
+//        //n.believe("y", ...); //Y unknown
+//        n.believe("z", 0f, 0.81f);
+//        n.run(1);
+//        {
+//            Task belief = n.belief(n.conceptualize($("(&&,x,y,z)")), n.time());
+//            assertEquals("%0.0;.81%", belief.truth().toString());
+//            assertEquals(1, belief.stamp().length);
+//        }
+//    }
+//
+//    @Test
+//    public void testDynamicUnionShortCircuit() throws Narsese.NarseseException {
+//        NAR n = NARS.shell();
+//        n.believe("a:x", 0f, 0.50f);
+//        n.believe("a:y", 0f, 0.50f);
+//        n.believe("a:z", 1f, 0.81f);
+//        n.run(1);
+//        Term xyz = $("((&,x,y,z)-->a)");
+//        assertEquals(
+//                "%1.0;.81%", n.beliefTruth(xyz, n.time()).toString()
+//        );
+//        Task nbt = n.belief(xyz, n.time());
+//        assertNotNull(nbt);
+//        assertEquals(
+//                1, nbt.stamp().length
+//        );
+//    }
+
     @Test
-    public void testDynamicConjunctionShortCircuitEvenWithMissing() throws Narsese.NarseseException {
+    public void testDynamicConjConceptWithNegations() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
-        n.believe("x", 1f, 0.50f);
-        //n.believe("y", ...); //Y unknown
-        n.believe("z", 0f, 0.81f);
-        n.run(1);
-        {
-            Task belief = n.belief( n.conceptualize( $("(&&,x,y,z)") ), n.time());
-            assertEquals("%0.0;.81%", belief.truth().toString() );
-            assertEquals(1, belief.stamp().length);
-        }
-    }
-
-    @Test
-    public void testDynamicUnionShortCircuit() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
-        n.believe("a:x", 0f, 0.50f);
-        n.believe("a:y", 0f, 0.50f);
-        n.believe("a:z", 1f, 0.81f);
-        n.run(1);
-        Term xyz = $("((&,x,y,z)-->a)");
-        assertEquals(
-                "%1.0;.81%", n.beliefTruth(xyz, n.time()).toString()
-        );
-        Task nbt = n.belief(xyz, n.time());
-        assertNotNull(nbt);
-        assertEquals(
-                1, nbt.stamp().length
-        );
-    }
-
-    @Test public void testDynamicConjConceptWithNegations() throws Narsese.NarseseException {
-
-        NAR n = NARS.shell();
-        for (String s : new String[] {
+        for (String s : new String[]{
                 "((y-->t) &&+1 (t-->happy))",
                 "(--(y-->t) &&+1 (t-->happy))",
                 "((y-->t) &&+1 --(t-->happy))",
@@ -363,21 +367,50 @@ public class DynamicTruthBeliefTableTest {
 
     }
 
-    @Test public void testRawDifference() throws Narsese.NarseseException {
+    @Test
+    public void testRawDifference() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("x", 0.75f, 0.50f);
         n.believe("y", 0.25f, 0.50f);
         n.run(1);
         Term xMinY = $("(x ~ y)");
         Term yMinX = $("(y ~ x)");
-        assertEquals( DynamicTruthBeliefTable.class, n.conceptualize(xMinY).beliefs().getClass());
-        assertEquals( DynamicTruthBeliefTable.class, n.conceptualize(yMinX).beliefs().getClass());
+        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(xMinY).beliefs().getClass());
+        assertEquals(DynamicTruthBeliefTable.class, n.conceptualize(yMinX).beliefs().getClass());
         assertEquals(
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );
         assertEquals(
                 "%.06;.25%", n.beliefTruth(yMinX, n.time()).toString()
         );
+
+    }
+
+    @Test
+    public void testDynamicBeliefTableSampling() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe("x", 0f, 0.50f);
+        n.believe("y", 0f, 0.50f);
+        n.run(1);
+        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), BELIEF, ETERNAL, 1f);
+        Set<Task> tasks = new HashSet();
+        for (int i = 0; i < 10; i++)
+            tasks.add(tl.get(n));
+        assertEquals("[$.50 (x&&y). %0.0;.25%]", tasks.toString());
+        tasks.forEach(System.out::println);
+    }
+
+    @Test
+    public void testDynamicBeliefTableSamplingTemporalFlexible() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.input("x. +1");
+        n.input("y. +2");
+        n.run(1);
+        TaskLink.GeneralTaskLink tl = new TaskLink.GeneralTaskLink($$("(x && y)"), BELIEF, 1, 1f);
+        Set<Task> tasks = new HashSet();
+        for (int i = 0; i < 100; i++)
+            tasks.add(tl.get(n));
+        assertEquals("[$.50 (x &&+1 y). 1 %1.0;.81%]", tasks.toString());
 
     }
 

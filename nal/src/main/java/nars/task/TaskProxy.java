@@ -293,4 +293,24 @@ public class TaskProxy implements Task {
 
     }
 
+    public static class WithNegatedTruth extends TaskProxy {
+
+
+        public WithNegatedTruth(Task task) {
+            super(task);
+        }
+
+        @Override
+        public Term term() {
+            return super.term().neg();
+        }
+
+
+        @Override
+        public @Nullable Truth truth() {
+            return super.truth().neg();
+        }
+
+    }
+
 }

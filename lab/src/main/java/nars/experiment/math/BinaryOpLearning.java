@@ -359,7 +359,7 @@
 //
 //        BinaryOpLearning b = new BinaryOpLearning(nar);
 //
-//        Param.DEBUG = true;
+//
 //        //b.trace = false;
 //
 //        NARLoop bLoop = b.run(500, 0);

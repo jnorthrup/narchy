@@ -38,7 +38,7 @@ public class MIDITaskifier {
         NAR nar = NARS.threadSafe();
         nar.termVolumeMax.set(16);
 
-        Param.DEBUG = true;
+
         nar.onTask(t -> {
             if (t instanceof DerivedTask && t.isGoal()) {
                 //if (t.term().equals(ab))

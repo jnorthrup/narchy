@@ -27,7 +27,7 @@ public class NARio extends NAgentX {
         //super(nar, HaiQAgent::new);
 
         //Param.ANSWER_REPORTING = false;
-        //Param.DEBUG = true;
+        //
 
         //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         mario = new MarioComponent(
@@ -280,7 +280,7 @@ public class NARio extends NAgentX {
     public static void main(String[] args) {
 
 
-        //Param.DEBUG = true;
+        //
 
         NAR nar = runRT((NAR n) -> {
 

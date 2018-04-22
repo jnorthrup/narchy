@@ -25,7 +25,7 @@ public class Line1DCalibrate {
 
     public static void main(String[] args) {
 
-        Param.DEBUG = true;
+
         NAR n = NARS.threadSafe();
 
         //new STMTemporalLinkage(n, 2, false);

@@ -265,7 +265,7 @@ public class IRCNLP extends IRC {
 
     public static void main(String[] args) {
 
-        //Param.DEBUG = true;
+        //
 
         float durFPS = 20f;
         NAR n = NARS.realtime(durFPS).get();
@@ -308,7 +308,7 @@ public class IRCNLP extends IRC {
 
 
         Term HEAR = $.the("hear");
-        //Param.DEBUG = true;
+        //
 
         n.onTask(t -> {
             //if (t.isGoal()) {

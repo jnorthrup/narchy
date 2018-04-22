@@ -43,7 +43,7 @@ public class Arkancide extends NAgentX {
     private float prevScore;
 
     public static void main(String[] args) {
-        //Param.DEBUG = true;
+        //
 
         //runRT(Arkancide::new);
         //nRT(Arkancide::new, 25, 5);
@@ -144,7 +144,7 @@ public class Arkancide extends NAgentX {
 //            SpaceGraph.window(Vis.beliefCharts(100,
 //                    Lists.newArrayList(ab.term(), a.term(), b.term(), c.term()),
 //                    nar), 600, 600);
-//            Param.DEBUG = true;
+//
 //            nar.onTask(t -> {
 //                if (//t instanceof DerivedTask &&
 //                        //t.isEternal()) {
@@ -196,7 +196,7 @@ public class Arkancide extends NAgentX {
 //
 //        });///.resolution(0.1f);
 
-//        Param.DEBUG = true;
+//
 //        nar.onTask((t) -> {
 //            if (!t.isInput() && (t.isGoal() || t.isEternal())) {
 //                System.err.println(t.proof());
@@ -204,7 +204,7 @@ public class Arkancide extends NAgentX {
 //        });
 
 
-//        Param.DEBUG = true;
+//
 //        nar.onTask(x -> {
 //            if (x.isGoal()
 //                    && !x.isInput() && (!(x instanceof ActionConcept.CuriosityTask))

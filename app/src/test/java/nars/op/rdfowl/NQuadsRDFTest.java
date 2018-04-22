@@ -58,7 +58,7 @@ public class NQuadsRDFTest {
         n.input("$0.9$ (Bacteria <-> Pharmacy)?");
 
 
-        //Param.DEBUG = true;
+        //
 
 
         n.run(128);
@@ -74,7 +74,7 @@ public class NQuadsRDFTest {
 
         final NAR n = NARS.tmp();
 
-        Param.DEBUG = true;
+
 
         for (String input : new String[] { "/home/me/d/finance/money.orig.n3", "/home/me/d/finance/finance.orig.n3" } ) {
             File output = new File(input + ".nal");

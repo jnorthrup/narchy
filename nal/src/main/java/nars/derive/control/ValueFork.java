@@ -1,6 +1,7 @@
 package nars.derive.control;
 
 import jcog.decide.MutableRoulette;
+import jdk.internal.vm.annotation.Stable;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -20,6 +21,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
      * the causes that this is responsible for, ie. those that may be caused by this
      */
 //    final PrediTerm<Derivation>[] conc;
+    @Stable
     public final Cause[] causes;
 
     /**

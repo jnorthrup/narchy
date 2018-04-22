@@ -123,7 +123,7 @@ public class TrackXY extends NAgent {
         }
         if (nars) {
 
-            //Param.DEBUG = true;
+            //
             //n.log();
 
 //            for (String action : new String[]{"up", "down", "left", "right"}) {

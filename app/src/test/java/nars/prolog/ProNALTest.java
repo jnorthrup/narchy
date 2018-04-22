@@ -28,7 +28,7 @@ public class ProNALTest {
         Theory t = Theory.resource(
             "../../../resources/prolog/furniture.pl"
         );
-        Param.DEBUG = true;
+
         NAR n = NARS.tmp(6);
         n.questPriDefault.set(1f);
         n.beliefPriDefault.set(0.5f);

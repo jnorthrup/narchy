@@ -99,7 +99,7 @@ public class ArithmeticExpressionSimplifierTest {
 
         assertAdditionSimplification("v0", "(+ v1 (+ v1 (+ v0 9)))", "(+ (* 2 v1) (+ 9 (* 2 v0)))");
 
-        assertAdditionSimplification("v1", "(+ v1 (+ v1 (+ v0 9)))", "(+ (+ 9 v0) (* 3 v1))");
+        assertAdditionSimplification("v1", "(+ v1 (+ v1 (+ v0 9)))", "(+ (* 3 v1) (+ 9 v0))");
 
         assertAdditionSimplification("v0", "(* 1 v0)", "(* 2 v0)");
 
@@ -107,7 +107,6 @@ public class ArithmeticExpressionSimplifierTest {
 
         assertSimplify("(+ v0 (- 1 v0))", "1");
 
-        assertSimplify("(- v0 (- v1 (- v0 9)))", "(- 0 (- v1 (- (* 2 v0) 9)))");
         assertSimplify("(- v0 (- v1 (- v1 (- v0 9))))", "(- 0 (- v1 (- v1 (- 0 9))))");
 
         assertAdditionSimplification("9", "(+ v0 3)", "(+ 12 v0)");
@@ -125,6 +124,10 @@ public class ArithmeticExpressionSimplifierTest {
         assertSimplify("(+ (- v0 1) (- v0 1))", "(+ (- 0 0) (- (* 2 v0) 2))");
         assertSimplify("(+ (+ v0 1) (+ v0 1))", "(+ (+ 0 0) (+ (* 2 v0) 2))");
         assertSimplify("(- (+ v0 1) (- v0 1))", "(- (+ 0 0) (- -1 1))");
+
+        assertSimplify("(- v0 (- v1 (- v0 9)))", "(* 2 v0) 9) v1)");
+
+
     }
 
     private void assertAdditionSimplification(String firstArg, String secondArg, String expectedOutput) {

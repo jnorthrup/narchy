@@ -103,7 +103,7 @@ public class PrologCoreTest {
     public void testConjunction3b() throws Exception {
         NAR n = NARS.tmp();
 
-        Param.DEBUG = true;
+
         PrologCore p = new PrologCore(n);
         n.believe("x:a");
         assertTrue(p.isTrue("'-->'(a,x)."));
@@ -144,7 +144,7 @@ public class PrologCoreTest {
     public void testPrologCoreImplToRule() throws Narsese.NarseseException {
         NAR n = NARS.tmp(1);
         n.log();
-        Param.DEBUG = true;
+
         PrologCore p = new PrologCore(n);
         n.input("f(x,y).");
         n.input("(f($x,$y)==>g($y,$x)).");

@@ -150,7 +150,7 @@ public class TopCraft extends NAgentX {
         });
         actionToggle($.func("menu", id), input.menu::pressIfUnpressed);
 
-//        Param.DEBUG = true;
+//
 //        nar.onTask(t ->{
 //            if (t.isEternal() && (!(t instanceof VarIntroduction.VarIntroducedTask)) && t.concept(nar).get(Abbreviation.class)==null) {
 //                System.err.println(t.proof());

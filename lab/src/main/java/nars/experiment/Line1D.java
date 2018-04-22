@@ -39,7 +39,7 @@ public class Line1D {
 //                        new TaskExecutor(256, 0.5f)
 //                );
 //
-            Param.DEBUG = true;
+
 
             NAR n = NARS.tmp(); //new NARS().threadable().nal(8);
             //NAR n = NARS.shell();

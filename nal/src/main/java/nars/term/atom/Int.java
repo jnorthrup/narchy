@@ -7,6 +7,7 @@ import jcog.Util;
 import jcog.data.SimpleIntSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
+import jdk.internal.vm.annotation.Stable;
 import nars.$;
 import nars.Op;
 import nars.Param;
@@ -35,6 +36,7 @@ import static nars.term.Terms.sorted;
 public class Int implements Intlike, The {
 
 
+    @Stable
     private final byte[] bytesCached;
 
     public static Int the(int i) {

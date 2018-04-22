@@ -30,7 +30,7 @@
 //    final static Atomic heard = $.the("heard");
 //
 //    public static void main(String[] args) {
-//        Param.DEBUG = true;
+//
 //
 //
 //

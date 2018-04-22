@@ -837,7 +837,7 @@ public class Occurrify extends TimeGraph {
 
 
     protected Supplier<Term> solveAll(Term pattern) {
-        ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS*2);
+        ArrayHashSet<Event> solutions = new ArrayHashSet<>(Param.TEMPORAL_SOLVER_ITERATIONS*2);
 
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
         //final boolean[] rejectRelative = {false};
@@ -917,20 +917,20 @@ public class Occurrify extends TimeGraph {
                 //return solveRandomOne(solutions);
                 //FasterList<Event> solutionsCopy = new FasterList(solutions.list);
 
-                Function<long[], Term> tt = solveMerged(solutions, d.dur);
-                if (tt == null) {
+//                Function<long[], Term> tt = solveMerged(solutions, d.dur);
+//                if (tt == null) {
                     return () -> solveThe(solutions.get(random())); //choose one at random
-                } else {
-                    long[] when = new long[]{TIMELESS, TIMELESS};
-                    Term ttt = tt.apply(when);
-                    if (ttt == null || when[0] == TIMELESS)
-                        return null; //should not happen
-                    return () -> {
-                        d.concOcc[0] = when[0];
-                        d.concOcc[1] = when[1];
-                        return ttt;
-                    };
-                }
+//                } else {
+//                    long[] when = new long[]{TIMELESS, TIMELESS};
+//                    Term ttt = tt.apply(when);
+//                    if (ttt == null || when[0] == TIMELESS)
+//                        return null; //should not happen
+//                    return () -> {
+//                        d.concOcc[0] = when[0];
+//                        d.concOcc[1] = when[1];
+//                        return ttt;
+//                    };
+//                }
         }
     }
 

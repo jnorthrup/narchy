@@ -491,12 +491,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 tt.truth(subStart, subEnd, dur)
         );
     }
-
-    static Task eternalize(Task tx) {
-        return eternalize(tx, 1);
+    /**
+     * creates negated proxy of a task
+     */
+    static Task negated(@Nullable Task t) {
+        return new TaskProxy.WithNegatedTruth(t);
     }
 
-    static Task eternalize(Task x, float eviFactor) {
+    static Task eternalized(Task tx) {
+        return eternalized(tx, 1);
+    }
+
+    static Task eternalized(Task x, float eviFactor) {
         if (x == null)
             return null;
 

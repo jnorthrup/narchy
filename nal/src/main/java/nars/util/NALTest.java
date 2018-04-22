@@ -45,7 +45,7 @@ public abstract class NALTest {
 
     @BeforeEach
     void init() {
-        //Param.DEBUG = true;
+        //
     }
 
 

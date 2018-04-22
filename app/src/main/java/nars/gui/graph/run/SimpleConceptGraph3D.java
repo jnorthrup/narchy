@@ -91,7 +91,7 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
 
     public static void main(String[] args) {
 
-//        Param.DEBUG = true;
+//
         //Param.TRACE = true;
         NAR n = NARS.threadSafe();
         new MatrixDeriver(Derivers.nal(1, 8, n));
@@ -181,7 +181,7 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
         //n.linkFeedbackRate.setValue(0.05f);
 
 
-        //Param.DEBUG = true;
+        //
 //        n
 //                //.log()
 //                //.logSummaryGT(System.out, 0.05f)

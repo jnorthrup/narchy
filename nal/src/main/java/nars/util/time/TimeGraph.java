@@ -1,6 +1,9 @@
 package nars.util.time;
 
-import com.google.common.collect.*;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.ImmutableDirectedEdge;
@@ -14,7 +17,6 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.apache.commons.math3.exception.MathArithmeticException;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -30,7 +32,6 @@ import static nars.Op.CONJ;
 import static nars.Op.IMPL;
 import static nars.util.time.Tense.*;
 import static nars.util.time.TimeGraph.TimeSpan.TS_ZERO;
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * represents a multigraph of events and their relationships
@@ -788,6 +789,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
      */
     boolean solveAll(Term x, Predicate<Event> each) {
 
+        Set<Event> occAlreadySolved = new UnifiedSet<>(8);
+
         //collect XTERNAL terms that will need to be solved
         if (x.hasAny(Op.Temporal)) {
             final TreeSet<Term> xternalsToSolve = new TreeSet<>();
@@ -803,79 +806,61 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             int xs = xternalsToSolve.size();
 
 
-            Multimap<Pair<Term, Term>, Event> trying = HashMultimap.create();
+
+
             //solve the XTERNAL from simplest to most complex. the canonical sort order of compounds will naturally descend this way
-            //if (xs > 0 && !Util.andReverse(xternalsToSolve.toArray(new Term[xs]), u -> solveDT(u, v -> {
-            if (xs > 0) {
-                Util.andReverse(xternalsToSolve.toArray(new Term[xs]), u -> solveDT(u, v -> {
-                    trying.put(pair(u, v.id), v);
-                    return true;
-                }));
-                trying.asMap().forEach((term, events) -> {
-                    if (events.size() > 1) {
-                        int numAbsolutes = 0, numRelatives = 0;
-                        for (Event e : events)
-                            if (e instanceof Absolute) {
-                                numAbsolutes++;
-                            } else {
-                                numRelatives++;
-                            }
-                        if (numAbsolutes > 0 && numRelatives > 0) {
-                            //remove relatives
-                            events.removeIf(r -> r instanceof Relative);
-                        }
-                    }
-                });
+            if (xs > 0 && !Util.andReverse(xternalsToSolve.toArray(new Term[xs]), u -> solveDT(u, v -> {
 
-                for (Map.Entry<Pair<Term, Term>, Event> vv : trying.entries()) {
-                    Term u = vv.getKey().getOne();
-                    Event v = vv.getValue();
-                    Term y;
-                    if (!u.equals(v.id)) {
-                        y = x.replace(u, v.id);
-                        if (y == null || y instanceof Bool)
-                            return true; //continue
-                    } else {
-                        y = x;
-                    }
-
-                    boolean yEqualsX = y.equals(x);
-                    if (!yEqualsX) {
-
-                        if (!solveExact(y, each))
-                            return false;
-
-                        boolean yx = y.hasXternal();
-                        if (u.equals(x) && !yx) {
-                            if (v.start() != TIMELESS) {
-                                if (!each.test(v)) //shortcut to finish
-                                    return false;
-                            } else {
-                                if (!solveOccurrence(v, each)) //only need to solve occurrence
-                                    return false;
-                            }
-                        } else {
-                            if (!yx ?
-                                    solveAll(y, each) : //recurse to solve remaning xternal's
-                                    solveOccurrence(event(y, TIMELESS), each)) //just need to solve occurrence now
-                                return false;
-                        }
-                    } else {
-                        //term didnt change...
-                        if (v.start() != TIMELESS) {
-                            if (!each.test(v))
-                                return false;
-                        }
-                    }
-
-
+                Term y;
+                if (!u.equals(v.id)) {
+                    y = x.replace(u, v.id);
+                    if (y == null || y instanceof Bool)
+                        return true; //continue
+                } else {
+                    y = x;
                 }
 
-            }
+                        boolean ye = y.equals(x);
+                        if (!ye) {
+
+                            if (!solveExact(y, each))
+                                return false;
+
+                            boolean yx = y.hasXternal();
+                            if (u.equals(x) && !yx) {
+                                if (v.start() != TIMELESS) {
+                                    return each.test(v); //shortcut to finish
+                                } else {
+                                    return solveOccurrence(v, occAlreadySolved, each); //only need to solve occurrence
+                                }
+                            }
+
+                            return yx ?
+                                    solveAll(y, each) : //recurse to solve remaning xternal's
+                                    solveOccurrence(event(y, TIMELESS), occAlreadySolved, each); //just need to solve occurrence now
+                        } else {
+                            //term didnt change...
+                            if (v.start() != TIMELESS) {
+                                return each.test(v);
+                            }
+                        }
+
+
+                        return true; //keep trying
+                    })
+            ))
+                return false;
         }
 
-        return solveOccurrence(event(x, TIMELESS), each);
 
+        return solveOccurrence(event(x, TIMELESS), occAlreadySolved, each);
+    }
+
+
+    private boolean solveOccurrence(Event x, Set<Event> filter, Predicate<Event> each) {
+        if (filter.add(x))
+            return solveOccurrence(x, each);
+        return true;
     }
 
     /**
@@ -923,6 +908,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         }) && each.test(x) /* last resort */;
 
     }
+
 
 //    protected LinkedHashMap<Term, LongSet> absolutes(Term x) {
 //        LinkedHashMap<Term, LongSet> m = new LinkedHashMap<>();

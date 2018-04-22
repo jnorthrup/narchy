@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
-    public int cycles = 600;
+    public int cycles = 800;
 
     @BeforeEach
     public void setTolerance() {
@@ -1243,7 +1243,7 @@ public class NAL7Test extends NALTest {
         test
                 .believe("((x) ==>+5 (z))")
                 .believe("((y) ==>+5 (z))")
-                .mustBelieve(cycles, "( ((x) &&+0 (y)) ==>+5 (z))", 1f, 0.81f);
+                .mustBelieve(cycles, "( ((x) &| (y)) ==>+5 (z))", 1f, 0.81f);
     }
 
     @Test
