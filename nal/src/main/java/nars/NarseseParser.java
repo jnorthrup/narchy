@@ -444,12 +444,19 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
     /** translate shortcuts for time units */
-    protected static String timeUnitize(String s) {
-        switch (s) {
+    protected static String timeUnitize(String u) {
+        switch (u) {
+            case "years": return "year";
+            case "months": return "month";
+            case "weeks": return "week";
+            case "days": return "day";
+            case "hours": return "h"; //hour
             case "hr": return "h"; //hour
             case "m": return "min"; //min
+            case "mins": return "min"; //min
+            case "sec": return "s"; //min
             default:
-                return s;
+                return u;
         }
     }
 

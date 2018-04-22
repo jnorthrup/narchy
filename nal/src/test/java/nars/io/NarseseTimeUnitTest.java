@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$$;
 import static nars.io.NarseseTest.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NarseseTimeUnitTest {
 
@@ -99,16 +100,36 @@ public class NarseseTimeUnitTest {
 
     @Test
     public void testTimeDeltaUnits() {
+        //intermediate representation
         assertEquals(
             "term(\"&&\",(a,b),(day,1))",
             $$("(a &&+1day b)").toString()
         );
+
+        //live representation, as determined by reasoner realtime clock and its precision
         assertEquals("(a &&+86400000 b)",
-                $$("(a &&+1day b).").eval(n).toString()
+                $$("(a &&+1day b)").eval(n).toString()
         );
-//        assertEquals("(a &&+86400000 b). %1.0;0.90%",
-//            n.inputTask("(a &&+1day b).").toString()
-//        );
+
+        //decimal parsing
+        assertEquals("(a &&+129600000 b)",
+                $$("(a &&+1.5days b)").eval(n).toString()
+        );
+
+        assertEquals("((c &&+259200000 b) &&+604800000 a)",
+                $$("(a &&-1week (b &&-3days c))").eval(n).toString()
+        );
+
+    }
+
+    @Test
+    public void testTimeDeltaUnitsAndOccurrence() throws Narsese.NarseseException {
+        StringBuilder sb = new StringBuilder();
+        n.log(sb);
+        n.input("(a &&+1day b)! +5m..+2h %1.0;0.90%");
+        assertTrue(sb.toString().contains("(a &&+86400000 b)! "));
+        assertTrue(sb.toString().contains("%1.0;.90%"));
+
     }
 
 //    @Test

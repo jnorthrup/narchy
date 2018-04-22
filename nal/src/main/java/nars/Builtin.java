@@ -254,7 +254,9 @@ public class Builtin {
                 if (o.temporal) {
                     //decode DT field
                     Term dtTerm = s.sub(2);
-                    if (dtTerm instanceof QuantityTerm) {
+                    if (!(dtTerm instanceof QuantityTerm)) {
+                        dtTerm = QuantityTerm.the(dtTerm);
+                    }
 
                         long dt = nar.time.toCycles(((QuantityTerm) dtTerm).quant);
                         if (Math.abs(dt) < Integer.MAX_VALUE-2) {
@@ -262,7 +264,7 @@ public class Builtin {
                         } else {
                             throw new UnsupportedOperationException("time unit too large for 32-bit DT interval");
                         }
-                    }
+
                 }
 
                 throw new UnsupportedOperationException("unrecognized modifier argument: " + s);

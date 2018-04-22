@@ -7,6 +7,7 @@ package nars;
 
 import com.google.common.base.Strings;
 import com.google.common.escape.Escapers;
+import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
@@ -578,6 +579,16 @@ public enum $ {
             return Int.the(rx);
         } else {
             return the(new Fraction(x));
+        }
+    }
+
+    public static double doubleValue(Term x) {
+        if (x.op()==INT) {
+            return ((Int)x).id;
+        } else if (x.op()==ATOM) {
+            return Double.parseDouble($.unquote(x));
+        } else {
+            throw new TODO();
         }
     }
 
