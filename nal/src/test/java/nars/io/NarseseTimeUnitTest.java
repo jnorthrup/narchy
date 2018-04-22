@@ -52,30 +52,47 @@ public class NarseseTimeUnitTest {
         assertEquals(year.start() - n.time(), 3.15569521E10, 10000);
 
     }
+
     @Test
     public void testRealtimeRelativeOccurrenceRange() throws Narsese.NarseseException {
 
         {
-            Task x = n.inputTask("<a --> b>. |..+5m");
-            assertEquals(x.start() - n.time(), 0, 1000);
-            assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
+            for (String nowStr : new String[] { "|", "+0", ":|:" }) {
+                String taskStr = "<a --> b>. " + nowStr + "..+5m";
+                Task x = n.inputTask(taskStr);
+                System.out.println(taskStr + " " + x);
+                assertEquals(x.start() - n.time(), 0, 1000);
+                assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
+            }
         }
 
         {
             Task x = n.inputTask("<a --> b>. -2h..+5m");
-            assertEquals(x.start() - n.time(), 0, 1000);
-            assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
-        }
-        {
-            Task x = n.inputTask("<a --> b>. +2h..+7h");
-            assertEquals(x.start() - n.time(), 0, 1000);
+            assertEquals(n.time() - x.start(), 2 * 60 * 60 * 1000, 1000);
             assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
         }
 
         {
-            Task x = n.inputTask("<a --> b>. -2h..|");
-            assertEquals(x.start() - n.time(), 0, 1000);
-            assertEquals(x.end() - n.time(), 5 * 60 * 1000, 1000);
+            //reverse corrected
+            Task x = n.inputTask("<a --> b>. +5h..-2m");
+            assertEquals(n.time() - x.start(), 2 * 60 * 1000, 1000);
+            assertEquals(x.end() - n.time(), 5 * 60 * 60 * 1000, 1000);
+        }
+
+        {
+            Task x = n.inputTask("<a --> b>. +2h..+7h");
+            assertEquals(x.start() - n.time(), 2 * 60 * 60 * 1000, 1000);
+            assertEquals(x.end() - n.time(), 7 * 60 * 60 * 1000, 1000);
+        }
+        {
+            Task x = n.inputTask("<a --> b>. -7h..-2h");
+            assertEquals(x.start() - n.time(), -7 * 60 * 60 * 1000, 1000);
+            assertEquals(x.end() - n.time(), -2 * 60 * 60 * 1000, 1000);
+        }
+        {
+            Task x = n.inputTask("<a --> b>. -2s..|");
+            assertEquals(x.start() - n.time(), -2000, 100);
+            assertEquals(x.end() - n.time(), 0, 100);
         }
 
     }

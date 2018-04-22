@@ -91,7 +91,16 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 SentencePunctuation(punc), s(),
 
-                optional(TimeAbsolute(occurr)),
+                optional(
+                    seq( firstOf(
+
+                        seq(OccurrenceTime(), "..", OccurrenceTime(),
+                            occurr.set(new Object[] { pop(1), pop() })),
+
+                        seq(OccurrenceTime(), occurr.set(pop()))
+
+                    ), s() )
+                ),
 
                 optional(Truth(truth), s()),
 
@@ -424,38 +433,36 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     public Rule TimeUnit(boolean negate) {
         return
-            seq(oneOrMore(firstOf(digit(),".")), push(match()),
-                oneOrMore(alpha()), push(1, timeUnitize(match())),
+            seq(oneOrMore(anyOf(".0123456789")), push(match()),
+                oneOrMore(alpha()), push(1,match()),
                 push(new QuantityTerm(
                     AbstractQuantity.parse(
-                        pop() + " " + pop()
+                        pop() + " " +  timeUnitize((String)pop())
                     ).multiply(negate? -1 : +1))
                 ))
         ;
     }
 
-    /** translate missing time units */
+    /** translate shortcuts for time units */
     protected static String timeUnitize(String s) {
         switch (s) {
             case "hr": return "h"; //hour
+            case "m": return "min"; //min
             default:
                 return s;
         }
     }
 
-    public Rule TimeAbsolute(Var<Object> occurr) {
+    public Rule OccurrenceTime() {
         return
                 firstOf(
-                        /*@Deprecated*/ seq(":|:", s(), occurr.set(Tense.Present)),
-                        seq("|", s(), occurr.set(Tense.Present)), //shorthand
-                        //seq("now", occurr.set(Tense.Present)),
-                        seq(TimeUnit(), occurr.set(pop())),
-                        seq("-", oneOrMore(digit()), occurr.set(-Texts.i(match()))),
-                        seq("+", oneOrMore(digit()), occurr.set(Texts.i(match()))),
+                        seq(firstOf("now", "|", ":|:"), push(Tense.Present)), //shorthand
+                        //seq("now", push(Tense.Present)),
+                        TimeUnit(),
+                        seq("-", oneOrMore(digit()), push(-Texts.i(match()))),
+                        seq("+", oneOrMore(digit()), push(Texts.i(match())))
 //                        seq("tomorrow", push("Tomorrow")),
 //                        seq("yesterday", push("Yesterday"))
-                        ///etc
-                        seq(empty(), occurr.set(Tense.Eternal))
                 )
                 ;
     }

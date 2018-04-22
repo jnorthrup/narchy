@@ -631,7 +631,7 @@ public enum Op {
     public static final Compound EmptyProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
-    public final static SubtermsCache subtermsCache = new SubtermsCache(64 * 1024, 4, false);
+    public final static SubtermsCache subtermCache = new SubtermsCache(64 * 1024, 4, false);
     static final ImmutableMap<String, Op> stringToOperator;
     /**
      * ops across which reflexivity of terms is allowed
@@ -642,8 +642,8 @@ public enum Op {
     final static int relationDelimeterStrong = Op.or(Op.PROD, Op.SETe, Op.NEG);
     public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
             c -> !c.isAny(relationDelimeterStrong);
-    final static TermCache cacheTerms = new TermCache(128 * 1024, 4, false);
-    final static TermCache cacheTemporalTerms = new TermCache(128 * 1024, 4, false);
+    final static TermCache termCache = new TermCache(128 * 1024, 4, false);
+    final static TermCache termTemporalCache = new TermCache(128 * 1024, 4, false);
     /**
      * specifier for any NAL level
      */
@@ -2268,7 +2268,7 @@ public enum Op {
 
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
-                (dt == DTERNAL ? cacheTerms : cacheTemporalTerms).apply(new InternedCompound(this, dt, u)) :
+                (dt == DTERNAL ? termCache : termTemporalCache).apply(new InternedCompound(this, dt, u)) :
                 instance(dt, u);
     }
 

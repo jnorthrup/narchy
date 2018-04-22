@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.term.Term.nullIfNull;
+import static nars.util.time.Tense.*;
 
 /**
  * NARese, syntax and language for interacting with a NAR in NARS.
@@ -287,23 +288,8 @@ public class Narsese {
             //TODO construct directly and remove TaskBuilder
 
 
-            long[] occ;
-            Object O = x[4];
+            long[] occ = occurrence(nar, x[4]);
 
-            if (O instanceof Tense) {
-                long o = Tense.getRelativeOccurrence((Tense) O, nar);
-                occ = new long[] { o, o };
-            } else if (O instanceof QuantityTerm) {
-                long qCycles = nar.time.toCycles(((QuantityTerm)O).quant);
-                long o = nar.time() + qCycles;
-                occ = new long[] { o, o };
-            } else if (O instanceof Integer) {
-                //cycle time, or default time unit
-                long o = (Integer)O;
-                occ = new long[] { o, o };
-            } else {
-                occ = (long[]) O;
-            }
             Task yy = new NALTask(C, punct, tr, nar.time(), occ[0], occ[1], nar.time.nextStampArray());
             yy.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
             yy.log(NARSESE_TASK_TAG);
@@ -316,6 +302,41 @@ public class Narsese {
 
         return y;
 
+    }
+
+    private static long[] occurrence(NAR nar, Object O) {
+        if (O == null)
+            return ETERNAL_ETERNAL;
+        else if (O instanceof Tense) {
+            long o = Tense.getRelativeOccurrence((Tense) O, nar);
+            return new long[] { o, o };
+        } else if (O instanceof QuantityTerm) {
+            long qCycles = nar.time.toCycles(((QuantityTerm) O).quant);
+            long o = nar.time() + qCycles;
+            return new long[] { o, o };
+        } else if (O instanceof Integer) {
+            //cycle time, or default time unit
+            long o = nar.time() + (Integer) O;
+            return new long[] { o, o };
+        } else if (O instanceof Object[]) {
+            long[] start = occurrence(nar, ((Object[])O)[0]);
+            if (start[0]!=start[1] || start[0] == ETERNAL || start[0] == TIMELESS)
+                throw new UnsupportedOperationException();
+            long[] end = occurrence(nar, ((Object[])O)[1]);
+            if (end[0]!=end[1] || end[0] == ETERNAL || end[0] == TIMELESS)
+                throw new UnsupportedOperationException();
+            if (start[0] <= end[0]) {
+                start[1] = end[0];
+                return start;
+            } else {
+                end[1] = start[0];
+                return end;
+            }
+        } else if (O instanceof long[]){
+            return (long[])O;
+        } else {
+            throw new UnsupportedOperationException("unrecognized occurrence: " + O);
+        }
     }
 
     public static Term term(String s, boolean normalize) throws NarseseException {

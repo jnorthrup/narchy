@@ -72,7 +72,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         //return The.Subterms.the.apply(s);
         //return compound(PROD, s).subterms();
         if (internable(s))
-            return Op.subtermsCache.apply(new InternedSubterms(s));
+            return Op.subtermCache.apply(new InternedSubterms(s));
         else
             return subtermsInstance(s);
     }
