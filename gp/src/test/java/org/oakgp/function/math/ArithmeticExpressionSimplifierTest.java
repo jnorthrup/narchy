@@ -107,11 +107,11 @@ public class ArithmeticExpressionSimplifierTest {
 
         assertSimplify("(+ v0 (- 1 v0))", "1");
 
-        assertSimplify("(- v0 (- v1 (- v1 (- v0 9))))", "(- 0 (- v1 (- v1 (- 0 9))))");
+        assertSimplify("(- v0 (- v1 (- v1 (- v0 9))))", "9");
 
         assertAdditionSimplification("9", "(+ v0 3)", "(+ 12 v0)");
 
-        assertAdditionSimplification("9", "(- v0 3)", "(- v0 -6)");
+        assertAdditionSimplification("9", "(- v0 3)", "(+ v0 6)");
 
         assertSimplify("(- 4 (- v1 (- v0 9)))", "(- 0 (- v1 (- v0 5)))");
         assertSimplify("(- 4 (- v1 (+ v0 9)))", "(- 0 (- v1 (+ 13 v0)))");

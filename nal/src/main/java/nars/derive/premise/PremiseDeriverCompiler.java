@@ -10,6 +10,7 @@ import nars.derive.Derivation;
 import nars.derive.control.ValueFork;
 import nars.derive.step.Branchify;
 import nars.derive.step.Taskify;
+import nars.derive.step.Truthify;
 import nars.term.Term;
 import nars.term.control.AndCondition;
 import nars.term.control.Fork;
@@ -60,11 +61,12 @@ public enum PremiseDeriverCompiler { ;
 
             for (PostCondition p : rule.POST) {
 
+                int id = conclusions.size();
+
                 Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> c = rule.build(p);
 
                 c.getOne().forEach((k) -> preconditionCount.addToValue(k, 1));
 
-                int id = conclusions.size();
                 conclusions.add(c.getTwo());
 
                 post.computeIfAbsent(c.getOne(), x -> new RoaringBitmap()).add(id);

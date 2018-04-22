@@ -17,7 +17,7 @@ import java.util.function.Function;
 public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
 
     public final EnumMap<Op, PrediTerm<D>> cases;
-    @Stable
+    /*@Stable*/
     public final PrediTerm[] swtch;
     public final boolean taskOrBelief;
 

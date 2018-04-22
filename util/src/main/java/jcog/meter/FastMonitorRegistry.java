@@ -1,11 +1,14 @@
 package jcog.meter;
 
+import com.netflix.servo.Metric;
 import com.netflix.servo.MonitorRegistry;
 import com.netflix.servo.monitor.Monitor;
 import jcog.list.FasterList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 public final class FastMonitorRegistry implements MonitorRegistry {
 
@@ -23,8 +26,19 @@ public final class FastMonitorRegistry implements MonitorRegistry {
     }
 
     @Override
-    public Collection<Monitor<?>> getRegisteredMonitors() {
+    public List<Monitor<?>> getRegisteredMonitors() {
         return monitors;
+    }
+    public List<Metric> getMetrics(long now) {
+        List<Monitor<?>> monitors = getRegisteredMonitors();
+        List<Metric> metrics = new ArrayList<>(monitors.size());
+        for (Monitor<?> monitor : monitors) {
+            Object v = monitor.getValue();
+            if (v != null) {
+                metrics.add(new Metric(monitor.getConfig(), now, v));
+            }
+        }
+        return metrics;
     }
 
     @Override

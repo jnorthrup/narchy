@@ -75,7 +75,7 @@ public final class Termify extends AbstractPred<Derivation> {
         Term c2;
         if (d.temporal) {
 
-            c2 = time.solve(d, c1);
+            c2 = d.occ.solve(time, c1);
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition

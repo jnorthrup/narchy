@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.concept.Concept;
 import nars.concept.action.GoalActionConcept;
 import nars.gui.Vis;

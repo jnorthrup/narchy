@@ -35,7 +35,7 @@ public class NAL6Test extends NALTest {
     public void variable_unification2() {
 
         test
-                //.log()
+                
                 .believe("<<$x --> bird> ==> <$x --> animal>>") //en("If something is a bird, then it is a animal.");
                 .believe("<<$y --> robin> ==> <$y --> bird>>") //en("If something is a robin, then it is a bird.");
                 .mustBelieve(cycles, "<<$1 --> robin> ==> <$1 --> animal>>", 1.00f, 0.81f) //en("If something is a robin, then it is a animal.")
@@ -49,7 +49,7 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.log();
+        
         tester.believe("<<$x --> swan> ==> <$x --> bird>>", 1.00f, 0.80f); //en("If something is a swan, then it is a bird.");
         tester.believe("<<$y --> swan> ==> <$y --> swimmer>>", 0.80f, 0.9f); //en("If something is a swan, then it is a swimmer.");
         tester.mustBelieve(cycles, "<<$1 --> swan> ==> (&&,<$1 --> bird>,<$1 --> swimmer>)>", 0.80f, 0.72f); //en("I believe that if something is a swan, then usually, it is both a bird and a swimmer.");
@@ -446,7 +446,6 @@ public class NAL6Test extends NALTest {
     @Test public void testConjunctionContradictionInduction() {
 
         test
-                .log()
                 .believe("((x && y) ==> z)")
                 .believe("((x && --y) ==> z)")
                 .mustBelieve(cycles, "(x ==> z)", 1.00f, 0.45f);
@@ -877,7 +876,7 @@ public class NAL6Test extends NALTest {
 
 
         test
-                //.log()
+                
                 .believe("num:x", 1.0f, 0.9f)
                 .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
                 .ask("num(((x)))")

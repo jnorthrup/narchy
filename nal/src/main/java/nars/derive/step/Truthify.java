@@ -31,6 +31,7 @@ abstract public class Truthify extends AbstractPred<Derivation> {
         return 2f;
     }
 
+
     @Override
     public final boolean test(Derivation d) {
 
@@ -41,12 +42,15 @@ abstract public class Truthify extends AbstractPred<Derivation> {
             case BELIEF:
             case GOAL:
                 TruthOperator f = (punc == BELIEF) ? belief : goal;
-
                 if (f == null)
                     return false; //there isnt a truth function for this punctuation
 
+                single = f.single();
+                if (!f.allowOverlap() && (single ? d.overlapSingle : d.overlapDouble))
+                    return false;
+
                 Truth beliefTruth;
-                if (single = f.single()) {
+                if (single) {
                     beliefTruth = null;
                 } else {
                     beliefTruth = projectBeliefToTask ? d.beliefTruthDuringTask : d.beliefTruth;
@@ -62,10 +66,6 @@ abstract public class Truthify extends AbstractPred<Derivation> {
                     return false;
 
 
-                if (!f.allowOverlap() && (single ? d.overlapSingle : d.overlapDouble))
-                    return false;
-
-
                 d.truthFunction = f;
 
                 break;
@@ -75,7 +75,7 @@ abstract public class Truthify extends AbstractPred<Derivation> {
                 if (d.overlapSingle)
                     return false;
                 //if (o > 0 && d.random.nextFloat() <= o)
-                    //return false;
+                //return false;
 
 //                byte tp = d.taskPunct;
 //                if ((tp == QUEST) || (tp == GOAL))
@@ -97,7 +97,12 @@ abstract public class Truthify extends AbstractPred<Derivation> {
     }
 
 
-    public abstract byte punc(Derivation d);
+    public byte punc(Derivation d) {
+        return d.taskPunc;
+    }
+
+    public abstract byte punc(byte taskPunc);
+
 
     /**
      * Created by me on 5/26/16.
@@ -111,6 +116,11 @@ abstract public class Truthify extends AbstractPred<Derivation> {
             this.puncOverride = puncOverride;
         }
 
+
+        @Override
+        public byte punc(byte taskPunc) {
+            return puncOverride;
+        }
 
         @Override
         public byte punc(Derivation d) {
@@ -129,12 +139,93 @@ abstract public class Truthify extends AbstractPred<Derivation> {
         }
 
         @Override
-        public byte punc(Derivation d) {
-            return d.taskPunc;
+        public byte punc(byte taskPunc) {
+            return taskPunc;
         }
-
     }
 
+//    static byte unpunc(byte punc) {
+//        switch (punc) {
+//            case BELIEF:
+//                return 0;
+//            case GOAL:
+//                return 1;
+//            case QUESTION:
+//                return 2;
+//            case QUEST:
+//                return 3;
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
+//
+//    }
+//
+//    public PrediTerm preFilter() {
+//        boolean belief = this.belief != null;
+//        boolean beliefSingle = belief && this.belief.single();
+//        boolean beliefAllowOverlap = belief && this.belief.allowOverlap();
+//        boolean goal = this.goal != null;
+//        boolean goalSingle = goal && this.goal.single();
+//        boolean goalAllowOverlap = goal && this.goal.allowOverlap();
+//
+//        /** punc translation table */
+//        byte punc[] = new byte[]{
+//                unpunc(punc(BELIEF)),
+//                unpunc(punc(GOAL)),
+//                unpunc(punc(QUESTION)),
+//                unpunc(punc(QUEST)) };
+//
+//        return new AbstractPred<Derivation>($.func("preTruthify",
+//                $.p(punc[0], punc[1], punc[2], punc[3]),
+//                $.p(belief, beliefSingle, beliefAllowOverlap, goal, goalSingle, goalAllowOverlap)
+//        )) {
+//
+//            private byte punc(byte taskPunc) {
+//                switch (taskPunc) {
+//                    case BELIEF:
+//                        return punc[0];
+//                    case GOAL:
+//                        return punc[1];
+//                    case QUESTION:
+//                        return punc[2];
+//                    case QUEST:
+//                        return punc[3];
+//                    default:
+//                        throw new UnsupportedOperationException();
+//                }
+//            }
+//
+//            @Override
+//            public boolean test(Derivation derivation) {
+//                boolean single = derivation.belief == null;
+//                switch (punc(derivation.taskPunc)) {
+//                    case BELIEF:
+//                        return belief && ((!single || beliefSingle) || beliefAllowOverlap || !derivation.overlapDouble);
+//                    case GOAL:
+//                        return goal && ((!single || goalSingle) || goalAllowOverlap || !derivation.overlapDouble);
+//                    case QUESTION:
+//                    case QUEST:
+//                        return !derivation.overlapSingle;
+//                    default:
+//                        return false;
+//                }
+//            }
+//        };
+//    }
+//
+//    boolean valid(byte taskPunc, boolean single, boolean overlap, boolean cyclic) {
+//        switch (punc(taskPunc)) {
+//            case BELIEF:
+//                return belief != null && ((!single || belief.single()) || belief.allowOverlap() || !overlap);
+//            case GOAL:
+//                return goal != null && ((!single || goal.single()) || goal.allowOverlap() || !overlap);
+//            case QUESTION:
+//            case QUEST:
+//                return !cyclic;
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
+//    }
 
 //    static final AbstractPred<Derivation> NotCyclic = new AbstractPred<Derivation>($.the("notCyclic")) {
 //

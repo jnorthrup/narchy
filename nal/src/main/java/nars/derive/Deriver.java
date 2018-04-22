@@ -112,9 +112,7 @@ abstract public class Deriver extends Causable {
     }
 
 
-    protected boolean derivable(Derivation d) {
-        return rules.derivable(d);
-    }
+
 
     @Override
     public final boolean singleton() {

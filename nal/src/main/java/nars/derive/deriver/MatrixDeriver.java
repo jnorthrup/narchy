@@ -104,7 +104,7 @@ public class MatrixDeriver extends Deriver {
 
                 if (premise.match(d, matchTTL)) {
 
-                    if (derivable(d)) {
+                    if (rules.derivable(d)) {
 
                         d.derive(deriveTTL);
 

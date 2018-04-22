@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 public class ArrayTermVector extends TermVector {
 
     /*@NotNull*/
-    @Stable
+    /*@Stable*/
     private final Term[] terms;
 
     public ArrayTermVector(/*@NotNull */Term... terms) {

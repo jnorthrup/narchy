@@ -1,22 +1,13 @@
 package nars.concept.dynamic;
 
-import jcog.decide.Roulette;
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.table.TemporalBeliefTable;
-import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
-import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
-
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.XTERNAL;
 
 
 /** computes dynamic truth according to implicit truth functions
@@ -41,11 +32,13 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 
 
     @Override
-    protected Task taskDynamic(long start, long end, final Term _template, NAR nar) {
+    protected Task taskDynamic(long start, long end, Term template, NAR nar) {
 
-        Term template = template(start, end, _template, nar);
-        if (template == null || (template!=_template && template.op()!=_template.op()))
-            return null;
+//        Term template = template(start, end, _template, nar);
+//        if (template == null || (template!=_template && template.op()!=_template.op()))
+//            return null;
+        if (template == null)
+            template = term;
 
         DynTruth yy = model.eval(template, beliefOrGoal, start, end, nar);
         if (yy != null) {
@@ -76,9 +69,6 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         if (template == null)
             template = term;
 
-        if (template.hasXternal())
-            return null; //cant be evaluated without a template
-
         DynTruth d = model.eval(template, beliefOrGoal, start, end, nar);
         if (d!=null)
             return d.truth(template, model, beliefOrGoal, nar);
@@ -86,124 +76,124 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
             return null;
     }
 
-    @Nullable
-    protected Term template(long start, long end, Term template, NAR nar) {
-        Op templateOp = template.op();
-        if (this.term != null && templateOp != this.term.op())
-            return null; //template doesnt match this (quick op test)
-
-        int templateSubs = template.subs();
-        assert (templateSubs > 1);
-        boolean temporal = templateOp.temporal;
-        if (temporal) {
-            int d = template.dt();
-            if (d == XTERNAL) {
-                int e = matchDT(start, end, templateSubs > 2, nar);
-                assert (e != XTERNAL);
-                Term next = template.dt(e);
-
-                if ((next.subs() < templateSubs || next.dt() == XTERNAL)) {
-
-                    /*if no dt can be calculated, return
-                              0 or some non-zero value (ex: 1, end-start, etc) in case of repeating subterms. */
-                    int artificialDT;
-
-
-                    if (templateSubs == 2) {
-                        if (start != end && end - start < Integer.MAX_VALUE) {
-                            if (end != start) {
-                                artificialDT = (int) (end - start);
-                            } else {
-                                artificialDT =
-                                        (template.sub(0).unneg().equals(template.sub(1).unneg())) ?
-                                                nar.dur() :
-                                                0; //ok for simultaneous
-                            }
-                        } else {
-                            artificialDT = nar.dur();
-                        }
-
-
-                    } else /*(if (templateSubs > 2)*/ {
-                        assert (templateSubs > 2);
-                        artificialDT = 0; //commutive conjunction
-                    }
-
-                    next = template.dt(artificialDT);
-
-                    if (next.subs() < templateSubs || next.dt() == XTERNAL) {
-                        return null; //give up
-
-//                        next = template;
-//                        if (next.subs() == 2) {
+//    @Nullable
+//    protected Term template(long start, long end, Term template, NAR nar) {
+//        Op templateOp = template.op();
+//        if (this.term != null && templateOp != this.term.op())
+//            return null; //template doesnt match this (quick op test)
 //
-//                            //possibly pulled an internal XTERNAL to the outside, so try artificializing this as well
-//                            int limit = 2;
-//                            int nextDT = XTERNAL;
-//                            do {
-//                                next = next.dt(artificialDT);
-//                                if (next instanceof Bool)
-//                                    return null;
-//                            } while (limit-- > 0 && (nextDT = next.dt()) == XTERNAL);
+//        int templateSubs = template.subs();
+//        assert (templateSubs > 1);
+//        boolean temporal = templateOp.temporal;
+//        if (temporal) {
+//            int d = template.dt();
+//            if (d == XTERNAL) {
+//                int e = matchDT(start, end, templateSubs > 2, nar);
+//                assert (e != XTERNAL);
+//                Term next = template.dt(e);
 //
-//                            if (nextDT == XTERNAL)
-//                                return null; //give up
+//                if ((next.subs() < templateSubs || next.dt() == XTERNAL)) {
 //
-//                        } else {
-//                            //create a random sequence of the terms, separated by artificial DT's
-//                            assert (templateOp == CONJ);
-//                            Term[] subs = template.subterms().arrayClone();
-//                            ArrayUtils.shuffle(subs, nar.random());
-//                            int dur = nar.dur();
-//                            next = subs[0];
-//                            for (int k = 1; k < subs.length; k++) {
-//                                next = Op.conjMerge(next, 0, subs[k], dur);
-//                                if (next instanceof Bool)
-//                                    return null; //it is probably possible to find another solution with a different shuffle
+//                    /*if no dt can be calculated, return
+//                              0 or some non-zero value (ex: 1, end-start, etc) in case of repeating subterms. */
+//                    int artificialDT;
+//
+//
+//                    if (templateSubs == 2) {
+//                        if (start != end && end - start < Integer.MAX_VALUE) {
+//                            if (end != start) {
+//                                artificialDT = (int) (end - start);
+//                            } else {
+//                                artificialDT =
+//                                        (template.sub(0).unneg().equals(template.sub(1).unneg())) ?
+//                                                nar.dur() :
+//                                                0; //ok for simultaneous
 //                            }
+//                        } else {
+//                            artificialDT = nar.dur();
 //                        }
-                    }
-                }
+//
+//
+//                    } else /*(if (templateSubs > 2)*/ {
+//                        assert (templateSubs > 2);
+//                        artificialDT = 0; //commutive conjunction
+//                    }
+//
+//                    next = template.dt(artificialDT);
+//
+//                    if (next.subs() < templateSubs || next.dt() == XTERNAL) {
+//                        return null; //give up
+//
+////                        next = template;
+////                        if (next.subs() == 2) {
+////
+////                            //possibly pulled an internal XTERNAL to the outside, so try artificializing this as well
+////                            int limit = 2;
+////                            int nextDT = XTERNAL;
+////                            do {
+////                                next = next.dt(artificialDT);
+////                                if (next instanceof Bool)
+////                                    return null;
+////                            } while (limit-- > 0 && (nextDT = next.dt()) == XTERNAL);
+////
+////                            if (nextDT == XTERNAL)
+////                                return null; //give up
+////
+////                        } else {
+////                            //create a random sequence of the terms, separated by artificial DT's
+////                            assert (templateOp == CONJ);
+////                            Term[] subs = template.subterms().arrayClone();
+////                            ArrayUtils.shuffle(subs, nar.random());
+////                            int dur = nar.dur();
+////                            next = subs[0];
+////                            for (int k = 1; k < subs.length; k++) {
+////                                next = Op.conjMerge(next, 0, subs[k], dur);
+////                                if (next instanceof Bool)
+////                                    return null; //it is probably possible to find another solution with a different shuffle
+////                            }
+////                        }
+//                    }
+//                }
+//
+//                template = next;
+//            }
+//        }
+//        return template;
+//    }
 
-                template = next;
-            }
-        }
-        return template;
-    }
-
-    /**
-     * returns an appropriate dt for the root term
-     * of beliefs held in the table.  returns 0 if no other value can
-     * be computed.
-     */
-    protected int matchDT(long start, long end, boolean commutive, NAR nar) {
-
-        int s = size();
-        if (s == 0)
-            return 0;
-
-        //int dur = nar.dur();
-
-        IntFloatHashMap dtEvi = new IntFloatHashMap(s);
-        forEachTask(t -> {
-            int tdt = t.dt();
-            if (tdt != DTERNAL) {
-                if (tdt == XTERNAL)
-                    throw new RuntimeException("XTERNAL should not be present in " + t);
-                if ((t.term().subs() > 2) == commutive)
-                    dtEvi.addToValue(tdt, Revision.eviAvg(t, start, end, 1)); //maybe evi
-            }
-        });
-        int n = dtEvi.size();
-        if (n == 0) {
-            return 0;
-        } else {
-            MutableList<IntFloatPair> ll = dtEvi.keyValuesView().toList();
-            int selected = n != 1 ?
-                    Roulette.selectRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
-            return ll.get(selected).getOne();
-        }
-    }
+//    /**
+//     * returns an appropriate dt for the root term
+//     * of beliefs held in the table.  returns 0 if no other value can
+//     * be computed.
+//     */
+//    protected int matchDT(long start, long end, boolean commutive, NAR nar) {
+//
+//        int s = size();
+//        if (s == 0)
+//            return 0;
+//
+//        //int dur = nar.dur();
+//
+//        IntFloatHashMap dtEvi = new IntFloatHashMap(s);
+//        forEachTask(t -> {
+//            int tdt = t.dt();
+//            if (tdt != DTERNAL) {
+//                if (tdt == XTERNAL)
+//                    throw new RuntimeException("XTERNAL should not be present in " + t);
+//                if ((t.term().subs() > 2) == commutive)
+//                    dtEvi.addToValue(tdt, Revision.eviAvg(t, start, end, 1)); //maybe evi
+//            }
+//        });
+//        int n = dtEvi.size();
+//        if (n == 0) {
+//            return 0;
+//        } else {
+//            MutableList<IntFloatPair> ll = dtEvi.keyValuesView().toList();
+//            int selected = n != 1 ?
+//                    Roulette.selectRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
+//            return ll.get(selected).getOne();
+//        }
+//    }
 
 }
 //    /** prepare a term, if necessary, for use as template  */

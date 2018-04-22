@@ -92,7 +92,7 @@ public class NodeWriterTest {
         FunctionNode arg1 = new FunctionNode(IntFunc.the.getSubtract(), integerConstant(5), createVariable(0));
         FunctionNode arg2 = new FunctionNode(IntFunc.the.getMultiply(), createVariable(1), integerConstant(-6876));
         String output = writer.writeNode(new FunctionNode(IntFunc.the.getAdd(), arg1, arg2));
-        assertEquals("(+ (- 5 v0) (* v1 -6876))", output);
+        assertEquals("(+ (* -6876 v1) (- 5 v0))", output);
     }
 
     @Test

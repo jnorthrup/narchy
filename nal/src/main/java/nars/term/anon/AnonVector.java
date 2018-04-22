@@ -19,7 +19,7 @@ import static nars.Op.NEG;
  */
 public class AnonVector extends TermVector {
 
-    @Stable
+    /*@Stable*/
     final short[] subterms;
 
     /** assumes the array contains only AnonID instances */

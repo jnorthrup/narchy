@@ -1,7 +1,7 @@
 package nars.term.atom;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
-import jdk.internal.vm.annotation.Stable;
 import nars.Op;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import static java.lang.System.arraycopy;
 public abstract class AtomicConst implements Atomic {
 
 
-    @Stable
+    /*@Stable*/
     final transient byte[] bytesCached;
     protected final transient int hash;
 
@@ -54,6 +54,10 @@ public abstract class AtomicConst implements Atomic {
         return sbytes;
     }
 
+    @Override
+    public void append(ByteArrayDataOutput out) {
+        out.write(bytesCached);
+    }
 
     @Override
     public final byte[] bytes() {

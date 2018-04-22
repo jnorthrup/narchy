@@ -70,20 +70,21 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     public MutableNode<N, E> addNode(N key) {
 
-        Node<N, E> r = nodes.get(key);
-        if (r == null) {
-            r = newNode(key);
-            nodes.put(key, r);
-            onAdd(r);
-        }
-//        final boolean[] created = {false};
-//        Node<N, E> r = nodes.computeIfAbsent(key, (x) -> {
-//            created[0] = true;
-//            return newNode(x);
-//        });
-//        if (created[0]) {
+//        Node<N, E> r = nodes.get(key);
+//        if (r == null) {
+//            r = newNode(key);
+//            nodes.put(key, r);
 //            onAdd(r);
 //        }
+
+        final boolean[] created = {false};
+        Node<N, E> r = nodes.computeIfAbsent(key, (x) -> {
+            created[0] = true;
+            return newNode(x);
+        });
+        if (created[0]) {
+            onAdd(r);
+        }
         return (MutableNode<N, E>) r;
     }
 

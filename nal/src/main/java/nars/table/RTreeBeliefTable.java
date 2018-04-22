@@ -70,8 +70,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             //1f;
             //1.5f;
             //2f;
-            4f;
+            //4f;
             //8f;
+            10f;
 
 
     private static final int SCAN_CONF_OCTAVES_MAX = 1;

@@ -20,7 +20,7 @@ public class SimpleConceptGraph2D {
     public static void main(String[] args) throws Narsese.NarseseException {
 
         NAR n = NARS.tmp(1);
-        n.termVolumeMax.set(7);
+        n.termVolumeMax.set(9);
 //        n.input("a:b.");
 //        n.input("b:c.");
 //        n.input("c:d.");

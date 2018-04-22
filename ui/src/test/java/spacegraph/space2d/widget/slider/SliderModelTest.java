@@ -2,10 +2,7 @@ package spacegraph.space2d.widget.slider;
 
 import spacegraph.SpaceGraph;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static spacegraph.space2d.container.grid.Gridding.col;
-import static spacegraph.space2d.container.grid.Gridding.grid;
-import static spacegraph.space2d.container.grid.Gridding.row;
+import static spacegraph.space2d.container.grid.Gridding.*;
 
 class SliderModelTest {
     public static void main(String[] args) {

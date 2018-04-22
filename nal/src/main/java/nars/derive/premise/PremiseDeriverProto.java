@@ -879,8 +879,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         precon.addAll(this.pre);
 
 
-        ////-------------------
-        //below here are predicates which affect the derivation
+
 
 
         //SUFFIX (order already determined for matching)

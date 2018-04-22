@@ -6,6 +6,7 @@ import jcog.data.UnenforcedConcatSet;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 
 import java.util.*;
@@ -35,12 +36,16 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         if (id != null) {
             int sizeBeforeClear = id.size();
             id.clear();
-            if (sizeBeforeClear > 16)
+            if (sizeBeforeClear > compactThreshold())
                 id.compact(); //shrink internal key/value array
         }
         //id = null;
 
         if (other != null) other.clear();
+    }
+
+    public int compactThreshold() {
+        return initialHashCapacity()*2;
     }
 
     @Override
@@ -69,8 +74,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             if (id == null) {
                 X next = f.apply(key, null);
                 if (next!=null) {
-                    id = newIDMap();
-                    id.put(a, next);
+                    ensureIDMap().put(a, next);
                 }
                 return next;
             } else {
@@ -82,8 +86,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             if (other == null) {
                 X next = f.apply(key, null);
                 if (next!=null) {
-                    other = newOtherMap();
-                    other.put(key, next);
+                    ensureOtherMap().put(key, next);
                 }
                 return next;
             } else {
@@ -110,8 +113,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             if (id == null) {
                 X next = mappingFunction.apply(key);
                 if (next!=null) {
-                    id = newIDMap();
-                    id.put(a, next);
+                    (id = newIDMap()).put(a, next);
                 }
                 return next;
             } else {
@@ -123,8 +125,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             if (other == null) {
                 X next = mappingFunction.apply(key);
                 if (next!=null) {
-                    other = newOtherMap();
-                    other.put(key, next);
+                    (other = newOtherMap()).put(key, next);
                 }
                 return next;
             } else {
@@ -132,6 +133,22 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             }
         }
 
+    }
+    private ShortObjectHashMap<X> ensureIDMap() {
+        ShortObjectHashMap<X> o = this.id;
+        if (o == null) {
+            return this.id = newIDMap();
+        } else {
+            return o;
+        }
+    }
+    private Map<Term, X> ensureOtherMap() {
+        Map<Term, X> o = this.other;
+        if (o == null) {
+            return this.other = newOtherMap();
+        } else {
+            return o;
+        }
     }
 
     @Override
@@ -149,11 +166,9 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     @Override
     public X put(Term key, X value) {
         if (key instanceof AnonID) {
-            if (id == null) id = newIDMap();
-            return id.put(((AnonID) key).anonID(), value);
+            return ensureIDMap().put(((AnonID) key).anonID(), value);
         } else {
-            if (other == null) other = newOtherMap();
-            return other.put(key, value);
+            return ensureOtherMap().put(key, value);
         }
     }
 
@@ -171,14 +186,17 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         return null;
     }
 
+    protected int initialHashCapacity() {
+        return 8;
+    }
+
     protected ShortObjectHashMap<X> newIDMap() {
-        return new ShortObjectHashMap(8);
+        return new ShortObjectHashMap<>(initialHashCapacity());
     }
 
     protected Map<Term, X> newOtherMap() {
-
-        //return new UnifiedMap();
-        return new HashMap(8);
+        return new UnifiedMap<>(initialHashCapacity(), 0.99f);
+        //return new HashMap(initialHashCapacity(), 0.99f);
     }
 
     @Override

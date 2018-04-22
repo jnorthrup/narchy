@@ -244,7 +244,6 @@ public class QuestionTest {
 
     @Test public void testExplicitEternalizationViaQuestion() {
         new TestNAR(NARS.tmp())
-                .log()
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "x. :|: %0.50;0.90%")
                 .inputAt(7, "x. :|: %0.00;0.90%")
@@ -255,7 +254,6 @@ public class QuestionTest {
 
     @Test public void testExplicitEternalizationViaQuestionDynamic() {
         new TestNAR(NARS.tmp())
-                .log()
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "y. :|: %1.00;0.90%")
                 .inputAt(1, "$1.0 (x &&+3 y)? :|:") //temporal

@@ -14,25 +14,18 @@ import java.util.Arrays;
  */
 public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes {
 
+    static final int MIN_GROWTH_BYTES = 128;
     /**
      * must remain final for global consistency
      * might as well be 1.0, if it's already compressed to discover what this is, just keep it
      */
     private final static float minCompressionRatio = 1f;
-
     /**
      * must remain final for global consistency
      */
     private final static int MIN_COMPRESSION_BYTES = 64;
-
-    static final int MIN_GROWTH_BYTES = 64;
-
-    protected byte[] bytes;
     public int len;
-
-    protected DynBytes() {
-        this.bytes = null;
-    }
+    protected byte[] bytes;
 
     public DynBytes(int bufferSize) {
         this.bytes = new byte[bufferSize];
@@ -191,127 +184,123 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     private int ensureSized(int extra) {
         byte[] b = this.bytes;
-        int space = b != null ? b.length : 0;
+        int space = b.length;
         int p = this.len;
         if (space - p <= extra) {
-            this.bytes =
-                    b != null ?
-                            Arrays.copyOf(this.bytes, space + Math.max(extra, MIN_GROWTH_BYTES)) :
-                            new byte[extra];
+            this.bytes = Arrays.copyOf(b, space + Math.max(extra, MIN_GROWTH_BYTES));
         }
         return p;
     }
 
-    @Override
-    public final byte[] array() {
-        compact();
-        return bytes;
-    }
-
-    public byte[] compact() {
-        return compact(false);
-    }
-
-    public final byte[] compact(boolean force) {
-        return compact(null, force);
-    }
-
-    public final byte[] compact(byte[] forceIfSameAs, boolean force) {
-        int l = this.len;
-        if (l > 0) {
-            byte[] b = this.bytes;
-            if (force || b.length != l || forceIfSameAs == bytes)
-                this.bytes = Arrays.copyOfRange(b, 0, l);
-        } else {
-            this.bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
+        @Override
+        public final byte[] array () {
+            compact();
+            return bytes;
         }
-        return bytes;
-    }
+
+        public byte[] compact () {
+            return compact(false);
+        }
+
+        public final byte[] compact ( boolean force){
+            return compact(null, force);
+        }
+
+        public final byte[] compact ( byte[] forceIfSameAs, boolean force){
+            int l = this.len;
+            if (l > 0) {
+                byte[] b = this.bytes;
+                if (force || b.length != l || forceIfSameAs == bytes)
+                    this.bytes = Arrays.copyOfRange(b, 0, l);
+            } else {
+                this.bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
+            }
+            return bytes;
+        }
 
 
-    @Override
-    public final void toArray(byte[] c, int offset) {
-        System.arraycopy(bytes, 0, c, offset, length());
-    }
+        @Override
+        public final void toArray ( byte[] c, int offset){
+            System.arraycopy(bytes, 0, c, offset, length());
+        }
 
-    @Override
-    public String toString() {
-        return Arrays.toString(ArrayUtils.subarray(bytes, 0, length()));
-    }
+        @Override
+        public String toString () {
+            return Arrays.toString(ArrayUtils.subarray(bytes, 0, length()));
+        }
 
 
-    @Override
-    public final void writeBoolean(boolean v) {
-        ensureSized(1);
-        byte[] e = this.bytes;
-        e[this.len++] = (byte) (v ? 1 : 0);
-    }
+        @Override
+        public final void writeBoolean ( boolean v){
+            ensureSized(1);
+            byte[] e = this.bytes;
+            e[this.len++] = (byte) (v ? 1 : 0);
+        }
 
-    @Override
-    public final void writeShort(int v) {
+        @Override
+        public final void writeShort ( int v){
+            int s = ensureSized(2);
+            byte[] e = this.bytes;
+            e[s] = (byte) (v >> 8);
+            e[s + 1] = (byte) v;
+            this.len += 2;
+        }
 
-        int s = ensureSized(2);
-        byte[] e = this.bytes;
-        e[s] = (byte) (v >> 8);
-        e[s + 1] = (byte) v;
-        this.len += 2;
-    }
+        @Override
+        public final void writeChar ( int v){
 
-    @Override
-    public final void writeChar(int v) {
+            int s = ensureSized(2);
+            byte[] e = this.bytes;
+            e[s] = (byte) (v >> 8);
+            e[s + 1] = (byte) v;
+            this.len += 2;
 
-        int s = ensureSized(2);
-        byte[] e = this.bytes;
-        e[s] = (byte) (v >> 8);
-        e[s + 1] = (byte) v;
-        this.len += 2;
+        }
 
-    }
+        @Override
+        public final void writeInt ( int v){
 
-    @Override
-    public final void writeInt(int v) {
+            int s = ensureSized(4);
+            byte[] e = this.bytes;
+            e[s] = (byte) (v >> 24);
+            e[s + 1] = (byte) (v >> 16);
+            e[s + 2] = (byte) (v >> 8);
+            e[s + 3] = (byte) v;
+            this.len += 4;
+        }
 
-        int s = ensureSized(4);
-        byte[] e = this.bytes;
-        e[s] = (byte) (v >> 24);
-        e[s + 1] = (byte) (v >> 16);
-        e[s + 2] = (byte) (v >> 8);
-        e[s + 3] = (byte) v;
-        this.len += 4;
-    }
+        @Override
+        public final void writeLong ( long v){
 
-    @Override
-    public final void writeLong(long v) {
+            int s = ensureSized(8);
+            this.len += 8;
+            byte[] e = this.bytes;
+            e[s] = (byte) ((int) (v >> 56));
+            e[s + 1] = (byte) ((int) (v >> 48));
+            e[s + 2] = (byte) ((int) (v >> 40));
+            e[s + 3] = (byte) ((int) (v >> 32));
+            e[s + 4] = (byte) ((int) (v >> 24));
+            e[s + 5] = (byte) ((int) (v >> 16));
+            e[s + 6] = (byte) ((int) (v >> 8));
+            e[s + 7] = (byte) ((int) v);
+        }
 
-        int s = ensureSized(8);
-        this.len += 8;
-        byte[] e = this.bytes;
-        e[s] = (byte) ((int) (v >> 56));
-        e[s + 1] = (byte) ((int) (v >> 48));
-        e[s + 2] = (byte) ((int) (v >> 40));
-        e[s + 3] = (byte) ((int) (v >> 32));
-        e[s + 4] = (byte) ((int) (v >> 24));
-        e[s + 5] = (byte) ((int) (v >> 16));
-        e[s + 6] = (byte) ((int) (v >> 8));
-        e[s + 7] = (byte) ((int) v);
-    }
+        @Override
+        public final void writeFloat ( float v){
 
-    @Override
-    public final void writeFloat(float v) {
+            int s = ensureSized(4);
+            byte[] e = this.bytes;
+            this.len += 4;
+            int bits = Float.floatToIntBits(v);
+            e[s] = (byte) (bits >> 24);
+            e[s + 1] = (byte) (bits >> 16);
+            e[s + 2] = (byte) (bits >> 8);
+            e[s + 3] = (byte) bits;
+        }
 
-        int s = ensureSized(4);
-        byte[] e = this.bytes;
-        this.len += 4;
-        int bits = Float.floatToIntBits(v);
-        e[s] = (byte) (bits >> 24);
-        e[s + 1] = (byte) (bits >> 16);
-        e[s + 2] = (byte) (bits >> 8);
-        e[s + 3] = (byte) bits;
-    }
-
-    @Override
-    public final void writeDouble(double v) {
-        throw new UnsupportedOperationException("yet");
+        @Override
+        public final void writeDouble ( double v){
+            throw new UnsupportedOperationException("yet");
 //        long bits = Double.doubleToLongBits(v);
 //
 //        int e = this.buffer.length - this.position;
@@ -340,47 +329,47 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 //        }
 //
 
-    }
+        }
 
-    @Override
-    public void writeBytes(String s) {
+        @Override
+        public void writeBytes (String s){
 //        int len = s.length();
 //
 //        for (int i = 0; i < len; ++i) {
 //            this.write(s.charAt(i));
 //        }
-        throw new UnsupportedOperationException("TODO");
+            throw new UnsupportedOperationException("TODO");
 
-    }
+        }
 
 
-    @Override
-    @Deprecated
-    public byte[] toByteArray() {
-        return bytes;
-    }
+        @Override
+        @Deprecated
+        public byte[] toByteArray () {
+            return bytes;
+        }
 
-    @Override
-    public void writeChars(String s) {
+        @Override
+        public void writeChars (String s){
 //        int len = s.length();
 //
 //        for (int i = 0; i < len; ++i) {
 //            this.writeChar(s.charAt(i));
 //        }
-        throw new UnsupportedOperationException("TODO");
+            throw new UnsupportedOperationException("TODO");
 
-    }
+        }
 
-    @Override
-    public void writeUTF(String s) {
+        @Override
+        public void writeUTF (String s){
 
-        throw new UnsupportedOperationException("yet");
+            throw new UnsupportedOperationException("yet");
 
-        //WARNING this isnt UTF8
+            //WARNING this isnt UTF8
 //        this.write(strToBytes(s));
 //        this.writeByte(0); //null-terminated
 
-        //IO.writeWithPreLen(s, this);
+            //IO.writeWithPreLen(s, this);
 
 
 //        byte[] ss = Hack.bytes(s);
@@ -389,42 +378,42 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
 //        UTF8Writer
 //        UTFUtils.writeUTFBytes(this, s);
-    }
-
-    @Override
-    public Appendable append(CharSequence csq) {
-        return append(csq, 0, csq.length());
-    }
-
-    @Override
-    public Appendable append(CharSequence csq, int start, int end) {
-        for (int i = start; i < end; i++) {
-            writeChar(csq.charAt(i)); //TODO optimize
         }
-        return this;
-    }
 
-    @Override
-    public Appendable append(char c) {
-        writeChar(c);
-        return this;
-    }
+        @Override
+        public Appendable append (CharSequence csq){
+            return append(csq, 0, csq.length());
+        }
 
-    public void appendTo(DataOutput out) throws IOException {
-        out.write(bytes, 0, len);
-    }
+        @Override
+        public Appendable append (CharSequence csq,int start, int end){
+            for (int i = start; i < end; i++) {
+                writeChar(csq.charAt(i)); //TODO optimize
+            }
+            return this;
+        }
 
-    public void writeUnsignedByte(int i) {
-        writeByte(i & 0xff);
-    }
+        @Override
+        public Appendable append ( char c){
+            writeChar(c);
+            return this;
+        }
 
-    public void clear() {
-        len = 0;
-    }
+        public void appendTo (DataOutput out) throws IOException {
+            out.write(bytes, 0, len);
+        }
 
-    public RawBytes rawCopy() {
-        return new RawBytes(compact(true));
-    }
+        public void writeUnsignedByte ( int i){
+            writeByte(i & 0xff);
+        }
+
+        public void clear () {
+            len = 0;
+        }
+
+        public RawBytes rawCopy () {
+            return new RawBytes(compact(true));
+        }
 
 //    @Override
 //    public void flush()  {
@@ -474,4 +463,4 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 //        
 //        this.byteOutput.close();
 //    }
-}
+    }

@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.util.time.Tense.*;
+import static nars.util.time.Tense.ETERNAL;
+import static nars.util.time.Tense.Present;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

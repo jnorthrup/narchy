@@ -45,7 +45,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 //        assert(Op.VAR_PATTERN.id - DEP_ORD == 3);
 //    }
 
-    @Stable
+    /*@Stable*/
     private final byte[] bytes;
 
     protected NormalizedVariable(/*@NotNull*/ Op type, byte num) {

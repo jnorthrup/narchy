@@ -1,10 +1,10 @@
 package spacegraph.space2d.dyn2d.jbox2d;
 
+import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.RevoluteJointDef;
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.util.math.v2;
 
 /**

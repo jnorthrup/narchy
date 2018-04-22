@@ -12,7 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static nars.Op.QUESTION;
-import static nars.truth.Stamp.*;
+import static nars.truth.Stamp.toSetArray;
+import static nars.truth.Stamp.zip;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

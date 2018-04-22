@@ -2,7 +2,10 @@ package nars.prolog;
 
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Theory;
-import nars.*;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
+import nars.Op;
 import nars.concept.Operator;
 import nars.op.prolog.PrologToNAL;
 import nars.term.Term;

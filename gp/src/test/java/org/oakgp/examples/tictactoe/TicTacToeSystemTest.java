@@ -36,11 +36,13 @@ public class TicTacToeSystemTest {
     private static final int NUM_GENERATIONS = 10;
     private static final int INITIAL_POPULATION_SIZE = 50;
     private static final int INITIAL_POPULATION_MAX_DEPTH = 4;
-    private static final Type BOARD_TYPE = type("board");
     private static final Type MOVE_TYPE = type("move");
     private static final Type POSSIBLE_MOVE = type("possibleMove");
-    private static final Type SYMBOL_TYPE = type("symbol");
-    private static final Type[] VARIABLE_TYPES = {BOARD_TYPE, SYMBOL_TYPE, SYMBOL_TYPE};
+    private static final Type[] VARIABLE_TYPES = {
+            type("board"),
+            type("symbol"),
+            type("symbol")
+    };
 
     @Test
     public void testHighLevel() {

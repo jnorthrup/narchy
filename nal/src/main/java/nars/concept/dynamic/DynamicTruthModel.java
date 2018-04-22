@@ -13,6 +13,7 @@ import nars.term.Term;
 import nars.term.compound.util.Conj;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -60,6 +61,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
                 BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
 
+                //TODO if ETERNAL , intersects test isnt necessary
                 bt = table.match(subStart, subEnd, concept, (x)->
                     x.intersects(subStart, subEnd) && d.doesntOverlap(x), n
                 );
@@ -267,10 +269,20 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         @Override
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            long range = start!=ETERNAL ? end-start : 0;
-            return superterm.eventsWhile((when, event)->
-                    each.accept(event, when, when + range),
-            start, true, true, false, 0);
+            int superDT = superterm.dt();
+            boolean xternal = superDT ==XTERNAL;
+            boolean dternal = superDT ==DTERNAL;
+            LongObjectPredicate<Term> sub;
+            if (xternal || dternal) {
+                //the entire range
+                sub = (whenIgnored, event) -> each.accept(event, start, end);
+            } else {
+                //specific sub-range
+                long range = start!=ETERNAL ? end-start : 0;
+                sub = (when, event) -> each.accept(event, when, when+range);
+            };
+            return superterm.eventsWhile(sub, start,
+                    !xternal && !dternal, dternal, xternal, 0);
         }
     }
 

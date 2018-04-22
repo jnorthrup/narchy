@@ -32,9 +32,11 @@ import nars.term.control.PrediTerm;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
+import nars.util.term.TermHashMap;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -43,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.c2wSafe;
@@ -82,7 +85,7 @@ public class Derivation extends PreDerivation {
             new CachedAnon(ANON_CAPACITY, 16*1024);
 
     /** temporary un-transform map */
-    public Map<Term,Term> untransform = new HashMap<>();
+    public Map<Term,Term> untransform = new UnifiedMap<>();
 
 
     private ImmutableMap<Term, Termed> derivationFunctors;
@@ -152,7 +155,8 @@ public class Derivation extends PreDerivation {
     public float premiseEviSingle;
     public float premiseEviDouble;
     private long[] evidenceDouble, evidenceSingle;
-    public Occurrify dtSingle = null, dtDouble = null;
+
+    public Occurrify occ = new Occurrify(this);
 
 
     /**
@@ -289,6 +293,10 @@ public class Derivation extends PreDerivation {
 
 //    final MRUCache<Transformation, Term> transformsCache = new MRUCache<>(Param.DERIVATION_THREAD_TRANSFORM_CACHE_SIZE);
 
+    protected static Supplier<Map<Term,Versioned<Term>>> _termMapBuilder = ()->{
+        return new TermHashMap();
+    };
+
     /**
      * if using this, must set: nar, index, random, DerivationBudgeting
      */
@@ -296,7 +304,7 @@ public class Derivation extends PreDerivation {
         super(
                 //null /* any var type */
                 VAR_PATTERN
-                , null, Param.UnificationStackMax, 0);
+                , null, Param.UnificationStackMax, 0, Derivation._termMapBuilder.get());
 
 
         derivedTerm = new Versioned(this, 3);
@@ -472,11 +480,12 @@ public class Derivation extends PreDerivation {
         this.truthFunction = null;
         this.single = false;
         this.evidenceDouble = evidenceSingle = null;
-        this.dtSingle = this.dtDouble = null;
         this.concOcc[0] = this.concOcc[1] = ETERNAL;
 
         return true; //ready
     }
+
+
 
 
     /** called after protoderivation has returned some possible Try's */
@@ -493,7 +502,7 @@ public class Derivation extends PreDerivation {
 
 
 
-        long[] taskStamp = task.stamp();
+        //long[] taskStamp = task.stamp();
         this.overlapSingle = task.isCyclic(); //Stamp.cyclicity(taskStamp);
 
         if (_belief != null) {

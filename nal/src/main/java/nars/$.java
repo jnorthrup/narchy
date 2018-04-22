@@ -281,6 +281,20 @@ public enum $ {
         return $.p((Term[]) $.the(t));
     }
 
+    /** encodes a boolean bitvector as an Int term, or if larger than 31 bits, as an Atom string */
+    public static Term p(boolean... t) {
+        if (t.length < 31) {
+            int b = 0;
+            for (int i = 0; i < t.length; i++) {
+                if (t[i])
+                    b |= 1 << i;
+            }
+            return Int.the(b);
+        } else {
+            throw new TODO();
+        }
+    }
+
     /**
      * warning: generic variable
      */

@@ -5,7 +5,6 @@ import jcog.Texts;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.derive.Derivation;
 import nars.derive.deriver.MatrixDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.op.stm.STMLinkage;
@@ -27,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RuleInductionTest {
     @Test
     public void test1() {
-        int dur = 1;
+        int dur = 3;
         int loops = 10;
         int period = 5;
         int dutyPeriod = 1;
@@ -47,18 +46,18 @@ public class RuleInductionTest {
             //,"B, A, notImpl(A),notImpl(B) |- (A ==>+- B), (Belief:InductionUnprojected)"
         ), n) {
 
-            @Override
-            protected boolean derivable(Derivation d) {
-                if (super.derivable(d)) {
-                    //..
-                    System.out.println(
-                        "task: " + d._task + " @ " + d.taskAt + "\t" +
-                        "belief: " + d._belief + " @ " + d.beliefAt);
-
-                    return true;
-                }
-                return false;
-            }
+//            @Override
+//            protected boolean derivable(Derivation d) {
+//                if (super.derivable(d)) {
+//                    //..
+//                    System.out.println(
+//                        "task: " + d._task + " @ " + d.taskAt + "\t" +
+//                        "belief: " + d._belief + " @ " + d.beliefAt);
+//
+//                    return true;
+//                }
+//                return false;
+//            }
         };
         new STMLinkage(n, 1, false);
 

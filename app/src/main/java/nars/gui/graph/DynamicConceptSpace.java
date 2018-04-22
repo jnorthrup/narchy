@@ -68,7 +68,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         if (concepts == null)
             concepts = (Iterable) this;
 
-        this.concepts = new Bagregate<Activate>(concepts, maxNodes, bagUpdateRate) {
+        this.concepts = new Bagregate<>(concepts, maxNodes, bagUpdateRate) {
 
             @Override
             public void onRemove(PriReference<Activate> value) {
@@ -89,10 +89,20 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     public void start(SpaceGraphPhys3D<Concept> space) {
         synchronized (this) {
             super.start(space);
+            init();
+        }
+
+    }
+
+    public void init() {
+        synchronized (this) {
+            if (onDur != null)
+                onDur.off();
+            if (onClear != null)
+                onClear.off();
+
             onDur = DurService.on(nar, () -> {
-                if (!updated.get() && concepts.update()) {
-
-
+                if (concepts.update()) {
                     updated.set(true);
                 }
 
@@ -105,7 +115,6 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 }
             }));
         }
-
     }
 
     @Override

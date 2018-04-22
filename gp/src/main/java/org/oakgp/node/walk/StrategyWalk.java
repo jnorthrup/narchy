@@ -62,7 +62,8 @@ public final class StrategyWalk {
                 FunctionNode functionNode = (FunctionNode) node;
                 Arguments arguments = functionNode.args();
                 int total = 0;
-                for (int i = 0; i < arguments.length(); i++) {
+                int n = arguments.length();
+                for (int i = 0; i < n; i++) {
                     Node child = arguments.get(i);
                     int c = getNodeCount(child, treeWalkerStrategy);
                     if (total + c > index) {

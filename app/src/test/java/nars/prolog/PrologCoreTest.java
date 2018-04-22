@@ -6,7 +6,6 @@ import alice.tuprolog.Theory;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Param;
 import nars.op.prolog.PrologCore;
 import org.junit.jupiter.api.Test;
 

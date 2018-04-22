@@ -29,7 +29,7 @@ public class SubTreeMutationTest {
         Node input = readNode("(+ (+ (if (zero? v0) 7 8) v1) (+ 9 v2))");
         DummyNodeSelector selector = new DummyNodeSelector(input);
         ConstantNode result = integerConstant(42);
-        SubTreeMutation mutator = new SubTreeMutation(nextInt(10).returns(5), (t, d) -> result);
-        assertNodeEquals("(+ (+ (if (zero? v0) 7 8) 42) (+ 9 v2))", mutator.evolve(selector));
+        SubTreeMutation mutator = new SubTreeMutation(nextInt(10).returns(3), (t, d) -> result);
+        assertNodeEquals("(+ (+ 9 v2) (+ 42 (if (zero? v0) 7 8)))", mutator.evolve(selector));
     }
 }

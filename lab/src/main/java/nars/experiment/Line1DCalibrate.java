@@ -5,7 +5,6 @@ import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import nars.truth.PreciseTruth;

@@ -85,6 +85,10 @@ public abstract class Unify extends Versioning implements Subst {
      * @param random
      */
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
+        this(type, random, stackMax, initialTTL, new TermHashMap<>());
+    }
+
+    protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL, Map<Term,Versioned<Term>> termMap) {
         super(stackMax, initialTTL);
 
 //        this.terms = terms;
@@ -92,7 +96,7 @@ public abstract class Unify extends Versioning implements Subst {
         this.random = random;
         this.type = type;
 
-        xy = new ConstrainedVersionMap(this);
+        xy = new ConstrainedVersionMap(this, termMap);
         //this.free = new Versioned<>(this, 4); //task, belief, subIfUnifies + ?
         //this.freeCount = new Versioned<>(versioning, 8);
 
@@ -407,10 +411,10 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {
-        public ConstrainedVersionMap(Versioning versioning) {
+        public ConstrainedVersionMap(Versioning versioning, Map<Term,Versioned<Term>> termMap) {
             super(versioning,
                     //4
-                    new TermHashMap<>(),
+                    termMap,
                     1);
         }
 

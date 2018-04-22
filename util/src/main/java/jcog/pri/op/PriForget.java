@@ -45,7 +45,8 @@ public class PriForget<P extends Priority> implements Consumer<P> {
                     temperature * //global rate
                     pressure / (pressure + mass) //total fraction, by mass, to depressurize
                     // * (((float)s) / c); //emptiness deduction
-                    * (((float)s) / c)*(1f-(mass/s)); //emptiness deduction corrected in proportion to average pri
+                    //* (((float)s) / c)*(1f-(mass/s)) //emptiness deduction corrected in proportion to average pri
+            ;
 
 //            float eachMustForgetPct =
 //                      (temperature * pressure)

@@ -3,6 +3,7 @@ package nars.derive.premise;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
+import jdk.internal.vm.annotation.Stable;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.term.control.PrediTerm;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 
 public final class PremiseKey {
 
+    /*@Stable*/
     final byte[] key;
     private final int hash;
 
@@ -44,15 +46,11 @@ public final class PremiseKey {
 
         Derivation derivation  = Deriver.derivation.get();
 
-//        derivation.ttl = Integer.MAX_VALUE;
-
-//        assert(derivation.can.isEmpty()); //only place this is used
+        derivation.can.clear();
 
         what.test(derivation);
 
         int[] result = derivation.can.toArray();
-
-        derivation.can.clear();
 
         return Util.toShort(result);
     }

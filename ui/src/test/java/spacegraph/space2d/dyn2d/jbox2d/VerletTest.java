@@ -30,11 +30,11 @@ package spacegraph.space2d.dyn2d.jbox2d;
  */
 
 import jcog.list.FasterList;
+import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.dynamics.*;
 import spacegraph.space2d.phys.dynamics.joints.RopeJoint;
 import spacegraph.space2d.phys.dynamics.joints.RopeJointDef;
-import spacegraph.space2d.dyn2d.ICase;
 import spacegraph.util.math.v2;
 
 import java.util.List;

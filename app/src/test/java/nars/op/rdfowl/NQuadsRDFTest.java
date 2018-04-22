@@ -2,7 +2,6 @@ package nars.op.rdfowl;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

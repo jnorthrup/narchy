@@ -70,7 +70,7 @@ public class SimpleDeriver extends Deriver {
                             if (task!=null) {
                                 Premise premise = new Premise(task, termlink);
                                 if (premise.match(d, matchTTL))
-                                    if (derivable(d))
+                                    if (rules.derivable(d))
                                         d.derive(deriveTTL);
 
                                 if (ii[0]-- <= 0)

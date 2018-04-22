@@ -15,7 +15,7 @@ import java.util.function.Function;
  */
 public class Fork<X> extends AbstractPred<X> {
 
-    @Stable
+    /*@Stable*/
     public final PrediTerm<X>[] branch;
 
     public Fork(PrediTerm<X>[] actions) {

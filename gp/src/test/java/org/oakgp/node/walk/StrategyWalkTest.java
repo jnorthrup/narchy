@@ -95,7 +95,7 @@ public class StrategyWalkTest {
     public void testReplaceAt_FunctionNode() {
         String input = "(+ (+ 1 v0) (+ (+ v0 v1) 2))";
 
-        assertFunctionNodeReplaceAt(input, 0, NodeType::isVariable, "(+ (+ 1 true) (+ (+ v0 v1) 2))");
+        assertFunctionNodeReplaceAt(input, 0, NodeType::isVariable, "(+ (+ true 1) (+ 2 (+ v0 v1)))");
         assertFunctionNodeReplaceAt(input, 1, NodeType::isVariable, "(+ (+ 1 v0) (+ (+ true v1) 2))");
         assertFunctionNodeReplaceAt(input, 2, NodeType::isVariable, "(+ (+ 1 v0) (+ (+ v0 true) 2))");
 

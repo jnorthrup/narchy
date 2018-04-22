@@ -5,7 +5,6 @@ import jcog.data.byt.HashCachedBytes;
 import jcog.memoize.HijackMemoize;
 import jcog.pri.AbstractPLink;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Term;
 
 import java.util.Arrays;

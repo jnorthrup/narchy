@@ -392,6 +392,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 @Override
                 public boolean next() {
 
+                    if (window == null)
+                        return true; //not ready yet
+
                     preRenderTasks.removeIf(r -> {
                         r.accept(JoglWindow.this);
                         return true;

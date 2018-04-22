@@ -71,6 +71,8 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
     private void reload() {
         nar.runLater(() -> {
 
+            nar.stop();
+
             nar.clear();
             nar.concepts.clear();
             //n.reset();
@@ -78,7 +80,9 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
 
             nar.runLater(() -> {
                 try {
+                    init();
                     nar.input(inputbox.text());
+                    nar.startFPS(16);
                 } catch (Narsese.NarseseException e) {
                     e.printStackTrace();
                 }
@@ -95,8 +99,6 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
         //Param.TRACE = true;
         NAR n = NARS.threadSafe();
         new MatrixDeriver(Derivers.nal(1, 8, n));
-
-        n.startFPS(10f);
 
 //        new DeductiveChainTest(n, 8,  2048, inh);
 

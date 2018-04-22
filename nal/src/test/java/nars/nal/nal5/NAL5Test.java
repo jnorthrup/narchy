@@ -130,7 +130,7 @@ public class NAL5Test extends NALTest {
         //B, (A ==> C), belief(positive) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
 
         test
-                //.log()
+                
                 .believe("(b)")
                 .believe("((b)==>(c))", 1, 0.9f)
                 .mustBelieve(cycles, "(c)", 1.00f, 0.81f);
@@ -138,7 +138,6 @@ public class NAL5Test extends NALTest {
 //    @Test public void testImplBeliefNegPos() {
 //        //B, (A ==> C), belief(positive) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
 //        test()
-//                .log()
 //                .believe("(--,(b))")
 //                .believe("((b)==>(c))",1,0.9f)
 //                .mustNotOutput(cycles,"(c)",BELIEF);
@@ -199,7 +198,7 @@ public class NAL5Test extends NALTest {
     @Test
     public void anonymous_analogy1_pos2() {
         test
-                //.log()
+                
                 .believe("(x && y)")
                 .believe("x", 0.80f, 0.9f)
                 .mustBelieve(cycles*10, "y", 0.80f, 0.43f);
@@ -357,7 +356,7 @@ public class NAL5Test extends NALTest {
     public void compound_decomposition_one_premises() {
 
         test
-                //.log()
+                
                 .believe("(&&,<robin --> swimmer>,<robin --> [flying]>)", 0.9f, 0.9f) //.en("Robin can fly and swim.");
                 .mustBelieve(cycles, "<robin --> swimmer>", 0.9f, 0.73f) //.en("Robin can swim.");
                 .mustBelieve(cycles, "<robin --> [flying]>", 0.9f, 0.73f); //.en("Robin can fly.");
@@ -510,7 +509,7 @@ public class NAL5Test extends NALTest {
         //((&&,M,A_1..n) ==> C), ((&&,A_1..n) ==> C) |- M, (Truth:Abduction, Order:ForAllSame)
 
         test
-                //.log()
+                
                 .believe("<(&&,<robin --> [withWings]>,<robin --> [chirping]>) ==> <robin --> bird>>") //.en("If robin is has wings and chirps, then robin is a bird")
                 .believe("<(&&,<robin --> [flying]>,<robin --> [withWings]>,<robin --> [chirping]>) ==> <robin --> bird>>") //.en("If robin can fly, has wings, and chirps, then robin is a bird");
                 .mustBelieve(cycles, "<robin --> [flying]>",
@@ -709,7 +708,7 @@ public class NAL5Test extends NALTest {
 
         // ((%1,(%2==>%3),belief(positive),notImpl(%1),time(urgent)),(subIfUnifiesAny(%3,%2,%1),((DeductionRecursive-->Belief),(InductionRecursive-->Goal))))
         test
-                //.log()
+                
                 .input("(x). %1.0;0.90%")
                 .input("((x) ==> (y)).")
                 .mustBelieve(cycles, "(y)", 1.0f, 0.81f)
@@ -745,7 +744,7 @@ public class NAL5Test extends NALTest {
     public void testImplNegNeg() {
 
         test
-                .log()
+                
                 .input("--x.")
                 .input("(--x ==> --y).")
                 .mustBelieve(cycles, "y", 0.0f, 0.81f)
@@ -769,7 +768,7 @@ public class NAL5Test extends NALTest {
     public void testAbductionNegPosImplicationPred() {
 
         test
-                //.log()
+                
                 .input("y. %1.0;0.90%")
                 .input("(--x ==> y).")
                 .mustBelieve(cycles, "x", 0.0f, 0.45f)
@@ -831,7 +830,6 @@ public class NAL5Test extends NALTest {
 
     //    @Test public void testNegNegImplicationConc() {
 //        test()
-//                .log()
 //                .input("(x). %0.0;0.90%")
 //                .input("((--,(x)) ==> (--,(y))).")
 //                .mustBelieve(cycles, "(y)", 0.0f, 0.81f)
@@ -853,7 +851,7 @@ public class NAL5Test extends NALTest {
     public void testConversion() {
 
         test
-                //.log()
+                
                 .input("((x)==>(y))?")
                 .input("((y)==>(x)).")
                 .mustBelieve(cycles, "((x)==>(y)).", 1.0f, 0.47f)
