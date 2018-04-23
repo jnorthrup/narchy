@@ -265,7 +265,8 @@ public class Reflect {
     public Reflect field(String name) throws ReflectException {
         try {
             Field field = field0(name);
-            return on(field.getType(), field.get(object));
+            return on(field.getType(),
+                    object instanceof Class ? field /* the field itself */ : field.get(object));
         }
         catch (Exception e) {
             throw new ReflectException(e);
@@ -311,13 +312,14 @@ public class Reflect {
      *
      * @return A map containing field names and wrapped values.
      */
-    public Map<String, Reflect> fields() {
+    public Map<String, Reflect> fields(boolean instance, boolean statik) {
         Map<String, Reflect> result = new LinkedHashMap<String, Reflect>();
         Class<?> t = type();
 
         do {
             for (Field field : t.getDeclaredFields()) {
-                if (type != object ^ Modifier.isStatic(field.getModifiers())) {
+                boolean isStatik = Modifier.isStatic(field.getModifiers());
+                if ((isStatik && statik ) || (!isStatik && instance)) {
                     String name = field.getName();
 
                     if (!result.containsKey(name))
