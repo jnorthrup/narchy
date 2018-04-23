@@ -15,12 +15,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 250;
+    static final int cycles = 350;
 
 
     @Override
     protected NAR nar() {
-        return NARS.tmp(2);
+
+        NAR n = NARS.tmp(2);
+        n.termVolumeMax.set(12);
+        return n;
     }
 
 

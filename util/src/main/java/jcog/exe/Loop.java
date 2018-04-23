@@ -33,7 +33,7 @@ abstract public class Loop {
         if (timer == null) {
             Executor exe = Util.executor();
             HashedWheelTimer.logger.info("global timer start: executor={}", exe);
-            timer = new HashedWheelTimer(Loop.class.getName(),
+            timer = new HashedWheelTimer(
                         new AdmissionQueueWheelModel(32, TimeUnit.MILLISECONDS.toNanos(1)),
                          //HashedWheelTimer.WaitStrategy.YieldingWait,
                         HashedWheelTimer.WaitStrategy.SleepWait,

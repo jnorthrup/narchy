@@ -39,22 +39,25 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
     }
 
     @Override
-    public void run(int c, HashedWheelTimer timer) {
+    public int run(int c, HashedWheelTimer timer) {
 
         if (incomingCount.get() > 0) {
             int count = incoming.remove(buffer);
-            incomingCount.addAndGet(-count);
-            for (int i = 0; i < count; i++) {
-                TimedFuture b = buffer[i];
-                buffer[i] = null;
-                schedule(b, c, timer);
+            if (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    TimedFuture b = buffer[i];
+                    buffer[i] = null;
+                    schedule(b, c, timer);
+                }
+                Arrays.fill(buffer, 0, count, null);
+                timer.assertRunning();
+                incomingCount.addAndGet(-count);
             }
-            Arrays.fill(buffer, 0, count, null);
         }
 
         // TODO: consider extracting processing until deadline for test purposes
         Queue<TimedFuture<?>> q = wheel[c];
-        int n = q.size();
+        final int n = q.size();
         switch (n) {
             case 0: break; //shoudlnt happen really
             case 1: {
@@ -77,7 +80,8 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                 //use an iterator
                 Iterator<TimedFuture<?>> i = q.iterator();
 
-                while (i.hasNext() && n-- > 0) {
+                int remain = n;
+                while (remain-- > 0) {
 
                     TimedFuture<?> r = i.next();
 
@@ -96,9 +100,15 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                 }
             }
         }
+        return n;
 
 
 
+    }
+
+    @Override
+    public boolean canExit() {
+        return incomingCount.get() == 0;
     }
 
     @Override
@@ -114,11 +124,12 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
         if (r.state()==TimedFuture.Status.CANCELLED)
             throw new RuntimeException("scheduling an already cancelled task");
 
+        incomingCount.incrementAndGet();
+
         boolean added = incoming.offer(r);
         if (!added)
             throw new RuntimeException("incoming queue overloaded");
 
-        incomingCount.incrementAndGet();
     }
 
     @Override public void reschedule(int wheel, TimedFuture r) {

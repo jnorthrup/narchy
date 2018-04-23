@@ -897,7 +897,7 @@ public class NAL8Test extends NALTest {
                 .inputAt(0, "(a). :|:")
                 .inputAt(4, "(b)@ :|:")
                 //TODO needs a 'mustAsk' condition
-                .mustOutput(0, cycles, "((b) ==>-4 (a))?", QUESTION, 0f, 1f, 0f, 1f, 4);
+                .mustOutput( cycles, "((b) ==>-4 (a))?", QUESTION, 0f, 1f, 0f, 1f, 4);
     }
 //
 //    @Test

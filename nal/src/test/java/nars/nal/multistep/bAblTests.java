@@ -54,7 +54,7 @@ public class bAblTests extends NALTest {
                 .input("inside(bob,kitchen). :|:") ////Bob went to the kitchen.
                 .input("$0.9 inside(football,?where)?") ////Where is the football?
                 .input("$0.9 inside(football,?where)?") ////Where is the football?
-                .mustOutput(0, 1400,
+                .mustOutput( 1400,
                         "inside(football,playground)", BELIEF,
                         1f, 1f, 0.5f, 0.99f, 0); ////A: playground
 

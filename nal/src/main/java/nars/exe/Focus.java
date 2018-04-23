@@ -578,7 +578,9 @@ public class Focus extends AtomicRoulette<Causable> {
             }
 
             for (int i = 0; i < cc; i++) {
-                causes.get(i).commit(/*causeSummary*/);
+                causes.get(i)
+                        //.commit();
+                        .commitFast();
             }
 
 

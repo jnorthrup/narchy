@@ -16,8 +16,14 @@ public class Traffic extends AtomicFloat {
 
     public volatile double total;
 
+    /** fully atomic commit */
     public final void commit() {
         zero(this::commit);
+    }
+    /** partially atomic commit, faster than full atomic commit;
+     * should be ok for single thread modes */
+    public final void commitFast() {
+        commit(getAndZero());
     }
 
     private void commit(float cur) {

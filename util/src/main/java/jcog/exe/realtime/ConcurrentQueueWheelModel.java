@@ -11,8 +11,9 @@ public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
     }
 
     @Override
-    public void run(int wheel, HashedWheelTimer timer) {
+    public int run(int wheel, HashedWheelTimer timer) {
 
+        return wheel;
     }
 
     @Override
@@ -28,5 +29,10 @@ public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
     @Override
     public int size() {
         throw new TODO();
+    }
+
+    @Override
+    public boolean canExit() {
+        return true;
     }
 }

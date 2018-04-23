@@ -235,6 +235,11 @@ public class Cause implements Comparable<Cause> {
             aGoal.commit();
     }
 
+    public void commitFast() {
+        for (Traffic aGoal : goal)
+            aGoal.commitFast();
+    }
+
     public void print(PrintStream out) {
         out.println(this + "\t" +
                 IntStream.range(0, goal.length).mapToObj(x->

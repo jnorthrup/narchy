@@ -991,8 +991,8 @@ public class NAL7Test extends NALTest {
         test
 
                 .input("((x) &&+5 (y))? :|:")
-                .mustOutput(0, cycles, "(x)", QUESTION, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0)
-                .mustOutput(0, cycles, "(y)", QUESTION, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 5)
+                .mustOutput( cycles, "(x)", QUESTION, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0)
+                .mustOutput( cycles, "(y)", QUESTION, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 5)
         ;
     }
 
@@ -1003,8 +1003,8 @@ public class NAL7Test extends NALTest {
         test
                 //
                 .input("((x) &&+5 (y))@ :|:")
-                .mustOutput(0, cycles, "(x)", QUEST, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0)
-                .mustOutput(0, cycles, "(y)", QUEST, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 5)
+                .mustOutput( cycles, "(x)", QUEST, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 0)
+                .mustOutput( cycles, "(y)", QUEST, Float.NaN, Float.NaN, Float.NaN, Float.NaN, 5)
         ;
     }
 

@@ -75,7 +75,6 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
     final static int maxSimilars = 2;
 
-    @NotNull
     protected final TreeMap<Float, Task> similar = new TreeMap();
 
 //    @Override
@@ -125,8 +124,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
     }
 
-    @NotNull
-    public static String rangeStringN2(float min, float max) {
+    static String rangeStringN2(float min, float max) {
         return '(' + Texts.n2(min) + ',' + Texts.n2(max) + ')';
     }
 
@@ -134,7 +132,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
      * a heuristic for measuring the difference between terms
      * in range of 0..100%, 0 meaning equal
      */
-    public static float termDistance(Term a, Term b, float ifLessThan) {
+    static float termDistance(Term a, Term b, float ifLessThan) {
         if (a.equals(b)) return 0;
 
         float dist = 0;
@@ -239,12 +237,6 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         if (task == null)
             return false;
 
-        if (task.punc() != punc)
-            return false;
-
-        if (!truthMatches(task))
-            return false;
-
         Term tt = task.term();
         if (!tt.equals(this.term)) {
             if (tt.op()==term.op() && tt.volume()==this.term.volume() && tt.structure()==this.term.structure() && this.term.toString().equals(tt.toString())) {
@@ -253,6 +245,12 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
             }
             return false;
         }
+
+        if (task.punc() != punc)
+            return false;
+
+        if (!truthMatches(task))
+            return false;
 
         return creationTimeMatches() && occurrenceTimeMatches(task);
     }
