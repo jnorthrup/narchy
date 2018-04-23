@@ -162,7 +162,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         Task t = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
                 ETERNAL, ETERNAL,
                 //Stamp.UNSTAMPED
-                nar().time.nextStampArray()
+                nar().evidence()
         ) {
             @Override
             public boolean isInput() {

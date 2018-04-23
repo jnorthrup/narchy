@@ -73,6 +73,8 @@ public interface ArraySet<X> extends Set<X> {
 		return get(random.nextInt(s));
 	}
 
+	X remove(Random random);
+
 	default X max(FloatFunction<X> rank) {
 		assert(!isEmpty());
 		return new Top<>(new CachedFloatFunction<>(size(), rank)).of(listIterator()).the;

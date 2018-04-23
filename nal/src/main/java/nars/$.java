@@ -610,27 +610,41 @@ public enum $ {
         return $.func("div", $.the(o.getNumerator()), $.the(o.getDenominator()));
     }
 
-    public static Term the(Object o) {
-        if (o instanceof Term)
-            return ((Term) o);
+    public static Term the(Object x) {
+        if (x instanceof Term)
+            return ((Term) x);
 
-        if (o instanceof Number) {
-            if (o instanceof Integer) {
-                return Int.the((Integer) o);
-            } else if (o instanceof Short) {
-                return Int.the((Short) o);
-            } else if (o instanceof Byte) {
-                return Int.the((Byte) o);
-            } else {
-                Number n = (Number) o;
-                double d = n.doubleValue();
-                int id = (int)d;
-                if (d == d && Util.equals(d, id, Double.MIN_NORMAL))
-                    return Int.the(id); //practically an int
-            }
+        if (x instanceof Number) {
+            return the((Number)x);
         }
 
-        return Atomic.the(o.toString()); //default, store as a (probably quoted) string
+        return Atomic.the(x.toString()); //default, store as a (probably quoted) string
+    }
+
+    public static Term the(Number n) {
+        if (n instanceof Integer) {
+            return Int.the((Integer) n); //(32-bit)
+        } else if (n instanceof Long) {
+            return Atomic.the(Long.toString((Long)n)); //TODO make a Int64 type like Int (32-bit)
+        } else if (n instanceof Short) {
+            return Int.the((Short) n);
+        } else if (n instanceof Byte) {
+            return Int.the((Byte) n);
+        } else if (n instanceof Float) {
+            float d = n.floatValue();
+            int id = (int)d;
+            if (d == d && Util.equals(d, id, Float.MIN_NORMAL))
+                return Int.the(id); //practically an int
+
+            return Atomic.the(n.toString()); //last option
+        } else {
+            double d = n.doubleValue();
+            int id = (int)d;
+            if (d == d && Util.equals(d, id, Double.MIN_NORMAL))
+                return Int.the(id); //practically an int
+
+            return Atomic.the(n.toString()); //last option
+        }
     }
 
     /**
@@ -884,6 +898,20 @@ public enum $ {
 
     public static Subterms vFast(Term[] t) {
         return new TermList(t);
+    }
+
+//    public static Term[] $$(String[] s) {
+//        return Util.map((String x) -> $.$$(x), Term[]::new, s);
+//    }
+
+    public static Term[] $(String[] s) {
+        return Util.map((String x) -> {
+            try {
+                return $.$(x);
+            } catch (Narsese.NarseseException e) {
+                throw new RuntimeException(e);
+            }
+        }, Term[]::new, s);
     }
 
 

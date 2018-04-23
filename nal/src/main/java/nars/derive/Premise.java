@@ -44,6 +44,8 @@ public class Premise {
 
     public Premise(Task task, PriReference<Term> termLink) {
         super();
+//        if (task.isQuestionOrQuest())
+//            System.out.println(task + " "+ termLink);
         this.task = task;
         this.termLink = termLink;
         this.hash = Util.hashCombine(task, term());

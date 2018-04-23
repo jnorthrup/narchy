@@ -290,7 +290,7 @@ public class Narsese {
 
             long[] occ = occurrence(nar, x[4]);
 
-            Task yy = new NALTask(C, punct, tr, nar.time(), occ[0], occ[1], nar.time.nextStampArray());
+            Task yy = new NALTask(C, punct, tr, nar.time(), occ[0], occ[1], nar.evidence());
             yy.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
             yy.log(NARSESE_TASK_TAG);
             return yy;

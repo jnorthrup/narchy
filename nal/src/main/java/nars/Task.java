@@ -1171,9 +1171,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     /**
      * fluent form of setPri which returns this class
      */
-    default ITask pri(float p) {
+    default Task pri(float p) {
         priSet(p);
         return this;
+    }
+
+    default Task pri(NAR defaultPrioritizer) {
+        return pri(defaultPrioritizer.priDefault(punc()));
     }
 
     /** computes the average frequency during the given interval */

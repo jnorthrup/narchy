@@ -115,7 +115,7 @@ public class NARS {
                 //new CaffeineIndex(new DefaultConceptBuilder(), 8*1024, 16*1024, null)
                 new MapConceptIndex(
                         //new /*Linked*/HashMap(256, 0.9f)
-                        new MRUCache<>(1024) {
+                        new MRUCache<>(16*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();

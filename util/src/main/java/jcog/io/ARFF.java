@@ -52,6 +52,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static jcog.io.ARFF.AttributeType.*;
 
@@ -75,9 +76,14 @@ import static jcog.io.ARFF.AttributeType.*;
  * not support sparse storage (yet).</p>
  *
  * @author Mikio L. Braun, mikio@cs.tu-berlin.de
+ *
  * https://github.com/mikiobraun/dataformat
+ *
+ * https://github.com/renatopp/arff-datasets
+ * https://archive.ics.uci.edu/ml/datasets.html?format=&task=&att=&area=&numAtt=&numIns=&type=&sort=instUp&view=table
+ *
  */
-public class ARFF {
+public class ARFF implements Iterable<ImmutableList> {
 
 
     static final String NEW_LINE = System.getProperty("line.separator");
@@ -88,38 +94,62 @@ public class ARFF {
      * data 'rows'
      * TODO abstract this to different underlying data model
      */
-    protected final Set<ImmutableList> data;
+    protected final Collection<ImmutableList> data;
     private final List<String> attribute_names;
     private final Map<String, AttributeType> attrTypes;
     private final Map<String, String[]> nominalCats;
     private String relation;
     private String comment;
 
+
+    protected ARFF(ARFF copyMetadataFrom, Collection<ImmutableList> data) {
+        this.attribute_names = copyMetadataFrom.attribute_names;
+        this.attrTypes = copyMetadataFrom.attrTypes;
+        this.nominalCats = copyMetadataFrom.nominalCats;
+        this.relation = copyMetadataFrom.relation;
+        this.comment = copyMetadataFrom.comment;
+        this.data = data;
+    }
+
+    static Collection<ImmutableList> newDefaultDataCollection() {
+        return Sets.newConcurrentHashSet();
+    }
+
     /**
      * Parse an ArffFile from a string.
      */
     public ARFF(String l) throws IOException, ArffFileParseError {
-        this(new BufferedReader(new StringReader(l)));
+        this(l, newDefaultDataCollection());
+    }
+
+    public ARFF(String l, Collection<ImmutableList> data) throws IOException, ArffFileParseError {
+        this(new BufferedReader(new StringReader(l)), data);
     }
 
 
+    /** default data model: concurrent hash set, eliminates duplicate
+     * data points but limited in performance/data access methods.
+     */
+    public ARFF() {
+        this(newDefaultDataCollection());
+    }
     /**
      * Construct an empty ArffFile.
      */
-    public ARFF() {
+    public ARFF(Collection<ImmutableList> data) {
         relation = "";
         comment = null;
         attribute_names = new FasterList<>();
         attrTypes = new HashMap<>();
         nominalCats = new HashMap<>();
-        data = Sets.newConcurrentHashSet();
+        this.data = data;
     }
 
     /**
      * Parse an ArffFile from a BufferedReader.
      */
-    private ARFF(BufferedReader r) throws IOException, ArffFileParseError {
-        this();
+    public ARFF(BufferedReader r, Collection<ImmutableList> data) throws IOException, ArffFileParseError {
+        this(data);
         int[] state = new int[]{COMMENT};
 
         StringBuilder collectedComment = new StringBuilder();
@@ -127,7 +157,7 @@ public class ARFF {
         String line;
         int lineno = 1;
         while ((line = r.readLine()) != null) {
-            parseLine(lineno++, state, line.trim(), collectedComment);
+            readLine(lineno++, state, line.trim(), collectedComment);
         }
         this.comment = collectedComment.toString();
     }
@@ -148,6 +178,10 @@ public class ARFF {
             s.append(o.toString());
             first = false;
         }
+    }
+
+    public ARFF clone(Collection<ImmutableList> with) {
+        return new ARFF(this, with);
     }
 
     private static void joinWith(ImmutableList objects, Appendable s, CharSequence del) throws IOException {
@@ -189,7 +223,7 @@ public class ARFF {
 
         return false;
     }
-    private void parseLine(int lineNum, int[] state, String line, StringBuilder collectedComment) throws ArffFileParseError {
+    private void readLine(int lineNum, int[] state, String line, StringBuilder collectedComment) throws ArffFileParseError {
         int ll = line.length();
         switch (state[0]) {
             case COMMENT:
@@ -199,16 +233,16 @@ public class ARFF {
                     collectedComment.append(NEW_LINE);
                 } else {
                     state[0] = HEADER;
-                    parseLine(lineNum, state, line, collectedComment);
+                    readLine(lineNum, state, line, collectedComment);
                 }
                 break;
             case HEADER:
                 String lowerline = line.toLowerCase();
                 if (lowerline.startsWith("@relation")) {
-                    parseRelationDefinition(line);
+                    readRelationDefinition(line);
                 } else if (lowerline.startsWith("@attribute")) {
                     try {
-                        parseAttributeDefinition(lineNum, line);
+                        readAttributeDefinition(lineNum, line);
                     } catch (ArffFileParseError e) {
                         System.err.println("Warning: " + e.getMessage());
                     }
@@ -224,7 +258,7 @@ public class ARFF {
         }
     }
 
-    private void parseRelationDefinition(String line) {
+    private void readRelationDefinition(String line) {
         int i = line.indexOf(' ');
         relation = line.substring(i + 1);
     }
@@ -260,7 +294,7 @@ public class ARFF {
         return this;
     }
 
-    private void parseAttributeDefinition(int lineno, String line) throws ArffFileParseError {
+    private void readAttributeDefinition(int lineno, String line) throws ArffFileParseError {
         Scanner s = new Scanner(line);
         Pattern p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^\\}]+\\}|\\'[^\\']+\\'|\\\"[^\\\"]+\\\"");
         String keyword = s.findInLine(p);
@@ -323,6 +357,11 @@ public class ARFF {
     }
 
     private boolean isNominalValueValid(String name, String token) {
+        switch (token) {
+            case "?": return true; //unknown
+            case "_": return true; //don't care
+        }
+
         String[] values = nominalCats.get(name);
         boolean found = false;
         for (String value : values) {
@@ -375,7 +414,6 @@ public class ARFF {
      */
     public void write(Appendable s) throws IOException {
 
-
         if (comment != null) {
             s.append("% ");
             s.append(comment.replaceAll(NEW_LINE, NEW_LINE + "% "));
@@ -420,7 +458,7 @@ public class ARFF {
     /**
      * Save the data into a file.
      */
-    public void save(String filename) throws IOException {
+    public void writeToFile(String filename) throws IOException {
         write(new FileWriter(filename));
     }
 
@@ -462,7 +500,7 @@ public class ARFF {
     /**
      * Get the name of an attribute.
      */
-    public String getAttributeName(int idx) {
+    public String attrName(int idx) {
         return attribute_names.get(idx);
     }
 
@@ -475,35 +513,51 @@ public class ARFF {
         return attrTypes.get(name);
     }
     public AttributeType attrType(int n) {
-        return attrTypes.get(attribute_names.get(n));
+        return attrTypes.get(attrName(n));
     }
 
     /**
      * Get additional information on the attribute. This data is used for
      * nominal attributes to define the possible values.
      */
-    public String[] getCategories(String name) {
-        return nominalCats.get(name);
+    public String[] categories(String nominalAttributeName) {
+        return nominalCats.get(nominalAttributeName);
     }
 
     /**
-     * Add a datum. No checking of the data types is performed!
+     * Add a data point
+     * TODO check data type of each point component
      */
     public boolean add(Object... point) {
         if (point.length != attribute_names.size())
             throw new UnsupportedOperationException("row structure mismatch");
 
-        //TODO check data type of each point component
+        return add(Lists.immutable.of(point)); //TODO impl ImmutableList to cache hashcode
+    }
 
-        return data.add(Lists.immutable.of(point)); //TODO impl ImmutableList to cache hashcode
+    public boolean add(ImmutableList point) {
+        return this.data.add(point);
     }
 
     public Iterator<ImmutableList> iterator() {
         return data.iterator();
     }
 
+    public void print() {
+        try {
+            write(System.out);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Stream<ImmutableList> stream() {
+        return data.stream();
+    }
+
     public enum AttributeType {
         /*
+        boolean?
         numeric
         integer is treated as numeric
         real is treated as numeric
@@ -521,7 +575,7 @@ public class ARFF {
         */
     }
 
-    static class ArffFileParseError extends Exception {
+    public static class ArffFileParseError extends Exception {
 
         /**
          * Construct a new ArffFileParseErrro object.

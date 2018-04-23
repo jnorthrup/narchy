@@ -34,7 +34,6 @@ import static nars.term.Terms.sorted;
  */
 public class Int implements Intlike, The {
 
-
     /*@Stable*/
     private final byte[] bytesCached;
 

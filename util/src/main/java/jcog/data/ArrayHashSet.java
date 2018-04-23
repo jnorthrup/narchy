@@ -229,6 +229,18 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 //		return list== EMPTY_LIST;
 //	}
 
+
+	@Override
+	public X remove(Random random) {
+		int s = size();
+		if (s == 0) return null;
+		int index = random.nextInt(s);
+		X removed;
+		remove( removed = list.remove(index) );
+		return removed;
+	}
+
+
 	@Override
 	public void shuffle(Random random) {
 		Collections.shuffle(list, random);

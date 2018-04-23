@@ -209,7 +209,7 @@ public class reflect {
                             n.confDefault(BELIEF) :
                             n.confMin.floatValue(); //if there is a variable, avoid becoming overconfident about linking across it. maybe this is too extreme of a conf discount
 
-                    Task t = new NALTask(reflectionSim, BELIEF, $.t(1f, c), n.time(), ETERNAL, ETERNAL, n.time.nextStampArray());
+                    Task t = new NALTask(reflectionSim, BELIEF, $.t(1f, c), n.time(), ETERNAL, ETERNAL, n.evidence());
                     t.pri(next.priElseZero() * Util.unitize(x.term().volume() / ((float)rvol)));
                     input(t);
                     logger.info("+ {}", reflectionSim);

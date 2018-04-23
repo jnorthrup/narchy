@@ -5,14 +5,16 @@ import nars.NARS;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static nars.Op.BELIEF;
+import static nars.Op.*;
 import static nars.util.time.Tense.ETERNAL;
 
 public class NAL4Test extends NALTest {
 
 
-    public static final int CYCLES = 650;
+    public static final int CYCLES = 250;
 
     @Override protected NAR nar() { return NARS.tmp(4); }
 
@@ -116,7 +118,6 @@ public class NAL4Test extends NALTest {
 
     @Test
     public void testIntersectionOfProductSubterms1() {
-
         test
                 .believe("f(x)", 1.0f, 0.9f)
                 .believe("f(y)", 1.0f, 0.9f)
@@ -145,12 +146,31 @@ public class NAL4Test extends NALTest {
         */
 
         test
-                .log()
                 .believe("happy(L)", 1f, 0.9f)
                 .believe("((L)-->(o-(i-happy)))", 1f, 0.9f)
                 .mustNotOutput(CYCLES, "((o-(i-happy))-->happy)", BELIEF, ETERNAL);
     }
 
+
+
+    @ValueSource(bytes={QUESTION, QUEST})
+    @ParameterizedTest
+    public void testTransformQuestionSubj(byte punc) {
+        test
+            .input("((a,b)-->?4)" + Character.valueOf((char)punc))
+            .mustOutput(CYCLES, "(b-->(?1,a,/))", punc)
+            .mustOutput(CYCLES, "(a-->(?1,/,b))", punc)
+        ;
+    }
+    @ValueSource(bytes={QUESTION, QUEST})
+    @ParameterizedTest
+    public void testTransformQuestionPred(byte punc) {
+        test
+                .input("(x --> (a,b))" + Character.valueOf((char)punc))
+                .mustOutput(CYCLES, "b(x,a,\\)", punc)
+                .mustOutput(CYCLES, "a(x,\\,b)", punc)
+        ;
+    }
 
 }
 //package nars.nal.nal4;
