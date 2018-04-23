@@ -14,7 +14,7 @@ class ARFFTest {
      * and dumps their contents to the System.out.
      */
     @Test
-    public void testParse() throws IOException, ARFF.ArffFileParseError {
+    public void testParse() throws IOException, ARFF.ARFFParseError {
 
         String file = "% oh yes, this is great!\n" +
                 "% and even better than I thought!\n" +

@@ -17,7 +17,9 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.apache.commons.math3.exception.MathArithmeticException;
+import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
+import org.eclipse.collections.api.tuple.primitive.LongLongPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +34,8 @@ import static nars.Op.CONJ;
 import static nars.Op.IMPL;
 import static nars.util.time.Tense.*;
 import static nars.util.time.TimeGraph.TimeSpan.TS_ZERO;
+import static org.eclipse.collections.impl.tuple.Tuples.twin;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * represents a multigraph of events and their relationships
@@ -440,12 +444,19 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
                             Event[] ab = ae.toArray(new Event[aes]);
                             //Arrays.sort(ab, Comparator.comparingLong(Event::when));
+                            Set<LongLongPair> uniqueTry = new UnifiedSet<>(4);
                             for (int i = 0; i < ab.length; i++) {
                                 Event abi = ab[i];
+                                long from = abi.start();
                                 for (int j = 0; j < ab.length; j++) {
                                     if (i == j) continue;
-                                    if (!solveDT(x, abi.start(), dt(x, abi, ab[j]), each))
-                                        return false;
+                                    long to = dt(x, abi, ab[j]);
+                                    if (uniqueTry.add(pair(from, to))) {
+                                        if (!solveDT(x, from, to,
+                                                abi.dur(),
+                                                each))
+                                            return false;
+                                    }
                                 }
                             }
                         }
@@ -460,9 +471,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         if (bes > 0) {
                             //search only if one to N; there may be incorrect possibilities among N to N comparisons
                             //if (aes == 1 || bes == 1) {
+                            Set<Twin<Event>> uniqueTry = new UnifiedSet<>(4);
                             if (!ae.allSatisfy(ax ->
-                                    be.allSatisfyWith((bx, axx) ->
-                                            solveDT(x, axx.start(), dt(x, axx, bx), each), ax)))
+                                    be.allSatisfyWith((bx, axx) -> {
+                                        if (uniqueTry.add(twin(axx, bx))) {
+                                            return solveDT(x, axx.start(), dt(x, axx, bx),
+                                                    axx.dur(), //use the duration of the start event
+                                                    each);
+                                        } else {
+                                            return true;
+                                        }
+                                    }, ax)))
                                 return false;
                             //}
                         }
@@ -541,7 +560,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
                         long start = startDT[0];
                         long ddt = startDT[1];
-                        return TimeGraph.this.solveDT(x, start, ddt, each);
+                        return TimeGraph.this.solveDT(x, start, ddt,
+                                pathStart(path).dur(),
+                                each);
                     }
                 });
 
@@ -639,7 +660,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         return ambiguous[0];
     }
 
-    private boolean solveDT(Term x, long start, long ddt, Predicate<Event> each) {
+    private boolean solveDT(Term x, long start, long ddt, long dur, Predicate<Event> each) {
         assert (ddt != TIMELESS && ddt != XTERNAL);
         int dt;
         if (ddt == ETERNAL) {
@@ -653,13 +674,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         if (y instanceof Bool)
             return true;
 
+
         if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0 && y.op() == CONJ) {
             start += dt; //shift to left align
         }
 
         return start != TIMELESS ?
                 each.test(
-                        event(y, start, false)
+                        event(y,
+                            start,
+                            start!=ETERNAL && start!=XTERNAL ? (start+dur) : start
+                                ,false)
                 )
                 :
                 solveOccurrence(y, each);
@@ -870,12 +895,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 long endTime;
                 if (startTime!=ETERNAL && startTime != XTERNAL) {
                     long startDur = pathStart(path).dur();
-                    long endDur = pathEnd(path).dur();
-                    if (startDur > 0 || endDur > 0) {
-                        endTime = startTime + Math.max(startDur, endDur); //range expanded by either of the endpoints of the path
-                    } else {
-                        endTime = startTime; //point
-                    }
+//                    long endDur = pathEnd(path).dur();
+//                    if (startDur > 0 || endDur > 0) {
+//                        endTime = startTime + Math.max(startDur, endDur); //range expanded by either of the endpoints of the path
+//                    } else {
+//                        endTime = startTime; //point
+//                    }
+                    endTime = startTime + startDur;
                 } else {
                     endTime = startTime;
                 }

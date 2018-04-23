@@ -5,30 +5,31 @@ import jcog.io.ARFF;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.NARS;
+import nars.truth.Stamp;
 import nars.util.Schema;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Random;
 
-import static nars.Op.CONJ;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SchemaTest {
 
     @Test
-    public void validatePredictionIris() throws IOException, ARFF.ArffFileParseError {
+    public void validatePredictionIris() throws IOException, ARFF.ARFFParseError {
         validatePrediction(irisDataSet_arff);
     }
     @Test
-    public void validatePredictionShuttle() throws IOException, ARFF.ArffFileParseError {
+    public void validatePredictionShuttle() throws IOException, ARFF.ARFFParseError {
         validatePrediction(shuttleDataSet_arff);
     }
 
-    static void validatePrediction(String arffData) throws IOException, ARFF.ArffFileParseError {
+    static void validatePrediction(String arffData) throws IOException, ARFF.ARFFParseError {
         ArrayHashSet<ImmutableList> data = new ArrayHashSet<>();
 
         ARFF dataset = new ARFF(arffData, data) {
@@ -65,13 +66,24 @@ public class SchemaTest {
         assertEquals(originalDataSetSize, validationPoints.size() + data.size());
 
         NAR n = NARS.tmp();
-        n.beliefPriDefault.set(0.1f);
-        n.questionPriDefault.set(0.9f);
-        n.log();
+        n.beliefPriDefault.set(0.01f);
+        n.questionPriDefault.set(0.99f);
+        LongHashSet questions = new LongHashSet();
+        n.onTask(t->{
+            if (t.isInput() && t.isQuestionOrQuest())
+                questions.add(t.stamp()[0]);
+            else if (Stamp.overlapsAny(questions, t.stamp())) {
+                System.out.println("ANSWER: " + t);
+            }
+        });
+        //n.log();
         Schema.believe(n, dataset, Schema.predictsLast);
         n.run(1000);
-        Schema.ask(n, validation, Schema.typed(Schema.predictsLast, dataset) );
-        n.run(1000);
+        Schema.ask(n, validation,
+                Schema.predictsLast
+                //Schema.typed(Schema.predictsLast, dataset)
+        );
+        n.run(5000);
     }
 
 

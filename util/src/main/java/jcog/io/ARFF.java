@@ -118,11 +118,11 @@ public class ARFF implements Iterable<ImmutableList> {
     /**
      * Parse an ArffFile from a string.
      */
-    public ARFF(String l) throws IOException, ArffFileParseError {
+    public ARFF(String l) throws IOException, ARFFParseError {
         this(l, newDefaultDataCollection());
     }
 
-    public ARFF(String l, Collection<ImmutableList> data) throws IOException, ArffFileParseError {
+    public ARFF(String l, Collection<ImmutableList> data) throws IOException, ARFFParseError {
         this(new BufferedReader(new StringReader(l)), data);
     }
 
@@ -148,7 +148,7 @@ public class ARFF implements Iterable<ImmutableList> {
     /**
      * Parse an ArffFile from a BufferedReader.
      */
-    public ARFF(BufferedReader r, Collection<ImmutableList> data) throws IOException, ArffFileParseError {
+    public ARFF(BufferedReader r, Collection<ImmutableList> data) throws IOException, ARFFParseError {
         this(data);
         int[] state = new int[]{COMMENT};
 
@@ -223,7 +223,7 @@ public class ARFF implements Iterable<ImmutableList> {
 
         return false;
     }
-    private void readLine(int lineNum, int[] state, String line, StringBuilder collectedComment) throws ArffFileParseError {
+    private void readLine(int lineNum, int[] state, String line, StringBuilder collectedComment) throws ARFFParseError {
         int ll = line.length();
         switch (state[0]) {
             case COMMENT:
@@ -243,7 +243,7 @@ public class ARFF implements Iterable<ImmutableList> {
                 } else if (lowerline.startsWith("@attribute")) {
                     try {
                         readAttributeDefinition(lineNum, line);
-                    } catch (ArffFileParseError e) {
+                    } catch (ARFFParseError e) {
                         System.err.println("Warning: " + e.getMessage());
                     }
                 } else if (lowerline.startsWith("@data")) {
@@ -294,7 +294,7 @@ public class ARFF implements Iterable<ImmutableList> {
         return this;
     }
 
-    private void readAttributeDefinition(int lineno, String line) throws ArffFileParseError {
+    private void readAttributeDefinition(int lineno, String line) throws ARFFParseError {
         Scanner s = new Scanner(line);
         Pattern p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^\\}]+\\}|\\'[^\\']+\\'|\\\"[^\\\"]+\\\"");
         String keyword = s.findInLine(p);
@@ -302,7 +302,7 @@ public class ARFF implements Iterable<ImmutableList> {
         String type = s.findInLine(p);
 
         if (name == null || type == null) {
-            throw new ArffFileParseError(lineno, "Attribute definition cannot be parsed");
+            throw new ARFFParseError(lineno, "Attribute definition cannot be parsed");
         }
 
         String lowertype = type.toLowerCase();
@@ -316,18 +316,18 @@ public class ARFF implements Iterable<ImmutableList> {
             type = type.trim();
             defineNominal(name, type.split("\\s*,\\s*"));
         } else {
-            throw new ArffFileParseError(lineno, "Attribute of type \"" + type + "\" not supported (yet)");
+            throw new ARFFParseError(lineno, "Attribute of type \"" + type + "\" not supported (yet)");
         }
     }
 
-    private void parseData(int lineno, String line) throws ArffFileParseError {
+    private void parseData(int lineno, String line) throws ARFFParseError {
         int num_attributes = attribute_names.size();
         if (line.charAt(0) == '{' && line.charAt(line.length() - 1) == '}') {
-            throw new ArffFileParseError(lineno, "Sparse data not supported (yet).");
+            throw new ARFFParseError(lineno, "Sparse data not supported (yet).");
         } else {
             String[] tokens = line.split("\\s*,\\s*");
             if (tokens.length != num_attributes) {
-                throw new ArffFileParseError(lineno, "Warning: line " + lineno + " does not contain the right " +
+                throw new ARFFParseError(lineno, "Warning: line " + lineno + " does not contain the right " +
                         "number of elements (should be " + num_attributes + ", got " + tokens.length + '.');
             }
 
@@ -344,7 +344,7 @@ public class ARFF implements Iterable<ImmutableList> {
                         break;
                     case Nominal:
                         if (!isNominalValueValid(name, tokens[i])) {
-                            throw new ArffFileParseError(lineno, "Undefined nominal value \"" +
+                            throw new ARFFParseError(lineno, "Undefined nominal value \"" +
                                     tokens[i] + "\" for field " + name + ".");
                         }
                         datum[i] = tokens[i];
@@ -575,12 +575,12 @@ public class ARFF implements Iterable<ImmutableList> {
         */
     }
 
-    public static class ArffFileParseError extends Exception {
+    public static class ARFFParseError extends Exception {
 
         /**
          * Construct a new ArffFileParseErrro object.
          */
-        ArffFileParseError(int lineno, String string) {
+        ARFFParseError(int lineno, String string) {
             super("Parse error line " + lineno + ": " + string);
         }
 

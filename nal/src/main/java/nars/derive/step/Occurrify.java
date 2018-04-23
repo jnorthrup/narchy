@@ -459,10 +459,12 @@ public class Occurrify extends TimeGraph {
 
         Term u = d.untransform(t);
         if (u != null && !(u instanceof Bool) && !u.equals(t)) {
+            expanded.add(u); //HACK prevent infinite loop
             link(tt, 0, shadow(u));
         }
         Term v = Image.imageNormalize(t);
         if (!v.equals(t)) {
+            expanded.add(v); //HACK prevent infinite loop
             link(tt, 0, shadow(v));
         }
 

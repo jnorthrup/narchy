@@ -12,6 +12,7 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
+import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.truth.Stamp;
@@ -99,7 +100,7 @@ public class Premise {
                     final Term[] unifiedBeliefTerm = new Term[]{null};
                     UnifySubst u = new UnifySubst(var==VAR_QUERY.bit ? VAR_QUERY : null /* all */, d.nar, (y) -> {
                         if (y.op().conceptualizable) {
-                            y = y.normalize();
+                            y = y.normalize().unneg();
 
                             beliefConceptCanAnswerTaskConcept[0] = true;
 
@@ -198,6 +199,7 @@ public class Premise {
                                 assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
                                 //add the answer to the derived tasks for eventual input
+                                ((NALTask)match).causeMerge(task);
                                 d.add(match);
 
                                 if (match.isBelief()) {
@@ -243,11 +245,13 @@ public class Premise {
             }
 
 
-//            if (unifiedBelief) {
-//                Concept originalBeliefConcept = n.conceptualize(term());
-//                if (originalBeliefConcept != null)
-//                    linkVariable(originalBeliefConcept, beliefConcept);
-//            }
+            if (unifiedBelief) {
+                Concept originalBeliefConcept = n.conceptualize(term());
+                if (originalBeliefConcept != null) {
+                    Concept taskConcept = task.concept(n, true);
+                    linkVariable(taskConcept, originalBeliefConcept, beliefConcept);
+                }
+            }
 
         }
         return belief;
@@ -283,10 +287,10 @@ public class Premise {
     /**
      * x has variables, y unifies with x and has less or no variables
      */
-    private void linkVariable(Concept lessConstant, Concept moreConstant) {
+    private void linkVariable(Concept taskConcept, Concept lessConstant, Concept moreConstant) {
 
         //fraction of the source termlink's budget
-        float pri = termLink.priElseZero() * 0.5f;
+        float pri = termLink.priElseZero(); // * 0.5f;
         //termLink.priMult(0.5f);
 
 //        /** creates a tasklink/termlink proportional to the tasklink's priority
@@ -302,9 +306,12 @@ public class Premise {
 //
         //share the budget in 2 opposite links: specific -> general & general -> specific
         moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2f));
+
         lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2f));
 //        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
-//        //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+
+        if (taskConcept!=null)
+            taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
 //
 //
 //        //Tasklinks.linkTask(this.task.get(), pri, moreConstant);

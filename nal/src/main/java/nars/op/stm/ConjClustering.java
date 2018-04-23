@@ -20,7 +20,7 @@ import nars.truth.Truth;
 import nars.util.time.Tense;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -186,12 +186,14 @@ public class ConjClustering extends Causable {
         int centroidGen = 0;
 
         Consumer<Task> gen = in.get();
+        LongHashSet actualStamp = new LongHashSet();
 
         main:
         while (gg.hasNext() && centroidGen < taskLimitPerCentroid) {
 
             vv.clear();
             actualTasks.clear();
+            actualStamp.clear();
 
 
             long end = Long.MIN_VALUE;
@@ -215,7 +217,7 @@ public class ConjClustering extends Causable {
                 Term xt = t.term();
 
                 long zs = Tense.dither(t.start(), ditherTime);
-                long ze = Tense.dither(t.end(), ditherTime);
+                //long ze = Tense.dither(t.end(), ditherTime);
 //                assert (end >= start);
 
                 Truth tx = t.truth();
@@ -234,30 +236,35 @@ public class ConjClustering extends Causable {
                 LongObjectPair<Term> ps = pair(zs, xt);
                 Term xtNeg = xt.neg();
 
-                //TODO fairly decide midpoint if the conj cant hold both endpoints:
-
-                if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
-                    vol += xtv;
-                    if (start > zs) start = zs;
-                    if (end < zs) end = zs;
-                    involved = true;
-                }
-
-                if (ze - zs >= dur) {
-                    //endpoint
-                    if (vol + xtv + 1 < volMax) {
-                        LongObjectPair<Term> pe = pair(ze, xt);
-                        if (!vv.containsKey(pair(ze, xtNeg)) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
-                            vol += xtv;
-                            if (end < ze) end = ze;
-                            involved = true;
-                        }
+//                //TODO fairly decide midpoint if the conj cant hold both endpoints:
+//
+                if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
+                    if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
+                        vol += xtv;
+                        involved = true;
                     }
                 }
+//
+//                if (ze - zs >= dur) {
+//                    //endpoint
+//                    if (vol + xtv + 1 < volMax) {
+//                        LongObjectPair<Term> pe = pair(ze, xt);
+//                        if (!vv.containsKey(pair(ze, xtNeg)) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
+//                            vol += xtv;
+//                            if (end < ze) end = ze;
+//                            involved = true;
+//                        }
+//                    }
+//                }
 
                 if (involved) {
 
                     actualTasks.add(t);
+
+                    actualStamp.addAll(t.stamp());
+
+                    if (start > zs) start = zs;
+                    if (end < zs) end = zs;
 
                     conf *= tx.conf();
 
@@ -268,6 +275,8 @@ public class ConjClustering extends Causable {
                     if (p < priMin) priMin = p;
                     if (p > priMax) priMax = p;
 
+                    if (actualTasks.size() >= Param.STAMP_CAPACITY)
+                        break; //done
                 }
             } while (vol < volMax - 1 && conf > confMin);
 
@@ -282,9 +291,7 @@ public class ConjClustering extends Causable {
 
             //TODO discount based on evidential overlap? needs N-way overlapFraction function
 
-            ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
-            float overlap = evidence.getTwo();
-            float e = c2w(conf) * Param.overlapFactor(overlap);
+            float e = c2w(conf);
             if (e > 0) {
                 final Truth t = Truth.theDithered(freq, e, nar);
                 if (t != null) {
@@ -302,7 +309,7 @@ public class ConjClustering extends Causable {
                             if (cp != null) {
 
 
-                                NALTask m = new STMClusterTask(cp, t, start, start, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                                NALTask m = new STMClusterTask(cp, t, start, start, actualStamp.toArray(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
                                 //if (evidence.getTwo() > 0) m.setCyclic(true);
 
                                 m.cause = Cause.sample(Param.causeCapacity.intValue(), uu);

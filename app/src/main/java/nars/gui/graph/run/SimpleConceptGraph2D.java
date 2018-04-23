@@ -4,7 +4,6 @@ import jcog.pri.PLink;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.concept.Concept;
 import nars.exe.AbstractExec;
 import nars.test.DeductiveMeshTest;
@@ -17,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class SimpleConceptGraph2D {
-    public static void main(String[] args) throws Narsese.NarseseException {
+    public static void main(String[] args) {
 
         NAR n = NARS.tmp(1);
         n.termVolumeMax.set(9);

@@ -318,11 +318,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         ),
 
-                        Variable(), //variable must before AtomStr
-
                         NumberAtom(),
 
                         AtomStr(),
+
+                        Variable(),
 
                         //negation shorthand
                         seq(NEG.str, Term(), push(($.the(pop())).neg())),

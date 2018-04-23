@@ -1,18 +1,22 @@
 package nars.derive.step;
 
 import com.google.common.collect.Sets;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Narsese;
+import nars.term.Term;
 import nars.util.time.TimeGraph;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static nars.$.$$;
 import static nars.util.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,9 +27,9 @@ public class TimeGraphTest {
      */
     final TimeGraph A; {
         A = newTimeGraph(1);
-        A.know($.$$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
-        A.know($.$$("one"), 1);
-        A.know($.$$("two"), 20);
+        A.know($$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
+        A.know($$("one"), 1);
+        A.know($$("two"), 20);
 
     }
 
@@ -37,8 +41,8 @@ public class TimeGraphTest {
         //                .mustBelieve(cycles, "(x ==>-1 z)", 1.00f, 0.45f)
         //                .mustNotOutput(cycles, "(x ==>+1 z)", BELIEF, Tense.ETERNAL)
         B = newTimeGraph(1);
-        B.know($.$$("(y ==>+3 x)"), ETERNAL);
-        B.know($.$$("(y ==>+2 z)"), ETERNAL);
+        B.know($$("(y ==>+3 x)"), ETERNAL);
+        B.know($$("(y ==>+2 z)"), ETERNAL);
     }
 
 //    @BeforeEach
@@ -241,10 +245,29 @@ public class TimeGraphTest {
 
     @Test
     public void testImplMultipleSolutions() throws Narsese.NarseseException {
-        TimeGraph C = newTimeGraph(1);
-        C.know($.$("(_2,_1)"), 1590);
-        C.know($.$("(_2,_1)"), 2540);
-        C.know($.$("(_2,_1)"), 2567);
+        Occurrify C = new Occurrify(null) {
+            XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(1);
+            @Override
+            protected Random random() {
+                return rng;
+            }
+
+            @Override
+            protected void onNewTerm(Term t) {
+                link(shadow(t), 0, shadow(t.replace($$("_2"), $.varDep(1))));
+                link(shadow(t), 0, shadow(t.neg()));
+            }
+
+            @Override
+            protected Term dt(Term x, int dt) {
+                return x.dt(dt);
+            }
+        };
+        C.know((Term)$.$("(_2,_1)"), 1590);
+        C.know((Term)$.$("(_2,_1)"), 2540);
+        C.know((Term)$.$("(_2,_1)"), 2567);
+//        C.link(C.shadow($.$("_2")), 0, C.shadow($.varDep(1)));
+        C.print();
 
         //several slutions
         assertSolved("(((--,(#1,_1)) &&+220 (_2,_1)) ==>+- (_2,_1))", C,
@@ -272,7 +295,7 @@ public class TimeGraphTest {
         {
             ExpectSolutions ee = new ExpectSolutions(solutions);
 
-            t.solve($.$$(inputTerm), false, ee);
+            t.solve($$(inputTerm), false, ee);
         }
 
         int nodesAfter = A.nodes().size();
@@ -307,12 +330,12 @@ public class TimeGraphTest {
     }
 
     static TimeGraph newTimeGraph(long seed) {
-//        XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(seed);
         return new TimeGraph() {
-//            @Override
-//            protected Random random() {
-//                return rng;
-//            }
+            XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(seed);
+            @Override
+            protected Random random() {
+                return rng;
+            }
         };
     }
 
