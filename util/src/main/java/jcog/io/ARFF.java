@@ -180,6 +180,9 @@ public class ARFF {
             switch(x) {
                 case ' ': return true;
                 case ',': return true;
+                case '-': return true;
+                case '+': return true;
+                case '.': return true;
                 //etc..
             }
         }

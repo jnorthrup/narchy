@@ -2,14 +2,13 @@ package nars.perf;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
+import jcog.io.ARFF;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.util.NALTest;
 import org.eclipse.collections.api.tuple.Pair;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.engine.descriptor.ClassTestDescriptor;
@@ -34,6 +33,7 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -51,10 +51,26 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * JUnit wrappers and runners
  */
 public class JUnitNAR {
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws IOException {
         junit(NARTestBenchmark.tests);
     }
 
+    static class TestRun {
+        public final String klass;
+        public final String method;
+        public final long startedAt;
+        public final long wallTime;
+        public final boolean success;
+
+        TestRun(String klass, String method, long startedAt, long wallTime, boolean success) {
+            this.klass = klass;
+            this.method = method;
+            this.startedAt = startedAt;
+            this.wallTime = wallTime;
+            this.success = success;
+        }
+    }
 
     /**
      * HACK runs all Junit test methods, summing the scores.
@@ -119,7 +135,7 @@ public class JUnitNAR {
     /**
      * alternate, less flexible due to JUnit 5's unfortunately contaminated unworkable API
      */
-    public static void junit(Class... testClasses) {
+    public static void junit(Class... testClasses) throws IOException {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
                 .selectors(
                         //selectPackage("com.example.mytests"),
@@ -132,9 +148,11 @@ public class JUnitNAR {
                 // .filters( includeClassNamePatterns(".*Tests")  )
                 .build();
 
-        Launcher launcher =
+        BetterThanDefaultLauncher launcher =
                 //LauncherFactory.create();
                 new BetterThanDefaultLauncher(request);
+
+
 
 //        //SummaryGeneratingListener listener = new SummaryGeneratingListener();
         //LoggingListener listener = LoggingListener.forJavaUtilLogging();
@@ -146,25 +164,13 @@ public class JUnitNAR {
 
     static class BetterThanDefaultLauncher implements Launcher, EngineExecutionListener, TestExecutionListener {
 
+        public final ARFF.ARFFObject<TestRun> results = new ARFF.ARFFObject(TestRun.class);
+
         private static final Logger logger = LoggerFactory.getLogger(BetterThanDefaultLauncher.class);
         final Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> all = new ConcurrentLinkedQueue<>();
         final JupiterEngineExecutionContext ctx;
         //private final TestExecutionListenerRegistry listenerRegistry = new TestExecutionListenerRegistry();
         private final Iterable<TestEngine> testEngines;
-        ThrowableCollector throwCollector = new ThrowableCollector() {
-            @Override
-            public void execute(Executable executable) {
-                ForkJoinPool.commonPool().submit(() -> {
-                    try {
-                        System.out.println(Thread.currentThread() + " exe " + executable);
-                        executable.execute();
-                    } catch (Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                });
-
-            }
-        };
         Node.DynamicTestExecutor dte = testDescriptor -> System.err.println("TODO: dynamic: " + testDescriptor);
 
 
@@ -177,17 +183,22 @@ public class JUnitNAR {
             this.testEngines = ServiceLoader.load(TestEngine.class, ClassLoaderUtils.getDefaultClassLoader());
             final ExtensionRegistry reg = ExtensionRegistry.createRegistryWithDefaultExtensions(request.getConfigurationParameters());
 
-            BeforeEachCallback before = context -> System.out.println("before: " + context);
-
-            AfterTestExecutionCallback after = context -> System.out.println("after: " + context);
-
-            reg.registerExtension(before, before);
-            reg.registerExtension(after, after);
+//            BeforeEachCallback before =
+//                    context -> System.out.println("before: " + context);
+//            reg.registerExtension(before, before);
+//
+//            AfterTestExecutionCallback after =
+//                    context -> System.out.println("after: " + context);
+//            reg.registerExtension(after, after);
 
 
             ctx = new JupiterEngineExecutionContext(this, request.getConfigurationParameters()) {
+                @Override
+                public EngineExecutionListener getExecutionListener() {
+                    return BetterThanDefaultLauncher.this;
+                }
 
-//                @Override
+                //                @Override
 //                public TestInstanceProvider getTestInstanceProvider() {
 //                    return new TestInstanceProvider() {
 //                        @Override
@@ -207,6 +218,24 @@ public class JUnitNAR {
 //                        }
 //                    };
 //                }
+
+                final ThrowableCollector throwCollector = new ThrowableCollector() {
+                    @Override
+                    public void execute(Executable executable) {
+                        throw new UnsupportedOperationException("unused");
+//                        ForkJoinPool.commonPool().submit(() -> {
+//                            try {
+//                                //System.out.println(Thread.currentThread() + " exe " + executable);
+//                                executable.execute();
+//                                //onSuccess(executable)
+//                            } catch (Throwable throwable) {
+//                                throwable.printStackTrace();
+//                            }
+//                        });
+
+                    }
+                };
+
 
                 @Override
                 public ThrowableCollector getThrowableCollector() {
@@ -229,7 +258,7 @@ public class JUnitNAR {
                 }
             };
 
-            execute(request/*, listener*/);
+            execute(request);
         }
 
         @Override
@@ -329,17 +358,29 @@ public class JUnitNAR {
             ForkJoinPool exe = new ForkJoinPool(Util.concurrencyDefault());
 
             all.removeIf(x -> {
-                logger.info("deq {}", x);
+                //logger.info("deq {}", x);
                 if (x.getOne() instanceof TestMethodTestDescriptor) {
                     exe.execute(() -> {
-                        logger.info("exe {}", x);
+                        //logger.info("exe {}", x);
                         JupiterEngineExecutionContext tctx = x.getTwo();
+
+
+                        String klass = tctx.getExtensionContext().getTestClass().get().getName();
+                        String method = tctx.getExtensionContext().getTestMethod().get().getName();
+                        long start = System.nanoTime();
+
+                        boolean fail = false;
                         try {
-                            tctx = ((JupiterTestDescriptor) x.getOne()).prepare(tctx);
                             ((Node<JupiterEngineExecutionContext>) x.getOne()).execute(tctx, dte);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        } catch (Throwable e) {
+                            //e.printStackTrace();
+                            fail = true;
                         }
+
+                        long end = System.nanoTime();
+                        boolean success = !fail && !tctx.getThrowableCollector().isNotEmpty();
+                        results.put(new TestRun(klass, method, start, end-start, success));
+
                     });
                 } else {
                     throw new UnsupportedOperationException("unknown test descriptor type: " + x);
@@ -350,7 +391,12 @@ public class JUnitNAR {
 
 
             exe.awaitQuiescence(10000, SECONDS);
-            logger.info("done");
+
+            try {
+                results.write(System.out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
 

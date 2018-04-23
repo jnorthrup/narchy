@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
 
+import java.io.IOException;
+
 import static nars.perf.JmhBenchmark.perf;
 
 
@@ -38,7 +40,11 @@ public class NARTestBenchmark {
     @Fork(0)
     public void testX() {
 
-        JUnitNAR.junit(tests);
+        try {
+            JUnitNAR.junit(tests);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
