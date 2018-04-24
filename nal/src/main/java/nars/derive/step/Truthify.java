@@ -35,6 +35,8 @@ abstract public class Truthify extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
+        d.truthFunction = null; //reset
+
         byte punc = punc(d);
         boolean single;
         Truth t;
@@ -81,7 +83,6 @@ abstract public class Truthify extends AbstractPred<Derivation> {
 //                if ((tp == QUEST) || (tp == GOAL))
 //                    punc = QUEST; //use QUEST in relation to GOAL or QUEST task
 
-                d.truthFunction = null;
                 single = true;
                 t = null;
                 break;

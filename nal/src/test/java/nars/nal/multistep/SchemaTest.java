@@ -5,11 +5,9 @@ import jcog.io.ARFF;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.NARS;
-import nars.truth.Stamp;
 import nars.util.Schema;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,13 +19,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SchemaTest {
 
     @Test
-    public void validatePredictionIris() throws IOException, ARFF.ARFFParseError {
-        validatePrediction(irisDataSet_arff);
+    public void validatePredictionXOR() throws IOException, ARFF.ARFFParseError {
+        validatePrediction(xorARFF);
     }
+
     @Test
     public void validatePredictionShuttle() throws IOException, ARFF.ARFFParseError {
-        validatePrediction(shuttleDataSet_arff);
+        validatePrediction(shuttleARFF);
     }
+
+    @Test
+    public void validatePredictionIris() throws IOException, ARFF.ARFFParseError {
+        validatePrediction(irisARFF);
+    }
+
 
     static void validatePrediction(String arffData) throws IOException, ARFF.ARFFParseError {
         ArrayHashSet<ImmutableList> data = new ArrayHashSet<>();
@@ -35,11 +40,14 @@ public class SchemaTest {
         ARFF dataset = new ARFF(arffData, data) {
             @Override
             public boolean add(Object... point) {
-                //convert centimeters to millimeters so the values are integer
-                for (int i = 0, pointLength = point.length; i < pointLength; i++) {
-                    Object x = point[i];
-                    if (x instanceof Number) {
-                        point[i] = Math.round(((Number)x).floatValue() * 10);
+                //HACK
+                if (arffData == irisARFF) {
+                    //convert centimeters to millimeters so the values are integer
+                    for (int i = 0, pointLength = point.length; i < pointLength; i++) {
+                        Object x = point[i];
+                        if (x instanceof Number) {
+                            point[i] = Math.round(((Number) x).floatValue() * 10);
+                        }
                     }
                 }
                 return super.add(point);
@@ -62,23 +70,29 @@ public class SchemaTest {
             randomPointErased.set(randomPointErased.size()-1, "?class");
             validationPoints.add(randomPointErased.toImmutable());
         }
+
         ARFF validation = dataset.clone(validationPoints);
+        validation.print();
+
         assertEquals(originalDataSetSize, validationPoints.size() + data.size());
 
         NAR n = NARS.tmp();
         n.beliefPriDefault.set(0.01f);
         n.questionPriDefault.set(0.99f);
-        LongHashSet questions = new LongHashSet();
-        n.onTask(t->{
-            if (t.isInput() && t.isQuestionOrQuest())
-                questions.add(t.stamp()[0]);
-            else if (Stamp.overlapsAny(questions, t.stamp())) {
-                System.out.println("ANSWER: " + t);
-            }
-        });
-        //n.log();
+
+//        LongHashSet questions = new LongHashSet();
+//        n.onTask(t->{
+//            if (t.isInput() && t.isQuestionOrQuest())
+//                questions.add(t.stamp()[0]);
+//            else if (Stamp.overlapsAny(questions, t.stamp())) {
+//                if (t.isBeliefOrGoal())
+//                    System.out.println("ANSWER: " + t);
+//            }
+//        });
+        n.log();
+
         Schema.believe(n, dataset, Schema.predictsLast);
-        n.run(1000);
+
         Schema.ask(n, validation,
                 Schema.predictsLast
                 //Schema.typed(Schema.predictsLast, dataset)
@@ -86,8 +100,24 @@ public class SchemaTest {
         n.run(5000);
     }
 
+    /** https://github.com/renatopp/arff-datasets/blob/master/boolean/xor.arff */
+    static final String xorARFF = "%\n" +
+            "% XOR\n" +
+            "%\n" +
+            "\n" +
+            "@RELATION xor\n" +
+            "\n" +
+            "@ATTRIBUTE input1 REAL\n" +
+            "@ATTRIBUTE input2 REAL\n" +
+            "@ATTRIBUTE y REAL\n" +
+            "\n" +
+            "@DATA\n" +
+            "0.0,0.0,0.0\n" +
+            "0.0,1.0,1.0\n" +
+            "1.0,0.0,1.0\n" +
+            "1.0,1.0,0.0\n";
 
-    static final String shuttleDataSet_arff = "% 1. Title: Space Shuttle Autolanding Domain\n" +
+    static final String shuttleARFF = "% 1. Title: Space Shuttle Autolanding Domain\n" +
             "% \n" +
             "% 2. Sources:\n" +
             "%     (a) Original source: unknown\n" +
@@ -167,7 +197,7 @@ public class SchemaTest {
             "1,3,1,1,3,vis,manual\n" +
             "1,3,1,2,3,vis,auto\n";
 
-    static final String irisDataSet_arff = "% 1. Title: Iris Plants Database\n" +
+    static final String irisARFF = "% 1. Title: Iris Plants Database\n" +
             "% \n" +
             "% 2. Sources:\n" +
             "%      (a) Creator: R.A. Fisher\n" +

@@ -151,7 +151,7 @@ public class NAL8Test extends NALTest {
         TestNAR tester = test;
 
         tester.input("pick:t2. :|:");
-        tester.inputAt(10, "(pick:t2 ==>+5 hold:t2).");
+        tester.inputAt(2, "(pick:t2 ==>+5 hold:t2).");
         tester.mustBelieve(cycles, "hold:t2", 1.0f, 0.81f, 5);
 
     }

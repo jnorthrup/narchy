@@ -89,9 +89,14 @@ public interface Variable extends Atomic {
 
                     Term xBound = u.xy.get(this);
                     Term yBound = u.xy.get(y);
-                    if (xBound!=null && yBound!=null) {
+
+                    if (yBound!=null && yBound.equals(this))
+                        return true;
+                    if (xBound!=null && xBound.equals(y))
+                        return true;
+                    if (xBound!=null && yBound!=null)
                         return xBound.unify(yBound, u);
-                    }
+
                     Term target;
                     if (xBound!=null) target = xBound;
                     else if (yBound!=null) target = yBound;

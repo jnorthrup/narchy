@@ -1,6 +1,7 @@
 package nars.perf;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import jcog.TODO;
 import jcog.Util;
 import jcog.io.ARFF;
 import jcog.list.FasterList;
@@ -8,6 +9,7 @@ import nars.NAR;
 import nars.Param;
 import nars.util.NALTest;
 import org.eclipse.collections.api.tuple.Pair;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
@@ -21,7 +23,6 @@ import org.junit.platform.commons.util.BlacklistedExceptions;
 import org.junit.platform.commons.util.ClassLoaderUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.*;
-import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.engine.support.hierarchical.Node;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -46,6 +48,7 @@ import java.util.stream.Stream;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
+import static org.junit.jupiter.engine.Constants.EXTENSIONS_AUTODETECTION_ENABLED_PROPERTY_NAME;
 
 /**
  * JUnit wrappers and runners
@@ -54,22 +57,6 @@ public class JUnitNAR {
 
     public static void main(String[] args) throws IOException {
         junit(NARTestBenchmark.tests);
-    }
-
-    static class TestRun {
-        public final String klass;
-        public final String method;
-        public final long startedAt;
-        public final long wallTime;
-        public final boolean success;
-
-        TestRun(String klass, String method, long startedAt, long wallTime, boolean success) {
-            this.klass = klass;
-            this.method = method;
-            this.startedAt = startedAt;
-            this.wallTime = wallTime;
-            this.success = success;
-        }
     }
 
     /**
@@ -135,23 +122,27 @@ public class JUnitNAR {
     /**
      * alternate, less flexible due to JUnit 5's unfortunately contaminated unworkable API
      */
-    public static void junit(Class... testClasses) throws IOException {
+    public static void junit(Class... testClasses) {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(
-                        //selectPackage("com.example.mytests"),
-                        (ClassSelector[]) Util.map(
-                                DiscoverySelectors::selectClass,
-                                new ClassSelector[testClasses.length], testClasses)
 
-                        //selectClass(FastCompoundNAL1Test.class)
-                )
+//                .selectors(
+//                        //selectPackage("com.example.mytests"),
+//                        (ClassSelector[]) Util.map(
+//                                DiscoverySelectors::selectClass,
+//                                new ClassSelector[testClasses.length], testClasses)
+//
+//                        //selectClass(FastCompoundNAL1Test.class)
+//                )
+
                 // .filters( includeClassNamePatterns(".*Tests")  )
+
+                .selectors(DiscoverySelectors.selectPackage("nars"))
+                .configurationParameter(EXTENSIONS_AUTODETECTION_ENABLED_PROPERTY_NAME, "true")
                 .build();
 
         BetterThanDefaultLauncher launcher =
                 //LauncherFactory.create();
                 new BetterThanDefaultLauncher(request);
-
 
 
 //        //SummaryGeneratingListener listener = new SummaryGeneratingListener();
@@ -161,17 +152,32 @@ public class JUnitNAR {
 //        //listener.getSummary().printTo(new PrintWriter(System.out));
     }
 
+    static class TestRun {
+        public final String klass;
+        public final String method;
+        public final long startedAt;
+        public final long wallTime;
+        public final boolean success;
+
+        TestRun(String klass, String method, long startedAt, long wallTime, boolean success) {
+            this.klass = klass;
+            this.method = method;
+            this.startedAt = startedAt;
+            this.wallTime = wallTime;
+            this.success = success;
+        }
+    }
 
     static class BetterThanDefaultLauncher implements Launcher, EngineExecutionListener, TestExecutionListener {
 
-        public final ARFF.ARFFObject<TestRun> results = new ARFF.ARFFObject(TestRun.class);
-
         private static final Logger logger = LoggerFactory.getLogger(BetterThanDefaultLauncher.class);
+        public final ARFF.ARFFObject<TestRun> results = new ARFF.ARFFObject(TestRun.class);
         final Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> all = new ConcurrentLinkedQueue<>();
         final JupiterEngineExecutionContext ctx;
         //private final TestExecutionListenerRegistry listenerRegistry = new TestExecutionListenerRegistry();
         private final Iterable<TestEngine> testEngines;
-        Node.DynamicTestExecutor dte = testDescriptor -> System.err.println("TODO: dynamic: " + testDescriptor);
+        Node.DynamicTestExecutor dte = testDescriptor ->
+                System.err.println("TODO: dynamic: " + testDescriptor);
 
 
         /**
@@ -181,7 +187,10 @@ public class JUnitNAR {
          */
         BetterThanDefaultLauncher(LauncherDiscoveryRequest request) {
             this.testEngines = ServiceLoader.load(TestEngine.class, ClassLoaderUtils.getDefaultClassLoader());
-            final ExtensionRegistry reg = ExtensionRegistry.createRegistryWithDefaultExtensions(request.getConfigurationParameters());
+
+            final ExtensionRegistry reg = ExtensionRegistry
+                    .createRegistryWithDefaultExtensions(request.getConfigurationParameters());
+            //reg.registerExtension(ParameterizedTestExtension.class);
 
 //            BeforeEachCallback before =
 //                    context -> System.out.println("before: " + context);
@@ -193,10 +202,22 @@ public class JUnitNAR {
 
 
             ctx = new JupiterEngineExecutionContext(this, request.getConfigurationParameters()) {
-                @Override
-                public EngineExecutionListener getExecutionListener() {
-                    return BetterThanDefaultLauncher.this;
-                }
+                final ThrowableCollector throwCollector = new ThrowableCollector() {
+                    @Override
+                    public void execute(Executable executable) {
+                        throw new UnsupportedOperationException("unused");
+//                        ForkJoinPool.commonPool().submit(() -> {
+//                            try {
+//                                //System.out.println(Thread.currentThread() + " exe " + executable);
+//                                executable.execute();
+//                                //onSuccess(executable)
+//                            } catch (Throwable throwable) {
+//                                throwable.printStackTrace();
+//                            }
+//                        });
+
+                    }
+                };
 
                 //                @Override
 //                public TestInstanceProvider getTestInstanceProvider() {
@@ -219,23 +240,10 @@ public class JUnitNAR {
 //                    };
 //                }
 
-                final ThrowableCollector throwCollector = new ThrowableCollector() {
-                    @Override
-                    public void execute(Executable executable) {
-                        throw new UnsupportedOperationException("unused");
-//                        ForkJoinPool.commonPool().submit(() -> {
-//                            try {
-//                                //System.out.println(Thread.currentThread() + " exe " + executable);
-//                                executable.execute();
-//                                //onSuccess(executable)
-//                            } catch (Throwable throwable) {
-//                                throwable.printStackTrace();
-//                            }
-//                        });
-
-                    }
-                };
-
+                @Override
+                public EngineExecutionListener getExecutionListener() {
+                    return BetterThanDefaultLauncher.this;
+                }
 
                 @Override
                 public ThrowableCollector getThrowableCollector() {
@@ -261,6 +269,48 @@ public class JUnitNAR {
             execute(request);
         }
 
+        private static void flatten(Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> target, TestDescriptor t, JupiterEngineExecutionContext ctx) {
+
+            if (t.isContainer()) {
+
+                if (t instanceof ClassTestDescriptor && isDisabled(((ClassTestDescriptor) t).getTestClass().getAnnotations()))
+                    return;
+
+                JupiterEngineExecutionContext subCTX;
+                if (t instanceof JupiterTestDescriptor) {
+                    try {
+                        subCTX = ((JupiterTestDescriptor) t).prepare(ctx);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        subCTX = ctx;
+                    }
+                } else {
+                    subCTX = ctx;
+                }
+                JupiterEngineExecutionContext finalSubCTX = subCTX;
+                t.getChildren().forEach(z -> flatten(target, z, finalSubCTX));
+            } else {
+
+                if (t instanceof TestMethodTestDescriptor && isDisabled(((TestMethodTestDescriptor) t).getTestMethod().getAnnotations()))
+                    return;
+
+                try {
+                    target.add(pair(t, t instanceof JupiterTestDescriptor ? ((JupiterTestDescriptor) t).prepare(ctx) : ctx));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                Set<? extends TestDescriptor> descendents = t.getDescendants();
+                if (!descendents.isEmpty()) {
+                    throw new TODO();
+                }
+                if (t.mayRegisterTests()) {
+                    throw new TODO();
+                }
+            }
+
+        }
+
         @Override
         public void registerTestExecutionListeners(TestExecutionListener... listeners) {
             throw new RuntimeException("ignored");
@@ -275,6 +325,10 @@ public class JUnitNAR {
             return TestPlan.from(discoverRoot(discoveryRequest, "discovery"));
         }
 
+//        TestExecutionListenerRegistry getTestExecutionListenerRegistry() {
+//            return listenerRegistry;
+//        }
+
         @Override
         public void execute(LauncherDiscoveryRequest discoveryRequest, TestExecutionListener... listeners) {
             Preconditions.notNull(discoveryRequest, "LauncherDiscoveryRequest must not be null");
@@ -284,13 +338,8 @@ public class JUnitNAR {
             }
             //Preconditions.containsNoNullElements(listeners, "individual listeners must not be null");
             executeTests(
-                    discoverRoot(discoveryRequest, "execution"),
-                    discoveryRequest.getConfigurationParameters());
+                    discoverRoot(discoveryRequest, "execution"));
         }
-
-//        TestExecutionListenerRegistry getTestExecutionListenerRegistry() {
-//            return listenerRegistry;
-//        }
 
         private Collection<TestDescriptor> discoverRoot(LauncherDiscoveryRequest discoveryRequest, String phase) {
             List<TestDescriptor> root = new FasterList<>();
@@ -337,7 +386,7 @@ public class JUnitNAR {
             }
         }
 
-        private void executeTests(Collection<TestDescriptor> root, ConfigurationParameters configurationParameters) {
+        private void executeTests(Collection<TestDescriptor> root) {
 
 //            TestExecutionListenerRegistry listenerRegistry = buildListenerRegistryForExecution(listeners);
 //            TestPlan testPlan = TestPlan.from(root);//.getEngineDescriptors());
@@ -354,32 +403,58 @@ public class JUnitNAR {
             }
 
 
-
             ForkJoinPool exe = new ForkJoinPool(Util.concurrencyDefault());
+
+
 
             all.removeIf(x -> {
                 //logger.info("deq {}", x);
-                if (x.getOne() instanceof TestMethodTestDescriptor) {
+                TestDescriptor test = x.getOne();
+                if (test instanceof TestMethodTestDescriptor) {
                     exe.execute(() -> {
                         //logger.info("exe {}", x);
                         JupiterEngineExecutionContext tctx = x.getTwo();
 
 
-                        String klass = tctx.getExtensionContext().getTestClass().get().getName();
-                        String method = tctx.getExtensionContext().getTestMethod().get().getName();
+                        Class<?> c = tctx.getExtensionContext().getTestClass().get();
+                        String klass = c.getName();
+
+                        Method m = tctx.getExtensionContext().getTestMethod().get();
+
+                        String method = m.getName();
                         long start = System.nanoTime();
 
                         boolean fail = false;
+                        Node<JupiterEngineExecutionContext> t = (Node<JupiterEngineExecutionContext>) test;
                         try {
-                            ((Node<JupiterEngineExecutionContext>) x.getOne()).execute(tctx, dte);
+                            t.before(tctx);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+
+                            t.execute(tctx, dte);
                         } catch (Throwable e) {
                             //e.printStackTrace();
                             fail = true;
                         }
 
+                        try {
+                            t.after(tctx);
+//                            if (!((TestDescriptor)t).getChildren().isEmpty())
+//                                System.out.println(((TestDescriptor)t).getChildren());
+//                            if (!((TestDescriptor)t).getDescendants().isEmpty())
+//                                System.out.println(((TestDescriptor)t).getDescendants());
+
+                            t.cleanUp(tctx);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         long end = System.nanoTime();
                         boolean success = !fail && !tctx.getThrowableCollector().isNotEmpty();
-                        results.put(new TestRun(klass, method, start, end-start, success));
+                        results.put(new TestRun(klass, method, start, end - start, success));
 
                     });
                 } else {
@@ -387,7 +462,6 @@ public class JUnitNAR {
                 }
                 return true;
             });
-
 
 
             exe.awaitQuiescence(10000, SECONDS);
@@ -400,20 +474,16 @@ public class JUnitNAR {
 
         }
 
-        private static void flatten(Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> target, TestDescriptor t, JupiterEngineExecutionContext ctx) {
-            if (t.isContainer()) {
-                if (t instanceof ClassTestDescriptor) {
-                    ctx = ((ClassTestDescriptor) t).prepare(ctx);
-                }
-                JupiterEngineExecutionContext subCTX = ctx;
-                t.getChildren().forEach(z -> flatten(target, z, subCTX));
-            } else {
-                try {
-                    target.add(pair(t, ((JupiterTestDescriptor) t).prepare(ctx)));
-                } catch (Exception e) {
-                    e.printStackTrace();
+        private static boolean isDisabled(Annotation[] annotations) {
+            for (Annotation a : annotations) {
+                if (a.annotationType() == Disabled.class) {
+                    //WTF: @Disabled
+                    // "When applied at the method level, the presence of this annotation does not
+                    // prevent the test class from being instantiated."
+                    return true;
                 }
             }
+            return false;
         }
 
 //        private TestExecutionListenerRegistry buildListenerRegistryForExecution(TestExecutionListener... listeners) {
@@ -435,13 +505,13 @@ public class JUnitNAR {
 //        }
 
         private void handleThrowable(TestEngine testEngine, String phase, Throwable throwable) {
-            logger.error("{} {}", throwable,String.format("TestEngine with ID '%s' failed to %s tests", testEngine.getId(), phase));
+            logger.error("{} {}", throwable, String.format("TestEngine with ID '%s' failed to %s tests", testEngine.getId(), phase));
             BlacklistedExceptions.rethrowIfBlacklisted(throwable);
         }
 
         @Override
         public void dynamicTestRegistered(TestDescriptor testDescriptor) {
-
+            System.err.println("dyn: " + testDescriptor);
         }
 
         @Override
@@ -468,6 +538,8 @@ public class JUnitNAR {
         public void testPlanExecutionStarted(TestPlan testPlan) {
 
         }
+
+
     }
 
 }

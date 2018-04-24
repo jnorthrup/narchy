@@ -1846,14 +1846,16 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 reclaim.start();
         }
     }
-    public static final ReferenceQueue<Object> refQueue = reclaim.queue;
+
+    static final ReferenceQueue<Object> refQueue = reclaim.queue;
 
     static final class ReclamationThread extends Thread {
         final ReferenceQueue<Object> queue;
 
         ReclamationThread() {
             this.queue = new ReferenceQueue<>();
-//            setDaemon(true);
+            setDaemon(true);
+            setPriority(1);
         }
 
         @Override

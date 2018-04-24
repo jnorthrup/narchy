@@ -22,7 +22,7 @@ class ARFFTest {
                 "@attribute number real\n" +
                 "@attribute argh {yes, no}\n" +
                 "@data\n" +
-                "1, yes\n" +
+                "1.0, yes\n" +
                 "0, no\n";
 
 

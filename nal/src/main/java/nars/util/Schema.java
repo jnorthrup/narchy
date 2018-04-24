@@ -88,7 +88,7 @@ public class Schema {
         );
     }
 
-    public static Term attrTerm(String ai) {
+    static Term attrTerm(String ai) {
         return $.$$($.unquote(ai));
     }
 

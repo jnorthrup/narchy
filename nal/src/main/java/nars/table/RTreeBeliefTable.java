@@ -881,8 +881,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             Task i = incoming.task();
             Task e = existing.task();
             ((NALTask) e).causeMerge(i);
-            i.delete();
-            i.meta("merge", e); //signals success to activate what was input
+            //i.delete();
+            //i.meta("merge", e); //signals success to activate what was input
         }
 
     }

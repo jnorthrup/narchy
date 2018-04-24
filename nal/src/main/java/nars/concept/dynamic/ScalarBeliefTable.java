@@ -183,8 +183,8 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
                 if (removePrev) {
                     Task p = at.remove(lastEntryKey);
-                    if (p!=null)
-                        p.delete();
+//                    if (p!=null)
+//                        p.delete();
                 }
 
                 if (nextTask!=null)

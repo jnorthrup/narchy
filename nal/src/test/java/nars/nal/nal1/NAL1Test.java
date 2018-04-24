@@ -140,6 +140,22 @@ public class NAL1Test extends NALTest {
                 .mustOutput(cycles, "<bird --> ?1>?") //.en("What is the type of bird?");
         ;
     }
+    @Test
+    public void backwardInference2() throws nars.Narsese.NarseseException {
+
+        /*
+        $.14 (1-->(?1,0,/))? {866: 1©}
+        $.27 (1-->(x,/,/)). %1.0;.90% {868: 2©}
+        */
+
+        test
+                .believe("(x --> y)")
+                .ask(    "(x --> z)")
+                .mustOutput(cycles, "<y --> z>?")
+                .mustOutput(cycles, "<z --> y>?")
+        ;
+    }
+
 
 
     @Test

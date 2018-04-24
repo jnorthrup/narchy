@@ -172,6 +172,12 @@ public class NAL4Test extends NALTest {
         ;
     }
 
+    @Disabled @Test public void testQuestionAnswering() {
+        test
+            .input("((0,1)-->?1)?")
+            .input("((1,1)-->x).")
+            .mustOutput(CYCLES, "((0,1)-->(1,1))", QUESTION);
+    }
 }
 //package nars.nal.nal4;
 //

@@ -156,6 +156,9 @@ public class Leaf<T> extends AbstractNode<T, T> {
             T[] data = this.data;
             for (int i = 0; i < s; i++) {
                 T d = data[i];
+                if (t == d) {
+                    return true; //same instance
+                }
                 if (t.equals(d)) {
                     model.merge(d, t);
                     return true;

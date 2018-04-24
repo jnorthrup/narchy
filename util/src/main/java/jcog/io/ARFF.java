@@ -76,12 +76,11 @@ import static jcog.io.ARFF.AttributeType.*;
  * not support sparse storage (yet).</p>
  *
  * @author Mikio L. Braun, mikio@cs.tu-berlin.de
- *
+ * <p>
  * https://github.com/mikiobraun/dataformat
- *
+ * <p>
  * https://github.com/renatopp/arff-datasets
  * https://archive.ics.uci.edu/ml/datasets.html?format=&task=&att=&area=&numAtt=&numIns=&type=&sort=instUp&view=table
- *
  */
 public class ARFF implements Iterable<ImmutableList> {
 
@@ -111,10 +110,6 @@ public class ARFF implements Iterable<ImmutableList> {
         this.data = data;
     }
 
-    static Collection<ImmutableList> newDefaultDataCollection() {
-        return Sets.newConcurrentHashSet();
-    }
-
     /**
      * Parse an ArffFile from a string.
      */
@@ -126,13 +121,15 @@ public class ARFF implements Iterable<ImmutableList> {
         this(new BufferedReader(new StringReader(l)), data);
     }
 
-
-    /** default data model: concurrent hash set, eliminates duplicate
+    /**
+     * default data model: concurrent hash set, eliminates duplicate
      * data points but limited in performance/data access methods.
      */
     public ARFF() {
         this(newDefaultDataCollection());
     }
+
+
     /**
      * Construct an empty ArffFile.
      */
@@ -162,6 +159,10 @@ public class ARFF implements Iterable<ImmutableList> {
         this.comment = collectedComment.toString();
     }
 
+    static Collection<ImmutableList> newDefaultDataCollection() {
+        return Sets.newConcurrentHashSet();
+    }
+
     /**
      * Formats an array of Objects in the passed StringBuilder using toString()
      * and using del as the delimiter.
@@ -180,18 +181,20 @@ public class ARFF implements Iterable<ImmutableList> {
         }
     }
 
-    public ARFF clone(Collection<ImmutableList> with) {
-        return new ARFF(this, with);
-    }
-
     private static void joinWith(ImmutableList objects, Appendable s, CharSequence del) throws IOException {
         boolean first = true;
         for (Object o : objects) {
             if (!first) {
                 s.append(del);
             }
+
             String oo = o.toString();
-            boolean quote = isQuoteNecessary(oo);
+            boolean quote;
+            if (o instanceof Number) {
+                quote = false;
+            } else {
+                quote = isQuoteNecessary(oo);
+            }
 
             if (quote)
                 s.append('\"');
@@ -203,6 +206,7 @@ public class ARFF implements Iterable<ImmutableList> {
             first = false;
         }
     }
+
     static boolean isQuoteNecessary(CharSequence t) {
         int len = t.length();
 
@@ -211,18 +215,28 @@ public class ARFF implements Iterable<ImmutableList> {
 
         for (int i = 0; i < len; i++) {
             char x = t.charAt(i);
-            switch(x) {
-                case ' ': return true;
-                case ',': return true;
-                case '-': return true;
-                case '+': return true;
-                case '.': return true;
+            switch (x) {
+                case ' ':
+                    return true;
+                case ',':
+                    return true;
+                case '-':
+                    return true;
+                case '+':
+                    return true;
+                case '.':
+                    return true;
                 //etc..
             }
         }
 
         return false;
     }
+
+    public ARFF clone(Collection<ImmutableList> with) {
+        return new ARFF(this, with);
+    }
+
     private void readLine(int lineNum, int[] state, String line, StringBuilder collectedComment) throws ARFFParseError {
         int ll = line.length();
         switch (state[0]) {
@@ -358,8 +372,10 @@ public class ARFF implements Iterable<ImmutableList> {
 
     private boolean isNominalValueValid(String name, String token) {
         switch (token) {
-            case "?": return true; //unknown
-            case "_": return true; //don't care
+            case "?":
+                return true; //unknown
+            case "_":
+                return true; //don't care
         }
 
         String[] values = nominalCats.get(name);
@@ -512,6 +528,7 @@ public class ARFF implements Iterable<ImmutableList> {
     public AttributeType attrType(String name) {
         return attrTypes.get(name);
     }
+
     public AttributeType attrType(int n) {
         return attrTypes.get(attrName(n));
     }
@@ -586,29 +603,44 @@ public class ARFF implements Iterable<ImmutableList> {
 
     }
 
-    /** ARFF that is defined by and can be bound to/from a simple POJO */
+    /**
+     * ARFF that is defined by and can be bound to/from a simple POJO
+     */
     public static class ARFFObject<X> extends ARFF {
 
         final static Logger logger = LoggerFactory.getLogger(ARFFObject.class);
         private final Function[] extractor;
 
-        /** TODO hints for extracting Nominals */
+        /**
+         * TODO hints for extracting Nominals
+         */
         public ARFFObject(Class<X> c) {
             Reflect C = Reflect.on(c);
 
-            FasterList<Function<X,?>> extractor = new FasterList();
+            FasterList<Function<X, ?>> extractor = new FasterList();
 
-            for (Map.Entry<String,Reflect> e : C.fields(true, false).entrySet()) {
+            for (Map.Entry<String, Reflect> e : C.fields(true, false).entrySet()) {
                 String n = e.getKey();
 
                 Field field = e.getValue().get();
                 field.trySetAccessible();
 
-                Class<?> t = field.getType();
-                if (Number.class.isAssignableFrom(Primitives.wrap(t))) {
+                Class<?> t = Primitives.wrap(field.getType());
+                if (Byte.class.isAssignableFrom(t) || Short.class.isAssignableFrom(t) || Integer.class.isAssignableFrom(t) || Long.class.isAssignableFrom(t)) {
+                    defineNumeric(n);
+                    extractor.add((x) -> {
+                        try {
+                            return ((Number) field.get(x)).longValue();
+                        } catch (IllegalAccessException e1) {
+                            logger.error("field {} : {}", e1);
+                            return Double.NaN;
+                        }
+                    });
+
+                } else if (Number.class.isAssignableFrom(Primitives.wrap(t))) {
 
                     defineNumeric(n);
-                    extractor.add((x)->{
+                    extractor.add((x) -> {
                         try {
                             return ((Number) field.get(x)).doubleValue();
                         } catch (IllegalAccessException e1) {
@@ -619,7 +651,7 @@ public class ARFF implements Iterable<ImmutableList> {
                 } else {
                     //default: Text
                     defineText(n);
-                    extractor.add((x)->{
+                    extractor.add((x) -> {
                         try {
                             return field.get(x).toString();
                         } catch (IllegalAccessException e1) {

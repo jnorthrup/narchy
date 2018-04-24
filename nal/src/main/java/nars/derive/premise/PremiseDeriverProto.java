@@ -165,9 +165,36 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
                 case "subOf": //non-recursive
                     //X subOf Y : X is subterm of Y
-                    neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm));
+                    if ((Y==Op.imExt) || (Y==Op.imInt)) {
+                        //TODO move to top-level class
+                        pres.add(new AbstractPred<>($.func("subOf", $.quote(Y.toString()))) {
+                            boolean task = taskPattern.containsRecursively(X);
+                            boolean belief = beliefPattern.containsRecursively(Y);
+
+                            {
+                                assert(task || belief);
+                            }
+
+                            @Override
+                            public boolean test(PreDerivation preDerivation) {
+                                if (task && !preDerivation.taskTerm.containsRecursively(Y))
+                                    return false;
+                                if (belief && !preDerivation.beliefTerm.containsRecursively(Y))
+                                    return false;
+                                return true;
+                            }
+
+                            @Override
+                            public float cost() {
+                                return 0.5f;
+                            }
+                        });
+                        //TODO match constraints
+                    } else {
+                        neq(constraints, X, Y);
+                        constraints.add(new SubOfConstraint(X, Y, false, false, Subterm));
+                        constraints.add(new SubOfConstraint(Y, X, true, false, Subterm));
+                    }
                     break;
 
                 case "subOfNeg": //non-recursive
@@ -646,7 +673,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
 
 
-        pattern = index.get(pattern, true).term();
+        pattern = intern(pattern, index);
 
 
 
@@ -662,8 +689,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         String goalLabel = goalTruth != null ? goalTruth.toString() : "_";
 
         FasterList<Term> args = new FasterList();
-        args.add($.the(beliefLabel));
-        args.add($.the(goalLabel));
+        args.add(intern($.the(beliefLabel), index));
+        args.add(intern($.the(goalLabel), index));
         if (puncOverride != 0)
             args.add($.quote(((char) puncOverride)));
 
@@ -755,6 +782,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         );*/
 
 
+    }
+
+    static private Term intern(Term pattern, PremisePatternIndex index) {
+        return index.get(pattern, true).term();
     }
 
     private static boolean taskFirst(Term task, Term belief) {

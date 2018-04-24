@@ -636,12 +636,15 @@ public enum Op {
     /**
      * ops across which reflexivity of terms is allowed
      */
-    final static int relationDelimeterWeak = Op.or(Op.PROD, Op.SETe, Op.CONJ, Op.NEG);
-    public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
-            c -> !c.isAny(relationDelimeterWeak);
-    final static int relationDelimeterStrong = Op.or(Op.PROD, Op.SETe, Op.NEG);
+    final static int relationDelimeterStrong = Op.or(Op.PROD, Op.NEG);
     public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
             c -> !c.isAny(relationDelimeterStrong);
+
+    /** allows conj */
+    final static int relationDelimeterWeak = relationDelimeterStrong | Op.or(Op.CONJ);
+    public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
+            c -> !c.isAny(relationDelimeterWeak);
+
     final static TermCache termCache = new TermCache(128 * 1024, 4, false);
     final static TermCache termTemporalCache = new TermCache(128 * 1024, 4, false);
     /**
@@ -1059,9 +1062,11 @@ public enum Op {
 
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
         Conj c = new Conj();
-        c.add(a, aStart);
-        c.add(b, bStart);
-        return c.term();
+        if (c.add(a, aStart)) {
+            if (c.add(b, bStart))
+                return c.term();
+        }
+        return Null;
     }
 
     /**

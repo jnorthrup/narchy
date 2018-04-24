@@ -7,9 +7,9 @@
     (I --> P), X, is(P,"*"), subsMin(P,2), subOf(P,X), task("@") |- imageInt((I-->P),X), (Punctuation:Quest)
 
 //image structural transform reverse
-(X --> P), X, is(P,"*"), subsMin(P,2), in(P,"#") |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
+(X --> P), X, is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
     //in(P,"#") is a hack to detect / or \
-(P --> X), X, is(P,"*"), subsMin(P,2), in(P,"#") |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
+(P --> X), X, is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
     //in(P,"#") is a hack to detect / or \
 
 //TODO int

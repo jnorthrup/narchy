@@ -133,10 +133,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     if (af.start() == ETERNAL)
                         continue;
                     Longerval merged = null;
-                    if (af.containedInAndNotEqual(start, end)) {
+                    if (af.containedInButNotEqual(start, end)) {
                         removeNode(f);
                         ff.remove();
-                    } else if ((merged = af.unionIfIntersectsAndNotEqual(start, end)) != null) {
+                    } else if ((merged = af.unionIfIntersectsButNotEqual(start, end)) != null) {
                         if (merged.a < start)
                             start = merged.a;
                         if (merged.b > end)
@@ -453,8 +453,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                                     long to = dt(x, abi, ab[j]);
                                     if (uniqueTry.add(pair(from, to))) {
                                         if (!solveDT(x, from, to,
-                                                abi.dur(),
-                                                each))
+                                                Math.min(abi.dur(), ab[j].dur()) //dur=intersection
+                                                ,each))
                                             return false;
                                     }
                                 }
@@ -476,7 +476,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                                     be.allSatisfyWith((bx, axx) -> {
                                         if (uniqueTry.add(twin(axx, bx))) {
                                             return solveDT(x, axx.start(), dt(x, axx, bx),
-                                                    axx.dur(), //use the duration of the start event
+                                                    Math.min(axx.dur(), bx.dur()), //dur=intersection
                                                     each);
                                         } else {
                                             return true;
@@ -561,8 +561,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         long start = startDT[0];
                         long ddt = startDT[1];
                         return TimeGraph.this.solveDT(x, start, ddt,
-                                pathStart(path).dur(),
-                                each);
+                                (start!=ETERNAL && start!=XTERNAL) ? Math.min(pathStart(path).dur(), pathEnd(path).dur()) : 0 //dur=intersection
+                                ,each);
                     }
                 });
 
@@ -895,13 +895,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 long endTime;
                 if (startTime!=ETERNAL && startTime != XTERNAL) {
                     long startDur = pathStart(path).dur();
-//                    long endDur = pathEnd(path).dur();
-//                    if (startDur > 0 || endDur > 0) {
-//                        endTime = startTime + Math.max(startDur, endDur); //range expanded by either of the endpoints of the path
-//                    } else {
-//                        endTime = startTime; //point
-//                    }
-                    endTime = startTime + startDur;
+                    long endDur = pathEnd(path).dur();
+                    long dur = Math.min(startDur, endDur); //dur=intersection
+                    endTime = startTime + dur;
                 } else {
                     endTime = startTime;
                 }
@@ -1155,7 +1151,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         /**
          * contained within but not true if equal
          */
-        public boolean containedInAndNotEqual(long cs, long ce) {
+        public boolean containedInButNotEqual(long cs, long ce) {
             return (cs <= start && ce >= end() && start != cs && end() != ce);
         }
 
@@ -1167,10 +1163,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         }
 
         @Nullable
-        public Longerval unionIfIntersectsAndNotEqual(long start, long end) {
-            if (start != start() && end != end()) {
-                if (Longerval.intersectLength(start, end, start(), end()) >= 0)
-                    return Longerval.union(start, end, start(), end());
+        public Longerval unionIfIntersectsButNotEqual(long start, long end) {
+            long thisEnd = end();
+            long thisStart = this.start;
+            if (start != thisStart && end != thisEnd) {
+                if (Longerval.intersectLength(start, end, thisStart, thisEnd) >= 0)
+                    return Longerval.union(start, end, thisStart, thisEnd);
             }
             return null;
         }
@@ -1307,12 +1305,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     long startTime = startEvent.start();
 
                     Event endEvent = pathEnd(path);
-                    long endTime = endEvent.end();
+                    long endTime = endEvent.start();
 
 
                     long dt;
                     if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
-                        //use the two endpoints and subtract the dt
 
                         dt = endTime - startTime;
                     } else {

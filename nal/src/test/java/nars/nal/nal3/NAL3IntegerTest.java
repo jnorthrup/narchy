@@ -29,7 +29,6 @@ public class NAL3IntegerTest extends NALTest {
                 $.inh($.p(Int.range(1, 3), Int.range(1, 3)), $.the("a")
                 ), Tense.Eternal, 1f, 0.9f);
         test
-                .log()
                 .mustBelieve(cycles, "a(2,2)", 1.0f, 0.59f); //structural decomposition
 
     }

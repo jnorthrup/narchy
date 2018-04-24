@@ -3,6 +3,7 @@ package nars.perf;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
+import nars.nal.nal4.NAL4Test;
 import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
@@ -10,8 +11,6 @@ import nars.nal.nal8.NAL8Test;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
-
-import java.io.IOException;
 
 import static nars.perf.JmhBenchmark.perf;
 
@@ -24,6 +23,7 @@ public class NARTestBenchmark {
             NAL1Test.class,
             NAL2Test.class,
             NAL3Test.class,
+            NAL4Test.class,
             NAL5Test.class,
             NAL6Test.class,
             NAL7Test.class,
@@ -32,19 +32,15 @@ public class NARTestBenchmark {
 
     //@Param("ttl") public int ttl;
 
-    /**
-     * CONTROL
-     */
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @Fork(0)
-    public void testX() {
+    public static void main(String[] args) throws RunnerException {
 
-        try {
-            JUnitNAR.junit(tests);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        perf(NARTestBenchmark.class, (x) -> {
+            x.measurementIterations(3);
+            x.warmupIterations(1);
+            //x.jvmArgs("-Xint");
+            x.forks(1);
+            x.threads(1);
+        });
     }
 
 
@@ -58,15 +54,17 @@ public class NARTestBenchmark {
 //        junit(testclass);
 //    }
 
-    public static void main(String[] args) throws RunnerException {
+    /**
+     * CONTROL
+     */
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @Fork(0)
+    public void testX() {
 
-        perf(NARTestBenchmark.class, (x) -> {
-            x.measurementIterations(3);
-            x.warmupIterations(1);
-            //x.jvmArgs("-Xint");
-            x.forks(1);
-            x.threads(1);
-        });
+
+        JUnitNAR.junit(tests);
+
     }
 }
 

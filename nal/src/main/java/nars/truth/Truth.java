@@ -71,10 +71,10 @@ public interface Truth extends Truthed {
 
         int freqHash = floatToInt(freq, discreteness);// & 0x0000ffff;
 
-        if (!(Float.isFinite(conf) && conf >= 0 && conf <= Param.TRUTH_MAX_CONF))
+        if (!(Float.isFinite(conf) && conf >= 0))
             throw new RuntimeException("invalid conf: " + conf);
 
-        int confHash = floatToInt(conf, discreteness);// & 0x0000ffff;
+        int confHash = floatToInt(Math.min(Param.TRUTH_MAX_CONF, conf), discreteness);// & 0x0000ffff;
 
         return (freqHash << 16) | confHash;
     }

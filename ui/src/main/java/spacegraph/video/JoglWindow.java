@@ -88,8 +88,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         GLCapabilities config = new GLCapabilities(
 
                 //GLProfile.getMinimum(true)
-                //GLProfile.getDefault()
-                GLProfile.getMaximum(true)
+                GLProfile.getDefault()
+                //GLProfile.getGL2GL3()
+                //GLProfile.getMaximum(true)
 
         );
 
@@ -104,7 +105,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //        config.setHardwareAccelerated(true);
 
 
-        config.setStencilBits(8);
+        config.setStencilBits(1);
 //        config.setAlphaBits(8);
 //        config.setAccumAlphaBits(8);
 //        config.setAccumRedBits(8);

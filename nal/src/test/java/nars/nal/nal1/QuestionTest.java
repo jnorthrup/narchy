@@ -252,7 +252,7 @@ public class QuestionTest {
                 .test();
     }
 
-    @Test public void testExplicitEternalizationViaQuestionDynamic() {
+    @Disabled @Test public void testExplicitEternalizationViaQuestionDynamic() {
         new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "y. :|: %1.00;0.90%")

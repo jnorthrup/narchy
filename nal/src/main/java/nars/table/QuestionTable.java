@@ -85,6 +85,7 @@ public interface QuestionTable extends TaskTable {
     /**
      * unsorted, MRU policy.
      * this impl sucks actually
+     * TODO make one based on ArrayHashSet
      */
     class DefaultQuestionTable extends MRUCache<Task, Task> implements QuestionTable {
 
@@ -172,6 +173,8 @@ public interface QuestionTable extends TaskTable {
         public void forEachTask(Consumer<? super Task> x) {
             Task[] t = toArray();
             for (Task y : t) {
+                if (y == null)
+                    continue;
                 if (y.isDeleted()) {
                     removeTask(y);
                 } else {

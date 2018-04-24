@@ -1105,7 +1105,7 @@ public class NAL7Test extends NALTest {
         ;
     }
 
-    @Test
+    @Disabled @Test
     public void testPrediction1() throws Narsese.NarseseException {
 
 

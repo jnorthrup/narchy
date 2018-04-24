@@ -527,6 +527,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     protected void assertRunning() {
         if (cursor.compareAndSet(-1, 0)) {
             this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() +"_" + hashCode());
+            this.loop.setDaemon(true); //dont stop JVM from shutdown
             this.loop.start();
         }
     }

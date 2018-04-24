@@ -17,7 +17,9 @@ public class PredictionFeedback {
 
     //final BeliefTable table;
 
-    static final boolean delete = true;
+    static final boolean delete =
+            true;
+            //false;
 
     /**
      * punish any held non-signal beliefs during the current signal task which has just been input.
