@@ -5,6 +5,7 @@ import jcog.io.ARFF;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.NARS;
+import nars.Narsese;
 import nars.util.Schema;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
@@ -20,7 +21,7 @@ public class SchemaTest {
 
     @Test
     public void validatePredictionXOR() throws IOException, ARFF.ARFFParseError {
-        validatePrediction(xorARFF);
+        validatePrediction(xorARFF, "--(0<->1).");
     }
 
     @Test
@@ -34,7 +35,7 @@ public class SchemaTest {
     }
 
 
-    static void validatePrediction(String arffData) throws IOException, ARFF.ARFFParseError {
+    static void validatePrediction(String arffData, String... hints) throws IOException, ARFF.ARFFParseError {
         ArrayHashSet<ImmutableList> data = new ArrayHashSet<>();
 
         ARFF dataset = new ARFF(arffData, data) {
@@ -97,6 +98,13 @@ public class SchemaTest {
                 Schema.predictsLast
                 //Schema.typed(Schema.predictsLast, dataset)
         );
+        for (String h : hints) {
+            try {
+                n.input(h);
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            }
+        }
         n.run(5000);
     }
 

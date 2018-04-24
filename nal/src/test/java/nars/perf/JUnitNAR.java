@@ -140,9 +140,9 @@ public class JUnitNAR {
                 .configurationParameter(EXTENSIONS_AUTODETECTION_ENABLED_PROPERTY_NAME, "true")
                 .build();
 
-        BetterThanDefaultLauncher launcher =
+        PlanetXLauncher launcher =
                 //LauncherFactory.create();
-                new BetterThanDefaultLauncher(request);
+                new PlanetXLauncher(request);
 
 
 //        //SummaryGeneratingListener listener = new SummaryGeneratingListener();
@@ -168,9 +168,9 @@ public class JUnitNAR {
         }
     }
 
-    static class BetterThanDefaultLauncher implements Launcher, EngineExecutionListener, TestExecutionListener {
+    static class PlanetXLauncher implements Launcher, EngineExecutionListener, TestExecutionListener {
 
-        private static final Logger logger = LoggerFactory.getLogger(BetterThanDefaultLauncher.class);
+        private static final Logger logger = LoggerFactory.getLogger(PlanetXLauncher.class);
         public final ARFF.ARFFObject<TestRun> results = new ARFF.ARFFObject(TestRun.class);
         final Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> all = new ConcurrentLinkedQueue<>();
         final JupiterEngineExecutionContext ctx;
@@ -185,7 +185,7 @@ public class JUnitNAR {
          *
          * @param testEngines the test engines to delegate to; never {@code null} or empty
          */
-        BetterThanDefaultLauncher(LauncherDiscoveryRequest request) {
+        PlanetXLauncher(LauncherDiscoveryRequest request) {
             this.testEngines = ServiceLoader.load(TestEngine.class, ClassLoaderUtils.getDefaultClassLoader());
 
             final ExtensionRegistry reg = ExtensionRegistry
@@ -242,7 +242,7 @@ public class JUnitNAR {
 
                 @Override
                 public EngineExecutionListener getExecutionListener() {
-                    return BetterThanDefaultLauncher.this;
+                    return PlanetXLauncher.this;
                 }
 
                 @Override
@@ -477,7 +477,7 @@ public class JUnitNAR {
         private static boolean isDisabled(Annotation[] annotations) {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Disabled.class) {
-                    //WTF: @Disabled
+                    //@Disabled
                     // "When applied at the method level, the presence of this annotation does not
                     // prevent the test class from being instantiated."
                     return true;

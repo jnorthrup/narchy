@@ -70,7 +70,11 @@ public class Schema {
             String ai = a.attrName(i);
             Term attr = attrTerm(ai);
 
-            meta.add(CONJ.the(pattern, $.inh($.varDep(i+1), attr)));
+            meta.add(
+                //CONJ.the(pattern, $.inh($.varDep(i+1), attr))
+                    IMPL.the(pattern.replace($.varDep(i+1), $.varIndep(i+1)),
+                            $.inh($.varIndep(i+1), attr))
+            );
 
             String[] nom = a.categories(ai);
             if (nom!=null) {
