@@ -69,14 +69,14 @@ subprojects {
 
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url "http://jcenter.bintray.com" }
-//        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
     }
 
     tasks.withType(JavaCompile) {
 
         sourceCompatibility = targetCompatibility =
-                //JavaVersion.VERSION_1_10
-                JavaVersion.VERSION_1_9
+                JavaVersion.VERSION_1_10
+                //JavaVersion.VERSION_11
 
         options.encoding = 'UTF-8'
         options.incremental = true // one flag, and things will get MUCH faster

@@ -44,7 +44,6 @@ public class NAL5EquivTests extends NALTest {
     public void comparisonImpl() {
 
         TestNAR tester = test;
-        tester.log();
         tester.believe("<x ==> y>", 1f, 0.9f); //.en("If robin is a type of bird then robin is a type of animal.");
         tester.believe("<x ==> z>", 0.8f, 0.9f); //.en("If robin is a type of bird then robin can fly.");
         //was <=>

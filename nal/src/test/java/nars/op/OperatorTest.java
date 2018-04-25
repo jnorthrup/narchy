@@ -209,7 +209,6 @@ public class OperatorTest {
     static void testIO(String input, String output) {
 
         TestNAR t = new TestNAR(NARS.tmp());
-        t.log();
         t.mustOutput(16, output);
         t.input(input);
 

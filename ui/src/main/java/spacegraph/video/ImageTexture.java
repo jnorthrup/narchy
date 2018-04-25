@@ -1,22 +1,18 @@
 package spacegraph.video;
 
-import com.google.common.io.Resources;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 public class ImageTexture extends Tex {
 
@@ -25,8 +21,11 @@ public class ImageTexture extends Tex {
 
     static {
         try {
-            fontawesome = new JarFile(new File(Resources.getResource("fontawesome_128.jar").toURI()));
-        } catch (IOException | URISyntaxException e) {
+            ClassLoader classLoader = ImageTexture.class.getClassLoader();
+
+            File file = new File(classLoader.getResource("fontawesome_128.jar").getFile());
+            fontawesome = new JarFile(file);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -36,8 +35,13 @@ public class ImageTexture extends Tex {
 
             if (fontawesome!=null && u.startsWith(fa_prefix)) {
                 String icon = u.substring(fa_prefix.length());
-                ZipEntry e = fontawesome.getEntry("x128/" + icon + "-fs8.png");
-                return TextureIO.newTexture(fontawesome.getInputStream(e), true, "png");
+                try (InputStream in = fontawesome.getInputStream(
+                        fontawesome.getEntry("x128/" + icon + "-fs8.png"
+                    ))) {
+                    Texture t = TextureIO.newTexture(in, true, "png");
+                    return t;
+                }
+
             } else {
                 return TextureIO.newTexture(new URL(u), true, null);
             }
@@ -71,20 +75,20 @@ public class ImageTexture extends Tex {
         super.paint(gl, bounds, repeatScale, alpha);
     }
 
-    public static void main(String[] args) throws MalformedURLException {
-        //pngquant 2 wrench.png --speed 1 --quality 0 --nofs
-
-        String file = "/home/me/Font-Awesome-SVG-PNG/white/png/x128/wrench-fs8.png";
-        SpaceGraph.window(
-                new Gridding(
-//                    new ImageTexture(new File(file)).view(),
-                        new ImageTexture("fontawesome://wrench").view(),
-                        new ImageTexture("fontawesome://feed").view(),
-                        new ImageTexture("fontawesome://space-shuttle").view(),
-                        new ImageTexture("fontawesome://youtube").view(),
-                        new ImageTexture(new File(file)).view()
-                ),
-                500, 500);
-    }
+//    public static void main(String[] args) throws MalformedURLException {
+//        //pngquant 2 wrench.png --speed 1 --quality 0 --nofs
+//
+//        String file = "/home/me/Font-Awesome-SVG-PNG/white/png/x128/wrench-fs8.png";
+//        SpaceGraph.window(
+//                new Gridding(
+////                    new ImageTexture(new File(file)).view(),
+//                        new ImageTexture("fontawesome://wrench").view(),
+//                        new ImageTexture("fontawesome://feed").view(),
+//                        new ImageTexture("fontawesome://space-shuttle").view(),
+//                        new ImageTexture("fontawesome://youtube").view(),
+//                        new ImageTexture(new File(file)).view()
+//                ),
+//                500, 500);
+//    }
 
 }

@@ -170,7 +170,7 @@ public class TrieDeriverTest {
 //        PrediTerm<Derivation> d = t.nar.derivation().deriver;
 //        TrieDeriver.print(d);
 
-        t.log().ask("(a-->b)").mustQuestion(64, "(a==>b)");
+        t.ask("(a-->b)").mustQuestion(64, "(a==>b)");
 
     }
 
@@ -178,7 +178,6 @@ public class TrieDeriverTest {
     public void testDeriveQuest() throws Narsese.NarseseException {
 
         @NotNull TestNAR t = test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
-                .log()
                 .ask("b:a")
                 .believe("a:b")
                 .mustOutput(16, "b:a", QUEST);

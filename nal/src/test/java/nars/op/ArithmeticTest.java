@@ -90,7 +90,6 @@ public class ArithmeticTest {
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
-        t.log();
 //        t.believe("(x:1,x:2)");
 //        t.believe("(x:2,x:3)");
 //        t.believe("(x:3,x:4)");

@@ -9,7 +9,6 @@ import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AspectAlign;
-import spacegraph.space2d.container.MutableContainer;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -171,8 +170,11 @@ public class Tex {
             try {
                 Tex.this.paint(gl, bounds);
             } catch (NullPointerException e) {
-                ((MutableContainer) parent).remove(this);
-                e.printStackTrace();
+//                SurfaceBase p = this.parent;
+//                if (p instanceof MutableContainer) {
+//                    ((MutableContainer) p).remove(this);
+//                }
+//                e.printStackTrace();
             }
         }
     }

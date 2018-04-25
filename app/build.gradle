@@ -16,8 +16,6 @@ dependencies {
     compile group: 'org.zeromq', name: 'jeromq', version: '0.4.3'
     compile group: 'org.semanticweb.yars', name: 'nxparser-parsers', version: '2.3.3'
 
-    compile group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.8.6'
-
 }
 
 
@@ -46,9 +44,7 @@ shadowJar {
     exclude '/*.txt'
     exclude '/*.html'
 
-    exclude 'org/apache/lucene/codecs/lucene50/*'
-    exclude 'org/apache/lucene/codecs/lucene60/*'
-    exclude 'org/apache/lucene/codecs/lucene62/*'
+
     mainClassName = 'nars.GUI'
 
 //   baseName = 'nars_app'

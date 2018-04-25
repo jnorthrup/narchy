@@ -1,9 +1,11 @@
 package nars.op;
 
+import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,4 +113,24 @@ public class SetFunc {
         }
         return o.the(DTERNAL, t);
     }
+
+    /**
+     * input: a compound of >1 items
+     * output: a product containing the inputs, sorted according to (the most) natural ordering
+     */
+    public static final Functor sort = new Functor.UnaryBidiFunctor("sort") {
+
+        @Override
+        protected Term compute(Term x) {
+            if (x.subs() < 2)
+                return Null; //invalid
+
+            if (x.hasAny(Op.varBits))
+                return null; //incomputable
+
+            return $.p( Terms.sorted(x.subterms().arrayShared()) );
+        }
+
+    };
+
 }

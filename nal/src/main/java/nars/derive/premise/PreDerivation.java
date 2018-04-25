@@ -44,15 +44,14 @@ public abstract class PreDerivation extends Unify {
 //        return (t.isPositive() ? +1 : -1);
 //    }
 
-    protected void reset() {
+    @Override public boolean reset() {
 
-
-        termutes.clear();
-
-        this.size = 0; //HACK instant revert to zero
-        this.xy.map.clear(); //must also happen to be consistent
-
-
+        if (super.reset()) {
+            this.xy.map.clear(); //must also happen to be consistent
+            this.termutes.clear();
+            return true;
+        }
+        return false;
     }
 
 }

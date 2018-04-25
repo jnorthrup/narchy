@@ -336,6 +336,85 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         }
     }
 
+    /** (potentially) reversible function */
+    public abstract static class UnaryBidiFunctor extends Functor {
+
+        public UnaryBidiFunctor(Atom atom) {
+            super(atom);
+        }
+
+        public UnaryBidiFunctor(String atom) { super(atom); }
+
+        @Nullable
+        @Override
+        public final Term apply(Subterms terms) {
+            int s = terms.subs();
+            switch (s) {
+                case 1:
+                    return apply1(terms.sub(0));
+                case 2:
+                    return apply2(terms.sub(0), terms.sub(1));
+                default:
+                    return Null; //invalid
+            }
+        }
+
+        protected Term apply1(Term x) {
+            if (x.op().var)
+                return null; //do nothing
+            else {
+                return compute(x); //replace with result
+            }
+        }
+
+        protected abstract Term compute(Term x);
+
+        /** override for reversible functions, though it isnt required */
+        protected Term uncompute(Term y) {
+            return null;
+        }
+
+        protected Term apply2(Term x, Term y) {
+            boolean xVar = x.op().var;
+            if (y.op().var) {
+                //forwards
+                if (xVar) {
+                    return null; //uncomputable; no change
+                } else {
+                    Term XY = compute(x);
+                    if (XY!=null) {
+                        return Evaluation.solve(s ->
+                                s.replace(y, XY)
+                        );
+                    } else {
+                        return null; //unchanged
+                    }
+                }
+            } else {
+                if (xVar) {
+                    Term X = uncompute(y);
+                    if (X!=null) {
+                        return Evaluation.solve(s ->
+                                s.replace(x, X)
+                        );
+                    } else {
+                        return null; //unchanged
+                    }
+                } else {
+                    //verify
+                    Term XY = compute(x);
+                    if (XY==null || XY.equals(y)) {
+                        //equal
+                        return null; //unchanged
+                        //return True;
+                    } else {
+                        //inequal
+                        return False;
+                    }
+                }
+            }
+        }
+    }
 
     /** Functor template for a binary functor with bidirectional parameter cases */
     public abstract static class BinaryBidiFunctor extends Functor {
@@ -395,6 +474,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else if (yVar && !xVar) {
                     return computeYfromXandXY(x, y, xy);
                 } else if (!yVar && !xVar) {
+                    //VERIFY
                     Term XY = compute(x, y);
                     if (XY==null || XY.equals(xy)) {
                         //equal

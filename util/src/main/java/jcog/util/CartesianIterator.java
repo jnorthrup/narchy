@@ -16,16 +16,16 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	private final Iterable<X>[] iterables;
 	private final Iterator<X>[] iterators;
 	private X[] values;
-	private final int size;
+
 
 	/**
 	 * Constructor
 	 * @param iterables array of Iterables being the source for the Cartesian product.
 	 */
 	public CartesianIterator(IntFunction<X[]> arrayBuilder, Iterable<X>... iterables) {
-		this.size = iterables.length;
-		this.iterables = iterables;
-		this.iterators = new Iterator[size];
+		int size = iterables.length;
+
+		Iterator[] iterators = new Iterator[size];
 
 		boolean empty = false;
 
@@ -46,11 +46,14 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 		} else {
 			values = null;
 		}
+		this.iterators = iterators;
+		this.iterables = iterables;
 	}
 
 	@Override
 	public boolean hasNext() {
 		if (values==null) return false;
+		int size = iterables.length;
 		for (int i = 0; i < size; i++)
 			if (iterators[i].hasNext())
 				return true;
@@ -61,6 +64,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	public X[] next() {
 		// Find first in reverse order iterator the has a next element
 		int cursor;
+		int size = iterables.length;
 		for (cursor = size-1; cursor >= 0; cursor--)
 			if (iterators[cursor].hasNext()) break;
 		// Initialize iterators next from the current one  

@@ -45,7 +45,6 @@ public class NAL8EquivalenceTest extends NALTest {
     public void testGoalEquivComponentNeg() {
 
         test
-                .log()
                 .input("(happy)!")
                 .input("(--(happy) <=>+0 ((--,(x))&&(--,(out)))).")
                 .mustGoal(cycles, "((--,(x))&&(--,(out)))", 0f, 0.81f);
@@ -106,7 +105,6 @@ public class NAL8EquivalenceTest extends NALTest {
     public void goal_deduction_equi_neg_posneg() {
 
         test
-                .log()
                 .input("--(R)! :|:")
                 .input("((S) <=>+5 --(R)).") //internally, this reduces to --(S <=> R)
                 .mustGoal(cycles, "(S)", 1.0f, 0.81f, 0 /* shifted to present */)

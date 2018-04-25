@@ -78,7 +78,7 @@ public class PoolMultiExec extends AbstractExec {
         private int batchSize = 4;
 
         public Next() {
-            cursor = 1;
+            cursor = 0;
 
             execute(this); //start
         }
@@ -86,15 +86,17 @@ public class PoolMultiExec extends AbstractExec {
         @Override
         public boolean exec() {
             try {
-                play();
+                work();
 
+            } catch (Throwable t) {
+                t.printStackTrace();
             } finally {
 
                 try {
 
-                    work();
+                    play();
 
-                } finally {
+                } catch (Throwable t) { t.printStackTrace(); } finally {
 
                     fork();
                 }
@@ -105,11 +107,13 @@ public class PoolMultiExec extends AbstractExec {
         public void play() {
             int[] i = focus.sliceIters;
             int n = i.length;
+            if (n == 0)
+                return;
 
             int remain = batchSize;
             for (int a = 0; a < n; a++) { //safety limit
                 if (++cursor >= n)
-                    cursor = 1;
+                    cursor = 0;
                 if (focus.tryRun(cursor)) {
                     if (--remain <= 0)
                         break; //done
@@ -119,9 +123,9 @@ public class PoolMultiExec extends AbstractExec {
 
         public void work() {
 
-            if (getSurplusQueuedTaskCount()>0) {
-                ForkJoinTask.helpQuiesce();
-            }
+//            if (getSurplusQueuedTaskCount()>0) {
+//                ForkJoinTask.helpQuiesce();
+//            }
 
             ForkJoinTask<?> next;
             while ((next = peekNextLocalTask()) != null) {

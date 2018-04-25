@@ -26,11 +26,12 @@ public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
 
     public final static QuickMemoize<String, List<PremiseDeriverSource>> ruleCache = new QuickMemoize<>(32, (String n) -> {
         InputStream nn = null;
-        try {
-            nn = ClassLoader.getSystemResource(n).openStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+            nn = //ClassLoader.getSystemResource(n).openStream();
+                    NAR.class.getClassLoader().getResourceAsStream(n);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 //                    InputStream nn = NAR.class.getResourceAsStream(
 //                            //"nal/" + n
 //                            n

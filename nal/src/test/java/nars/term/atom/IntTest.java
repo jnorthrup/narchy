@@ -125,7 +125,6 @@ public class IntTest {
     @Disabled @Test
     public void testRangeUnification() {
         TestNAR n = new TestNAR(NARS.tmp());
-        n.log();
         //Tense.Present so that Temporal Induction links the two unrelated Statements
         n.nar.believe(
                 $.inh(range(0, 2), $.the("x")),

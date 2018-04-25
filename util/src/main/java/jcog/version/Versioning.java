@@ -33,6 +33,15 @@ public class Versioning<X>
         return false;
     }
 
+    /** hard clear; use with caution */
+    public boolean reset() {
+        if (this.size != 0) {
+            this.size = 0; //HACK instant revert to zero
+            return true;
+        }
+        return false;
+    }
+
     /**
      * reverts/undo to previous state
      * returns whether any revert was actually applied
@@ -110,4 +119,6 @@ public class Versioning<X>
     public final int now() {
         return size;
     }
+
+
 }

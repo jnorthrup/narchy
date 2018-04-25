@@ -53,6 +53,7 @@ public class Builtin {
             SetFunc.intersect,
             SetFunc.differ,
             SetFunc.union,
+            SetFunc.sort,
 
             ListFunc.append,
             ListFunc.sub,

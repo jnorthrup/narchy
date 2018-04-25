@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
+    private boolean daemon = true;
+
     public int size() {
         return model.size();
     }
@@ -83,7 +85,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
     /** how many epochs can pass while empty before the thread attempts to end (going into a re-activatable sleep mode) */
-    static final int SLEEP_ROUNDS = 2048;
+    static final int SLEEP_EPOCHS = 2048;
 
     public final long resolution;
     public final int wheels;
@@ -143,6 +145,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             return null;
         };
     }
+//
+//    public HashedWheelTimer daemon(boolean daemon) {
+//        this.daemon = daemon;
+//        return this;
+//    }
 
     static final int SHUTDOWN = Integer.MIN_VALUE;
 
@@ -184,7 +191,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
                 }
 
                 if (model.run(c, this) == 0) {
-                    if (empties++ >= wheels * SLEEP_ROUNDS) {
+                    if (empties++ >= wheels * SLEEP_EPOCHS) {
                         break; //turn off the wheel for now
                     }
                 } else
@@ -524,10 +531,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
 
-    protected void assertRunning() {
+    public void assertRunning() {
         if (cursor.compareAndSet(-1, 0)) {
             this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() +"_" + hashCode());
-            this.loop.setDaemon(true); //dont stop JVM from shutdown
+            this.loop.setDaemon(daemon); //true = dont stop JVM from shutdown
             this.loop.start();
         }
     }

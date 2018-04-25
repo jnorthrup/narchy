@@ -7,7 +7,6 @@ import jcog.io.ARFF;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.Param;
-import nars.nal.nal4.NAL4Test;
 import nars.util.NALTest;
 import org.eclipse.collections.api.tuple.Pair;
 import org.junit.jupiter.api.Disabled;
@@ -22,7 +21,6 @@ import org.junit.platform.commons.util.BlacklistedExceptions;
 import org.junit.platform.commons.util.ClassLoaderUtils;
 import org.junit.platform.commons.util.Preconditions;
 import org.junit.platform.engine.*;
-import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.engine.support.hierarchical.Node;
@@ -52,8 +50,9 @@ import static org.junit.jupiter.engine.Constants.EXTENSIONS_AUTODETECTION_ENABLE
 public class JUnitNAR {
 
     public static void main(String[] args) throws IOException {
+        junit();
         //junit(NARTestBenchmark.tests);
-        junit(NAL4Test.class);
+        //junit(NAL4Test.class);
     }
 
     /**
@@ -122,18 +121,18 @@ public class JUnitNAR {
     public static void junit(Class... testClasses) {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
 
-                .selectors(
-                        //selectPackage("com.example.mytests"),
-                        (ClassSelector[]) Util.map(
-                                DiscoverySelectors::selectClass,
-                                new ClassSelector[testClasses.length], testClasses)
-
-                        //selectClass(FastCompoundNAL1Test.class)
-                )
+//                .selectors(
+//                        //selectPackage("com.example.mytests"),
+//                        (ClassSelector[]) Util.map(
+//                                DiscoverySelectors::selectClass,
+//                                new ClassSelector[testClasses.length], testClasses)
+//
+//                        //selectClass(FastCompoundNAL1Test.class)
+//                )
 
                 // .filters( includeClassNamePatterns(".*Tests")  )
 
-                //.selectors(DiscoverySelectors.selectPackage("nars"))
+                .selectors(DiscoverySelectors.selectPackage("nars"))
 
                 .configurationParameter(EXTENSIONS_AUTODETECTION_ENABLED_PROPERTY_NAME, "true")
                 .build();
@@ -177,7 +176,7 @@ public class JUnitNAR {
 
         //private final TestExecutionListenerRegistry listenerRegistry = new TestExecutionListenerRegistry();
         final Node.DynamicTestExecutor dte = testDescriptor -> {
-            System.err.println("TODO: dynamic: " + testDescriptor);
+            //System.err.println("TODO: dynamic: " + testDescriptor);
         };
         private final Iterable<TestEngine> testEngines;
 
@@ -501,7 +500,10 @@ public class JUnitNAR {
 
                         boolean success = !fail && !tctx.getThrowableCollector().isNotEmpty();
                         results.put(new TestRun(klass,
-                                test.getUniqueId() + " " + test.getDisplayName(),
+                                test.getParent().get() instanceof TestTemplateTestDescriptor ?
+                                    "\"" + method + ":" + test.getDisplayName() + "\"" : //include dynamic's params
+                                    "\"" + method + "\"",
+                                //test.getUniqueId() + " " + test.getDisplayName(),
                                 //test.getUniqueId().toString(),
                                 //test.getDisplayName() + "/" + tctx.getExtensionContext().getDisplayName(), //getUniqueId().toString(),
                                 //test.getDisplayName() + " "  + tctx.getExtensionContext().getUniqueId(),

@@ -7,22 +7,35 @@ import jcog.version.VersionMap;
 import jcog.version.Versioning;
 import nars.NAR;
 import nars.Op;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Evaluation {
 
-    public static final ThreadLocal<Evaluation> solving = new ThreadLocal();
+    static final ThreadLocal<Evaluation> solving = ThreadLocal.withInitial(Evaluation::new);
 
     final List<Predicate<VersionMap<Term, Term>>[]> proc = new FasterList(1);
 
     final Versioning v = new Versioning(32, 128);
 
     final VersionMap<Term, Term> subst = new VersionMap(v);
+
+
+    private Evaluation() {
+
+    }
+
+    public static Evaluation start() {
+        return solving.get().clear();
+    }
 
     public static Evaluation the() {
         return solving.get();
@@ -44,53 +57,50 @@ public class Evaluation {
         if (!x.hasAny(Op.funcBits))
             return Collections.singleton(x);
         else {
-            assert (solving.get() == null);
-            Evaluation s = new Evaluation();
-            solving.set(s);
+            Evaluation s = Evaluation.clear();
 
-            try {
-                Term y = x.eval(context);
-                Iterable<Term> solution;
-                if (y.op().atomic)
-                    solution = Collections.singleton(y);
-                else
-                    solution = s.get(y, context);
-                return solution;
-            } finally {
-                solving.remove();
-            }
-
-
+            Term y = x.eval(context);
+            Iterable<Term> solution;
+            if (y.op().atomic)
+                solution = Collections.singleton(y);
+            else
+                solution = s.get(y, context);
+            return solution;
         }
     }
 
-    public Iterable<Term> get(Term x, TermContext context) {
-        if (proc.isEmpty()) {
-            return Collections.singleton(x);
-        }
+    public static Evaluation clear() {
+        Evaluation e = Evaluation.the();
+        e.reset();
+        return e;
+    }
 
-        //TODO length=1 special case doesnt need cartesian product
+    private void reset() {
+        if (v.reset())
+            subst.map.clear();
+        proc.clear();
+    }
+
+    public Iterable<Term> get(Term x, TermContext context) {
         Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
 
-        /*if (proc.size() > 1)*/ {
-//        Iterator<Predicate<VersionMap<Term,Term>>> ci = new CartesianIterator(
-//                Predicate[]::new,
-//                Iterables.transform(proc, (Predicate<VersionMap<Term,Term>>[] p)
-//                        -> (Iterable<Predicate<VersionMap<Term,Term>>>)(()->ArrayIterator.get(p))));
-
-            pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(
-                    Predicate[]::new,
-                    proc.stream().map(z -> ((Iterable) (() -> ArrayIterator.get(z))))
-                            .toArray(Iterable[]::new)
-            );
-
+        switch (proc.size()) {
+            case 0:
+                return Collections.singleton(x); //TODO do any substitutions need applied?
+//            case 1:
+//                //length=1 special case doesnt need cartesian product
+//                pp = Iterators.singletonIterator(proc.get(0)); //<- not working right
+//                break;
+            default:
+                pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(
+                        Predicate[]::new,
+                        proc.stream().map(z -> ((Iterable) (() -> ArrayIterator.get(z))))
+                                .toArray(Iterable[]::new)
+                );
+                break;
         }
-//        else {
-//            pp = proc.iterator();
-//        }
 
-
-        Set<Term> result = new HashSet(1); //TODO stream an iterable
+        Set<Term> result = new UnifiedSet<>(4); //TODO stream an iterable
 
         while (pp.hasNext()) {
             Predicate<VersionMap<Term, Term>>[] n = pp.next();
@@ -117,9 +127,9 @@ public class Evaluation {
 
                         y = y.normalize();
 
-                        if (!y.equals(x)) {
-                            result.add(y);
-                        }
+                    if (!y.equals(x)) {
+                        result.add(y);
+                    }
                 }
             }
 
@@ -155,18 +165,18 @@ public class Evaluation {
     }
 
     public Predicate<VersionMap<Term, Term>> subst(Term x, Term xx, Term y, Term yy) {
-        return (m) -> {
-            return subst(x, xx).test(m) && subst(y, yy).test(m);
-        };
+        return (m) -> subst(x, xx).test(m) && subst(y, yy).test(m);
     }
 
     /**
      * interface necessary for evaluating terms
      */
-    public static interface TermContext extends Function<Term,Termed> {
+    public interface TermContext extends Function<Term, Termed> {
 
 
-        /** elides superfluous .term() call */
+        /**
+         * elides superfluous .term() call
+         */
         default Term applyTermIfPossible(/*@NotNull*/ Term x, Op supertermOp, int subterm) {
             Termed y = apply(x);
             return y != null ? y.term() : x;

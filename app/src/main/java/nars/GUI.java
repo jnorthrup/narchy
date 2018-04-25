@@ -19,6 +19,7 @@ public class GUI {
 
 
     public static void main(String[] args) {
+
         Dyn2DSurface w = SpaceGraph.wall(800, 600);
 
         NAR nar = NARchy.ui();
@@ -39,18 +40,23 @@ public class GUI {
 
 
 
-        Loop.invokeLater(()->{
+        //Loop.invokeLater(()->{
             //((ZoomOrtho) w.root()).scaleMin = 100f;
             //((ZoomOrtho) w.root()).scaleMax = 1500;
 
             w.put(new ServicesTable(nar.services), 5,4);
             w.put(new Gridding(new OmniBox()), 6, 1);
             w.put(Vis.top(nar), 4,4);
-        });
+        //});
+
 
         //nar.inputNarsese(new FileInputStream("/home/me/d/sumo_merge.nal"));
 
-
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -2,10 +2,11 @@ package nars;
 
 import jcog.Util;
 import jcog.exe.Loop;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.math.random.SplitMix64Random;
 import jcog.signal.Bitmap2D;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
+import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Focus;
 import nars.exe.WorkerMultiExec;
 import nars.gui.EmotionPlot;
@@ -52,7 +53,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -146,14 +146,14 @@ abstract public class NAgentX extends NAgent {
 
 //                .exe(new PoolMultiExec(
 //                        //new Focus.DefaultRevaluator()
-//                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+//                        new Focus.AERevaluator(new SplitMix64Random(1)),
 //                        512
 //                    )
 //                )
 
                 .exe(new WorkerMultiExec(
                         //new Focus.DefaultRevaluator(),
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        new Focus.AERevaluator(new SplitMix64Random(1)),
                         Util.concurrencyDefault(2),
                         512, 2048) {
                         {
@@ -161,6 +161,7 @@ abstract public class NAgentX extends NAgent {
                         }
                      }
                 )
+
                 .time(clock)
                 .index(
                         new CaffeineIndex(
@@ -226,6 +227,7 @@ abstract public class NAgentX extends NAgent {
         new MatrixDeriver(Derivers.nal(5, 5, n));
         new MatrixDeriver(Derivers.nal(6, 8, n));
         new MatrixDeriver(Derivers.files(n, "motivation.nal"));
+
         //.deriverAdd("goal_analogy.nal")
         //.deriverAdd(6,6) //extra NAL6
 
@@ -327,7 +329,7 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 32);
 
-        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
+        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
 
         //ArithmeticIntroduction arith = new ArithmeticIntroduction(4, n);
 
@@ -406,6 +408,12 @@ abstract public class NAgentX extends NAgent {
         n.on(a);
         n.synch();
 
+        new SimpleDeriver(a.fire(), n::input, Derivers.nal(1, 8, n,
+        "motivation.nal","goal_analogy.nal"
+        ));
+
+        Loop loop = n.startFPS(narFPS);
+
         n.runLater(() -> {
 
             chart(a);
@@ -417,7 +425,6 @@ abstract public class NAgentX extends NAgent {
             Loop aLoop = a.startFPS(agentFPS);
 
         });
-        Loop loop = n.startFPS(narFPS);
 
         return n;
     }

@@ -52,11 +52,16 @@ abstract public class Deriver extends Causable {
         this(new PremiseDeriverRuleSet(nar, rules));
     }
 
+    public Deriver(PremiseDeriverRuleSet rules) {
+        this(rules, rules.nar);
+    }
+
     public Deriver(Set<PremiseDeriverProto> rules, NAR nar) {
         this(nar.exe::fire, nar::input, rules, nar);
     }
-    public Deriver(PremiseDeriverRuleSet rules) {
-        this(rules, rules.nar);
+
+    public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules) {
+        this(source, target, rules, rules.nar);
     }
 
     public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
@@ -67,7 +72,7 @@ abstract public class Deriver extends Causable {
 
     public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriver rules, NAR nar) {
         super(
-                $.func("deriver", $.the(serial.getAndIncrement())) //HACK
+            $.func("deriver", $.the(serial.getAndIncrement())) //HACK
         );
         this.rules = rules;
         this.source = source;
@@ -75,7 +80,6 @@ abstract public class Deriver extends Causable {
 
         nar.on(this);
     }
-
 
     public static Stream<Deriver> derivers(NAR n) {
         return n.services().filter(Deriver.class::isInstance).map(Deriver.class::cast);
