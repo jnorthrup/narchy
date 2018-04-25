@@ -91,7 +91,10 @@ public enum ListFunc { ;
                         );
                 }
             }
-            return Null; //impossible
+            return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
+                    null //unknown
+                    :
+                    Null; //impossible
         }
 
         @Override
@@ -116,8 +119,10 @@ public enum ListFunc { ;
                         );
                 }
             }
-            return Null; //impossible
-
+            return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
+                    null //unknown
+                    :
+                    Null; //impossible
         }
     };
 

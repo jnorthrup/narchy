@@ -748,8 +748,8 @@ public interface Compound extends Term, IPair, Subterms {
         /*if (hasAll(opBits))*/
 
 
-        if (remain-- <= 0)
-            return Null;
+        if (remain-- < 0)
+            return this; //recursion limit
 
 //        Termed ff = context.applyIfPossible(this);
 //        if (!ff.equals(this))
@@ -769,8 +769,13 @@ public interface Compound extends Term, IPair, Subterms {
             Term xi = xy!=null ? xy[i] : uu.sub(i);
             Term yi = xi.evalSafe(context, o, i, remain);
             if (yi == null) {
-                return Null;
+                //return Null;
             } else {
+                if (yi == Null)
+                    return Null;
+                if (yi == False && (o == CONJ))
+                    return False; //short-circuit fast fail
+
                 if (yi instanceof EllipsisMatch) {
                     int ys = yi.subs();
                     ellipsisAdds += ys;
@@ -820,7 +825,7 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
         if (u!=this && (u.equals(this) && u.getClass()==getClass()))
-            u = this; //return to this instance, undoing any substitutions necessary to reach this eval
+            return this; //return to this instance, undoing any substitutions necessary to reach this eval
 
         return u;
     }

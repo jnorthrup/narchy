@@ -31,14 +31,16 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 
 		// Initialize iterators
 		for (int i = 0; i < size; i++) {
-			iterators[i] = iterables[i].iterator();
+			Iterator<X> ii = iterables[i].iterator();
 			// If one of the iterators is empty then the whole Cartesian product is empty
-			if (!iterators[i].hasNext()) {
+			if (!ii.hasNext()) {
 				empty = true;
 				break;
 			}
+			iterators[i] = ii;
 		}
-		
+		this.iterators = iterators;
+
 		// Initialize the tuple of the iteration values except the last one
 		if (!empty) {
 			values = arrayBuilder.apply(size);
@@ -46,7 +48,6 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 		} else {
 			values = null;
 		}
-		this.iterators = iterators;
 		this.iterables = iterables;
 	}
 

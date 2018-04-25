@@ -1,6 +1,5 @@
 package nars;
 
-import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
@@ -28,12 +27,12 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import static nars.Op.*;
 import static nars.util.time.Tense.XTERNAL;
@@ -1013,13 +1012,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         //Term y = x.eval(n.concepts.functors);
 
         //this might be overkill
-        Set<ITask> yy = Streams.stream(Evaluation.solve(x, n.concepts.functors))
-                .map(y -> preProcess(n, x, y))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        Set<ITask> yy = new UnifiedSet<>(4);
+        Evaluation.solve(x, n.concepts.functors,
+                _y -> {
+                    ITask y = preProcess(n, x, _y);
+                    if (y!=null)
+                        yy.add(y);
+                    return true;
+                });
+
         switch (yy.size()) {
             case 0:
-                return null;
+                return preProcess(n, x, x);
             case 1:
                 return yy.iterator().next();
             default:

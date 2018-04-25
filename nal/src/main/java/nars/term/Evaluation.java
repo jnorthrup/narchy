@@ -10,7 +10,6 @@ import nars.Op;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -49,23 +48,24 @@ public class Evaluation {
         return null;
     }
 
-    public static Iterable<Term> solve(Term x, NAR n) {
-        return solve(x, n.concepts.functors);
+    public static Set<Term> solveAll(Term x, NAR n) {
+        Set<Term> all = new UnifiedSet<>(4);
+        solve(x, n.concepts.functors, (y) -> { all.add(y); return true; });
+        return !all.isEmpty() ? all : Set.of(x);
     }
 
-    public static Iterable<Term> solve(Term x, TermContext context) {
+    public static boolean solve(Term x, TermContext context, Predicate<Term> each) {
         if (!x.hasAny(Op.funcBits))
-            return Collections.singleton(x);
+            return false;
         else {
             Evaluation s = Evaluation.clear();
 
             Term y = x.eval(context);
-            Iterable<Term> solution;
             if (y.op().atomic)
-                solution = Collections.singleton(y);
-            else
-                solution = s.get(y, context);
-            return solution;
+                return each.test(y);
+            else {
+                return s.get(y, context, each);
+            }
         }
     }
 
@@ -81,26 +81,31 @@ public class Evaluation {
         proc.clear();
     }
 
-    public Iterable<Term> get(Term x, TermContext context) {
+    public boolean get(Term x, TermContext context, Predicate<Term> each) {
         Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
 
-        switch (proc.size()) {
+        int np = proc.size();
+        switch (np) {
             case 0:
-                return Collections.singleton(x); //TODO do any substitutions need applied?
+                //return Collections.singleton(x); //TODO do any substitutions need applied?
+                each.test(x);
+                return true;
 //            case 1:
 //                //length=1 special case doesnt need cartesian product
 //                pp = Iterators.singletonIterator(proc.get(0)); //<- not working right
 //                break;
-            default:
-                pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(
-                        Predicate[]::new,
-                        proc.stream().map(z -> ((Iterable) (() -> ArrayIterator.get(z))))
-                                .toArray(Iterable[]::new)
-                );
+            default: {
+                Iterable[] aa = new Iterable[np];
+                for (int i = 0; i < np; i++) {
+                    Predicate<VersionMap<Term, Term>>[] pi = proc.get(i);
+                    aa[i] = () -> ArrayIterator.get(pi);
+                }
+                pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(Predicate[]::new, aa);
                 break;
+            }
         }
 
-        Set<Term> result = new UnifiedSet<>(4); //TODO stream an iterable
+        proc.clear();
 
         while (pp.hasNext()) {
             Predicate<VersionMap<Term, Term>>[] n = pp.next();
@@ -122,13 +127,19 @@ public class Evaluation {
                 if (y != null && !y.equals(x)) {
 
                     y = y.eval(context);
+                    if (proc.isEmpty()) {
 
-                    if (y != null)
+                        if (y!=null) {
+                            y = y.normalize(); //TODO optional
 
-                        y = y.normalize();
-
-                    if (!y.equals(x)) {
-                        result.add(y);
+                            if (!y.equals(x)) {
+                                if (!each.test(y))
+                                    return false;
+                            }
+                        }
+                    } else {
+                        //recurse, new proc added
+                        return get(y, context, each);
                     }
                 }
             }
@@ -137,7 +148,7 @@ public class Evaluation {
         }
 
 
-        return result;
+        return true;
     }
 
     public void replace(Term x, Term xx) {
