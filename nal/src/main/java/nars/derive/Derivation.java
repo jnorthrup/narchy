@@ -27,6 +27,7 @@ import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.compound.util.Image;
 import nars.term.control.PrediTerm;
 import nars.truth.Stamp;
@@ -596,8 +597,6 @@ public class Derivation extends PreDerivation {
                 SetFunc.differ,
                 SetFunc.intersect,
 
-                Subst.substitute,
-
                 ListFunc.sub,
                 ListFunc.subs,
                 ListFunc.append,
@@ -635,6 +634,9 @@ public class Derivation extends PreDerivation {
 
         if (atomic instanceof Bool)//assert (!(x instanceof Bool));
             return atomic;
+
+        if (atomic instanceof Functor)
+            return atomic; //pre-resolved functor
 
         if (atomic instanceof Atom) {
             Termed f = derivationFunctors.get(atomic);
@@ -750,7 +752,7 @@ public class Derivation extends PreDerivation {
 
     private final SubIfUnify uniSubAny = new SubIfUnify(this);
 
-    private final Subst uniSub = new Subst() {
+    private final Subst uniSub = new Subst("substitute") {
 
         @Override
         public @Nullable Term apply(Subterms xx) {

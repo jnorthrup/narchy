@@ -1,0 +1,139 @@
+"""
+Quality Graph
+
+  VERB(?QUALITY) = Set<Pair<Quality,Quantifier>>
+       the components of the set represent the combined measurable
+       ingredients of some resource yielding the existence
+       or access to it in one of several different Modality's:
+
+  VERBS
+       --CAN - has, supply, provider, source, from, dependent, etc.
+       --NEED - want, demand, requirements, target, to, dependency, etc.
+       --DO(?condition, ?consequence) , ie.  (?pre ==> ?post)
+             the knowledge of the inevitability of postconditions
+             from certain preconditions.
+             a condition will typically consist of its various
+             estimate-able 'ingredients' that describe the precondition.
+                  ex: time, energy, adjustments of distance, and permissions
+             the post condition may describe changes to the precondition or
+             reference external concepts.
+
+       --HOW - that which is necessary to realize a plan (@ quest), ex:
+             (($NEED && how(CHANGE($NEED, $CAN))) ==> $CAN)
+
+  Core Qualities
+    each of these can be qualified by different combinations of variables to classify specific contexts
+       ($what,$where,$when)
+
+       --MATTER (or lack of it, ie. SPACE)
+         --MASS (kg)
+         --POSITION, DISTANCE, VELOCITY, ACCELERATION, etc..
+           ex: desired/undesired DISTANCE implies the desire to adjust the proximity to or from something
+         --VOLUME
+         --PRESSURE
+         --TEMPERATURE
+         --STRUCTURE
+            --atoms
+            --molecules
+            --chemical reactions
+            --ionization/isotope/etc.
+       --TIME (seconds)
+       --ENERGY (joules)
+         --TEMPERATURE (etc..)
+         --FREQUENCY (hz)
+         --POWER (watt)
+         --TRANSVERSE (ELECTROMAGNTIC) - non-ionizing radiation
+         --LONGITUDNAL (ACOUSTIC) - acoustic radiation
+         --RADIOACTIVE - ionizing radiation
+       --MEMORY (bits)
+       --SIGNAL
+         --BANDWIDTH (hz, Db, SNR, bits/sec)
+         --NOISE (SNR, entropy, etc)
+         --agreeability(x) = degree of coherence with subjective preference(x)
+       --COMPUTE (...several...)
+       --BIO
+         --toxins(?what,dose*time)
+         --nutritients(?what,dose*time)
+         --survival = (nutrients - toxins)
+         --reproductivity
+
+  Quantifier - evaluates some boolean or numeric result
+               to some degree of accuracy (from vague, "something" to precise "324284.2423").
+               depending on the application it may
+               provide meaningful prediction, estimation, comparison
+               results alone or as part of an N-ary function
+               with another estimator.
+
+               re: Vague estimators, ex: it may be able to resolve
+               only relative similarity or difference or ordering between
+               two items at a time (ex: Comparator<>)
+
+  Preferences = Sorted Quantifiable Qualities
+
+http://www.johnclilly.com/simulationsPrologue.html
+
+Before the beginning was the VOID.
+
+Out of the void came God, the Star Maker, the Creator, the Decision Maker, the First Distinction.
+
+Out of God came the idea of self, the consciousness without an object, the consciousness of itself without an object, the consciousness without consciousness, self.
+
+From consciousness without an object came the object, the first object, space a space to vorticize, a space to whirl, a space to turn upon itself, a space to turn upon itself and then in addition turn upon itself in the other direction, opposite, expanding.
+
+On the microlevel, the smallest vortex, the smallest quantum of space, the smallest of the smallest unit out of which all else would be built-the smallest vortex reproduced itself, reproduced in pairs, opposite, swinging oppositely, making sure to balance, so that the sum over all the integral of ALL was zero, as if not real. God created AS IF, the as if conscious as real, made hardware out of software, software out of hardware, creating nothing, casting ALL to destruction back in the VOID. Everywhere the VOID. Anything, everything, all of it can dump, at any moment, any instant, any eternity, any past, any future, into the VOID to zero out SAFE PLACE.
+
+The integral of all the summed aspects of averaging through all the new creation, is all the little vortices and their dances to make larger vortices and their dances to make still larger vortices till finally a universe.
+
+In the beginning was the point, the smallest possible point, the H nu, "hv," the quantum of action. Also at the beginning was the quantum of love expanded, L star, L*, expanding becoming the idealized abstraction of universal love,
+filling the new universe, yet also filling the old consciousness without an object. The true prime abstract compassion working its own thing out there with nothing else to refer to. With NOTHING to refer to except ALL, which included it, itself, Lovestar, L*.
+
+The random dance of E star, E*, entropic energy, totally random, having no point, no place, pure, pure energy, pure randomness, pure destruction burning all else into itself, becoming entropic, running down isothermally as high a temperature as it could achieve out of all the organization around it that it swallowed up.
+
+N star, N*, negentropic energy, the big N, the Network, the intelligence, the organizer. That which comes, takes entropic,
+makes it straight, straight lines, points, planes, solids, cubes, crystals, computers, brains, life. The organizer. Building, build-
+ing out of nothing everywhere, using entropic energy in its service, creating, creating straight lines, crooked lines, curves, surfaces, beautiful nonlinear spaces, Riemannian surfaces, pure mathematics.
+
+Minus star [ - ]*, negative energy star. The pure negative energy, the destroyer of the creator. Negative opposite the positive energy.
+
+Plus star, [+]*. Pure positive energy, the rejuvenator, the pusher, the creator, opposite of the destroyer [ - ]*.
+
+Zero star, Z*, nothingness, the void, the absence of all, negative absence of the positive, the positive absence of the negative, the where with all, the opposite of all, from all, the zero place,the safe place, the nothingness from which all came and back to which all goes. Nothingness. Zero star, Z*.
+
+[- +]* --> Z* --> [+ -}*
+
+All is nothing, nothing is all. C* pure consciousness. The pure aspect of it, itself, before it thought of itself yet after it thought of itself. The distinguisher yet the non distinguisher. The pure high indifference HIND which is without the necessity of any of the others is this cosmic dance. The beginning, the end, the be all in C star, C*.
+
+C*, [+]*, [ - ]*, L*, Z*, the five energies, the five sources. Opposite these from the left hand we go to the right hand. God starts with nothing, with zero, with Him before Him out of which He came, as well as everything else.
+
+In his aspect as the Star Maker, N star, N*, the creator, that which created everything else including itself, N star, pure negentropic creativity. The organizer on the pure organization level. That which came and managed all else.
+
+L star, L*, the lover. That which feels compassion is the L star trip for all the others, making sure that love permeates everywhere, keeping the atoms dancing and the vortices whirling, keeping space intact, not allowing zero to take over yet, yet compassionately reducing to zero that which is too much in the negative region.
+
+Plus star, [+]*, pure positive energy seeking, always seeking, the positive, the orgiastic, the orgasm, the fucking of the universe fucking itself, always doing the fucking. The female fucker, the cunt, the cock, the male fucker. That which is so positive that it's unbearable. So anti-negative that it's euphoric, it's orgiastic and it's ananda, it is beyond comprehension in the positive realm. Pure positive abstraction.
+
+Randomness, E star, E*, that which is totally unorganized, not allowing any organization to appear, destroying all organization that does appear. The shiva-shakti dichotomy to the nth power. Pure random organizer and anti-organizer that tears it all down, that destroys the whirlings, takes the vortices, converts them into pure electromagnetic energy by the collapse of anti-matter and matter into the energy space into the N* space and then reducing that itself. Pure randomness with photons no longer photons. With thermal photons no longer thermal photons and the isotropic eternal dance of nothing taking place in any direction with no space, no time, ten to the minus thirty-third centimeters' indeterminancy of space itself, of topology. Indeterminacy, the quantum of indeterminacy, raised everywhere supporting ten to the ninety-fifth grams per cubic centimeter of density, of apparent density and yet totally random.
+"""
+
+(can($has,$x) ==> can($has,know($x))).
+
+(can($knower, know($what)) ==> do($knower, $what)).
+
+(know($knower,$what) ==> can($knower,know($what) && --need($knower, know($what)))).
+
+((&&,can($has,$what),--need($has,$what),need($hasnt,$what)) ==> can($has,give($what,$hasnt))).
+
+    (teach($teacher,$what,$student) ==> can($teacher,give(know($what,$student)))).
+
+(sort({$x,#something}, $quality, ($x,#something))  ==> minimize($x,$quality)).
+(sort({$x,#less,#more},$quality,(#less,$x,#more))  ==> medimize($x,$quality)).
+(sort({$x,#something}, $quality, (#something,$x))  ==> maximize($x,$quality)).
+
+(need($someone,--$something) ==> ... //"i need NOT x" ie. dislike/hate X
+
+can(#someone, #something)!
+give(#someone, #something)!
+know(#someone, #something)!
+do(#someone, #something)!
+--need(#something, #something)!
+maximize(#something,#someway)!
+minimize(#something,#someway)!

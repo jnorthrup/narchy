@@ -1,6 +1,5 @@
 package nars.op;
 
-import nars.$;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
@@ -21,15 +20,11 @@ public class Subst extends Functor {
     final static Term STRICT = Atomic.the("strict");
     final static Term FORCE = Atomic.the("force");
 
+    public static final Subst replace = new Subst("replace");
 
-    final static Atom id = (Atom) $.the("substitute");
-
-    public static final Subst substitute = new Subst();
-
-    protected Subst() {
-        super(id);
+    protected Subst(String id) {
+        this((Atom)Atomic.the(id));
     }
-
     protected Subst(Atom id) {
         super(id);
     }

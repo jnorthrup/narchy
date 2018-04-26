@@ -43,7 +43,6 @@ import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.time.Tense;
-import org.HdrHistogram.Histogram;
 import org.HdrHistogram.ShortCountsHistogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -202,14 +201,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         LongSummaryStatistics goals = new LongSummaryStatistics();
         LongSummaryStatistics questions = new LongSummaryStatistics();
         LongSummaryStatistics quests = new LongSummaryStatistics();
-        Histogram termlinkCount = new Histogram(1);
-        Histogram tasklinkCount = new Histogram(1);
+        ShortCountsHistogram termlinkCount = new ShortCountsHistogram(1, 1024, 3);
+        ShortCountsHistogram tasklinkCount = new ShortCountsHistogram(1, 1024, 3);
         //Frequency complexity = new Frequency();
         HashBag clazz = new HashBag();
         HashBag policy = new HashBag();
         HashBag rootOp = new HashBag();
 
-        ShortCountsHistogram volume = new ShortCountsHistogram(2);
+        ShortCountsHistogram volume = new ShortCountsHistogram(1, Param.COMPOUND_VOLUME_MAX, 3);
 
         //AtomicInteger i = new AtomicInteger(0);
 

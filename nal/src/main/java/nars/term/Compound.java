@@ -768,25 +768,27 @@ public interface Compound extends Term, IPair, Subterms {
         for (int i = 0, n = uu.subs(); i < n; i++) {
             Term xi = xy!=null ? xy[i] : uu.sub(i);
             Term yi = xi.evalSafe(context, o, i, remain);
-            if (yi == null) {
-                //return Null;
-            } else {
-                if (yi == Null)
-                    return Null;
-                if (yi == False && (o == CONJ))
-                    return False; //short-circuit fast fail
+            if (xi!=yi) {
+                if (yi == null) {
+                    //nothing
+                } else {
+                    if (yi == Null)
+                        return Null;
+                    if (yi == False && (o == CONJ))
+                        return False; //short-circuit fast fail
 
-                if (yi instanceof EllipsisMatch) {
-                    int ys = yi.subs();
-                    ellipsisAdds += ys;
-                    ellipsisRemoves++;
-                }
-
-                if (xi != yi && (xi.getClass() != yi.getClass() || !xi.equals(yi))) {
-                    if (xy == null) {
-                        xy = arrayClone(); //begin clone copy
+                    if (yi instanceof EllipsisMatch) {
+                        int ys = yi.subs();
+                        ellipsisAdds += ys;
+                        ellipsisRemoves++;
                     }
-                    xy[i] = yi;
+
+                    if (xi.getClass() != yi.getClass() || !xi.equals(yi)) {
+                        if (xy == null) {
+                            xy = arrayClone(); //begin clone copy
+                        }
+                        xy[i] = yi;
+                    }
                 }
             }
         }

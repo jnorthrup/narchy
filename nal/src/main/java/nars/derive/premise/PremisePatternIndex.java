@@ -7,7 +7,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.Terms;
+import nars.term.compound.CachedCompound;
 import nars.term.compound.LightCompoundDT;
 import nars.term.var.Variable;
 import nars.unify.Unify;
@@ -16,14 +16,17 @@ import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
 import nars.unify.mutate.CommutivePermutations;
+import nars.util.term.InternedSubterms;
 import nars.util.term.transform.VariableNormalization;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static nars.Op.ATOM;
 import static nars.Op.CONJ;
-import static nars.Op.concurrent;
+import static nars.Op.NEG;
 import static nars.util.time.Tense.XTERNAL;
 
 /**
@@ -31,6 +34,7 @@ import static nars.util.time.Tense.XTERNAL;
  */
 public class PremisePatternIndex extends MapConceptIndex {
 
+    final Map<InternedSubterms,Subterms> subterms = new HashMap<>(512);
 
     public PremisePatternIndex() {
         super(new HashMap<>(512));
@@ -58,10 +62,21 @@ public class PremisePatternIndex extends MapConceptIndex {
         if (!x.op().conceptualizable)
             return x;
 
-        //avoid recursion-caused concurrent modifiation exception
+
+
+        //avoid recursion-caused concurrent modification exception
         Termed y = concepts.get(x);
         if (y == null) {
-            Term yy = x instanceof Compound ? patternify((Compound) x) : x;
+            if (nar!=null && x.op()==ATOM) {
+                //resolve NAR built-in functors
+                Termed xx = nar.concepts.get(x,false);
+                if (xx!=null) {
+                    concepts.put(xx.term(), xx);
+                    return xx;
+                }
+            }
+
+            Term yy = patternify(x);
             concepts.put(yy, yy);
             return yy;
         } else {
@@ -69,9 +84,17 @@ public class PremisePatternIndex extends MapConceptIndex {
         }
     }
 
+    private Term patternify(Term x) {
+        if (x instanceof Compound)
+            return patternify((Compound)x);
+        return x;
+    }
+
     /*@NotNull*/
     public Term patternify(/*@NotNull*/ Compound x) {
 
+        if (x.op()==NEG)
+            return patternify(x.unneg()).neg();
 
         Subterms s = x.subterms();
         int ss = s.subs();
@@ -89,14 +112,17 @@ public class PremisePatternIndex extends MapConceptIndex {
         if (!changed && Ellipsis.firstEllipsis(s) == null)
             return x;
 
-        Subterms v = changed ? Subterms.subtermsInterned(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
-                Terms.sorted(bb) :
-                bb) : s;
+        Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
+
+//        Subterms v = changed ? Subterms.subtermsInterned(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
+//                Terms.sorted(bb) :
+//                bb) : s;
 
         Ellipsis e = Ellipsis.firstEllipsis(v);
         return e != null ?
                 ellipsis(x, v, e) :
-                x.op().the(x.dt(), v.arrayShared()); //new PatternCompound.PatternCompoundSimple(x.op(), x.dt(), v);
+                CachedCompound.the(x.op(), x.dt(), v);
+                    //x.op().the(x.dt(), v.arrayShared()); //new PatternCompound.PatternCompoundSimple(x.op(), x.dt(), v);
     }
 
 

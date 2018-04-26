@@ -48,6 +48,12 @@ public final class Termify extends AbstractPred<Derivation> {
 
         d.untransform.clear();
 
+//        Term c1 = pattern.transform(d);
+//        if (c1==null || !c1.op().conceptualizable) {
+//            return false;
+//        }
+//        c1 = c1.eval(d);
+
         Term c1 = pattern.eval(d);
 
         if (c1.volume() > d.termVolMax) {

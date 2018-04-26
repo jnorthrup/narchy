@@ -12,9 +12,9 @@ import java.util.Arrays;
 public final class InternedSubterms extends AbstractPLink<Subterms> implements HijackMemoize.Computation<InternedSubterms, Subterms> {
     private final int hash;
 
-    final byte[] subs;
+    public final byte[] subs;
 
-    private transient Term[] rawSubs;
+    public transient Term[] rawSubs;
 
     //Y
     public Subterms y = null;

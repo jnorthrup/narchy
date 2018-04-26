@@ -85,7 +85,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
     /** how many epochs can pass while empty before the thread attempts to end (going into a re-activatable sleep mode) */
-    static final int SLEEP_EPOCHS = 2048;
+    static final int SLEEP_EPOCHS = 128;
 
     public final long resolution;
     public final int wheels;

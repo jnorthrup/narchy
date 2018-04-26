@@ -7,6 +7,9 @@ import jcog.version.VersionMap;
 import jcog.version.Versioning;
 import nars.NAR;
 import nars.Op;
+import nars.concept.Operator;
+import org.eclipse.collections.api.map.ImmutableMap;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,6 +19,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import static nars.Op.ATOM;
 
 public class Evaluation {
 
@@ -57,15 +62,42 @@ public class Evaluation {
     public static boolean solve(Term x, TermContext context, Predicate<Term> each) {
         if (!x.hasAny(Op.funcBits))
             return false;
-        else {
-            Evaluation s = Evaluation.clear();
 
-            Term y = x.eval(context);
-            if (y.op().atomic)
-                return each.test(y);
-            else {
-                return s.get(y, context, each);
+        //pre-resolve functors
+        UnifiedMap<Term,Term> resolved = new UnifiedMap<>(4);
+        x.recurseTerms(t->t.hasAny(ATOM), (t)->{
+            if (t.op()==ATOM) {
+                resolved.computeIfAbsent(t, (tt)->{
+                    Termed ttt = context.apply(tt);
+                    if ((ttt instanceof Functor || ttt instanceof Operator)) {
+                        return ttt.term();
+                    } else {
+                        return null; //dont map
+                    }
+                });
             }
+            return true;
+        }, null);
+        if (resolved.isEmpty())
+            return false;
+
+        ImmutableMap<Term, Term> resolvedImm = resolved.toImmutable();
+        TermContext subcontext = term -> {
+            if (term.op()==ATOM) {
+                Term r = resolvedImm.get(term);
+                if (r!=null)
+                    return r;
+            }
+            return term;
+        };
+
+        Evaluation s = Evaluation.clear();
+
+        Term y = x.eval(subcontext);
+        if (y.op().atomic)
+            return each.test(y);
+        else {
+            return s.get(y, subcontext, each);
         }
     }
 
