@@ -9,8 +9,8 @@ import static nars.Op.INT;
 
 public enum MathFunc { ;
 
-    public final static Functor _add =
-            Functor.f2Int("add", true, (i) -> i == 0, (n) -> false, (x, y) -> x + y);
+//    public final static Functor _add =
+//            Functor.f2Int("add", true, (i) -> i == 0, (n) -> false, (x, y) -> x + y);
 
     public final static Functor add =
             new Functor.CommutiveBinaryBidiFunctor("add") {

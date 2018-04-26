@@ -1,8 +1,10 @@
 package nars.op;
 
+import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
@@ -10,6 +12,7 @@ import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -128,9 +131,34 @@ public class SetFunc {
             if (x.hasAny(Op.varBits))
                 return null; //incomputable
 
-            return $.p( Terms.sorted(x.subterms().arrayShared()) );
+            return $.pFast( Terms.sorted(x.subterms().arrayShared()) );
         }
 
+        @Override
+        protected Term uncompute(Term x, Term y) {
+            //deduce specific terms present in 'y' but not 'x'
+
+            //HACK simple case of 1
+            if (y.vars() == 0 && x.vars()==1) {
+                Subterms xx = x.subterms();
+                Subterms yy = y.subterms();
+                List<Term> missing = new FasterList(1);
+                for (Term sy : yy) {
+                    if (!xx.contains(sy)) {
+                        missing.add(sy);
+                    }
+                }
+                if (missing.size() == 1) {
+                    Term[] xxx = xx.terms((n, xs) -> xs.op().var);
+                    if (xxx.length == 1) {
+                        Evaluation.the().replace(xxx[0], missing.get(0));
+                        return null;
+                    }
+                }
+            }
+
+            return null;
+        }
     };
 
 }

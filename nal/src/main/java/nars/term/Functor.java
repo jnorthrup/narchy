@@ -370,7 +370,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         protected abstract Term compute(Term x);
 
         /** override for reversible functions, though it isnt required */
-        protected Term uncompute(Term y) {
+        protected Term uncompute(Term x, Term y) {
             return null;
         }
 
@@ -391,8 +391,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                     }
                 }
             } else {
-                if (xVar) {
-                    Term X = uncompute(y);
+                if (x.hasAny(Op.VariableBits)) {
+                    Term X = uncompute(x, y);
                     if (X!=null) {
                         return Evaluation.solve(s ->
                                 s.replace(x, X)

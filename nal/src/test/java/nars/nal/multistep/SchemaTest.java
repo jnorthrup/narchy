@@ -94,7 +94,8 @@ public class SchemaTest {
 
         Schema.believe(n, dataset, Schema.predictsLast);
 
-        Schema.ask(n, validation,
+        //Schema.ask
+        Schema.askActive(n, validation,
                 Schema.predictsLast
                 //Schema.typed(Schema.predictsLast, dataset)
         );

@@ -26,6 +26,7 @@ import jcog.data.sexpression.Pair;
 import nars.$;
 import nars.IO;
 import nars.Op;
+import nars.concept.Operator;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.compound.UnitCompound;
@@ -38,6 +39,7 @@ import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFuncti
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -745,11 +747,37 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
 
+        if (remain-- < 0)
+            return this; //recursion limit
+
+        if (!hasAll(Op.funcBits))
+            return this;
+
+        //pre-resolve functors
+        UnifiedMap<Term,Term> resolved = new UnifiedMap<>(4);
+        recurseTerms(t->t.hasAny(ATOM), t->{
+            if (t.op()==ATOM) {
+                resolved.computeIfAbsent(t, tt->{
+                    Termed ttt = context.apply(tt);
+                    if ((ttt instanceof Functor || ttt instanceof Operator)) {
+                        return ttt.term();
+                    } else {
+                        return null; //dont map
+                    }
+                });
+            }
+            return true;
+        }, null);
+        if (resolved.isEmpty())
+            return this;
+
+
+        Evaluation.TermContext subcontext = new Evaluation.TermContext.MapTermContext(resolved);
+
         /*if (hasAll(opBits))*/
 
 
-        if (remain-- < 0)
-            return this; //recursion limit
+
 
 //        Termed ff = context.applyIfPossible(this);
 //        if (!ff.equals(this))
@@ -767,7 +795,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         for (int i = 0, n = uu.subs(); i < n; i++) {
             Term xi = xy!=null ? xy[i] : uu.sub(i);
-            Term yi = xi.evalSafe(context, o, i, remain);
+            Term yi = xi.evalSafe(subcontext, o, i, remain);
             if (xi!=yi) {
                 if (yi == null) {
                     //nothing

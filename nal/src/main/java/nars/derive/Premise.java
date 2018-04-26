@@ -81,16 +81,15 @@ public class Premise {
     public boolean match(Derivation d, int matchTTL) {
 
         Term taskTerm = task.term();
-        Term taskConcept = taskTerm.concept();
-        Op to = taskTerm.op();
+
 
         final boolean[] beliefConceptCanAnswerTaskConcept = {false};
         boolean unifiedBelief = false;
 
         Term beliefTerm = term();
         Op bo = beliefTerm.op();
-        if (to == bo) {
-            if (taskConcept.equals(beliefTerm.concept())) {
+        if (taskTerm.op() == bo) {
+            if (taskTerm.concept().equals(beliefTerm.concept())) {
                 beliefConceptCanAnswerTaskConcept[0] = true;
             } else {
 

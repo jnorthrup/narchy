@@ -2,10 +2,16 @@ package nars.util;
 
 import jcog.io.ARFF;
 import jcog.list.FasterList;
+import jcog.pri.PLink;
+import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.concept.Concept;
+import nars.control.Activate;
+import nars.derive.Derivers;
+import nars.derive.deriver.SimpleDeriver;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
@@ -14,8 +20,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -36,9 +44,43 @@ public class Schema {
                 data(n, data, QUESTION, pointGenerator)
         );
     }
+    public static void askActive(NAR n, ARFF data, Function<Term[], Term> pointGenerator) {
+        Task[] questions = data(n, data, QUESTION, pointGenerator).toArray(Task[]::new);
+        for (Task q : questions) {
+
+            n.input(q);
+
+            Concept qc = q.concept(n, true);
+            if (qc!=null) {
+                new SimpleDeriver((x) -> {
+                    while (x.test(new Activate(qc,1f))) ;
+                }, n::input, Derivers.nal(1, 8, n)) {
+                    //termlinks: sample from nar concepts
+
+                    @Override
+                    public Supplier<PriReference<Term>> termlinker(Concept c, Random rng) {
+                        return ()-> {
+                            Activate[] pl = new Activate[1];
+                            n.exe.fire(x -> {
+                                pl[0] = x;
+                                return false; //just one
+                            });
+                            if (pl[0] != null)
+                                return new PLink<>(pl[0].term(), pl[0].pri());
+                            else
+                                return null;
+                        };
+                    }
+                };
+            } else {
+                throw new RuntimeException("null question concept: " + q);
+            }
+        }
+
+    }
 
     /** raw product representation of the row */
-    public static Function<Term[], Term> raw = (tt) -> $.p(tt);
+    public static Function<Term[], Term> raw = $::p;
 
     /** all elements except a specified row become the subj of an impl to the element in the specified column*/
     public static Function<Term[], Term> predictsNth(int column) {

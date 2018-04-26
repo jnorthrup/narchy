@@ -12,8 +12,6 @@ import nars.Task;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
 import nars.derive.step.Occurrify;
-import nars.op.ListFunc;
-import nars.op.SetFunc;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
@@ -27,8 +25,6 @@ import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.atom.Int;
-import nars.term.compound.util.Image;
 import nars.term.control.PrediTerm;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -363,9 +359,6 @@ public class Derivation extends PreDerivation {
 
         Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
 
-        for (Termed x : ruleFunctors(nar))
-            m.put(x.term(), x);
-
         for (Termed x : derivationFunctors)
             m.put(x.term(), x);
 
@@ -584,46 +577,6 @@ public class Derivation extends PreDerivation {
             revert(now); //undo any changes applied in conclusion
         }*/
 
-    }
-
-    /**
-     * functors to be inserted in PatternIndex's for direct usage
-     */
-    static Termed[] ruleFunctors(NAR nar) {
-
-        return new Termed[]{
-
-                SetFunc.union,
-                SetFunc.differ,
-                SetFunc.intersect,
-
-                ListFunc.sub,
-                ListFunc.subs,
-                ListFunc.append,
-
-                Image.imageNormalize,
-                Image.imageInt,
-                Image.imageExt,
-
-//                nar.get(Atomic.the("add")),
-//                nar.get(Atomic.the("mul")),
-
-                nar.get(Atomic.the("dropAnyEvent")),
-                nar.get(Atomic.the("dropAnySet")),
-                nar.get(Atomic.the("without")),
-                nar.get(Atomic.the("withoutPosOrNeg")),
-
-                nar.get(Atomic.the("conjWithout")),
-                nar.get(Atomic.the("conjWithoutPosOrNeg")),
-
-                nar.get(Atomic.the("conjDropIfEarliest")),
-                nar.get(Atomic.the("conjDropIfLatest")),
-                nar.get(Atomic.the("conjEvent")),
-                nar.get(Atomic.the("ifConjCommNoDepVars")),
-                nar.get(Atomic.the("indicesOf")),
-                nar.get(Atomic.the("substDiff")),
-                nar.get(Atomic.the("ifNeqRoot")),
-        };
     }
 
     /**

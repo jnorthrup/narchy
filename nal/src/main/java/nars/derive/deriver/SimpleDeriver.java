@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * samples freely from concept, termlink, and tasklink bags without any buffering of premises
@@ -59,12 +60,14 @@ public class SimpleDeriver extends Deriver {
 
             Concept c = a.get();
 
-            float cPri = a.priElseZero();
+            //float cPri = a.priElseZero();
 
             Bag<?, TaskLink> tasks = c.tasklinks();
-            Bag<Term, PriReference<Term>> terms = c.termlinks();
 
-            if (update(nar, tasks, terms)) {
+
+            if (update(nar, tasks, c.termlinks())) {
+
+                Supplier<PriReference<Term>> termlinker = termlinker(c, rng);
 
                 int tasklinks = /*Util.lerp(cPri, 1, */tasklinksPerConcept.intValue();
                 int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
@@ -80,7 +83,7 @@ public class SimpleDeriver extends Deriver {
 
                             for (int z = 0; z < termlinks; z++) {
 
-                                PriReference<Term> termlink = terms.sample(rng);
+                                PriReference<Term> termlink = termlinker.get();
                                 if (termlink != null) {
 
                                     Premise premise = new Premise(task, termlink);
@@ -102,5 +105,10 @@ public class SimpleDeriver extends Deriver {
             return ii[0]-- > 0; //miss
         });
 
+    }
+
+    public Supplier<PriReference<Term>> termlinker(Concept c, Random rng) {
+        Bag<Term, PriReference<Term>> ct = c.termlinks();
+        return ()->ct.sample(rng);
     }
 }

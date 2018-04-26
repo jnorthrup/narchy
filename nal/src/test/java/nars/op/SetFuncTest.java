@@ -39,5 +39,11 @@ public class SetFuncTest {
                 Set.of($$("(&&,sort((1,2),(1,2)),append(1,(),1),append(2,(),2))")),
                 Evaluation.solveAll($$("(&&, append(1,(),#a),append(2,(),#b),sort((#a,#b),#sorted))"), n));
     }
+    @Test public void testSortSubst3() {
+        assertEquals(
+                Set.of($$("(sort((3,2),(2,3))&&add(1,2,3))")),
+                Evaluation.solveAll(
+                    $$("(&&,add(1,#x,#a),sort((#a,2),(2,3)))"), n));
+    }
 
 }
