@@ -80,7 +80,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
      */
     @Override
     protected boolean start() {
-        AudioContext context = getContext();
+        //AudioContext context = getContext();
         IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
         AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.outputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);

@@ -745,7 +745,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     /*@NotNull*/
     @Override
-    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
+    default Term evalSafe(Evaluation.TermContext _context, Op supertermOp, int subterm, int remain) {
 
         if (remain-- < 0)
             return this; //recursion limit
@@ -753,26 +753,34 @@ public interface Compound extends Term, IPair, Subterms {
         if (!hasAll(Op.funcBits))
             return this;
 
-        //pre-resolve functors
-        UnifiedMap<Term,Term> resolved = new UnifiedMap<>(4);
-        recurseTerms(t->t.hasAny(ATOM), t->{
-            if (t.op()==ATOM) {
-                resolved.computeIfAbsent(t, tt->{
-                    Termed ttt = context.apply(tt);
-                    if ((ttt instanceof Functor || ttt instanceof Operator)) {
-                        return ttt.term();
-                    } else {
-                        return null; //dont map
-                    }
-                });
-            }
-            return true;
-        }, null);
-        if (resolved.isEmpty())
-            return this;
+        Evaluation.TermContext context;
+//        if (!(_context instanceof Evaluation.TermContext.MapTermContext)) {
+            //pre-resolve functors
+            UnifiedMap<Term, Term> resolved = new UnifiedMap<>(4);
+            recurseTerms(t -> t.hasAny(ATOM), t -> {
+                if (t.op() == ATOM) {
+                    resolved.computeIfAbsent(t, tt -> {
+                        Termed ttt = _context.apply(tt);
+                        if ((ttt instanceof Functor || ttt instanceof Operator)) {
+                            return ttt.term();
+                        } else {
+                            return null; //dont map
+                        }
+                    });
+                }
+                return true;
+            }, null);
+            if (resolved.isEmpty())
+                return this;
+
+            context = new Evaluation.TermContext.MapTermContext(resolved);
+//        } else {
+//            //re-use existing pre-solved Context
+//            context = _context;
+//        }
 
 
-        Evaluation.TermContext subcontext = new Evaluation.TermContext.MapTermContext(resolved);
+
 
         /*if (hasAll(opBits))*/
 
@@ -795,7 +803,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         for (int i = 0, n = uu.subs(); i < n; i++) {
             Term xi = xy!=null ? xy[i] : uu.sub(i);
-            Term yi = xi.evalSafe(subcontext, o, i, remain);
+            Term yi = xi.evalSafe(context, o, i, remain);
             if (xi!=yi) {
                 if (yi == null) {
                     //nothing

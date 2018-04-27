@@ -118,7 +118,7 @@ Randomness, E star, E*, that which is totally unorganized, not allowing any orga
 
 (can($knower, know($what)) ==> do($knower, $what)).
 
-(know($knower,$what) ==> can($knower,know($what) && --need($knower, know($what)))).
+(know($knower,$what) ==> (can($knower,know($what)) && --need($knower, know($what)))).
 
 ((&&,can($has,$what),--need($has,$what),need($hasnt,$what)) ==> can($has,give($what,$hasnt))).
 

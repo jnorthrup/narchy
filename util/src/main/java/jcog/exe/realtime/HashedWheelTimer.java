@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
-    private boolean daemon = true;
+    private boolean daemon = false;
 
     public int size() {
         return model.size();
