@@ -60,8 +60,8 @@
 
 package jcog.io.bzip2;
 
-import java.io.OutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * An output stream that compresses into the BZip2 format (without the file

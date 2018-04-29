@@ -17,6 +17,7 @@ import nars.exe.Causable;
 import nars.link.TaskLink;
 import nars.link.Tasklinks;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Set;
@@ -103,16 +104,21 @@ abstract public class Deriver extends Causable {
         Tasklinks.linkTaskTemplates(concept, tasklink, tasklink.priElseZero(), nar);
     }
 
-    protected boolean update(NAR nar, Bag<?, TaskLink> tasklinks, Bag<Term, PriReference<Term>> termlinks) {
+    static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, @Nullable Bag<Term, PriReference<Term>> termlinks) {
         float linkForgetting = nar.forgetRate.floatValue();
         tasklinks.commit(tasklinks.forget(linkForgetting));
         int ntasklinks = tasklinks.size();
         if (ntasklinks == 0)
             return false;
 
-        termlinks.commit(termlinks.forget(linkForgetting));
-        int ntermlinks = termlinks.size();
-        return ntermlinks != 0;
+
+        if (termlinks!=null) {
+            termlinks.commit(termlinks.forget(linkForgetting));
+            int ntermlinks = termlinks.size();
+            return ntermlinks != 0;
+        } else {
+            return true;
+        }
     }
 
 

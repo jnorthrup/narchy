@@ -100,9 +100,7 @@ public abstract class AbstractTimerTest {
     public void fixedRateFirstFireTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
         long start = System.currentTimeMillis();
-        timer.scheduleAtFixedRate(() -> {
-                    latch.countDown();
-                },
+        timer.scheduleAtFixedRate(latch::countDown,
                 100,
                 100,
                 TimeUnit.MILLISECONDS);

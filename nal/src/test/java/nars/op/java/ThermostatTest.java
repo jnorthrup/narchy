@@ -107,7 +107,9 @@ public class ThermostatTest {
 
         };
 
-        Teacher<Thermostat> env = new Teacher<>(op, Thermostat.class);
+        Teacher<Thermostat> env = new Teacher<>(op,
+                new Thermostat());
+                //Thermostat.class);
 
 
 
@@ -262,7 +264,7 @@ public class ThermostatTest {
 //                    n.time.nextInputStamp()).pri(1f));
 
             }
-        } while (false /*stupid*/);
+        } while (stupid);
 
 
         //n.run(thinkDurs * n.dur());

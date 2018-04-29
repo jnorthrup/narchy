@@ -6,9 +6,11 @@ import jcog.list.FasterList;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.truth.Stamp;
 import nars.util.Schema;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -81,15 +83,16 @@ public class SchemaTest {
         n.beliefPriDefault.set(0.01f);
         n.questionPriDefault.set(0.99f);
 
-//        LongHashSet questions = new LongHashSet();
-//        n.onTask(t->{
-//            if (t.isInput() && t.isQuestionOrQuest())
-//                questions.add(t.stamp()[0]);
-//            else if (Stamp.overlapsAny(questions, t.stamp())) {
-//                if (t.isBeliefOrGoal())
-//                    System.out.println("ANSWER: " + t);
-//            }
-//        });
+        LongHashSet questions = new LongHashSet();
+        n.onTask(t->{
+            if (t.isInput() && t.isQuestionOrQuest())
+                questions.add(t.stamp()[0]);
+            else if (Stamp.overlapsAny(questions, t.stamp())) {
+                if (t.isBeliefOrGoal())
+                    System.out.println("ANSWER: " + t);
+            }
+        });
+
         n.log();
 
         Schema.believe(n, dataset, Schema.predictsLast);

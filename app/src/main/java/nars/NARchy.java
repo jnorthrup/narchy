@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.User;
+import jcog.Util;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
@@ -31,7 +32,8 @@ public class NARchy extends NARS {
         NAR nar = new DefaultNAR(8, true)
                 //.exe(new WorkerMultiExec(512, 2, 64))
                 .exe(new PoolMultiExec /*WorkerMultiExec*/(
-                    new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),512
+                        Util.concurrencyDefault(2), 512,
+                    new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
                         //        , 64, 512))
                 ))
 //                .exe(new AbstractExec(64) {

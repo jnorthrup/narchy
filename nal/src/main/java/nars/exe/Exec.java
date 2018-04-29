@@ -71,6 +71,14 @@ abstract public class Exec implements Executor {
 
     abstract public void fire(Predicate<Activate> each);
 
+    public Activate fire() {
+        Activate[] pl = new Activate[1];
+        fire(x -> {
+            pl[0] = x;
+            return false; //just one
+        });
+        return pl[0];
+    }
 
     abstract public Stream<Activate> active();
 

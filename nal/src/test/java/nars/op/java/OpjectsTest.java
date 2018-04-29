@@ -95,13 +95,16 @@ public class OpjectsTest {
     }
 
     /** invoked externally (ex: by user) */
-    @Test public void testInvoke() {
+    @Test public void testInvokeInstanced() {
         final NAR n = NARS.tmp();
 
         n.log();
-        final Opjects objs = new Opjects(n);
 
-        final SimpleClass y = objs.a("y", SimpleClass.class);
+        final SimpleClass y = new Opjects(n).a("y", SimpleClass.class);
+        testInvoke(n, y);
+    }
+
+    static void testInvoke(NAR n, SimpleClass y) {
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
         n.run(1);
@@ -117,6 +120,15 @@ public class OpjectsTest {
         System.out.println("log:\n" + s);
         assertTrue(s.contains("get(y,0)."));
         assertTrue(s.contains("set(y,1)."));
+    }
+
+    @Test public void testInvokeWrapped() {
+        final NAR n = NARS.tmp();
+
+        n.log();
+
+        final SimpleClass y = new Opjects(n).the("y", new SimpleClass());
+        testInvoke(n, y);
     }
 
     @Disabled

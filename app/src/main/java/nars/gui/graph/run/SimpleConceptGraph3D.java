@@ -61,35 +61,34 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
     @Override
     public void update(SpaceGraphPhys3D<Concept> s, long dtMS) {
         if (reloadReady.getAndSet(false)) {
-//            active.clear();
             reload();
         }
 
         super.update(s, dtMS);
     }
 
-    private void reload() {
-        nar.runLater(() -> {
+    private synchronized void reload() {
+        //nar.runLater(() -> {
 
-            nar.stop();
+            //nar.stop();
 
-            nar.clear();
-            nar.concepts.clear();
+            //nar.clear();
+            //nar.concepts.clear();
             //n.reset();
 
+        //init();
 
-            nar.runLater(() -> {
+            //nar.runLater(() -> {
                 try {
-                    init();
                     nar.input(inputbox.text());
-                    nar.startFPS(16);
                 } catch (Narsese.NarseseException e) {
                     e.printStackTrace();
                 }
-            });
+            //});
 
+        //nar.startFPS(16);
 
-        });
+        //});
     }
 
 

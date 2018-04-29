@@ -2,8 +2,6 @@ package nars.util;
 
 import jcog.io.ARFF;
 import jcog.list.FasterList;
-import jcog.pri.PLink;
-import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -20,10 +18,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -44,38 +40,25 @@ public class Schema {
                 data(n, data, QUESTION, pointGenerator)
         );
     }
-    public static void askActive(NAR n, ARFF data, Function<Term[], Term> pointGenerator) {
+    public static SimpleDeriver askActive(NAR n, ARFF data, Function<Term[], Term> pointGenerator) {
         Task[] questions = data(n, data, QUESTION, pointGenerator).toArray(Task[]::new);
+        List<Concept> concepts = new FasterList(questions.length);
         for (Task q : questions) {
 
             n.input(q);
 
             Concept qc = q.concept(n, true);
             if (qc!=null) {
-                new SimpleDeriver((x) -> {
-                    while (x.test(new Activate(qc,1f))) ;
-                }, n::input, Derivers.nal(1, 8, n)) {
-                    //termlinks: sample from nar concepts
-
-                    @Override
-                    public Supplier<PriReference<Term>> termlinker(Concept c, Random rng) {
-                        return ()-> {
-                            Activate[] pl = new Activate[1];
-                            n.exe.fire(x -> {
-                                pl[0] = x;
-                                return false; //just one
-                            });
-                            if (pl[0] != null)
-                                return new PLink<>(pl[0].term(), pl[0].pri());
-                            else
-                                return null;
-                        };
-                    }
-                };
+                concepts.add(qc);
             } else {
                 throw new RuntimeException("null question concept: " + q);
             }
         }
+
+        return new SimpleDeriver(x -> {
+            while (x.test(new Activate(concepts.get(n.random().nextInt(concepts.size())),1f))) ;
+        }, n::input, Derivers.nal(1, 8, n),
+                SimpleDeriver.GlobalTermLinker);
 
     }
 

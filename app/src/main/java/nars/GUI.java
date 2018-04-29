@@ -52,11 +52,11 @@ public class GUI {
 
         //nar.inputNarsese(new FileInputStream("/home/me/d/sumo_merge.nal"));
 
-        try {
-            Thread.currentThread().join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.currentThread().join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

@@ -60,7 +60,10 @@ abstract public class AbstractExec extends Exec {
         active.putAsync(new Activate(c, activationApplied));
     }
 
-
+    @Override
+    public Activate fire() {
+        return active.sample(nar.random());
+    }
 
     @Override
     public void fire(Predicate<Activate> each) {
@@ -153,9 +156,8 @@ abstract public class AbstractExec extends Exec {
 
     @Override
     public Stream<Activate> active() {
-
-        return active.stream();
-        //return active.stream().map(x -> new Activate(x.getOne(), x.getTwo()));
+        Bag<?, Activate> a = active;
+        return a == null ? Stream.empty() : active.stream();
     }
 
 //    final int WINDOW_SIZE = 32;

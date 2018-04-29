@@ -80,7 +80,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 @Paper
 @Skill({"Metaprogramming", "Reinforcement_learning"})
-public class Opjects extends DefaultTermizer implements InvocationHandler {
+public class Opjects extends DefaultTermizer {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
     final static ClassLoadingStrategy classLoadingStrategy =
@@ -756,8 +756,8 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
                     .with(TypeValidation.DISABLED)
                     .subclass(instance.getClass())
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
-                    .intercept(InvocationHandlerAdapter.of((objIgnored, method, margs) ->
-                            invoke(instance, method, margs)))
+                    .intercept(InvocationHandlerAdapter.of((objWrapper, method, margs) ->
+                            invoke(objWrapper, instance, method, margs)))
                     .make()
                     .load(
                             Thread.currentThread().getContextClassLoader(),
@@ -1077,18 +1077,31 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
         //return isGeneric(candidate);
     }
 
-    private static boolean isGeneric(Method method) {
-        return isGeneric(method.getGenericReturnType())
-                ||
-                Util.or((Predicate<Type>) Opjects::isGeneric, method.getGenericParameterTypes());
-    }
+//    private static boolean isGeneric(Method method) {
+//        return isGeneric(method.getGenericReturnType())
+//                ||
+//                Util.or((Predicate<Type>) Opjects::isGeneric, method.getGenericParameterTypes());
+//    }
+//
+//    private static boolean isGeneric(Type type) {
+//        return type instanceof TypeVariable || type instanceof GenericArrayType;
+//    }
 
-    private static boolean isGeneric(Type type) {
-        return type instanceof TypeVariable || type instanceof GenericArrayType;
-    }
+//    @Override
+//    public final Object invoke(Object obj, Method method, Object[] args)  {
+//
+//        Object result;
+//        try {
+//            result = method.invoke(obj, args);
+//        } catch (Throwable t) {
+//            logger.error("{} args={}: {}", obj, args, t);
+//            result = t;
+//        }
+//
+//        return tryInvoked(obj, method, args, result);
+//    }
 
-    @Override
-    public final Object invoke(Object obj, Method method, Object[] args)  {
+    public final Object invoke(Object wrapper, Object obj, Method method, Object[] args)  {
 
         Object result;
         try {
@@ -1098,9 +1111,8 @@ public class Opjects extends DefaultTermizer implements InvocationHandler {
             result = t;
         }
 
-        return tryInvoked(obj, method, args, result);
+        return tryInvoked(wrapper, method, args, result);
     }
-
 //    @Deprecated @Nullable
 //    @Override
 //    public final Object invoke(Object obj, Method wrapper, Method wrapped, Object[] args) {

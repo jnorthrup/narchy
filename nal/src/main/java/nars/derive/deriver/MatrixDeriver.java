@@ -163,7 +163,7 @@ public class MatrixDeriver extends Deriver {
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
-        if (!update(nar, tasklinks, termlinks))
+        if (!commit(nar, tasklinks, termlinks))
             return;
 
         int[] conceptTTL = { _tasklinks *  _termlinksPerTasklink };

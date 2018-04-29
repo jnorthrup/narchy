@@ -1,7 +1,5 @@
 package spacegraph.space3d.test;
 
-import com.jogamp.newt.event.WindowAdapter;
-import com.jogamp.newt.event.WindowEvent;
 import jcog.User;
 import spacegraph.space2d.WidgetTest;
 import spacegraph.space2d.hud.SubOrtho;
@@ -22,13 +20,13 @@ public class OSMTest {
 
         SpaceGraphPhys3D sg = new SpaceGraphPhys3D(new OsmSpace(i.osm));
         sg.show(800, 800);
-        sg.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowDestroyed(WindowEvent e) {
-                super.windowDestroyed(e);
-                System.exit(0);
-            }
-        });
+//        sg.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowDestroyed(WindowEvent e) {
+//                super.windowDestroyed(e);
+//                System.exit(0);
+//            }
+//        });
         sg.add(new SubOrtho(WidgetTest.widgetDemo()).posWindow(0, 0, 0.3f, 1f));
 
     }
