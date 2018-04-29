@@ -8,7 +8,7 @@ import nars.concept.Concept;
 import nars.exe.AbstractExec;
 import nars.test.DeductiveMeshTest;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.Graph2D;
+import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.container.ForceDirected2D;
 import spacegraph.space2d.container.Splitting;
 

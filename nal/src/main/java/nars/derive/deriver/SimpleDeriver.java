@@ -74,33 +74,30 @@ public class SimpleDeriver extends Deriver {
             Supplier<PriReference<Term>> termlinker = model.termlinks();
 
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
-            tasklinks.forEach(tasklink -> {
+            for (TaskLink tasklink : tasklinks) {
 
-                if (tasklink != null) {
+                activate(c, tasklink, nar);
 
-                    activate(c, tasklink, nar);
+                Task task = tasklink.get(nar);
+                if (task != null) {
 
-                    Task task = tasklink.get(nar);
-                    if (task != null) {
+                    for (int z = 0; z < termlinks; z++) {
 
-                        for (int z = 0; z < termlinks; z++) {
+                        PriReference<Term> termlink = termlinker.get();
+                        if (termlink != null) {
 
-                            PriReference<Term> termlink = termlinker.get();
-                            if (termlink != null) {
-
-                                Premise premise = new Premise(task, termlink);
-                                if (premise.match(d, matchTTL))
-                                    if (rules.derivable(d))
-                                        d.derive(deriveTTL);
+                            Premise premise = new Premise(task, termlink);
+                            if (premise.match(d, matchTTL))
+                                if (rules.derivable(d))
+                                    d.derive(deriveTTL);
 
 
-                            }
                         }
-
                     }
 
                 }
-            });
+
+            }
 
             return ii[0]-- > 0;
         });
@@ -128,7 +125,7 @@ public class SimpleDeriver extends Deriver {
         public Iterable<TaskLink> tasklinks(int max) {
             List<TaskLink> t = new FasterList<>(max);
             c.tasklinks().sample(rng, max, x -> {
-                t.add(x);
+                if (x!=null) t.add(x);
             });
             return t;
         }
@@ -149,14 +146,14 @@ public class SimpleDeriver extends Deriver {
         final Random rng = d.random;
 
         {
-            Deriver.commit(d.nar, c.tasklinks(), null);
+            Deriver.commit(n, c.tasklinks(), null);
         }
 
         @Override
         public Iterable<TaskLink> tasklinks(int max) {
             List<TaskLink> t = new FasterList<>(max);
             c.tasklinks().sample(rng, max, x -> {
-                t.add(x);
+                if (x!=null) t.add(x);
             });
             return t;
         }

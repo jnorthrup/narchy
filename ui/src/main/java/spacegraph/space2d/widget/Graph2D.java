@@ -1,4 +1,4 @@
-package spacegraph.space2d;
+package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
 import jcog.data.pool.DequePool;
@@ -6,6 +6,7 @@ import jcog.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.MutableMapContainer;

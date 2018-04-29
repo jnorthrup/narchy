@@ -4,7 +4,7 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
 import jcog.data.graph.MapNodeGraph;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.Graph2D;
+import spacegraph.space2d.widget.Graph2D;
 
 public class Graph2DTest {
 

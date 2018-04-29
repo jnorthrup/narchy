@@ -7,10 +7,7 @@ import spacegraph.space2d.container.AbstractMutableContainer;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
@@ -30,6 +27,12 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         forEach(x -> {
             if (x.visible())
                 each.accept(x);
+        });
+    }
+
+    public void forEachKeySurface(BiConsumer<? super K, Surface> each) {
+        cache.forEach((k,v)->{
+           each.accept(k, v.surface);
         });
     }
 

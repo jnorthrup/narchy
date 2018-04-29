@@ -132,11 +132,14 @@ public class Longerval implements LongInterval {
 		return a+".."+b;
 	}
 
+	/** returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common */
 	public static long intersectLength(long x1, long y1, long x2, long y2) {
 		long a = max(x1, x2);
 		long b = min(y1, y2);
 		return a <= b ? b - a : -1;
 	}
+
+	/** returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common */
 	public static int intersectLength(int x1, int y1, int x2, int y2) {
 		int a = max(x1, x2);
 		int b = min(y1, y2);
