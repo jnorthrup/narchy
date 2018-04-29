@@ -262,9 +262,9 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             //TODO heuristic for range sampling parameters
             for (TaskRegion t : components) {
                 if (!c.add(((Task)t).term(), t.start(), t.end(), 1, 1))
-                    return Null; //TODO maybe try with less aggressive sampling, if sampling was used
+                    break; //TODO maybe try with less aggressive sampling, if sampling was used
             }
-            return c.term();
+            return c.term(); //null, false, true...
         }
 
         @Override

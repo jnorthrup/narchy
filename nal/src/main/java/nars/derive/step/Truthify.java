@@ -1,5 +1,6 @@
 package nars.derive.step;
 
+import nars.The;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
@@ -13,7 +14,7 @@ import static nars.Op.*;
  * After temporalization, truth may be recalculated.  the confidence
  * will not exceed the prior value calculated here.
  */
-abstract public class Truthify extends AbstractPred<Derivation> {
+abstract public class Truthify extends AbstractPred<Derivation>  {
 
     public final TruthOperator belief;
     public final TruthOperator goal;

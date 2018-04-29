@@ -185,7 +185,8 @@ public class TaskProxy implements Task {
 
         public WithTerm(Term term, Task task) {
             super(task);
-            assert(term.op()!=NEG);
+            if(term.op()==NEG)
+                throw new RuntimeException("task must not be named wit NEG term");
             this.term = term;
         }
 

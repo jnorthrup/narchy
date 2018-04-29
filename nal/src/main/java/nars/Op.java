@@ -11,7 +11,6 @@ import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -23,7 +22,6 @@ import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarDep;
 import nars.unify.Unify;
-import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.InternedCompound;
@@ -36,8 +34,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.map.mutable.primitive.LongByteHashMap;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
@@ -64,20 +60,7 @@ public enum Op {
     ATOM(".", Op.ANY_LEVEL, OpType.Other),
 
     NEG("--", 1, Args.One) {
-        @Override
-        public Term the(int dt, Term[] u, boolean intern) {
-            return instance(dt, u);
-        }
 
-        @Override
-        public Term the(int dt, Term... u) {
-            return instance(dt, u);
-        }
-
-        @Override
-        protected final Term compound(int dt, Term[] u, boolean intern) {
-            return instance(dt, u);
-        }
 
         public Term instance(int dt, Term[] u) {
             //assert(u.length == 1);
@@ -88,12 +71,30 @@ public enum Op {
 
         @Override
         protected boolean internable(int dt, Term[] u) {
-            return false;
+            //return false;
+            return true;
         }
     },
 
-    INH("-->", 1, OpType.Statement, Args.Two),
-    SIM("<->", true, 2, OpType.Statement, Args.Two),
+    INH("-->", 1, OpType.Statement, Args.Two) {
+        @Override
+        public Term instance(int dt, Term[] u) {
+            assert(u.length==2);
+            return statement(this, dt, u[0], u[1]);
+        }
+    },
+    SIM("<->", true, 2, OpType.Statement, Args.Two) {
+        @Override
+        public Term instance(int dt, Term[] u) {
+            if (u.length == 1) { //similarity has been reduced
+                assert (this == SIM);
+                return u[0] == Null ? Null : True;
+            } else {
+                assert (u.length == 2);
+                return statement(this, dt, u[0], u[1]);
+            }
+        }
+    },
 
     /**
      * extensional intersection
@@ -148,13 +149,7 @@ public enum Op {
      * along with inheritance (INH), which comprise the functor,
      * can be used to compose the foundation of the system.
      */
-    PROD("*", 1, Args.GTEZero) {
-        @Override
-        public Term the(int dt, Term... t) {
-            assert (dt == DTERNAL);
-            return (t.length == 0) ? EmptyProduct : super.the(dt, t);
-        }
-    },
+    PROD("*", 1, Args.GTEZero),
 
 
     /**
@@ -172,12 +167,12 @@ public enum Op {
                 case 1:
                     Term only = u[0];
                     if (only instanceof EllipsisMatch) {
-                        return a(dt, ((EllipsisMatch) only).arrayShared()); //unwrap
+                        return the(dt, ((EllipsisMatch) only).arrayShared()); //unwrap
                     } else {
 
                         //preserve unitary ellipsis for patterns etc
                         return only instanceof Ellipsislike ?
-                                new CachedUnitCompound(CONJ, only) //special; preserve the surrounding conjunction
+                                instance(CONJ, dt, only) //special; preserve the surrounding conjunction
                                 :
                                 only;
                     }
@@ -238,8 +233,14 @@ public enum Op {
                         if (u[0].equalsNeg(u[1]))
                             return False;
 
-                        if (!u[0].unneg().op().temporal && !u[1].unneg().op().temporal)
-                            return Op.instance(CONJ, dt, Terms.sorted(u));
+//                        if (!u[0].unneg().op().temporal && !u[1].unneg().op().temporal) {
+//
+//                            Term[] uu = Terms.sorted(u);
+//                            if (u==uu)
+//                                return instance(CONJ, dt, u); //direct instance
+//                            else
+//                                return CONJ.the(dt, uu); //send thru again
+//                        }
                     }
 
                     ci = junctionFlat(dt, u);
@@ -320,7 +321,7 @@ public enum Op {
                     }
 
                     if (u.length > 1) {
-                        return instance(CONJ, XTERNAL, u);
+                        return Op.instance(CONJ, XTERNAL, u);
                     } else {
                         return u[0];
                     }
@@ -411,7 +412,13 @@ public enum Op {
     /**
      * implication
      */
-    IMPL("==>", 5, OpType.Statement, Args.Two),
+    IMPL("==>", 5, OpType.Statement, Args.Two) {
+        @Override
+        public Term instance(int dt, Term[] u) {
+            assert(u.length==2);
+            return statement(this, dt, u[0], u[1]);
+        }
+    },
 
 
     ///-----------------------------------------------------
@@ -1063,145 +1070,144 @@ public enum Op {
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
         Conj c = new Conj();
         if (c.add(a, aStart)) {
-            if (c.add(b, bStart))
-                return c.term();
+            c.add(b, bStart);
         }
-        return Null;
+        return c.term(); //Null, True, or False
     }
 
-    /**
-     * constructs a correctly merged conjunction from a list of events
-     * note: this modifies the event list
-     */
-    public static Term conj0(FasterList<LongObjectPair<Term>> events) {
-
-        final int ee = events.size();
-        switch (ee) {
-            case 0:
-                return True;
-            case 1:
-                return events.get(0).getTwo();
-            default:
-                events.sortThisByLong(LongObjectPair::getOne);
-
-                LongHashSet times = new LongHashSet(ee); //TODO lazy alloc only after a duplicate sequence time has been detected
-                LongByteHashMap collides = null;
-
-                for (int i = 0; i < ee; i++) {
-                    LongObjectPair<Term> p = events.get(i);
-                    long pt = p.getOne();
-                    if (!times.add(pt)) {
-                        if (collides == null)
-                            collides = new LongByteHashMap(2);
-
-                        byte n = collides.getIfAbsentPut(pt, (byte) 1);
-                        collides.addToValue(pt, (byte) 1);
-                    }
-                }
-                if (collides != null) {
-                    ListIterator<LongObjectPair<Term>> ii = events.listIterator();
-                    int batchRemain = 0;
-                    Term[] batch = null;
-                    while (ii.hasNext()) {
-                        LongObjectPair<Term> p = ii.next();
-
-                        if (batchRemain == 0) {
-                            long pt = p.getOne();
-                            batchRemain = collides.removeKeyIfAbsent(pt, (byte) 0);
-                            assert (batchRemain == 0 || batchRemain > 1) : "batchRemain=" + batchRemain;
-                            if (batchRemain > 0) {
-                                ii.remove();
-                                batch = new Term[batchRemain--];
-                                batch[0] = p.getTwo();
-                            }
-                        } else {
-                            ii.remove();
-                            batch[batch.length - batchRemain--] = p.getTwo();
-
-                            if (batchRemain == 0) {
-                                Term b = CONJ.the(0, batch);
-                                if (b == False)
-                                    return False;
-                                if (b == Null)
-                                    return Null;
-                                if (b != True)
-                                    ii.add(pair(p.getOne(), b));
-                                batch = null;
-                            }
-                        }
-
-                    }
-                }
-//                //TODO optimize this
-//                ListIterator<LongObjectPair<Term>> ii = events.listIterator();
-//                long prevtime = TIMELESS;
-//                int prevtimeStart = 0;
-//                while (ii.hasNext()) {
-//                    LongObjectPair<Term> x = ii.next();
-//                    Term xt = x.getTwo();
-//                    if (xt == True) {
-//                        ii.remove(); //skip
-//                    } else if (xt == False) {
-//                        return False;
-//                    } else if (xt == Null) {
-//                        return Null;
-//                    }
+//    /**
+//     * constructs a correctly merged conjunction from a list of events
+//     * note: this modifies the event list
+//     */
+//    public static Term conj0(FasterList<LongObjectPair<Term>> events) {
 //
-//                    long now = x.getOne();
+//        final int ee = events.size();
+//        switch (ee) {
+//            case 0:
+//                return True;
+//            case 1:
+//                return events.get(0).getTwo();
+//            default:
+//                events.sortThisByLong(LongObjectPair::getOne);
 //
-//                    if (now == ETERNAL)
-//                        throw new TODO();
-//                    else if (now == TIMELESS)
-//                        throw new RuntimeException();
-//                    int at = ii.previousIndex();
+//                LongHashSet times = new LongHashSet(ee); //TODO lazy alloc only after a duplicate sequence time has been detected
+//                LongByteHashMap collides = null;
 //
-//                    boolean hasNext = ii.hasNext();
-//                    if (prevtime == now && hasNext) {
-//                        //continue, will be grouped when the # changes
-//                    } else {
-//                        if ((hasNext && prevtimeStart < at - 1) || (!hasNext && prevtime == now)) {
-//                            Term[] s = new Term[at - prevtimeStart + (!hasNext ? 1 : 0)];
-//                            assert (s.length > 1);
-//                            int j = 0;
-//                            if (!hasNext) {
-//                                s[j++] = xt; //include current
-//                                ii.remove();
-//                            } else {
-//                                ii.previous();
-//                            }
-//                            for (; j < s.length; ) {
-//                                LongObjectPair<Term> e = ii.previous();
-//                                ii.remove();
-//                                s[j++] = e.getTwo();
-//                            }
-//                            Term xyt = CONJ.the(0, s);
-//                            if (xyt == Null) return Null;
-//                            if (xyt == False) return False;
-//                            if (xyt != True) {
-//                                LongObjectPair<Term> xy = pair(prevtime, xyt);
-//                                ii.add(xy);
-//                                if (hasNext)
-//                                    ii.next();
-//                            }
-//                            prevtimeStart = ii.previousIndex();
-//                        } else {
-//                            prevtimeStart = at;
-//                        }
-//                        prevtime = now;
+//                for (int i = 0; i < ee; i++) {
+//                    LongObjectPair<Term> p = events.get(i);
+//                    long pt = p.getOne();
+//                    if (!times.add(pt)) {
+//                        if (collides == null)
+//                            collides = new LongByteHashMap(2);
+//
+//                        byte n = collides.getIfAbsentPut(pt, (byte) 1);
+//                        collides.addToValue(pt, (byte) 1);
 //                    }
 //                }
-                int e = events.size();
-                switch (e) {
-                    case 0:
-                        return True;
-                    case 1:
-                        return events.get(0).getTwo();
-                    default:
-                        return Conj.conjSeq(events);
-                }
-
-        }
-    }
+//                if (collides != null) {
+//                    ListIterator<LongObjectPair<Term>> ii = events.listIterator();
+//                    int batchRemain = 0;
+//                    Term[] batch = null;
+//                    while (ii.hasNext()) {
+//                        LongObjectPair<Term> p = ii.next();
+//
+//                        if (batchRemain == 0) {
+//                            long pt = p.getOne();
+//                            batchRemain = collides.removeKeyIfAbsent(pt, (byte) 0);
+//                            assert (batchRemain == 0 || batchRemain > 1) : "batchRemain=" + batchRemain;
+//                            if (batchRemain > 0) {
+//                                ii.remove();
+//                                batch = new Term[batchRemain--];
+//                                batch[0] = p.getTwo();
+//                            }
+//                        } else {
+//                            ii.remove();
+//                            batch[batch.length - batchRemain--] = p.getTwo();
+//
+//                            if (batchRemain == 0) {
+//                                Term b = CONJ.the(0, batch);
+//                                if (b == False)
+//                                    return False;
+//                                if (b == Null)
+//                                    return Null;
+//                                if (b != True)
+//                                    ii.add(pair(p.getOne(), b));
+//                                batch = null;
+//                            }
+//                        }
+//
+//                    }
+//                }
+////                //TODO optimize this
+////                ListIterator<LongObjectPair<Term>> ii = events.listIterator();
+////                long prevtime = TIMELESS;
+////                int prevtimeStart = 0;
+////                while (ii.hasNext()) {
+////                    LongObjectPair<Term> x = ii.next();
+////                    Term xt = x.getTwo();
+////                    if (xt == True) {
+////                        ii.remove(); //skip
+////                    } else if (xt == False) {
+////                        return False;
+////                    } else if (xt == Null) {
+////                        return Null;
+////                    }
+////
+////                    long now = x.getOne();
+////
+////                    if (now == ETERNAL)
+////                        throw new TODO();
+////                    else if (now == TIMELESS)
+////                        throw new RuntimeException();
+////                    int at = ii.previousIndex();
+////
+////                    boolean hasNext = ii.hasNext();
+////                    if (prevtime == now && hasNext) {
+////                        //continue, will be grouped when the # changes
+////                    } else {
+////                        if ((hasNext && prevtimeStart < at - 1) || (!hasNext && prevtime == now)) {
+////                            Term[] s = new Term[at - prevtimeStart + (!hasNext ? 1 : 0)];
+////                            assert (s.length > 1);
+////                            int j = 0;
+////                            if (!hasNext) {
+////                                s[j++] = xt; //include current
+////                                ii.remove();
+////                            } else {
+////                                ii.previous();
+////                            }
+////                            for (; j < s.length; ) {
+////                                LongObjectPair<Term> e = ii.previous();
+////                                ii.remove();
+////                                s[j++] = e.getTwo();
+////                            }
+////                            Term xyt = CONJ.the(0, s);
+////                            if (xyt == Null) return Null;
+////                            if (xyt == False) return False;
+////                            if (xyt != True) {
+////                                LongObjectPair<Term> xy = pair(prevtime, xyt);
+////                                ii.add(xy);
+////                                if (hasNext)
+////                                    ii.next();
+////                            }
+////                            prevtimeStart = ii.previousIndex();
+////                        } else {
+////                            prevtimeStart = at;
+////                        }
+////                        prevtime = now;
+////                    }
+////                }
+//                int e = events.size();
+//                switch (e) {
+//                    case 0:
+//                        return True;
+//                    case 1:
+//                        return events.get(0).getTwo();
+//                    default:
+//                        return Conj.conjSeq(events);
+//                }
+//
+//        }
+//    }
 
     static boolean hasNull(Term[] t) {
         for (Term x : t)
@@ -1229,7 +1235,7 @@ public enum Op {
                     return differ(op, ((Subterms) single).arrayShared());
                 }
                 return single instanceof Ellipsislike ?
-                        new CachedUnitCompound(op, single) :
+                        instance(op, DTERNAL, single) :
                         Null;
             case 2:
                 Term et0 = t[0], et1 = t[1];
@@ -1319,7 +1325,7 @@ public enum Op {
             }
         }
 
-        return Op.instance(diffOp, a, b);
+        return instance(diffOp, DTERNAL, a, b);
     }
 
     /*@NotNull*/
@@ -1394,14 +1400,7 @@ public enum Op {
         return null;
     }
 
-    /**
-     * direct constructor
-     * no reductions or validatios applied
-     * use with caution
-     */
-    public static Term instance(Op op, Term... subterms) {
-        return instance(op, DTERNAL, subterms);
-    }
+
 
     /**
      * direct constructor
@@ -1414,12 +1413,11 @@ public enum Op {
         boolean hasEllipsis = false;
 
         for (Term x : u) {
-            if (!hasEllipsis && x instanceof Ellipsis)
+            if (!hasEllipsis && (x instanceof Ellipsislike ))
                 hasEllipsis = true;
             if (x == Null)
                 return Null;
         }
-
 
         int s = u.length;
         assert (o.maxSize >= s) :
@@ -1430,19 +1428,14 @@ public enum Op {
         if (s == 1) {
             switch (o) {
                 case NEG:
-                    return Neg.the(u[0]);
-//                case PROD:
-//                    //use full CachedCompound for PROD
-//                    //use default below
-//                    break;
+                    //return Neg.the(u[0]);
+                    throw new UnsupportedOperationException("should have been intercepted by NEG builder");
                 default:
                     return new CachedUnitCompound(o, u[0]);
             }
-
-
+        } else {
+            return CachedCompound.the(o, dt, Subterms.subtermsInterned(u));
         }
-
-        return CachedCompound.the(o, dt, Subterms.subtermsInterned(u));
     }
 
     static boolean in(int needle, int haystack) {
@@ -1933,7 +1926,7 @@ public enum Op {
                     return intersect(((Subterms) single).arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
-                        new CachedUnitCompound(intersection, single) :
+                        instance(intersection, DTERNAL, single) :
                         single;
 
             case 2:
@@ -1999,7 +1992,7 @@ public enum Op {
         if (aaa == 1)
             return args.first();
         else {
-            return instance(intersection, args.toArray(new Term[aaa]));
+            return instance(intersection, DTERNAL, args.toArray(new Term[aaa]));
         }
     }
 
@@ -2228,11 +2221,7 @@ public enum Op {
 
     /*@NotNull*/
     public Term the(int dt, Term... u) {
-
-        if (Op.hasNull(u))
-            return Null;
-
-        return compound(dt, commute(dt, u.length) ? sorted(u) : u, true);
+        return the(dt, u, true);
     }
 
     /**
@@ -2242,12 +2231,6 @@ public enum Op {
         return the(dt, a, b);
     }
 
-    /**
-     * syntax shortcut for non-interned (heap) term construction
-     */
-    public final Term a(Term... u) {
-        return the(DTERNAL, u, false);
-    }
 
     /**
      * syntax shortcut for non-interned (heap) term construction
@@ -2256,11 +2239,9 @@ public enum Op {
         return the(dt, u, false);
     }
 
-    public final Term a(Term x, int dt, Term y) {
-        return the(dt, x, y);
-    }
-
     public Term the(int dt, Term[] u, boolean intern) {
+        if (Op.hasNull(u))
+            return Null;
         return compound(dt, commute(dt, u.length) ? sorted(u) : u, intern);
     }
 
@@ -2271,7 +2252,7 @@ public enum Op {
         return internable(u);
     }
 
-    protected Term compound(int dt, Term[] u, boolean intern) {
+    protected final Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
                 (dt == DTERNAL ? termCache : termTemporalCache).apply(new InternedCompound(this, dt, u)) :
                 instance(dt, u);
@@ -2283,18 +2264,11 @@ public enum Op {
      * - instance(..)
      * - reduction to another term or True/False/Null
      */
-    public Term instance(int dt, Term[] u) {
-
-        if (statement) {
-            if (u.length == 1) { //similarity has been reduced
-                assert (this == SIM);
-                return u[0] == Null ? Null : True;
-            } else {
-                return statement(this, dt, u[0], u[1]);
-            }
-        } else {
-            return instance(this, dt, u);
-        }
+    public Term instance(int dt, Term... u) {
+        return instance(this, dt, u); //default
+    }
+    public final Term instance(Term... u) {
+        return instance(DTERNAL, u); //default
     }
 
     /**

@@ -67,8 +67,8 @@ public interface TermTransform extends Evaluation.TermContext {
 //            }
 
 //            //seems to happen very infrequently so probably not worth the test
-            if (x != z && x.equals(z))
-                return x; //unchanged
+//            if (x != z && x.equals(z))
+//                return x; //unchanged
 
             return z;
         } else {

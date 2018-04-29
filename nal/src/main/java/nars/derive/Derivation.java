@@ -74,9 +74,6 @@ public class Derivation extends PreDerivation {
 
     public NAR nar;
 
-//    public final ByteShuffler shuffler = new ByteShuffler(64);
-//    public final BatchActivation activator = new BatchActivation();
-
     public final Anon anon =
             //new Anon(ANON_CAPACITY);
             new CachedAnon(ANON_CAPACITY, 16*1024);

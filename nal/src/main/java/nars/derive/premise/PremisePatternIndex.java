@@ -100,11 +100,11 @@ public class PremisePatternIndex extends MapConceptIndex {
         boolean changed = false;//, temporal = false;
         for (int i = 0; i < ss; i++) {
             Term a = s.sub(i);
-            Termed b = get(a, true);
+            Term b = get(a, true).term();
             if (a != b) {
                 changed = true;
             }
-            bb[i] = b.term();
+            bb[i] = b;
         }
 
         if (!changed && Ellipsis.firstEllipsis(s) == null)

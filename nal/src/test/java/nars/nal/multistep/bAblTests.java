@@ -69,6 +69,7 @@ public class bAblTests extends NALTest {
         //(19) Path Finding
 
         TestNAR t = test;
+        t.confTolerance(0.9f);
         t.nar.termVolumeMax.set(40);
         t.nar.freqResolution.set(0.25f);
 

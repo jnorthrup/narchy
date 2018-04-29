@@ -26,7 +26,6 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.*;
 import nars.op.mental.AliasConcept;
-import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.subterm.util.TermMetadata;
@@ -829,7 +828,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default Term neg() {
-        return Neg.the(this); //the DTERNAL gets it directly to it
+        return NEG.the(this);
     }
 
     default Term negIf(boolean negate) {

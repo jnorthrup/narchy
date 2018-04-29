@@ -678,25 +678,29 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         TruthOperator beliefTruth = BeliefFunction.get(beliefTruthTerm);
-        if ((beliefTruth != null) && !beliefTruth.equals(TruthOperator.NONE) && (beliefTruth == null)) {
-            throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
-        }
+//        if ((beliefTruth != null) && !beliefTruth.equals(TruthOperator.NONE) && (beliefTruth == null)) {
+//            throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
+//        }
         TruthOperator goalTruth = GoalFunction.get(goalTruthTerm);
-        if ((goalTruth != null) && !goalTruth.equals(TruthOperator.NONE) && (goalTruth == null)) {
-            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
-        }
+//        if ((goalTruth != null) && !goalTruth.equals(TruthOperator.NONE) && (goalTruth == null)) {
+//            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
+//        }
         String beliefLabel = beliefTruth != null ? beliefTruth.toString() : "_";
         String goalLabel = goalTruth != null ? goalTruth.toString() : "_";
 
-        FasterList<Term> args = new FasterList();
+        boolean projectBeliefToTask = time!= Occurrify.TaskTimeMerge.Task && time!=Occurrify.TaskTimeMerge.Belief; //TODO make method in the enum
+
+        FasterList<Term> args = new FasterList(4);
         args.add(intern($.the(beliefLabel), index));
         args.add(intern($.the(goalLabel), index));
         if (puncOverride != 0)
             args.add($.quote(((char) puncOverride)));
+        if (!projectBeliefToTask)
+            args.add(Occurrify.unprojected);
+
+
 
         Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
-
-        boolean projectBeliefToTask = time!= Occurrify.TaskTimeMerge.Task && time!=Occurrify.TaskTimeMerge.Belief; //TODO make method in the enum
         this.truthify = (puncOverride == 0) ?
                 new Truthify.TruthifyPuncFromTask(ii, beliefTruth, goalTruth, projectBeliefToTask) :
                 new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruth, goalTruth, projectBeliefToTask);

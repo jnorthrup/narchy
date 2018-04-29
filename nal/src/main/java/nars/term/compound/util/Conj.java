@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 
 import static nars.Op.*;
@@ -637,11 +636,23 @@ public class Conj {
                 return True;
             case 1:
                 return t.first();
-            default:
+            default: {
+                int dt;
+                if (when == ETERNAL) {
+                    dt = DTERNAL;
+                } else {
+//                    if (when == XTERNAL)
+//                        dt = XTERNAL;
+//                    else
+                        dt = 0; //same time
+                }
                 return
+                        //CONJ.the(
                         Op.instance(CONJ,
-                                when == ETERNAL ? DTERNAL : 0,
+                                dt,
                                 sorted(t));
+                                //t);
+            }
         }
     }
 
@@ -755,18 +766,18 @@ public class Conj {
         return instance(CONJ, dt, left, right);
     }
 
-    public void forEachTerm(Object what, Consumer<Term> each) {
-        if (what instanceof byte[]) {
-            byte[] b = (byte[])what;
-            for (byte termIndex : b) {
-                if (termIndex == 0)
-                    break; //done
-                each.accept(sub(termIndex));
-            }
-        } else {
-            ((RoaringBitmap)what).forEach((int termIndex) -> {
-                each.accept(sub(termIndex));
-            });
-        }
-    }
+//    public void forEachTerm(Object what, Consumer<Term> each) {
+//        if (what instanceof byte[]) {
+//            byte[] b = (byte[])what;
+//            for (byte termIndex : b) {
+//                if (termIndex == 0)
+//                    break; //done
+//                each.accept(sub(termIndex));
+//            }
+//        } else {
+//            ((RoaringBitmap)what).forEach((int termIndex) -> {
+//                each.accept(sub(termIndex));
+//            });
+//        }
+//    }
 }

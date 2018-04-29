@@ -9,6 +9,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.util.term.transform.TermTransform;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -29,7 +30,7 @@ public class PremiseDeriverSource extends ProxyTerm {
     public PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
         super(
             $.pFast(parseRuleComponents(ruleSrc))
-                .transform(UppercaseAtomsToPatternVariables)
+                .transform(new UppercaseAtomsToPatternVariables())
         );
         this.source = ruleSrc;
     }
@@ -39,22 +40,25 @@ public class PremiseDeriverSource extends ProxyTerm {
         this.source = raw.source;
     }
 
-    static final TermTransform UppercaseAtomsToPatternVariables = new TermTransform() {
+    static class UppercaseAtomsToPatternVariables implements TermTransform {
+
+        final Map<String,Term> patternVars = new UnifiedMap(8);
+
         @Override
         public Termed transformAtomic(Term atomic) {
             if (atomic instanceof Atom) {
                 if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
                     String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return $.v(VAR_PATTERN, atomic.toString());
+                        return patternVars.computeIfAbsent(name, (n)->$.varPattern(1+patternVars.size()));
+                        //return $.v(VAR_PATTERN, name);
                     }
                 }
             }
             return atomic;
         }
 
-
-    };
+    }
 
     public static PremiseDeriverSource parse(String ruleSrc) throws Narsese.NarseseException {
         return new PremiseDeriverSource(ruleSrc);

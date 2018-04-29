@@ -187,6 +187,13 @@ public class TermReductionsTest extends NarseseTest {
 //        Term ax = x.anon();
 //        assertEquals("", ax.toString());
     }
+    @Test public void testConjParallelMix2() {
+        assertReduction("(--,isRow(tetris,(6,true),true))",
+                "((--,(x &| isRow(tetris,(6,true),true))) &| (--,isRow(tetris,(6,true),true)))");
+
+        assertReduction("(--,isRow(tetris,(6,true),true))",
+                "((--,((--,isRow(tetris,(14,false),true))&|isRow(tetris,(6,true),true)))&|(--,isRow(tetris,(6,true),true)))");
+    }
 
     @Test
     public void implSubjSimultaneousWithTemporalPred() {

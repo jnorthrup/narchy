@@ -13,7 +13,7 @@ public interface DirectTermTransform extends TermTransform {
 
     @Override
     default Term the(Op op, int dt, TermList t) {
-        return Op.instance(op, dt, t.arrayShared());
+        return op.instance(dt, t.arrayShared());
     }
 
     class CachedDirectTermTransform implements DirectTermTransform {
@@ -22,7 +22,7 @@ public interface DirectTermTransform extends TermTransform {
 
         public CachedDirectTermTransform(int capacity) {
             this.built = new QuickMemoize<>(capacity, (ot) ->
-                    Op.instance(ot.getOne(), ot.getTwo().arraySharedSafe()) //dont erase the items in the TermList
+                    ot.getOne().instance(ot.getTwo().arraySharedSafe()) //dont erase the items in the TermList
             );
         }
 

@@ -279,6 +279,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, NAR nar, long start, long end, long[] stamp) throws InvalidTaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, nar.time(), start, end, stamp);
+            if (c.op()==NEG)
+                throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
         }
 
 //        @Override

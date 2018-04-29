@@ -837,7 +837,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         Term u;
         if (/*changed*/ xy!=null) {
-            u = o.a(dt(), xy);
+            u = o.the(dt(), xy);
             o = u.op(); //refresh root operator in case it has changed
             uu = u.subterms(); //refresh subterms
         } else {

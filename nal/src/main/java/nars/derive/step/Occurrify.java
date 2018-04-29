@@ -52,6 +52,9 @@ public class Occurrify extends TimeGraph {
             Atomic.the("TaskRelative"), TaskTimeMerge.Task,
             Atomic.the("BeliefRelative"), TaskTimeMerge.Belief
     );
+
+    public static Term unprojected = $.the("Unprojected");
+
     /**
      * temporary set for filtering duplicates
      */
