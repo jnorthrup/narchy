@@ -80,16 +80,15 @@ public class SchemaTest {
         assertEquals(originalDataSetSize, validationPoints.size() + data.size());
 
         NAR n = NARS.tmp();
-        n.beliefPriDefault.set(0.01f);
-        n.questionPriDefault.set(0.99f);
+        //n.beliefPriDefault.set(0.01f);
+        //n.questionPriDefault.set(0.99f);
 
         LongHashSet questions = new LongHashSet();
         n.onTask(t->{
             if (t.isInput() && t.isQuestionOrQuest())
                 questions.add(t.stamp()[0]);
-            else if (Stamp.overlapsAny(questions, t.stamp())) {
-                if (t.isBeliefOrGoal())
-                    System.out.println("ANSWER: " + t);
+            else if (t.isBeliefOrGoal() && Stamp.overlapsAny(questions, t.stamp())) {
+                System.out.println("ANSWER: " + t);
             }
         });
 
@@ -109,7 +108,7 @@ public class SchemaTest {
                 e.printStackTrace();
             }
         }
-        n.run(5000);
+        n.run(1000);
     }
 
     /** https://github.com/renatopp/arff-datasets/blob/master/boolean/xor.arff */

@@ -2,22 +2,19 @@ package nars.op;
 
 import jcog.list.FasterList;
 import nars.$;
+import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Terms;
+import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
-import static nars.Op.INT;
-import static nars.Op.Null;
+import static nars.Op.*;
 import static nars.util.time.Tense.DTERNAL;
 
 public class SetFunc {
@@ -118,47 +115,68 @@ public class SetFunc {
     }
 
     /**
+     * sort(input, [mappingFunction=identity], output)
      * input: a compound of >1 items
      * output: a product containing the inputs, sorted according to (the most) natural ordering
      */
-    public static final Functor sort = new Functor.UnaryBidiFunctor("sort") {
+    public static Functor sort(NAR nar) {
+        return new Functor.UnaryParametricBidiFunctor("sort") {
 
-        @Override
-        protected Term compute(Term x) {
-            if (x.subs() < 2)
-                return Null; //invalid
+            @Override
+            protected Term compute(Term x, Term param) {
+                int n = x.subs();
+                if (n < 2)
+                    return Null; //invalid
 
-            if (x.hasAny(Op.varBits))
-                return null; //incomputable
+                if (x.hasAny(Op.varBits))
+                    return null; //incomputable
 
-            return $.pFast( Terms.sorted(x.subterms().arrayShared()) );
-        }
+                List<Term> l = new FasterList<>(n);
+                ((FasterList<Term>) l).addingAll(x.subterms().arrayShared());
+                Comparator<Term> cmp;
+                if (param instanceof Atomic && !param.hasVars()) {
+                    //TODO cache intermediate results if n >> 2
+                    cmp = Comparator.comparing((Term t) -> eval(t, (Atomic) param)).thenComparing((Term t) -> t);
+                } else
+                    return Null; //TODO support other comparator patterns, ex: x(a,#1)
 
-        @Override
-        protected Term uncompute(Term x, Term y) {
-            //deduce specific terms present in 'y' but not 'x'
-
-            //HACK simple case of 1
-            if (y.vars() == 0 && x.vars()==1) {
-                Subterms xx = x.subterms();
-                Subterms yy = y.subterms();
-                List<Term> missing = new FasterList(1);
-                for (Term sy : yy) {
-                    if (!xx.contains(sy)) {
-                        missing.add(sy);
-                    }
-                }
-                if (missing.size() == 1) {
-                    Term[] xxx = xx.terms((n, xs) -> xs.op().var);
-                    if (xxx.length == 1) {
-                        Evaluation.the().replace(xxx[0], missing.get(0));
-                        return null;
-                    }
-                }
+                l.sort(cmp);
+                return $.pFast(l);
             }
 
-            return null;
-        }
-    };
+            private Term eval(Term t, Atomic atom) {
+                Term tt = $.func(atom, t);
+                return tt.eval(nar);
+            }
+
+            @Override
+            protected Term uncompute(Term x, Term param, Term y) {
+                //deduce specific terms present in 'y' but not 'x'
+
+                //HACK simple case of 1
+                if (y.vars() == 0 && x.vars() == 1) {
+                    Subterms xx = x.subterms();
+                    Subterms yy = y.subterms();
+                    List<Term> missing = new FasterList(1);
+                    for (Term sy : yy) {
+                        if (!xx.contains(sy)) {
+                            missing.add(sy);
+                        }
+                    }
+                    if (missing.size() == 1) {
+                        Term[] xxx = xx.terms((n, xs) -> xs.op().var);
+                        if (xxx.length == 1) {
+                            Evaluation.the().replace(xxx[0], missing.get(0));
+                            return null;
+                        }
+                    }
+                }
+
+                //TODO if y.subs()==1 then there is only one solution
+
+                return null;
+            }
+        };
+    }
 
 }

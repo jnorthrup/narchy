@@ -110,7 +110,7 @@ public class Narsese {
         }
     }
 
-    public static final String NARSESE_TASK_TAG = "Narsese";
+    static final String NARSESE_TASK_TAG = "Narsese";
 
     static class MyParseRunner extends ParseRunner {
 
@@ -119,7 +119,7 @@ public class Narsese {
          *
          * @param rule the rule
          */
-        public MyParseRunner(Rule rule) {
+        MyParseRunner(Rule rule) {
             super(rule);
         }
 

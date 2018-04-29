@@ -1,15 +1,11 @@
 package spacegraph.space2d.widget;
 
 import com.google.common.collect.Iterables;
-import com.jogamp.opengl.GL2;
 import jcog.math.Longerval;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.MutableMapContainer;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.video.Draw;
 
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Function;
@@ -21,19 +17,18 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
 
     final TimelineModel<E> model;
 
-    final Function<E,Surface> view;
+    final Function<E, Surface> view;
 
     public Timeline2D(TimelineModel<E> model, Function<E, Surface> view) {
         this.model = model;
         this.view = view;
     }
 
-    public Timeline2D view(double start, double end) {
+    public Timeline2D<E> view(double start, double end) {
         assert(start < end);
         tStart = start;
         tEnd = end;
-        update();
-        return this;
+        return update();
     }
 
     public float x(long t) {
@@ -46,20 +41,23 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
         return (float)(((t - s)) / (e - s) * W + X);
     }
 
-    public synchronized void update() {
+    public synchronized Timeline2D<E> update() {
         clear();
         model.events((long)Math.floor(tStart), (long)Math.ceil(tEnd-1)).forEach(e->{
            put(e, e, this::viewFunc);
         });
+        return this;
     }
 
     @Override
     protected void doLayout(int dtMS) {
+        final int[] lane = {0};
+        int lanes = cache.size();
         forEachKeySurface((e,s)->{
             long[] r = model.range(e);
             float x1 = x(r[0]);
             float x2 = x(r[1]+1);
-            float yy[] = y(e);
+            float yy[] = y(e, lane[0]++, lanes);
             float h = h();
             float y = y();
             s.pos(x1, y + yy[0] * h, x2, y + yy[1] * h);
@@ -72,9 +70,10 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
     }
 
     /** range of values between 0..1 */
-    float[] y(E event) {
-        //TODO layout
-        return new float[] { 0.25f, 0.75f };
+    float[] y(E event, int lane, int lanes) {
+        float thick = 1f/lanes;
+        float margin = 0.02f * thick;
+        return new float[] { lane * thick + margin, (lane+1)*thick - margin };
     }
 
     interface TimelineModel<X> {
@@ -91,7 +90,7 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
 
     }
 
-    static class SimpleEvent implements Comparable<SimpleEvent> {
+    public static class SimpleEvent implements Comparable<SimpleEvent> {
         public final String name;
         public final long start, end;
 
@@ -115,7 +114,7 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
 
     }
 
-    static class SimpleTimelineModel extends ConcurrentSkipListSet<SimpleEvent> implements TimelineModel<SimpleEvent> {
+    public static class SimpleTimelineModel extends ConcurrentSkipListSet<SimpleEvent> implements TimelineModel<SimpleEvent> {
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
@@ -134,20 +133,5 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
         }
     }
 
-    public static void main(String[] args) {
 
-        SimpleTimelineModel dummyModel = new SimpleTimelineModel();
-        dummyModel.add(new SimpleEvent("x", 0, 1));
-        dummyModel.add(new SimpleEvent("y", 1, 3));
-        dummyModel.add(new SimpleEvent("z", 2, 5));
-        dummyModel.add(new SimpleEvent("w", 3, 3)); //point
-
-        SpaceGraph.window(new Timeline2D<>(dummyModel, e->new PushButton(e.name)){
-            @Override
-            protected void paintBelow(GL2 gl) {
-                gl.glColor3f(0, 0, 0.25f);
-                Draw.rect(gl, bounds);
-            }
-        }.view(1, 4), 800, 600);
-    }
 }

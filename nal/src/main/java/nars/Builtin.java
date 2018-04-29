@@ -53,7 +53,7 @@ public class Builtin {
             SetFunc.intersect,
             SetFunc.differ,
             SetFunc.union,
-            SetFunc.sort,
+
 
             ListFunc.append,
             ListFunc.sub,
@@ -174,15 +174,25 @@ public class Builtin {
                     $.the(Texts.levenshteinDistance(a.toString(), b.toString()))
             ),
 
-            Functor.f2("equal", (x, y) -> {
-                if (x.equals(y))
-                    return True; //unconditionally true
-                if ((x.hasVars() || y.hasVars())) {
-                    return null; //unknown, fall-through
-                }
-                return False;
-            }),
+            new Functor.CommutiveBinaryBidiFunctor("equal") {
 
+                @Override
+                protected Term compute(Term x, Term y) {
+                    if (x.hasVars() || y.hasVars()) return null; //unknown
+                    return x.equals(y) ? True : False;
+                }
+
+                @Override
+                protected Term computeFromXY(Term x, Term y, Term xy) {
+                    return null;
+                }
+
+                @Override
+                protected Term computeXfromYandXY(Term x, Term y, Term xy) {
+                    return xy==True ? y : null;
+                }
+
+            },
 
             Functor.f2("if", (condition, conseq) -> {
                 if (condition.hasVars()) return null; //unknown
@@ -246,6 +256,8 @@ public class Builtin {
         for (Concept t : Builtin.statik) {
             nar.on(t);
         }
+
+        nar.on(SetFunc.sort(nar));
 
         /** dynamic term builder - useful for NAR specific contexts like clock etc.. */
         nar.on(Functor.f("term", (Subterms s)->{
