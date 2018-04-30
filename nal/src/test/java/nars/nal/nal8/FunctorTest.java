@@ -19,7 +19,7 @@ public class FunctorTest {
         NAR n = NARS.tmp();
 
 
-        n.log();
+
         final boolean[] got = {false};
         n.onTask(t -> {
             String s = t.toString();
@@ -94,7 +94,7 @@ public class FunctorTest {
     @Test
     public void testExecutionResultIsCondition() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
-        d.log();
+
         d.input("(add($x,1,$y) ==> ($y <-> inc($x))).");
         d.input("((inc(2) <-> $x) ==> its($x)).");
         d.run(64);

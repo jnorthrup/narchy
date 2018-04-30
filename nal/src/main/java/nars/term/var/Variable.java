@@ -77,6 +77,10 @@ public interface Variable extends Atomic {
         Op xOp = op();
 
         if (y instanceof Variable) {
+
+            if (y == Op.imInt || y == Op.imExt) //HACK exclude Image terms from unification
+                return false;
+
             Op yOp = y.op();
             if (xOp == yOp) {
 

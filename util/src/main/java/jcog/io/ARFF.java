@@ -637,7 +637,17 @@ public class ARFF implements Iterable<ImmutableList> {
                         }
                     });
 
-                } else if (Number.class.isAssignableFrom(Primitives.wrap(t))) {
+                } else if (Boolean.class.isAssignableFrom(t)) {
+                    defineNominal(n, "true", "false");
+                    extractor.add((x) -> {
+                        try {
+                            return Boolean.toString( ((Boolean) field.get(x)).booleanValue() );
+                        } catch (IllegalAccessException e1) {
+                            logger.error("field {} : {}", e1);
+                            return null;
+                        }
+                    });
+                } else if (Number.class.isAssignableFrom(t)) {
 
                     defineNumeric(n);
                     extractor.add((x) -> {

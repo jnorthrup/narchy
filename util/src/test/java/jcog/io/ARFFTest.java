@@ -57,20 +57,23 @@ class ARFFTest {
     static class Schema1 {
         final String name;
         final float score;
+        final boolean ok;
 
-        Schema1(String name, float score) {
+        Schema1(String name, float score, boolean ok) {
             this.name = name;
             this.score = score;
+            this.ok = ok;
         }
     }
 
     @Test
     public void testARFFObjectAdd() throws IOException {
         ARFF.ARFFObject<Schema1> a = new ARFF.ARFFObject<>(Schema1.class);
-        a.put(new Schema1("abc", 0.5f));
-        a.put(new Schema1("def", 0.75f));
+        a.put(new Schema1("abc", 0.5f, true));
+        a.put(new Schema1("def", 0.75f, false));
         assertSame(ARFF.AttributeType.Text, a.attrType(0));
         assertSame(ARFF.AttributeType.Numeric, a.attrType(1));
+        assertSame(ARFF.AttributeType.Nominal, a.attrType(2)); //boolean
         a.write(System.out);
         assertEquals(2, a.data.size());
     }

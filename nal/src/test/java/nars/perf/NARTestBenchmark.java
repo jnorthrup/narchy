@@ -54,18 +54,18 @@ public class NARTestBenchmark {
 //        junit(testclass);
 //    }
 
-    /**
-     * CONTROL
-     */
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @Fork(0)
-    public void testX() {
-
-
-        JUnitNAR.junit(tests);
-
-    }
+//    /**
+//     * CONTROL
+//     */
+//    @Benchmark
+//    @BenchmarkMode(Mode.AverageTime)
+//    @Fork(0)
+//    public void testX() {
+//
+//
+//        JUnitNAR.junit(tests);
+//
+//    }
 }
 
 //public class TestBenchmark1 {

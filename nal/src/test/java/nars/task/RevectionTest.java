@@ -238,7 +238,7 @@ public class RevectionTest {
 
         NAR n = newNAR(maxBeliefs);
 
-        n.log();
+
 
         long at = 5;
 

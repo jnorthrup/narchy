@@ -55,7 +55,7 @@ public class OpjectsTest {
         final SimpleClass x = objs.the("x", new SimpleClass());
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
-        n.log();
+        
 
         n.input("set(x,1)! :|:");
 
@@ -80,7 +80,7 @@ public class OpjectsTest {
 
 
 
-        n.log();
+        
         final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
@@ -98,7 +98,7 @@ public class OpjectsTest {
     @Test public void testInvokeInstanced() {
         final NAR n = NARS.tmp();
 
-        n.log();
+        
 
         final SimpleClass y = new Opjects(n).a("y", SimpleClass.class);
         testInvoke(n, y);
@@ -125,7 +125,7 @@ public class OpjectsTest {
     @Test public void testInvokeWrapped() {
         final NAR n = NARS.tmp();
 
-        n.log();
+        
 
         final SimpleClass y = new Opjects(n).the("y", new SimpleClass());
         testInvoke(n, y);

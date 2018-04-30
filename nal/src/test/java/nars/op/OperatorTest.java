@@ -61,7 +61,7 @@ public class OperatorTest {
     public void testAtomicExec() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         final int[] count = {0};
-        n.log();
+        
         n.onOp("x", new AtomicExec((x, nar) -> {
             System.err.println("INVOKE " + x);
             count[0]++;
@@ -98,7 +98,7 @@ public class OperatorTest {
                 n.believe($.impl(x.term(), r), Tense.Present);
             }
         }, 0.51f));
-        n.log();
+        
         n.input("x(1)! :|:");
         n.run(4);
         n.input("x(0)! :|:");
@@ -117,7 +117,7 @@ public class OperatorTest {
             Term xy = $.impl(x, y);
             n.believe(xy, Tense.Present);
         }, 1));
-        n.log();
+        
         n.run(1);
         n.input("x(1)! :|:");
         n.run(1);
@@ -134,7 +134,7 @@ public class OperatorTest {
 
 
         NAR n = NARS.tmp();
-        n.log();
+        
         n.input("(slice((a,b,c),2)).");
         n.input("assertEquals(c, slice((a,b,c),add(1,1)));");
         n.input("assertEquals((a,b), slice((a,b,c),(0,2)));");
@@ -376,7 +376,7 @@ public class OperatorTest {
 ////            }
 ////        };
 ////        n.onQuestion(addition);
-////        //n.log();
+////        //
 ////
 ////        TestNAR t = new TestNAR(n);
 ////        n.input("add(1,2,#x)?");
@@ -425,7 +425,7 @@ public class OperatorTest {
 //    @Test public void testClojure2() {
 //            //t.eval("(\"org.junit.Assert/assertTrue\" false)");
 //        NAR n = new Default();
-//        n.log();
+//        
 //        n.input("a:b!");
 //        //n.input("<(println (System/getProperty \"java.vm.version\"))==>a:b>.");
 //        n.input("<(println 1)==>a:b>.");

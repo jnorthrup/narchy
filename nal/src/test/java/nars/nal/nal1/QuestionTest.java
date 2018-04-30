@@ -51,7 +51,7 @@ public class QuestionTest {
         Term expectedSolutionTerm = $.$(expectedSolution);
 
         NAR nar = NARS.tmp(1);
-        nar.log();
+
 
         nar
                 .believe(belief, 1.0f, 0.9f)
@@ -197,7 +197,7 @@ public class QuestionTest {
     @Test @Disabled
     public void testMathBackchain() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        n.log();
+
 
 
 

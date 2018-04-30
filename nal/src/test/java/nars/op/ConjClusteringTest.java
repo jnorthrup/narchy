@@ -19,7 +19,7 @@ public class ConjClusteringTest {
         NAR n = NARS.shell();
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, (t) -> t.isInput(), 4, ccap);
-        n.log();
+
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i), Tense.Present);
         n.run(1);
@@ -31,7 +31,7 @@ public class ConjClusteringTest {
         NAR n = NARS.shell();
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, (t) -> t.isInput(), 4, ccap);
-        n.log();
+
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i).neg(), Tense.Present);
         n.run(1);

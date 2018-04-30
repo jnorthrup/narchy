@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
-import nars.perf.JUnitNAR;
+import nars.perf.JUnitPlanetX;
 import nars.term.Term;
 import nars.util.term.TermHashMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -80,7 +80,7 @@ public class BenchmarkUnify {
             Derivation._termMapBuilder = mapBuilder;
             return n;
         };
-        JUnitNAR.tests(MoreExecutors.directExecutor(), s,
+        JUnitPlanetX.tests(MoreExecutors.directExecutor(), s,
             NAL5Test.class, NAL6Test.class
 //                NAL1Test.class
 //                , NAL2Test.class, NAL1MultistepTest.class

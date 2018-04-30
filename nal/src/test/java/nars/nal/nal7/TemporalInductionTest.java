@@ -95,7 +95,7 @@ public class TemporalInductionTest {
         NAR n = NARS.tmp();
         n.time.dur(1);
 
-        n.log();
+
         //TextOutput.out(n);
 
         n.input("a:b. :|: %1.0;0.9%");
@@ -155,7 +155,7 @@ public class TemporalInductionTest {
 
         NAR n = NARS.tmp();
 
-        n.log();
+
 
         n.input("a:b. :|:");
         //n.frame();
@@ -244,7 +244,7 @@ public class TemporalInductionTest {
 
         n.beliefPriDefault.set(0.1f);
         //n.deep.set(1f);
-        n.log();
+
 
         TemporalMetrics m = new TemporalMetrics(1024);
         n.onCycle(()->m.update(n.time()));

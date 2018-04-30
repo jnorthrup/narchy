@@ -64,7 +64,7 @@ public class BenchmarkDefaultConceptBuilder {
             });
             return n;
         };
-        JUnitNAR.tests(MoreExecutors.directExecutor(), s,
+        JUnitPlanetX.tests(MoreExecutors.directExecutor(), s,
             NAL1Test.class, NAL2Test.class, NAL1MultistepTest.class
         );
     }
