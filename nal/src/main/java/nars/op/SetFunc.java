@@ -14,7 +14,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static nars.Op.*;
+import static nars.Op.INT;
+import static nars.Op.Null;
 import static nars.util.time.Tense.DTERNAL;
 
 public class SetFunc {

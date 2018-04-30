@@ -1,6 +1,6 @@
 package jcog.math;
 
-import jcog.data.array.Arrays;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Random;
 
@@ -29,7 +29,7 @@ public class ShuffledPermutations extends Permutations {
 
         for (int i = 0; i < size; i++)
             shuffle[i] = (byte)i;
-        Arrays.shuffle(shuffle, size, random);
+        ArrayUtils.shuffle(shuffle, size, random);
 
 
         return this;

@@ -334,9 +334,8 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         return true;
     }
 
-    /*@NotNull*/
     @Override
-    public X key(Computation<X, Y> value) {
+    public final X key(Computation<X, Y> value) {
         return value.x();
     }
 

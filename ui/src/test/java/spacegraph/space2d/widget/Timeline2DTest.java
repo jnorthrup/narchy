@@ -5,8 +5,6 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class Timeline2DTest {
 
     public static void main(String[] args) {

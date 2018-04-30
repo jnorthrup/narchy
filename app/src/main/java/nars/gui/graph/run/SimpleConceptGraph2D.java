@@ -8,9 +8,9 @@ import nars.concept.Concept;
 import nars.exe.AbstractExec;
 import nars.test.DeductiveMeshTest;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.widget.Graph2D;
 import spacegraph.space2d.container.ForceDirected2D;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.Graph2D;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;

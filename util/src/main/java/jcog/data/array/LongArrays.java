@@ -58,6 +58,8 @@
 package jcog.data.array;
 
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * A class providing static methods and objects that do useful things with type-specific arrays.
  * <p>
@@ -307,7 +309,7 @@ public enum LongArrays {
      * @throws ArrayIndexOutOfBoundsException if <code>from</code> or <code>to</code> are greater than the array length or negative.
      */
     public static void ensureFromTo(long[] a, int from, int to) {
-        Arrays.ensureFromTo(a.length, from, to);
+        ArrayUtils.ensureFromTo(a.length, from, to);
     }
 
 
@@ -325,7 +327,7 @@ public enum LongArrays {
      * @throws ArrayIndexOutOfBoundsException if <code>offset</code> is negative or <code>offset</code>+<code>length</code> is greater than the array length.
      */
     public static void ensureOffsetLength(long[] a, int offset, int length) {
-        Arrays.ensureOffsetLength(a.length, offset, length);
+        ArrayUtils.ensureOffsetLength(a.length, offset, length);
     }
 
     private static final int SMALL = 7;

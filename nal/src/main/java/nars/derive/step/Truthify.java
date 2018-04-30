@@ -1,6 +1,5 @@
 package nars.derive.step;
 
-import nars.The;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;

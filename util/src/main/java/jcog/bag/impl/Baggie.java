@@ -2,7 +2,6 @@ package jcog.bag.impl;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.data.array.Arrays;
 import jcog.list.FasterList;
 import jcog.math.LightObjectFloatPair;
 import jcog.pri.PriMap;
@@ -164,7 +163,7 @@ public class Baggie<X> extends PriMap<X> {
      */
     private void reSort(short from, short to) {
         int[] s = this.sorted;
-        Arrays.sort(s, 0, s.length - 1, (int x) -> values[x]); //descending
+        ArrayUtils.sort(s, 0, s.length - 1, (int x) -> values[x]); //descending
         this.max = values[s[0]];
         this.min = values[s[s.length - 1]];
     }

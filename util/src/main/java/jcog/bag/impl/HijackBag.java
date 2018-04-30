@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.bag.Bag;
 import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
-import jcog.data.array.Arrays;
 import jcog.decide.Roulette;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Pri;
@@ -100,6 +99,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 //new XorShift128PlusRandom(id); //lighter-weight, non-atomic
                 //new XoRoShiRo128PlusRandom(id);
 
+        assert(reprobes < Byte.MAX_VALUE-1); //for sizing of byte[] rank in update(..)
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
 
@@ -265,6 +265,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
         }
 
+        byte[] rank = new byte[reprobes];
+        float[] rpri = new float[reprobes];
+
         int mutexTicket = -1;
         V toAdd = null, toRemove = null, toReturn = null;
         try {
@@ -321,9 +324,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 //attempt insert
 
                 //sort - this is only an approximation since values may change while this occurrs
-                int[] rank = new int[reprobes];
-                float[] rpri = new float[reprobes];
-                for (int j=0,i = start, probe = reprobes; probe > 0; probe--, j++) {
+
+                byte j=0;
+                for (int i = start, probe = reprobes; probe > 0; probe--, j++) {
                     rank[j] = j;
                     V mi = map.get(i);
                     float mp;
@@ -335,7 +338,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                         }
                         mp = 0; //value has changed, assume 0
                     } else {
-                        mp = priElse(mi,-1);
+                        mp = priElse(mi, Float.NEGATIVE_INFINITY);
                     }
                     rpri[j] = mp;
                     if (++i == c) i = 0; //continue to next probed location
@@ -343,10 +346,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                 if (toReturn == null) {
 
-
-                    Arrays.sort(rank, (r) -> -rpri[r]);
-
-
+                    ArrayUtils.sort(rank, (r) -> -rpri[r]);
 
                     float power = incomingPri;
                     inserting: for (int f = 0; f < reprobes; f++) { //FIGHT!:

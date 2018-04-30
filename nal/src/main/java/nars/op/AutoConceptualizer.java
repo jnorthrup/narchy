@@ -7,6 +7,7 @@ import nars.control.DurService;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.List;
@@ -94,7 +95,7 @@ public class AutoConceptualizer {
 //        mean/=n;
 
         float finalMean = 0.5f; //mean;
-        jcog.data.array.Arrays.sort(order, (i) -> Math.abs(finalMean - a[i]));
+        ArrayUtils.sort(order, (i) -> Math.abs(finalMean - a[i]));
 
         Set<Term> x = new UnifiedSet(maxArity);
         for (int i = 0; i < maxArity; i++) {

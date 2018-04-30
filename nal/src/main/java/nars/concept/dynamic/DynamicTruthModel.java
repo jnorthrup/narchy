@@ -13,6 +13,7 @@ import nars.term.Term;
 import nars.term.compound.util.Conj;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -138,7 +139,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             }
 
             //sort by lowest expectation
-            jcog.data.array.Arrays.sort(order, (i) -> l.get(i) != null ? (1f - f(l.get(i).expectation())) : Float.NEGATIVE_INFINITY);
+            ArrayUtils.sort(order, (i) -> l.get(i) != null ? (1f - f(l.get(i).expectation())) : Float.NEGATIVE_INFINITY);
 
             float confMin =
                     //nar.confMin.floatValue();
