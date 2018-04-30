@@ -1,6 +1,10 @@
-package nars;
+package nars.nar;
 
 import jcog.Util;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
+import nars.SubNAR;
 import nars.test.DeductiveChainTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

@@ -88,7 +88,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.add(jTextField1, gridBagConstraints);
 
         changeButton.setText("...");
-        changeButton.addActionListener(evt -> changeButtonActionPerformed(evt));
+        changeButton.addActionListener(this::changeButtonActionPerformed);
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 1;
@@ -107,7 +107,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.add(new JPanel(), gridBagConstraints);
 
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(evt -> cancelButtonActionPerformed(evt));
+        cancelButton.addActionListener(this::cancelButtonActionPerformed);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 4;
@@ -117,7 +117,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.add(cancelButton, gridBagConstraints);
 
         exitButton.setText("Exit");
-        exitButton.addActionListener(evt -> exitButtonActionPerformed(evt));
+        exitButton.addActionListener(this::exitButtonActionPerformed);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 1;
@@ -125,7 +125,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.add(exitButton, gridBagConstraints);
 
         okButton.setText("OK");
-        okButton.addActionListener(evt -> okButtonActionPerformed(evt));
+        okButton.addActionListener(this::okButtonActionPerformed);
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;

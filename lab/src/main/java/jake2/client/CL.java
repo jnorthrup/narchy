@@ -1601,9 +1601,8 @@ public final class CL {
 
         Console.Init(); //ok
 
-        new Thread(()->{
-            S.Init(); //empty
-        }).start();
+        //empty
+        new Thread(S::Init).start();
         VID.Init();
 
         V.Init();

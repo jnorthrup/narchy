@@ -78,7 +78,7 @@ public class NARTestOptimize {
                         n.emotion.want(MetaGoal.Believe, p)
                 )
                 .optimize(32*1024, 3, (n) ->
-                        JUnitPlanetX.tests(exe, n,
+                        JUnitNAR.tests(exe, n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
                                 NAL2Test.class,

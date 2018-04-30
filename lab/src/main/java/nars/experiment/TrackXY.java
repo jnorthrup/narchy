@@ -143,7 +143,7 @@ public class TrackXY extends NAgent {
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
                     //(tt)->true,
-                    (tt) -> tt.isInput(),
+                    Task::isInput,
                     4, 16);
 
 //            ConjClustering cjG = new ConjClustering(n, GOAL,

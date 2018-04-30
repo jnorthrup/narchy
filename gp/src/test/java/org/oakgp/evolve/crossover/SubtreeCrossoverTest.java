@@ -43,8 +43,9 @@ public class SubtreeCrossoverTest {
 
         GeneticOperator c = new SubtreeCrossover(dummyRandom, DEFAULT_DEPTH);
 
-        Node result = c.evolve(dummySelector);
-        assertNodeEquals("(+ 9 (- 8 v5))", result);
+
+        assertNodeEquals("(+ 5 (- 8 v5))", c.evolve(dummySelector));
+        //assertNodeEquals("(+ 9 (- 8 v5))", c.evolve(dummySelector));
 
         dummyRandom.assertEmpty();
         dummySelector.assertEmpty();
@@ -117,8 +118,14 @@ public class SubtreeCrossoverTest {
     }
 
     private void assertCrossoverPossibilities(int maxDepth) {
-        String[] possibilities = {"(+ (+ 9 (+ 3 4)) 5)", "(+ (+ 7 (+ 3 4)) 5)", "(+ (+ 8 (+ 3 4)) 5)", "(+ (+ (* 7 8) (+ 3 4)) 5)",
-                "(+ (+ (* 9 (* 7 8)) (+ 3 4)) 5)", "(+ (+ 6 (+ 3 4)) 5)", "(+ (+ (* (* 9 (* 7 8)) 6) (+ 3 4)) 5)"};
+        String[] possibilities = {
+                "(+ (+ 9 (+ 3 4)) 5)",
+                "(+ (+ 7 (+ 3 4)) 5)",
+                "(+ (+ 8 (+ 3 4)) 5)",
+                "(+ (+ (* 7 8) (+ 3 4)) 5)",
+                "(+ (+ (* 9 (* 7 8)) (+ 3 4)) 5)",
+                "(+ (+ 6 (+ 3 4)) 5)",
+                "(+ (+ (* (* 9 (* 7 8)) 6) (+ 3 4)) 5)"};
         List<FunctionNode> f = Arrays.stream(possibilities).map(s -> readFunctionNode(s)).filter(n -> n.depth() <= maxDepth).collect(Collectors.toList());
         int numPossibilities = f.size();
         assertTrue(numPossibilities > 0);

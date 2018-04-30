@@ -61,8 +61,8 @@ public class StrategyWalkTest {
         FunctionNode tree = new FunctionNode(f, branch1, branch2);
 
         assertSame(v0, StrategyWalk.getAt(tree, 0, NodeType::isVariable));
-        assertSame(v2, StrategyWalk.getAt(tree, 1, NodeType::isVariable));
-        assertSame(v1, StrategyWalk.getAt(tree, 2, NodeType::isVariable));
+        assertSame(v1, StrategyWalk.getAt(tree, 1, NodeType::isVariable));
+        assertSame(v2, StrategyWalk.getAt(tree, 2, NodeType::isVariable));
 
         assertSame(c1, StrategyWalk.getAt(tree, 0, NodeType::isConstant));
 
@@ -96,15 +96,15 @@ public class StrategyWalkTest {
         String input = "(+ (+ 1 v0) (+ (+ v0 v1) 2))";
 
         assertFunctionNodeReplaceAt(input, 0, NodeType::isVariable, "(+ (+ true 1) (+ 2 (+ v0 v1)))");
-        assertFunctionNodeReplaceAt(input, 1, NodeType::isVariable, "(+ (+ 1 v0) (+ (+ true v1) 2))");
-        assertFunctionNodeReplaceAt(input, 2, NodeType::isVariable, "(+ (+ 1 v0) (+ (+ v0 true) 2))");
+        assertFunctionNodeReplaceAt(input, 1, NodeType::isVariable, "(+ (+ 1 v0) (+ 2 (+ true v1)))");
+        assertFunctionNodeReplaceAt(input, 2, NodeType::isVariable, "(+ (+ 1 v0) (+ 2 (+ true v0)))");
 
-        assertFunctionNodeReplaceAt(input, 0, NodeType::isConstant, "(+ (+ true v0) (+ (+ v0 v1) 2))");
-        assertFunctionNodeReplaceAt(input, 1, NodeType::isConstant, "(+ (+ 1 v0) (+ (+ v0 v1) true))");
+        assertFunctionNodeReplaceAt(input, 0, NodeType::isConstant, "(+ (+ true v0) (+ 2 (+ v0 v1)))");
+        assertFunctionNodeReplaceAt(input, 1, NodeType::isConstant, "(+ (+ 1 v0) (+ true (+ v0 v1)))");
 
-        assertFunctionNodeReplaceAt(input, 0, NodeType::isFunction, "(+ true (+ (+ v0 v1) 2))");
+        assertFunctionNodeReplaceAt(input, 0, NodeType::isFunction, "(+ true (+ 2 (+ v0 v1)))");
         assertFunctionNodeReplaceAt(input, 1, NodeType::isFunction, "(+ (+ 1 v0) (+ true 2))");
-        assertFunctionNodeReplaceAt(input, 2, NodeType::isFunction, "(+ (+ 1 v0) true)");
+        assertFunctionNodeReplaceAt(input, 2, NodeType::isFunction, "(+ true (+ 1 v0))");
         assertFunctionNodeReplaceAt(input, 3, NodeType::isFunction, "true");
     }
 

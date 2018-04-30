@@ -66,6 +66,7 @@ public class DepthWalkTest {
     }
 
     private void assertReplaceAt(int index, String expected) {
-        assertNodeEquals(expected, DepthWalk.replaceAt(INPUT, index, (n, d) -> integerConstant(d)));
+        assertNodeEquals(expected,
+                DepthWalk.replaceAt(INPUT, index, (n, d) -> integerConstant(d)));
     }
 }

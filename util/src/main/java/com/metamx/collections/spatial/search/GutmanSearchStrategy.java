@@ -29,13 +29,13 @@ public class GutmanSearchStrategy implements SearchStrategy {
         if (bound.getLimit() > 0) {
             return Iterables.transform(
                     breadthFirstSearch(node, bound),
-                    immutableNode -> immutableNode.getImmutableBitmap()
+                    ImmutableNode::getImmutableBitmap
             );
         }
 
         return Iterables.transform(
                 depthFirstSearch(node, bound),
-                immutablePoint -> immutablePoint.getImmutableBitmap()
+                ImmutableNode::getImmutableBitmap
         );
     }
 
@@ -43,13 +43,13 @@ public class GutmanSearchStrategy implements SearchStrategy {
         return node.isLeaf ? bound.filter(
                 Iterables.transform(
                         node.children(),
-                        tNode -> new ImmutablePoint(tNode)
+                        ImmutablePoint::new
                 )
         ) : Iterables.concat(
                 Iterables.transform(
                         Iterables.filter(
                                 node.children(),
-                                child -> bound.overlaps(child)
+                                bound::overlaps
                         ),
                         child -> depthFirstSearch(child, bound)
                 )
@@ -104,7 +104,7 @@ public class GutmanSearchStrategy implements SearchStrategy {
                         Iterables.concat(
                                 Iterables.transform(
                                         overlappingNodes,
-                                        immutableNode -> immutableNode.children()
+                                        ImmutableNode::children
                                 )
                         ),
                         bound,

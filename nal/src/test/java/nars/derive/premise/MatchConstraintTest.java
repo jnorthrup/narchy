@@ -1,10 +1,11 @@
-package nars.unify.constraint;
+package nars.derive.premise;
 
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
 import nars.term.Term;
 import nars.test.TestNAR;
+import nars.unify.constraint.NoCommonSubtermConstraint;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;

@@ -86,8 +86,8 @@ public class NodeWalkTest {
         assertEquals("(+ (* 9 v0) (+ 1 v2))", NodeWalk.replaceAt(n, 1, replacement).toString());
         assertEquals("(+ 9 (+ 1 v2))", NodeWalk.replaceAt(n, 2, replacement).toString());
         assertEquals("(+ (* v0 v1) (+ 9 v2))", NodeWalk.replaceAt(n, 3, replacement).toString());
-        assertEquals("(+ (* v0 v1) (+ 9 v2))", NodeWalk.replaceAt(n, 4, replacement).toString());
-        assertEquals("(+ (* v0 v1) 9)", NodeWalk.replaceAt(n, 5, replacement).toString());
+        assertEquals("(+ (* v0 v1) (+ 1 9))", NodeWalk.replaceAt(n, 4, replacement).toString());
+        assertEquals("(+ 9 (* v0 v1))", NodeWalk.replaceAt(n, 5, replacement).toString());
         assertEquals("9", NodeWalk.replaceAt(n, 6, replacement).toString());
     }
 

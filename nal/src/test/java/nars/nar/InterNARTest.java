@@ -1,6 +1,10 @@
-package nars;
+package nars.nar;
 
 import jcog.Util;
+import nars.InterNAR;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;

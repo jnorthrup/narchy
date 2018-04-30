@@ -1,16 +1,11 @@
-package nars.perf;
+package jcog.test;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
 import jcog.Util;
 import jcog.io.ARFF;
 import jcog.list.FasterList;
-import nars.NAR;
-import nars.Param;
-import nars.util.NALTest;
 import org.eclipse.collections.api.tuple.Pair;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.engine.descriptor.*;
@@ -32,30 +27,31 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
-import static java.util.stream.Collectors.toList;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
- * JUnit wrappers and runners
+ * JUnit5 Planet_X
+ * Parallel Test Runner with Advanced Statistics collection
+ * based on JUnit "Jupiter"
  */
 public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExecutionListener {
 
     private static final Logger logger = LoggerFactory.getLogger(JUnitPlanetX.class);
+
     public final ARFF.ARFFObject<TestRun> results = new ARFF.ARFFObject<>(TestRun.class);
-    final Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> all = new ConcurrentLinkedQueue<>();
+
+    private final Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> all = new ConcurrentLinkedQueue<>();
+
     //private final TestExecutionListenerRegistry listenerRegistry = new TestExecutionListenerRegistry();
-    final Node.DynamicTestExecutor dte = testDescriptor -> {
+    private final Node.DynamicTestExecutor dte = testDescriptor -> {
         //System.err.println("TODO: dynamic: " + testDescriptor);
     };
     private final Iterable<TestEngine> testEngines;
@@ -66,83 +62,10 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
      *
      * @param testEngines the test engines to delegate to; never {@code null} or empty
      */
-    JUnitPlanetX() {
+    public JUnitPlanetX() {
         this.request = LauncherDiscoveryRequestBuilder.request();
         this.testEngines = ServiceLoader.load(TestEngine.class, ClassLoaderUtils.getDefaultClassLoader());
 
-    }
-
-    public static void main(String[] args) throws FileNotFoundException {
-
-        JUnitPlanetX j = new JUnitPlanetX()
-                .test("nars")
-                //.test(NAL1Test.class)
-                .run();
-
-        j.report(new PrintStream(new FileOutputStream("/tmp/test/" + System.currentTimeMillis() + ".arff")));
-        j.report(System.out);
-
-
-    }
-
-    /**
-     * HACK runs all Junit test methods, summing the scores.
-     * TODO use proper JUnit5 test runner api but it is a mess to figure out right now
-     */
-    public static float tests(Executor exe, Supplier<NAR> s, Class<? extends NALTest>... c) {
-
-
-        List<Method> methods = Stream.of(c)
-                .flatMap(cc -> Stream.of(cc.getMethods())
-                        .filter(x -> x.getAnnotation(Test.class) != null))
-                .collect(toList());
-
-        final CountDownLatch remain = new CountDownLatch(methods.size());
-        final AtomicDouble sum = new AtomicDouble(0);
-        methods.forEach(m -> exe.execute(() -> {
-            try {
-                sum.addAndGet(test(s, m));
-            } finally {
-                remain.countDown();
-            }
-        }));
-        try {
-            remain.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return sum.floatValue();
-    }
-
-    private static float test(Supplier<NAR> s, Method m) {
-        try {
-            NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
-            t.test.set(s.get()); //overwrite NAR with the supplier
-            t.test.nar.random().setSeed(
-                    System.nanoTime()
-                    //1 //should change on each iteration so constant value wont work
-            );
-            try {
-                m.invoke(t);
-            } catch (Throwable ee) {
-                return -1; //fatal setup
-            }
-
-            Param.DEBUG = false;
-
-            try {
-                t.test.test(false);
-                return t.test.score;
-                //return 1 + t.test.score; //+1 for successful completion
-            } catch (Throwable ee) {
-                //return -2f;
-                //return -1f;
-                return 0.0f; //fatal during test
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0.0f;
-        }
     }
 
     private static void flatten(Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> target, TestDescriptor t, JupiterEngineExecutionContext ctx) {
@@ -213,6 +136,11 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
             }
         }
         return false;
+    }
+
+
+    public ARFF.ARFFObject<TestRun> report(File out) throws FileNotFoundException {
+        return report(new PrintStream(new FileOutputStream(out)));
     }
 
     public ARFF.ARFFObject<TestRun> report(PrintStream out) {
@@ -427,7 +355,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
     }
 
     public JUnitPlanetX test(Class... testClasses) {
-        for (Class testClass: testClasses)
+        for (Class testClass : testClasses)
             request.selectors(DiscoverySelectors.selectClass(testClass));
         return this;
     }
@@ -475,8 +403,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 //                logger.debug(() -> String.format("Discovering tests during Launcher %s phase in engine '%s'.", phase,
 //                        testEngine.getId()));
 
-            Optional<TestDescriptor> engineRoot = discoverEngineRoot(testEngine, discoveryRequest);
-            engineRoot.ifPresent(root::add);
+            discoverEngineRoot(testEngine, discoveryRequest).ifPresent(root::add);
         }
         //root.applyPostDiscoveryFilters(discoveryRequest);
         //root.prune();
@@ -525,7 +452,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
     @Override
     public void dynamicTestRegistered(TestDescriptor testDescriptor) {
-        System.err.println("dyn: " + testDescriptor);
+        //System.err.println("dyn: " + testDescriptor);
     }
 
     @Override
@@ -535,12 +462,12 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
-        System.out.println("started: " + testDescriptor);
+        //System.out.println("started: " + testDescriptor);
     }
 
     @Override
     public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
-        System.out.println("finished : " + testDescriptor);
+        //System.out.println("finished : " + testDescriptor);
     }
 
     @Override

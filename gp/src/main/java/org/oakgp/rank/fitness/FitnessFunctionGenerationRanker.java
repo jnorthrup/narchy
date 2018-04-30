@@ -59,8 +59,7 @@ abstract public class FitnessFunctionGenerationRanker implements GenerationRanke
             RankedCandidate[] output = new RankedCandidate[input.size()];
             int ctr = 0;
             for (Node n : input) {
-                RankedCandidate rankedCandidate = rankCandidate(n);
-                output[ctr++] = rankedCandidate;
+                output[ctr++] = rankCandidate(n);
             }
             return new Candidates(output);
         }

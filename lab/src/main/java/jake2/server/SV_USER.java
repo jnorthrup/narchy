@@ -45,14 +45,14 @@ public class SV_USER {
         final Runnable r;
     }
 
-    static ucmd_t u1 = new ucmd_t("new", () -> SV_USER.SV_New_f());
+    static ucmd_t u1 = new ucmd_t("new", SV_USER::SV_New_f);
 
     static final ucmd_t[] ucmds = {
     // auto issued
-            new ucmd_t("new", () -> SV_USER.SV_New_f()), new ucmd_t("configstrings", () -> SV_USER.SV_Configstrings_f()), new ucmd_t("baselines", () -> SV_USER.SV_Baselines_f()), new ucmd_t("begin", () -> SV_USER.SV_Begin_f()), new ucmd_t("nextserver", () -> SV_USER.SV_Nextserver_f()), new ucmd_t("disconnect", () -> SV_USER.SV_Disconnect_f()),
+            new ucmd_t("new", SV_USER::SV_New_f), new ucmd_t("configstrings", SV_USER::SV_Configstrings_f), new ucmd_t("baselines", SV_USER::SV_Baselines_f), new ucmd_t("begin", SV_USER::SV_Begin_f), new ucmd_t("nextserver", SV_USER::SV_Nextserver_f), new ucmd_t("disconnect", SV_USER::SV_Disconnect_f),
 
             // issued by hand at client consoles
-            new ucmd_t("info", () -> SV_USER.SV_ShowServerinfo_f()), new ucmd_t("download", () -> SV_USER.SV_BeginDownload_f()), new ucmd_t("nextdl", () -> SV_USER.SV_NextDownload_f()) };
+            new ucmd_t("info", SV_USER::SV_ShowServerinfo_f), new ucmd_t("download", SV_USER::SV_BeginDownload_f), new ucmd_t("nextdl", SV_USER::SV_NextDownload_f) };
 
     public static final int MAX_STRINGCMDS = 8;
 

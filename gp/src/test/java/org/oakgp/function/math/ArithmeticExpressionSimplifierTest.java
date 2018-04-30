@@ -111,21 +111,21 @@ public class ArithmeticExpressionSimplifierTest {
 
         assertAdditionSimplification("9", "(+ v0 3)", "(+ 12 v0)");
 
-        assertAdditionSimplification("9", "(- v0 3)", "(+ v0 6)");
+        assertAdditionSimplification("9", "(- v0 3)", "(+ 6 v0)");
 
-        assertSimplify("(- 4 (- v1 (- v0 9)))", "(- 0 (- v1 (- v0 5)))");
-        assertSimplify("(- 4 (- v1 (+ v0 9)))", "(- 0 (- v1 (+ 13 v0)))");
+        assertSimplify("(- 4 (- v1 (- v0 9)))", "(- (- v0 5) v1)");
+        assertSimplify("(- 4 (- v1 (+ v0 9)))", "(- (+ 13 v0) v1)");
 
         assertSimplify("(- (+ 4 v0) 3)", "(+ 1 v0)");
         assertSimplify("(- (- v0 1) v1)", "(- (- v0 1) v1)");
 
         assertSimplify("(- (- v0 1) (- v0 1))", "0");
         assertSimplify("(- (+ v0 1) (+ v0 1))", "0");
-        assertSimplify("(+ (- v0 1) (- v0 1))", "(+ (- 0 0) (- (* 2 v0) 2))");
-        assertSimplify("(+ (+ v0 1) (+ v0 1))", "(+ (+ 0 0) (+ (* 2 v0) 2))");
-        assertSimplify("(- (+ v0 1) (- v0 1))", "(- (+ 0 0) (- -1 1))");
+        assertSimplify("(+ (- v0 1) (- v0 1))", "(- (* 2 v0) 2)");
+        assertSimplify("(+ (+ v0 1) (+ v0 1))", "(+ 2 (* 2 v0))");
+        assertSimplify("(- (+ v0 1) (- v0 1))", "2");
 
-        assertSimplify("(- v0 (- v1 (- v0 9)))", "(* 2 v0) 9) v1)");
+        assertSimplify("(- v0 (- v1 (- v0 9)))", "(- (- (* 2 v0) 9) v1)");
 
 
     }
