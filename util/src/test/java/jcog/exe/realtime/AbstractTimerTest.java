@@ -12,16 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractTimerTest {
 
     final HashedWheelTimer timer = new HashedWheelTimer(
-                    new AdmissionQueueWheelModel(64,
+                    new AdmissionQueueWheelModel(128,
                     TimeUnit.MILLISECONDS.toNanos(1)),
                     waitStrategy());
 
@@ -43,9 +40,7 @@ public abstract class AbstractTimerTest {
     @Test
     public void scheduleOneShotRunnableTest() throws InterruptedException {
         AtomicInteger i = new AtomicInteger(1);
-        timer.schedule(() -> {
-                    i.decrementAndGet();
-                },
+        timer.schedule((Runnable) i::decrementAndGet,
                 100,
                 TimeUnit.MILLISECONDS);
 
@@ -57,9 +52,7 @@ public abstract class AbstractTimerTest {
     public void testOneShotRunnableFuture() throws InterruptedException, TimeoutException, ExecutionException {
         AtomicInteger i = new AtomicInteger(1);
         long start = System.currentTimeMillis();
-        assertNull(timer.schedule(() -> {
-                    i.decrementAndGet();
-                },
+        assertNull(timer.schedule((Runnable) i::decrementAndGet,
                 100,
                 TimeUnit.MILLISECONDS)
                 .get(10, TimeUnit.SECONDS));
@@ -235,10 +228,8 @@ public abstract class AbstractTimerTest {
     public void fixedRateSubsequentFireTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(10);
         long start = System.currentTimeMillis();
-        timer.scheduleAtFixedRate(() -> {
-                    latch.countDown();
-                    //thre
-                },
+        //thre
+        timer.scheduleAtFixedRate(latch::countDown,
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
@@ -268,9 +259,7 @@ public abstract class AbstractTimerTest {
     @Test
     public void testScheduleTimeoutShouldRunAfterDelay() throws InterruptedException {
         final CountDownLatch barrier = new CountDownLatch(1);
-        final Future timeout = timer.schedule(() -> {
-            barrier.countDown();
-        }, 2, TimeUnit.SECONDS);
+        final Future timeout = timer.schedule(barrier::countDown, 2, TimeUnit.SECONDS);
         assertTrue(barrier.await(3, TimeUnit.SECONDS));
         assertTrue(timeout.isDone(), "should expire");
     }
@@ -339,157 +328,4 @@ public abstract class AbstractTimerTest {
         }
     }
 
-    // Debounce tests
-
-    @Test
-    public void debounceTest() throws InterruptedException {
-        AtomicReference ref = new AtomicReference(null);
-
-        Consumer<String> debounced = timer.debounce(s -> {
-            ref.set(s);
-            assertEquals("g'suffa", s);
-        }, 500, TimeUnit.MILLISECONDS);
-
-        for (int i = 0; i < 3; i++) {
-            ref.set("wat");
-            long start = System.currentTimeMillis();
-            debounced.accept("oanz");
-            Thread.sleep(100);
-            debounced.accept("zwoa");
-            Thread.sleep(100);
-            debounced.accept("g'suffa");
-
-            assertEquals("wat", ref.get());
-            assertTrue(waitFor(ref, "g'suffa", 10, TimeUnit.SECONDS));
-            Thread.sleep(1000);
-            assertEquals("g'suffa", ref.get());
-            long end = System.currentTimeMillis();
-
-            assertTrue(end - start >= 700);
-        }
-    }
-
-    private boolean waitFor(Supplier<Boolean> condition,
-                            long timeout, TimeUnit timeUnit) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeUnit.toMillis(timeout);
-        while (!condition.get() && System.currentTimeMillis() < deadline) {
-            Thread.sleep(1);
-        }
-        return condition.get();
-    }
-
-    private <T> boolean waitFor(AtomicReference<T> v, T expected,
-                                long timeout, TimeUnit timeUnit) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeUnit.toMillis(timeout);
-        while (!expected.equals(v.get()) && System.currentTimeMillis() < deadline) {
-            Thread.sleep(1);
-        }
-        return expected.equals(v.get());
-    }
-
-    @Test
-    public void singleDebounceTest() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        Consumer<String> debounced = timer.debounce(s -> {
-            latch.countDown();
-            assertEquals("oanz", s);
-        }, 500, TimeUnit.MILLISECONDS);
-
-        long start = System.currentTimeMillis();
-        debounced.accept("oanz");
-
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
-        long end = System.currentTimeMillis();
-
-        assertTrue(end - start >= 500);
-    }
-
-    @Test
-    public void runnableDebounceTest() throws InterruptedException {
-        AtomicInteger ref = new AtomicInteger(0);
-
-        Runnable debounced = timer.debounce(() -> {
-            ref.incrementAndGet();
-        }, 500, TimeUnit.MILLISECONDS);
-
-        for (int i = 0; i < 3; i++) {
-            ref.set(0);
-            long start = System.currentTimeMillis();
-            debounced.run();
-            Thread.sleep(100);
-            debounced.run();
-            Thread.sleep(100);
-            debounced.run();
-
-            assertEquals(0, ref.get()); // isn't set immediately
-            assertTrue(waitFor(() -> ref.get() == 1, 10, TimeUnit.SECONDS));
-            assertEquals(1, ref.get()); // set after debounce
-            long end = System.currentTimeMillis();
-            long diff = end - start;
-            assertTrue(diff >= 700 && diff <= 800);
-
-            Thread.sleep(1000);
-            assertEquals(1, ref.get());  // not changed after that
-        }
-    }
-
-    // throttle test
-
-    @Test
-    public void throttleTest() throws InterruptedException {
-        AtomicInteger ref = new AtomicInteger(0);
-
-        Runnable throttled = timer.throttle(ref::incrementAndGet,
-                500, TimeUnit.MILLISECONDS);
-
-        for (int i = 0; i < 3; i++) {
-            ref.set(0);
-            long start = System.currentTimeMillis();
-            throttled.run();
-            Thread.sleep(100);
-            throttled.run();
-            Thread.sleep(100);
-            throttled.run();
-
-            assertEquals(0, ref.get());
-
-            assertTrue(waitFor(() -> ref.get() == 1, 10, TimeUnit.SECONDS));
-            long end = System.currentTimeMillis();
-            long diff = end - start;
-            assertTrue(diff >= 500 && diff <= 600); // wiggle
-
-            assertEquals(1, ref.get());
-            Thread.sleep(1000);
-            assertEquals(1, ref.get());
-        }
-    }
-
-    @Test
-    public void throttleConsumerTest() throws InterruptedException {
-        AtomicInteger ref = new AtomicInteger(0);
-
-        Consumer<Integer> throttled = timer.throttle(t -> ref.addAndGet(t),
-                500, TimeUnit.MILLISECONDS);
-
-        for (int i = 0; i < 3; i++) {
-            ref.set(0);
-            long start = System.currentTimeMillis();
-            throttled.accept(3);
-            Thread.sleep(100);
-            throttled.accept(5);
-            Thread.sleep(100);
-            throttled.accept(7);
-
-            assertEquals(0, ref.get());
-
-            assertTrue(waitFor(() -> ref.get() == 7, 10, TimeUnit.SECONDS));
-            long end = System.currentTimeMillis();
-            long diff = end - start;
-            assertTrue(diff >= 500 && diff <= 600, ()->diff + "diff"); // wiggle
-
-            assertEquals(7, ref.get());
-            Thread.sleep(1000);
-            assertEquals(7, ref.get());
-        }
-    }
 }

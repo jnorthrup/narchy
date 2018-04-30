@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 /**
  * Hash Wheel Timer, as per the paper:
@@ -347,115 +344,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         return ((ExecutorService) this.executor).invokeAny(tasks, timeout, unit);
     }
 
-    /**
-     * Create a wrapper Function, which will "debounce" i.e. postpone the function execution until after <code>period</code>
-     * has elapsed since last time it was invoked. <code>delegate</code> will be called most once <code>period</code>.
-     *
-     * @param delegate delegate runnable to be wrapped
-     * @param period   given time period
-     * @param timeUnit unit of the period
-     * @return wrapped runnable
-     */
-    public Runnable debounce(Runnable delegate,
-                             long period,
-                             TimeUnit timeUnit) {
-        AtomicReference<ScheduledFuture<?>> reg = new AtomicReference<>();
 
-        return () -> {
-            ScheduledFuture<?> future = reg.getAndSet(scheduleOneShot(TimeUnit.NANOSECONDS.convert(period, timeUnit),
-                    () -> {
-                        delegate.run();
-                        return null;
-                    }));
-            if (future != null) {
-                future.cancel(true);
-            }
-        };
-    }
 
-    /**
-     * Create a wrapper Consumer, which will "debounce" i.e. postpone the function execution until after <code>period</code>
-     * has elapsed since last time it was invoked. <code>delegate</code> will be called most once <code>period</code>.
-     *
-     * @param delegate delegate consumer to be wrapped
-     * @param period   given time period
-     * @param timeUnit unit of the period
-     * @return wrapped runnable
-     */
-    public <T> Consumer<T> debounce(Consumer<T> delegate,
-                                    long period,
-                                    TimeUnit timeUnit) {
-        AtomicReference<ScheduledFuture<T>> reg = new AtomicReference<>();
 
-        return t -> {
-            ScheduledFuture<T> future = reg.getAndSet(scheduleOneShot(TimeUnit.NANOSECONDS.convert(period, timeUnit),
-                    () -> {
-                        delegate.accept(t);
-                        return t;
-                    }));
-            if (future != null) {
-                future.cancel(true);
-            }
-        };
-    }
-
-    // TODO: biConsumer
-
-    /**
-     * Create a wrapper Runnable, which creates a throttled version, which, when called repeatedly, will call the
-     * original function only once per every <code>period</code> milliseconds. It's easier to think about throttle
-     * in terms of it's "left bound" (first time it's called within the current period).
-     *
-     * @param delegate delegate runnable to be called
-     * @param period   period to be elapsed between the runs
-     * @param timeUnit unit of the period
-     * @return wrapped runnable
-     */
-    public Runnable throttle(Runnable delegate,
-                             long period,
-                             TimeUnit timeUnit) {
-        AtomicBoolean alreadyWaiting = new AtomicBoolean();
-
-        return () -> {
-            if (alreadyWaiting.compareAndSet(false, true)) {
-                scheduleOneShot(TimeUnit.NANOSECONDS.convert(period, timeUnit),
-                        () -> {
-                            delegate.run();
-                            alreadyWaiting.compareAndSet(true, false);
-                            return null;
-                        });
-            }
-        };
-    }
-
-    /**
-     * Create a wrapper Consumer, which creates a throttled version, which, when called repeatedly, will call the
-     * original function only once per every <code>period</code> milliseconds. It's easier to think about throttle
-     * in terms of it's "left bound" (first time it's called within the current period).
-     *
-     * @param delegate delegate consumer to be called
-     * @param period   period to be elapsed between the runs
-     * @param timeUnit unit of the period
-     * @return wrapped runnable
-     */
-    public <T> Consumer<T> throttle(Consumer<T> delegate,
-                                    long period,
-                                    TimeUnit timeUnit) {
-        AtomicBoolean alreadyWaiting = new AtomicBoolean();
-        AtomicReference<T> lastValue = new AtomicReference<>();
-
-        return val -> {
-            lastValue.set(val);
-            if (alreadyWaiting.compareAndSet(false, true)) {
-                scheduleOneShot(TimeUnit.NANOSECONDS.convert(period, timeUnit),
-                        () -> {
-                            delegate.accept(lastValue.getAndSet(null));
-                            alreadyWaiting.compareAndSet(true, false);
-                            return null;
-                        });
-            }
-        };
-    }
 
     /**
      * INTERNALS
@@ -469,9 +360,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         }
 
         int firstFireOffset = (int) (firstDelay / resolution);
-        int firstFireRounds = firstFireOffset / wheels;
+        int firstFireRounds = Math.round(((float)firstDelay) / (resolution * wheels));
 
-        TimedFuture<V> r = new OneTimedFuture<>(firstFireOffset+1, firstFireRounds, callable);
+        TimedFuture<V> r = new OneTimedFuture<>(firstFireOffset, firstFireRounds, callable);
         // We always add +1 because we'd like to keep to the right boundary of event on execution, not to the left:
         //
         // For example:
