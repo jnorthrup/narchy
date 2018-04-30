@@ -84,8 +84,22 @@ public class ConjTest {
     @Test public void testEventContradictionWithEternal() {
         Conj c = new Conj();
         c.add($.the("x"), ETERNAL);
-        c.add($.the("x").neg(), 1);
+        boolean added = c.add($.the("x").neg(), 1);
         assertEquals(False, c.term());
+    }
+    @Test public void testEventNonContradictionWithEternal() {
+        Conj c = new Conj();
+        c.add($.the("x"), ETERNAL);
+        boolean added = c.add($.the("y"), 1);
+        assertTrue(added);
+        assertEquals("(x&&y)", c.term().toString());
+    }
+    @Test public void testEventNonContradictionWithEternal2() {
+        Conj c = new Conj();
+        c.add($.the("x"), ETERNAL);
+        c.add($.the("y"), 1);
+        c.add($.the("z"), 2);
+        assertEquals("((y &&+1 z)&&x)", c.term().toString());
     }
 
     final Random rng = new XoRoShiRo128PlusRandom(1);

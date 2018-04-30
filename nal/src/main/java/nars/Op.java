@@ -179,9 +179,9 @@ public enum Op {
 
             int trues = 0; //# of trues to ignore
             for (Term t : u) {
-                if (t == Op.Null || t == False)
+                if (t == Null || t == False)
                     return t; //short-circuit
-                else if (t == Op.True)
+                else if (t == True)
                     trues++;
             }
 
@@ -218,7 +218,7 @@ public enum Op {
             }
 
 
-            Term ci;
+
             switch (dt) {
                 case DTERNAL:
                 case 0:
@@ -228,23 +228,24 @@ public enum Op {
                         if (u[0].equals(u[1]))
                             return u[0];
 
-                        if (u[0].equalsNeg(u[1]))
+                        if (!u[0].hasAny(Op.CONJ.bit | Op.NEG.bit) && !u[1].hasAny(Op.CONJ.bit | Op.NEG.bit)) {
+                            //fast case: no inner conjunction or negations
+                            return instance(CONJ, dt, sorted(u[0], u[1]));
+                        } else if (u[0].equalsNeg(u[1]))
                             return False;
 
                     }
 
                     //TODO if there are no negations in u then an accelerated construction is possible
 
-                    assert (u.length > 1 && (dt == 0 || dt == DTERNAL)); //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
+                    assert u.length > 1; //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
                     Conj c = new Conj();
                     long sdt = dt == DTERNAL ? ETERNAL : 0;
                     for (Term x : u) {
                         if (!c.add(x, sdt))
                             break;
                     }
-                    ci = c.term();
-                    break;
-
+                    return c.term();
 
                 case XTERNAL:
                     //sequence or xternal
@@ -320,7 +321,7 @@ public enum Op {
                     }
 
                     if (u.length > 1) {
-                        return Op.instance(CONJ, XTERNAL, u);
+                        return instance(CONJ, XTERNAL, u);
                     } else {
                         return u[0];
                     }
@@ -332,12 +333,10 @@ public enum Op {
                         return Null;
                     }
 
-                    ci = Conj.conjMerge(u[0], u[1], dt);
+                    return Conj.conjMerge(u[0], u[1], dt);
                 }
             }
 
-
-            return ci;
         }
 
     },

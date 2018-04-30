@@ -529,13 +529,11 @@ public class Conj {
         int i = add(t); //should be get(), add doesnt apply
         int[] ii;
         if (pos && neg) {
-            ii = new int[]{i, -i};
+            ii = new int[] { i, -i };
         } else if (pos) {
-            if (negateInput) i = -i;
-            ii = new int[]{i};
+            ii = new int[] { negateInput ? -i : i };
         } else if (neg) {
-            if (negateInput) i = -i;
-            ii = new int[]{-i};
+            ii = new int[] { negateInput ? i : -i };
         } else {
             throw new UnsupportedOperationException();
         }
@@ -562,7 +560,7 @@ public class Conj {
                 break;
         }
 
-        event.compact();
+        //event.compact();
 
 
         IntPredicate validator = null;
@@ -632,8 +630,9 @@ public class Conj {
             }
 
             ci = eternal != null ?
-                    //Op.instance(CONJ, DTERNAL, sorted(eternal, temporal))
-                    CONJ.the(DTERNAL, sorted(eternal, temporal))
+                    //CONJ.the(DTERNAL, sorted(temporal, eternal))
+                    CONJ.instance(DTERNAL, sorted(temporal, eternal))
+                    //instance(CONJ, DTERNAL, sorted(temporal, eternal))
                     :
                     temporal;
         }

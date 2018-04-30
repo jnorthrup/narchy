@@ -13,7 +13,6 @@ import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -458,7 +457,7 @@ public enum Terms {
         final int[] minScore = {Integer.MAX_VALUE};
         {
             //Iterator<ObjectIntPair<Term>> oo = oi.keyValuesView().iterator();
-            List<Term> keysToRemove = new FasterList(0);
+            List<Term> keysToRemove = new FasterList(4);
             Iterator<Term> oo = ok.iterator();
             while (oo.hasNext()) {
                 Term bb = oo.next();
@@ -556,7 +555,6 @@ public enum Terms {
             return x;
     }
 
-    @NotNull
     public static Term[] neg(Term... modified) {
         int l = modified.length;
         Term[] u = new Term[l];
@@ -566,7 +564,7 @@ public enum Terms {
         return u;
     }
 
-    static final Comparator<Term> volumeComparator = Comparator.comparingInt(Term::volume);
+//    static final Comparator<Term> volumeComparator = Comparator.comparingInt(Term::volume);
 
     /**
      * for commutive conjunction

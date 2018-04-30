@@ -295,7 +295,6 @@ public class IO {
     /**
      * called by readTerm after determining the op type
      */
-    @NotNull
     public static Term readTerm(DataInput in) throws IOException {
 
         byte ob = in.readByte();
@@ -505,7 +504,7 @@ public class IO {
 
             appendArgs(cs, p);
 
-            appendCloser(p);
+            p.append(Op.COMPOUND_TERM_CLOSER);
 
         }
 
@@ -520,7 +519,7 @@ public class IO {
 
             appendArgs(c, filter, p);
 
-            appendCloser(p);
+            p.append(Op.COMPOUND_TERM_CLOSER);
 
         }
 
@@ -547,10 +546,6 @@ public class IO {
                 }
                 filter.apply(c.sub(i)).append(p);
             }
-        }
-
-        static void appendCloser(Appendable p) throws IOException {
-            p.append(Op.COMPOUND_TERM_CLOSER);
         }
 
         static void append(Compound c, Appendable p) throws IOException {
