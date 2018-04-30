@@ -44,7 +44,7 @@ public class NAL8SetTest extends NALTest {
                 .mustGoal(cycles,"(a-->g)", 1f, 0.81f);
     }
 
-    @Test
+    @Test @Disabled
     public void testMutexNegConj() {
         test
                 .input("(||, --(a&|b), a, b,(--a &| --b))!")

@@ -187,12 +187,19 @@ public class TermReductionsTest extends NarseseTest {
 //        Term ax = x.anon();
 //        assertEquals("", ax.toString());
     }
-    @Test public void testConjParallelMix2() {
-        assertReduction("(--,isRow(tetris,(6,true),true))",
-                "((--,(x &| isRow(tetris,(6,true),true))) &| (--,isRow(tetris,(6,true),true)))");
+    @Test public void testConjParallelWithNegMix() {
+        String x = "((--,(x &| y)) &| (--,y))";
+        assertEquals($$(x).toString(), $$($$(x).toString()).toString());
 
-        assertReduction("(--,isRow(tetris,(6,true),true))",
-                "((--,((--,isRow(tetris,(14,false),true))&|isRow(tetris,(6,true),true)))&|(--,isRow(tetris,(6,true),true)))");
+        assertReduction("(--,y)",
+                x);
+
+        assertReduction("(--,y)",
+                "((--,(x&|y))&|(--,y))");
+
+        //DONT:
+        assertEquals("((--,(x&|y)) &&+1 (--,y))", $$("((--,(x &| y)) &&+1 (--,y))").toString());
+        assertEquals("((--,(x &&+1 y))&|(--,y))", $$("((--,(x &&+1 y)) &| (--,y))").toString());
     }
 
     @Test
@@ -549,7 +556,7 @@ public class TermReductionsTest extends NarseseTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        Term ab = Op.conjMerge(a, 1, b, 6);
+        Term ab = Conj.conjMerge(a, 1, b, 6);
         assertEquals("((a &&+5 ((--,a)&|b)) &&+5 ((--,b) &&+5 (--,c)))", ab.toString());
     }
 
@@ -1414,7 +1421,7 @@ public class TermReductionsTest extends NarseseTest {
 
         //parallel
         assertEquals("(--,x)", $.$("((--,(x &| y)) &| (--,x))").toString());
-        assertEquals("(--,x)", $.$("((--,(x &| y)) && (--,x))").toString());
+        assertEquals("(--,x)", $.$("((--,(x && y)) && (--,x))").toString());
 
         //eternal
         assertEquals("(--,x)", $.$("((--,(x && y)) && (--,x))").toString());
@@ -1507,7 +1514,7 @@ public class TermReductionsTest extends NarseseTest {
                     "((((a,b) ==>+1 (b,c)) &&+4 c) &&+1 d)",
                     x.toString());
 
-            Term x2 = Op.conjMerge(a, 0, b, 4);
+            Term x2 = Conj.conjMerge(a, 0, b, 4);
             assertEquals(x, x2);
         }
     }

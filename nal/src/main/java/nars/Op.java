@@ -3,7 +3,6 @@ package nars;
 
 import jcog.Util;
 import jcog.data.ArrayHashSet;
-import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import nars.op.SetFunc;
 import nars.op.mental.AliasConcept;
@@ -38,7 +37,6 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
@@ -233,17 +231,18 @@ public enum Op {
                         if (u[0].equalsNeg(u[1]))
                             return False;
 
-//                        if (!u[0].unneg().op().temporal && !u[1].unneg().op().temporal) {
-//
-//                            Term[] uu = Terms.sorted(u);
-//                            if (u==uu)
-//                                return instance(CONJ, dt, u); //direct instance
-//                            else
-//                                return CONJ.the(dt, uu); //send thru again
-//                        }
                     }
 
-                    ci = junctionFlat(dt, u);
+                    //TODO if there are no negations in u then an accelerated construction is possible
+
+                    assert (u.length > 1 && (dt == 0 || dt == DTERNAL)); //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
+                    Conj c = new Conj();
+                    long sdt = dt == DTERNAL ? ETERNAL : 0;
+                    for (Term x : u) {
+                        if (!c.add(x, sdt))
+                            break;
+                    }
+                    ci = c.term();
                     break;
 
 
@@ -333,54 +332,10 @@ public enum Op {
                         return Null;
                     }
 
-                    ci = conjMerge(u[0], u[1], dt);
+                    ci = Conj.conjMerge(u[0], u[1], dt);
                 }
             }
 
-
-            //(NOT (x AND y)) AND (NOT x) == NOT X
-            if (ci.op() == CONJ && ci.hasAny(NEG)) {
-                Subterms cci;
-                if ((cci = ci.subterms()).hasAny(CONJ)) {
-                    int ciDT = ci.dt();
-                    if (ciDT == 0 || ciDT == DTERNAL) {
-                        int s = cci.subs();
-                        RoaringBitmap ni = null, nc = null;
-                        for (int i = 0; i < s; i++) {
-                            Term cii = cci.sub(i);
-                            if (cii.op() == NEG) {
-                                if (cii.unneg().op() == CONJ) {
-                                    if (nc == null) nc = new RoaringBitmap();
-                                    nc.add(i);
-                                } else {
-                                    if (ni == null) ni = new RoaringBitmap();
-                                    ni.add(i);
-                                }
-                            }
-                        }
-                        if (nc != null && ni != null) {
-                            int[] bb = ni.toArray();
-                            MetalBitSet toRemove = MetalBitSet.bits(bb.length);
-                            PeekableIntIterator ncc = nc.getIntIterator();
-                            while (ncc.hasNext()) {
-                                int nccc = ncc.next();
-                                for (int j = 0; j < bb.length; j++) {
-                                    Term NC = cci.sub(nccc).unneg();
-                                    Term NX = cci.sub(bb[j]).unneg();
-                                    if (NC.contains(NX)) {
-                                        toRemove.set(nccc);
-                                    }
-                                }
-                            }
-                            if (toRemove.getCardinality() > 0) {
-                                return CONJ.the(ciDT, cci.termsExcept(toRemove));
-                            }
-                        }
-
-
-                    }
-                }
-            }
 
             return ci;
         }
@@ -1061,21 +1016,7 @@ public enum Op {
         return (dt == DTERNAL) || (dt == 0);
     }
 
-    static Term conjMerge(Term a, Term b, int dt) {
-        return (dt >= 0) ?
-                conjMerge(a, 0, b, +dt + a.dtRange()) :
-                conjMerge(b, 0, a, -dt + b.dtRange());
-    }
-
-    static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
-        Conj c = new Conj();
-        if (c.add(a, aStart)) {
-            c.add(b, bStart);
-        }
-        return c.term(); //Null, True, or False
-    }
-
-//    /**
+    //    /**
 //     * constructs a correctly merged conjunction from a list of events
 //     * note: this modifies the event list
 //     */
@@ -2068,70 +2009,6 @@ public enum Op {
             return events.get(start).getTwo();
         else
             return CONJ.the(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
-    }
-
-    /**
-     * flattening conjunction builder, for (commutive) multi-arg conjunction and disjunction (dt == 0 ar DTERNAL)
-     * see: https://en.wikipedia.org/wiki/Boolean_algebra#Monotone_laws
-     */
-    /*@NotNull*/
-    static Term junctionFlat(int dt, final Term[] u) {
-
-        //TODO if there are no negations in u then an accelerated construction is possible
-
-        assert (u.length > 1 && (dt == 0 || dt == DTERNAL)); //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
-
-
-//            //simple accelerated case:
-//            if (u.length == 2 && !u[0].hasAny(CONJ) && !u[1].hasAny(CONJ)) { //if it's simple
-//
-//                //already checked in callee
-//                //if (u[0].unneg().equals(u[1].unneg()))
-//                //    return False; //co-neg
-//
-//                return Op.implInConjReduction(compound(CONJ, dt, u));
-//            }
-
-
-//        ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
-//
-//        Term uu = flatten(CONJ, u, dt, s);
-//        if (uu != null) {
-//            assert (uu instanceof Bool);
-//            return uu;
-//        }
-//
-//        int os = s.size();
-//        if (os == 0) {
-//            return True;  //? does this happen
-//        }
-//
-//        Set<Term> outer = os > 1 ? new HashSet(os) : null /* unnecessary for the one element case */;
-//
-//        for (ObjectBytePair<Term> xn : s.keyValuesView()) {
-//            Term oi = xn.getOne().negIf(xn.getTwo() < 0);
-//            if (os == 1)
-//                return oi; //was the only element
-//            else
-//                outer.add(oi);
-//        }
-//
-//
-//
-//        Term[] scs = sorted(outer);
-//        if (scs.length == 1) {
-//            return scs[0];
-//        } else {
-//            return instance(CONJ, dt, scs);
-//        }
-
-        Conj c = new Conj();
-        long sdt = dt == DTERNAL ? ETERNAL : 0;
-        for (Term x : u) {
-            if (!c.add(x, sdt))
-                break;
-        }
-        return c.term();
     }
 
     public final Term the(Subterms s) {

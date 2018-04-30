@@ -16,6 +16,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.compound.util.Conj;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -716,7 +717,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             Term xEarly = x.sub(early);
             Term xLate = x.sub(1 - early);
 
-            return Op.conjMerge(
+            return Conj.conjMerge(
                     xEarly, 0,
                     xLate, dt);
         } else {
