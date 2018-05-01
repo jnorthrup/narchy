@@ -8,7 +8,6 @@ import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
 import jcog.decide.Roulette;
 import jcog.math.random.SplitMix64Random;
-import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jcog.util.AtomicFloat;
 import org.apache.commons.lang3.ArrayUtils;
@@ -256,17 +255,22 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         final int hash = hash(k);
 
+        byte[] rank;
+        float[] rpri;
         float incomingPri;
         if (mode == Mode.PUT) {
-            incomingPri = pri(incoming);
-            if (incomingPri != incomingPri)
+            if ((incomingPri = pri(incoming)) != incomingPri)
                 return null;
+            rank = new byte[reprobes];
+            rpri = new float[reprobes];
         } else {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
+            rpri = null;
+            rank = null;
         }
 
-        byte[] rank = new byte[reprobes];
-        float[] rpri = new float[reprobes];
+
+
 
         int mutexTicket = -1;
         V toAdd = null, toRemove = null, toReturn = null;
@@ -327,7 +331,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                 byte j=0;
                 for (int i = start, probe = reprobes; probe > 0; probe--, j++) {
-                    rank[j] = j;
                     V mi = map.get(i);
                     float mp;
                     if (mi == null) {
@@ -340,6 +343,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     } else {
                         mp = priElse(mi, Float.NEGATIVE_INFINITY);
                     }
+
+                    rank[j] = j;
                     rpri[j] = mp;
                     if (++i == c) i = 0; //continue to next probed location
                 }
@@ -464,7 +469,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     protected boolean replace(float i, V existing) {
         float e = pri(existing);
-        return e != e || replace(i, e) ? true : false;
+        return e != e || replace(i, e);
     }
 
     protected boolean replace(float incoming, float existing) {
@@ -478,7 +483,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     protected boolean hijackFair(float newPri, float oldPri) {
-        return hijackFair(newPri, oldPri, 1f);
+        return hijackFair(newPri, oldPri, 1.0f);
     }
     /** roulette fair */
     protected boolean hijackFair(float newPri, float oldPri, float temperature) {
@@ -493,7 +498,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             float thresh = newPriSlice / (newPriSlice + oldPri);
             return rng.nextFloat() < thresh;
         } else {
-            return (newPri >= priEpsilon) || (rng.nextFloat() < (1f/reprobes));
+            return (newPri >= priEpsilon) || (rng.nextFloat() < (1.0f /reprobes));
         }
     }
 
@@ -504,7 +509,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         newPri = newPri * newPri * reprobes;
         oldPri = oldPri * oldPri * reprobes;
         if (oldPri > 2 * Float.MIN_VALUE) {
-            float thresh = 1f - (1f - (oldPri / (newPri + oldPri)));
+            float thresh = 1.0f - (1.0f - (oldPri / (newPri + oldPri)));
             return random.nextFloat() > thresh;
         } else {
             return (newPri >= Float.MIN_VALUE) || random.nextBoolean();// / reprobes;
@@ -621,7 +626,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
                     System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
                     wVal[windowCap - 1] = v0;
-                    wPri[windowCap - 1] = Util.max(p, Pri.EPSILON); //to differentiate from absolute zero
+                    wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON); //to differentiate from absolute zero
 
                     int which = Roulette.selectRoulette(windowCap, (r) -> wPri[r], random);
                     V v = (V) wVal[which];
@@ -705,7 +710,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     @Override
     public float depressurize() {
-        return Math.max(0, pressure.getAndSet(0f));  //max() in case it becomes negative
+        return Math.max(0, pressure.getAndSet(0.0f));  //max() in case it becomes negative
     }
 
 

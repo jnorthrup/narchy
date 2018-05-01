@@ -47,16 +47,16 @@ public class AIMATests {
     public void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.05f);
-        n.confResolution.set(0.04f);
+        n.freqResolution.set(0.04f);
+        n.confResolution.set(0.02f);
 //        n.activationRate.set(0.1f);
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
-        n.termVolumeMax.set(28);
+        n.termVolumeMax.set(32);
         //n.conceptActivation.set(0.5f);
 
-        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(4));
+        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(2));
         //new QuerySpider(n);
         //new PrologCore(n);
         //n.run(1);
