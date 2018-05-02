@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
 import static jcog.net.UDPeer.Command.TELL;
 
 /**
- * InterNAR P2P Network Interface for a NAR
+ * InterNARchy / InterNARS P2P Network Interface for a NAR
  */
 public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQuestionTask, Task> {
 

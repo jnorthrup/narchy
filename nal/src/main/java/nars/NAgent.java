@@ -46,7 +46,7 @@ import static nars.util.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
- * explicit management of sensor concepts and motor functions
+ * an integration of sensor concepts and motor functions
  */
 abstract public class NAgent extends NARService implements NSense, NAct, Runnable {
 

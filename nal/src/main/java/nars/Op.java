@@ -488,7 +488,7 @@ public enum Op {
     public static final Atomic Imdex =
             new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(ImdexSym)) {
 
-                final int RANK = Term.opX(VAR_PATTERN, 20 /* different from normalized variables with a subOp of 0 */);
+                final int RANK = Term.opX(VAR_PATTERN, (short)20 /* different from normalized variables with a subOp of 0 */);
 
                 @Override
                 public int opX() {
@@ -507,7 +507,7 @@ public enum Op {
      */
     public static final Bool Null = new Bool(String.valueOf(Op.NullSym)) {
 
-        final int rankBoolNull = Term.opX(BOOL, 0);
+        final int rankBoolNull = Term.opX(BOOL, (short)0);
 
         @Override
         public final int opX() {
@@ -534,7 +534,7 @@ public enum Op {
      */
     public static final Bool False = new Bool(String.valueOf(Op.FalseSym)) {
 
-        final int rankBoolFalse = Term.opX(BOOL, 1);
+        final int rankBoolFalse = Term.opX(BOOL, (short)1);
 
         @Override
         public final int opX() {
@@ -561,7 +561,7 @@ public enum Op {
      */
     public static final Bool True = new Bool(String.valueOf(Op.TrueSym)) {
 
-        final int rankBoolTrue = Term.opX(BOOL, 2);
+        final int rankBoolTrue = Term.opX(BOOL, (short)2);
 
         @Override
         public final int opX() {

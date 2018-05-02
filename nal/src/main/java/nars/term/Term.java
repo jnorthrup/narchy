@@ -733,7 +733,7 @@ public interface Term extends Termed, Comparable<Termed> {
     /**
      * opX function
      */
-    public static int opX(Op o, short subOp) {
+    static int opX(Op o, short subOp) {
         return (o.id << 16) | (subOp);
     }
 
