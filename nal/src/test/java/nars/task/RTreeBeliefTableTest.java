@@ -162,12 +162,12 @@ public class RTreeBeliefTableTest {
     public void testProjection() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         Term ab = nars.$.$("a:b");
-        TaskConcept X = (TaskConcept) n.conceptualize(ab);
+        TaskConcept AB = (TaskConcept) n.conceptualize(ab);
         RTreeBeliefTable r = RTreeBeliefTable.build(ab);
         r.setCapacity(4);
 
-        add(r, X, 1f, 0.9f, 0, 1, n);
-        add(r, X, 0f, 0.9f, 2, 3, n);
+        add(r, AB, 1f, 0.9f, 0, 1, n);
+        add(r, AB, 0f, 0.9f, 2, 3, n);
 
         assertEquals("%1.0;.90%", r.truth(0, 0, null, null, 1).toString());
         assertEquals("%1.0;.90%", r.truth(0, 1, null, null, 1).toString());

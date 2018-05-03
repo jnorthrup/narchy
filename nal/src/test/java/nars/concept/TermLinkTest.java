@@ -156,7 +156,7 @@ public class TermLinkTest {
     @Test
     public void testImplicateInhSet() throws Narsese.NarseseException {
         testTemplates("(($1-->[melted])=|>($1-->[pliable]))",
-                "[($1-->[pliable]), ($1-->[melted])]");
+                "[($1-->[pliable]), ($1-->[melted]), [pliable], [melted], pliable, melted, $1]");
     }
     @Test
     public void testImageExt() throws Narsese.NarseseException {
