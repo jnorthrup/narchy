@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Consumer;
 
-public class SpeechPlan extends NARService {
+public class Vocalization extends NARService {
 
     public static final Term PREPOSITION = $.the("preposition");
     public static final Term PRONOUN = $.the("pronoun");
@@ -31,7 +31,7 @@ public class SpeechPlan extends NARService {
     private float energy;
     private final float expectationThreshold = 0.5f;
 
-    public SpeechPlan(NAR nar, float durationsPerWord, Consumer<Term> speak) {
+    public Vocalization(NAR nar, float durationsPerWord, Consumer<Term> speak) {
         super(nar);
         this.durationsPerWord = durationsPerWord;
         this.speak = speak;

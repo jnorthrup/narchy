@@ -48,7 +48,7 @@ public class IRCNLP extends IRC {
     //    final int wordDelayMS = 25; //for serializing tokens to events: the time in millisecond between each perceived (subvocalized) word, when the input is received simultaneously
     private final String[] channels;
     private final MyLeakOut outleak;
-    final SpeechPlan speech;
+    final Vocalization speech;
 
     boolean trace;
 
@@ -60,7 +60,7 @@ public class IRCNLP extends IRC {
 
         this.nar = nar;
         this.channels = channels;
-        this.speech = new SpeechPlan(nar, 2f, this::send);
+        this.speech = new Vocalization(nar, 2f, this::send);
 
 //        new Thread(()->{
 //            while (true) {

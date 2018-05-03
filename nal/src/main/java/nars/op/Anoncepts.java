@@ -3,6 +3,7 @@ package nars.op;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.TODO;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.bag.leak.LeakBack;
@@ -11,7 +12,6 @@ import nars.concept.NodeConcept;
 import nars.link.CauseLink;
 import nars.link.TermlinkTemplates;
 import nars.term.Term;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,12 +30,11 @@ import org.jetbrains.annotations.NotNull;
 public class Anoncepts extends LeakBack {
 
     private final NAR nar;
-//    private final StableBloomFilter<Task> filter;
 
     /** used also for termlinks */
-    public final MutableFloat conceptActivationRate = new MutableFloat(1f);
+    public final FloatRange conceptActivationRate = new FloatRange(1f, 0, 1f);
 
-    public final MutableFloat taskLinkActivationRate = new MutableFloat(1f);
+    public final FloatRange taskLinkActivationRate = new FloatRange(1f, 0, 1f);
 
     public Anoncepts(int taskCapacity, @NotNull NAR n) {
         super(taskCapacity, n);
@@ -46,6 +45,8 @@ public class Anoncepts extends LeakBack {
         conceptActivationRate.set(1f/taskCapacity);
         taskLinkActivationRate.set(1f/taskCapacity);
     }
+
+//    private final StableBloomFilter<Task> filter;
 
 //    @Override
 //    protected boolean preFilter(Task next) {
