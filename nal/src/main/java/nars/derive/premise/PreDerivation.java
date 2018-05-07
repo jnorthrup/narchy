@@ -3,6 +3,7 @@ package nars.derive.premise;
 import jcog.version.Versioned;
 import nars.Op;
 import nars.term.Term;
+import nars.truth.Truth;
 import nars.unify.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,8 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Map;
 import java.util.Random;
 
-/** contains only information which depends on the premise itself (Task, Belief, BeliefTerm) */
+/** contains only information which depends on the premise itself (Task, Belief, BeliefTerm).
+ * used for first stage winnowing to determine the (memoizable) set of possible forkable outcomes */
 public abstract class PreDerivation extends Unify {
 
 
@@ -21,6 +23,10 @@ public abstract class PreDerivation extends Unify {
 
 //    /* -1 = freq<0.5, 0 = null, +1 = freq>=0.5 */
 //    public int taskPolarity, beliefPolarity;
+
+    public Truth taskTruth;
+    public Truth beliefTruth, beliefTruthDuringTask;
+
 
     public byte _taskOp;
     public byte _beliefOp;
@@ -52,6 +58,10 @@ public abstract class PreDerivation extends Unify {
             return true;
         }
         return false;
+    }
+
+    public boolean hasBeliefTruth() {
+        return beliefTruth!=null || beliefTruthDuringTask!=null;
     }
 
 }

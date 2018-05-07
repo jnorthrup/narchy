@@ -289,10 +289,6 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 //            return this;
 //        }
 
-        @Override
-        public void meta(String key, Object value) {
-            //dont store meta since these are temporary
-        }
 
         @Override
         public boolean isInput() {

@@ -8,6 +8,7 @@ import nars.control.TaskService;
 import nars.control.channel.CauseChannel;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
+import nars.task.NALTask;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,7 +166,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         if (x.isQuestionOrQuest()) {
             //reconstruct a question task with an onAnswered handler to reply with answers to the sender
             x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
-            x.meta("UDPeer", m);
+            ((NALTask.NALTaskX)x).meta("UDPeer", m);
         }
         x.budget(nar);
 

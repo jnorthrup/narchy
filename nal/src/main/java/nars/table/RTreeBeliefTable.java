@@ -401,12 +401,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //        }
 
         if (x.isDeleted()) {
-            Task xisting = x.meta("merge");
-            if (xisting != null) {
-                return true; //already contained or revised
-            } else {
+//            Task xisting = x.meta("merge");
+//            if (xisting != null) {
+//                return true; //already contained or revised
+//            } else {
                 return false; //rejected
-            }
+//            }
         } else {
             return true; //accepted new
         }
@@ -610,7 +610,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
 
             case RejectInput: {
-                //I.delete();
+                I.delete();
                 return false;
             }
 
@@ -638,8 +638,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     added.accept(AB);
                     return true;
                 } else {
-//                    if (I!=null)
-//                        I.delete();
+                    if (I!=null)
+                        I.delete();
                     return false; //?? not sure why this might happen but in case it does, reject the input
                 }
             }
@@ -881,7 +881,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             Task i = incoming.task();
             Task e = existing.task();
             ((NALTask) e).causeMerge(i);
-            //i.delete();
+            i.delete();
             //i.meta("merge", e); //signals success to activate what was input
         }
 

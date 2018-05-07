@@ -61,24 +61,6 @@ public class TaskProxy implements Task {
     }
 
     @Override
-    public <X> X meta(String key) {
-        return null;
-    }
-
-    @Override
-    public void meta(String key, Object value) {
-        //ignore
-        //throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <X> X meta(String key, Function<String, Object> valueIfAbsent) {
-        //ignore
-        //throw new UnsupportedOperationException();
-        return null;
-    }
-
-    @Override
     public float priSet(float p) {
         //ignore
         //throw new UnsupportedOperationException();

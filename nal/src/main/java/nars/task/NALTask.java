@@ -1,6 +1,7 @@
 package nars.task;
 
 import jcog.data.map.CompactArrayMap;
+import jcog.list.FasterList;
 import jcog.pri.Pri;
 import nars.Param;
 import nars.Task;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
 import static nars.Op.BELIEF;
@@ -28,46 +30,78 @@ public class NALTask extends Pri implements Task {
 
     private final long creation, start, end;
 
-    private final long[] stamp;
-
-    public volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
+    /*@Stable*/ private final long[] stamp;
 
     final int hash;
 
-    private final CompactArrayMap<String,Object> meta;
+    public volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
 
     private volatile boolean cyclic;
+
+    /** extended: with meta table */
+    public static class NALTaskX extends NALTask implements jcog.data.map.MetaMap {
+
+        private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
+
+        public NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
+            super(term, punc, truth, creation, start, end, stamp);
+        }
+
+        @Override
+        public @Nullable List log(boolean createIfMissing) {
+            if (createIfMissing)
+                return meta("!", (x) -> new FasterList(1));
+            else
+                return meta("!");
+        }
+
+        @Override
+        public <X> X meta(String key, Function<String,Object> valueIfAbsent) {
+            CompactArrayMap<String, Object> m = this.meta;
+            return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
+        }
+
+        @Override
+        public void meta(String key, Object value) {
+            CompactArrayMap<String, Object> m = this.meta;
+            if (m!=null) m.put(key, value);
+        }
+
+        @Override
+        public <X> X meta(String key) {
+            CompactArrayMap<String, Object> m = this.meta;
+            return m!=null ? (X) m.get(key) : null;
+        }
+    }
+
 
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
         super();
 
+        //quick truth/punctuation validity test
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new InvalidTaskException(term, "null truth");
 
+        //quick occurrence validity test
         if ((start == ETERNAL && end != ETERNAL) ||
             (start != ETERNAL && start > end) ||
-            (start == TIMELESS || end == TIMELESS)
+            (start == TIMELESS) || (end == TIMELESS)
            )
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
 
         if (Param.DEBUG_EXTRA)
             Task.validTaskTerm(term, punc, false);
 
-        this.term = term;
+        this.hash = Task.hash(
+                this.term = term,
+                (this.truth = truth!=null ? truth.truth() : null),
+                this.punc = punc,
+                this.start = start,
+                this.end = end,
+                this.stamp = stamp);
 
-        this.truth = truth!=null ? truth.truth() : null;
-
-        this.punc = punc;
-
-        this.start = start;
-        this.end = end;
         this.creation = creation;
 
-        this.stamp = stamp;
-
-        this.hash = Task.hash(term, truth(), punc, start, end, stamp);
-
-        this.meta = new CompactArrayMap();
     }
 
     @Override
@@ -230,23 +264,6 @@ public class NALTask extends Pri implements Task {
         return appendTo(null).toString();
     }
 
-    @Override
-    public <X> X meta(String key, Function<String,Object> valueIfAbsent) {
-        CompactArrayMap<String, Object> m = this.meta;
-        return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
-    }
-
-    @Override
-    public void meta(String key, Object value) {
-        CompactArrayMap<String, Object> m = this.meta;
-        if (m!=null) m.put(key, value);
-    }
-
-    @Override
-    public <X> X meta(String key) {
-        CompactArrayMap<String, Object> m = this.meta;
-        return m!=null ? (X) m.get(key) : null;
-    }
 
     @Override
     public double coord(boolean maxOrMin, int dimension) {

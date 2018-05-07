@@ -182,13 +182,14 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         tt = null;
 
         if (fromBZip2File) {
-            byte[] header;
+            byte[] header = new byte[2];
+            int nh;
             try {
-                header = zStream.readNBytes(2);
+                nh = zStream.read(header);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                nh = 0;
             }
-            if ((header[0]!='B') && (header[1]!='Z'))
+            if (nh!=2 || ((header[0]!='B') && (header[1]!='Z')))
                 throw new RuntimeException("BZip2 header not detected");
         }
         bsSetStream(zStream);
@@ -196,6 +197,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         initBlock();
         setupBlock();
     }
+
     public BZip2InputStream(InputStream zStream) {
         this(false, zStream);
     }

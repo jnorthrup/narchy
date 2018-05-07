@@ -22,6 +22,7 @@ package jcog.tree.rtree.split;
 
 import jcog.list.FasterList;
 import jcog.tree.rtree.*;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -60,10 +61,10 @@ public final class AxialSplitLeaf<T> implements Split<T> {
         final int splitDimension = axis;
 
         short size = leaf.size;
-        FasterList<IntDoublePair> sorted = new FasterList(size);
+        IntDoublePair[] sorted = new IntDoublePair[size];
         for (int i = 0; i < size; i++)
-            sorted.add(pair(i, model.bounds(leaf.data[i]).center(splitDimension)));
-        sorted.sortThisByDouble(IntDoublePair::getTwo);
+            sorted[i] = (pair(i, model.bounds(leaf.data[i]).center(splitDimension)));
+        ArrayUtils.sort(sorted, IntDoublePair::getTwo);
 
 //        final HyperRegion[] sortedMbr = HyperRegion.toArray(leaf.data, size, model.bounds);
 //        Arrays.sort(sortedMbr, Comparator.comparingDouble(o -> o.center(splitDimension)));

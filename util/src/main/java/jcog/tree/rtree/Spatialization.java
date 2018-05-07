@@ -1,6 +1,5 @@
 package jcog.tree.rtree;
 
-import jcog.list.FasterList;
 import jcog.tree.rtree.split.AxialSplitLeaf;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
@@ -58,10 +57,12 @@ public class Spatialization<T> {
 
     }
 
-    public final Leaf<T> transfer(Leaf<T> leaf, FasterList<IntDoublePair> sortedMbr, int from, int to) {
+    public final Leaf<T> transfer(Leaf<T> leaf, IntDoublePair[] sortedMbr, int from, int to) {
         Leaf<T> l = newLeaf();
-        for (int i = from; i < to; i++)
-            ((Node<T, ?>) l).add(leaf.data[sortedMbr.get(i).getOne()], leaf, this, new boolean[] { false });
+        T[] ld = leaf.data;
+        for (int i = from; i < to; i++) {
+            ((Node<T, ?>) l).add(ld[sortedMbr[i].getOne()], leaf, this, new boolean[] { false });
+        }
         return l;
     }
 

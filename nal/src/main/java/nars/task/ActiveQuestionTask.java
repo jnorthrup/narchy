@@ -32,7 +32,7 @@ import static nars.Op.*;
  * --custom BiConsumer<Q Task, A Task>
  * --statistical truth aggregator for easy to understand summary
  */
-public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
+public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Task> {
 
     private @NotNull
     final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;

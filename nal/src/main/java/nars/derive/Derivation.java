@@ -95,6 +95,9 @@ public class Derivation extends PreDerivation {
     public final long[] concOcc = new long[2];
     public final Versioned<Term> derivedTerm;
 
+    public Task _task;
+    public Task _belief;
+    public Term _beliefTerm;
 
     /**
      * cached values ==========================================
@@ -106,8 +109,6 @@ public class Derivation extends PreDerivation {
     public Task task;
     public Task belief;
 
-    public Truth taskTruth;
-    public Truth beliefTruth, beliefTruthDuringTask;
 
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
@@ -121,9 +122,6 @@ public class Derivation extends PreDerivation {
     public long time = ETERNAL;
 
 
-    public Task _task;
-    public Task _belief;
-    public Term _beliefTerm;
 
 
     /**

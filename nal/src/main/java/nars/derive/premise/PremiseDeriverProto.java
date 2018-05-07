@@ -19,6 +19,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.AndCondition;
 import nars.term.control.PrediTerm;
@@ -36,8 +37,7 @@ import java.util.*;
 import static java.util.Collections.addAll;
 import static nars.$.newArrayList;
 import static nars.$.newHashSet;
-import static nars.Op.CONJ;
-import static nars.Op.PROD;
+import static nars.Op.*;
 import static nars.derive.premise.PremiseDeriverProto.IntroVars.VAR_INTRO;
 import static nars.subterm.util.Contains.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -69,7 +69,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
         super(raw, index);
 
-        NAR nar = index.nar;
+
 
         /**
          * deduplicate and generate match-optimized compounds for rules
@@ -507,7 +507,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 case "Punctuation":
                     switch (which.toString()) {
                         case "Question":
-                            puncOverride = Op.QUESTION;
+                            puncOverride = QUESTION;
                             break;
                         case "Goal":
                             puncOverride = Op.GOAL;
@@ -516,7 +516,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                             puncOverride = Op.BELIEF;
                             break;
                         case "Quest":
-                            puncOverride = Op.QUEST;
+                            puncOverride = QUEST;
                             break;
 
                         default:
@@ -582,7 +582,156 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         }
 
-        build(this, pre, post, puncOverride, beliefTruth, goalTruth, time, index);
+        Term pattern = conclusion().sub(0);
+
+        final Term taskPattern1 = getTask();
+        final Term beliefPattern1 = getBelief();
+
+        Op to = taskPattern1.op();
+        boolean taskIsPatVar = to == Op.VAR_PATTERN;
+        Op bo = beliefPattern1.op();
+        boolean belIsPatVar = bo == Op.VAR_PATTERN;
+
+        //TODO may interfere with constraints, functors, etc or other features, ie.
+        // if the pattern is a product for example?
+        //            pattern = pattern.replace(ta, Derivation._taskTerm);
+        // determine if any cases where a shortcut like this can work (ie. no constraints, not a product etc)
+
+        //        //substitute compound occurrences of the exact task and belief terms with the short-cut
+//        Term ta = rule.getTask();
+//        if (!ta.op().var) {
+//            if (pattern.equals(ta))
+//                pattern = Derivation.TaskTerm;
+//        }
+//        Term tb = rule.getBelief();
+//        if (!tb.op().var) {
+//            //pattern = pattern.replace(tb, Derivation._beliefTerm);
+//            if (pattern.equals(tb))
+//                pattern = Derivation.BeliefTerm;
+//        }
+
+        //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
+
+
+        pattern = intern(pattern, index);
+
+
+        TruthOperator beliefTruthOp = BeliefFunction.get(beliefTruth);
+//        if ((beliefTruth != null) && !beliefTruth.equals(TruthOperator.NONE) && (beliefTruth == null)) {
+//            throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
+//        }
+        TruthOperator goalTruthOp = GoalFunction.get(goalTruth);
+//        if ((goalTruth != null) && !goalTruth.equals(TruthOperator.NONE) && (goalTruth == null)) {
+//            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
+//        }
+        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : "_";
+        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : "_";
+
+        boolean projectBeliefToTask = time != Occurrify.TaskTimeMerge.Task && time !=Occurrify.TaskTimeMerge.Belief; //TODO make method in the enum
+
+        FasterList<Term> args = new FasterList(4);
+        args.add(intern($.the(beliefLabel), index));
+        args.add(intern($.the(goalLabel), index));
+        if (puncOverride != 0)
+            args.add($.quote(((char) puncOverride)));
+        if (!projectBeliefToTask)
+            args.add(Occurrify.unprojected);
+
+
+        Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
+        this.truthify = (puncOverride == 0) ?
+                new Truthify.TruthifyPuncFromTask(ii, beliefTruthOp, goalTruthOp, projectBeliefToTask) :
+                new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruthOp, goalTruthOp, projectBeliefToTask);
+
+        NAR nar1 = index.nar;
+        Taskify taskify = new Taskify(nar1.newCause((s) -> new RuleCause(this, s)));
+
+        boolean introVars1;
+        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i) -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
+        if (outerFunctor != null) {
+            introVars1 = true;
+            pattern = outerFunctor.getTwo().sub(0);
+        } else {
+            introVars1 = false;
+        }
+        PrediTerm<Derivation> conc = AndCondition.the(
+                new Termify(pattern, this, truthify, time),
+                introVars1 ?
+                        AndCondition.the(introVars, taskify)
+                        :
+                        taskify
+        );
+        if (taskPattern1.equals(beliefPattern1)) {
+            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern1, conc));
+        }
+        if (taskFirst(taskPattern1, beliefPattern1)) {
+            //task first
+            post.add(new UnifyTerm.UnifySubterm(0, taskPattern1));
+            post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern1, conc));
+        } else {
+            //belief first
+            post.add(new UnifyTerm.UnifySubterm(1, beliefPattern1));
+            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern1, conc));
+        }
+
+
+        if (!taskIsPatVar) {
+            pre.add(new TaskBeliefOp(to, true, false));
+            pre.addAll(SubTermStructure.get(0, taskPattern1.structure()));
+        }
+        if (!belIsPatVar) {
+            if (to == bo) {
+                pre.add(new AbstractPatternOp.TaskBeliefOpEqual());
+            } else {
+                pre.add(new TaskBeliefOp(bo, false, true));
+                pre.addAll(SubTermStructure.get(1, beliefPattern1.structure()));
+            }
+        }
+
+
+            if (beliefTruthOp != null && !beliefTruthOp.single()) {
+                pre.add(DoublePremiseIfBelief);
+            }
+            if (goalTruthOp != null && !goalTruthOp.single()) {
+                pre.add(DoublePremiseIfGoal);
+            }
+
+
+
+        //        } else {
+        //            if (x0.containsTermRecursively(x1)) {
+        //                //pre.add(new TermContainsRecursively(x0, x1));
+        //            }
+        //        }
+
+        //@Nullable ListMultimap<Term, MatchConstraint> c){
+
+
+        //ImmutableMap<Term, MatchConstraint> cc = compact(constraints);
+
+
+        //match both
+        //code.add(new MatchTerm.MatchTaskBeliefPair(pattern, initConstraints(constraints)));
+
+
+        //Term beliefPattern = pattern.term(1);
+
+        //if (Global.DEBUG) {
+//            if (beliefPattern.structure() == 0) {
+
+        // if nothing else in the rule involves this term
+        // which will be a singular VAR_PATTERN variable
+        // then allow null
+//                if (beliefPattern.op() != Op.VAR_PATTERN)
+//                    throw new RuntimeException("not what was expected");
+
+//            }
+        //}
+
+        /*System.out.println( Long.toBinaryString(
+                        pStructure) + " " + pattern
+        );*/
+
 
         constraints.forEach(c -> {
             PrediTerm<PreDerivation> p = c.asPredicate(taskPattern, beliefPattern);
@@ -635,156 +784,6 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         //store to arrays
         this.PRE = pres.toArray(new PrediTerm[0]);
-
-    }
-
-    public void build(final PremiseDeriverProto rule, List<PrediTerm<PreDerivation>> pre, List<PrediTerm<Derivation>> post,
-                      byte puncOverride, Term beliefTruthTerm, Term goalTruthTerm,
-                      @Nullable Occurrify.TaskTimeMerge time, PremisePatternIndex index) {
-
-        Term pattern = rule.conclusion().sub(0);
-
-        final Term taskPattern = rule.getTask();
-        final Term beliefPattern = rule.getBelief();
-
-        Op to = taskPattern.op();
-        boolean taskIsPatVar = to == Op.VAR_PATTERN;
-        Op bo = beliefPattern.op();
-        boolean belIsPatVar = bo == Op.VAR_PATTERN;
-
-        //TODO may interfere with constraints, functors, etc or other features, ie.
-        // if the pattern is a product for example?
-        //            pattern = pattern.replace(ta, Derivation._taskTerm);
-        // determine if any cases where a shortcut like this can work (ie. no constraints, not a product etc)
-
-        //        //substitute compound occurrences of the exact task and belief terms with the short-cut
-//        Term ta = rule.getTask();
-//        if (!ta.op().var) {
-//            if (pattern.equals(ta))
-//                pattern = Derivation.TaskTerm;
-//        }
-//        Term tb = rule.getBelief();
-//        if (!tb.op().var) {
-//            //pattern = pattern.replace(tb, Derivation._beliefTerm);
-//            if (pattern.equals(tb))
-//                pattern = Derivation.BeliefTerm;
-//        }
-
-        //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
-
-
-        pattern = intern(pattern, index);
-
-
-
-        TruthOperator beliefTruth = BeliefFunction.get(beliefTruthTerm);
-//        if ((beliefTruth != null) && !beliefTruth.equals(TruthOperator.NONE) && (beliefTruth == null)) {
-//            throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
-//        }
-        TruthOperator goalTruth = GoalFunction.get(goalTruthTerm);
-//        if ((goalTruth != null) && !goalTruth.equals(TruthOperator.NONE) && (goalTruth == null)) {
-//            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
-//        }
-        String beliefLabel = beliefTruth != null ? beliefTruth.toString() : "_";
-        String goalLabel = goalTruth != null ? goalTruth.toString() : "_";
-
-        boolean projectBeliefToTask = time!= Occurrify.TaskTimeMerge.Task && time!=Occurrify.TaskTimeMerge.Belief; //TODO make method in the enum
-
-        FasterList<Term> args = new FasterList(4);
-        args.add(intern($.the(beliefLabel), index));
-        args.add(intern($.the(goalLabel), index));
-        if (puncOverride != 0)
-            args.add($.quote(((char) puncOverride)));
-        if (!projectBeliefToTask)
-            args.add(Occurrify.unprojected);
-
-
-
-        Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
-        this.truthify = (puncOverride == 0) ?
-                new Truthify.TruthifyPuncFromTask(ii, beliefTruth, goalTruth, projectBeliefToTask) :
-                new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruth, goalTruth, projectBeliefToTask);
-
-        NAR nar = index.nar;
-        Taskify taskify = new Taskify(nar.newCause((s) -> new RuleCause(rule, s)));
-
-        boolean introVars1;
-        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i) -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
-        if (outerFunctor != null) {
-            introVars1 = true;
-            pattern = outerFunctor.getTwo().sub(0);
-        } else {
-            introVars1 = false;
-        }
-        PrediTerm<Derivation> conc = AndCondition.the(
-                new Termify(pattern, rule, truthify, time),
-                introVars1 ?
-                        AndCondition.the(introVars, taskify)
-                        :
-                        taskify
-        );
-        if (taskPattern.equals(beliefPattern)) {
-            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
-        }
-        if (taskFirst(taskPattern, beliefPattern)) {
-            //task first
-            post.add(new UnifyTerm.UnifySubterm(0, taskPattern));
-            post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern, conc));
-        } else {
-            //belief first
-            post.add(new UnifyTerm.UnifySubterm(1, beliefPattern));
-            post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
-        }
-
-
-        if (!taskIsPatVar) {
-            pre.add(new TaskBeliefOp(to, true, false));
-            pre.addAll(SubTermStructure.get(0, taskPattern.structure()));
-        }
-        if (!belIsPatVar) {
-            if (to == bo) {
-                pre.add(new AbstractPatternOp.TaskBeliefOpEqual());
-            } else {
-                pre.add(new TaskBeliefOp(bo, false, true));
-                pre.addAll(SubTermStructure.get(1, beliefPattern.structure()));
-            }
-        }
-
-
-        //        } else {
-        //            if (x0.containsTermRecursively(x1)) {
-        //                //pre.add(new TermContainsRecursively(x0, x1));
-        //            }
-        //        }
-
-        //@Nullable ListMultimap<Term, MatchConstraint> c){
-
-
-        //ImmutableMap<Term, MatchConstraint> cc = compact(constraints);
-
-
-        //match both
-        //code.add(new MatchTerm.MatchTaskBeliefPair(pattern, initConstraints(constraints)));
-
-
-        //Term beliefPattern = pattern.term(1);
-
-        //if (Global.DEBUG) {
-//            if (beliefPattern.structure() == 0) {
-
-        // if nothing else in the rule involves this term
-        // which will be a singular VAR_PATTERN variable
-        // then allow null
-//                if (beliefPattern.op() != Op.VAR_PATTERN)
-//                    throw new RuntimeException("not what was expected");
-
-//            }
-        //}
-
-        /*System.out.println( Long.toBinaryString(
-                        pStructure) + " " + pattern
-        );*/
-
 
     }
 
@@ -989,6 +988,40 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 //            p.concEviFactor *= (((float)(1+y.complexity()))/(1+x.complexity()));
 
             return true;
+        }
+    }
+
+    /** requires double premise belief task evidence if deriving */
+    private static AbstractPred<PreDerivation> DoublePremiseIfBelief = new DoublePremise(true, false);
+    private static AbstractPred<PreDerivation> DoublePremiseIfGoal = new DoublePremise(false, true);
+
+    private static class DoublePremise extends AbstractPred<PreDerivation> {
+
+        final static Atomic key = (Atomic) $.the("DoublePremise");
+        private final boolean ifBelief, ifGoal;
+
+        public DoublePremise(boolean ifBelief, boolean ifGoal) {
+            super($.func(key, ifBelief ? Op.True:Op.False, ifGoal ? Op.True:Op.False));
+            this.ifBelief = ifBelief;
+            this.ifGoal = ifGoal;
+        }
+
+        @Override
+        public boolean test(PreDerivation preDerivation) {
+            byte punc = preDerivation.taskPunc;
+            if (punc == QUESTION || punc == QUEST) return true; //skip although here cyclic test could be performed
+            if (!preDerivation.hasBeliefTruth()) {
+                if (ifBelief && punc == BELIEF)
+                    return false;
+                if (ifGoal && punc == GOAL)
+                    return false;
+            }
+            return true; //ok
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
         }
     }
 

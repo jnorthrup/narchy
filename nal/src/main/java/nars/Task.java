@@ -41,7 +41,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /**
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
  */
-public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.data.map.MetaMap, Priority {
+public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priority {
 
 
     /**
@@ -948,22 +948,25 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if (!Param.DEBUG_TASK_LOG)
             return this;
 
-        log(true).add(entry);
+        List ll = log(true);
+        if (ll!=null)
+            ll.add(entry);
+
         return this;
     }
 
     @Nullable
     default List log(boolean createIfMissing) {
-        if (createIfMissing)
-            return meta("!", (x) -> new FasterList(1));
-        else
-            return meta("!");
+        return null; //default: no log ability
     }
 
     @Nullable
     default Object lastLogged() {
         List log = log(false);
-        return log == null || log.isEmpty() ? null : log.get(log.size() - 1);
+        if (log == null) return null;
+        int s = log.size();
+        if (s == 0) return null;
+        else return log.get(s - 1);
     }
 
     default String proof() {
