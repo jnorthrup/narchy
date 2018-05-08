@@ -1,7 +1,6 @@
 package nars.concept.dynamic;
 
 import jcog.TODO;
-import jcog.sort.Top;
 import jcog.sort.Top2;
 import nars.NAR;
 import nars.Op;
@@ -11,7 +10,6 @@ import nars.table.TaskMatch;
 import nars.table.TemporalBeliefTable;
 import nars.task.Revision;
 import nars.term.Term;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -154,38 +152,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
         Task y = taskDynamic(start, end, template, nar);
 
-        if (x == null && y == null)
-            return null;
-
-        if (filter !=null) {
-            if (x != null && !filter.test(x))
-                x = null;
-            if (y != null && !filter.test(y))
-                y = null;
-        }
-
-        if (y == null)
-            return x;
-
-        if (x == null)
-            return y;
-
-        if (x.equals(y))
-            return x;
-
-        //choose highest confidence
-        Top<Task> top = new Top<>(t->Revision.eviAvg(t, start, end, 1));
-
-        if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
-            //try to revise
-            Task xy = Revision.mergeTasks(nar, start, end, x, y);
-            if (xy != null && (filter==null || filter.test(xy)))
-                top.accept(xy);
-        }
-        top.accept(x);
-        top.accept(y);
-
-        return top.the;
+        return Revision.mergeOrChoose(x, y, start, end, filter, nar);
     }
 
 

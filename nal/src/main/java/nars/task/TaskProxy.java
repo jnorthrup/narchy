@@ -6,10 +6,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
-
-import static nars.Op.NEG;
-
 public class TaskProxy implements Task {
 
     public final Task task;
@@ -160,41 +156,7 @@ public class TaskProxy implements Task {
     }
 
 
-    public static class WithTerm extends TaskProxy {
-
-        public final Term term;
-
-
-        public WithTerm(Term term, Task task) {
-            super(task);
-            if(term.op()==NEG)
-                throw new RuntimeException("task must not be named wit NEG term");
-            this.term = term;
-        }
-
-//        @Override
-//        public float freq() {
-//            if (isBeliefOrGoal()) {
-//                float f = super.freq();
-//                if (neg) f = 1-f;
-//                return f;
-//            }
-//            return Float.NaN;
-//        }
-//
-//        @Override
-//        public @Nullable Truth truth() {
-//            return isBeliefOrGoal() ? new PreciseTruth(freq(), conf()) : null;
-//        }
-
-        @Override
-        public Term term() {
-            return term;
-        }
-
-    }
-
-//    /**
+    //    /**
 //     * adds a Truth cache
 //     */
 //    public static class WithTermCachedTruth extends WithTerm {
@@ -219,81 +181,5 @@ public class TaskProxy implements Task {
 //
 //
 //    }
-
-    public static class WithTruthAndTime extends TaskProxy {
-
-        public final long start, end;
-
-        private final boolean negated;
-
-        /** either Truth, Function<Task,Truth>, or null */
-        Object truthCached;
-
-        public WithTruthAndTime(Task task, long start, long end, boolean negated, Function<Task,Truth> truth) {
-            super(task);
-            this.start = start;
-            this.end = end;
-            this.negated = negated;
-
-            this.truthCached = truth;
-        }
-
-        @Override
-        public Term term() {
-            return super.term().negIf(negated);
-        }
-
-        @Override
-        public long start() {
-            return start;
-        }
-
-        @Override
-        public long end() {
-            return end;
-        }
-
-
-        @Override
-        public @Nullable Truth truth() {
-            Object tt = this.truthCached;
-
-            if (tt instanceof Function) {
-                Truth computed = ((Function<Task,Truth>) tt).apply(task);
-                if (computed != null) {
-                    if (negated) {
-                        computed = computed.neg();
-                    }
-                    this.truthCached = computed;
-                    return computed;
-                } else {
-                    this.truthCached = null;
-                    return null;
-                }
-            }
-            return (Truth) tt;
-        }
-
-    }
-
-    public static class WithNegatedTruth extends TaskProxy {
-
-
-        public WithNegatedTruth(Task task) {
-            super(task);
-        }
-
-        @Override
-        public Term term() {
-            return super.term().neg();
-        }
-
-
-        @Override
-        public @Nullable Truth truth() {
-            return super.truth().neg();
-        }
-
-    }
 
 }

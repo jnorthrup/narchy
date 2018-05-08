@@ -268,6 +268,13 @@ public interface LongInterval {
         return (start == ETERNAL) || (rangeStart >= start && rangeEnd <= end());
     }
 
+    default boolean containedBy(long start, long end) {
+        if (start == ETERNAL) return true;
+        long xStart = this.start();
+        if (xStart == ETERNAL) return false;
+        return xStart >= start && this.end() <= end;
+    }
+
 //    default boolean containedBy(long start, long end) {
 //        if (start == ETERNAL) return true;
 //        long s = start();

@@ -5,12 +5,15 @@ import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
+import jcog.math.Longerval;
 import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.proto.TaskAddTask;
 import nars.derive.Premise;
 import nars.task.*;
+import nars.task.proxy.TaskWithNegatedTruth;
+import nars.task.proxy.TaskWithTruthAndOccurrence;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Evaluation;
@@ -473,17 +476,28 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * creates lazily computing proxy task which facades the task to the target time range
      */
     static Task project(@Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
-        int dur = n.dur();
+        if (t.isEternal() || t.containedBy(subStart, subEnd)) {
+            //no need to project, but apply negation if negate
+            return negated ? Task.negated(t) : t;
+        }
 
-        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, tt ->
-                tt.truth(subStart, subEnd, dur)
-        );
+        @Nullable Longerval intersection = Longerval.intersect(subStart, subEnd, t.start(), t.end());
+        if (intersection!=null) {
+            //narrow to the intersecting region
+            subStart = intersection.a;
+            subEnd = intersection.b;
+        }
+
+        Truth ttt = t.truth(subStart, subEnd, n.dur());
+        return (ttt != null) ?
+                new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, ttt.negIf(negated)) : null;
     }
+
     /**
      * creates negated proxy of a task
      */
     static Task negated(@Nullable Task t) {
-        return new TaskProxy.WithNegatedTruth(t);
+        return new TaskWithNegatedTruth(t);
     }
 
     static Task eternalized(Task tx) {

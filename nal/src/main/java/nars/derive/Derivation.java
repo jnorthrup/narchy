@@ -16,7 +16,7 @@ import nars.op.SubIfUnify;
 import nars.op.Subst;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
-import nars.task.TaskProxy;
+import nars.task.proxy.TaskWithTerm;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -406,7 +406,7 @@ public class Derivation extends PreDerivation {
 
             this._task = _task;
 
-            this.task = new TaskProxy.WithTerm(taskTerm, _task); //create new proxy even if task are .equal() because cause and other instance-specific details may differ
+            this.task = new TaskWithTerm(taskTerm, _task); //create new proxy even if task are .equal() because cause and other instance-specific details may differ
 
             this._taskStruct = taskTerm.structure();
             this._taskOp = taskTerm.op().id;
@@ -449,7 +449,7 @@ public class Derivation extends PreDerivation {
         if (this._belief != null) {
             //double
             beliefTerm = anon.put(this._beliefTerm = _belief.term());
-            this.belief = new TaskProxy.WithTerm(beliefTerm, _belief);
+            this.belief = new TaskWithTerm(beliefTerm, _belief);
             this.beliefAt = _belief.start();
         } else {
             //single

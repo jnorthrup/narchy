@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
 import jcog.pri.Priority;
+import jcog.sort.Top;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import static jcog.Util.lerp;
 import static nars.Op.*;
@@ -807,6 +809,40 @@ public class Revision {
         return d / depth;
     }
 
+    public static Task mergeOrChoose(@Nullable Task x, @Nullable Task y, long start, long end, Predicate<Task> filter, NAR nar) {
+        if (x == null && y == null)
+            return null;
+
+        if (filter !=null) {
+            if (x != null && !filter.test(x))
+                x = null;
+            if (y != null && !filter.test(y))
+                y = null;
+        }
+
+        if (y == null)
+            return x;
+
+        if (x == null)
+            return y;
+
+        if (x.equals(y))
+            return x;
+
+        //choose highest confidence
+        Top<Task> top = new Top<>(t-> eviAvg(t, start, end, 1));
+
+        if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
+            //try to revise
+            Task xy = mergeTasks(nar, start, end, x, y);
+            if (xy != null && (filter==null || filter.test(xy)))
+                top.accept(xy);
+        }
+        top.accept(x);
+        top.accept(y);
+
+        return top.the;
+    }
 }
 
 //    /** get the task which occurrs nearest to the target time */

@@ -37,11 +37,11 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         int superDT = superterm.dt();
 
-        boolean flexible = (superDT ==XTERNAL || superDT == DTERNAL);
+
 
         DynTruth d = new DynTruth(4);
 
-        if (!components(superterm, start, end, (Term concept, long subStart, long subEnd)->{
+        return components(superterm, start, end, (Term concept, long subStart, long subEnd)->{
             boolean negated = concept.op() == Op.NEG;
             if (negated)
                 concept = concept.unneg();
@@ -62,30 +62,24 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
 
                 //TODO if ETERNAL , intersects test isnt necessary
-                bt = table.match(subStart, subEnd, concept, (x)->
-                    x.intersects(subStart, subEnd) && d.doesntOverlap(x), n
+                bt = table.match(subStart, subEnd, concept, x->
+                    /* x.intersects(subStart, subEnd) && */ d.doesntOverlap(x), n
                 );
                 if (bt != null) {
-                    if (!flexible) {
+
                         /** project to a specific time, and apply negation if necessary */
                         bt = Task.project(bt, subStart, subEnd, n, negated);
-                    } else  {
-                        if (negated)
-                            bt = Task.negated(bt);
-                    }
+
                 } else {
-                    bt = null; //missing truth, but yet still may be able to conclude a result
+                    //bt = null; //missing truth, but yet still may be able to conclude a result
+                    return false;
                 }
 
             }
 
             return add(bt, d);
 
-        }))
-            return null;
-
-
-        return d;
+        }) ? d : null;
     }
 
     @FunctionalInterface
