@@ -1,5 +1,6 @@
 package jcog.learn;
 
+import com.google.common.math.PairedStatsAccumulator;
 import jcog.math.FloatSupplier;
 import jcog.math.MutableInteger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -16,24 +17,23 @@ public class LivePredictorTest {
         IntToFloatFunction oo = x -> (float)Math.cos(x/4f);
         LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.1f, 1);
         int iHistory = 4;
-        int errorWindow = 16;
         int totalTime = 8192;
         float maxMeanError = 0.2f;
 
 
-        assertCorrect(ii, oo, model, iHistory, errorWindow, totalTime, maxMeanError);
+        assertCorrect(ii, oo, model, iHistory, totalTime, maxMeanError);
     }
+
     @Test public void test21_LSTM() {
         IntToFloatFunction ii = x -> (float)Math.sin(x/4f);
         IntToFloatFunction oo = x -> (float)Math.cos(x/8f);
-        LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.5f, 1);
+        LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.2f, 1);
         int iHistory = 6;
-        int errorWindow = 16;
-        int totalTime = 8192*8;
+        int totalTime = 8192*2;
         float maxMeanError = 0.1f;
 
 
-        assertCorrect(ii, oo, model, iHistory, errorWindow, totalTime, maxMeanError);
+        assertCorrect(ii, oo, model, iHistory, totalTime, maxMeanError);
     }
 
     @Test public void test12_MLP() {
@@ -43,14 +43,13 @@ public class LivePredictorTest {
         LivePredictor.MLPPredictor model =
                 new LivePredictor.MLPPredictor(0.03f);
         int iHistory = 4;
-        int errorWindow = 16;
         int totalTime = 1024;
         float maxMeanError = 0.15f;
 
-        assertCorrect(ii, oo, model, iHistory, errorWindow, totalTime, maxMeanError);
+        assertCorrect(ii, oo, model, iHistory, totalTime, maxMeanError);
     }
 
-    static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, LivePredictor.Predictor model, int iHistory, int errorWindow, int totalTime, float maxMeanError) {
+    static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, LivePredictor.Predictor model, int iHistory, int totalTime, float maxMeanError) {
         MutableInteger m = new MutableInteger();
 
 
@@ -60,9 +59,14 @@ public class LivePredictorTest {
         LivePredictor.HistoryFramer ih = new LivePredictor.HistoryFramer(in, iHistory, out);
         LivePredictor l = new LivePredictor(model, ih );
 
+        int numSnapshots = 16;
+        assert(totalTime > numSnapshots*2);
+        int errorWindow = totalTime / numSnapshots;
+
+        PairedStatsAccumulator errortime = new PairedStatsAccumulator();
         DescriptiveStatistics error = new DescriptiveStatistics(errorWindow);
 
-        for (int i = 0; i < totalTime; i++, m.increment()) {
+        for (int t = 0; t < totalTime; t++, m.increment()) {
 
             double[] prediction = l.next();
 
@@ -70,7 +74,7 @@ public class LivePredictorTest {
             {
                 float[] i0 = ih.data.get(0).data;
                 assertEquals(i0[0], in[0].asFloat(), 0.001f);
-                if (i > 1)
+                if (t > 1)
                     assertEquals(i0[1], ii.valueOf(m.intValue() - 1), 0.001f);
             }
 
@@ -80,10 +84,20 @@ public class LivePredictorTest {
             double e = Math.abs(actual - predicted); //absolute error
             error.addValue(e);
 
+            if (t%errorWindow == errorWindow-1) {
+                errortime.add(t, error.getMean());
+            }
            //System.out.println( n4(predicted) + "\t" + n4(actual));
         }
 
         double eMean = error.getMean();
+
+        System.out.println(model);
+        System.out.println("\tmean error: " + eMean);
+        System.out.println("\terror rate: " +
+                errortime.leastSquaresFit().slope());
+
+        assertTrue(errortime.leastSquaresFit().slope() < -1E-8);
         assertTrue(eMean < maxMeanError, ()->"mean error: " + eMean);
     }
 

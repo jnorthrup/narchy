@@ -44,4 +44,7 @@ public class Top<T> implements Consumer<T> {
         return this;
     }
 
+    public boolean isEmpty() {
+        return the!=null;
+    }
 }

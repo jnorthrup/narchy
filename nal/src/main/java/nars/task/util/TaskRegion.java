@@ -19,19 +19,19 @@ import java.util.List;
 public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     /**
-     * cost of stretching a node by time
+     * cost of splitting a node by time
      */
     float TIME_COST = 1f;
 
     /**
-     * cost of stretching a node by freq
+     * cost of splitting a node by freq
      */
     float FREQ_COST = 1f;
 
     /**
-     * cost of stretching a node by conf
+     * cost of splitting a node by conf
      */
-    float CONF_COST = 1f;
+    float CONF_COST = 4f;
 
 
     @Override
@@ -189,7 +189,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     @Override
     default TaskRegion mbr(HyperRegion r) {
-        if (contains(r))
+        if (this == r || contains(r))
             return this;
         else {
 

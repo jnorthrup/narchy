@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FocusingLinearTruthPolation extends TruthPolation {
 
-    static final boolean durShrink = false;
+    static final boolean durShrink = true;
 
     private final static int minDur =
             0; //<- anything besides what matches the specified interval is ignored

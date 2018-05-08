@@ -22,7 +22,7 @@ class SubNARTest {
 
         SubNAR ab = new SubNAR(a, (superNAR)-> {
 
-            NAR n = NARS.realtime(1).deriverAdd(1,1).get();
+            NAR n = NARS.realtime(1).withNAL(1,1).get();
 
             new DeductiveChainTest(n, 2, 25, DeductiveChainTest.inh);
 

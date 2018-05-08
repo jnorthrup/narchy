@@ -75,14 +75,14 @@ public class LivePredictor {
         private LiveSTM net;
         private double[] nextPredictions;
 
-
-        public LSTMPredictor() {
-            this(0.01f, 1);
-        }
-
         public LSTMPredictor(float learningRate, int memoryScale) {
             this.learningRate = learningRate;
             this.memoryScale = memoryScale;
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + "[" + net + "]";
         }
 
         @Override

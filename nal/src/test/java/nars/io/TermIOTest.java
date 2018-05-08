@@ -79,7 +79,7 @@ public class TermIOTest {
         //Terms.printRecursive(System.out, (Task)orig, 10);
 
         //System.out.println("\tbytes: " + Arrays.toString(barray));
-        out.println("\tcopy: " + copy);
+        out.println("\t" + (copy == orig ? "same" : "copy") + ": " + copy);
 
         //Terms.printRecursive(System.out, (Term)copy, 10);
 

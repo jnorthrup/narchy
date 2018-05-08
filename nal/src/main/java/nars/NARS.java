@@ -99,7 +99,7 @@ public class NARS {
     /**
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
-    @Deprecated public NARS deriverAdd(int minLevel, int maxLevel) {
+    @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
         postInit.add((n)->
                 new MatrixDeriver(Derivers.nal(minLevel, maxLevel, n))
         );
@@ -176,7 +176,7 @@ public class NARS {
     
     public static NAR threadSafe(int level) {
         NARS d = new DefaultNAR(level, true)
-                .time(new RealTime.CS().durFPS(0.01f));
+                .time(new RealTime.CS().durFPS(25f));
 
         d.rng = ()->new XoRoShiRo128PlusRandom(System.nanoTime());
 
@@ -239,7 +239,7 @@ public class NARS {
         public DefaultNAR(int nal, boolean threadSafe) {
 
             if (nal > 0)
-                deriverAdd(1, nal);
+                withNAL(1, nal);
 
             if (threadSafe)
                 index = () -> new CaffeineIndex(64 * 1024);

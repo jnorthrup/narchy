@@ -36,6 +36,11 @@ abstract public class LiveSTM extends AbstractTraining {
         errorHistory.setWindowSize(ERROR_WINDOW_SIZE);
     }
 
+    @Override
+    public String toString() {
+        return agent.toString();
+    }
+
     public double next() {
 
 

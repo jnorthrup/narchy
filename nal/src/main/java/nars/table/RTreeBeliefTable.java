@@ -32,7 +32,6 @@ import org.eclipse.collections.api.set.primitive.LongSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -68,12 +67,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int SAMPLE_MATCH_LIMIT = TRUTHPOLATION_LIMIT/2;
 
     private static final float PRESENT_AND_FUTURE_BOOST =
-            //1f;
+            1f;
             //1.5f;
             //2f;
             //4f;
             //8f;
-            10f;
+            //10f;
 
 
     private static final int SCAN_CONF_OCTAVES_MAX = 1;
@@ -127,7 +126,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.
      */
-    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion, ?> next, @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Top2<Leaf<TaskRegion>> weakLeaf) {
+    private static boolean findEvictable(Space<TaskRegion> tree, Node<TaskRegion, ?> next, @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Consumer<Leaf<TaskRegion>> weakLeaf) {
         if (next instanceof Leaf) {
 
             Leaf l = (Leaf) next;
@@ -152,7 +151,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     closest.accept(x);
             }
 
-            weakLeaf.accept(l);
+            if (l.size >= 2)
+                weakLeaf.accept(l);
 
         } else { //if (next instanceof Branch)
 
@@ -379,11 +379,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         if (capacity() == 0)
             return false;
 
-        List<Tasked> revisions = new FasterList<>(2);
         write(treeRW -> {
             if (treeRW.add(x)) {
                 if (!x.isDeleted()) {
-                    ensureCapacity(treeRW, x, revisions::add, n);
+                    ensureCapacity(treeRW, x, n);
                 }
             }
         });
@@ -416,7 +415,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
 
-    private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, Consumer<Tasked> added, NAR nar) {
+    private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, NAR nar) {
         int cap = this.capacity;
         int s = treeRW.size();
         if (s <= cap)
@@ -441,9 +440,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         int e = 0;
         while (treeRW.size() > cap) {
             if (!compress(treeRW, e == 0 ? inputRegion : null /** only limit by inputRegion first */,
-                    taskStrength, added, cap,
-                    now + nar.dur() /* compress ahead for next duration */,
-                    //(long) Math.ceil(tableDur()),
+                    taskStrength, cap,
+                    now,
+                    //now + nar.dur() /* compress ahead for next duration */,
                     perceptDur, nar))
                 return false;
             e++;
@@ -457,7 +456,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, Consumer<Tasked> added, int cap, long now, int perceptDur, NAR nar) {
+    private boolean compress(Space<TaskRegion> tree, @Nullable Task input, FloatFunction<Task> taskStrength, int cap, long now, int perceptDur, NAR nar) {
 
 
         float inputStrength = input != null ? taskStrength.floatValueOf(input) : Float.POSITIVE_INFINITY;
@@ -466,7 +465,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 /*new CachedFloatFunction*/(regionWeakness(now, perceptDur));
         FloatFunction<Leaf<TaskRegion>> leafWeakness =
                 L -> leafRegionWeakness.floatValueOf((TaskRegion) L.bounds());
-        Top2<Leaf<TaskRegion>> weakLeaf = new Top2(leafWeakness);
+        Top<Leaf<TaskRegion>> weakLeaf = new Top<>(leafWeakness);
 
         FloatFunction<TaskRegion> weakestTask = (t ->
                 -taskStrength.floatValueOf((Task) t));
@@ -488,7 +487,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         assert (tree.size() >= cap);
 
         //decide what to do and do it
-        if (mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, added, nar)) {
+        if (mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, nar)) {
             return true;
         }
 
@@ -499,9 +498,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private boolean mergeOrDelete(Space<TaskRegion> treeRW,
                                   @Nullable Task I /* input */,
-                                  @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest, Top2<Leaf<TaskRegion>> weakLeaf, FloatFunction<Task> taskStrength, float inputStrength,
+                                  @Nullable Top<TaskRegion> closest, Top<TaskRegion> weakest,
+                                  Top<Leaf<TaskRegion>> weakLeaf,
+                                  FloatFunction<Task> taskStrength, float inputStrength,
                                   FloatFunction<TaskRegion> weakness,
-                                  Consumer<Tasked> added, NAR nar) {
+                                  NAR nar) {
 
         //TODO compare the value of revising with input task against its cost of removing the input,
         // and also the cost of removing tasks from the weakest leaf below
@@ -521,36 +522,50 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
         if (!weakLeaf.isEmpty()) {
-            TaskRegion a, b;
+            Leaf<TaskRegion> la = weakLeaf.the;
 
-            Leaf<TaskRegion> la = weakLeaf.a;
-            short sa = la.size;
-            if (sa > 2) {
+            TaskRegion a, b;
+            if (la.size > 2) {
                 Top2<TaskRegion> w = new Top2<>(weakness);
                 la.forEach(w::add);
                 a = w.a;
                 b = w.b;
-            } else if (sa == 2) {
-                a = la.get(0);
-                b = la.get(1);
+            } else if (la.size == 2) {
+                a = la.data[0];
+                b = la.data[1];
             } else {
-                a = la.get(0);
-                Leaf<TaskRegion> lb = weakLeaf.b;
-                if (lb != null) {
-                    int sb = lb.size();
-                    if (sb > 1) {
-                        Top<TaskRegion> w = new Top<>(weakness);
-                        lb.forEach(w);
-                        b = w.the;
-                    } else if (sb == 1) {
-                        b = lb.get(0);
-                    } else {
-                        b = null;  //??
-                    }
-                } else {
-                    b = null;
-                }
+                throw new UnsupportedOperationException("should not have chosen leaf with size < 2");
             }
+
+//
+//            Leaf<TaskRegion> la = weakLeaf.a;
+//            short sa = la.size;
+//            if (sa > 2) {
+//                Top2<TaskRegion> w = new Top2<>(weakness);
+//                la.forEach(w::add);
+//                a = w.a;
+//                b = w.b;
+//            } else if (sa == 2) {
+//                a = la.get(0);
+//                b = la.get(1);
+//            } else {
+//                a = la.get(0);
+//                Leaf<TaskRegion> lb = weakLeaf.b;
+//                if (lb != null) {
+//                    int sb = lb.size();
+//                    if (sb > 1) {
+//                        Top<TaskRegion> w = new Top<>(weakness);
+//                        lb.forEach(w);
+//                        b = w.the;
+//                    } else if (sb == 1) {
+//                        b = lb.get(0);
+//                    } else {
+//                        b = null;  //??
+//                    }
+//                } else {
+//                    b = null;
+//                }
+//            }
             A = (Task)a;
             B = (Task)b;
         } else {
@@ -618,14 +633,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             case MergeInputClosest: {
 
-                //I.delete();
-
-                treeRW.remove(C);
-                //C.delete();
-
-                if (treeRW.add(IC))
-                    added.accept(IC);
-                return true;
+                if (treeRW.add(IC)) {
+                    treeRW.remove(C);
+                    C.delete();
+                    //I.delete(); //allow inputter to think it was successful
+                    return true;
+                } else {
+                    return false;
+                }
             }
 
             case MergeLeaf: {
@@ -633,11 +648,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 if (treeRW.add(AB)) {
                     treeRW.remove(A);
-                    //A.delete(/*fwd: c*/);
+                    A.delete(/*fwd: c*/);
                     treeRW.remove(B);
-                    //B.delete(/*fwd: c*/);
+                    B.delete(/*fwd: c*/);
 
-                    added.accept(AB);
                     return true;
                 } else {
                     if (I!=null)

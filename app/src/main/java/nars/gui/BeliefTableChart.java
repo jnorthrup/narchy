@@ -175,6 +175,8 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         if (range != null) {
             minT = range[0];
             maxT = range[1];
+            if (minT >= maxT)
+                return;
         } else {
             minT = Long.MIN_VALUE;
             maxT = Long.MAX_VALUE;

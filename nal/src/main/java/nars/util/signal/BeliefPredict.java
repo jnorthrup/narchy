@@ -24,7 +24,7 @@ import static nars.truth.TruthFunctions.c2w;
  */
 public class BeliefPredict {
 
-    final MutableFloat conf = new MutableFloat(0.75f);
+    final MutableFloat conf = new MutableFloat(0.5f);
 
     final DurService on;
     private final CauseChannel<ITask> predict;
@@ -50,16 +50,24 @@ public class BeliefPredict {
 
         this.on = DurService.on(nar, () -> {
             double[] predFreq = p.next();
-            long next = nar.time() + lookAhead * nar.time.dur();
+            long now = nar.time();
+            int dur = nar.dur();
+            long next = now + lookAhead * dur;
+
+            float evi = c2w(conf.floatValue() * nar.beliefConfDefault.floatValue());
+
             for (int i = 0; i < predFreq.length; i++) {
 
                 float f = (float)Util.unitize(predFreq[i]);
-                PreciseTruth t = Truth.theDithered(f, c2w(conf.floatValue()), nar);
+
+                PreciseTruth t = Truth.theDithered(f, evi, nar);
+                if (t == null)
+                    continue; //??
 
                 predict.input(
                     new SignalTask(outConcepts[i].term(), BELIEF,
                             t,
-                            next, next, nar.time.nextStamp()
+                            next-dur, next, nar.time.nextStamp()
                     ).pri(nar.priDefault(BELIEF))
                 );
             }
@@ -68,7 +76,11 @@ public class BeliefPredict {
 
     static FloatSupplier freqSupplier(Termed c, int dDur, NAR nar) {
         return () -> {
-            @Nullable Truth t = nar.truth(c, BELIEF, nar.time() + dDur * nar.dur());
+            long now = nar.time();
+            float dur = Math.max(1,nar.dur());
+            long start = Math.round(now + dDur * dur - dur/2f);
+            long end = Math.round(now + dDur * dur + dur/2f);
+            @Nullable Truth t = nar.truth(c, BELIEF, start, end);
             if (t == null)
                 return 0.5f; //HACK
             else

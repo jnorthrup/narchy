@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
@@ -1147,6 +1148,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      */
     default float eviInteg(long dur, long... times) {
         assert (times.length > 1);
+        //return eviIntegPieceWise(dur, times);
+        return eviIntegTrapezoidal(dur, times);
+    }
+
+    /** maybe */
+    default float eviIntegPieceWise(long dur, long... times) {
+//        if (times.length == 2) {
+//            return evi(times[0], dur)
+//        }
+        throw new TODO();
+    }
+
+    default float eviIntegTrapezoidal(long dur, long... times) {
+
 
         int n = times.length;
         long last = times[n - 1];
@@ -1160,17 +1175,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         float dx = X / n;
 
         //area = dx * (y0/2 + y1 + y2 ... + yn/2)
-        float area = 0; //evidence sum
-        area += evi(first, dur) / 2;
-        area += evi(last, dur) / 2;
+        float e = 0; //evidence sum
+        e += evi(first, dur) / 2;
+        e += evi(last, dur) / 2;
         for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
             long ti = times[i];
             if (!(ti != ETERNAL && ti != XTERNAL && ti > times[i - 1] && ti < times[i + 1]))
                 throw new RuntimeException("invalid time point for evi integration");
-            area += evi(ti, dur);
+            e += evi(ti, dur);
         }
 
-        return dx * area;
+        return dx * e; /* area */
     }
 
     byte punc();

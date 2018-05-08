@@ -77,7 +77,8 @@ public class SimpleLSTM  {
 				weightsOut[k][j] = (r.nextDouble() * 2.0d - 1d) * init_weight_range;
 		}
 	}
-	
+
+
 
 	public void clear()	{
 

@@ -568,7 +568,7 @@ public class Revision {
     /** forces projection */
     @Nullable public static Task mergeTasks(NAR nar, TaskRegion... tt) {
         long[] u = Tense.union(tt);
-        return mergeTasks(nar, nar.dur(), u[0], u[1], true, tt);
+        return mergeTasks(nar, 0, u[0], u[1], true, tt);
     }
 
     @Nullable
@@ -650,9 +650,7 @@ public class Revision {
         }
 
         //integrate, potentialy inside and outside
-        float e = eviInteg(x, start, end, dur);
-        long range = (start == ETERNAL) ? 1 : (end - start + 1);
-        return e / range;
+        return eviInteg(x, start, end, dur) / (end - start + 1);
 
     }
 
@@ -691,23 +689,26 @@ public class Revision {
 
                 }
 
-                return x.eviInteg(dur,
-                        start,
-                        (start + end) / 2L, //midpoint
-                        end);
+                return x.eviInteg(dur, start, end);
+
+
+//                return x.eviInteg(dur,
+//                        start,
+//                        (start + end) / 2L, //midpoint
+//                        end);
             }
         }
     }
 
-    static boolean equalOrWeaker(Task input, Truth output, long start, long end, Term cc, NAR nar) {
-        Truth inTruth = input.truth();
-        if ((inTruth.conf() - output.conf() <= nar.confResolution.floatValue())) {
-            if (Util.equals(inTruth.freq(), output.freq(), nar.freqResolution.asFloat())) {
-                return cc.equals(input.term()) && start >= input.start() && end <= input.end();
-            }
-        }
-        return false;
-    }
+//    static boolean equalOrWeaker(Task input, Truth output, long start, long end, Term cc, NAR nar) {
+//        Truth inTruth = input.truth();
+//        if ((inTruth.conf() - output.conf() <= nar.confResolution.floatValue())) {
+//            if (Util.equals(inTruth.freq(), output.freq(), nar.freqResolution.asFloat())) {
+//                return cc.equals(input.term()) && start >= input.start() && end <= input.end();
+//            }
+//        }
+//        return false;
+//    }
 
 
     /**

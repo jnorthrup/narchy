@@ -80,8 +80,8 @@ public class WorkerMultiExecTest {
 //        Exec exe = new MultiExec(32, threads, 2);
         Exec exe = new UniExec(32);
         NAR n = new NARS()
-                .deriverAdd(1, 1)
-                .deriverAdd(6, 6)
+                .withNAL(1, 1)
+                .withNAL(6, 6)
                 .exe(exe)
                 .get();
 

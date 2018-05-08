@@ -9,7 +9,7 @@ public class NAL7RealtimeTest {
     @Test
     public void test1() throws Narsese.NarseseException {
         //dumb test
-        NAR n = NARS.realtime(1f).deriverAdd(1,8).get();
+        NAR n = NARS.realtime(1f).withNAL(1,8).get();
         //n.log();
         n.input("wake. |");
         n.input("(wake &&+16hours sleep).");
@@ -21,7 +21,7 @@ public class NAL7RealtimeTest {
     }
     @Test
     public void test2() throws Narsese.NarseseException {
-        NAR n = NARS.realtime(1f).deriverAdd(1,8).get();
+        NAR n = NARS.realtime(1f).withNAL(1,8).get();
 
         n.log();
         n.input("(a &&+1min b).");

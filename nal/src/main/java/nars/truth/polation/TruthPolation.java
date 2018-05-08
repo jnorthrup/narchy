@@ -46,7 +46,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
         this.start = start;
         this.end = end;
 
-        assert (dur > 0);
+        assert (dur >= 0);
         this.dur = dur;
     }
 
@@ -82,7 +82,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             float eTotal = Revision.eviAvg(task, start, end, dur);
 
-            if (eTotal < Float.MIN_NORMAL) {
+            if (eTotal < Param.TRUTH_MIN_EVI) {
                 tc.evi = -1;
                 return null; //no evidence; remove
             } else {
@@ -91,7 +91,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
                 return tc;
             }
         } else {
-            return tc.evi > 0 ? tc : null;
+            return tc.evi >= Param.TRUTH_MIN_EVI ? tc : null;
         }
 
 

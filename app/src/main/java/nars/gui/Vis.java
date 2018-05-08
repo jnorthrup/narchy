@@ -348,9 +348,7 @@ public class Vis {
 
             if (!s.isEmpty()) {
                 set(s);
-//                on = DurService.on(nar, this);
             } else {
-//                on = null;
                 set(label("(empty)"));
             }
 
