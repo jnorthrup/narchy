@@ -37,7 +37,7 @@ public class PriCache<X, Y> extends AbstractMap<X, Y> {
 
     public State state = FREE;
 
-    private Hold defaultMode = Hold.STRONG;
+    private final Hold defaultMode = Hold.STRONG;
 
     abstract public static class TLink<X, Y> implements Supplier<Y> {
         public final X key;
@@ -190,7 +190,7 @@ public class PriCache<X, Y> extends AbstractMap<X, Y> {
 
     private final LongSupplier clock;
 
-    private float forgetRate = 1;
+    private final float forgetRate = 1;
 
     public final ReferenceQueue refq = new ReferenceQueue();
     public final Loop cleaner;

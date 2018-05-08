@@ -130,8 +130,7 @@ public class GenCursor {
 		
 		if(openDirs.size() > 1) {
 			if(path.size() > 1)
-				if(openDirs.contains(path.get(path.size() - 1)))
-					openDirs.remove(path.get(path.size() - 1));
+                openDirs.remove(path.get(path.size() - 1));
 		}
 		
 		Direction[] returnedDirs = new Direction[openDirs.size()];

@@ -15,7 +15,7 @@ import java.util.function.IntFunction;
 public class CartesianIterator<X> implements Iterator<X[]> {
 	private final Iterable<X>[] iterables;
 	private final Iterator<X>[] iterators;
-	private X[] values;
+	private final X[] values;
 
 
 	/**

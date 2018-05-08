@@ -733,7 +733,7 @@ public class P extends GamePanel {
 						g.drawString("TESTS COMPLETE", 160, 400);
 					}
 					if ((gameState & STATE_LEVEL_START) != 0) {
-						g.drawString("TEST " + String.valueOf(levelCount + 1), 320, 400);
+						g.drawString("TEST " + (levelCount + 1), 320, 400);
 					}
 					if ((gameState & STATE_DIED) != 0) {
 						g.drawString("REGENERATING", 220, 400);

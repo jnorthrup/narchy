@@ -38,7 +38,7 @@ public class FunctionRenderer1D extends javax.swing.JPanel {
                 double y0 =rf.compute(x);
                 double y = (0.5f * y0+0.5)*getHeight();
                 int px = (int)(getWidth() * x);
-                g.drawLine((int) prevX, (int) prevY, (int) px, (int) y);
+                g.drawLine((int) prevX, (int) prevY, px, (int) y);
                 prevX = px;
                 prevY = y;
             }

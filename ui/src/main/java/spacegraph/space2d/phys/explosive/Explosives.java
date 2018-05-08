@@ -117,10 +117,7 @@ public class Explosives {
 
         @Override
         public boolean preUpdate() {
-            if (W.realtimeMS > end) {
-                return false;
-            }
-            return true;
+            return W.realtimeMS <= end;
         }
 
         @Override

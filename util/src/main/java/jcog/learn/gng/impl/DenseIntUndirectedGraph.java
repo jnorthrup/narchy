@@ -41,7 +41,7 @@ public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     private void addToEdge(short x, short y, int d) {
         int e = data[x][y];
-        if (e!=this.CLEAR_VALUE) {
+        if (e!=CLEAR_VALUE) {
             data[x][y] += d;
             data[y][x] += d;
         }

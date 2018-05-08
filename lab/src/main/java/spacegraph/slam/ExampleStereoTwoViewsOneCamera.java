@@ -136,7 +136,7 @@ public class ExampleStereoTwoViewsOneCamera {
 
 	private GrayF32 next, prev;
 	private GrayU8 distortedNext, distortedPrev;
-	private AssociationPanel assocPanel = new AssociationPanel(20);
+	private final AssociationPanel assocPanel = new AssociationPanel(20);
 
 
 	public static void main(String args[]) throws InterruptedException {

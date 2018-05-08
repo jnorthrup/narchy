@@ -511,15 +511,15 @@ public class ConnectFour {
         private void updateStatus() {
             String statusText;
             if (!game.isTerminal()) {
-                String toMove = (String) game.players[game.moving()];
+                String toMove = ConnectFourState.players[game.moving()];
                 statusText = "Next move: " + toMove;
                 statusBar.setForeground(toMove.equals("red") ? Color.RED
                         : Color.YELLOW);
             } else {
                 String winner = null;
                 for (int i = 0; i < 2; i++)
-                    if (game.getUtility(game.players[i]) == 1)
-                        winner = game.players[i];
+                    if (game.getUtility(ConnectFourState.players[i]) == 1)
+                        winner = ConnectFourState.players[i];
                 if (winner != null)
                     statusText = "Color " + winner
                             + " has won. Congratulations!";

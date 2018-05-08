@@ -3,12 +3,9 @@ package jcog.learn;
 import jcog.Util;
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.test.LiveSTM;
-import jcog.list.FasterList;
-import jcog.math.FloatDelay;
-import jcog.math.FloatSupplier;
 import jcog.math.random.XoRoShiRo128PlusRandom;
+import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
-import java.util.List;
 import java.util.Random;
 
 import static jcog.Util.toDouble;
@@ -21,10 +18,15 @@ import static jcog.Util.toDouble;
 public class LivePredictor {
 
 
+
     public interface Framer {
-        double[] inputs();
+        /** computes training vector from current observations */
+        double[] inputs(long now);
 
         double[] outputs();
+
+        /** only use if the set of inputs is the same as the set of outputs (symmetric) */
+        void project(double[] hypotheticalPresent);
         //double get(boolean inOrOut, int n);
     }
 
@@ -32,33 +34,61 @@ public class LivePredictor {
 
     }*/
 
-    public static class HistoryFramer implements Framer {
-        private final FloatSupplier[] ins;
-        private final int history;
-        public final FloatsDelay data;
-        private final FloatSupplier[] outs;
+    public static class DenseShiftFramer implements Framer {
+        /** time -> value function, (ex: one per concept) */
+        private final LongToFloatFunction[] ins;
+        private final LongToFloatFunction[] outs;
+
+        private int past; //how many samples to remember into the past
+        private int dur; //time duration between each history sample
 
         /**
          * temporary buffers, re-used
          */
-        private double[] ii, oo;
+        private double[] pastVector, present;
 
-        public HistoryFramer(FloatSupplier[] ins, int history, FloatSupplier[] outs) {
+        public DenseShiftFramer(LongToFloatFunction[] ins, int past, int sampleDur, LongToFloatFunction[] outs) {
             this.ins = ins;
-            this.history = history;
-            this.data = FloatsDelay.delay(ins, history);
             this.outs = outs;
+            this.past = past;
+            this.dur = sampleDur;
         }
 
         @Override
-        public double[] inputs() {
-            data.next();
-            return ii = historyVector(data, history, ii);
+        public double[] inputs(long now) {
+            if (pastVector == null || pastVector.length!=(past * ins.length)) {
+                pastVector = new double[past * ins.length];
+                present = new double[1 * outs.length];
+            }
+
+            int i = 0;
+            for (int t = past-1; t >=0; t--) { //TODO make this inner loop
+                for (LongToFloatFunction c : ins) {
+                    pastVector[i++] = c.valueOf(now - (t+1) * dur);
+                }
+            }
+            int k = 0;
+            for (LongToFloatFunction c : outs) {
+                present[k++] = c.valueOf(now);
+            }
+
+            return pastVector;
         }
 
         @Override
         public double[] outputs() {
-            return oo = vector(outs, oo);
+           return present;
+        }
+
+        @Override
+        public void project(double[] nextPresent) {
+            //shift
+            int stride = ins.length;
+            assert(nextPresent.length == stride);
+            int all = pastVector.length;
+            System.arraycopy(pastVector, stride, pastVector, 0, all - stride);
+            System.arraycopy(present, 0, pastVector, all - stride,  stride);
+            System.arraycopy(nextPresent, 0, present, 0,  stride);
         }
     }
 
@@ -130,7 +160,11 @@ public class LivePredictor {
         @Override
         public void learn(double[] ins, double[] outs) {
             if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
-                 mlp = new MLPMap(ins.length, new int[] { ins.length + outs.length, outs.length},
+                 mlp = new MLPMap(ins.length,
+                         new int[] {
+                                 2 * (ins.length + outs.length),
+                                 ins.length + outs.length,
+                                 outs.length},
                          rng, true);
                  Util.last(mlp.layers).setIsSigmoid(false);
             }
@@ -158,63 +192,70 @@ public class LivePredictor {
         this.framer = framer;
     }
 
-    /**
-     * delay line of floats (plural, vector)
-     */
-    public static class FloatsDelay extends FasterList<FloatDelay> {
+//    /**
+//     * delay line of floats (plural, vector)
+//     */
+//    public static class FloatsDelay extends FasterList<FloatDelay> {
+//
+//        public FloatsDelay(int size) {
+//            super(size);
+//        }
+//
+//        public void next() {
+//            forEach(FloatDelay::next);
+//        }
+//
+//        static FloatsDelay delay(FloatSupplier[] vector, int history) {
+//            FloatsDelay delayed = new FloatsDelay(vector.length);
+//            for (FloatSupplier f : vector)
+//                delayed.add(new FloatDelay(f, history));
+//            return delayed;
+//        }
+//
+//        public void print() {
+//            forEach(System.out::println);
+//        }
+//    }
 
-        public FloatsDelay(int size) {
-            super(size);
-        }
 
-        public void next() {
-            forEach(FloatDelay::next);
-        }
-
-        static FloatsDelay delay(FloatSupplier[] vector, int history) {
-            FloatsDelay delayed = new FloatsDelay(vector.length);
-            for (FloatSupplier f : vector)
-                delayed.add(new FloatDelay(f, history));
-            return delayed;
-        }
-
-        public void print() {
-            forEach(System.out::println);
-        }
-    }
-
-
-    public synchronized double[] next() {
-
-        model.learn(framer.inputs(), framer.outputs());
+    public synchronized double[] next(long when) {
+        model.learn(framer.inputs(when), framer.outputs());
 
         return model.predict();
-
     }
 
-
-    static double[] vector(FloatSupplier[] x, double[] d) {
-        if (d == null || d.length != x.length) {
-            d = new double[x.length];
-        }
-        for (int k = 0; k < d.length; k++) {
-            d[k] = x[k].asFloat();
-        }
-        return d;
+    /** applies the vector as new hypothetical present inputs,
+     * after shifting the existing data (destructively)
+     * down one time slot.
+     * then calls next(), predicting a new vector.
+     */
+    public synchronized double[] project(long now, double[] p) {
+        framer.project(p);
+        return next(now);
     }
 
-    static double[] historyVector(List<? extends FloatDelay> f, int history, double[] d) {
-        if (d == null || d.length != f.size() * history) {
-            d = new double[f.size() * history];
-        }
-        int i = 0;
-        for (int i1 = 0, fSize = f.size(); i1 < fSize; i1++) {
-            float[] gd = f.get(i1).data;
-            for (int k = 0; k < gd.length; k++)
-                d[i++] = gd[k];
-        }
-        return d;
-    }
+//    static double[] vector(FloatSupplier[] x, double[] d) {
+//        if (d == null || d.length != x.length) {
+//            d = new double[x.length];
+//        }
+//        for (int k = 0; k < d.length; k++) {
+//            d[k] = x[k].asFloat();
+//        }
+//        return d;
+//    }
+//
+//    static double[] historyVector(List<? extends FloatDelay> f, int history, double[] d) {
+//        if (d == null || d.length != f.size() * history) {
+//            d = new double[f.size() * history];
+//        }
+//        int i = 0;
+//        for (int i1 = 0, fSize = f.size(); i1 < fSize; i1++) {
+//            float[] gd = f.get(i1).data;
+//            for (int k = 0; k < gd.length; k++)
+//                d[i++] = gd[k];
+//        }
+//        return d;
+//    }
 
 
 }

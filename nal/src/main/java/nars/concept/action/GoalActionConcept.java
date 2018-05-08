@@ -158,7 +158,7 @@ public class GoalActionConcept extends ActionConcept {
 
         Task curiosityGoal = null;
         if (curi && feedbackBelief!=null) {
-            curiosityGoal = this.curiosity(nar,
+            curiosityGoal = curiosity(nar,
                     goal,
                     //Truth.theDithered(feedbackBelief.freqMean(dur, pStart, pEnd), goal.evi(), nar),
                     term, gStart, gEnd, nar.time.nextStamp());

@@ -210,7 +210,7 @@ public class Dyn2DSurface extends Wall implements Animated {
     @Override
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
-            on = ((Ortho) root()).animate(this);
+            on = root().animate(this);
             return true;
         }
         return false;

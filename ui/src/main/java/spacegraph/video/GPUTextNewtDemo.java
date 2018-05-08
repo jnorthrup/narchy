@@ -235,8 +235,8 @@ public class GPUTextNewtDemo {
         public TextRegionUtil textRegionUtil;
     //    private final GLRegion regionFPS, regionBottom;
     protected RegionRenderer renderer;
-        private int renderModes;
-        private GLRegion regionBottom;
+        private final int renderModes;
+        private final GLRegion regionBottom;
         int fontSet = FontFactory.JAVA;//UBUNTU;
         Font font;
 

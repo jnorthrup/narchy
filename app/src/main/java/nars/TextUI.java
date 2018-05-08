@@ -57,7 +57,7 @@ public class TextUI {
     final Set<TextGUI> sessions = Sets.newConcurrentHashSet();
 
     /** HACK because Lanterna's Component.onRemove doesnt get called reliably */
-    private Set<DurService> updaters = Sets.newConcurrentHashSet();
+    private final Set<DurService> updaters = Sets.newConcurrentHashSet();
 
     public TextUI(NAR n) {
         this.nar = n;

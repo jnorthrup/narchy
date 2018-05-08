@@ -33,7 +33,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package jcog.io;
+package jcog.io.arff;
 
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
@@ -54,7 +54,7 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static jcog.io.ARFF.AttributeType.*;
+import static jcog.io.arff.ARFF.AttributeType.*;
 
 /**
  * https://weka.wikispaces.com/ARFF%20%28developer%20version%29
@@ -82,7 +82,7 @@ import static jcog.io.ARFF.AttributeType.*;
  * https://github.com/renatopp/arff-datasets
  * https://archive.ics.uci.edu/ml/datasets.html?format=&task=&att=&area=&numAtt=&numIns=&type=&sort=instUp&view=table
  */
-public class ARFF implements Iterable<ImmutableList> {
+public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
 
     static final String NEW_LINE = System.getProperty("line.separator");
@@ -93,21 +93,18 @@ public class ARFF implements Iterable<ImmutableList> {
      * data 'rows'
      * TODO abstract this to different underlying data model
      */
-    protected final Collection<ImmutableList> data;
-    private final List<String> attribute_names;
-    private final Map<String, AttributeType> attrTypes;
-    private final Map<String, String[]> nominalCats;
+
+
     private String relation;
     private String comment;
 
+    public final Collection<ImmutableList> data;
 
     protected ARFF(ARFF copyMetadataFrom, Collection<ImmutableList> data) {
-        this.attribute_names = copyMetadataFrom.attribute_names;
-        this.attrTypes = copyMetadataFrom.attrTypes;
-        this.nominalCats = copyMetadataFrom.nominalCats;
+        super(copyMetadataFrom);
+        this.data = data;
         this.relation = copyMetadataFrom.relation;
         this.comment = copyMetadataFrom.comment;
-        this.data = data;
     }
 
     /**
@@ -134,11 +131,9 @@ public class ARFF implements Iterable<ImmutableList> {
      * Construct an empty ArffFile.
      */
     public ARFF(Collection<ImmutableList> data) {
+        super(null);
         relation = "";
         comment = null;
-        attribute_names = new FasterList<>();
-        attrTypes = new HashMap<>();
-        nominalCats = new HashMap<>();
         this.data = data;
     }
 

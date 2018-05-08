@@ -10,7 +10,7 @@ public class KeyValueModel implements GridModel {
     private final Map map;
 
     /** cached keys as an array for fast access */
-    private transient Object[] keys;
+    private final transient Object[] keys;
 
     public KeyValueModel(Map map) {
         this.map = map;

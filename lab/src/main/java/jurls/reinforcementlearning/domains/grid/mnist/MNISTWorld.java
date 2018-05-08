@@ -132,7 +132,7 @@ public class MNISTWorld extends MNIST implements World {
     int maxTrainingCyclesPerImage = 256, trainingCyclesPerImage = 1;
     final static double noise = 0.01;
     
-    public static void main(String[] args) throws IOException, Exception {
+    public static void main(String[] args) throws Exception {
         
         MNISTWorld m = new MNISTWorld("/home/me/Downloads", 800, maxDigit);
 //        

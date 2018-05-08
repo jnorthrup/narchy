@@ -31,8 +31,8 @@ import java.awt.image.BufferedImage;
 
 public class WaveAnalyzer {
 
-    private BaseMusic_ScopeAndSpectrumAnalyzer analyzer;
-    private BaseMusic_DigitalSignalSynchronizer synchronizer;
+    private final BaseMusic_ScopeAndSpectrumAnalyzer analyzer;
+    private final BaseMusic_DigitalSignalSynchronizer synchronizer;
     private final float[] mFFTSpectrum_Empty;
 
     int fps = 30;

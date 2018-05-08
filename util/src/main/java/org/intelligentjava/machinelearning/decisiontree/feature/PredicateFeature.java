@@ -116,11 +116,8 @@ public class PredicateFeature<L> implements Predicate<Function<String,L>> {
         } else if (!label.equals(other.label))
             return false;
         if (predicate == null) {
-            if (other.predicate != null)
-                return false;
-        } else if (!predicate.equals(other.predicate))
-            return false;
-        return true;
+            return other.predicate == null;
+        } else return predicate.equals(other.predicate);
     }
 
 }

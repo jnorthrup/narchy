@@ -33,7 +33,7 @@ public class TopCraft extends NAgentX {
 
     private final TopDownMinicraft craft;
     private Bitmap2DSensor<PixelBag> pixels;
-    private AutoclassifiedBitmap camAE;
+    private final AutoclassifiedBitmap camAE;
 
     public static void main(String[] args) {
         runRT(n -> {

@@ -123,8 +123,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
 
     @Override
     public void returnOperation(final AbstractInsnNode insn,
-                                final BasicValue value, final BasicValue expected)
-            throws AnalyzerException {
+                                final BasicValue value, final BasicValue expected) {
         Preconditions.checkState(insn.getOpcode() == ARETURN);
         Type type = Type.getType(Rule.class);
         Preconditions.checkState(unwrap(value).getType().equals(

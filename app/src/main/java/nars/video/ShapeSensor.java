@@ -77,7 +77,7 @@ public class ShapeSensor extends NARService {
     private Grid grid;
 
     private GrayU8 filtered;
-    private Tex filteredTex = new Tex();
+    private final Tex filteredTex = new Tex();
     private BufferedImage filteredRGB;
 
 

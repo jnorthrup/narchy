@@ -67,8 +67,8 @@ public class Main extends JFrame {
       float Y_OFFSET = HEIGHT < WIDTH ? (WIDTH - HEIGHT) / 2 : 0;
       for(int y = 0, k = 0; y < HEIGHT; y++) {
         for(int x = 0; x < WIDTH; x++, k++) {
-          float theta = (float)(Math.PI * (0.5f + y + Y_OFFSET) / (float)MAX);
-          float phi = (float)(Math.PI * (0.5f + x + X_OFFSET) / (float)MAX);
+          float theta = (float)(Math.PI * (0.5f + y + Y_OFFSET) / MAX);
+          float phi = (float)(Math.PI * (0.5f + x + X_OFFSET) / MAX);
           float rx = (float)(Math.cos(phi) * Math.sin(theta));
           float ry = (float)(Math.sin(phi) * Math.sin(theta));
           float rz = (float)(Math.cos(theta));

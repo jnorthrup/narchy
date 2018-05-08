@@ -90,6 +90,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         return currentValue;
     }
 
+
     public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
         return update(truther, n.time(), n.dur(), n);
     }

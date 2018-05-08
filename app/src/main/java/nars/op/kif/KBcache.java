@@ -239,10 +239,7 @@ public class KBcache implements Serializable {
         	return false;
         }
         if (debug) System.out.println("INFO in KBcache.childOfP(): child set contains " + child + " : " + childSet.contains(child));
-        if (childSet.contains(child))
-            return true;
-        else
-            return false;
+        return childSet.contains(child);
     }
 
     /** *************************************************************
@@ -256,10 +253,7 @@ public class KBcache implements Serializable {
 
         if (instances.containsKey(i)) {
             HashSet<String> hashSet = instances.get(i);
-            if (hashSet.contains(c))
-                return true;
-            else
-                return false;
+            return hashSet.contains(c);
         }
         else
             return false;
@@ -1190,7 +1184,7 @@ public class KBcache implements Serializable {
             instances.put(pred,instances.get(oldPred));
         valences.put(pred,arity);
     }
-        ;
+
     /** *************************************************************
      */
     public void showState() {

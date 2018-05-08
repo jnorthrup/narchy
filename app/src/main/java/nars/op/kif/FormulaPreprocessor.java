@@ -231,7 +231,7 @@ public class FormulaPreprocessor {
         if (Formula.atom(carstr) && (Formula.isLogicalOperator(carstr) || carstr.equals(Formula.EQUAL))) {
             sb.append("(" + carstr + " ");
             if (debug) System.out.println("addTypeRestrictionsRecurse: interior sb: " + sb);
-            if (carstr.equals(f.EQUANT) || carstr.equals(f.UQUANT)) {
+            if (carstr.equals(Formula.EQUANT) || carstr.equals(Formula.UQUANT)) {
                 // If we see existentially quantified variables, like (exists (?X ?Y) ...),
                 //   and if ?X, ?Y are not explicitly restricted in the following statements,
                 // we need to add type restrictions for ?X, ?Y
@@ -259,8 +259,8 @@ public class FormulaPreprocessor {
                     }
                 }
                 if (addSortals) {
-                    if (carstr.equals(f.EQUANT)) sb.append("(and ");
-                    else if (carstr.equals(f.UQUANT)) sb.append("(=> (and ");
+                    if (carstr.equals(Formula.EQUANT)) sb.append("(and ");
+                    else if (carstr.equals(Formula.UQUANT)) sb.append("(=> (and ");
                 }
 
                 for (int i = 0; i < quantifiedVariables.size(); i++) {
@@ -275,7 +275,7 @@ public class FormulaPreprocessor {
                         }
                     }
                 }
-                if (addSortals && carstr.equals(f.UQUANT))
+                if (addSortals && carstr.equals(Formula.UQUANT))
                     sb.append(")");
                 for (int i = 2 ; i < f.listLength(); i++)
                     addTypeRestrictionsRecurse(kb, new Formula(f.getArgument(i)), sb);
@@ -411,11 +411,11 @@ public class FormulaPreprocessor {
      */
     private static Formula findAntecedent(Formula f) {
 
-        if (f.theFormula.indexOf(f.IF) == -1 && f.theFormula.indexOf(f.IFF) == -1)
+        if (f.theFormula.indexOf(Formula.IF) == -1 && f.theFormula.indexOf(Formula.IFF) == -1)
             return f;
         String carstr = f.car();
         if (Formula.atom(carstr) && Formula.isLogicalOperator(carstr)) {
-            if (carstr.equals(f.IF) || carstr.equals(f.IFF))
+            if (carstr.equals(Formula.IF) || carstr.equals(Formula.IFF))
                 return f.cdrAsFormula().carAsFormula();
             else
                 return f;
@@ -475,11 +475,11 @@ public class FormulaPreprocessor {
         String carstr = form.car();
 
         if (Formula.atom(carstr) && Formula.isLogicalOperator(carstr)) {
-            if (carstr.equals(form.EQUANT) || carstr.equals(form.UQUANT)) {
+            if (carstr.equals(Formula.EQUANT) || carstr.equals(Formula.UQUANT)) {
                 for (int i = 2 ; i < form.listLength(); i++)  // (exists (?X ?Y) (foo1 ?X ?Y)), recurse from the second argument
                     findExplicitTypesRecurse(kb,new Formula(form.getArgument(i)), false, varExplicitTypes, varExplicitClasses);
             }
-            else if (carstr.equals(form.NOT)) {
+            else if (carstr.equals(Formula.NOT)) {
                 for (int i = 1; i < form.listLength(); i++)   // (not (foo1 ?X ?Human)), set isNegativeLiteral = true, and recurse from the first argument
                     findExplicitTypesRecurse(kb,new Formula(form.getArgument(i)), true, varExplicitTypes, varExplicitClasses);
             }
@@ -772,7 +772,7 @@ public class FormulaPreprocessor {
                 accumulator.clear();
                 Iterator<Formula> it = working.iterator();
                 while (it.hasNext()) {
-                    f = (Formula) it.next();
+                    f = it.next();
                     Set<Formula> instantiations = PredVarInst.instantiatePredVars(f,kb);
                     form.errors.addAll(f.getErrors());
 
@@ -799,7 +799,7 @@ public class FormulaPreprocessor {
                 accumulator.clear();
                 Iterator<Formula> it2 = working.iterator();
                 while (it2.hasNext()) {
-                    f = (Formula) it2.next();
+                    f = it2.next();
 //                    RowVars rv = new RowVars();
                     accumulator.addAll(RowVars.expandRowVars(kb,f));
                     if (accumulator.size() > AXIOM_EXPANSION_LIMIT) {
@@ -969,7 +969,7 @@ public class FormulaPreprocessor {
                 String theNewFormula = null;
                 Iterator<Formula> it = accumulator.iterator();
                 while (it.hasNext()) {
-                    fnew = (Formula) it.next();
+                    fnew = it.next();
                     FormulaPreprocessor fp = new FormulaPreprocessor();
                     theNewFormula = fp.preProcessRecurse(fnew,"",ignoreStrings,translateIneq,translateMath,kb);
                     fnew.read(theNewFormula);

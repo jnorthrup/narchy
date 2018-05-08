@@ -44,8 +44,8 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
      */
-    private int projections = 32;
-    private long[] range;
+    private final int projections = 32;
+    private final long[] range;
     //private int dur; //cached dur
     private long now; //cached time
     private String termString; //cached string

@@ -412,11 +412,11 @@ public class WordNetUtilities {
             result.append("<a href=\"WordNet.jsp?word=");
             result.append(word);
             result.append("&POS=");
-            result.append(synset.substring(0, 1));
+            result.append(synset, 0, 1);
             result.append("&kb=");
             result.append(kbName);
             result.append("&synset=");
-            result.append(synset.substring(1, synset.length()));
+            result.append(synset, 1, synset.length());
             result.append("\">").append(word).append("</a>");
             count++;
             if (it.hasNext() && count < 50) {
@@ -446,11 +446,11 @@ public class WordNetUtilities {
                 result.append("<a href=\"WordNet.jsp?word=");
                 result.append(word);
                 result.append("&POS=");
-                result.append(synset.substring(0, 1));
+                result.append(synset, 0, 1);
                 result.append("&kb=");
                 result.append(kbName);
                 result.append("&synset=");
-                result.append(synset.substring(1, synset.length()));
+                result.append(synset, 1, synset.length());
                 result.append("\">").append(word).append("</a>");
                 count++;
                 if (i < synsetList.size() - 1) {

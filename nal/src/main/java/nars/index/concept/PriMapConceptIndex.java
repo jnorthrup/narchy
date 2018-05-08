@@ -1,9 +1,9 @@
 package nars.index.concept;
 
 import com.google.common.collect.Iterables;
-import jcog.bag.Bag;
 import jcog.bag.impl.ConcurrentArrayBag;
 import jcog.bloom.YesNoMaybe;
+import jcog.list.table.Table;
 import jcog.pri.PLink;
 import jcog.pri.PriCache;
 import jcog.pri.PriReference;
@@ -11,7 +11,6 @@ import jcog.pri.op.PriMerge;
 import nars.IO;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Variable;
@@ -336,10 +335,10 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
         // (they are not divided like this)
         int complexity = c.complexity();
 
-        Bag<?, TaskLink> ta = c.tasklinks();
+        Table<?,nars.link.TaskLink> ta = c.tasklinks();
         score += (ta.size() / (1f + ta.capacity())) / complexity;
 
-        Bag<Term, PriReference<Term>> te = c.termlinks();
+        Table<nars.term.Term,PriReference<Term>> te = c.termlinks();
         score += (te.size() / (1f + te.capacity())) / complexity;
 
         return score;

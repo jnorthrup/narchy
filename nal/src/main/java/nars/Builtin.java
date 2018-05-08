@@ -261,7 +261,7 @@ public class Builtin {
 
         /** dynamic term builder - useful for NAR specific contexts like clock etc.. */
         nar.on(Functor.f("term", (Subterms s)->{
-            Op o = Op.stringToOperator.get($.unquote(((Atom)s.sub(0))));
+            Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
             Term[] args = s.sub(1).subterms().arrayClone();
             if (s.subs() > 2) {
                 if (o.temporal) {

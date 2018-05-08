@@ -6,8 +6,8 @@ import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.DefaultHijackBag;
 import jcog.list.FasterList;
+import jcog.math.random.SplitMix64Random;
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import jcog.math.random.XorShift128PlusRandom;
 import jcog.math.tensor.ArrayTensor;
 import jcog.math.tensor.Tensor;
 import jcog.pri.PLink;
@@ -61,7 +61,7 @@ public class BagTest {
 
 
     public static Random rng() {
-        return new XorShift128PlusRandom(1);
+        return new SplitMix64Random(1);
     }
 
 //
@@ -106,7 +106,7 @@ public class BagTest {
     }
 
 
-    public static Tensor samplingPriDist(@NotNull Bag<PLink<String>, PLink<String>> b, int batches, int batchSize, int bins) {
+    static Tensor samplingPriDist(@NotNull Bag<PLink<String>, PLink<String>> b, int batches, int batchSize, int bins) {
 
         assert(bins > 1);
 

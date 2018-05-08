@@ -215,7 +215,7 @@ public final class RayTracer extends JPanel {
     private void render(int depth) {
         W = image.getWidth();
         H = image.getHeight();
-        A = ((double)size.getWidth()) / size.getHeight();
+        A = size.getWidth() / size.getHeight();
 //        int mx = W / 2;
 //
 //        int my = H / 2;

@@ -447,12 +447,10 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
             Task revised = tryRevision(input, nar);
             if (revised == null) {
-                if (insert(input)) {
-                    return true; //accepted input
-                } else {
-                    //input.delete();
-                    return false; //rejected
-                }
+                //accepted input
+//input.delete();
+//rejected
+                return insert(input);
             } else {
 
                 if (revised.equals(input)) {

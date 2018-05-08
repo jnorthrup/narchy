@@ -401,16 +401,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //            }
 //        }
 
-        if (x.isDeleted()) {
-//            Task xisting = x.meta("merge");
-//            if (xisting != null) {
-//                return true; //already contained or revised
-//            } else {
-                return false; //rejected
-//            }
-        } else {
-            return true; //accepted new
-        }
+        return !x.isDeleted();
 
     }
 
@@ -487,12 +478,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         assert (tree.size() >= cap);
 
         //decide what to do and do it
-        if (mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, nar)) {
-            return true;
-        }
+        return mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, nar);
 
 
-        return false; //?? could be a problem if it reaches here
     }
 
 
@@ -622,7 +610,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             case EvictWeakest: {
                 treeRW.remove(W);
-                //W.delete();
+                W.delete();
                 return true;
             }
 
@@ -663,6 +651,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             default:
                 throw new UnsupportedOperationException();
         }
+
 
     }
 
@@ -892,7 +881,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             Task e = existing.task();
             if (e instanceof NALTask) //HACK
                 ((NALTask) e).causeMerge(i);
-            i.delete();
+            //i.delete();
             //i.meta("merge", e); //signals success to activate what was input
         }
 

@@ -153,11 +153,8 @@ abstract public class Surface implements SurfaceBase {
             AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
 
     public boolean stop() {
-        if (_parent.getAndSet(this, null)!=null) { //if this atomic update changed from non-null to null, the callee has got it
-            return true;
-        }
+        return _parent.getAndSet(this, null) != null;
         //already stopped. ok
-        return false;
     }
 
     public void layout() {

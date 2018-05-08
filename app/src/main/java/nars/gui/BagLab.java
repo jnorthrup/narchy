@@ -3,22 +3,18 @@ package nars.gui;
 import jcog.Util;
 import jcog.bag.Bag;
 import jcog.bag.impl.CurveBag;
-import jcog.bag.impl.HijackBag;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.$;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.meter.MatrixView;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.util.math.Color3f;
-import spacegraph.video.Draw;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
 
 import static jcog.pri.op.PriMerge.plus;
@@ -70,31 +66,31 @@ public class BagLab {
         );
     }
 
-    private static Surface hijackVis(HijackBag bag) {
-        int c = bag.capacity();
-        int w = (int) Math.ceil(Math.sqrt(1 + c));
-        int h = c / w;
-        return new MatrixView(w, h, (x, y, gl) -> {
-            try {
-                Object m = bag.map;
-                float p = -1;
-                if (m != null) {
-                    int i = y * w + x;
-                    if (i < c) {
-
-                        Object val = ((AtomicReferenceArray) m).get(i);
-                        if (val != null)
-                            p = bag.priElse(val, 0);
-                    }
-                }
-                Draw.colorBipolar(gl, p);
-            } catch (RuntimeException e) {
-
-            }
-            return 0;
-        });
-
-    }
+//    private static Surface hijackVis(HijackBag bag) {
+//        int c = bag.capacity();
+//        int w = (int) Math.ceil(Math.sqrt(1 + c));
+//        int h = c / w;
+//        return new MatrixView(w, h, (x, y, gl) -> {
+//            try {
+//                Object m = bag.map;
+//                float p = -1;
+//                if (m != null) {
+//                    int i = y * w + x;
+//                    if (i < c) {
+//
+//                        Object val = ((AtomicReferenceArray) m).get(i);
+//                        if (val != null)
+//                            p = bag.priElse(val, 0);
+//                    }
+//                }
+//                Draw.colorBipolar(gl, p);
+//            } catch (RuntimeException e) {
+//
+//            }
+//            return 0;
+//        });
+//
+//    }
 
 
     public static void main(String[] arg) {

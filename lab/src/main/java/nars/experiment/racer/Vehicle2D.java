@@ -34,10 +34,10 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     float m_maxDriveForce = 10000;
     float m_maxLateralImpulse = 10000;
 
-    private Wheel rightFront;
-    private Wheel leftFront;
-    private Wheel rightBack;
-    private Wheel leftBack;
+    private final Wheel rightFront;
+    private final Wheel leftFront;
+    private final Wheel rightBack;
+    private final Wheel leftBack;
 
     private final boolean powered = true;
 
@@ -143,7 +143,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
             desiredAngle = lockAngle;
             break;
         default:
-            ;// nothing
+            // nothing
         }
 
         RevoluteJoint leftJoint = (RevoluteJoint) leftFront.getJoint();
@@ -257,8 +257,8 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
 
         private Joint joint;
 
-        private PolygonShape mWheelShape;
-        private Body2D mWheelBody;
+        private final PolygonShape mWheelShape;
+        private final Body2D mWheelBody;
 
         private final Vehicle2D vehicle;
 

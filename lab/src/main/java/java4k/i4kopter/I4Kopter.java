@@ -223,8 +223,8 @@ public class I4Kopter extends Applet {
             }
 
             if(obstacles[i+1].y != -1){
-                oRectangle = new Rectangle(heliX, obstacles[i+1].y, widthBar, oheight);  
-                if(copter.intersects(oRectangle)){ return true; }
+                oRectangle = new Rectangle(heliX, obstacles[i+1].y, widthBar, oheight);
+                return copter.intersects(oRectangle);
             }
         }
 

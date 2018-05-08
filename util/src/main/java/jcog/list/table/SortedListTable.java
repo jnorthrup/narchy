@@ -44,7 +44,7 @@ abstract public class SortedListTable<X, Y> extends ArrayListTable<X, Y> impleme
 
     @Override
     public final Y get(int i) {
-        return (Y) items.list[i];//array()[i];
+        return items.list[i];//array()[i];
     }
 
     @Override

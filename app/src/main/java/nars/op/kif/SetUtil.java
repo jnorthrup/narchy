@@ -39,7 +39,7 @@ public class SetUtil {
             HashSet hs = new HashSet();
             Object obj = null;
             for (Iterator it = collection.iterator(); it.hasNext();) {
-                obj = (Object) it.next();
+                obj = it.next();
                 if (hs.contains(obj)) 
                     it.remove();                
                 else 
@@ -123,7 +123,7 @@ public class SetUtil {
             if ((seq instanceof List) && StringUtil.isNonEmptyString(regex)) {
                 Object obj = null;
                 for (ListIterator it = seq.listIterator(); it.hasNext();) {
-                    obj = (Object) it.next();
+                    obj = it.next();
                     if (obj.toString().matches(regex)) 
                         it.remove();                    
                 }
@@ -151,7 +151,7 @@ public class SetUtil {
             if ((seq instanceof List) && StringUtil.isNonEmptyString(regex)) {
                 Object obj = null;
                 for (ListIterator it = seq.listIterator(); it.hasNext();) {
-                    obj = (Object) it.next();
+                    obj = it.next();
                     if (!obj.toString().matches(regex)) {
                         it.remove();
                     }

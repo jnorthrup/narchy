@@ -295,10 +295,8 @@ final class ArithmeticExpressionSimplifier {
         if (areFunctions(n1, n2)) {
             FunctionNode f1 = (FunctionNode) n1;
             FunctionNode f2 = (FunctionNode) n2;
-            if (numberUtils.isMultiply(f1) && numberUtils.isMultiply(f2) && isConstant(f1.args().firstArg()) && isConstant(f2.args().firstArg())
-                    && f1.args().secondArg().equals(f2.args().secondArg())) {
-                return true;
-            }
+            return numberUtils.isMultiply(f1) && numberUtils.isMultiply(f2) && isConstant(f1.args().firstArg()) && isConstant(f2.args().firstArg())
+                    && f1.args().secondArg().equals(f2.args().secondArg());
         }
         return false;
     }

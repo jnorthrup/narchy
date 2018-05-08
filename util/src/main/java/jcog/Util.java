@@ -2471,6 +2471,11 @@ public enum Util {
         }
     }
 
+    public static float nanOr(float x, float otherwise) {
+        if (x==x) return x;
+        else return otherwise;
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,

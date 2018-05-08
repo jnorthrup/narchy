@@ -207,7 +207,7 @@ public class SoNAR extends TimerTask {
         audio.thread.join();
     }
 
-    public static void main(String[] args) throws LineUnavailableException, InterruptedException, Narsese.NarseseException {
+    public static void main(String[] args) throws InterruptedException, Narsese.NarseseException {
         NAR n = new NARS().get();
 
         //n.log();

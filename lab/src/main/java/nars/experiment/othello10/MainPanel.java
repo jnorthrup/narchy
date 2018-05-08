@@ -275,11 +275,9 @@ public class MainPanel extends JPanel implements MouseListener {
             return true; // ����
         if (canPutDown(x, y, 1, -1))
             return true; // �E��
-        if (canPutDown(x, y, -1, 1))
-            return true; // ����
+        return canPutDown(x, y, -1, 1);
 
         // �ǂ̕��������߂ȏꍇ�͂����ɂ͑łĂȂ�
-        return false;
     }
 
     /**

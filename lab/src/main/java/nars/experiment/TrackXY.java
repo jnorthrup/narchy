@@ -46,10 +46,10 @@ public class TrackXY extends NAgent {
             //new RandomTarget();
             //new CyclicTarget();
             new CircleTarget();
-    private float controlSpeed =
+    private final float controlSpeed =
             1f;
     //0.5f;
-    private float visionContrast = 0.9f;
+    private final float visionContrast = 0.9f;
 
     protected TrackXY(int x, int y) {
         super("trackXY", null);
@@ -386,7 +386,7 @@ public class TrackXY extends NAgent {
     }
 
     public static class RandomTarget implements Consumer<TrackXY> {
-        private float targetSpeed = 0.5f;
+        private final float targetSpeed = 0.5f;
 
         public void accept(TrackXY t) {
 

@@ -191,12 +191,9 @@ public class PatternMatcher {
         // One last check: we may have finished the match string, but still
         // have a '.*' at the end of the pattern, which should still count
         // as a match.
-        if (ip == NP-2 && pattern.charAt(ip) == '.'
-            && pattern.charAt(ip+1) == '*') {
-            return true;
-        }
-        
-        return false;
+        return ip == NP - 2 && pattern.charAt(ip) == '.'
+                && pattern.charAt(ip + 1) == '*';
+
     }
     /**
      * Parses the advanced pattern and returns an integer array representation of it. The integer

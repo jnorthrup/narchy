@@ -271,19 +271,19 @@ public class HMM implements Serializable{
 		fmt.setMaximumFractionDigits(5);
 		for (int i = 0; i < numStates; i++)
 			System.out.println("pi(" + i + ") = " + fmt.format(pi[i]));
-		System.out.println("");
+		System.out.println();
 		for (int i = 0; i < numStates; i++) {
 			for (int j = 0; j < numStates; j++)
 				System.out.println("a(" + i + ',' + j + ") = "
 						+ fmt.format(a[i][j]) + ' ');
-			System.out.println("");
+			System.out.println();
 		}
-		System.out.println("");
+		System.out.println();
 		for (int i = 0; i < numStates; i++) {
 			for (int k = 0; k < numObservations; k++)
 				System.out.println("b(" + i + ',' + k + ") = "
 						+ fmt.format(b[i][k]) + ' ');
-			System.out.println("");
+			System.out.println();
 		}
 	}
 	

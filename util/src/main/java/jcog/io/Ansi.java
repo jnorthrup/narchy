@@ -199,7 +199,7 @@ public final class Ansi {
     return ANSI_ERASE_TO_THE_END_OF_LINE;
   }
 
-  public static enum SeverityLevel {
+  public enum SeverityLevel {
     OK,
     WARNING,
     ERROR

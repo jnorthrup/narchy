@@ -29,7 +29,6 @@ public class ClassPatch {
 //               String className = generatedClassName(conventionBasedTest);
 //        String methodName = generatedMethodName(conventionBasedTest);
 //        TestAnnotationImpl testAnnotationImpl = new TestAnnotationImpl(conventionBasedTest);
-        ;
 
 
         String entryClass = ClassPatch.class.getName();

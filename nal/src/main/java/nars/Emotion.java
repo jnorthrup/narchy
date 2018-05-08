@@ -12,7 +12,6 @@ import jcog.meter.ExplainedCounter;
 import jcog.meter.FastCounter;
 import jcog.meter.Meter;
 import jcog.meter.MetricsMapper;
-import jcog.meter.event.AtomicLongGuage;
 import jcog.meter.event.AtomicMeanFloat;
 import jcog.pri.Pri;
 import nars.control.MetaGoal;
@@ -62,8 +61,8 @@ public class Emotion implements Meter {
     public final Counter deriveFailParentDuplicate = new FastCounter("derive fail parent duplicate");  //parent copy
     public final Counter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate"); //sibling copy
 
-    /** how much TTL remains after a derivation finishes (avg) */
-    public final AtomicLongGuage.LongMeanCounter deriveTTLRemain = new AtomicLongGuage().mean("derive ttl remain");
+    ///** how much TTL remains after a derivation finishes (avg) */
+    //public final AtomicLongGuage.LongMeanCounter deriveTTLRemain = new AtomicLongGuage().mean("derive ttl remain");
 
     //public final Counter taskIgnored = new FastCounter(id("task ignored"));
 

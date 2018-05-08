@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
-    private boolean daemon = false;
+    private final boolean daemon = false;
 
     public int size() {
         return model.size();

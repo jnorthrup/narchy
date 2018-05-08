@@ -257,7 +257,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 	private class ArrayHashSetIterator implements ListIterator<X> {
 
-		private ListIterator<X> arrayListIterator;
+		private final ListIterator<X> arrayListIterator;
 		private X lastElementProvided;
 
 		public ArrayHashSetIterator() {

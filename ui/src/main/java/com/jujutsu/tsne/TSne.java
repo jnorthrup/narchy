@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 */
 public interface TSne {
 
-	public static Logger logger = LoggerFactory.getLogger(TSne.class);
+	Logger logger = LoggerFactory.getLogger(TSne.class);
 
 //    static TSneConfiguration buildConfig(double[][] xin, int outputDims, int initial_dims,
 //                                         double perplexity, int max_iter, boolean use_pca, double theta, boolean silent, boolean printError) {

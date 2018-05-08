@@ -17,13 +17,13 @@ import java.util.*;
 public class PredVarInst {
     
     // The implied arity of a predicate variable from its use in a Formula
-    private static HashMap<String,Integer> predVarArity = new HashMap<String,Integer>();
+    private static final HashMap<String,Integer> predVarArity = new HashMap<String,Integer>();
     
     // All predicates that meet that class membership and arity constraints for the given variable
-    private static HashMap<String,HashSet<String>> candidatePredicates = new HashMap<String,HashSet<String>>();
+    private static final HashMap<String,HashSet<String>> candidatePredicates = new HashMap<String,HashSet<String>>();
 
     //The list of logical terms that not related to arity check, will just jump with these precicates
-    private static List<String> logicalTerms=Arrays.asList(new String[]{"forall","exists","=>","and","or","<=>","not"});
+    private static final List<String> logicalTerms=Arrays.asList("forall","exists","=>","and","or","<=>","not");
 
     /** ***************************************************************
      * There are two type conditions:

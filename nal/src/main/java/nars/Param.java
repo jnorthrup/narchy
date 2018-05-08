@@ -176,7 +176,7 @@ public abstract class Param {
         int f = Math.round(dur * timeFocus.floatValue());
         int ditherCycles = dtDitherCycles();
         long from = Tense.dither(when - f, ditherCycles);
-        long to = Tense.dither(when + f, ditherCycles);;
+        long to = Tense.dither(when + f, ditherCycles);
         return new long[] {from, to};
     }
 

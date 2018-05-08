@@ -33,7 +33,7 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
     );
     int components = 16;
     private final RenderFunction1D f;
-    private Timer timer = new Timer(5, new ActionListener() {
+    private final Timer timer = new Timer(5, new ActionListener() {
 
         @Override
         public void actionPerformed(ActionEvent e) {

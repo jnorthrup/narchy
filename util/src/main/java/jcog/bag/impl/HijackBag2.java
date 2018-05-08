@@ -1,5 +1,6 @@
 package jcog.bag.impl;
 
+
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
@@ -12,103 +13,91 @@ import jcog.pri.Prioritized;
 import jcog.util.AtomicFloat;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicReferenceArray;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static jcog.bag.impl.HijackBag.Mode.*;
-
 /**
  * unsorted priority queue with stochastic replacement policy
  * <p>
  * it uses a AtomicReferenceArray<> to hold the data but Unsafe CAS operations might perform better (i couldnt get them to work like NBHM does).  this is necessary when an index is chosen for replacement that it makes certain it was replacing the element it thought it was (that it hadnt been inter-hijacked by another thread etc).  on an insert i issue a ticket to the thread and store this in a small ConcurrentHashMap<X,Integer>.  this spins in a busy putIfAbsent loop until it can claim the ticket for the object being inserted. this is to prevent the case where two threads try to insert the same object and end-up puttnig two copies in adjacent hash indices.  this should be rare so the putIfAbsent should usually work on the first try.  when it exits the update critical section it removes the key,value ticket freeing it for another thread.  any onAdded and onRemoved subclass event handling happen outside of this critical section, and all cases seem to be covered.
+ * <p>
+ * revision using separate integer array to hold priorities and hashes like the original NBHM
+ *
+ * not complete, untested
  */
 @Paper
 @Skill("https://en.wikipedia.org/wiki/Concurrent_computing")
-public abstract class HijackBag<K, V> implements Bag<K, V> {
-
-    private static final AtomicIntegerFieldUpdater<HijackBag> sizeUpdater =
-            AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "size");
-    private static final AtomicIntegerFieldUpdater<HijackBag> capUpdater =
-            AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "capacity");
-    private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> mapUpdater =
-            AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
-
-    private static final SpinMutex mutex = new Treadmill2();
-    private static final AtomicInteger serial = new AtomicInteger();
-
-    /** internal random number generator, used for deciding hijacks but not sampling. */
-    final Random rng;
-
-    /**
-     * id unique to this bag instance, for use in treadmill
-     */
-    private final int id;
-
-    volatile private int size, capacity;
-
-    /**
-     * TODO make non-public
-     */
-    volatile AtomicReferenceArray<V> map;
-
-
-
+public abstract class HijackBag2<K, V> implements Bag<K, V> {
 
     /**
      * when size() reaches this proportion of space(), and space() < capacity(), grows
      */
     static final float loadFactor = 0.5f;
-
     /**
      * how quickly the current space grows towards the full capacity, using LERP
      */
     static final float growthLerpRate = 0.5f;
-
-//    final static float PRESSURE_THRESHOLD = 0.05f;
-
     static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
-
+    static final AtomicIntegerArray EMPTY_INT_ARRAY = new AtomicIntegerArray(0);
+    final static float GET = Float.NaN;
+    final static float REMOVE = Float.NEGATIVE_INFINITY;
+    private static final AtomicIntegerFieldUpdater<HijackBag2> sizeUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(HijackBag2.class, "size");
+    private static final AtomicIntegerFieldUpdater<HijackBag2> capUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(HijackBag2.class, "capacity");
+    private static final AtomicReferenceFieldUpdater<HijackBag2, AtomicReferenceArray> mapUpdater =
+            AtomicReferenceFieldUpdater.newUpdater(HijackBag2.class, AtomicReferenceArray.class, "map");
+    private static final SpinMutex mutex = new Treadmill2();
+    private static final AtomicInteger serial = new AtomicInteger();
     public final int reprobes;
 
+//    final static float PRESSURE_THRESHOLD = 0.05f;
     //TODO use atomic field updater
     public final AtomicFloat pressure = new AtomicFloat();
-
-
+    /**
+     * internal random number generator, used for deciding hijacks but not sampling.
+     */
+    final Random rng;
+    /**
+     * id unique to this bag instance, for use in treadmill
+     */
+    private final int id;
     public float mass;
+    volatile AtomicReferenceArray<V> map;
+    volatile AtomicIntegerArray maf;
+    volatile private int size, capacity;
     private float min;
     private float max;
 
-
-    protected HijackBag(int initialCapacity, int reprobes) {
+    protected HijackBag2(int initialCapacity, int reprobes) {
         this.id = serial.getAndIncrement();
 
         this.rng =
                 new SplitMix64Random(id); //supposedly even faster
-                //new XorShift128PlusRandom(id); //lighter-weight, non-atomic
-                //new XoRoShiRo128PlusRandom(id);
+        //new XorShift128PlusRandom(id); //lighter-weight, non-atomic
+        //new XoRoShiRo128PlusRandom(id);
 
-        assert(reprobes < Byte.MAX_VALUE-1); //for sizing of byte[] rank in update(..)
+        assert (reprobes < Byte.MAX_VALUE - 1); //for sizing of byte[] rank in update(..)
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
+        this.maf = EMPTY_INT_ARRAY;
 
         setCapacity(initialCapacity);
 
         int initialSpace = Math.min(reprobes, capacity);
-        resize(initialSpace);
+        resize(initialSpace, false);
     }
 
-    protected HijackBag(int reprobes) {
+    protected HijackBag2(int reprobes) {
         this(0, reprobes);
     }
 
@@ -116,35 +105,50 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return weakestPri <= newPri;
     }
 
-    static <X, Y> void forEachActive(HijackBag<X, Y> bag, AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
+    static <X, Y> void forEachActive(HijackBag2<X, Y> bag, AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
         forEach(map, bag::active, e);
     }
 
-    @Override
-    public void pressurize(float f) {
-        pressure.add(f);
-    }
-
-    public static <Y> void forEach(AtomicReferenceArray<Y> map,  Predicate<Y> accept,   Consumer<? super Y> e) {
+    public static <Y> void forEach(AtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
         for (int c = map.length(), j = 0; j < c; j++) {
-            Y v = map
-                    .get(j);
-                    //.getPlain(j);
+            Y v = map.get(j);
             if (v != null && accept.test(v)) {
                 e.accept(v);
+            }
+        }
+    }
+    public static <Y> void forEach(AtomicReferenceArray<Y> map, AtomicIntegerArray maf, ObjectFloatProcedure<? super Y> e) {
+        for (int c = map.length(), j = 0; j < c; j++) {
+            Y v = map.get(j);
+            if (v != null) {
+                e.value(v, Float.intBitsToFloat(maf.get(j*2+1)));
             }
         }
     }
 
     public static <Y> void forEach(AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
         for (int c = map.length(), j = -1; ++j < c; ) {
-            Y v = map
-                    .get(j);
-                    //.getPlain(j);
+            Y v = map.get(j);
             if (v != null) {
                 e.accept(v);
             }
         }
+    }
+
+    /**
+     * SUSPECT
+     */
+    public static <X> Stream<X> stream(AtomicReferenceArray<X> a) {
+        return IntStream.range(0, a.length()).mapToObj(a::get);//.filter(Objects::nonNull);
+    }
+
+    public static <X> List<X> list(AtomicReferenceArray<X> a) {
+        return IntStream.range(0, a.length()).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    @Override
+    public void pressurize(float f) {
+        pressure.add(f);
     }
 
     @Override
@@ -157,7 +161,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             int s = space();
             if (newCapacity < s /* must shrink */) {
                 s = newCapacity;
-                resize(s);
+                resize(s, true);
             }
 
 
@@ -167,8 +171,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         //return false;
     }
 
-    protected void resize(int newSpace) {
+    protected void resize(int newSpace, boolean saveExisting) {
         final AtomicReferenceArray<V>[] prev = new AtomicReferenceArray[1];
+        final AtomicIntegerArray[] pref = new AtomicIntegerArray[1];
 
         //ensures sure only the thread successful in changing the map instance is the one responsible for repopulating it,
         //in the case of 2 simultaneous threads deciding to allocate a replacement:
@@ -176,47 +181,43 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (next == mapUpdater.updateAndGet(this, (x) -> {
             if (x.length() != newSpace) {
                 prev[0] = x;
+                pref[0] = maf;
+                AtomicIntegerArray nef = newSpace != 0 ? new AtomicIntegerArray(newSpace*2) : EMPTY_INT_ARRAY;
+                maf = nef;
                 return next;
             } else return x;
         })) {
 
-
-            //copy items from the previous map into the new map. they will be briefly invisibile while they get transferred.  TODO verify
-            forEachActive(this, prev[0], (b) -> {
-                if (put(b) == null)
+            if (saveExisting) {
+                //copy items from the previous map into the new map. they will be briefly invisibile while they get transferred.  TODO verify
+                forEach(prev[0], pref[0], (V b, float bPri) -> {
+                    if (bPri==bPri && put(b, bPri) == null)
+                        _onRemoved(b);
+                });
+            } else {
+                forEachActive(this, prev[0], (b) -> {
                     _onRemoved(b);
-            });
+                });
+            }
 
             commit(null);
         }
-    }
 
+    }
 
     @Override
     public void clear() {
-        AtomicReferenceArray<V> x = reset(reprobes);
-        pressure.set(0);
-        if (x != null) {
-            forEachActive(this, x, this::_onRemoved);
-        }
-
+        reset(reprobes);
     }
 
     @Nullable
-    private AtomicReferenceArray<V> reset(int space) {
-
+    private void reset(int space) {
         if (!sizeUpdater.compareAndSet(this, 0, 0)) {
-            AtomicReferenceArray<V> newMap = new AtomicReferenceArray<>(space);
-
-            AtomicReferenceArray<V> prevMap = mapUpdater.getAndSet(this, newMap);
-
-            commit();
-
-            return prevMap;
+            pressure.set(0);
+            resize(space, false);
         }
-
-        return null;
     }
+    //final static float PUT = (Finite, non-negative value)
 
     /**
      * the current capacity, which is less than or equal to the value returned by capacity()
@@ -236,15 +237,19 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return ((float) filled) / mm;
     }
 
-    enum Mode {
-        GET, PUT, REMOVE
-    }
+    /**
+     * core update function
+     */
+    private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, float mode, @Nullable MutableFloat overflowing) {
 
-    /** core update function */
-    private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable MutableFloat overflowing) {
+        AtomicReferenceArray<V> map;
+        AtomicIntegerArray maf;
+        int c;
+        do {
+            maf = this.maf;
+            map = this.map;
+        } while (maf.length() != 2 * (c = map.length())); //wait for any resizing operation to end
 
-        final AtomicReferenceArray<V> map = this.map;
-        int c = map.length();
         if (c == 0)
             return null;
 
@@ -254,19 +259,17 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         byte[] rank;
         float[] rpri;
         float incomingPri;
-        if (mode == Mode.PUT) {
-            if ((incomingPri = pri(incoming)) != incomingPri)
-                return null;
-            pressurize(incomingPri);
+
+        if (Float.isFinite(mode) /* PUT */) {
+            pressurize(incomingPri = mode);
             rank = new byte[reprobes];
             rpri = new float[reprobes];
+
         } else {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
             rpri = null;
             rank = null;
         }
-
-
 
 
         int mutexTicket = -1;
@@ -277,57 +280,58 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             if (start < 0)
                 start += c; //Fair wraparound: ex, -1 -> (c-1)
 
-            if (mode != GET) {
+            if (mode == mode /* PUT or REMOVE */) {
                 mutexTicket = mutex.start(id, hash);
             }
 
             probing:
             for (int i = start, probe = reprobes; probe > 0; probe--) {
+                int ph = maf.get(i*2);
+                if (ph==hash || ph == 0) {
 
-                V p = map.get(i); //probed value 'p'
+                    V p = map.get(i); //probed value 'p'
 
-                if (p != null && k.equals(key(p))) { //existing, should only occurr at most ONCE in this loop
-                    switch (mode) {
-
-                        case GET:
+                    if (p != null && k.equals(key(p))) { //existing, should only occurr at most ONCE in this loop
+                        if (mode != mode /* GET */) {
                             toReturn = p;
-                            break;
-
-                        case PUT:
+                        } else if (mode == REMOVE) {
+                            if (map.compareAndSet(i, p, null)) {
+                                maf.set(i*2, 0); //clear hash
+                                maf.set(i*2+1, Float.floatToIntBits(Float.NEGATIVE_INFINITY)); //clear pri
+                                toReturn = toRemove = p;
+                            }
+                        } else {
+                            //PUT
                             if (p == incoming) {
                                 toReturn = p; //identical match found, keep original
                             } else {
-                                V next = merge(p, incoming, overflowing);
-                                if (next != null && (next == p || map.compareAndSet(i, p, next))) {
-                                    if (next != p) {
+
+                                merge(maf, i, incomingPri, overflowing);
+                                if (incoming != null && (incoming == p || map.compareAndSet(i, p, incoming))) {
+                                    if (incoming != p) {
                                         toRemove = p; //replaced
-                                        toAdd = next;
+                                        toAdd = incoming;
                                     }
-                                    toReturn = next;
+                                    toReturn = incoming;
                                 }
                             }
-                            break;
 
-                        case REMOVE:
-                            if (map.compareAndSet(i, p, null)) {
-                                toReturn = toRemove = p;
-                            }
-                            break;
+                        }
+
+                        break probing; //successful if y!=null
                     }
-
-                    break probing; //successful if y!=null
                 }
 
                 if (++i == c) i = 0; //continue to next probed location
             }
 
-            if (mode == PUT && toReturn == null) {
+            if (rank != null /* PUT */ && toReturn == null) {
                 //attempt insert
 
                 //sort - this is only an approximation since values may change while this occurrs
 
-                byte j=0;
-                for (int i = start, probe = reprobes; probe > 0; probe--) {
+                byte j = 0;
+                for (int i = start, probe = reprobes; probe > 0; probe--, j++) {
                     V mi = map.get(i);
                     float mp;
                     if (mi == null) {
@@ -338,11 +342,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                         }
                         mp = 0; //value has changed, assume 0
                     } else {
-                        mp = priElse(mi, Float.NEGATIVE_INFINITY);
+                        mp = Float.intBitsToFloat(maf.get(i*2+1));
                     }
 
                     rank[j] = j;
-                    rpri[j++] = mp;
+                    rpri[j] = mp;
                     if (++i == c) i = 0; //continue to next probed location
                 }
 
@@ -353,21 +357,23 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     float power = incomingPri;
 
                     //FIGHT! starting with weakest
-                    combative_insert: for (int f = 0; f < reprobes; f++) {
-                        int i = rank[f]+start; //try against next weakest opponent
-                        if (i >= c) i-=c;
+                    combative_insert:
+                    for (int f = 0; f < reprobes; f++) {
+                        int i = rank[f] + start; //try against next weakest opponent
+                        if (i >= c) i -= c;
 
                         V existing = map.compareAndExchange(i, null, incoming);
                         if (existing == null) {
-
+                            maf.set(i*2+1, Float.floatToIntBits(power));
                             toReturn = toAdd = incoming;
                             break combative_insert; //took empty slot, done
 
                         } else {
                             //attempt HIJACK (tm)
 
-                            if (replace(power, existing)) {
+                            if (replace(power, i, existing, map, maf)) {
                                 if (map.compareAndSet(i, existing, incoming)) { //inserted
+                                    maf.set(i*2+1, Float.floatToIntBits(power));
                                     toRemove = existing;
                                     toReturn = toAdd = incoming;
                                     break combative_insert; //hijacked replaceable slot, done
@@ -381,7 +387,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             }
 
-            ready: {
+            ready:
+            {
                 int delta = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
                 if (delta != 0)
                     sizeUpdater.addAndGet(this, delta);
@@ -391,7 +398,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         } catch (Throwable t) {
             t.printStackTrace(); //should not happen
         } finally {
-            if (mode != GET) {
+            if (mode==mode /* PUT or REMOVE */) {
                 mutex.end(mutexTicket);
             }
         }
@@ -403,7 +410,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             if (attemptRegrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
                 //the insert has regrown the map so try reinserting this displaced item
                 if (toRemove != null) {
-                    update(key(toRemove), toRemove, Mode.PUT, null); //recurse, maybe set a limit on this cuckoo-like resize
+                    update(key(toRemove), toRemove, mode, null); //recurse, maybe set a limit on this cuckoo-like resize
                     toRemove = null;
                 }
             }
@@ -413,17 +420,16 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             _onRemoved(toRemove);
         }
 
-        if (mode == PUT && toAdd == null) {
+        if (rank != null && toAdd == null) {
 
             if (attemptRegrowForSize(size() + 1)) {
-                return update(k, incoming, PUT, overflowing); //try once more
+                return update(k, incoming, mode, overflowing); //try once more
             }
 
         }
 
         return toReturn;
     }
-
 
     protected int hash(Object x) {
 
@@ -437,38 +443,82 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return x.hashCode();
     }
 
+    @Override
+    public float pri(V key) {
+        return pri(hash(key), key, Float.NaN, false, 0);
+    }
 
-    /**
-     * if no existing value then existing will be null.
-     * this should modify the existing value if it exists,
-     * or the incoming value if none.
-     * <p>
-     * if adding content, pressurize() appropriately
-     * <p>
-     * <p>
-     * NOTE:
-     * this should usually equal the amount of priority increased by the
-     * insertion (considering the scale's influence too) as if there were
-     * no existing budget to merge with, even if there is.
-     * <p>
-     * this supports fairness so that existing items will not have a
-     * second-order budgeting advantage of not contributing as much
-     * to the presssure as new insertions.
-     * <p>
-     * if returns null, the merge is considered failed and will try inserting/merging
-     * at a different probe location
-     */
-    protected abstract V merge(V existing, V incoming, @Nullable MutableFloat overflowing);
+    private float pri(int keyHash, V key, float finiteToPutOrNaNToGet, boolean alreadyAcquiredMutex, int alreadyAcquiredMutexHash) {
+        AtomicReferenceArray<V> map;
+        AtomicIntegerArray maf;
+
+        do {
+            maf = this.maf;
+            map = this.map;
+        } while (maf.length() != 2 * map.length()); //wait for any resizing operation to end
+
+        return pri(keyHash, key, finiteToPutOrNaNToGet, alreadyAcquiredMutex, alreadyAcquiredMutexHash, map, maf);
+    }
+
+    private float pri(int keyHash, V key, float finiteToPutOrNaNToGet, boolean alreadyAcquiredMutex, int alreadyAcquiredMutexHash, AtomicReferenceArray<V> map, AtomicIntegerArray maf) {
+        int c = map.length();
+        if (c == 0)
+            return Float.NaN;//not found
+
+        int start = (keyHash % c); //Math.min(Math.abs(hash), Integer.MAX_VALUE - reprobes - 1); //dir ? iStart : (iStart + reprobes) - 1;
+        if (start < 0)
+            start += c; //Fair wraparound: ex, -1 -> (c-1)
+
+        //TODO provide optional hint where to start looking among the reprobes
+        for (int i = start, probe = reprobes; probe > 0; probe--, i++) {
+            if (i == c)
+                i = 0;
+            int ih = maf.get(i*2);
+            if (ih == keyHash) {
+                boolean acquire = !alreadyAcquiredMutex || alreadyAcquiredMutexHash != ih;
+                int m = acquire ? mutex.start(id, ih) : -1;
+                try {
+                    V vi = map.get(i);
+                    if (vi!=null && key.equals(vi)) {
+                        if (finiteToPutOrNaNToGet==finiteToPutOrNaNToGet) {
+                            maf.set(i * 2 + 1, Float.floatToIntBits(finiteToPutOrNaNToGet));
+                            return finiteToPutOrNaNToGet;
+                        } else
+                            return Float.intBitsToFloat(maf.get(i * 2 + 1));
+                    }
+                } finally {
+                    if (acquire)
+                        mutex.end(m);
+                }
+            }
+        }
+
+        return Float.NaN;
+    }
+
+    private void merge(AtomicIntegerArray maf, int index, float incoming, @Nullable MutableFloat overflowing) {
+        float existing = Float.intBitsToFloat(maf.get(index*2+1));
+        float result = merge(existing, incoming);
+        if(result > 1) {
+            overflowing.add(result-1f);
+            result = 1f;
+            if (result!=existing) {
+                maf.set(index*2+1, Float.floatToIntBits(result));
+            }
+        }
+    }
+
+    abstract protected float merge(float existing, float incoming);
 
     /**
      * true if the incoming priority is sufficient to replace the existing value
      * can override in subclasses for custom replacement policy.
-     *
+     * <p>
      * a potential eviction can be intercepted here
      */
-    protected boolean replace(float i, V existing) {
-        float e = pri(existing);
-        return e != e || replace(i, e);
+    protected boolean replace(float newValue, int index, V existing, AtomicReferenceArray<V> map, AtomicIntegerArray maf) {
+        float e = pri(hash(existing), existing, Float.NaN /* GET */,false, 0, map, maf);
+        return e != e || replace(newValue, e);
     }
 
     protected boolean replace(float incoming, float existing) {
@@ -484,7 +534,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     protected boolean hijackFair(float newPri, float oldPri) {
         return hijackFair(newPri, oldPri, 1.0f);
     }
-    /** roulette fair */
+
+    /**
+     * roulette fair
+     */
     protected boolean hijackFair(float newPri, float oldPri, float temperature) {
 
 
@@ -497,10 +550,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             float thresh = newPriSlice / (newPriSlice + oldPri);
             return rng.nextFloat() < thresh;
         } else {
-            return (newPri >= priEpsilon) || (rng.nextFloat() < (1.0f /reprobes));
+            return (newPri >= priEpsilon) || (rng.nextFloat() < (1.0f / reprobes));
         }
     }
-
 
     protected boolean hijackSoftmax2(float newPri, float oldPri, Random random) {
         //newPri = (float) Math.exp(newPri*2*reprobes); //divided by temperature, reprobes ~ 0.5/temperature
@@ -519,30 +571,35 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     /**
      */
     @Override
-    public final V put(/*@NotNull*/ V v,  /* TODO */ @Nullable MutableFloat overflowing) {
+    @Deprecated public final V put(/*@NotNull*/ V v,  /* TODO */ @Nullable MutableFloat overflowing) {
 
-//        commitIfPressured();
-
+        throw new UnsupportedOperationException();
 //        float p = pri(v);
 //        if (p != p)
-//            return null; //already deleted
+//            return null; //deleted pri = reject at input
+//
+//        return put(v, p, overflowing);
+    }
+
+    /** prefferred put method */
+    public final V put(V v, float p) {
+        return put(v, p, null);
+    }
+
+    /** prefferred put method */
+    public final V put(V v, float p, @Nullable MutableFloat overflowing) {
         K k = key(v);
         if (k == null)
             return null;
 
-        //int c = capacity;
-        //int s = size;
-        //if (((float) Math.abs(c - s)) / c < PRESSURE_THRESHOLD)
 
-
-        V x = update(k, v, PUT, overflowing);
+        V x = update(k, v, p, overflowing);
         if (x == null) {
             onReject(v);
         }
 
         return x;
     }
-
 
     @Override
     public @Nullable V get(/*@NotNull*/ Object key) {
@@ -555,7 +612,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     @Override
-    public HijackBag<K, V> sample(/*@NotNull*/ Random random, BagCursor<? super V> each) {
+    public HijackBag2<K, V> sample(/*@NotNull*/ Random random, BagCursor<? super V> each) {
         final int s = size();
         if (s <= 0)
             return this;
@@ -584,10 +641,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             //0. seek to some non-null item
             int prefilled = 0;
-            while ((nulls+prefilled) < c /*&& size > 0*/) {
-                V v = map
-                        .get(i);
-                        //.getPlain(i);
+            while ((nulls + prefilled) < c /*&& size > 0*/) {
+                V v = map.get(i);
+                //.getPlain(i);
 
                 //move ahead now in case it terminates on the first try, it wont remain on the same value when the next phase starts
                 if (direction) {
@@ -612,22 +668,21 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             nulls = 0;
             while (nulls < c/* && size > 0*/) {
-                V v0 = map
-                        .get(i);
-                        //.getPlain(i);
+                V v0 = map.get(i);
+                //.getPlain(i);
                 float p;
                 if (v0 == null) {
                     nulls++;
-                } else  if ((p = pri(v0)) == p /* not deleted*/) {
-                    nulls=0; //reset contiguous null counter
+                } else if ((p = pri(v0)) == p /* not deleted*/) {
+                    nulls = 0; //reset contiguous null counter
 
                     //shift window down, erasing value (if any) in position 0
                     System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
-                    wVal[windowCap - 1] = v0;
                     System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
+                    wVal[windowCap - 1] = v0;
                     wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON); //to differentiate from absolute zero
 
-                    int which = Roulette.selectRoulette(windowCap, r -> wPri[r], random);
+                    int which = Roulette.selectRoulette(windowCap, (r) -> wPri[r], random);
                     V v = (V) wVal[which];
                     if (v == null)
                         continue; //shouldnt happen but just in case
@@ -638,7 +693,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             //modified = true;
                             //else: already removed
 
-                            sizeUpdater.decrementAndGet(this);
+                            sizeUpdater.addAndGet(this, -1);
                             _onRemoved(v);
                         }
                     }
@@ -647,7 +702,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                         break;
                     } else if (next.remove) {
                         //prevent the removed item from further selection
-                        if (which==windowCap-1) {
+                        if (which == windowCap - 1) {
                             //if it's in the last place, it will be replaced in next cycle anyway
                             wVal[which] = null;
                             wPri[which] = 0;
@@ -674,7 +729,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
     }
 
-
     @Override
     public int size() {
         return Math.max(0, sizeUpdater.get(this));
@@ -684,7 +738,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     public void forEach(Consumer<? super V> e) {
         forEachActive(this, map, e);
     }
-
 
     @Override
     public Spliterator<V> spliterator() {
@@ -703,7 +756,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return IntStream.range(0, map.length()).mapToObj(map::get).filter(Objects::nonNull);
     }
 
-
     /**
      * always >= 0
      */
@@ -712,11 +764,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return Math.max(0, pressure.getAndSet(0.0f));  //max() in case it becomes negative
     }
 
-
     @Override
     public float mass() {
         return mass;
     }
+
+
+    //final AtomicBoolean busy = new AtomicBoolean(false);
 
     @Override
     public float priMin() {
@@ -728,11 +782,15 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return max;
     }
 
-
-    //final AtomicBoolean busy = new AtomicBoolean(false);
-
     @Override
-    public HijackBag<K, V> commit(@Nullable Consumer<V> update) {
+    public HijackBag2<K, V> commit(@Nullable Consumer<V> update) {
+        AtomicReferenceArray<V> map;
+        AtomicIntegerArray maf;
+        int c;
+        do {
+            maf = this.maf;
+            map = this.map;
+        } while (maf.length() != 2 * (c = map.length())); //wait for any resizing operation to end
 
 
 //        try {
@@ -746,29 +804,44 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
         int count = 0;
 
-        AtomicReferenceArray<V> a = map;
+        for (int i = 0; i < c; i++) {
 
-        int len = a.length();
-        for (int i = 0; i < len; i++) {
-            V f = a
-                    .get(i);
-                    //.getPlain(i);
+            V f = map.get(i);
             if (f == null)
                 continue;
 
-            float p = priUpdate(f);
+            int fh = maf.get(i*2);
+            float p = Float.intBitsToFloat(maf.get(i*2+1));
+
             if (p == p) {
+
+                float pp = p;
+
                 if (update != null) {
                     update.accept(f);
-                    p = priElse(f, 0); //HACK in case it changed TODO make update.accept return the float pri
+                    p = Util.nanOr(p, 0);//HACK in case it changed TODO make update.accept return the float pri
                 }
                 mass += p;
                 if (p > max) max = p;
                 if (p < min) min = p;
                 count++;
+                if (map.get(i) != f) {
+                    //changed already; ignore entry
+                    continue;
+                }
+
+                if (pp!=p)
+                    maf.set(i*2+1, Float.floatToIntBits(p));
+
             } else {
-                if (a.compareAndSet(i, f, null)) {
-                    _onRemoved(f); //TODO this may call onRemoved unnecessarily if the map has changed (ex: resize)
+                if (maf.compareAndSet(i*2, fh, 0)) {
+                    if (map.compareAndSet(i, f, null)) {
+                        _onRemoved(f); //TODO this may call onRemoved unnecessarily if the map has changed (ex: resize)
+                    } else {
+                        //?
+                    }
+                } else {
+                    //?
                 }
             }
         }
@@ -776,12 +849,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         //assert(size() == count);
         sizeUpdater.set(this, count);
 
+        this.mass = mass;
         if (count > 0) {
-            this.mass = mass;
             this.min = min;
             this.max = max;
         } else {
-            this.mass = 0;
             this.min = this.max = 0;
         }
 
@@ -798,7 +870,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     }
 
-    protected boolean attemptRegrowForSize(int s) {
+    private boolean attemptRegrowForSize(int s) {
         //grow if load is reached
         int sp = space();
         int cp = capacity;
@@ -809,28 +881,26 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 ns = cp; //just grow to full capacity, it is close enough
 
             if (ns != sp) {
-                resize(ns);
+                resize(ns, true);
                 return true;
             }
         }
         return false;
     }
 
+    @Deprecated
     private void _onRemoved(V x) {
         onRemove(x);
     }
 
+    @NotNull
+    protected HijackBag2<K, V> update(@Nullable Consumer<V> each) {
 
+        if (each != null) {
+            forEach(each);
+        }
 
-    /**
-     * SUSPECT
-     */
-    public static <X> Stream<X> stream(AtomicReferenceArray<X> a) {
-        return IntStream.range(0, a.length()).mapToObj(a::get);//.filter(Objects::nonNull);
-    }
-
-    public static <X> List<X> list(AtomicReferenceArray<X> a) {
-        return IntStream.range(0, a.length()).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
+        return this;
     }
 
 //    /**
@@ -889,3 +959,4 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 //    }
 
 }
+

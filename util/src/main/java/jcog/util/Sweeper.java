@@ -417,7 +417,7 @@ public class Sweeper {
 
     private class DoSweep implements Callable<Boolean>, Runnable {
         @Override
-        public Boolean call() throws Exception {
+        public Boolean call() {
             return queueingSweep();
         }
 

@@ -27,7 +27,7 @@ public class SlidingDFT
 	private final double[]		sin;
 	private final float[][]		timeBuf;
 	private final double[][]	fftBufD;
-	private int[]				timeBufIdx;
+	private final int[]				timeBufIdx;
 	
 	public SlidingDFT( int fftSize, int numChannels )
 	{

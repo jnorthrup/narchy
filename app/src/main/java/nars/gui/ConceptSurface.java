@@ -1,6 +1,6 @@
 package nars.gui;
 
-import jcog.bag.Bag;
+import jcog.list.table.Table;
 import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
@@ -35,7 +35,7 @@ public class ConceptSurface extends TabPane {
                     Plot2D p = new Plot2D(64, Plot2D.Line)
                             .add("pri", () -> {
 
-                                Bag<?, Activate> bag = ((AbstractExec) n.exe).active;
+                                Table<?,nars.control.Activate> bag = ((AbstractExec) n.exe).active;
                                 if (bag != null) {
                                     Concept ni = n.conceptualize(id);
                                     if (ni!=null) {

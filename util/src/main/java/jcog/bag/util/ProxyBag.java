@@ -72,7 +72,7 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
 
     @NotNull
     @Override
-    public Bag<X, Y> sample(Random rng, @NotNull Bag.BagCursor<? super Y> each) {
+    public Iterable<Y> sample(Random rng, @NotNull Bag.BagCursor<? super Y> each) {
         bag.sample(rng, each);
         return this;
     }
@@ -130,7 +130,7 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
     @Override
-    public Bag<X,Y> commit() {
+    public Iterable<Y> commit() {
         bag.commit();
         return this;
     }

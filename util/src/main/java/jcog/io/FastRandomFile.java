@@ -52,8 +52,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 //  }
 
   // This is used to do network file streaming so that the local file isn't actually opened
-  protected FastRandomFile(String inCharset) throws java.io.IOException
-  {
+  protected FastRandomFile(String inCharset) {
     myCharset = inCharset;
     //isI18N = Sage.I18N_CHARSET.equals(myCharset);
   }
@@ -126,7 +125,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   // If we can skip back the desired amount and just write it into the current buffer, then we will do that,
   // otherwise, we'll just skip back to write the one int and then be back at the current buffer
   // position as before the call
-  private byte[] intWriteBuf = new byte[4];
+  private final byte[] intWriteBuf = new byte[4];
   public void writeIntAtOffset(long targetFp, int s) throws java.io.IOException
   {
     byte b1 = (byte)((s >>> 24) & 0xFF);
@@ -314,7 +313,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           // Verify next byte starts with 10xxxxxx
           if ((c2 & 0xC0) != 0x80)
             throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
-                Integer.toString((int)c2, 16) + " count: " + incount);
+                Integer.toString(c2, 16) + " count: " + incount);
           chararr[outcount++]=(char)(((c & 0x1F) << 6) | (c2 & 0x3F));
         }
         else if (x == 14)
@@ -328,14 +327,14 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           // Verify next bytes start with 10xxxxxx
           if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
             throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
-                Integer.toString((int)c2, 16) + " char3: " + Integer.toString((int)c3, 16) + " count: " + incount);
+                Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
           chararr[outcount++]=(char)(((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F));
         }
         else
         {
           // No need to support beyond this, as we only have 16 bit chars in Java
           throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
-              Integer.toString((int)c, 16) + " count:" + incount);
+              Integer.toString(c, 16) + " count:" + incount);
         }
       }
       return new String(chararr, 0, outcount);
@@ -403,7 +402,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           // Verify next byte starts with 10xxxxxx
           if ((c2 & 0xC0) != 0x80)
             throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
-                Integer.toString((int)c2, 16) + " count: " + incount);
+                Integer.toString(c2, 16) + " count: " + incount);
           sb.setCharAt(outcount++, (char)(((c & 0x1F) << 6) | (c2 & 0x3F)));
         }
         else if (x == 14)
@@ -417,14 +416,14 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           // Verify next bytes start with 10xxxxxx
           if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
             throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
-                Integer.toString((int)c2, 16) + " char3: " + Integer.toString((int)c3, 16) + " count: " + incount);
+                Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
           sb.setCharAt(outcount++, (char)(((c & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F)));
         }
         else
         {
           // No need to support beyond this, as we only have 16 bit chars in Java
           throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
-              Integer.toString((int)c, 16) + " count:" + incount);
+              Integer.toString(c, 16) + " count:" + incount);
         }
       }
       sb.setLength(outcount);
@@ -440,7 +439,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         readFully(bytes, 0, len);
         return new StringBuffer(new String(bytes, myCharset));
       }
-      else return new StringBuffer("");
+      else return new StringBuffer();
     }
   }
   public void writeUTF(String s) throws java.io.IOException
@@ -528,7 +527,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       write((byte)s.charAt(i));
   }
 
-  private byte writeBuffer[] = new byte[8];
+  private final byte[] writeBuffer = new byte[8];
   public void writeInt(int s)	throws java.io.IOException
   {
     writeBuffer[0] = (byte)((s >>> 24) & 0xFF);
@@ -644,8 +643,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     readFully(b, 0, b.length);
   }
 
-  public String readLine() throws java.io.IOException
-  {
+  public String readLine() {
     throw new UnsupportedOperationException();
   }
 

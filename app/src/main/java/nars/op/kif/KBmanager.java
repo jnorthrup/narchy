@@ -51,12 +51,12 @@ public class KBmanager implements Serializable {
     private static KBmanager manager = new KBmanager();
     protected static final String CONFIG_FILE = "config.xml";
 
-    private HashMap<String,String> preferences = new HashMap<String,String>();
+    private final HashMap<String,String> preferences = new HashMap<String,String>();
     public HashMap<String,KB> kbs = new HashMap<String,KB>();
     public static boolean initialized = false;
     public static boolean initializing = false;
     public static boolean debug = false;
-    private int oldInferenceBitValue = -1;
+    private final int oldInferenceBitValue = -1;
     private String error = "";
 
     public static final List<String> configKeys =
@@ -723,7 +723,7 @@ public class KBmanager implements Serializable {
      */
     public static String escapeFilename(String fname) {
 
-        StringBuilder newstring = new StringBuilder("");
+        StringBuilder newstring = new StringBuilder();
         for (int i = 0; i < fname.length(); i++) {
             if (fname.charAt(i) == 92 && fname.charAt(i+1) != 92)
                 newstring = newstring.append("\\\\");
@@ -747,7 +747,7 @@ public class KBmanager implements Serializable {
 
     public KB addKB(String name, boolean isVisible) {
 
-        KB kb = new KB(name,(String) preferences.get("kbDir"), isVisible);
+        KB kb = new KB(name, preferences.get("kbDir"), isVisible);
         kbs.put(name.intern(),kb);
         return kb;
     }
@@ -847,7 +847,7 @@ public class KBmanager implements Serializable {
 
         if (!kbs.containsKey(name))
             System.out.println("KBmanager.getKB(): KB " + name + " not found.");
-        return (KB) kbs.get(name.intern());
+        return kbs.get(name.intern());
     }
 
     /** ***************************************************************
@@ -884,8 +884,8 @@ public class KBmanager implements Serializable {
         HashSet<String> names = new HashSet<String>();
         Iterator<String> it = kbs.keySet().iterator();
         while (it.hasNext()) {
-            String kbName = (String) it.next();
-            KB kb = (KB) getKB(kbName);
+            String kbName = it.next();
+            KB kb = getKB(kbName);
             if (kb.isVisible())
                 names.add(kbName);
         }
@@ -900,8 +900,8 @@ public class KBmanager implements Serializable {
         ArrayList<String> result = new ArrayList<String>();
         Iterator<String> it = kbs.keySet().iterator();
         while (it.hasNext()) {
-            String kbName = (String) it.next();
-            KB kb = (KB) getKB(kbName);
+            String kbName = it.next();
+            KB kb = getKB(kbName);
             result.addAll(kb.availableLanguages());
         }
         return result;
@@ -930,7 +930,7 @@ public class KBmanager implements Serializable {
             System.out.println("Error in KBmanager.getPref(): bad key: " + key);
             return "";
         }
-        String ans = (String) preferences.get(key);
+        String ans = preferences.get(key);
         if (ans == null)
             ans = "";
         return ans;

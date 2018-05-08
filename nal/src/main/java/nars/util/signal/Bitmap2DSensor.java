@@ -250,7 +250,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 //                this.conf =
 //                        nar.confDefault(BELIEF)
             //w2c(Util.lerp( (meanPixelsProcessedPerDuration) / numPixels, c2w(nar.confMin.floatValue()), c2w(nar.confDefault(BELIEF))))
-            ;
 
             //System.out.println(meanPixelsProcessedPerDuration + "/" + numPixels + " -> " + conf + "%");
 

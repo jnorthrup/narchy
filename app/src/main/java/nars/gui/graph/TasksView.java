@@ -178,7 +178,7 @@ public class TasksView extends MutableContainer {
         b.id.move(-delta.x * s, -delta.y * s);
     }
 
-    public void loadTasks(File f) throws IOException {
+    public void loadTasks(File f) {
         //NARS.shell().inputBinary(f).tasks().map(TaskIcon::new).collect(Collectors.toCollection(() -> children));
         throw new TODO();
     }

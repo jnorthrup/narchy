@@ -5,7 +5,7 @@ import jurls.reinforcementlearning.domains.wander.brain.Action;
 
 public class TurnRight extends Action {
 	private static final long serialVersionUID = 1L;
-	private Player player;
+	private final Player player;
 
 	public TurnRight(Player player) {
 		this.player = player;

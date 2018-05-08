@@ -19,7 +19,7 @@ public class Maze1DEnv extends Environment {
 	private final int REWARD_POSITION = 2;
 	private final int size;
 	private int reward;
-	private int observation;
+	private final int observation;
 	private int position;
 
 	public Maze1DEnv(int size) {

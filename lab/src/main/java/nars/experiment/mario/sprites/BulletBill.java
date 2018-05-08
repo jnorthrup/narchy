@@ -117,10 +117,7 @@ public class BulletBill extends Sprite
 
         if (xD > -16 && xD < 16)
         {
-            if (yD > -height && yD < fireball.height)
-            {
-                return true;
-            }
+            return yD > -height && yD < fireball.height;
         }
         return false;
     }      

@@ -121,9 +121,8 @@ public class Ghost extends Entity {
 				dirs.add(d);
 			
 		}
-		
-		if(dirs.contains(this.dir.opposite()))
-			dirs.remove(this.dir.opposite());
+
+        dirs.remove(this.dir.opposite());
 		
 		return dirs;
 		

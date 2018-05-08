@@ -323,7 +323,7 @@ public class DecisionTree<K, V> {
 
         public Stream<Node<V>> recurse() {
             return isEmpty() ? Stream.of(this) :
-                    Stream.concat(Stream.of(this),Streams.concat(stream().map(Node<V>::recurse).toArray(Stream[]::new)));
+                    Stream.concat(Stream.of(this),Streams.concat(stream().map(Node::recurse).toArray(Stream[]::new)));
         }
 
         public static <V> Node<V> feature(Predicate feature) {

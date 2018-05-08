@@ -161,7 +161,7 @@ public class PriMap<K> {
                 if (!first) {
                     appendable.append(", ");
                 }
-                appendable.append((K) key).append("=").append(this.values[i]);
+                appendable.append(key).append("=").append(this.values[i]);
                 first = false;
             }
         }
@@ -295,7 +295,7 @@ public class PriMap<K> {
         int index = this.probe(key);
 
         Object ki = this.keys[index];
-        if (isNonSentinel(ki) && nullSafeEquals((K) ki, key)) {
+        if (isNonSentinel(ki) && nullSafeEquals(ki, key)) {
             // key already present in map
             this.values[index] = value;
             return;
@@ -317,7 +317,7 @@ public class PriMap<K> {
 
     protected boolean removeKeyAtIndex(K key, int index) {
         Object ki = this.keys[index];
-        if (isNonSentinel(ki) && nullSafeEquals((K) ki, key)) {
+        if (isNonSentinel(ki) && nullSafeEquals(ki, key)) {
             this.occupiedWithSentinels++;
             this.keys[index] = REMOVED_KEY;
             this.values[index] = EMPTY_VALUE;
@@ -354,7 +354,7 @@ public class PriMap<K> {
     public short getIfAbsentPut(K key, short value) {
         int index = this.probe(key);
         Object ki = this.keys[index];
-        if (isNonSentinel(ki) && nullSafeEquals((K) ki, key)) {
+        if (isNonSentinel(ki) && nullSafeEquals(ki, key)) {
             return this.values[index];
         }
         this.addKeyValueAtIndex(key, value, index);
@@ -368,7 +368,7 @@ public class PriMap<K> {
 
     public short updateValue(K key, short initialValueIfAbsent, ShortToShortFunction function) {
         int index = this.probe(key);
-        if (isNonSentinel(this.keys[index]) && nullSafeEquals((K) this.keys[index], key)) {
+        if (isNonSentinel(this.keys[index]) && nullSafeEquals(this.keys[index], key)) {
             this.values[index] = function.valueOf(this.values[index]);
             return this.values[index];
         }
@@ -393,7 +393,7 @@ public class PriMap<K> {
 
     protected short addToValue(K key, short toBeAdded) {
         int index = this.probe(key);
-        if (isNonSentinel(this.keys[index]) && nullSafeEquals((K) this.keys[index], key)) {
+        if (isNonSentinel(this.keys[index]) && nullSafeEquals(this.keys[index], key)) {
             short v = this.values[index];
             if (v == -1)
                 v = toBeAdded; //NaN -> value
@@ -424,7 +424,7 @@ public class PriMap<K> {
         int index = this.probe(key);
         short v0, v;
         Object ki = this.keys[index];
-        if (isNonSentinel(ki) && nullSafeEquals((K) ki, key)) {
+        if (isNonSentinel(ki) && nullSafeEquals(ki, key)) {
             v0 = this.values[index];
             assert (v0 >= 0);
 //            if (v0 < 0)
@@ -459,7 +459,7 @@ public class PriMap<K> {
 
     public short getIfAbsent(Object key, short ifAbsent) {
         int index = this.probe(key);
-        if (isNonSentinel(this.keys[index]) && nullSafeEquals((K) this.keys[index], key)) {
+        if (isNonSentinel(this.keys[index]) && nullSafeEquals(this.keys[index], key)) {
             return this.values[index];
         }
         return ifAbsent;
@@ -468,7 +468,7 @@ public class PriMap<K> {
 
     public boolean containsKey(Object key) {
         int index = this.probe(key);
-        return isNonSentinel(this.keys[index]) && nullSafeEquals((K) this.keys[index], key);
+        return isNonSentinel(this.keys[index]) && nullSafeEquals(this.keys[index], key);
     }
 
 //
@@ -604,13 +604,8 @@ public class PriMap<K> {
 
     private static boolean nullSafeEquals(Object value, Object other) {
         if (value == null) {
-            if (other == null) {
-                return true;
-            }
-        } else if (other == value || value.equals(other)) {
-            return true;
-        }
-        return false;
+            return other == null;
+        } else return other == value || value.equals(other);
     }
 
     private void resize(int sizeToAllocate) {
@@ -795,7 +790,7 @@ public class PriMap<K> {
             this.currentKey = (K) PriMap.this.keys[this.position];
             this.isCurrentKeySet = true;
             this.position++;
-            return (K) this.currentKey;
+            return this.currentKey;
         }
 
 

@@ -72,12 +72,12 @@ public class BayazitDecomposer {
 
 	public static boolean isCounterClockWise(FasterList<v2> vect) {
 		// We just return true for lines
-		return vect.size() < 3 ? true : getSignedArea(vect) > 0.0f;
+		return vect.size() < 3 || getSignedArea(vect) > 0.0f;
 	}
 
 	public static boolean isCounterClockWise(v2[] vect) {
 		// We just return true for lines
-		return vect.length < 3 ? true : getSignedArea(vect) > 0.0f;
+		return vect.length < 3 || getSignedArea(vect) > 0.0f;
 	}
 
 	// / <summary>

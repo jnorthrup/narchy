@@ -575,7 +575,7 @@ public final class Console extends Globals {
 	    if (cls.downloadname.length() - text > i) {
 		y = x - i - 11;
 		int end = text + i - 1;
-			dlbar.append(cls.downloadname.substring(text, end));
+			dlbar.append(cls.downloadname, text, end);
 		dlbar.append("...");
 	    } else {
 		dlbar.append(cls.downloadname.substring(text));

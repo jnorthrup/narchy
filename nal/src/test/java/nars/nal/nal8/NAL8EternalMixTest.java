@@ -25,7 +25,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
-        test.nar.termVolumeMax.set(20);
+        test.nar.termVolumeMax.set(28);
     }
 
     @Test
@@ -203,7 +203,7 @@ public class NAL8EternalMixTest extends NALTest {
 
                 .input("a:b! :|:")
                 .inputAt(10, "(( c:d &&+5 e:f ) ==>+0 a:b).")
-                .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, 0)
+                .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, -5)
                 .mustNotOutput(cycles, "( c:d &&+5 e:f)", GOAL, ETERNAL)
         ;
     }
@@ -412,11 +412,11 @@ public class NAL8EternalMixTest extends NALTest {
         TestNAR tester = test;
 
         int when = 4;
-        tester.input("( ( hold:t2 &&+5 (att1 &&+5 open:t1)) ==>+5 opened:t1).");
+        tester.input("( ( hold:t2 &&+1 (att1 &&+1 open:t1)) ==>+1 opened:t1).");
         tester.inputAt(when, "hold:t2. :|:");
 
-        String result = "((att1 &&+5 open:t1) ==>+5 opened:t1)";
-        tester.mustBelieve(cycles, result, 1.0f, 0.81f, when + 5);
+        String result = "((att1 &&+1 open:t1) ==>+1 opened:t1)";
+        tester.mustBelieve(cycles, result, 1.0f, 0.81f, when + 1);
 
     }
 

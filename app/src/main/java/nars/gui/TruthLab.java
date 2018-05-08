@@ -183,7 +183,7 @@ public class TruthLab extends Gridding {
 
             List<Surface> cc = $.newArrayList();
 
-            Concept c = (TaskConcept) n.concept(term);
+            Concept c = n.concept(term);
             if (c == null) {
 
             } else {

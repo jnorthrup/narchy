@@ -78,19 +78,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 return false;
 //        }
 
-        if (a.term().equals(b.term())) {
-
-//            //clear cyclic state if either is not cyclic
-//            boolean ac = a.isCyclic();
-//            boolean bc = b.isCyclic();
-//            if (!ac && bc)
-//                b.setCyclic(false);
-//            else if (ac && !bc)
-//                a.setCyclic(false);
-
-            return true;
-        }
-        return false;
+        return a.term().equals(b.term());
     }
 
     static @Nullable Task eviMax(@Nullable Task a, @Nullable Task b, long start, long end) {

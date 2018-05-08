@@ -1573,8 +1573,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                         t.cause(tc);
                     }
                 }
-            } else if (x == null)
-                return false; //filter nulls
+            } else return x != null;
 
             return true;
         }

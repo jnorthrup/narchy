@@ -9,7 +9,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestLSTM1 {
+public class LSTMTest {
 
 	@Test
 	public void testLSTM1() {

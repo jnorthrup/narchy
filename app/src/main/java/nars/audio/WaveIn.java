@@ -28,7 +28,7 @@ public class WaveIn extends NARService {
      * target power level, as fraction of the sample depth
      */
     //float autogain = 0.5f;
-    private float fps = 20f;
+    private final float fps = 20f;
     final MiniPID autogain = new MiniPID(1, 0.1, 0.4);
 
     WaveIn(NAR nar, Term id, Supplier<WaveCapture> capture) {

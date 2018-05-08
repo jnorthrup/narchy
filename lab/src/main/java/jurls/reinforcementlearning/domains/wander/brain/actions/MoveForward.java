@@ -5,7 +5,7 @@ import jurls.reinforcementlearning.domains.wander.brain.Action;
 
 public class MoveForward extends Action {
 	private static final long serialVersionUID = 1L;
-	private Player player;
+	private final Player player;
 
 	public MoveForward(Player player) {
 		this.player = player;

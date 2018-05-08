@@ -137,7 +137,7 @@ public class Optimize<X> {
 
 
             if (trace)
-                csv.out(ArrayUtils.add(point, (int)0, score));
+                csv.out(ArrayUtils.add(point, 0, score));
 
             maxScore[0] = Math.max(maxScore[0], score);
 //            System.out.println(

@@ -33,7 +33,7 @@ public class MIDITaskifier {
 
     float volume[] = new float[128];
 
-    public MIDITaskifier() throws LineUnavailableException {
+    public MIDITaskifier() {
         NAR nar = NARS.threadSafe();
         nar.termVolumeMax.set(16);
 

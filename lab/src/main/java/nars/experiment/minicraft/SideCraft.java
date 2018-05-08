@@ -23,7 +23,7 @@ public class SideCraft extends NAgentX {
 
     private final SideScrollMinicraft craft;
     private final Bitmap2DSensor<PixelBag> pixels;
-    private AutoclassifiedBitmap camAE;
+    private final AutoclassifiedBitmap camAE;
 
     public static void main(String[] args) {
         runRT(nar1 -> {

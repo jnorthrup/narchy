@@ -29,7 +29,7 @@ public class FingerResizeWindow extends FingerResize {
 
     @Override
     protected v2 pos(Finger finger) {
-        return new v2(finger.pointer.getX(), -finger.pointer.getY());
+        return new v2(Finger.pointer.getX(), -Finger.pointer.getY());
     }
 
     @Override

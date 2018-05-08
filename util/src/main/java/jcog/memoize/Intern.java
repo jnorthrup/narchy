@@ -339,41 +339,41 @@ public final class Intern {
         }
     }
 
-    private static WeakHasherMap</*@Interned*/ Integer, WeakReference</*@Interned*/ Integer>>
+    private static final WeakHasherMap</*@Interned*/ Integer, WeakReference</*@Interned*/ Integer>>
             internedIntegers;
-    private static WeakHasherMap</*@Interned*/ Long, WeakReference</*@Interned*/ Long>> internedLongs;
-    private static WeakHasherMap<int /*@Interned*/[], WeakReference<int /*@Interned*/[]>>
+    private static final WeakHasherMap</*@Interned*/ Long, WeakReference</*@Interned*/ Long>> internedLongs;
+    private static final WeakHasherMap<int /*@Interned*/[], WeakReference<int /*@Interned*/[]>>
             internedIntArrays;
-    private static WeakHasherMap<long /*@Interned*/[], WeakReference<long /*@Interned*/[]>>
+    private static final WeakHasherMap<long /*@Interned*/[], WeakReference<long /*@Interned*/[]>>
             internedLongArrays;
-    private static WeakHasherMap</*@Interned*/ Double, WeakReference</*@Interned*/ Double>>
+    private static final WeakHasherMap</*@Interned*/ Double, WeakReference</*@Interned*/ Double>>
             internedDoubles;
-    private static /*@Interned*/ Double internedDoubleNaN;
-    private static /*@Interned*/ Double internedDoubleZero;
-    private static WeakHasherMap<double /*@Interned*/[], WeakReference<double /*@Interned*/[]>>
+    private static final /*@Interned*/ Double internedDoubleNaN;
+    private static final /*@Interned*/ Double internedDoubleZero;
+    private static final WeakHasherMap<double /*@Interned*/[], WeakReference<double /*@Interned*/[]>>
             internedDoubleArrays;
-    private static WeakHasherMap<
+    private static final WeakHasherMap<
             /*@Nullable*/ /*@Interned*/ String /*@Interned*/[],
             WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>
             internedStringArrays;
-    private static WeakHasherMap<
+    private static final WeakHasherMap<
             /*@Nullable*/ /*@Interned*/ Object /*@Interned*/[],
             WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>
             internedObjectArrays;
-    private static WeakHasherMap<
+    private static final WeakHasherMap<
             SequenceAndIndices<int /*@Interned*/[]>, WeakReference<int /*@Interned*/[]>>
             internedIntSequenceAndIndices;
-    private static WeakHasherMap<
+    private static final WeakHasherMap<
             SequenceAndIndices<long /*@Interned*/[]>, WeakReference<long /*@Interned*/[]>>
             internedLongSequenceAndIndices;
-    private static WeakHasherMap<
+    private static final WeakHasherMap<
             SequenceAndIndices<double /*@Interned*/[]>, WeakReference<double /*@Interned*/[]>>
             internedDoubleSequenceAndIndices;
-    private static WeakHasherMap<
+    private static final WeakHasherMap<
             SequenceAndIndices</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>,
             WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>>
             internedObjectSequenceAndIndices;
-    private static WeakHasherMap<
+    private static final WeakHasherMap<
             SequenceAndIndices</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>,
             WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>>
             internedStringSequenceAndIndices;
@@ -552,7 +552,7 @@ public final class Intern {
             return result1;
         } else {
             @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
-                    /*@Interned*/ Integer result = (/*@Interned*/ Integer) a;
+                    /*@Interned*/ Integer result = a;
             internedIntegers.put(result, new WeakReference</*@Interned*/ Integer>(result));
             return result;
         }
@@ -600,7 +600,7 @@ public final class Intern {
             return result1;
         } else {
             @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
-                    /*@Interned*/ Long result = (/*@Interned*/ Long) a;
+                    /*@Interned*/ Long result = a;
             internedLongs.put(result, new WeakReference</*@Interned*/ Long>(result));
             return result;
         }
@@ -655,7 +655,7 @@ public final class Intern {
             return result1;
         } else {
             @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
-                    /*@Interned*/ int[] result = (int /*@Interned*/[]) a;
+                    /*@Interned*/ int[] result = a;
             internedIntArrays.put(result, new WeakReference<int /*@Interned*/[]>(result));
             return result;
         }
@@ -679,7 +679,7 @@ public final class Intern {
             return result1;
         } else {
             @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
-                    /*@Interned*/ long[] result = (long /*@Interned*/[]) a;
+                    /*@Interned*/ long[] result = a;
             internedLongArrays.put(result, new WeakReference<long /*@Interned*/[]>(result));
             return result;
         }
@@ -711,7 +711,7 @@ public final class Intern {
             return result1;
         } else {
             @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
-                    /*@Interned*/ Double result = (/*@Interned*/ Double) a;
+                    /*@Interned*/ Double result = a;
             internedDoubles.put(result, new WeakReference</*@Interned*/ Double>(result));
             return result;
         }
@@ -762,7 +762,7 @@ public final class Intern {
             return result1;
         } else {
             @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
-                    /*@Interned*/ double[] result = (double /*@Interned*/[]) a;
+                    /*@Interned*/ double[] result = a;
             internedDoubleArrays.put(result, new WeakReference<double /*@Interned*/[]>(result));
             return result;
         }
@@ -799,7 +799,7 @@ public final class Intern {
         /*@Nullable*/ /*@Interned*/
         String /*@Interned*/[] result = (lookup != null) ? lookup.get() : null;
         if (result == null) {
-            result = (/*@Nullable*/ /*@Interned*/ String /*@Interned*/[]) a;
+            result = a;
             internedStringArrays.put(
                     result, new WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>(result));
         }
@@ -832,7 +832,7 @@ public final class Intern {
         /*@Nullable*/ /*@Interned*/
         Object /*@Interned*/[] result = (lookup != null) ? lookup.get() : null;
         if (result == null) {
-            result = (/*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]) a;
+            result = a;
             internedObjectArrays.put(
                     result, new WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>(result));
         }

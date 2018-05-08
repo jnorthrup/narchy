@@ -670,20 +670,18 @@ public enum Terms {
             } else {
                 //HACK check for co-negation of conjunctions of DTERNAL/0 interaction
                 if (polarity == -1) {
-                    if (s.keyValuesView().anySatisfy(kv->{
-                        if (kv.getTwo()==+1) {
+                    return !s.keyValuesView().anySatisfy(kv -> {
+                        if (kv.getTwo() == +1) {
                             Term sk = kv.getOne();
                             if (sk.op() == CONJ) {
                                 int dt = sk.dt();
                                 if ((dt == DTERNAL || dt == 0)) {
-                                    if (sk.contains(t))
-                                        return true; //conegated
+                                    return sk.contains(t);
                                 }
                             }
                         }
                         return false;
-                    }))
-                        return false;
+                    });
 
 //                    for (Term sk : s.entrys()) {
 //                            }

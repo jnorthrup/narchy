@@ -69,7 +69,7 @@ public class Racer {
 //
 //    private Scene mScene;
 
-    private Dynamics2D mPhysicsWorld;
+    private final Dynamics2D mPhysicsWorld;
 
     private IVehicleControl control;
     private Vehicle2D vehicle;
@@ -331,7 +331,7 @@ public class Racer {
      * @author Knoll
      *
      */
-    public static interface IVehicleControl {
+    public interface IVehicleControl {
 
         void steerLeft();
 

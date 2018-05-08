@@ -24,7 +24,7 @@ package jcog.math;
 public class FastLog {
     private final int q, qM1;
     private final float[] data;
-    private float korr;
+    private final float korr;
 
     /**
      * Create a new logarithm calculation instance. This will

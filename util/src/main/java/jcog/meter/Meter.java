@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 public interface Meter { ;
 
 
-    public static MonitorConfig meter(String name) {
+    static MonitorConfig meter(String name) {
         return MonitorConfig.builder(name).build();
     }
 

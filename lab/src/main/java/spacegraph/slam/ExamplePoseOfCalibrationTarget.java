@@ -112,7 +112,7 @@ public class ExamplePoseOfCalibrationTarget {
 				}
 			}
 
-			imagePanel.setImage((BufferedImage) cam.getGuiImage());
+			imagePanel.setImage(cam.getGuiImage());
 			viewer.repaint();
 			imagePanel.repaint();
 

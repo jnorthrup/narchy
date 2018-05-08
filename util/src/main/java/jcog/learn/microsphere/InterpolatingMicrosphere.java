@@ -52,7 +52,7 @@ public class InterpolatingMicrosphere {
     private final int size;
 
     /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
-    private float pointRadius = 0f;
+    private final float pointRadius = 0f;
 
 //    /** Maximum fraction of the facets that can be dark. */
 //    private float maxDarkFraction;

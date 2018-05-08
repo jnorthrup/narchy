@@ -639,7 +639,7 @@ public class R extends Applet implements Runnable {
 			g.setColor(new Color(175,175,175));
 			g.setFont(getFont().deriveFont(15f).deriveFont(1));
 			
-			s = "Level "+String.valueOf(curLevel+1)+"/"+LEVELS.length()/144;
+			s = "Level "+ (curLevel + 1) +"/"+LEVELS.length()/144;
 			g.drawString(s, 316 - g.getFontMetrics().stringWidth(s), 18);
 			
 			s = "steps: ";

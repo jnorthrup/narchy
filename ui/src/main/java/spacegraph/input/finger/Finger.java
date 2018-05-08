@@ -272,8 +272,7 @@ public class Finger {
         if (clickedNow(i)) {
             v2 where = hitOnDown[i];
             if (where != null)
-                if (Finger.relative(where, c).inUnit())
-                    return true;
+                return Finger.relative(where, c).inUnit();
         }
         return false;
     }

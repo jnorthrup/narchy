@@ -55,7 +55,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     public boolean whileEach(Predicate<Surface> o) {
         return cache.whileEachValue(e -> {
             Surface s = e.surface;
-            return s != null ? o.test(s) : true;
+            return s == null || o.test(s);
         });
     }
 
@@ -63,7 +63,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     public boolean whileEachReverse(Predicate<Surface> o) {
         return cache.whileEachValueReverse(e -> {
             Surface s = e.surface;
-            return s != null ? o.test(s) : true;
+            return s == null || o.test(s);
         });
     }
 

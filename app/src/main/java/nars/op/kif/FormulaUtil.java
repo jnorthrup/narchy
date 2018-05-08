@@ -111,9 +111,7 @@ public class FormulaUtil {
             FormulaMatchMemoMapKey that = (FormulaMatchMemoMapKey) o;
 
             if (f1 != null ? !f1.equals(that.f1) : that.f1 != null) return false;
-            if (f2 != null ? !f2.equals(that.f2) : that.f2 != null) return false;
-
-            return true;
+            return f2 != null ? f2.equals(that.f2) : that.f2 == null;
         }
 
         /** ******************************************************************************************

@@ -193,7 +193,7 @@ public class WorkerMultiExec extends AbstractExec {
          */
         final Random rng;
 
-        private Object[] qBatch;
+        private final Object[] qBatch;
 
         public MyWorkLoop(ConcurrentQueue q) {
             super(q);

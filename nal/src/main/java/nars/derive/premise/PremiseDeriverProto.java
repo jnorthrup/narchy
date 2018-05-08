@@ -63,7 +63,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
     final Set<PrediTerm<PreDerivation>> pre = new HashSet(8);
     final List<PrediTerm<Derivation>> post = new FasterList(8);
-    private Truthify truthify;
+    private final Truthify truthify;
 
 
     public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
@@ -179,9 +179,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                             public boolean test(PreDerivation preDerivation) {
                                 if (task && !preDerivation.taskTerm.containsRecursively(Y))
                                     return false;
-                                if (belief && !preDerivation.beliefTerm.containsRecursively(Y))
-                                    return false;
-                                return true;
+                                return !belief || preDerivation.beliefTerm.containsRecursively(Y);
                             }
 
                             @Override
@@ -1012,9 +1010,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     }
 
     /** requires double premise belief task evidence if deriving */
-    private static AbstractPred<PreDerivation> DoublePremise = new DoublePremise((byte)0);
-    private static AbstractPred<PreDerivation> DoublePremiseIfBelief = new DoublePremise(BELIEF);
-    private static AbstractPred<PreDerivation> DoublePremiseIfGoal = new DoublePremise(GOAL);
+    private static final AbstractPred<PreDerivation> DoublePremise = new DoublePremise((byte)0);
+    private static final AbstractPred<PreDerivation> DoublePremiseIfBelief = new DoublePremise(BELIEF);
+    private static final AbstractPred<PreDerivation> DoublePremiseIfGoal = new DoublePremise(GOAL);
 
     private static class DoublePremise extends AbstractPred<PreDerivation> {
 
@@ -1029,8 +1027,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         @Override
         public boolean test(PreDerivation preDerivation) {
             if (this.punc == 0 /* any */ || (preDerivation.taskPunc == this.punc /* a specific one */))
-                if (!preDerivation.hasBeliefTruth())
-                    return false; //filtered
+                return preDerivation.hasBeliefTruth();
             return true;
         }
 

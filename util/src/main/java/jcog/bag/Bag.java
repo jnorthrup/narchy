@@ -3,10 +3,9 @@ package jcog.bag;
 import jcog.Util;
 import jcog.list.table.Table;
 import jcog.pri.Prioritized;
-import jcog.pri.Priority;
 import jcog.pri.op.PriForget;
+import jcog.util.FloatFloatToFloatFunction;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +26,300 @@ import static jcog.bag.Bag.BagSample.*;
  */
 public interface Bag<K, V> extends Table<K, V> {
 
-//    /** >=0; multiplies with capacity to determine min pressure to pre-forget on a new insert.
-//     * lower values promote more accuracy by applying buffered pressure to forgetting sooner than higher values */
-//    float preCommitPressureFactor = 0.25f;
+   
+    @Override
+    @Nullable
+    V remove(K x);
+
+    default V put(V x) {
+        return put(x, null);
+    }
+
+    default void putAsync(V b) {
+        put(b);
+    }
+
+    V put(V b, @Nullable MutableFloat overflowing);
+
+    /**
+     * returns the bag to an empty state
+     */
+    @Override
+    void clear();
+
+    /**
+     * gets the next value without removing changing it or removing it from any index.  however
+     * the bag is cycled so that subsequent elements are different.
+     */
+    @Nullable
+    default V sample(Random rng) {
+        Object[] result = new Object[1];
+        sample(rng, ((Predicate<? super V>) (x) -> {
+            result[0] = x;
+            return false;
+        }));
+        return (V) result[0];
+    }
+
+
+
+    /* sample the bag, optionally removing each visited element as decided by the visitor's
+     * returned value */
+    Iterable<V> sample(Random rng, BagCursor<? super V> each);
+
+    default Iterable<V> sample(Random rng, Predicate<? super V> each) {
+        return sample(rng, (BagCursor<? super V>) ((x) -> each.test(x) ? BagSample.Next : BagSample.Stop));
+    }
+
+    default Stream<V> stream() {
+        return StreamSupport.stream(this::spliterator, 0, false);
+    }
+
+    default Iterable<V> sample(Random rng, int max, Consumer<? super V> each) {
+        return sampleOrPop(rng, false, max, each);
+    }
+
+    default Iterable<V> pop(Random rng, int max, Consumer<? super V> each) {
+        return sampleOrPop(rng, true, max, each);
+    }
+
+    default Iterable<V> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super V> each) {
+        if (max == 0)
+            return this;
+
+        final int[] count = {max};
+        return sample(rng, (BagCursor<? super V>) (x -> {
+            each.accept(x);
+            return ((--count[0]) > 0) ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
+        }));
+    }
+
+    /**
+     * convenience macro for using sample(BagCursor).
+     * continues while either the predicate hasn't returned false and
+     * < max true's have been returned
+     */
+    default Iterable<V> sample(Random rng, int max, Predicate<? super V> kontinue) {
+        if (max == 0)
+            return this;
+
+        final int[] count = {max};
+        return sample(rng, (BagCursor<? super V>) ((x) ->
+                (kontinue.test(x) && ((--count[0]) > 0)) ?
+                        Next : Stop));
+    }
+
+
+    /**
+     * The number of items in the bag
+     *
+     * @return The number of items
+     */
+    @Override
+    int size();
+
+    /**
+     * when adjusting the priority of links directly, to correctly absorb the pressure difference, call this
+     */
+    default void pressurize(float f) {
+
+    }
+
+    /**
+     * iterates all items in (approximately) descending priority
+     * forEach may be used to avoid allocation of iterator instances
+     */
+    @Override
+    Iterator<V> iterator();
+
+
+    /**
+     * Check if an item is in the bag.  both its key and its value must match the parameter
+     *
+     * @param it An item
+     * @return Whether the Item is in the Bag
+     */
+    default boolean contains(K it) {
+        return get(it) != null;
+    }
+
+
+//    /** not used currently in Bag classes, but from CacheBag interface */
+//    @Override public Consumer<V> getOnRemoval() {  return null;    }
+//    /** not used currently in Bag classes, but from CacheBag interface */
+//    @Override public void setOnRemoval(Consumer<V> onRemoval) { }
+
+    default boolean isEmpty() {
+        return size() == 0;
+    }
+
+    /**
+     * @return null if this is an event which was rejected on input, non-null if it was a re
+     */
+    default void onRemove(V value) {
+
+    }
+
+    /**
+     * called if an item which was attempted to be inserted was not
+     */
+    default void onReject(V value) {
+
+    }
+
+    default void onAdd(V v) {
+
+    }
+
+    /**
+     * returns the priority of a value, or NaN if such entry is not present
+     */
+    float pri(V key);
+
+    /**
+     * allows a Prioritized.priUpdate call in impl
+     */
+    default float priUpdate(V key) {
+        return pri(key);
+    }
+
+    default float pri(Object key, float ifMissing) {
+        V x = get(key);
+        if (x == null)
+            return ifMissing;
+        else
+            return priElse(x, ifMissing);
+    }
+
+    /** true if an item is not deleted */
+    default boolean active(V key) {
+        float x = pri(key);
+        return (x == x);
+        //return priSafe(key, -1) >= 0;
+    }
+
+    default float priElse(V key, float valueIfMissing) {
+        float p = pri(key);
+        return (p == p) ? p : valueIfMissing;
+    }
+
+    /**
+     * resolves the key associated with a particular value
+     */
+    K key(V value);
+
+    default void print() {
+        print(System.out);
+    }
+
+    default void print(PrintStream p) {
+        forEach(p::println);
+    }
+
+    /** reducer arg 0 = accumulated value, arg 1 = priority WARNING may be NaN if an item is deleted */
+    default float priIfy(float initial, FloatFloatToFloatFunction reduce) {
+        float[] x = new float[] { initial };
+        forEach(v -> {
+           x[0] = reduce.apply(x[0], pri(v));
+        });
+        return x[0];
+    }
+    /** priIfy only non-deleted items */
+    default float priIfyNonDeleted(float initial, FloatFloatToFloatFunction reduce) {
+        float[] x = new float[] { initial };
+        forEach(v -> {
+            float p = pri(v);
+            if (p==p)
+                x[0] = reduce.apply(x[0], p);
+        });
+        return x[0];
+    }
+    /**
+     * should visit items highest priority first, if possible.
+     * for some bags this may not be possible.
+     */
+    //by default this will use iterator().forEach() but this can be used to make sure each implementation offers its best
+    //@Override abstract public void forEach(final Consumer<? super V> action);
+    default float priSum() {
+        return priIfyNonDeleted(0, (sum, x) -> (sum + x));
+//        float[] total = {0};
+//        forEach(v -> total[0] = total[0] + priElse(v, 0));
+//        return total[0];
+    }
+
+    /**
+     * default slow implementation.
+     * returns a value between 0..1.0. if empty, returns 0
+     */
+    default float priMin() {
+        float m = priIfyNonDeleted(Float.POSITIVE_INFINITY, Math::min);
+        return Float.isFinite(m) ? m : 0;
+    }
+
+    /**
+     * default slow implementation.
+     * returns a value between 0..1.0. if empty, returns 0
+     */
+    default float priMax() {
+        float m = priIfyNonDeleted(Float.NEGATIVE_INFINITY, Math::max);
+        return Float.isFinite(m) ? m : 0;
+    }
+
+    @Override
+    void setCapacity(int c);
+
+    @NotNull
+    default float[] histogram(float[] x) {
+        int bins = x.length;
+        forEach(budget -> {
+            float p = priElse(budget, 0);
+            int b = Util.bin(p, bins - 1);
+            x[b]++;
+        });
+        double total = 0;
+        for (float e : x) {
+            total += e;
+        }
+        if (total > 0) {
+            for (int i = 0; i < bins; i++)
+                x[i] /= total;
+        }
+        return x;
+    }
+
+    default float depressurize() {
+        return 0; //TODO
+    }
+
+
+
+    default Iterable<V> commit() {
+        return commit(forget(PriForget.FORGET_TEMPERATURE_DEFAULT));
+    }
+
+    /**
+     * creates a forget procedure for the current bag's
+     * state, which can be applied as a parameter to the commit(Consumer<V>) method
+     * temperature is a value between 0..1.0 controlling
+     * how fast the bag should allow new items. 0.5 is a default value
+     */
+    default @Nullable Consumer<V> forget(float temperature) {
+        return PriForget.forget(this, temperature, Prioritized.EPSILON, PriForget::new);
+    }
+
+    float mass();
+
+    /**
+     * commits the next set of changes and updates budgeting
+     *
+     * @return this bag
+     */
+    Bag<K, V> commit(Consumer<V> update);
+
+    @Override
+    default void forEachKey(Consumer<? super K> each) {
+        forEach(b -> each.accept(key(b)));
+    }
 
     /**
      * action returned from bag sampling visitor indicating what to do with the current
@@ -50,160 +340,178 @@ public interface Bag<K, V> extends Table<K, V> {
         }
     }
 
+
     /**
      * used for sampling
      */
     @FunctionalInterface
     interface BagCursor<V> {
-        /*@NotNull */BagSample next(/*@NotNull*/ V x); //@NotNull's removed for max speed, but kept here as reference
+        BagSample next(V x); //@NotNull's removed for max speed, but kept here as reference
     }
 
-    /**
-     * returns the bag to an empty state
-     */
-    @Override
-    void clear();
 
-    /**
-     * gets the next value without removing changing it or removing it from any index.  however
-     * the bag is cycled so that subsequent elements are different.
-     */
-    @Nullable
-    default V sample(Random rng) {
-        Object[] result = new Object[1];
-        sample(rng, ((Predicate<? super V>)(x) -> {
-            result[0] = x;
+    @Nullable Bag EMPTY = new Bag() {
+
+
+        @Override
+        public float mass() {
+            return 0;
+        }
+
+        @Nullable
+        @Override
+        public Consumer forget(float temperature) {
+            return null;
+        }
+
+        @Override
+        public Iterable sample(Random rng, BagCursor each) {
+            return this;
+        }
+
+        @Override
+        public void clear() {
+        }
+
+        @Override
+        public Object key(Object value) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public float pri(Object key) {
+            return 0;
+        }
+
+
+        @Nullable
+        @Override
+        public Object remove(Object x) {
+            return null;
+        }
+
+        @Override
+        public Object put(Object b, @Nullable MutableFloat overflowing) {
+            return null;
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+
+
+        @Override
+        public Iterator iterator() {
+            return Collections.emptyIterator();
+        }
+
+        @Override
+        public boolean contains(Object it) {
             return false;
-        }));
-        return (V) result[0];
-    }
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
 
 
-    /**
-     * TODO rename 'remove'
-     *
-     * @param key
-     * @return
-     */
-    @Override
-    @Nullable
-    V remove(/*@NotNull*/ K x);
+        @Override
+        public void setCapacity(int c) {
+
+        }
+
+        @Override
+        public Iterable commit() {
+            return this;
+        }
 
 
-    default V put(/*@NotNull */V x) {
-        return put(x, null);
-    }
+        @Override
+        public Bag commit(Consumer update) {
+            return this;
+        }
 
-    default void putAsync(/*@NotNull */V b) {
-        put(b);
-    }
+        @Nullable
+        @Override
+        public Object get(Object key) {
+            return null;
+        }
 
-    //        @Nullable
-//        @Override public PLink<V> put(@NotNull V v) {
-//            //TODO combine with CurveBag.put(v)
-//            PLink<V> existing = get(v);
-//            if (existing!=null) {
-//                merge(existing, getDefaultBudget(v), 1f);
-//                return existing;
-//            } else {
-//            }
+        @Override
+        public void forEachKey(Consumer each) {
+
+        }
+
+        @Override
+        public int capacity() {
+            return 0;
+        }
+
+    };
+
+
+
+}
+
+
+//    default float depressurize(float frac) {
+//        frac = Util.unitize(frac);
+//        float p = depressurize();
+//        float pF = frac * p;
+//        if (pF >= Prioritized.EPSILON) {
+//            pressurize(p - pF);
+//            return pF;
 //        }
-//        @Nullable
-//        @Override public PLink<V> put(@NotNull V v) {
-//            PLink<V> existing = get(v);
-//            return (existing != null) ?
-//                    existing :
-//                    put(v, getDefaultBudget(v));
-//        }
+//        return 0;
+//    }
 
-
-    V put(/*@NotNull*/ V b, @Nullable MutableFloat overflowing);
-
-
-    /* sample the bag, optionally removing each visited element as decided by the visitor's
-     * returned value */
-    /*@NotNull*/ Bag<K, V> sample(/*@NotNull */Random rng, BagCursor<? super V> each);
-
-    default Bag<K, V> sample(Random rng, Predicate<? super V> each) {
-        return sample(rng, (BagCursor<? super V>)((x) -> each.test(x) ? BagSample.Next : BagSample.Stop));
-    }
-
-
-//    default List<V> copyToList(int n) {
-//        if (n == 0)
-//            return Collections.emptyList();
+//    @NotNull
+//    default <Y> PLink<Y> newLink(@NotNull Y i) {
 //
-//        List<V> l = new FasterList(n);
-//        sample(n, x -> {
-//            l.add(x);
-//        });
-//        return l;
+//        if (i instanceof Budgeted)
+//            return new DependentBLink((Budgeted) i);
+//        else
+//            return new DefaultBLink(i);
+//    }
+//
+//    @FunctionalInterface
+//    interface EarlyFailRanker<X> {
+//        /**
+//         * return the computed value or Float.NaN if it
+//         * terminated early by deciding that the currently calculated
+//         * value would never exceed the provided current best,
+//         * which is initialized to NEGATIVE_INFINITY
+//         */
+//        float floatValueOf(X x, float mustExceed);
 //    }
 
 
-    /**
-     * normalizes a priorty to within the present min/max range of this bag, and unitized to within 0..1.0 clipping if exceeded
-     */
-    default float normalizeMinMax(float pri) {
-        return Util.unitize(Util.lerp(pri, priMin(), priMax()));
-    }
-
-    default void normalizeAll(float lerp) {
-
-        int size = size();
-        if (size == 0 || lerp < Prioritized.EPSILON)
-            return;
-
-        float min = priMin();
-        float max = priMax();
-        if (Util.equals(min, max, Prioritized.EPSILON)) {
-            //flatten all to 0.5
-            commit(x -> ((Priority) x).priLerp(0.5f, lerp));
-        } else {
-            float range = max - min;
-            commit(x -> ((Priority) x).normalizePri(min, range, lerp));
-        }
-    }
+//    default boolean putIfAbsent(V b) {
+//        K x = b.get();
+//        if (contains(x))
+//            return false;
+//        if (put(b, 1f, null)==null)
+//            return false;
+//        return true;
+//    }
 
 
-
-
-    default Stream<V> stream() {
-        return StreamSupport.stream(this::spliterator, 0, false);
-    }
-
-    default Bag<K, V> sample(Random rng, int max, Consumer<? super V> each) {
-        return sampleOrPop(rng,false, max, each);
-    }
-
-    default Bag<K, V> pop(Random rng, int max, Consumer<? super V> each) {
-        return sampleOrPop(rng, true, max, each);
-    }
-
-    default Bag<K, V> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super V> each) {
-        if (max == 0)
-            return this;
-
-        final int[] count = {max};
-        return sample(rng, (BagCursor<? super V>)(x -> {
-            each.accept(x);
-            return ((--count[0]) > 0) ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
-        }));
-    }
-    /**
-     * convenience macro for using sample(BagCursor).
-     * continues while either the predicate hasn't returned false and
-     * < max true's have been returned
-     */
-    default Bag<K, V> sample(Random rng, int max, Predicate<? super V> kontinue) {
-        if (max == 0)
-            return this;
-
-        final int[] count = {max};
-        return sample(rng, (BagCursor<? super V>)((x) ->
-                (kontinue.test(x) && ((--count[0]) > 0)) ?
-                    Next : Stop));
-    }
+//    @Nullable
+//    default V maxBy(FloatFunction<V> rank) {
+//        final float[] best = {Float.NEGATIVE_INFINITY};
+//        final Object[] which = new Object[1];
+//        //TODO if (y>=best[0]) collect several if they are of equal rank, then choose randomly. better yet make this a feature of Bag
+//        forEach(x -> {
+//            float y = rank.floatValueOf(x);
+//            if (y > best[0]) {
+//                best[0] = y;
+//                which[0] = x;
+//            }
+//        });
+//        return (V) which[0];
+//    }
 
 //    default Bag<K, V> sampleOrPop(boolean pop, int max, Predicate<? super V> each) {
 //        final int[] count = {max};
@@ -214,246 +522,24 @@ public interface Bag<K, V> extends Table<K, V> {
 //                        (pop ? RemoveAndStop : Stop)));
 //    }
 
-    @Nullable
-    default V maxBy(FloatFunction<V> rank) {
-        final float[] best = {Float.NEGATIVE_INFINITY};
-        final Object[] which = new Object[1];
-        //TODO if (y>=best[0]) collect several if they are of equal rank, then choose randomly. better yet make this a feature of Bag
-        forEach(x -> {
-            float y = rank.floatValueOf(x);
-            if (y > best[0]) {
-                best[0] = y;
-                which[0] = x;
-            }
-        });
-        return (V) which[0];
-    }
-
-    @FunctionalInterface
-    interface EarlyFailRanker<X> {
-        /**
-         * return the computed value or Float.NaN if it
-         * terminated early by deciding that the currently calculated
-         * value would never exceed the provided current best,
-         * which is initialized to NEGATIVE_INFINITY
-         */
-        float floatValueOf(X x, float mustExceed);
-    }
-
-    @Nullable
-    default V maxBy(EarlyFailRanker<V> rank) {
-        final float[] best = {Float.NEGATIVE_INFINITY};
-        final Object[] which = new Object[1];
-        forEach(x -> {
-            float y = rank.floatValueOf(x, best[0]);
-            if ((y == y) && (y > best[0])) {
-                best[0] = y;
-                which[0] = x;
-            }
-        });
-        return (V) which[0];
-    }
-
-    /**
-     * The number of items in the bag
-     *
-     * @return The number of items
-     */
-    @Override
-    int size();
-
-
-    /**
-     * when adjusting the priority of links directly, to correctly absorb the pressure difference, call this
-     */
-    default void pressurize(float f) {
-
-    }
-
-
-
-//    default void commitIfPressured() {
-//        //<anti-elitism pressure relief on insert>
-//        float ep0 = depressurize();
-//
-//        if (ep0 >= capacity() * preCommitPressureFactor) {
-//            commit();
-//        } else {
-//            if (ep0 > 0)
-//                pressurize(ep0); //repressurize
-//        }
-//        //</anti-elitism pressure relief on insert>
+//    @Nullable
+//    default V maxBy(EarlyFailRanker<V> rank) {
+//        final float[] best = {Float.NEGATIVE_INFINITY};
+//        final Object[] which = new Object[1];
+//        forEach(x -> {
+//            float y = rank.floatValueOf(x, best[0]);
+//            if ((y == y) && (y > best[0])) {
+//                best[0] = y;
+//                which[0] = x;
+//            }
+//        });
+//        return (V) which[0];
 //    }
 
-    default float priAvg() {
-        int s = size();
-        return (s == 0) ? 0 : (priSum() / s);
-    }
-
-
-//    /** not used currently in Bag classes, but from CacheBag interface */
-//    @Override public Consumer<V> getOnRemoval() {  return null;    }
-//    /** not used currently in Bag classes, but from CacheBag interface */
-//    @Override public void setOnRemoval(Consumer<V> onRemoval) { }
-
-    /**
-     * iterates all items in (approximately) descending priority
-     * forEach may be used to avoid allocation of iterator instances
-     */
-    @NotNull
-    @Override
-    Iterator<V> iterator();
-
-    /**
-     * Check if an item is in the bag.  both its key and its value must match the parameter
-     *
-     * @param it An item
-     * @return Whether the Item is in the Bag
-     */
-    default boolean contains(/*@NotNull*/ K it) {
-        return get(it) != null;
-    }
-
-    default boolean isEmpty() {
-        return size() == 0;
-    }
-
-    //    /**
-//     * if the next item is true via the predicate, then it is TAKEn out of the bag; otherwise the item remains unaffected
-//     */
-//    public final V remove(final Predicate<V> iff) {
-//        V v = peekNext();
-//
-//        if (v == null) return null;
-//        if (iff.apply(v)) {
-//            remove(v.name());
-//            return v;
-//        }
-//        return null;
+//    default float priAvg() {
+//        int s = size();
+//        return (s == 0) ? 0 : (priSum() / s);
 //    }
-
-    /**
-     * @return null if this is an event which was rejected on input, non-null if it was a re
-     */
-    default void onRemove(/*@NotNull*/ V value) {
-
-    }
-
-    /**
-     * called if an item which was attempted to be inserted was not
-     */
-    default void onReject(/*@NotNull*/ V value) {
-
-    }
-
-    default void onAdd(/*@NotNull*/ V v) {
-
-    }
-
-    /**
-     * returns the priority of a value, or NaN if such entry is not present
-     */
-    float pri(V key);
-
-    /** allows a Prioritized.priUpdate call in impl */
-    default float priUpdate(V key) {
-        return pri(key);
-    }
-
-    default float pri(Object key, float ifMissing) {
-        V x = get(key);
-        if (x == null)
-            return ifMissing;
-        else
-            return priElse(x, ifMissing);
-    }
-
-    default boolean active(V key) {
-        float x = pri(key);
-        return (x == x);
-        //return priSafe(key, -1) >= 0;
-    }
-
-
-    default float priElse(V key, float valueIfMissing) {
-        float p = pri(key);
-        return (p == p) ? p : valueIfMissing;
-    }
-
-
-    /**
-     * resolves the key associated with a particular value
-     */
-    K key(/*@NotNull*/ V value);
-
-
-    default void print() {
-        print(System.out);
-    }
-
-    default void print(@NotNull PrintStream p) {
-        forEach(p::println);
-    }
-
-    /**
-     * should visit items highest priority first, if possible.
-     * for some bags this may not be possible.
-     */
-    //by default this will use iterator().forEach() but this can be used to make sure each implementation offers its best
-    //@Override abstract public void forEach(final Consumer<? super V> action);
-    default float priSum() {
-        float[] total = {0};
-        forEach(v -> total[0] = total[0] + priElse(v, 0));
-        return total[0];
-    }
-
-
-//    final public int forgetNext(float forgetCycles, final V[] batch, final long now) {
-//        return forgetNext(forgetCycles, batch, 0, batch.length, now, batch.length/2 /* default to max 1.5x */);
-//    }
-
-//    /** warning: slow */
-//    public double getStdDev(StandardDeviation target) {
-//        target.clear();
-//        forEachEntry(x -> target.increment(x.getPriority()));
-//        return target.getResult();
-//    }
-
-
-    /**
-     * default slow implementation.
-     * returns a value between 0..1.0. if empty, returns 0
-     */
-    default float priMin() {
-        float[] min = {Float.POSITIVE_INFINITY};
-        forEach(b -> {
-            float p = priElse(b, Float.POSITIVE_INFINITY);
-            if (p < min[0]) min[0] = p;
-        });
-        float m = min[0];
-        if (Float.isFinite(m)) return m;
-        else return 0;
-    }
-
-    /**
-     * default slow implementation.
-     * returns a value between 0..1.0. if empty, returns 0
-     */
-    default float priMax() {
-        float[] max = {Float.NEGATIVE_INFINITY};
-        forEach(b -> {
-            float p = priElse(b, Float.NEGATIVE_INFINITY);
-            if (p > max[0]) max[0] = p;
-        });
-        float m = max[0];
-        if (Float.isFinite(m)) return m;
-        else return 0;
-    }
-
-
-    @Override
-    void setCapacity(int c);
-
 
 //    /**
 //     * for bags which maintain a separate name index from the items, more fine-granied access methods to avoid redundancy when possible
@@ -535,195 +621,96 @@ public interface Bag<K, V> extends Table<K, V> {
 //        }
 //    }
 
-
-    @NotNull
-    default float[] histogram(/*@NotNull*/ float[] x) {
-        int bins = x.length;
-        forEach(budget -> {
-            float p = priElse(budget, 0);
-            int b = Util.bin(p, bins - 1);
-            x[b]++;
-        });
-        double total = 0;
-        for (float e : x) {
-            total += e;
-        }
-        if (total > 0) {
-            for (int i = 0; i < bins; i++)
-                x[i] /= total;
-        }
-        return x;
-    }
-
-
-//    default float depressurize(float frac) {
-//        frac = Util.unitize(frac);
-//        float p = depressurize();
-//        float pF = frac * p;
-//        if (pF >= Prioritized.EPSILON) {
-//            pressurize(p - pF);
-//            return pF;
+//        @Nullable
+//        @Override public PLink<V> put(@NotNull V v) {
+//            //TODO combine with CurveBag.put(v)
+//            PLink<V> existing = get(v);
+//            if (existing!=null) {
+//                merge(existing, getDefaultBudget(v), 1f);
+//                return existing;
+//            } else {
+//            }
 //        }
-//        return 0;
+//        @Nullable
+//        @Override public PLink<V> put(@NotNull V v) {
+//            PLink<V> existing = get(v);
+//            return (existing != null) ?
+//                    existing :
+//                    put(v, getDefaultBudget(v));
+//        }
+
+//    /**
+//     * normalizes a priorty to within the present min/max range of this bag, and unitized to within 0..1.0 clipping if exceeded
+//     */
+//    default float normalizeMinMax(float pri) {
+//        return Util.unitize(Util.lerp(pri, priMin(), priMax()));
 //    }
 
-    default float depressurize() {
-        return 0f; //TODO
-    }
 
-
-    default Bag<K, V> commit() {
-        return commit(forget(PriForget.FORGET_TEMPERATURE_DEFAULT));
-    }
-
-    /** creates a forget procedure for the current bag's
-     *  state, which can be applied as a parameter to the commit(Consumer<V>) method
-     *  temperature is a value between 0..1.0 controlling
-     *  how fast the bag should allow new items. 0.5 is a default value
-     */
-    default @Nullable Consumer<V> forget(float temperature) {
-        return PriForget.forget(this, temperature, Prioritized.EPSILON, PriForget::new);
-    }
-
-
-    float mass();
-
-    /**
-     * commits the next set of changes and updates budgeting
-     *
-     * @return this bag
-     */
-    @NotNull Bag<K, V> commit(Consumer<V> update);
-
-
-    @Nullable Bag EMPTY = new Bag() {
-
-
-        @Override
-        public float mass() {
-            return 0;
-        }
-
-        @Nullable
-        @Override
-        public Consumer forget(float temperature) {
-            return null;
-        }
-
-        @Override
-        public Bag sample(Random rng, BagCursor each) {
-            return this;
-        }
-
-        @Override
-        public void clear() {
-        }
-
-        @Override
-        public Object key(Object value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public float pri(Object key) {
-            return 0;
-        }
-
-
-        @Nullable
-        @Override
-        public Object remove(Object x) {
-            return null;
-        }
-
-        @Override
-        public Object put(Object b, @Nullable MutableFloat overflowing) {
-            return null;
-        }
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
-
-        @Override
-        public Iterator iterator() {
-            return Collections.emptyIterator();
-        }
-
-        @Override
-        public boolean contains(Object it) {
-            return false;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-
-        @Override
-        public void setCapacity(int c) {
-
-        }
-
-        @Override
-        public Bag commit() {
-            return this;
-        }
-
-
-        @Override
-        public Bag commit(Consumer update) {
-            return this;
-        }
-
-
-        @Nullable
-        @Override
-        public Object get(Object key) {
-            return null;
-        }
-
-        @Override
-        public void forEachKey(Consumer each) {
-
-        }
-
-        @Override
-        public int capacity() {
-            return 0;
-        }
-
-    };
-
-
-//    @NotNull
-//    default <Y> PLink<Y> newLink(@NotNull Y i) {
+//    default List<V> copyToList(int n) {
+//        if (n == 0)
+//            return Collections.emptyList();
 //
-//        if (i instanceof Budgeted)
-//            return new DependentBLink((Budgeted) i);
-//        else
-//            return new DefaultBLink(i);
+//        List<V> l = new FasterList(n);
+//        sample(n, x -> {
+//            l.add(x);
+//        });
+//        return l;
 //    }
 
-    @Override
-    default void forEachKey(Consumer<? super K> each) {
-        forEach(b -> each.accept(key(b)));
-    }
-
-
-//    default boolean putIfAbsent(V b) {
-//        K x = b.get();
-//        if (contains(x))
-//            return false;
-//        if (put(b, 1f, null)==null)
-//            return false;
-//        return true;
+//    default void normalizeAll(float lerp) {
+//
+//        int size = size();
+//        if (size == 0 || lerp < Prioritized.EPSILON)
+//            return;
+//
+//        float min = priMin();
+//        float max = priMax();
+//        if (Util.equals(min, max, Prioritized.EPSILON)) {
+//            //flatten all to 0.5
+//            commit(x -> ((Priority) x).priLerp(0.5f, lerp));
+//        } else {
+//            float range = max - min;
+//            commit(x -> ((Priority) x).normalizePri(min, range, lerp));
+//        }
 //    }
 
 
-    //TODO default @NotNull Bag<V> move(int limit, @NotNull Bag target) {
+//    default void commitIfPressured() {
+//        //<anti-elitism pressure relief on insert>
+//        float ep0 = depressurize();
+//
+//        if (ep0 >= capacity() * preCommitPressureFactor) {
+//            commit();
+//        } else {
+//            if (ep0 > 0)
+//                pressurize(ep0); //repressurize
+//        }
+//        //</anti-elitism pressure relief on insert>
+//    }
 
-}
+//    final public int forgetNext(float forgetCycles, final V[] batch, final long now) {
+//        return forgetNext(forgetCycles, batch, 0, batch.length, now, batch.length/2 /* default to max 1.5x */);
+//    }
+
+//    /** warning: slow */
+//    public double getStdDev(StandardDeviation target) {
+//        target.clear();
+//        forEachEntry(x -> target.increment(x.getPriority()));
+//        return target.getResult();
+//    }
+
+
+//    /**
+//     * if the next item is true via the predicate, then it is TAKEn out of the bag; otherwise the item remains unaffected
+//     */
+//    public final V remove(final Predicate<V> iff) {
+//        V v = peekNext();
+//
+//        if (v == null) return null;
+//        if (iff.apply(v)) {
+//            remove(v.name());
+//            return v;
+//        }
+//        return null;
+//    }

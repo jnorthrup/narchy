@@ -18,7 +18,7 @@ public class BomberPlayer extends Thread {
     /** game object handle */
     public BomberGame game;
     /** map object handle */
-    private BomberMap map;
+    private final BomberMap map;
     /** player's own bomb grid (must have for synchronization) */
     public boolean[][] bombGrid;
     /** input key queue */
@@ -53,7 +53,7 @@ public class BomberPlayer extends Thread {
     public int x;
     public int y;
     /** player's number */
-    private int playerNo;
+    private final int playerNo;
     /** user's state : default to face down */
     private int state = DOWN;
     /** flag : whether the player is moving or not */

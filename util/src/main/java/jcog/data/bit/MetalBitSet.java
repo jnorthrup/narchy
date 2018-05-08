@@ -77,10 +77,10 @@ abstract public class MetalBitSet {
          * @param i
          */
         @Override public void set(int i) {
-            data[(int) (i >>> 6)] |= (1L << i);
+            data[i >>> 6] |= (1L << i);
         }
         @Override public void clear(int i) {
-            data[(int) (i >>> 6)] &= ~(1L << i);
+            data[i >>> 6] &= ~(1L << i);
         }
 
 
@@ -95,7 +95,7 @@ abstract public class MetalBitSet {
         }
 
         public boolean getAndSet(int index, boolean next) {
-            int i = (int) (index >>> 6);
+            int i = index >>> 6;
             int j = (int) (1L << index);
             long[] d = this.data;
             boolean prev = (d[i] & j) != 0;
@@ -117,7 +117,7 @@ abstract public class MetalBitSet {
          * @return
          */
         @Override public boolean get(int i) {
-            return (data[(int) (i >>> 6)] & (1L << i)) != 0;
+            return (data[i >>> 6] & (1L << i)) != 0;
         }
 
         /**

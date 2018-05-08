@@ -75,7 +75,7 @@ public class PoolMultiExec extends AbstractExec {
         //        final int id = serial.getAndIncrement();
         private int cursor;
 
-        private int batchSize = 4;
+        private final int batchSize = 4;
 
         public Next() {
             cursor = 0;

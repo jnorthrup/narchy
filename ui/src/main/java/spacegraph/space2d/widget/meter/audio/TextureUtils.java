@@ -197,7 +197,7 @@ public class TextureUtils {
                     BufferedImage tARGBImage = ImageIO.read(tZipInputStream);
                     //BaseLogging.getInstance().info("LOADED IMAGE FROM INPUT STREAM: "+tARGBImage.getWidth()+"x"+tARGBImage.getHeight());
                     BufferedImage tARGBImageIntermediate = new BufferedImage(tARGBImage.getWidth(),tARGBImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                    ((Graphics2D)tARGBImageIntermediate.getGraphics()).drawImage(tARGBImage, 0,0, null);
+                    tARGBImageIntermediate.getGraphics().drawImage(tARGBImage, 0,0, null);
                     tHashtable.put(inZipEntryName,tARGBImageIntermediate);
                     tZipEntryFileNames.add(inZipEntryName);
                 } else {

@@ -33,7 +33,7 @@ import java.util.Arrays;
 public class Quantiler {
 
     private float[] qileNext;
-    private int nbuf;
+    private final int nbuf;
     private final int nq;
     int nt,  nd;
     private final float[] pval;

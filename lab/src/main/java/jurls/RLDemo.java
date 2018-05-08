@@ -125,7 +125,7 @@ public class RLDemo extends javax.swing.JFrame {
             }
         }
     };
-    private Timer timer = new Timer(updatePeriodMS, new ActionListener() {
+    private final Timer timer = new Timer(updatePeriodMS, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
 

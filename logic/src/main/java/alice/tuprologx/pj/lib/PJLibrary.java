@@ -1451,11 +1451,9 @@ public class PJLibrary extends Library {
 			if (mclass.equals(java.lang.Long.TYPE) && (pclass.equals(java.lang.Integer.TYPE))) {
 				return true;
 			}
-            else if(pclass.isPrimitive() && mclass.equals(java.lang.Object.class)) //boxing
-                return true;
+            else return pclass.isPrimitive() && mclass.equals(Object.class);
 		}
-		return false;
-	}
+    }
 	
 	private static Method mostSpecificMethod(Vector<Method> methods) throws NoSuchMethodException {
 		for (int i = 0; i != methods.size(); i++) {

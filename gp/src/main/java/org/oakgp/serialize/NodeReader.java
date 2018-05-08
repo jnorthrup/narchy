@@ -110,7 +110,7 @@ public final class NodeReader implements Closeable {
     }
 
     private static ConstantNode createDoubleConstant(String token) {
-        return new ConstantNode(Double.valueOf(token.substring(0, token.length())), doubleType());
+        return new ConstantNode(Double.valueOf(token), doubleType());
     }
 
     private static ConstantNode createBigIntegerConstant(String token) {

@@ -58,7 +58,6 @@ public class ImageTexture extends Tex {
                     new BufferedInputStream(classLoader.getResourceAsStream("fontawesome_128.bzip2"),
                     255660+1 //fully buffer
                     );
-                    ;
             TarInputStream fa = new TarInputStream(new BZip2InputStream(true, cin));
             TarEntry e;
             while ((e = fa.getNextEntry()) != null) {

@@ -77,7 +77,7 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public final void clear() {
-        this.size.updateAndGet(this, (sizeBeforeClear)->{
+        size.updateAndGet(this, (sizeBeforeClear)->{
             if (sizeBeforeClear > 0 || root == null)
                 this.root = model.newLeaf();
             return 0;
@@ -106,7 +106,7 @@ public class RTree<T> implements Space<T> {
         if (nextRoot != null) {
             this.root = nextRoot;
             if (added[0]) {
-                this.size.incrementAndGet(this);
+                size.incrementAndGet(this);
                 return true;
             }
         }

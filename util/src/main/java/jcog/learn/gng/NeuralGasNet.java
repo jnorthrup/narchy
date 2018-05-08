@@ -50,7 +50,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
      */
     private double winnerNeighborUpdateRate;
 
-    private float rangeAdaptRate;
+    private final float rangeAdaptRate;
 
     public int getLambda() {
         return lambda;

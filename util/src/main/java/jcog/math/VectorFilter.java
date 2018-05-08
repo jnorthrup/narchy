@@ -12,7 +12,7 @@ package jcog.math;
  */
 public class VectorFilter {
 
-    private double factor;
+    private final double factor;
     private double[] prevAcc;
 
     public VectorFilter() {

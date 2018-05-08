@@ -54,7 +54,7 @@ public class BufferedCauseChannel implements Consumer {
     public int commit() {
         int size = buffer.size();
         if (size > 0) {
-            target.input((Iterator)ArrayIterator.get(buffer.toArray()));
+            target.input(ArrayIterator.get(buffer.toArray()));
             buffer.clear();
         }
         return size;

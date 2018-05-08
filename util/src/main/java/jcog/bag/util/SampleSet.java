@@ -23,10 +23,10 @@ import java.util.*;
  */
 public class SampleSet<T> {
 
-    private Map<T, Node<T>> sampleMap;
+    private final Map<T, Node<T>> sampleMap;
     private int size;
     private long count;
-    private Random random;
+    private final Random random;
 
     /**
      * Element with the highest frequency in the set
@@ -235,9 +235,9 @@ public class SampleSet<T> {
      */
     public static class StochasticTopper<T>  {
 
-        private int sampleSize;
-        private SampleSet<T> sample;
-        private Random random;
+        private final int sampleSize;
+        private final SampleSet<T> sample;
+        private final Random random;
         private long count;
 
         public StochasticTopper(int sampleSize) {

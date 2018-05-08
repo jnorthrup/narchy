@@ -2,6 +2,7 @@ package jcog.bag;
 
 import com.google.common.base.Joiner;
 import jcog.bag.impl.hijack.DefaultHijackBag;
+import jcog.list.table.Table;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -186,7 +187,7 @@ public class HijackBagTest {
 
     }
 
-    public void assertApproximatelySized(Bag<String,?> b, int expected, float closeness) {
+    public void assertApproximatelySized(Table<String,?> b, int expected, float closeness) {
         int bSize = b.size();
         float error = Math.abs(expected - bSize) / (Math.max(bSize, (float) expected));
         System.out.println(bSize + "  === " + expected + ", diff=" + error);

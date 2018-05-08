@@ -18,7 +18,7 @@ public class HopfieldMap<X> {
     //TODO use Bag for this
     private final AdjGraph<X, Float> weight = new AdjGraph(false);
 
-    private Random rng = new Random();
+    private final Random rng = new Random();
 
     /**
      * TODO generalize to Iterable

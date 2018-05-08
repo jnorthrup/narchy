@@ -156,7 +156,7 @@ abstract public class AbstractExec extends Exec {
 
     @Override
     public Stream<Activate> active() {
-        Bag<?, Activate> a = active;
+        Iterable<nars.control.Activate> a = active;
         return a == null ? Stream.empty() : active.stream();
     }
 

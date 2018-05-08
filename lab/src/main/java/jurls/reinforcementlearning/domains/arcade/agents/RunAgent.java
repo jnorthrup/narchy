@@ -9,7 +9,7 @@ import java.io.IOException;
 public class RunAgent {
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
 
 
         String rom = "space_invaders";

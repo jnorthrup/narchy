@@ -844,8 +844,7 @@ public class M_Mutant {
             if (distance < 100)
                 return false;
             if (distance > 100) {
-                if (Lib.random() < 0.9)
-                    return false;
+                return !(Lib.random() < 0.9);
             }
 
             return true;

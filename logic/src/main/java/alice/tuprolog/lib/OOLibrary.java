@@ -1825,12 +1825,9 @@ public class OOLibrary extends Library {
         if (assignable) {
             return true;
         } else {
-            if (mclass.equals(java.lang.Long.TYPE)
-                    && (pclass.equals(java.lang.Integer.TYPE))) {
-                return true;
-            }
+            return mclass.equals(Long.TYPE)
+                    && (pclass.equals(Integer.TYPE));
         }
-        return false;
     }
 
     private static Method mostSpecificMethod(Vector<Method> methods)

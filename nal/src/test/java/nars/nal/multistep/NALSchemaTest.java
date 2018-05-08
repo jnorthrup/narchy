@@ -1,13 +1,13 @@
 package nars.nal.multistep;
 
 import jcog.data.ArrayHashSet;
-import jcog.io.ARFF;
+import jcog.io.arff.ARFF;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.truth.Stamp;
-import nars.util.Schema;
+import nars.util.NALSchema;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -19,7 +19,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SchemaTest {
+public class NALSchemaTest {
 
     @Test
     public void validatePredictionXOR() throws IOException, ARFF.ARFFParseError {
@@ -94,11 +94,11 @@ public class SchemaTest {
 
         n.log();
 
-        Schema.believe(n, dataset, Schema.predictsLast);
+        NALSchema.believe(n, dataset, NALSchema.predictsLast);
 
         //Schema.ask
-        Schema.askActive(n, validation,
-                Schema.predictsLast
+        NALSchema.askActive(n, validation,
+                NALSchema.predictsLast
                 //Schema.typed(Schema.predictsLast, dataset)
         );
         for (String h : hints) {

@@ -17,7 +17,7 @@ public class Grid1DSimple implements World {
     private final double MATCH_REWARD_FACTOR;
 
     private double focusPosition;
-    private double focusVelocity;
+    private final double focusVelocity;
         
     private double[] action;
 

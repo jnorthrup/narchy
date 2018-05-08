@@ -327,10 +327,7 @@ public class ScrollGrid<X> extends Bordering {
     @Override
     public boolean start(SurfaceBase parent) {
         model.start(this);
-        if (super.start(parent)) {
-            return true;
-        }
-        return false;
+        return super.start(parent);
     }
 
     @Override

@@ -280,7 +280,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 //specific sub-range
                 long range = start!=ETERNAL ? end-start : 0;
                 sub = (when, event) -> each.accept(event, when, when+range);
-            };
+            }
             return superterm.eventsWhile(sub, start,
                     !xternal && !dternal, dternal, xternal, 0);
         }

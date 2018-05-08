@@ -44,7 +44,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
      * @param height
      * @param timePerFall larger is slower gravity
      */
-    public Tetris(NAR nar, int width, int height, int timePerFall) throws Narsese.NarseseException {
+    public Tetris(NAR nar, int width, int height, int timePerFall) {
         super("tetris", nar);
 
         state = new TetrisState(width, height, timePerFall) {
@@ -171,7 +171,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         Opjects oo = new Opjects(nar);
         oo.exeThresh.set(0.6f);
 
-        oo.methodExclusions.add("toVector");
+        Opjects.methodExclusions.add("toVector");
 
         //state = new TetrisState(tetris_width, tetris_height, 2);
         state =

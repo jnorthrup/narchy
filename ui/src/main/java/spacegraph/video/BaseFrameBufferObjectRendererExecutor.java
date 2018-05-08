@@ -30,7 +30,7 @@ public class BaseFrameBufferObjectRendererExecutor {
     private int mDepthTextureID;
     private int mTextureWidth;
     private int mTextureHeight;
-    private BaseFrameBufferObjectRendererInterface func;
+    private final BaseFrameBufferObjectRendererInterface func;
 
     public BaseFrameBufferObjectRendererExecutor(int inTextureWidth, int inTextureHeight, BaseFrameBufferObjectRendererInterface func) {
         this.func = func;
@@ -247,11 +247,11 @@ public class BaseFrameBufferObjectRendererExecutor {
 
     public interface BaseFrameBufferObjectRendererInterface {
 
-        public void init_FBORenderer(GL2 inGL);
+        void init_FBORenderer(GL2 inGL);
 
-        public void mainLoop_FBORenderer(int inFrameNumber, GL2 inGL);
+        void mainLoop_FBORenderer(int inFrameNumber, GL2 inGL);
 
-        public void cleanup_FBORenderer(GL2 inGL);
+        void cleanup_FBORenderer(GL2 inGL);
 
     }
 

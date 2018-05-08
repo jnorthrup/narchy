@@ -28,8 +28,8 @@ import java.util.Iterator;
  */
 public class Array2DIterable<X> implements Iterable<X> {
 
-    private X[][] array2D;
-    private int pos = 0;
+    private final X[][] array2D;
+    private final int pos = 0;
     public FasterList<X> order;
     //private ShortArrayList order;
 

@@ -1,6 +1,6 @@
 package nars.util;
 
-import jcog.io.ARFF;
+import jcog.io.arff.ARFF;
 import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
@@ -27,7 +27,7 @@ import static nars.Op.*;
 import static nars.util.time.Tense.ETERNAL;
 
 /** schema+data -> beliefs/questions */
-public class Schema {
+public class NALSchema {
 
     public static void believe(NAR n, ARFF data, Function<Term[], Term> pointGenerator) {
         n.input(

@@ -320,9 +320,9 @@ public class A extends GamePanel {
 		String s = "ApoOne4k";
 		offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 30);
 		if (p[3] >= 0) {
-			offscreennGraphics.drawString("deaths: " + String.valueOf((int) (p[3])), 10, 30);
+			offscreennGraphics.drawString("deaths: " + (int) (p[3]), 10, 30);
 		}
-		offscreennGraphics.drawString("level: " + String.valueOf((int) (p[2]) + 1), 550, 30);
+		offscreennGraphics.drawString("level: " + ((int) (p[2]) + 1), 550, 30);
 
 		if (boolValues[3]) {
 			s = "Press p to continue the game";
@@ -335,11 +335,11 @@ public class A extends GamePanel {
 			s = "Press space to jump and to start the game";
 			offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 200);
 			if ((p[2] > 0) && (p[3] >= 0)) {
-				s = "Congratulation you beat the game with " + String.valueOf((int) (p[3])) + " death";
+				s = "Congratulation you beat the game with " + (int) (p[3]) + " death";
 				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 250);
 			}
 			if (p[4] >= 0) {
-				s = "Your best result are " + String.valueOf((int) (p[4])) + " death";
+				s = "Your best result are " + (int) (p[4]) + " death";
 				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 285);
 			}
 		} else {
@@ -359,7 +359,7 @@ public class A extends GamePanel {
 				s = "Those who died in that level ...";
 				offscreennGraphics.drawString(s, 320 - offscreennGraphics.getFontMetrics().stringWidth(s) / 2, 60);
 			} else if ((int) p[2] == 8) {
-				s = "You died " + String.valueOf((int) (p[3])) + " times? OMG";
+				s = "You died " + (int) (p[3]) + " times? OMG";
 				if (p[3] < 1) {
 					s = "Until now you are doing it right ...";
 				}

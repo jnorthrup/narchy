@@ -293,7 +293,7 @@ public class Formula implements Comparable, Serializable {
         if (hc < 0)
             result = "N" + (Integer.valueOf(hc)).toString().substring(1) + fname;
         else
-            result = (Integer.valueOf(hc)).toString() + fname;
+            result = (Integer.valueOf(hc)) + fname;
         return result;
     }
 
@@ -787,14 +787,14 @@ public class Formula implements Comparable, Serializable {
             location = "near line " + lineNo + " in " + filename;
         if (pred.equals(AND) || pred.equals(OR)) {
             if (argCount < 2) {
-                String errString = "Too few arguments for 'and' or 'or' at " + location + ": " + f.toString();
+                String errString = "Too few arguments for 'and' or 'or' at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
         }
         else if (pred.equals(UQUANT) || pred.equals(EQUANT)) {
             if (argCount != 2) {
-                String errString = "Wrong number of arguments for quantifer at " + location + ": " + f.toString();
+                String errString = "Wrong number of arguments for quantifer at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
@@ -802,7 +802,7 @@ public class Formula implements Comparable, Serializable {
                 Formula quantF = new Formula();
                 quantF.read(rest);
                 if (!listP(quantF.car())) {
-                    String errString = "No var list for quantifier at " + location + ": " + f.toString();
+                    String errString = "No var list for quantifier at " + location + ": " + f;
                     errors.add(errString);
                     return errString;
                 }
@@ -810,14 +810,14 @@ public class Formula implements Comparable, Serializable {
         }
         else if (pred.equals(IFF) || pred.equals(IF)) {
             if (argCount != 2) {
-                String errString = "Wrong number of arguments for '<=>' or '=>' at " + location + ": " + f.toString();
+                String errString = "Wrong number of arguments for '<=>' or '=>' at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
         }
         else if (pred.equals(EQUAL)) {
             if (argCount != 2) {
-                String errString = "Wrong number of arguments for 'equals' at " + location + ": " + f.toString();
+                String errString = "Wrong number of arguments for 'equals' at " + location + ": " + f;
                 errors.add(errString);
                 return errString;
             }
@@ -825,7 +825,7 @@ public class Formula implements Comparable, Serializable {
         else if (!(isVariable(pred)) && (argCount > (MAX_PREDICATE_ARITY + 1))) {
             //System.out.println("info in KIF.parse(): pred: " + pred);
             //System.out.println("info in KIF.parse(): " + this);
-            String errString = "Maybe too many arguments at " + location + ": " + f.toString();
+            String errString = "Maybe too many arguments at " + location + ": " + f;
             errors.add(errString);
             return errString;
         }
@@ -1125,11 +1125,7 @@ public class Formula implements Comparable, Serializable {
             if (var1 != null ? !var1.equals(that.var1) : that.var1 != null) {
                 return false;
             }
-            if (var2 != null ? !var2.equals(that.var2) : that.var2 != null) {
-                return false;
-            }
-
-            return true;
+            return var2 != null ? var2.equals(that.var2) : that.var2 == null;
         }
 
         /** *****************************************************************
@@ -1505,7 +1501,7 @@ public class Formula implements Comparable, Serializable {
             ArrayList<String> erList = complexArgumentsToArrayList(0);
             for (String s : erList) {
                 if (s.indexOf('(') != -1 && !StringUtil.quoted(s)) {
-                    String err = "Error in Formula.argumentsToArrayList() complex formula: " + this.toString();
+                    String err = "Error in Formula.argumentsToArrayList() complex formula: " + this;
                     errors.add(err);
                     System.out.println(err);
                     return null;
@@ -1629,7 +1625,7 @@ public class Formula implements Comparable, Serializable {
 
         String carstr = f.car();
         if (Formula.atom(carstr) && Formula.isLogicalOperator(carstr)) {
-            if (carstr.equals(f.EQUANT) || carstr.equals(f.UQUANT)) {
+            if (carstr.equals(EQUANT) || carstr.equals(UQUANT)) {
                 String varString = f.getArgument(1);
                 String[] varArray = (varString.substring(1, varString.length()-1)).split(" ");
                 for (String var : varArray) {
@@ -1718,7 +1714,7 @@ public class Formula implements Comparable, Serializable {
             Formula remainder = new Formula();
             remainder.read(this.cdr());
             if (!remainder.listP()) {
-                System.out.println("Error in Formula.collectQuantifiedVariables(): incorrect quantification: " + this.toString());
+                System.out.println("Error in Formula.collectQuantifiedVariables(): incorrect quantification: " + this);
                 return result;
             }
             Formula varlist = new Formula();
@@ -1754,7 +1750,7 @@ public class Formula implements Comparable, Serializable {
             Formula remainder = new Formula();
             remainder.read(this.cdr());
             if (!remainder.listP()) {
-                System.out.println("Error in Formula.collectQuantifiedVariables(): incorrect quantification: " + this.toString());
+                System.out.println("Error in Formula.collectQuantifiedVariables(): incorrect quantification: " + this);
                 return result;
             }
             Formula varlist = new Formula();
@@ -1819,7 +1815,7 @@ public class Formula implements Comparable, Serializable {
         newFormula.read("()");
         if (atom()) {
             if (m.keySet().contains(theFormula)) {
-                theFormula = (String) m.get(theFormula);
+                theFormula = m.get(theFormula);
                 if (this.listP())
                     theFormula = "(" + theFormula + ")";
             }
@@ -2124,9 +2120,7 @@ public class Formula implements Comparable, Serializable {
         if (!antecedent.isSimpleClause(kb) && !antecedent.car().equals("and"))
             return false;
         Formula consequent = cdrAsFormula().cdrAsFormula().carAsFormula();
-        if (!consequent.isSimpleClause(kb) && !consequent.car().equals("and"))
-            return false;
-        return true;
+        return consequent.isSimpleClause(kb) || consequent.car().equals("and");
     }
 
     /** ***************************************************************
@@ -2702,7 +2696,7 @@ public class Formula implements Comparable, Serializable {
             return null;
         }
         result.append(relation + "(");
-        System.out.println("INFO in Formula.toProlog(): result so far: " + result.toString());
+        System.out.println("INFO in Formula.toProlog(): result so far: " + result);
         System.out.println("INFO in Formula.toProlog(): remaining formula: " + f);
         while (!f.empty()) {
             String arg = f.car();

@@ -20,7 +20,7 @@ public class Grid1DRelative implements World {
 
     private double position;
     private double focusPosition;
-    private double focusVelocity;
+    private final double focusVelocity;
         
     private double[] action;
 

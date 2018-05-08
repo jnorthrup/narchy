@@ -282,7 +282,7 @@ public class TermlinkTemplates extends FasterList<Term> {
         MutableFloat refund = new MutableFloat(0);
 
         Term srcTerm = src.term();
-        Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
+        Iterable<PriReference<Term>> srcTermLinks = src.termlinks();
 
         float balance = nar.termlinkBalance.floatValue();
         float budgetedForward = concepts == 0 ? 0 :

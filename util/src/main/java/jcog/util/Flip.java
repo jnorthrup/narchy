@@ -6,8 +6,8 @@ import java.util.function.Supplier;
 /** atomic switching double buffer */
 public class Flip<X> extends AtomicInteger {
 
-    private X a;
-    private X b;
+    private final X a;
+    private final X b;
 
     public Flip(Supplier<X> builder) {
         super(0);

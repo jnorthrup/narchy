@@ -147,7 +147,7 @@ public class KIF {
         result.append("\t");
         result.append(st.nval);
         result.append("\t");
-        result.append(st.toString());
+        result.append(st);
         result.append("\t");
         result.append(key);
     }
@@ -201,8 +201,8 @@ public class KIF {
                         // has already been generated, otherwise report error
                         if (f.startLine != 0 && (!keySet.isEmpty() || (expression.length() > 0))) {
                             errStr = (errStart + " possible missed closing parenthesis near start line " + f.startLine
-                                    + " end line " + f.endLine + " for formula " + expression.toString() + "\n and key "
-                                    + keySet.toString() + " keyset size " + keySet.size() + " exp length "
+                                    + " end line " + f.endLine + " for formula " + expression + "\n and key "
+                                    + keySet + " keyset size " + keySet.size() + " exp length "
                                     + expression.length() + " comment lines " + totalLinesForComments);
                             errorSet.add(errStr);
                             throw new ParseException(errStr, f.startLine);
@@ -599,7 +599,7 @@ public class KIF {
     /*****************************************************************
      * Test method for this class.
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         // tptpOutputTest(args[0]);
         String exp = "(documentation foo \"(written by John Smith).\")";

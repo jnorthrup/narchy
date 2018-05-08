@@ -56,7 +56,7 @@ public class LivePredictorTest {
         FloatSupplier[] in =  { () -> ii.valueOf(m.intValue()),  () -> oo.valueOf(m.intValue()-1) };
         FloatSupplier[] out = { () -> oo.valueOf(m.intValue()) };
 
-        LivePredictor.HistoryFramer ih = new LivePredictor.HistoryFramer(in, iHistory, out);
+        LivePredictor.DenseShiftFramer ih = new LivePredictor.DenseShiftFramer(in, iHistory, out);
         LivePredictor l = new LivePredictor(model, ih );
 
         int numSnapshots = 16;

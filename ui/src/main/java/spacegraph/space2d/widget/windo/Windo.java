@@ -226,7 +226,7 @@ public class Windo extends Stacking {
 
             float pmx = mousePos.x;
             float pmy = mousePos.y;
-            float resizeBorder = Math.max(W, H) * this.resizeBorder;
+            float resizeBorder = Math.max(W, H) * Windo.resizeBorder;
             switch (p) {
                 case RESIZE_N:
                     colorDragIndicator(gl);

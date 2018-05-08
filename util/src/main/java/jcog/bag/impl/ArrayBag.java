@@ -140,7 +140,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             if (s < c) {
                 //room to add an item
                 items.add(toAdd, this);
-                this.mass.add(this, toAddPri);
+                mass.add(this, toAddPri);
             } else {
                 //at capacity, size will remain the same
                 Y removed;
@@ -157,7 +157,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                         items.add(toAdd, this);
                         massDelta += toAddPri;
 
-                        this.mass.add(this, massDelta);
+                        mass.add(this, massDelta);
 
                     } else {
                         removed = toAdd;
@@ -251,7 +251,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         //if (!mustSort && !toAdd)
             //System.out.println("elides sort");
 
-        this.mass.set(this, mass);
+        ArrayBag.mass.set(this, mass);
 
         if (mustSort!=-1)
             sort(0, mustSort); //everything below mustSort would be sorted
@@ -362,7 +362,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
     /*@NotNull*/
     @Override
-    public Bag<X, Y> sample(/*@NotNull*/ Random rng, BagCursor<? super Y> each) {
+    public Iterable<Y> sample(/*@NotNull*/ Random rng, BagCursor<? super Y> each) {
 
         newItemsArray:
         while (true) {
@@ -579,10 +579,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         if (size() == capacity) {
 
             update(incoming, null, false, trash);
-            if (trash.remove(incoming))  {
-                //update() has rejected this one
-                return false;
-            }
+            return !trash.remove(incoming);
 
             //sort(); //<- shouldnt need sorted
 
@@ -591,7 +588,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             int i = items.add(incoming, -p, this);
             //insertion sorted
             assert (i >= 0);
-            this.mass.add(this, p);
+            mass.add(this, p);
         }
 
         return true;
@@ -628,7 +625,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         if (Math.abs(delta) >= Pri.EPSILON) {
             items.adjust(posBefore, this);
 
-            this.mass.add(this, delta);
+            mass.add(this, delta);
         }
 
         return result;

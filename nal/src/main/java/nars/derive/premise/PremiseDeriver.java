@@ -54,40 +54,6 @@ public final class PremiseDeriver {
 
 
     public boolean derivable(Derivation x) {
-        if ((x.will = whats.apply(new PremiseKey(x))).length > 0) {
-            //filterByTruthAndPunctuation
-
-//            byte taskPunc = x.taskPunc;
-//            ///boolean cyclic = x...
-//            boolean hasBelief = x.belief!=null;
-//
-//            RoaringBitmap toRemove = new RoaringBitmap();
-//            short[] will = x.will;
-//            for (int i = 0, willLength = will.length; i < willLength; i++) {
-//                int w = will[i];
-//                PrediTerm<Derivation> b = can.branch[w];
-//                if (b instanceof Truthify) {
-//                    if (!((Truthify) b).test(taskPunc, hasBelief)) {
-//                        toRemove.add(i);
-//                    }
-//                }
-//            }
-//            int numToRemove = toRemove.getCardinality();
-//            if (numToRemove > 0) {
-//                if (numToRemove == will.length)
-//                    return false; //not derivable
-//
-//                short newWill[] = x.will = new short[will.length - numToRemove];
-//                int j = 0;
-//                for (int i = 0, willLength = will.length; i < willLength; i++) {
-//                    if (!toRemove.contains(i)) //TODO use the RoaringBitmap's iterator to copy ranges without lookup each time
-//                        newWill[j++] = will[i];
-//                }
-//                assert(j == newWill.length);
-//                x.will = newWill;
-//            }
-            return true;
-        }
-        return false;
+        return (x.will = whats.apply(new PremiseKey(x))).length > 0;
     }
 }
