@@ -45,7 +45,7 @@ public class PredictDemo {
         Loop.of(() -> {
             long rt = n.time();
             float t = ((float) rt) / n.dur();
-            xf[0] = (float) (0.5f + 0.5f * Math.sin(t / 8f));
+            xf[0] = (float) (0.5f + 0.5f * Math.sin(t / 6f));
             //n.believe(X.term(), rt, xf, 0.9f);
 
             ((Scalar) X).update(truther, n);
@@ -56,8 +56,8 @@ public class PredictDemo {
         //n.log();
 
         new BeliefPredict(List.of(X), 16, n.dur()*6, 6,
-                new LivePredictor.MLPPredictor(0.02f),
-                //new LivePredictor.LSTMPredictor(0.1f, 2),
+                //new LivePredictor.MLPPredictor(0.02f),
+                new LivePredictor.LSTMPredictor(0.1f, 2),
                 n
         );
 

@@ -25,8 +25,9 @@ public class LivePredictor {
 
         double[] outputs();
 
-        /** only use if the set of inputs is the same as the set of outputs (symmetric) */
-        void project(double[] hypotheticalPresent);
+        /** only use if the set of inputs is the same as the set of outputs (symmetric).
+         * returns the new input vector. */
+        double[] shift();
         //double get(boolean inOrOut, int n);
     }
 
@@ -81,14 +82,14 @@ public class LivePredictor {
         }
 
         @Override
-        public void project(double[] nextPresent) {
+        public double[] shift() {
             //shift
             int stride = ins.length;
-            assert(nextPresent.length == stride);
             int all = pastVector.length;
             System.arraycopy(pastVector, stride, pastVector, 0, all - stride);
             System.arraycopy(present, 0, pastVector, all - stride,  stride);
-            System.arraycopy(nextPresent, 0, present, 0,  stride);
+
+            return pastVector;
         }
     }
 
@@ -227,35 +228,13 @@ public class LivePredictor {
     /** applies the vector as new hypothetical present inputs,
      * after shifting the existing data (destructively)
      * down one time slot.
-     * then calls next(), predicting a new vector.
+     * then prediction can proceed again
      */
-    public synchronized double[] project(long now, double[] p) {
-        framer.project(p);
-        return next(now);
+    public synchronized double[] project(double[] prevOut) {
+        double[] nextIn = framer.shift();
+        model.learn(nextIn, prevOut);
+        return model.predict(); //nextOut
     }
-
-//    static double[] vector(FloatSupplier[] x, double[] d) {
-//        if (d == null || d.length != x.length) {
-//            d = new double[x.length];
-//        }
-//        for (int k = 0; k < d.length; k++) {
-//            d[k] = x[k].asFloat();
-//        }
-//        return d;
-//    }
-//
-//    static double[] historyVector(List<? extends FloatDelay> f, int history, double[] d) {
-//        if (d == null || d.length != f.size() * history) {
-//            d = new double[f.size() * history];
-//        }
-//        int i = 0;
-//        for (int i1 = 0, fSize = f.size(); i1 < fSize; i1++) {
-//            float[] gd = f.get(i1).data;
-//            for (int k = 0; k < gd.length; k++)
-//                d[i++] = gd[k];
-//        }
-//        return d;
-//    }
 
 
 }

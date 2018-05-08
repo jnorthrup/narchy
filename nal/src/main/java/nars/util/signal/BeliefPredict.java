@@ -83,7 +83,7 @@ public class BeliefPredict {
 
         for (int i = 0; i < projections; i++) {
             now += sampleDur;
-            p = predictor.project(now, p);
+            p = predictor.project(p);
             believe(now, p);
         }
     }
