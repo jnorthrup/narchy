@@ -121,7 +121,11 @@ public class RectFloatND implements HyperRegion<FloatND>, Serializable, Comparab
 
     @Override
     public HyperRegion mbr(final HyperRegion r) {
+        if (this == r)
+            return this;
+
         final RectFloatND x = (RectFloatND) r;
+
 
         int dim = dim();
         float[] newMin = new float[dim];

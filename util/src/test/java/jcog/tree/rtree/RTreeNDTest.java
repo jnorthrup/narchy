@@ -24,7 +24,7 @@ public class RTreeNDTest {
     @Test
     public void pointSearchTest() {
 
-        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 2, 8, Spatialization.DefaultSplits.AXIAL);
+        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 2, 8, Spatialization.DefaultSplits.AXIAL.get());
 
         for (int i = 0; i < 10; i++) {
             pTree.add(new Double2D(i, i));
@@ -576,7 +576,7 @@ public class RTreeNDTest {
     }
 
     static RTree<RectDouble2D> createRectDouble2DTree(int minM, int maxM, Spatialization.DefaultSplits splitType) {
-        return new RTree<>((x -> x), minM, maxM, splitType);
+        return new RTree<>((x -> x), minM, maxM, splitType.get());
     }
 
     @Test

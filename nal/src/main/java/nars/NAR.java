@@ -43,7 +43,7 @@ import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.time.Tense;
-import org.HdrHistogram.ShortCountsHistogram;
+import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
@@ -201,14 +201,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         LongSummaryStatistics goals = new LongSummaryStatistics();
         LongSummaryStatistics questions = new LongSummaryStatistics();
         LongSummaryStatistics quests = new LongSummaryStatistics();
-        ShortCountsHistogram termlinkCount = new ShortCountsHistogram(1, 1024, 3);
-        ShortCountsHistogram tasklinkCount = new ShortCountsHistogram(1, 1024, 3);
+        Histogram termlinkCount = new Histogram(1, 1024, 3);
+        Histogram tasklinkCount = new Histogram(1, 1024, 3);
         //Frequency complexity = new Frequency();
         HashBag clazz = new HashBag();
         HashBag policy = new HashBag();
         HashBag rootOp = new HashBag();
 
-        ShortCountsHistogram volume = new ShortCountsHistogram(1, Param.COMPOUND_VOLUME_MAX, 3);
+        Histogram  volume = new Histogram(1, Param.COMPOUND_VOLUME_MAX, 3);
 
         //AtomicInteger i = new AtomicInteger(0);
 
@@ -297,6 +297,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         x.put("term cache eternal", Op.termCache.summary());
         x.put("term cache temporal", Op.termTemporalCache.summary());
         x.put("subterm cache", Op.subtermCache.summary());
+
+        emotion.getter(()->x).run(); //HACK this is slow TODO cache the monitor list in a Stats instance
 
         return x;
 

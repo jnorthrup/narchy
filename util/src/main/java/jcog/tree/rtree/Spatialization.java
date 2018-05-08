@@ -17,11 +17,11 @@ public class Spatialization<T> {
     public final short max;       // max entries per node
     public final short min;       // least number of entries per node
 
-    public Spatialization(@Deprecated final Function<T, HyperRegion> bounds, DefaultSplits split, final int min, final int max) {
-        this(bounds, split.get(), min, max);
-    }
-
     public Spatialization(@Deprecated final Function<T, HyperRegion> bounds, final Split<T> split, final int min, final int max) {
+        if (min<2)
+            throw new UnsupportedOperationException("min split must be >=2");
+        if (max < min)
+            throw new UnsupportedOperationException("min split must be < max split");
         this.max = (short) max;
         this.min = (short) min;
         this.bounds = bounds;
@@ -58,10 +58,11 @@ public class Spatialization<T> {
     }
 
     public final Leaf<T> transfer(Leaf<T> leaf, IntDoublePair[] sortedMbr, int from, int to) {
-        Leaf<T> l = newLeaf();
-        T[] ld = leaf.data;
+        final Leaf<T> l = newLeaf();
+        final T[] ld = leaf.data;
+        final Node<T, ?> nl = l;
         for (int i = from; i < to; i++) {
-            ((Node<T, ?>) l).add(ld[sortedMbr[i].getOne()], leaf, this, new boolean[] { false });
+            nl.add(ld[sortedMbr[i].getOne()], leaf, this, new boolean[] { false });
         }
         return l;
     }

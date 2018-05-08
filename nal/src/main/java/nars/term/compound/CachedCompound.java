@@ -33,22 +33,9 @@ abstract public class CachedCompound implements Compound, The {
     private final int _volume;
     private final int _structure;
 
-    public static CachedCompound the(/*@NotNull*/ Op op, Subterms subterms) {
-        return the(op, DTERNAL, subterms);
-    }
+    public static class SimpleCachedCompound extends CachedCompound {
 
-    public static CachedCompound the(/*@NotNull*/ Op op, int dt, Subterms subterms) {
-        //HACK predict if compound will differ from its root
-        if (dt == DTERNAL && !op.temporal && !subterms.hasAny(Op.Temporal)) { //TODO there are more cases
-            return new SimpleCachedCompound(op, subterms);
-        } else {
-            return new TemporalCachedCompound(op, dt, subterms);
-        }
-    }
-
-    private static class SimpleCachedCompound extends CachedCompound {
-
-        SimpleCachedCompound(Op op, Subterms subterms) {
+        public SimpleCachedCompound(Op op, Subterms subterms) {
             super(op, DTERNAL, subterms);
         }
 
@@ -86,12 +73,12 @@ abstract public class CachedCompound implements Compound, The {
     }
 
     /** caches a reference to the root for use in terms that are inequal to their root */
-    private static class TemporalCachedCompound extends CachedCompound  {
+    public static class TemporalCachedCompound extends CachedCompound  {
         private transient Term rooted = null;
         private transient Term concepted = null;
         final int dt;
 
-        private TemporalCachedCompound(Op op, int dt, Subterms subterms) {
+        public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
             this.dt = dt;
         }

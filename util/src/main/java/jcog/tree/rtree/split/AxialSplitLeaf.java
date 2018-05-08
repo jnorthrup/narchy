@@ -20,7 +20,6 @@ package jcog.tree.rtree.split;
  * #L%
  */
 
-import jcog.list.FasterList;
 import jcog.tree.rtree.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.IntDoublePair;
@@ -36,6 +35,10 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public final class AxialSplitLeaf<T> implements Split<T> {
 
+    /** default stateless instance which can be re-used */
+    public static final Split<?> the = new AxialSplitLeaf<>();
+
+    public AxialSplitLeaf() { }
 
     @Override
     public Node<T, ?> split(T t, Leaf<T> leaf, Spatialization<T> model) {
@@ -62,9 +65,30 @@ public final class AxialSplitLeaf<T> implements Split<T> {
 
         short size = leaf.size;
         IntDoublePair[] sorted = new IntDoublePair[size];
-        for (int i = 0; i < size; i++)
-            sorted[i] = (pair(i, model.bounds(leaf.data[i]).center(splitDimension)));
-        ArrayUtils.sort(sorted, IntDoublePair::getTwo);
+        double lastSpan = Double.NEGATIVE_INFINITY;
+        T[] ld = leaf.data;
+        for (int i = 0; i < size; i++) {
+            double span = model.bounds(ld[i]).center(splitDimension);
+            sorted[i] = pair(i, -span /* negative since the ArrayUtils.sort below is descending */);
+            if (lastSpan==lastSpan) {
+                if (span < lastSpan) {
+                    lastSpan = Double.NaN; //set unsorted
+                } else {
+                    lastSpan = span;
+                }
+            }
+        }
+        if (lastSpan!=lastSpan) {
+            if (size > 2) {
+                ArrayUtils.sort(sorted, IntDoublePair::getTwo);
+            } else {
+                assert(size==2);
+                //just swap entries
+                IntDoublePair x = sorted[0];
+                sorted[0] = sorted[1];
+                sorted[1] = x;
+            }
+        }
 
 //        final HyperRegion[] sortedMbr = HyperRegion.toArray(leaf.data, size, model.bounds);
 //        Arrays.sort(sortedMbr, Comparator.comparingDouble(o -> o.center(splitDimension)));
@@ -73,9 +97,9 @@ public final class AxialSplitLeaf<T> implements Split<T> {
         final Leaf<T> l1Node = model.transfer(leaf, sorted, 0, size/2);
         final Leaf<T> l2Node = model.transfer(leaf, sorted, size / 2, size);
 
-        if ((l1Node.size()+l2Node.size() != size))
-            throw new RuntimeException("fix: leaf.contains(t)=" + leaf.contains(t, model.bounds(t), model));
-        //assert (l1Node.size()+l2Node.size() == size);
+//        if ((l1Node.size()+l2Node.size() != size))
+//            throw new RuntimeException("fix: leaf.contains(t)=" + leaf.contains(t, model.bounds(t), model));
+        assert (l1Node.size()+l2Node.size() == size);
 
         leaf.transfer(l1Node, l2Node, t, model);
 

@@ -23,17 +23,17 @@ public final class PremiseKey {
         DynBytes k = new DynBytes(64);
 
         //task punc (2 bits) + whether belief is present (1 bit)
-        byte puncPlusBeliefPresent;
+        byte taskPuncAndIfDouble;
         switch (d.taskPunc) {
-            case BELIEF:  puncPlusBeliefPresent = 0; break;
-            case GOAL:  puncPlusBeliefPresent = 1; break;
-            case QUESTION:  puncPlusBeliefPresent = 2; break;
-            case QUEST:  puncPlusBeliefPresent = 3; break;
+            case BELIEF:  taskPuncAndIfDouble = 0; break;
+            case GOAL:  taskPuncAndIfDouble = 1; break;
+            case QUESTION:  taskPuncAndIfDouble = 2; break;
+            case QUEST:  taskPuncAndIfDouble = 3; break;
             default:
                 throw new UnsupportedOperationException();
         }
-        puncPlusBeliefPresent |= (d.hasBeliefTruth() ? 1 : 0) << 3;
-        k.writeByte(puncPlusBeliefPresent);
+        taskPuncAndIfDouble |= (d.hasBeliefTruth() ? 1 : 0) << 3;
+        k.writeByte(taskPuncAndIfDouble);
 
 //        //2 bits for each polarity, each one offset by +1 (because it ranges from -1..+1)
 //        k.writeByte(((d.taskPolarity+1)<<2) | (d.beliefPolarity+1) );

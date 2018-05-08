@@ -61,7 +61,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
     final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
-    final List<PrediTerm<PreDerivation>> pre = new FasterList(8);
+    final Set<PrediTerm<PreDerivation>> pre = new HashSet(8);
     final List<PrediTerm<Derivation>> post = new FasterList(8);
     private Truthify truthify;
 
@@ -85,7 +85,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         Term[] postcons = ((Subterms) term().sub(1)).arrayShared();
 
 
-        Set<PrediTerm<PreDerivation>> pres = new HashSet(8);
+
 
 
         Term taskPattern = getTask();
@@ -101,7 +101,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         //pattern = PatternCompound.make(p(taskTermPattern, beliefTermPattern));
 
-        char taskPunc = 0;
+        byte taskPunc = 0;
 
 
         //additional modifiers: either preConditionsList or beforeConcs, classify them here
@@ -156,10 +156,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     break;
 
                 case "opSECTe":
-                    termIs(pres, taskPattern, beliefPattern, constraints, X, Op.SECTe);
+                    termIs(pre, taskPattern, beliefPattern, constraints, X, Op.SECTe);
                     break;
                 case "opSECTi":
-                    termIs(pres, taskPattern, beliefPattern, constraints, X, Op.SECTi);
+                    termIs(pre, taskPattern, beliefPattern, constraints, X, Op.SECTi);
                     break;
 
 
@@ -167,7 +167,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     //X subOf Y : X is subterm of Y
                     if ((Y==Op.imExt) || (Y==Op.imInt)) {
                         //TODO move to top-level class
-                        pres.add(new AbstractPred<>($.func("subOf", $.quote(Y.toString()))) {
+                        pre.add(new AbstractPred<>($.func("subOf", $.quote(Y.toString()))) {
                             boolean task = taskPattern.containsRecursively(X);
                             boolean belief = beliefPattern.containsRecursively(Y);
 
@@ -229,21 +229,21 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
                 case "eventOf":
                     neq(constraints, X, Y);
-                    eventPrefilter(pres, X, taskPattern, beliefPattern);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event));
                     break;
 
                 case "eventOfNeg":
                     neq(constraints, X, Y);
-                    eventPrefilter(pres, X, taskPattern, beliefPattern);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, -1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, -1));
                     break;
 
                 case "eventOfPosOrNeg":
                     neq(constraints, X, Y);
-                    eventPrefilter(pres, X, taskPattern, beliefPattern);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
                     break;
@@ -272,46 +272,46 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     int min = $.intValue(Y);
                     constraints.add(new SubsMin(X, min));
                     if (taskPattern.equals(X)) {
-                        pres.add(SubsMin.proto(true, min));
+                        pre.add(SubsMin.proto(true, min));
                     }
                     if (beliefPattern.equals(X)) {
-                        pres.add(SubsMin.proto(false, min));
+                        pre.add(SubsMin.proto(false, min));
                     }
                     break;
 
                 case "notSet":
-                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.SetBits);
+                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.SetBits);
                     break;
 
                 case "notImpl":
-                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
+                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
                     break;
 
                 case "notImplConj":
-                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit | Op.CONJ.bit);
+                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit | Op.CONJ.bit);
                     break;
 
                 case "isNot": {
                     Op o = Op.the($.unquote(Y));
-                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, o.bit);
+                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, o.bit);
                     break;
                 }
 
                 case "is": {
                     //TODO make var arg version of this
                     Op o = Op.the($.unquote(Y));
-                    termIs(pres, taskPattern, beliefPattern, constraints, X, o);
+                    termIs(pre, taskPattern, beliefPattern, constraints, X, o);
                     break;
                 }
 
                 case "hasNo":
                     //TODO make var arg version of this
-                    termHasNot(taskPattern, beliefPattern, pres, constraints, X, Op.the($.unquote(Y)).bit);
+                    termHasNot(taskPattern, beliefPattern, pre, constraints, X, Op.the($.unquote(Y)).bit);
                     break;
                 case "hasNoDiffed":
                     //HACK temporary
-                    termHasNot(taskPattern, beliefPattern, pres, constraints, X, Op.DiffBits);
-                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.INH.bit);
+                    termHasNot(taskPattern, beliefPattern, pre, constraints, X, Op.DiffBits);
+                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.INH.bit);
                     break;
 
 //                case "has":
@@ -445,7 +445,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 //                            pres.add(TaskPolarity.taskPos);
 //                            break;
                         case "\"?\"":
-                            pres.add(TaskPunctuation.Question);
+                            pre.add(TaskPunctuation.Question);
                             taskPunc = '?';
                             break;
 //                        case "\"?@\"":
@@ -453,23 +453,23 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 //                            taskPunc = '?'; //this will choose quest as punctuation type when necessary, according to the task
 //                            break;
                         case "\"@\"":
-                            pres.add(TaskPunctuation.Quest);
+                            pre.add(TaskPunctuation.Quest);
                             taskPunc = '@';
                             break;
                         case "\".\"":
-                            pres.add(TaskPunctuation.Belief);
+                            pre.add(TaskPunctuation.Belief);
                             taskPunc = '.';
                             break;
                         case "\"!\"":
-                            pres.add(TaskPunctuation.Goal);
+                            pre.add(TaskPunctuation.Goal);
                             taskPunc = '!';
                             break;
 
                         case "\"*\"":
-                            pres.add(new TaskBeliefOp(PROD, true, false));
+                            pre.add(new TaskBeliefOp(PROD, true, false));
                             break;
                         case "\"&&\"":
-                            pres.add(new TaskBeliefOp(CONJ, true, false));
+                            pre.add(new TaskBeliefOp(CONJ, true, false));
                             break;
 //                        case "\"&&|\"": //parallel or eternal
 //                            pres.add(new TaskBeliefOp.TaskBeliefConjComm(true, false));
@@ -689,12 +689,26 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
 
 
-            if (beliefTruthOp != null && !beliefTruthOp.single()) {
-                pre.add(DoublePremiseIfBelief);
+        if (beliefTruthOp != null && !beliefTruthOp.single() && (puncOverride == 0 || puncOverride == BELIEF)) {
+            if (taskPunc == BELIEF) {
+                pre.add(DoublePremise); //guaranteed belief
+            } else {
+//                if (puncOverride == BELIEF)
+//                    pre.add(DoublePremise); //overridden, so whatever task is (question, etc)
+//                else if (puncOverride == 0)
+                    pre.add(DoublePremiseIfBelief); //when it is a belief
             }
-            if (goalTruthOp != null && !goalTruthOp.single()) {
-                pre.add(DoublePremiseIfGoal);
+        }
+        if (goalTruthOp != null && !goalTruthOp.single() && (puncOverride == 0 || puncOverride == GOAL)) {
+            if (taskPunc == GOAL) {
+                pre.add(DoublePremise); //guaranteed goal
+            } else  {
+//                if (puncOverride == GOAL)
+//                    pre.add(DoublePremise); //overridden, so whatever task is (question, etc)
+//                else if (puncOverride == 0)
+                    pre.add(DoublePremiseIfGoal);  //when it is a goal
             }
+        }
 
 
 
@@ -771,11 +785,17 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             if (!b && !g) {
                 throw new RuntimeException("can not assume this applies only to questions");
             } else if (b && g) {
-                pres.add(TaskPunctuation.BeliefOrGoal);
+
+
+                pre.add(TaskPunctuation.BeliefOrGoal);
+
             } else if (b) {
-                pres.add(TaskPunctuation.Belief);
+
+                pre.add(TaskPunctuation.Belief);
+
+
             } else /* if (g) */ {
-                pres.add(TaskPunctuation.Goal);
+                pre.add(TaskPunctuation.Goal);
             }
 
         } else if (taskPunc == ' ') {
@@ -783,7 +803,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
 
         //store to arrays
-        this.PRE = pres.toArray(new PrediTerm[0]);
+        this.PRE = pre.toArray(new PrediTerm[0]);
 
     }
 
@@ -992,31 +1012,26 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     }
 
     /** requires double premise belief task evidence if deriving */
-    private static AbstractPred<PreDerivation> DoublePremiseIfBelief = new DoublePremise(true, false);
-    private static AbstractPred<PreDerivation> DoublePremiseIfGoal = new DoublePremise(false, true);
+    private static AbstractPred<PreDerivation> DoublePremise = new DoublePremise((byte)0);
+    private static AbstractPred<PreDerivation> DoublePremiseIfBelief = new DoublePremise(BELIEF);
+    private static AbstractPred<PreDerivation> DoublePremiseIfGoal = new DoublePremise(GOAL);
 
     private static class DoublePremise extends AbstractPred<PreDerivation> {
 
         final static Atomic key = (Atomic) $.the("DoublePremise");
-        private final boolean ifBelief, ifGoal;
+        private final byte punc;
 
-        public DoublePremise(boolean ifBelief, boolean ifGoal) {
-            super($.func(key, ifBelief ? Op.True:Op.False, ifGoal ? Op.True:Op.False));
-            this.ifBelief = ifBelief;
-            this.ifGoal = ifGoal;
+        public DoublePremise(byte taskPunc) {
+            super($.func(key, $.quote(Character.valueOf((char)taskPunc))));
+            this.punc = taskPunc;
         }
 
         @Override
         public boolean test(PreDerivation preDerivation) {
-            byte punc = preDerivation.taskPunc;
-            if (punc == QUESTION || punc == QUEST) return true; //skip although here cyclic test could be performed
-            if (!preDerivation.hasBeliefTruth()) {
-                if (ifBelief && punc == BELIEF)
-                    return false;
-                if (ifGoal && punc == GOAL)
-                    return false;
-            }
-            return true; //ok
+            if (this.punc == 0 /* any */ || (preDerivation.taskPunc == this.punc /* a specific one */))
+                if (!preDerivation.hasBeliefTruth())
+                    return false; //filtered
+            return true;
         }
 
         @Override

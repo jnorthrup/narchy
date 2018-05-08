@@ -42,7 +42,7 @@ public class Stats {
     private int leafCount;
     private int entryCount;
 
-    public void print(PrintStream out) {
+    public Stats print(PrintStream out) {
         out.println("[" + type + "] m=" + minFill + " M=" + maxFill);
         out.println("   Branches (" + branchCount + " total)");
         out.print("      ");
@@ -61,6 +61,8 @@ public class Stats {
         out.printf("\tEntries per Leaf: %.2f", getEntriesPerLeaf());
         out.println("\tMax Depth: " + maxDepth);
         out.println();
+
+        return this;
     }
 
     public float getEntriesPerLeaf() {
@@ -95,7 +97,7 @@ public class Stats {
         return leafCount;
     }
 
-    public int getEntryCount() {
+    public int size() {
         return entryCount;
     }
 

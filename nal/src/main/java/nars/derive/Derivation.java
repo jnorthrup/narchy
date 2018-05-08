@@ -552,10 +552,14 @@ public class Derivation extends PreDerivation {
 
 
         setTTL(ttl);
+        try {
 
-        deriver.prioritize.premise(this);
+            deriver.prioritize.premise(this);
 
-        deriver.rules.can.test(this);
+            deriver.rules.can.test(this);
+        } finally {
+            nar.emotion.deriveTTLRemain.increment(this.ttl);
+        }
     }
 
     @Override

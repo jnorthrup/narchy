@@ -8829,17 +8829,22 @@ public enum ArrayUtils { ;
 //        }
     }
 
+    /** sorts descending */
     public static void sort(byte[] a, ByteToFloatFunction v) {
         sort(a, 0, a.length-1, v);
     }
 
+    /** sorts descending */
     public static void sort(int[] a, IntToFloatFunction v) {
         sort(a, 0, a.length-1, v);
     }
+
+    /** sorts descending */
     public static <X> void sort(X[] a, ToDoubleFunction<X> v) {
         sort(a, 0, a.length-1, v);
     }
 
+    /** sorts descending */
     public static void sort(int[] a, int left, int right /* inclusive */, IntToFloatFunction v) {
 //        // Use counting sort on large arrays
 //        if (right - left > COUNTING_SORT_THRESHOLD_FOR_BYTE) {
@@ -8870,6 +8875,7 @@ public enum ArrayUtils { ;
         }
 //        }
     }
+    /** sorts descending */
     public static <X> void sort(X[] a, int left, int right /* inclusive */, ToDoubleFunction<X> v) {
 //        // Use counting sort on large arrays
 //        if (right - left > COUNTING_SORT_THRESHOLD_FOR_BYTE) {

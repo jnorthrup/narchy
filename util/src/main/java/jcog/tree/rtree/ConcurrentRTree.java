@@ -56,6 +56,16 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
         return tree.model();
     }
 
+    @Override
+    public boolean OR(Predicate<T> o) {
+        return root().OR(o);
+    }
+
+    @Override
+    public boolean AND(Predicate<T> o) {
+        return root().AND(o);
+    }
+
     /**
      * Blocking locked search
      *
@@ -152,13 +162,13 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
     /**
      * Blocking locked update
-     *
-     * @param told - entry to update
+     *  @param told - entry to update
      * @param tnew - entry with new value
      */
     @Override
-    public void replace(T told, T tnew) {
+    public boolean replace(T told, T tnew) {
         write(() -> tree.replace(told, tnew));
+        return false;
     }
 
     @Override

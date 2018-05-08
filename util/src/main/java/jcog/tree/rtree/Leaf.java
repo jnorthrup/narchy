@@ -100,6 +100,12 @@ public class Leaf<T> extends AbstractNode<T, T> {
             //TEMPORARY - why can this happen
             for (int i = 0, s = size; i < s; i++) {
                 T x = data[i];
+
+                if (x == null) continue; //in case of optimistic read
+
+                if (x == t)
+                    return null; //instance already contained
+
                 if (x.equals(t)) {
                     model.merge(x, t);
                     return null;
@@ -156,13 +162,8 @@ public class Leaf<T> extends AbstractNode<T, T> {
             T[] data = this.data;
             for (int i = 0; i < s; i++) {
                 T d = data[i];
-                if (t == d) {
-                    return true; //same instance
-                }
-                if (t.equals(d)) {
-                    model.merge(d, t);
-                    return true;
-                }
+                if (d!=null && t == d || t.equals(d))
+                    return true; //instance already contained
             }
         }
         return false;
@@ -204,7 +205,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
     }
 
     @Override
-    public Node<T, ?> update(final T told, final T tnew, Spatialization<T> model) {
+    public Node<T, ?> replace(final T told, final T tnew, Spatialization<T> model) {
         final int s = size;
         if (s <= 0)
             return this;

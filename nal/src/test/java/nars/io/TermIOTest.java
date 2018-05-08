@@ -5,7 +5,10 @@ import nars.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.anon.Anom;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Int;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,7 @@ import java.util.function.Predicate;
 import static java.lang.System.out;
 import static nars.$.$;
 import static nars.$.$$;
+import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -39,7 +43,7 @@ public class TermIOTest {
         assertEqualSerialize((Object)nar.inputTask(orig));
     }
 
-    static void assertEqualSerialize(@NotNull Object orig) {
+    static byte[] assertEqualSerialize(@NotNull Object orig) {
         //final IO.DefaultCodec codec = new IO.DefaultCodec(nar.index);
 
 
@@ -87,6 +91,7 @@ public class TermIOTest {
         //assertEquals(0, orig.compareTo(copy));
 
         //assertEquals(copy.getClass(), orig.getClass());
+        return barray;
     }
 
 
@@ -138,8 +143,41 @@ public class TermIOTest {
     }
 
     @Test
+    public void testAnonSerialization() {
+
+        Term[] anons = new Term[] {
+                $.v(VAR_DEP, (byte)1),
+                $.v(VAR_INDEP, (byte)1),
+                $.v(VAR_QUERY, (byte)1),
+                $.v(VAR_PATTERN, (byte)1),
+                Atomic.the("x"),
+                Int.the(1),
+                Anom.the(1),
+        };
+
+        for (Term a : anons) {
+            a.printRecursive();
+            byte[] b = assertEqualSerialize(a);
+
+            //special length requirement tests
+            if (a instanceof Anom) {
+                assertEquals(2, b.length); //byte op + anom id
+            } else if (a.op() == INT) {
+                assertEquals(5, b.length); //byte op + 4x8bits
+            } else if (a instanceof Atom) {
+                assertEquals(4, b.length); //byte op + short len + UTF-8 bytes
+            }
+        }
+
+        assertEqualSerialize($.p( anons ));
+
+        assertEqualSerialize($.p( Anom.the(1), Anom.the(2) ));
+        assertEqualSerialize($.p( Anom.the(1), $.varDep(2) ));
+    }
+
+    @Test
     public void testTermSerialization2() throws Narsese.NarseseException {
-        assertTermEqualSerialize("<a-->(be)>");
+        assertTermEqualSerialize("(a-->(be))");
     }
 
     @Test

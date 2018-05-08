@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -37,34 +36,34 @@ import java.util.stream.Stream;
  */
 public interface Space<T> extends Nodelike<T> {
 
-    int DEFAULT_MIN_M = 2;
-    int DEFAULT_MAX_M = 8;
-    Spatialization.DefaultSplits DEFAULT_SPLIT_TYPE = Spatialization.DefaultSplits.AXIAL;
+//    int DEFAULT_MIN_M = 2;
+//    int DEFAULT_MAX_M = 8;
+//    Spatialization.DefaultSplits DEFAULT_SPLIT_TYPE = Spatialization.DefaultSplits.AXIAL;
 
-    /**
-     * Create an R-Tree with default values for m, M, and split type
-     *
-     * @param spatializer - Builder implementation used to create HyperRects out of T's
-     * @param <T>         - The store type of the bound
-     * @return SpatialSearch - The spatial search and index structure
-     */
-    static <T> Space<T> rTree(final Function<T, HyperRegion> spatializer) {
-        return new RTree<>(spatializer, DEFAULT_MIN_M, DEFAULT_MAX_M, DEFAULT_SPLIT_TYPE);
-    }
+//    /**
+//     * Create an R-Tree with default values for m, M, and split type
+//     *
+//     * @param spatializer - Builder implementation used to create HyperRects out of T's
+//     * @param <T>         - The store type of the bound
+//     * @return SpatialSearch - The spatial search and index structure
+//     */
+//    static <T> Space<T> rTree(final Function<T, HyperRegion> spatializer) {
+//        return new RTree<>(spatializer, DEFAULT_MIN_M, DEFAULT_MAX_M, DEFAULT_SPLIT_TYPE);
+//    }
 
-    /**
-     * Create an R-Tree with specified values for m, M, and split type
-     *
-     * @param builder   - Builder implementation used to create HyperRects out of T's
-     * @param minM      - minimum number of entries per node of this tree
-     * @param maxM      - maximum number of entries per node of this tree (exceeding this causes node split)
-     * @param splitType - type of split to use when M+1 entries are added to a node
-     * @param <T>       - The store type of the bound
-     * @return SpatialSearch - The spatial search and index structure
-     */
-    static <T> Space<T> rTree(final Function<T, HyperRegion> builder, final int minM, final int maxM, final Spatialization.DefaultSplits splitType) {
-        return new RTree<>(builder, minM, maxM, splitType);
-    }
+//    /**
+//     * Create an R-Tree with specified values for m, M, and split type
+//     *
+//     * @param builder   - Builder implementation used to create HyperRects out of T's
+//     * @param minM      - minimum number of entries per node of this tree
+//     * @param maxM      - maximum number of entries per node of this tree (exceeding this causes node split)
+//     * @param splitType - type of split to use when M+1 entries are added to a node
+//     * @param <T>       - The store type of the bound
+//     * @return SpatialSearch - The spatial search and index structure
+//     */
+//    static <T> Space<T> rTree(final Function<T, HyperRegion> builder, final int minM, final int maxM, final Spatialization.DefaultSplits splitType) {
+//        return new RTree<>(builder, minM, maxM, splitType);
+//    }
 //
 //    /**
 //     * Create a protected R-Tree with default values for m, M, and split type
@@ -98,11 +97,10 @@ public interface Space<T> extends Nodelike<T> {
 
     /**
      * Update entry in tree
-     *
-     * @param told - Entry to update
+     *  @param told - Entry to update
      * @param tnew - Entry to update it to
      */
-    void replace(final T told, final T tnew);
+    boolean replace(final T told, final T tnew);
 
     /**
      * Get the number of entries in the tree
@@ -111,6 +109,8 @@ public interface Space<T> extends Nodelike<T> {
      */
     int size();
 
+    boolean OR(Predicate<T> o);
+    boolean AND(Predicate<T> o);
     void forEach(Consumer<? super T> consumer);
 
 //    default boolean intersecting(HyperRegion rect, Consumer<T> consumer) {
@@ -223,4 +223,5 @@ public interface Space<T> extends Nodelike<T> {
 
 
     boolean contains(T t);
+
 }

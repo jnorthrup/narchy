@@ -5,6 +5,7 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.IO;
 import nars.Narsese;
+import nars.Op;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector2;
@@ -12,7 +13,6 @@ import nars.subterm.UnitSubterm;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
-import nars.term.compound.CachedCompound;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -138,7 +138,7 @@ public class AnonTest {
         assertEquals(v.hashCode(), a.hashCode());
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
-        assertEquals(CachedCompound.the(PROD, v), CachedCompound.the(PROD, a));
+        assertEquals(Op.theCompound(PROD, v), Op.theCompound(PROD, a));
 
         byte[] bytesExpected = IO.termToBytes($.pFast(v));
         byte[] bytesActual = IO.termToBytes($.pFast(a));

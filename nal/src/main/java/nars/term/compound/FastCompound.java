@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
 
 import static nars.util.time.Tense.DTERNAL;
 
@@ -374,7 +373,7 @@ abstract public class FastCompound implements Compound /* The */ {
         } else {
             //TODO sub view
             //return opAtSub.the(DTERNAL, subs(subOffset));
-            return CachedCompound.the(opAtSub,
+            return Op.theCompound(opAtSub,
                     Subterms.subterms(new SubtermView(this, offset))
                     //new SubtermView(this, offset)
             );
@@ -514,22 +513,22 @@ abstract public class FastCompound implements Compound /* The */ {
         }
     }
 
-    /**
-     * for use in: Builder.Compound.the
-     */
-    public static final BiFunction<Op, List<Term>, Term> FAST_COMPOUND_BUILDER = (op, terms) -> {
-        //HACK creating an intermediate GenericCompound should not be necessary
-        CachedCompound g = CachedCompound.the(op, Subterms.subterms(terms));
-        try {
-
-            if (!g.isTemporal())
-                return get(g);
-            else
-                return g;
-
-        } catch (Throwable t) {
-            return g;
-        }
-    };
+//    /**
+//     * for use in: Builder.Compound.the
+//     */
+//    public static final BiFunction<Op, List<Term>, Term> FAST_COMPOUND_BUILDER = (op, terms) -> {
+//        //HACK creating an intermediate GenericCompound should not be necessary
+//        CachedCompound g = Op.theCompound(op, Subterms.subterms(terms));
+//        try {
+//
+//            if (!g.isTemporal())
+//                return get(g);
+//            else
+//                return g;
+//
+//        } catch (Throwable t) {
+//            return g;
+//        }
+//    };
 
 }

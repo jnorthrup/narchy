@@ -7,7 +7,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.compound.CachedCompound;
 import nars.term.compound.LightCompoundDT;
 import nars.term.var.Variable;
 import nars.unify.Unify;
@@ -119,7 +118,7 @@ public class PremisePatternIndex extends MapConceptIndex {
         Ellipsis e = Ellipsis.firstEllipsis(v);
         return e != null ?
                 ellipsis(x, v, e) :
-                CachedCompound.the(x.op(), x.dt(), v);
+                theCompound(x.op(), x.dt(), v);
                     //x.op().the(x.dt(), v.arrayShared()); //new PatternCompound.PatternCompoundSimple(x.op(), x.dt(), v);
     }
 

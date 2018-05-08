@@ -4,8 +4,6 @@ import com.google.common.math.PairedStatsAccumulator;
 import jcog.io.SparkLine;
 import jcog.list.FasterList;
 import nars.*;
-import nars.derive.Deriver;
-import nars.derive.deriver.MatrixDeriver;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -56,7 +54,7 @@ public class AIMATests {
         n.termVolumeMax.set(32);
         //n.conceptActivation.set(0.5f);
 
-        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(2));
+//        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(2));
         //new QuerySpider(n);
         //new PrologCore(n);
         //n.run(1);
@@ -105,7 +103,7 @@ public class AIMATests {
         });
         //
         //n.log();
-        n.run(3000);
+        n.run(2000);
 //        n.concept($.$("Criminal")).print();
 //        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {

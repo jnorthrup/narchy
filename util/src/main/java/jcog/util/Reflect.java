@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -297,6 +297,10 @@ public class Reflect {
         }
     }
 
+    public Map<String, Reflect> fields(boolean instance, boolean statik) {
+        return fields(instance, statik, true);
+    }
+
     /**
      * Get a Map containing field names and wrapped values for the fields'
      * values.
@@ -312,14 +316,22 @@ public class Reflect {
      *
      * @return A map containing field names and wrapped values.
      */
-    public Map<String, Reflect> fields(boolean instance, boolean statik) {
-        Map<String, Reflect> result = new LinkedHashMap<String, Reflect>();
+    public Map<String, Reflect> fields(boolean instance, boolean statik, boolean nonPublic) {
+
+        Map<String, Reflect> result =
+                //new LinkedHashMap<String, Reflect>();
+                new HashMap<>(16);
+
         Class<?> t = type();
 
         do {
             for (Field field : t.getDeclaredFields()) {
-                boolean isStatik = Modifier.isStatic(field.getModifiers());
+                int mods = field.getModifiers();
+                boolean isStatik = Modifier.isStatic(mods);
                 if ((isStatik && statik ) || (!isStatik && instance)) {
+                    if (!nonPublic && !Modifier.isPublic(mods))
+                        continue;
+
                     String name = field.getName();
 
                     if (!result.containsKey(name))

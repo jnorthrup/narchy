@@ -7,10 +7,7 @@ import jcog.Util;
 import jcog.data.SimpleIntSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
-import nars.$;
-import nars.Op;
-import nars.Param;
-import nars.The;
+import nars.*;
 import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Evaluation;
@@ -78,10 +75,9 @@ public class Int implements Intlike, The {
     protected Int(int i) {
         this.id = i;
 
-        byte[] b = new byte[6];
-        b[0] = op().id;
-        b[1] = 0; //subtype
-        Util.int2Bytes(id, b, 2);
+        byte[] b = new byte[5];
+        b[0] = IO.opAndSubType(op(), (byte) (((opX()&0xffff)&0b111)>>5));
+        Util.int2Bytes(id, b, 1);
         this.bytesCached = b;
     }
 

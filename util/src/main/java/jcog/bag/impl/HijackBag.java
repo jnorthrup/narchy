@@ -351,18 +351,20 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                 if (toReturn == null) {
 
-                    ArrayUtils.sort(rank, (r) -> -rpri[r]);
+                    ArrayUtils.sort(rank, r -> -rpri[r]);
 
                     float power = incomingPri;
-                    inserting: for (int f = 0; f < reprobes; f++) { //FIGHT!:
-                        int i = rank[f]+start; //try against next lowest opponent
+
+                    //FIGHT! starting with weakest
+                    combative_insert: for (int f = 0; f < reprobes; f++) {
+                        int i = rank[f]+start; //try against next weakest opponent
                         if (i >= c) i-=c;
 
                         V existing = map.compareAndExchange(i, null, incoming);
                         if (existing == null) {
 
                             toReturn = toAdd = incoming;
-                            break inserting; //took empty slot, done
+                            break combative_insert; //took empty slot, done
 
                         } else {
                             //attempt HIJACK (tm)
@@ -371,7 +373,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                                 if (map.compareAndSet(i, existing, incoming)) { //inserted
                                     toRemove = existing;
                                     toReturn = toAdd = incoming;
-                                    break inserting; //hijacked replaceable slot, done
+                                    break combative_insert; //hijacked replaceable slot, done
                                 }
                             }
                         }

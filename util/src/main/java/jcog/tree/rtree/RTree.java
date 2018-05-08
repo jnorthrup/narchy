@@ -56,7 +56,7 @@ public class RTree<T> implements Space<T> {
 
     public final Spatialization<T> model;
 
-    public RTree(@Nullable Function<T, HyperRegion> spatialize, final int mMin, final int mMax, final Spatialization.DefaultSplits splitType) {
+    public RTree(@Nullable Function<T, HyperRegion> spatialize, final int mMin, final int mMax, final Split<T> splitType) {
         this(new Spatialization<>(spatialize, splitType, mMin, mMax));
     }
 
@@ -82,6 +82,16 @@ public class RTree<T> implements Space<T> {
                 this.root = model.newLeaf();
             return 0;
         });
+    }
+
+    @Override
+    public boolean OR(Predicate<T> o) {
+        return root().OR(o);
+    }
+
+    @Override
+    public boolean AND(Predicate<T> o) {
+        return root().AND(o);
     }
 
     /**
@@ -127,8 +137,28 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public void replace(final T told, final T tnew) {
-        root.update(told, tnew, model);
+    public boolean replace(final T told, final T tnew) {
+        if (told == tnew) {
+            return true;
+            //throw new UnsupportedOperationException("equivalent instance");
+        }
+
+        if (model.bounds(told).equals(model.bounds(tnew))) {
+            //same bounds, so replace inline
+            root = root.replace(told, tnew, model);
+            return true;
+        } else {
+            //different bounds, so remove first then add
+            boolean removed = remove(told);
+            if (!removed) {
+                return false;
+            } else {
+                boolean added = add(tnew);
+                if (!added)
+                    throw new UnsupportedOperationException("error adding " + tnew);
+                return true;
+            }
+        }
     }
 
 //    /**

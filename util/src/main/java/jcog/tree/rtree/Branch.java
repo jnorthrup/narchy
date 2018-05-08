@@ -163,7 +163,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
 
         } else {
 
-            final int bestLeaf = chooseLeaf(t, tRect, parent, model);
+            final int bestLeaf = chooseLeaf(tRect);
 
             Node nextBest = child[bestLeaf].add(t, this, model, added);
             if (nextBest == null) {                return null; /*merged*/             }
@@ -248,7 +248,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
     @Override
-    public Node<T, ?> update(final T OLD, final T NEW, Spatialization<T> model) {
+    public Node<T, ?> replace(final T OLD, final T NEW, Spatialization<T> model) {
         final HyperRegion tRect = model.bounds(OLD);
 
         //TODO may be able to avoid recomputing bounds if the old was not found
@@ -258,20 +258,20 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         short s = this.size;
         for (int i = 0; i < s; i++) {
             if (!found && tRect.intersects(cc[i].bounds())) {
-                cc[i] = cc[i].update(OLD, NEW, model);
+                cc[i] = cc[i].replace(OLD, NEW, model);
                 found = true;
             }
             region = i == 0 ? cc[0].bounds() : grow(region, cc[i]);
         }
-        this.bounds = region;
-
+        if (found) {
+            this.bounds = region;
+        }
         return this;
-
     }
 
 
 
-    private int chooseLeaf(final T t, final HyperRegion tRect, Nodelike<T> parent, Spatialization<T> model) {
+    private int chooseLeaf(final HyperRegion tRect) {
         Node<T, ?>[] cc = this.data;
         if (size > 0) {
             int bestNode = -1;
@@ -314,14 +314,6 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         }
     }
 
-    /**
-     * Return child nodes of this branch.
-     *
-     * @return array of child nodes (leaves or branches)
-     */
-    public Node<T, ?>[] children() {
-        return data;
-    }
 
     @Override
     public void forEach(Consumer<? super T> consumer) {

@@ -12,6 +12,7 @@ import jcog.meter.ExplainedCounter;
 import jcog.meter.FastCounter;
 import jcog.meter.Meter;
 import jcog.meter.MetricsMapper;
+import jcog.meter.event.AtomicLongGuage;
 import jcog.meter.event.AtomicMeanFloat;
 import jcog.pri.Pri;
 import nars.control.MetaGoal;
@@ -40,26 +41,29 @@ public class Emotion implements Meter {
     public final Counter busyPri = new StepCounter(meter("busyPri"));
 
 
-    public final Counter conceptFire = new FastCounter(("concept fire"));
-    public final Counter taskFire = new FastCounter(("task fire"));
-    public final Counter taskActivation_x100 = new FastCounter(("task activation pri sum x100"));
-    public final Counter premiseFire = new FastCounter(("premise fire"));
-    public final Counter premiseFailMatch = new FastCounter(("premise fail"));
+    public final Counter conceptFire = new FastCounter("concept fire");
+    public final Counter taskFire = new FastCounter("task fire");
+    public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
+    public final Counter premiseFire = new FastCounter("premise fire");
+    public final Counter premiseFailMatch = new FastCounter("premise fail");
 
     /** indicates lack of novelty in premise selection */
-    public final Counter premiseBurstDuplicate = new FastCounter(("premise burst duplicate"));
+    public final Counter premiseBurstDuplicate = new FastCounter("premise burst duplicate");
 
-    public final Counter premiseUnderivable = new FastCounter(("premise underivable"));
+    public final Counter premiseUnderivable = new FastCounter("premise underivable");
 
-    public final Counter deriveTask = new FastCounter(("derive task"));
-    public final Counter deriveEval = new FastCounter(("derive eval"));
-    public final ExplainedCounter deriveFailTemporal = new ExplainedCounter(("derive fail temporal"));
-    public final ExplainedCounter deriveFailEval = new ExplainedCounter(("derive fail eval"));
-    public final Counter deriveFailVolLimit = new FastCounter(("derive fail vol limit"));
-    public final Counter deriveFailTaskify = new FastCounter(("derive fail taskify"));
-    public final Counter deriveFailPrioritize = new FastCounter(("derive fail prioritize"));
-    public final Counter deriveFailParentDuplicate = new FastCounter(("derive fail parent duplicate"));  //parent copy
-    public final Counter deriveFailDerivationDuplicate = new FastCounter(("derive fail derivation duplicate")); //sibling copy
+    public final Counter deriveTask = new FastCounter("derive task");
+    public final Counter deriveEval = new FastCounter("derive eval");
+    public final ExplainedCounter deriveFailTemporal = new ExplainedCounter("derive fail temporal");
+    public final ExplainedCounter deriveFailEval = new ExplainedCounter("derive fail eval");
+    public final Counter deriveFailVolLimit = new FastCounter("derive fail vol limit");
+    public final Counter deriveFailTaskify = new FastCounter("derive fail taskify");
+    public final Counter deriveFailPrioritize = new FastCounter("derive fail prioritize");
+    public final Counter deriveFailParentDuplicate = new FastCounter("derive fail parent duplicate");  //parent copy
+    public final Counter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate"); //sibling copy
+
+    /** how much TTL remains after a derivation finishes (avg) */
+    public final AtomicLongGuage.LongMeanCounter deriveTTLRemain = new AtomicLongGuage().mean("derive ttl remain");
 
     //public final Counter taskIgnored = new FastCounter(id("task ignored"));
 
@@ -360,7 +364,7 @@ public class Emotion implements Meter {
          *      complexity
          *      priority
          */
-        float cost = (1f + (vol / termVolMax) + pri)/3f;
+        float cost = (1f + vol / termVolMax + pri)/3f;
 
         MetaGoal.Perceive.learn(t.cause(), cost, nar.causes);
 

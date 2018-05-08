@@ -1,8 +1,9 @@
 package nars.util.time;
 
 import jcog.tree.rtree.RTree;
-import jcog.tree.rtree.Spatialization;
+import jcog.tree.rtree.Split;
 import jcog.tree.rtree.rect.RectDouble2D;
+import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
 import nars.Task;
 import org.jetbrains.annotations.NotNull;
@@ -12,8 +13,11 @@ import java.util.function.Consumer;
 
 public class TimeMap extends RTree<Task> implements Consumer<Task> {
 
+    private final static Split<Task> AxialSplit = new AxialSplitLeaf<>();
+
     public TimeMap() {
-        super((task) -> new RectDouble2D(task.start(), task.end(), task.hashCode(), task.hashCode()), 2, 8, Spatialization.DefaultSplits.AXIAL);
+        super((task) -> new RectDouble2D(task.start(), task.end(), task.hashCode(), task.hashCode()),
+                2, 8, AxialSplit);
     }
 
     public TimeMap(@NotNull NAR n) {

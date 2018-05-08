@@ -78,8 +78,8 @@ public final class CounterNode<T> implements Node<T, Object> {
     }
 
     @Override
-    public Node<T, ?> update(T told, T tnew, Spatialization<T> model) {
-        return this.node.update(told, tnew, model);
+    public Node<T, ?> replace(T told, T tnew, Spatialization<T> model) {
+        return this.node.replace(told, tnew, model);
     }
 
     @Override

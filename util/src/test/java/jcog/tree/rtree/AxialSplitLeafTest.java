@@ -23,6 +23,8 @@ package jcog.tree.rtree;
 import jcog.tree.rtree.rect.RectDouble2D;
 import jcog.tree.rtree.util.Stats;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Random;
 
@@ -63,8 +65,8 @@ public class AxialSplitLeafTest {
         assertTrue(stats.getEntriesPerLeaf() == 4.5, "Unexpected number of entries per leaf after basic split");
     }
 
-    @Test
-    public void splitCorrectnessTest() {
+
+    @Test public void splitCorrectnessTest() {
 
         RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, 4, TYPE);
         rTree.add(new RectDouble2D(0, 0, 3, 3));
@@ -75,7 +77,7 @@ public class AxialSplitLeafTest {
         rTree.add(new RectDouble2D(0, 2, 1, 4));
 
         Branch root = (Branch) rTree.root();
-        Node<RectDouble2D, Object>[] children = root.children();
+        Node<RectDouble2D, Object>[] children = root.data;
         int childCount = 0;
         for(Node c : children) {
             if (c != null) {
@@ -130,27 +132,28 @@ public class AxialSplitLeafTest {
         final int expectedEntryCount = 17;
 
         final Stats stats = rTree.stats();
-        assertEquals( expectedEntryCount, stats.getEntryCount(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.getEntryCount() + " entries - expected: " + expectedEntryCount + " actual: " + stats.getEntryCount());
+        assertEquals( expectedEntryCount, stats.size(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
     }
 
     /**
      * Adds many random entries and confirm that no entries
      * are lost during insert/split.
      */
-    @Test
-    public void randomEntryTest() {
+    @ParameterizedTest
+    @ValueSource(ints = {2,3,4,5,8})
+    public void randomEntryTest(int maxLeaf) {
 
         final int entryCount = 50000;
         final RectDouble2D[] rects = RTree2DTest.generateRandomRects(entryCount);
 
-        final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(TYPE);
+        final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(2, maxLeaf, TYPE);
         for (int i = 0; i < rects.length; i++) {
             rTree.add(rects[i]);
         }
 
         final Stats stats = rTree.stats();
-        assertTrue(Math.abs(entryCount - stats.getEntryCount()) < 20,
-                "Unexpected number of entries in " + TYPE + " split tree: " + stats.getEntryCount() + " entries - expected: " + entryCount + " actual: " + stats.getEntryCount() /* in case of duplicates */);
+        assertTrue(Math.abs(entryCount - stats.size()) == 0,
+                "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + entryCount + " actual: " + stats.size() /* in case of duplicates */);
         stats.print(System.out);
     }
 

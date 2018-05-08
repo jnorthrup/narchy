@@ -1,7 +1,8 @@
 package nars.unify.op;
 
 import nars.$;
-import nars.derive.premise.PreDerivation;
+import nars.derive.Derivation;
+import nars.derive.premise.*;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.term.control.PrediTerm;
@@ -15,11 +16,13 @@ final public class TaskPunctuation extends AbstractPred<PreDerivation> {
 
     public final byte punc;
 
+
+
     TaskPunctuation(byte p) {
-        this(p, INH.the($.quote((char) p), $.the("task")));
+        this(p, INH.the($.quote((char) p), Derivation.Task));
     }
 
-    TaskPunctuation(byte p, Term id) {
+    private TaskPunctuation(byte p, Term id) {
         super(id);
         this.punc = p;
     }
@@ -27,18 +30,18 @@ final public class TaskPunctuation extends AbstractPred<PreDerivation> {
 
     @Override
     public final boolean test(PreDerivation m) {
-        return m.taskPunc == punc;
+        return (m.taskPunc == punc);
     }
 
     @Override
     public float cost() {
-        return 0.1f;
+        return 0.05f;
     }
 
     public static final PrediTerm<PreDerivation> Belief = new TaskPunctuation(BELIEF);
     public static final PrediTerm<PreDerivation> Goal = new TaskPunctuation(GOAL);
 
-    public static final PrediTerm<PreDerivation> BeliefOrGoal = new AbstractPred<PreDerivation>($.inh($.quote(".!"), $.the("task"))) {
+    public static final PrediTerm<PreDerivation> BeliefOrGoal = new AbstractPred<>(INH.the($.quote(".!"), Derivation.Task)) {
         @Override
         public boolean test(PreDerivation o) {
             byte c = o.taskPunc;

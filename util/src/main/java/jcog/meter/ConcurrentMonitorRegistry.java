@@ -4,9 +4,10 @@ package jcog.meter;
 import com.google.common.collect.Sets;
 import com.netflix.servo.MonitorRegistry;
 import com.netflix.servo.monitor.Monitor;
-import jcog.Util;
+import jcog.util.Reflect;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -19,12 +20,13 @@ public class ConcurrentMonitorRegistry implements MonitorRegistry {
 
     public final Set<Monitor<?>> monitors = Sets.newConcurrentHashSet();
 
-    public void registerFields(Object x) {
-        monitorFields(x, this::registerFields);
-    }
+//    public void registerFields(Object x) {
+//        monitorFields(x, this::registerFields);
+//    }
 
     public static void monitorFields(Object x, Consumer<Monitor> o) {
-        Util.getAllDeclaredFields(x, true).forEach(f -> {
+        Reflect.on(x.getClass()).fields(true, true, true).forEach((s,ff)->{
+            Field f = ff.get();
             if (Monitor.class.isAssignableFrom( f.getType() )) {
                 if (f.trySetAccessible()) {
                     try {

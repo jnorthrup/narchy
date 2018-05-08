@@ -21,6 +21,7 @@ package jcog.tree.rtree;
  */
 
 import com.google.common.collect.Iterators;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.point.Double2D;
 import jcog.tree.rtree.rect.RectDouble2D;
 import jcog.tree.rtree.rect.RectFloatND;
@@ -42,7 +43,7 @@ public class RTree2DTest {
     @Test
     public void pointSearchTest() {
 
-        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 2, 8, Spatialization.DefaultSplits.AXIAL);
+        final RTree<Double2D> pTree = new RTree<>(new Double2D.Builder(), 2, 8, Spatialization.DefaultSplits.AXIAL.get());
 
         for(int i=0; i<10; i++) {
             pTree.add(new Double2D(i, i));
@@ -289,7 +290,7 @@ public class RTree2DTest {
      * @return array of generated rectangles
      */
     public static RectDouble2D[] generateRandomRects(int count) {
-        final Random rand = new Random(13);
+        final Random rand = new XoRoShiRo128PlusRandom(1);
 
         // changing these values changes the rectangle sizes and consequently the distribution density
         final int minX = 500;
@@ -412,9 +413,9 @@ public class RTree2DTest {
      * @return tree
      */
     public static RTree<RectDouble2D> createRect2DTree(int minM, int maxM, Spatialization.DefaultSplits splitType) {
-        return new RTree<>((r->r), minM, maxM, splitType);
+        return new RTree<>((r->r), minM, maxM, splitType.get());
     }
     public static RTree<RectFloatND> createRectNDTree(int minM, int maxM, Spatialization.DefaultSplits splitType) {
-        return new RTree<>((r->r), minM, maxM, splitType);
+        return new RTree<>((r->r), minM, maxM, splitType.get());
     }
 }

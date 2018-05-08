@@ -1,10 +1,10 @@
 package nars.term.anon;
 
 import jcog.Util;
+import nars.IO;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.AtomicConst;
 import nars.term.atom.Int;
 
 import static nars.Op.ATOM;
@@ -13,15 +13,18 @@ import static nars.Op.ATOM;
 public final class Anom extends Int implements AnonID {
 
     final static int MAX_ANOM = 127;
-    final static int ANOM = Term.opX(ATOM, 0);
+
+    static final byte ANOM_SUBTYPE = 1;
+    static final int ANOM_OPX = Term.opX(ATOM, ANOM_SUBTYPE);
+    static final byte ANOM_HEADER = IO.opAndSubType(ATOM, ANOM_SUBTYPE);
 
     Anom(byte i) {
-        super(i, AtomicConst.bytes(ATOM, i));
+        super(i, new byte[] { ANOM_HEADER, i } );
     }
 
     @Override
     public int opX() {
-        return ANOM;
+        return ANOM_OPX;
     }
 
     @Override

@@ -8,6 +8,7 @@ import jcog.sort.CachedTopN;
 import jcog.sort.Top;
 import jcog.sort.Top2;
 import jcog.tree.rtree.*;
+import jcog.tree.rtree.split.AxialSplitLeaf;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -81,7 +82,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int MIN_TASKS_PER_LEAF = 2;
     private static final int MAX_TASKS_PER_LEAF = 4;
     private static final Split<TaskRegion> SPLIT =
-            Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
+            new AxialSplitLeaf<>();
+            //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
     /**
      * if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps)
@@ -852,18 +854,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 
-        final static double EPSILON = 0.0001f;
-
         static final Spatialization<TaskRegion> the = new RTreeBeliefModel();
 
-
         private RTreeBeliefModel() {
-            super((t -> t), RTreeBeliefTable.SPLIT, RTreeBeliefTable.MIN_TASKS_PER_LEAF, RTreeBeliefTable.MAX_TASKS_PER_LEAF);
-        }
-
-        @Override
-        public final double epsilon() {
-            return EPSILON;
+            super((t -> t), RTreeBeliefTable.SPLIT,
+                    RTreeBeliefTable.MIN_TASKS_PER_LEAF,
+                    RTreeBeliefTable.MAX_TASKS_PER_LEAF);
         }
 
         @Override
@@ -880,7 +876,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         protected void merge(TaskRegion existing, TaskRegion incoming) {
             Task i = incoming.task();
             Task e = existing.task();
-            ((NALTask) e).causeMerge(i);
+            if (e instanceof NALTask) //HACK
+                ((NALTask) e).causeMerge(i);
             i.delete();
             //i.meta("merge", e); //signals success to activate what was input
         }

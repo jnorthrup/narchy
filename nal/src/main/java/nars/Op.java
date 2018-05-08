@@ -589,7 +589,7 @@ public enum Op {
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
-    public static final Compound EmptyProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
+    public static final Compound EmptyProduct = theCompound(Op.PROD, Subterms.Empty);
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
     public final static SubtermsCache subtermCache = new SubtermsCache(64 * 1024, 4, false);
@@ -1374,7 +1374,7 @@ public enum Op {
                     return new CachedUnitCompound(o, u[0]);
             }
         } else {
-            return CachedCompound.the(o, dt, Subterms.subtermsInterned(u));
+            return theCompound(o, dt, Subterms.subtermsInterned(u));
         }
     }
 
@@ -2008,6 +2008,24 @@ public enum Op {
             return events.get(start).getTwo();
         else
             return CONJ.the(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
+    }
+
+    public static Compound theCompound(/*@NotNull*/ Op op, Subterms subterms) {
+        return theCompound(op, DTERNAL, subterms);
+    }
+
+    public static Compound theCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
+        //HACK predict if compound will differ from its root
+        boolean dTernal = dt == DTERNAL;
+        if (dTernal && !op.temporal && !subterms.hasAny(Temporal)) { //TODO there are more cases
+            return new CachedCompound.SimpleCachedCompound(op, subterms);
+        } else {
+
+            if (!dTernal && !op.temporal)
+                throw new RuntimeException(op + " is non-temporal and can not accept dt=" + dt);
+
+            return new CachedCompound.TemporalCachedCompound(op, dt, subterms);
+        }
     }
 
     public final Term the(Subterms s) {

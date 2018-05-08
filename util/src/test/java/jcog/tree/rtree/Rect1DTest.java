@@ -1,6 +1,7 @@
 package jcog.tree.rtree;
 
 import jcog.tree.rtree.rect.RectDouble1D;
+import jcog.tree.rtree.split.LinearSplitLeaf;
 import jcog.tree.rtree.util.Stats;
 import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,8 @@ public class Rect1DTest {
         final int entryCount = 20;
 
         //for (RTree.Split type : RTree.Split.values()) {
-            RTree<Double> t = new RTree<>((x) -> new RectDouble1D.DefaultRect1D(x, x), 2, 3, Spatialization.DefaultSplits.LINEAR);
+            RTree<Double> t = new RTree<>((x) -> new RectDouble1D.DefaultRect1D(x, x), 2, 3,
+                    new LinearSplitLeaf<>());
             for (int i = 0; i < entryCount; i++) {
                 t.add((double)(i*i));
             }

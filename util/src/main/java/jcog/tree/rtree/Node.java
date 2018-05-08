@@ -98,7 +98,7 @@ public interface Node<L, V> extends Nodelike<L> {
      * @param tnew - value to update old index to
      * @param model
      */
-    Node<L, ?> update(L told, L tnew, Spatialization<L> model);
+    Node<L, ?> replace(L told, L tnew, Spatialization<L> model);
 
 
 

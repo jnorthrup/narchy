@@ -74,7 +74,7 @@ public class LinearSplitLeafTest {
         rTree.add(new RectDouble2D(0, 2, 1, 4));
 
         Branch root = (Branch) rTree.root();
-        Node<RectDouble2D, Object>[] children = root.children();
+        Node<RectDouble2D, Object>[] children = root.data;
         int childCount = 0;
         for (Node c : children) {
             if (c != null) {
@@ -129,7 +129,7 @@ public class LinearSplitLeafTest {
         final int expectedEntryCount = 17;
 
         final Stats stats = rTree.stats();
-        assertEquals(expectedEntryCount, stats.getEntryCount(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.getEntryCount() + " entries - expected: " + expectedEntryCount + " actual: " + stats.getEntryCount());
+        assertEquals(expectedEntryCount, stats.size(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
     }
 
 

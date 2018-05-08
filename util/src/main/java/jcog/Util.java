@@ -42,8 +42,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -1782,49 +1780,52 @@ public enum Util {
         }
     }
 
-    public static void shallowCopy(Object source, Object dest, final boolean publicOnly) {
-        if (!source.getClass().isInstance(dest))
-            throw new IllegalArgumentException();
+//    public static void shallowCopy(Object source, Object dest, final boolean publicOnly) {
+//        if (!source.getClass().isInstance(dest))
+//            throw new IllegalArgumentException();
+//
+//        for (Field f : Util.getAllDeclaredFields(source, publicOnly)) {
+//            try {
+//
+//                final int mods = f.getModifiers();
+//                if (Modifier.isStatic(mods) || Modifier.isFinal(mods))
+//                    continue;
+//
+//                f.setAccessible(true);
+//
+//                Object sourceValue = f.get(source);
+//                f.set(dest, sourceValue);
+//            } catch (IllegalArgumentException | IllegalAccessException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
-        for (Field f : Util.getAllDeclaredFields(source, publicOnly)) {
-            try {
-
-                final int mods = f.getModifiers();
-                if (Modifier.isStatic(mods) || Modifier.isFinal(mods))
-                    continue;
-
-                f.setAccessible(true);
-
-                Object sourceValue = f.get(source);
-                f.set(dest, sourceValue);
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * 'publicOnly' just gets public fields (Class.getFields vs. Class.getDeclaredFields) so we can work with reduced
-     * functionality in a sandboxed environment (ie. applets)
-     */
-    public static Collection<Field> getAllDeclaredFields(Object object, final boolean publicOnly) {
-        Set<Field> result = new HashSet<Field>();
-
-        Class<?> clazz = object.getClass();
-        while (clazz != null) {
-            Field[] fields;
-            if (publicOnly)
-                fields = clazz.getFields();
-            else
-                fields = clazz.getDeclaredFields();
-
-            Collections.addAll(result, fields);
-
-            clazz = clazz.getSuperclass();
-        }
-
-        return result;
-    }
+//    /**
+//     * 'publicOnly' just gets public fields (Class.getFields vs. Class.getDeclaredFields) so we can work with reduced
+//     * functionality in a sandboxed environment (ie. applets)
+//     */
+//    public static Map<String, Reflect> getAllDeclaredFields(Object object, final boolean publicOnly) {
+//
+////        Set<Field> result = new HashSet<Field>();
+//
+//        Class<?> clazz = object.getClass();
+//        return Reflect.on(clazz).fields(true, true, !publicOnly);
+//
+////        while (clazz != null) {
+////            Field[] fields;
+////            if (publicOnly)
+////                fields = clazz.getFields();
+////            else
+////                fields = clazz.getDeclaredFields();
+////
+////            Collections.addAll(result, fields);
+////
+////            clazz = clazz.getSuperclass();
+////        }
+////
+////        return result;
+//    }
 
     /**
      * http://www.java-gaming.org/topics/utils-essentials/22144/30/view.html

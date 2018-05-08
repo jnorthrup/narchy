@@ -15,6 +15,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TruthTest {
 
+    @Test public void testRounding() {
+        int discrete = 10;
+        float precision = 1f/discrete;
+
+        for (float x = 0.19f; x<0.31f; x+=0.01f/2) {
+            int i = Util.floatToInt(x, discrete);
+            float y = Util.intToFloat(i, discrete);
+            System.out.println(x + " -> " + i + " -> " + y + ", d=" + (Math.abs(y-x)));
+            assertTrue(
+                    Util.equals(
+                            x,
+                            y,
+                            precision/2f)
+            );
+        }
+    }
+
     @Test public void testEternalize() {
         assertEquals(0.47f, t(1f, 0.9f).confEternalized(), 0.01f);
         assertEquals(0.31f, t(1f, 0.45f).confEternalized(), 0.01f);
