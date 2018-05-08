@@ -145,10 +145,10 @@ public class Revision {
 
                     //TODO use Conj
                     //return dtMergeConjEvents(a, bOffset, b, aProp, curDepth, mergeOrChoose, nar.random(), nar.dtDitherCycles());
-                    return Conj.conjIntermpolate(a, b, bOffset);
+                    return Conj.conjIntermpolate(a, b, bOffset, nar);
 
                 } else if (ao == IMPL) {
-                    return dtMergeDirect(a, b, aProp, curDepth, nar, nar.dtMergeOrChoose());
+                    return dtMergeDirect(a, b, aProp, curDepth, nar);
                 } else
                     throw new UnsupportedOperationException();
             } else {
@@ -187,7 +187,7 @@ public class Revision {
 
 
     /*@NotNull*/
-    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar, boolean mergeOrChoose) {
+    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
 
         int adt = a.dt();
         int bdt = b.dt();
@@ -210,6 +210,7 @@ public class Revision {
                 dt = DTERNAL;
             } else {
 
+                boolean mergeOrChoose = nar.dtMergeOrChoose();
                 if (mergeOrChoose) {
 
                     dt = lerp(aProp, bdt, adt);

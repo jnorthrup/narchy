@@ -2,11 +2,13 @@ package nars.term.compound.util;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
+import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.util.TimeAware;
+import nars.util.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -330,8 +332,8 @@ public class Conj {
 
     /** similar to conjMerge but interpolates events so the resulting
      * intermpolation is not considerably more complex than either of the inputs */
-    public static Term conjIntermpolate(Term a, Term b, long bOffset) {
-        return new Conjterpolate(a, b, bOffset).term();
+    public static Term conjIntermpolate(Term a, Term b, long bOffset, NAR nar) {
+        return new Conjterpolate(a, b, bOffset, nar).term();
     }
 
     /** for each of b's events, find the nearest matching event in a while constructing a new Conj consisting of their mergers */
@@ -339,25 +341,32 @@ public class Conj {
 
         private final Conj aa;
         private final Term b;
+        private final NAR nar;
+        private final Random rng;
+        private final boolean mergeOrChoose;
 
-        public Conjterpolate(Term a, Term b, long bOffset) {
+        public Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
             //        int maxVol = Math.max(a.volume(), b.volume());
+            this.b = b;
+            this.nar = nar;
+            this.mergeOrChoose = nar.dtMergeOrChoose();
+            this.rng = nar.random();
             Conj aa = new Conj(); aa.add(a, 0);
             this.aa = aa;
-            this.b = b;
             add(b, bOffset);
         }
 
         @Override
         public boolean add(Term t, long bt) {
             assert(bt!=XTERNAL);
+            assert(t.op()!=NEG); //else handle that here
 
             if (t == b)
                 return super.add(t, bt);
             else {
                 //component merge
                 //find closest event in aa
-                byte tInA = aa.terms.get(t);
+                byte tInA = (byte) (aa.terms.get(t)+1);
 
                 //potential event times to compare and choose from
                 LongArrayList whens = new LongArrayList(2);
@@ -382,7 +391,7 @@ public class Conj {
                 }
 
                 long theWhen;
-                if (!whens.isEmpty() && ws > 1) {
+                if (ws > 1) {
                     LongToLongFunction TemporalDistance;
                     if (bt == ETERNAL) {
                         TemporalDistance = (at) -> at == ETERNAL ? 0 : 1; //prefer eternal, but no further preference
@@ -398,19 +407,27 @@ public class Conj {
                     theWhen = whens.get(0);
                 }
 
-                return super.add(t, merge(theWhen, bt));
+                return super.add(t, Tense.dither(merge(theWhen, bt), nar));
             }
 
         }
 
-        static long merge(long x, long y) {
+        long merge(long x, long y) {
             if (x == y) return x;
-            if (x == ETERNAL ^ y==ETERNAL) return ETERNAL;
-            //TODO dtMergeOrChoose
+            if (x == ETERNAL ^ y==ETERNAL)
+                return ETERNAL;
 
-//            if (Math.abs(x-y)==1)
-//                return rng.next
-            return (x+y)/2L; //merge
+
+            //TODO weighted random selection (ie. by evidence)
+            if (mergeOrChoose) {
+                if (Math.abs(x-y)>1) {
+                    //merge (mean)
+                    return (x + y) / 2L;
+                }
+            }
+
+            //choose
+            return rng.nextBoolean() ? x : y; //choose one or the other
         }
 
     }

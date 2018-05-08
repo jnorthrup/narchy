@@ -339,13 +339,13 @@ public class RevisionTest {
     @Test public void testIntermpolationOrderMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(c &&+1 (b &&+1 a))");
         Compound b = $.$("(a &&+1 (b &&+1 c))");
-        permuteChoose(a, b, "[(&&,a,b,c)]");
+        permuteChoose(a, b, "[((a &&+1 b) &&+1 c), (b &&+1 (a&|c)), ((a&|c) &&+1 b), ((c &&+1 b) &&+1 a)]");
     }
 
     @Test public void testIntermpolationOrderPartialMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(a &&+1 (c &&+1 b))");
-        permuteChoose(a, b, "[(a &&+1 (b&&c))]");
+        permuteChoose(a, b, "[((a &&+1 (b&|c)) &&+1 d), ((a &&+1 (b&|c)) &&+2 d), ((a &&+1 b) &&+1 (c&|d)), ((a &&+1 b) &&+1 (c &&+1 d))]");
     }
 
     @Test public void testIntermpolationOrderPartialMismatch2() throws Narsese.NarseseException {
@@ -379,7 +379,7 @@ public class RevisionTest {
     @Test public void testIntermpolationOrderMixDternal2() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
         Compound b = $.$("(a &&+1 (b &&+1 (c&&d)))");
-        permuteChoose(a, b, "[((a &&+1 b) &&+1 (c&&d))]");
+        permuteChoose(a, b, "[(((c&&d)&|a) &&+1 b), ((a &&+1 b) &&+1 (c&&d))]");
     }
 
     @Test public void testIntermpolationOrderMixDternal2Reverse() throws Narsese.NarseseException {
@@ -395,14 +395,14 @@ public class RevisionTest {
     @Test public void testIntermpolationOrderPartialMismatchReverse2() throws Narsese.NarseseException {
         Compound a = $.$("(b &&+1 (a &&+1 (c &&+1 d)))");
         Compound b = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
-        permuteChoose(a, b, "[(((a&&b) &&+1 c) &&+1 d)]");
+        permuteChoose(a, b, "[(((a&|b) &&+1 c) &&+1 d), (((a&|b) &&+2 c) &&+1 d), ((b &&+1 a) &&+1 (c &&+1 d)), ((a &&+1 b) &&+1 (c &&+1 d))]");
     }
 
 
     @Test public void testIntermpolationConj2OrderSwap() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 b)");
         Compound b = $.$("(b &&+1 a))");
-        permuteChoose(a, b, "[(a&&b)]");
+        permuteChoose(a, b, "[(b &&+1 a), (a&|b), (a &&+1 b)]");
     }
     @Test public void testIntermpolationImplDirectionMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(a ==>+1 b)");
