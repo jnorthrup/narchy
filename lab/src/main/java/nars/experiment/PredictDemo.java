@@ -55,9 +55,9 @@ public class PredictDemo {
 
         //n.log();
 
-        new BeliefPredict(List.of(X), 16, n.dur()*6, 6,
+        new BeliefPredict(List.of(X), 8, n.dur()*8, 8,
                 //new LivePredictor.MLPPredictor(0.02f),
-                new LivePredictor.LSTMPredictor(0.1f, 2),
+                new LivePredictor.LSTMPredictor(0.15f, 1),
                 n
         );
 

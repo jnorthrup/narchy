@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class BufferedCauseChannel implements Consumer {
 
-    private final LinkedHashSet buffer;
+    public final LinkedHashSet buffer;
     private final CauseChannel target;
 
     public BufferedCauseChannel(CauseChannel c) {

@@ -3,10 +3,11 @@ package nars.util.signal;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
+import jcog.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.control.DurService;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.BufferedCauseChannel;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Termed;
@@ -16,8 +17,7 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static jcog.Util.map;
 import static nars.Op.BELIEF;
@@ -31,8 +31,8 @@ public class BeliefPredict {
     final MutableFloat conf = new MutableFloat(0.5f);
 
     final DurService on;
-    final Set<ITask> currentPredictions = new HashSet();
-    private final CauseChannel<ITask> predict;
+    final List<ITask> currentPredictions = new FasterList<>();
+    private final BufferedCauseChannel predict;
     private final LivePredictor predictor;
     private final NAR nar;
     private final int sampleDur;
@@ -66,33 +66,41 @@ public class BeliefPredict {
             map(c -> freqSupplier(c, nar), LongToFloatFunction[]::new, presentSampling)
         ));
 
-        this.predict = nar.newChannel(this);
+        this.predict = nar.newChannel(this).buffered();
 
         this.on = DurService.on(nar, this::predict);
     }
 
     protected synchronized void predict() {
-        //delete all prediction tasks from the past cycle
-        currentPredictions.forEach(ITask::delete);
-        currentPredictions.clear();
 
         long now = nar.time();
 
         double[] p = predictor.next(now);
+
+        now += sampleDur;
         believe(now, p);
 
         for (int i = 0; i < projections; i++) {
-            now += sampleDur;
+
             p = predictor.project(p);
+
+            now += sampleDur;
             believe(now, p);
         }
+
+        //delete all prediction tasks from the past cycle
+        currentPredictions.forEach(ITask::delete);
+        currentPredictions.clear();
+
+        currentPredictions.addAll(predict.buffer); //save them because after commit predict.buffer will be empty
+
+        predict.commit();
+
     }
 
     private void believe(long when, double[] predFreq) {
-        long next = when + sampleDur;
 
         float evi = c2w(conf.floatValue() * nar.beliefConfDefault.floatValue());
-        int dur = nar.dur();
 
         for (int i = 0; i < predFreq.length; i++) {
 
@@ -108,10 +116,9 @@ public class BeliefPredict {
 
             Task p = new SignalTask(predicted[i].term(), BELIEF,
                     t,
-                    next - dur, next, nar.time.nextStamp()
+                    when - sampleDur/2, when + sampleDur/2,
+                    nar.time.nextStamp()
             ).pri(nar.priDefault(BELIEF));
-
-            currentPredictions.add(p);
 
             predict.input(
                     p
@@ -119,14 +126,15 @@ public class BeliefPredict {
         }
     }
 
-    static LongToFloatFunction freqSupplier(Termed c, NAR nar) {
+    LongToFloatFunction freqSupplier(Termed c, NAR nar) {
         return (when) -> {
-            float dur = Math.max(1, nar.dur());
-            long start = Math.round(when - dur/2f);
-            long end = Math.round(when + dur/2f);
+            long start = Math.round(when - sampleDur/2f);
+            long end = Math.round(when + sampleDur/2f);
             @Nullable Truth t = nar.truth(c, BELIEF, start, end);
             if (t == null)
-                return 0.5f; //HACK
+                return
+                        0.5f;
+                        //nar.random().nextFloat(); //HACK
             else
                 return t.freq();
         };

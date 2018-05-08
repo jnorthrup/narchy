@@ -25,8 +25,7 @@ public class LivePredictor {
 
         double[] outputs();
 
-        /** only use if the set of inputs is the same as the set of outputs (symmetric).
-         * returns the new input vector. */
+
         double[] shift();
         //double get(boolean inOrOut, int n);
     }
@@ -121,7 +120,7 @@ public class LivePredictor {
             synchronized (this) {
                 if (net == null || net.inputs != ins.length || net.outputs != outs.length) {
                     net = new LiveSTM(ins.length, outs.length,
-                            ins.length * outs.length * memoryScale) {
+                            Math.max(ins.length,outs.length) * memoryScale) {
                         @Deprecated
                         @Override
                         protected Interaction observe() {
@@ -221,6 +220,7 @@ public class LivePredictor {
 
     public synchronized double[] next(long when) {
         model.learn(framer.inputs(when), framer.outputs());
+        framer.shift();
 
         return model.predict();
     }
@@ -231,8 +231,9 @@ public class LivePredictor {
      * then prediction can proceed again
      */
     public synchronized double[] project(double[] prevOut) {
+        model.learn(((DenseShiftFramer)framer).pastVector, prevOut);
         double[] nextIn = framer.shift();
-        model.learn(nextIn, prevOut);
+
         return model.predict(); //nextOut
     }
 

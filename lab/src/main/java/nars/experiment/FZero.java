@@ -1,7 +1,7 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.learn.LivePredictor;
 import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
@@ -12,6 +12,7 @@ import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.concept.scalar.SwitchAction;
 import nars.gui.Vis;
+import nars.util.signal.BeliefPredict;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.util.time.Tense;
 import nars.video.Scale;
@@ -24,6 +25,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static com.google.common.collect.Iterables.concat;
 import static nars.Op.INH;
 
 /**
@@ -137,15 +139,15 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        Scalar dAccel = senseNumberDifference($.inh("accel",id), () -> (float) fz.vehicleMetrics[0][6]);//.resolution(0.02f);
+        Scalar dAccel = senseNumberDifference($.inh(id,"accel"), () -> (float) fz.vehicleMetrics[0][6]);//.resolution(0.02f);
         Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);//.resolution(0.02f);
         DemultiplexedScalar ang = senseNumber(angle -> $.func("ang", id, $.the(angle) ) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                7,
+                4,
                 DigitizedScalar.FuzzyNeedle
                 //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(0.1f);
+        ).resolution(0.05f);
 
         //new RLBooster(this, HaiQae::new, 1);
 
@@ -157,17 +159,17 @@ public class FZero extends NAgentX {
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        SpaceGraph.window(Vis.beliefCharts(64, Iterables.concat(java.util.List.of(dAngVel, dAccel), ang), nar), 300, 300);
+        SpaceGraph.window(Vis.beliefCharts(64, concat(java.util.List.of(dAngVel, dAccel), ang), nar), 300, 300);
 
-//        new BeliefPredict(
-//                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
-//                8,
-//                8,
-//                /*Iterables.concat(actions.keySet(), */java.util.List.of(dAngVel, dAccel),
-//                new LivePredictor.LSTMPredictor(0.01f, 1),
-//                //new LivePredictor.MLPPredictor(0.1f),
-//                nar
-//        );
+        new BeliefPredict(concat(
+                //actions.keySet(),
+                java.util.List.of(dAngVel, dAccel),
+                ang),
+                8, nar.dur()*2, 6,
+                new LivePredictor.LSTMPredictor(0.15f, 2),
+                nar
+        );
+
 
         //nar.mix.stream("Derive").setValue(1);
 
@@ -361,16 +363,16 @@ public class FZero extends NAgentX {
 
     private void initToggle() {
 
-        actionToggle($.inh($.the("left"), id), (b) -> {
+        actionToggle($.inh(id, $.the("left")), (b) -> {
             fz.left = b;
         });
-        actionToggle($.inh($.the("right"), id), (b) -> {
+        actionToggle($.inh(id, $.the("right")), (b) -> {
             fz.right = b;
         });
-        actionToggle($.inh($.the("fwd"), id), (b) -> {
+        actionToggle($.inh(id, $.the("fwd")), (b) -> {
             fz.thrust = b;
         });
-        actionToggle($.inh($.the("brake"), id), () -> {
+        actionToggle($.inh(id, $.the("brake")), () -> {
             //fz.left = fz.right = false;
             fz.vehicleMetrics[0][6] *= 0.9f;
         });
