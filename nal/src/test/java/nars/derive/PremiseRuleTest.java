@@ -151,7 +151,7 @@ public class PremiseRuleTest {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)"), null);
 
         d.printRecursive();
-        assertEquals("((\".!\"-->task),can({0}))", d.what.toString());
+        assertEquals("(DoublePremise(\".\"),(\".!\"-->task),can({0}))", d.what.toString());
     }
 
     @Test

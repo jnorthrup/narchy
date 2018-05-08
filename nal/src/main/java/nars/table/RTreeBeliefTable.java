@@ -519,8 +519,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 a = w.a;
                 b = w.b;
             } else if (la.size == 2) {
-                a = la.data[0];
-                b = la.data[1];
+                a = la.get(0);
+                b = la.get(1);
             } else {
                 throw new UnsupportedOperationException("should not have chosen leaf with size < 2");
             }

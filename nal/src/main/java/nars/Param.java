@@ -58,11 +58,11 @@ public abstract class Param {
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 1.5f;
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 6;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
@@ -130,7 +130,7 @@ public abstract class Param {
     /**
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
-    public final static int SIGNAL_LATCH_TIME_MAX =
+    @Deprecated public final static int SIGNAL_LATCH_TIME_MAX =
             //0;
             //2;
             //4;
@@ -183,7 +183,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(48, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(32, 0, 1024);
 
 
     /** estimate */
@@ -227,9 +227,9 @@ public abstract class Param {
     @Range(min=0, max=64)
     public static int TTL_DERIVE_TASK_SAME = 5;
 
-    /** cost of having insufficient evidence (according to NAR's confMin param) to derive task */
-    @Range(min=0, max=64)
-    public static int TTL_EVI_INSUFFICIENT = 3;
+//    /** cost of having insufficient evidence (according to NAR's confMin param) to derive task */
+//    @Range(min=0, max=64)
+//    public static int TTL_EVI_INSUFFICIENT = 3;
 
     /**
      * cost of a failed/aborted task derivation

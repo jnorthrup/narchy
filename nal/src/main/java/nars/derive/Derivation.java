@@ -58,12 +58,12 @@ public class Derivation extends PreDerivation {
 
 
     /** initial capacity, it will grow as needed */
-    final static int ANON_CAPACITY = 16;
+    private final static int ANON_CAPACITY = 16;
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
-    final Map<Task, Task> derivedTasks = new HashMap<>();
+    private final Map<Task, Task> derivedTasks = new HashMap<>();
     public final ArrayHashSet<Premise> premiseBuffer =
             //new LinkedHashSet();
             new ArrayHashSet<>();
@@ -84,7 +84,8 @@ public class Derivation extends PreDerivation {
 
     private ImmutableMap<Term, Termed> derivationFunctors;
 
-    public float freqRes, confRes;
+    public float freqRes;
+    private float confRes;
 
 
     /**
@@ -97,13 +98,14 @@ public class Derivation extends PreDerivation {
 
     public Task _task;
     public Task _belief;
-    public Term _beliefTerm;
+    private Term _beliefTerm;
 
     /**
      * cached values ==========================================
      */
     public int termVolMax;
-    public float confMin, eviMin;
+    public float confMin;
+    private float eviMin;
 
 
     public Task task;
@@ -141,11 +143,11 @@ public class Derivation extends PreDerivation {
     public short[] parentCause;
 
     public boolean single;
-    public float parentComplexitySum;
+    float parentComplexitySum;
 
 
-    public float premiseEviSingle;
-    public float premiseEviDouble;
+    float premiseEviSingle;
+    float premiseEviDouble;
     private long[] evidenceDouble, evidenceSingle;
 
     public Occurrify occ = new Occurrify(this);
@@ -168,7 +170,7 @@ public class Derivation extends PreDerivation {
     public long taskAt, beliefAt;
     private int taskUniques;
 
-    public ImmutableLongSet taskStamp;
+    private ImmutableLongSet taskStamp;
 
 
 ////    public final TopNUniquePremises premises = new TopNUniquePremises();
@@ -285,7 +287,7 @@ public class Derivation extends PreDerivation {
 
 //    final MRUCache<Transformation, Term> transformsCache = new MRUCache<>(Param.DERIVATION_THREAD_TRANSFORM_CACHE_SIZE);
 
-    protected static Supplier<Map<Term,Versioned<Term>>> _termMapBuilder = ()->{
+    static Supplier<Map<Term,Versioned<Term>>> _termMapBuilder = ()->{
         return new TermHashMap();
     };
 
@@ -339,7 +341,7 @@ public class Derivation extends PreDerivation {
 
     }
 
-    void init(NAR nar) {
+    private void init(NAR nar) {
 
         this.clear();
 
@@ -454,6 +456,8 @@ public class Derivation extends PreDerivation {
         } else {
             //single
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
+            if (beliefTerm.op()==NEG)
+                throw new RuntimeException("should not be NEG: " + beliefTerm);
             this.beliefAt = TIMELESS;
             this.belief = null;
             this.beliefTruth = this.beliefTruthDuringTask = null;
@@ -691,7 +695,7 @@ public class Derivation extends PreDerivation {
     }
 
 
-    final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
+    private final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
         ((NALTask)pp).causeMerge(tt);
         if (pp.isCyclic() && !tt.isCyclic()) {
@@ -747,7 +751,7 @@ public class Derivation extends PreDerivation {
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
 
-    final Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
+    private final Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
         if (subterm instanceof Bool)
             return subterm;
 
@@ -764,7 +768,7 @@ public class Derivation extends PreDerivation {
     });
 
     private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
-    final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
+    private final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
         x = anon.get(x);
         if (x == null)
             return Null;
