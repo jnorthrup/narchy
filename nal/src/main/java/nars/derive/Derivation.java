@@ -144,11 +144,11 @@ public class Derivation extends PreDerivation {
     public short[] parentCause;
 
     public boolean single;
-    float parentComplexitySum;
+    public float parentComplexitySum;
 
 
-    float premiseEviSingle;
-    float premiseEviDouble;
+    public float premiseEviSingle;
+    public float premiseEviDouble;
     private long[] evidenceDouble, evidenceSingle;
 
     public Occurrify occ = new Occurrify(this);

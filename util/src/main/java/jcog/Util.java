@@ -2471,7 +2471,8 @@ public enum Util {
         }
     }
 
-    public static float nanOr(float x, float otherwise) {
+    /** a number, or... (otherwise) */
+    public static float numOr(float x, float otherwise) {
         if (x==x) return x;
         else return otherwise;
     }

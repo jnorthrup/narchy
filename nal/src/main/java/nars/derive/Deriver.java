@@ -9,6 +9,8 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.Cause;
+import nars.derive.budget.DefaultDeriverBudgeting;
+import nars.derive.budget.NormalizingDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverProto;
@@ -47,7 +49,9 @@ abstract public class Deriver extends Causable {
 
     private final Consumer<Collection<Task>> target;
 
-    public DeriverBudgeting prioritize = new DeriverBudgeting.DefaultDeriverBudgeting();
+    public DeriverBudgeting prioritize =
+            //new DefaultDeriverBudgeting();
+            new NormalizingDeriverBudgeting(new DefaultDeriverBudgeting());
 
     public Deriver(NAR nar, String... rules) {
         this(new PremiseDeriverRuleSet(nar, rules));

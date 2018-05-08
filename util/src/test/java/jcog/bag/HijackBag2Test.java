@@ -374,9 +374,9 @@ class HijackBag2Test {
 
 
     private static final FloatFloatToFloatFunction PLUS = (existing, incoming)->
-            Util.nanOr(existing, 0) + incoming;
+            Util.numOr(existing, 0) + incoming;
     private static final FloatFloatToFloatFunction MAX = (existing, incoming)->
-            Math.max(Util.nanOr(existing, 0), incoming);
+            Math.max(Util.numOr(existing, 0), incoming);
 
     static class DefaultHijackBag<X> extends HijackBag2<X, X> {
         private final FloatFloatToFloatFunction merge;

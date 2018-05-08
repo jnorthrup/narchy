@@ -357,16 +357,19 @@ public class Conj {
         }
 
         @Override
-        public boolean add(Term t, long bt) {
+        public boolean add(final Term t, long bt) {
             assert(bt!=XTERNAL);
-            assert(t.op()!=NEG); //else handle that here
+
 
             if (t == b)
                 return super.add(t, bt);
             else {
+                boolean neg = t.op()==NEG;
+
+
                 //component merge
                 //find closest event in aa
-                byte tInA = (byte) (aa.terms.get(t)+1);
+                byte tInA = (byte) ((aa.terms.get(neg ? t.unneg() : t)+1) * (neg ? -1 : +1));
 
                 //potential event times to compare and choose from
                 LongArrayList whens = new LongArrayList(2);

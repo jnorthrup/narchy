@@ -819,7 +819,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
 
                 if (update != null) {
                     update.accept(f);
-                    p = Util.nanOr(p, 0);//HACK in case it changed TODO make update.accept return the float pri
+                    p = Util.numOr(p, 0);//HACK in case it changed TODO make update.accept return the float pri
                 }
                 mass += p;
                 if (p > max) max = p;
