@@ -1,6 +1,7 @@
 package nars.control;
 
 import nars.NAR;
+import nars.util.TimeAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,6 @@ abstract public class CycleService extends NARService implements Consumer<NAR> {
         }
     }
 
-    abstract protected void run(NAR nar);
+    abstract protected void run(TimeAware timeAware);
 
 }

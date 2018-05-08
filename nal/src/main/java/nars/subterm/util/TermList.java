@@ -1,6 +1,7 @@
 package nars.subterm.util;
 
 import jcog.list.FasterList;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 
@@ -49,7 +50,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     /** creates an immutable instance of this */
     public Subterms the() {
-        return Subterms.subterms(this);
+        return Op.terms.subterms(this);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     /** use this only if the TermList is done being modified */
-    public Term[] arraySharedSafe() {
+    public Term[] arraySharedKeep() {
         return toArrayRecycled(Term[]::new);
     }
 

@@ -18,7 +18,7 @@ public final class InternedCompound extends AbstractPLink<Term> implements Hijac
     //public Term[] subs;
     final byte[] subs;
 
-    private transient Term[] rawSubs;
+    public transient Term[] rawSubs;
 
     //Y
     public Term y = null;
@@ -125,9 +125,12 @@ public final class InternedCompound extends AbstractPLink<Term> implements Hijac
     }
 
     public Term compute() {
-        Term[] rawSubs = this.rawSubs;
+        return compute(Op.terms.compoundInstance(op, dt, this.rawSubs));
+    }
+
+    public Term compute(Term computed) {
         this.rawSubs = null;
-        return op.instance(dt, rawSubs);
+        return computed;
     }
 
 }

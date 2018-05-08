@@ -14,6 +14,7 @@ import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.util.TimeAware;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -108,7 +109,7 @@ public class NARHear extends Loop {
         }
     }
 
-    protected void onReset(NAR n) {
+    protected void onReset(TimeAware n) {
         stop();
         onReset.off();
     }

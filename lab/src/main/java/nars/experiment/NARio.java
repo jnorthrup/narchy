@@ -10,6 +10,7 @@ import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
+import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 
@@ -282,7 +283,7 @@ public class NARio extends NAgentX {
 
         //
 
-        NAR nar = runRT((NAR n) -> {
+        TimeAware timeAware = runRT((NAR n) -> {
 
 
             NARio x;

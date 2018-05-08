@@ -1,9 +1,9 @@
 package nars.unify;
 
-import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.term.Term;
+import nars.util.TimeAware;
 
 import java.util.function.Predicate;
 
@@ -13,16 +13,16 @@ public class UnifySubst extends Unify {
     //static final Logger logger = LoggerFactory.getLogger(UnifySubst.class);
 
     /*@NotNull*/
-    public final NAR nar;
+    public final TimeAware timeAware;
 
 
     final Predicate<Term> target;
     private Term a;
 
 
-    public UnifySubst(Op varType, /*@NotNull*/ NAR n, Predicate<Term> target, int ttl) {
+    public UnifySubst(Op varType, /*@NotNull*/ TimeAware n, Predicate<Term> target, int ttl) {
         super(varType, n.random(), Param.UnificationStackMax, ttl);
-        this.nar = n;
+        this.timeAware = n;
         this.target = target;
     }
 

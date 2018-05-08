@@ -154,11 +154,9 @@ public interface TermTransform extends Evaluation.TermContext {
      * constructs a new term for a result
      */
     default Term the(Op op, int dt, TermList t) {
-        return op.the(
         //return op.a(
-                dt,
-                t.arrayShared() //optimized impl for TermList (FasterList)
-                );
+        //optimized impl for TermList (FasterList)
+        return op.compound(dt, t.arrayShared());
     }
 
 

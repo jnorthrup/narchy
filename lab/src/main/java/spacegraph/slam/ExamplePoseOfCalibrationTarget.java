@@ -24,7 +24,6 @@ import georegression.transform.se.SePointOps_F64;
 import org.ejml.data.DMatrixRMaj;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 

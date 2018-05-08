@@ -1,5 +1,6 @@
 package nars.op.mental;
 
+import jcog.Util;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -280,8 +281,11 @@ public class Inperience extends LeakBack {
 
         //TODO Task.tryContent
 
+        //modulate the confidence by the degree of polarity (extremity of frequency)
+        float polarity = x.isQuestionOrQuest() ? 0.5f : Math.abs(x.freq()-0.5f)*2f;
+
         SignalTask y = new SignalTask(c, BELIEF,
-                $.t(1, nar.confDefault(Op.BELIEF)),
+                $.t(1, Util.lerp(polarity, nar.confMin.floatValue(), nar.confDefault(Op.BELIEF))),
                 nar.time(), start, end, x.stamp()
         );
         y.causeMerge(x);

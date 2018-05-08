@@ -171,10 +171,6 @@ public abstract class Time implements Clock, Serializable {
             n.input(l);
     }
 
-    public long[] nextStampArray() {
-        return new long[]{nextStamp()};
-    }
-
 
     /** returns a string containing the time elapsed/to the given time */
     public String durationToString(long target) {

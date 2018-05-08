@@ -1,9 +1,9 @@
 package nars.term;
 
-import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.index.concept.TreeConceptIndex;
+import nars.util.TimeAware;
 import nars.util.term.TermBytes;
 import nars.util.term.TermRadixTree;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +56,7 @@ public class TermRadixTreeTest {
     public void testCompoundInsertion() throws Narsese.NarseseException {
 
         TreeConceptIndex index;
-        NAR nar = new NARS().index(
+        TimeAware timeAware = new NARS().index(
             index = new TreeConceptIndex(1000)
         ).get();
 

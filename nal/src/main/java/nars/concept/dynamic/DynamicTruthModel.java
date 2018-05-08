@@ -314,7 +314,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 return inhConstruct2(superterm, DIFFe.bit | DIFFi.bit, a, b);
             } else if (superterm.op() == DIFFe) {
                 //raw difference
-                return Op.DIFFe.the(DTERNAL, a, b);
+                return Op.DIFFe.compound(DTERNAL, new Term[]{a, b});
             }
 
             throw new RuntimeException();

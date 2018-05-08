@@ -11,6 +11,7 @@ import nars.NAR;
 import nars.NAgent;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -25,7 +26,7 @@ import java.util.stream.IntStream;
  */
 public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
-    private final NAR nar;
+    private final TimeAware timeAware;
 
     private final P src;
 
@@ -36,7 +37,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         this.src = src;
 
-        this.nar = agent.nar();
+        this.timeAware = agent.nar();
 
         this.net = new NeuralGasNet(3, (short)blobs) {
 
@@ -125,7 +126,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
         for (int w = 0; w < width; w++) {
             for (int h = 0; h < height; h++) {
                 float color = src.brightness(w, h);
-                if (nar.random().nextFloat() - 0.05f <= color)
+                if (timeAware.random().nextFloat() - 0.05f <= color)
                 //if (color > 0.1f)
                     net.put(w/((float)width), h/((float)height), color );
             }

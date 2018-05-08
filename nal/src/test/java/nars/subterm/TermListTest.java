@@ -1,6 +1,7 @@
 package nars.subterm;
 
 import nars.$;
+import nars.Op;
 import nars.subterm.util.TermList;
 import nars.term.TermTest;
 import nars.term.compound.CompoundLight;
@@ -60,9 +61,9 @@ public class TermListTest {
         Subterms[] ab = {mutable, immutable};
         for (Subterms a : ab) {
             for (Subterms b : ab) {
-                TermTest.assertReallyEquals(theCompound(PROD, a), new CompoundLight(PROD, b));
-                TermTest.assertReallyEquals(theCompound(SETe, a), new CompoundLight(SETe, b));
-                assertNotEquals(theCompound(PROD, a), new CompoundLight(SETi, b));
+                TermTest.assertReallyEquals(Op.terms.theCompound(PROD, a), new CompoundLight(PROD, b));
+                TermTest.assertReallyEquals(Op.terms.theCompound(SETe, a), new CompoundLight(SETe, b));
+                assertNotEquals(Op.terms.theCompound(PROD, a), new CompoundLight(SETi, b));
 
             }
         }

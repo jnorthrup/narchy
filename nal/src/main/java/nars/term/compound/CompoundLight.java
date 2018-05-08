@@ -48,7 +48,7 @@ public class CompoundLight implements Compound {
 
     @Override
     public Term the() {
-        return op.the(DTERNAL, arrayShared());
+        return op.compound(DTERNAL, arrayShared());
     }
 
     @Override

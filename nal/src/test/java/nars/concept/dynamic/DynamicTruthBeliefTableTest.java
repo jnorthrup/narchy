@@ -247,11 +247,7 @@ public class DynamicTruthBeliefTableTest {
     public void testDynamicConceptValid1() throws Narsese.NarseseException {
         Term c =
                 //$.$("( &&+- ,(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1))),(joy-->fz),fwd)");
-                Op.CONJ.the(XTERNAL,
-                        $.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"),
-                        $.$("(joy-->fz)"),
-                        $.$("fwd")
-                ).normalize();
+                Op.CONJ.compound(XTERNAL, new Term[]{$.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")}).normalize();
 
         assertTrue(c instanceof Compound, () -> c.toString());
         assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task term");
@@ -261,11 +257,7 @@ public class DynamicTruthBeliefTableTest {
     public void testDynamicConceptValid2() throws Narsese.NarseseException {
         Term c =
                 //( &&+- ,(--,((--,#1)&&#2)),(--,#2),#1)
-                Op.CONJ.the(XTERNAL,
-                        $.$("(--,((--,#1)&&#2))"),
-                        $.$("(--,#2)"),
-                        $.varDep(1)
-                ).normalize();
+                Op.CONJ.compound(XTERNAL, new Term[]{$.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)}).normalize();
 
         assertTrue(c instanceof Compound, () -> c.toString());
         assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task term");

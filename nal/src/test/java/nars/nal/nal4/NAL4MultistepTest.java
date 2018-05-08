@@ -1,11 +1,19 @@
 package nars.nal.nal4;
 
+import nars.NAR;
+import nars.NARS;
 import nars.Narsese;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
 public class NAL4MultistepTest extends NALTest {
+    @Override
+    protected NAR nar() {
+        NAR n = NARS.tmp(4);
+        n.termVolumeMax.set(18);
+        return n;
+    }
 
 
     @Test
@@ -65,6 +73,7 @@ public class NAL4MultistepTest extends NALTest {
         //
 
         TestNAR tester = test;
+        
         //tester.nar.log();
         tester.believe("<sky --> blue>",1.0f,0.9f); //en("the sky is blue");
         tester.believe("<tom --> cat>",1.0f,0.9f); //en("tom is a cat");

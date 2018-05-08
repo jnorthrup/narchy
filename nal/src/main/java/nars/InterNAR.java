@@ -139,7 +139,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
 //        }
 
     @Override
-    public void accept(NAR nar, ActiveQuestionTask question, Task answer) {
+    public void accept(NAR NAR, ActiveQuestionTask question, Task answer) {
         UDPeer.Msg q = question.meta("UDPeer");
         if (q == null)
             return;

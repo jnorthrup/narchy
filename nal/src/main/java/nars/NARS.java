@@ -23,6 +23,7 @@ import nars.term.Termed;
 import nars.time.CycleTime;
 import nars.time.RealTime;
 import nars.time.Time;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -67,7 +68,7 @@ public class NARS {
 
     protected Supplier<ConceptBuilder> concepts;
 
-    protected List<Function<NAR, Deriver>> derivers;
+    protected List<Function<TimeAware, Deriver>> derivers;
 
     /**
      * applied in sequence as final step before returning the NAR

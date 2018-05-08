@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.bag.BagClustering;
 import nars.control.DurService;
+import nars.util.TimeAware;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,7 +83,7 @@ public abstract class ChainClustering extends DurService {
         nar.onTask((t) -> accept(nar, t));
     }
 
-      protected void linkClustersChain(Stream<VLink<Task>> sortedByCentroidStream, NAR nar) {
+      protected void linkClustersChain(Stream<VLink<Task>> sortedByCentroidStream, TimeAware timeAware) {
 
         List<VLink<Task>> sortedbyCentroid = sortedByCentroidStream.collect(Collectors.toList());
         int current = -1;
@@ -110,9 +111,9 @@ public abstract class ChainClustering extends DurService {
 
 
 
-    public void accept(NAR nar, Task t) {
-        long now = nar.time();
-        int dur = nar.dur();
+    public void accept(TimeAware timeAware, Task t) {
+        long now = timeAware.time();
+        int dur = timeAware.dur();
         if (!t.isEternal()) {
             float p = accept.floatValueOf(t);
             if (p == p) {

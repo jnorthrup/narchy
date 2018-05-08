@@ -36,7 +36,7 @@ public enum JmhBenchmark {
 
 				.resultFormat(ResultFormatType.TEXT)
 				.verbosity(VerboseMode.EXTRA) //VERBOSE OUTPUT
-				.addProfiler(StackProfiler2.class)
+				//.addProfiler(StackProfiler2.class)
 
 //			    .addProfiler(PausesProfiler.class, "period=10" /*uS */)
 //        		.addProfiler(SafepointsProfiler.class)

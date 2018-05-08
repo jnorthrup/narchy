@@ -373,8 +373,8 @@ abstract public class FastCompound implements Compound /* The */ {
         } else {
             //TODO sub view
             //return opAtSub.the(DTERNAL, subs(subOffset));
-            return Op.theCompound(opAtSub,
-                    Subterms.subterms(new SubtermView(this, offset))
+            return Op.terms.theCompound(opAtSub,
+                    Op.terms.subterms(new SubtermView(this, offset))
                     //new SubtermView(this, offset)
             );
         }

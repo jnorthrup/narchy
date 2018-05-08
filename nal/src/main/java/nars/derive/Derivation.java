@@ -29,6 +29,7 @@ import nars.term.control.PrediTerm;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
+import nars.util.TimeAware;
 import nars.util.term.TermHashMap;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
@@ -616,7 +617,7 @@ public class Derivation extends PreDerivation {
     }
 
     public Derivation cycle(NAR nar, Deriver deri) {
-        NAR pnar = this.nar;
+        TimeAware pnar = this.nar;
         if (pnar != nar) {
             init(nar);
         }

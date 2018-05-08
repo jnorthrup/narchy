@@ -1,5 +1,7 @@
 package nars.perf;
 
+import jcog.test.JUnitPlanetX;
+import nars.Op;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
@@ -8,9 +10,10 @@ import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
 import nars.nal.nal8.NAL8Test;
+import nars.util.term.builder.HeapTermBuilder;
+import nars.util.term.builder.InterningTermBuilder;
 import org.junit.jupiter.api.Disabled;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
 
 import static nars.perf.JmhBenchmark.perf;
@@ -19,6 +22,17 @@ import static nars.perf.JmhBenchmark.perf;
 @State(Scope.Thread)
 @Disabled
 public class NARTestBenchmark {
+
+    public static void main(String[] args) throws RunnerException {
+
+        perf(NARTestBenchmark.class, (x) -> {
+            x.measurementIterations(4);
+            x.warmupIterations(0);
+            //x.jvmArgs("-Xint");
+            x.forks(1);
+            x.threads(1);
+        });
+    }
 
     public static final Class[] tests = {
             NAL1Test.class,
@@ -31,18 +45,31 @@ public class NARTestBenchmark {
             NAL8Test.class
     };
 
-    //@Param("ttl") public int ttl;
 
-    public static void main(String[] args) throws RunnerException {
-
-        perf(NARTestBenchmark.class, (x) -> {
-            x.measurementIterations(3);
-            x.warmupIterations(1);
-            //x.jvmArgs("-Xint");
-            x.forks(1);
-            x.threads(1);
-        });
+    void runTests() {
+        new JUnitPlanetX().test(tests).run();
     }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @Fork(1)
+    public void testIterning() {
+        Op.terms = new InterningTermBuilder();
+        runTests();
+        System.err.println(
+                ((InterningTermBuilder)Op.terms).summary()
+        );
+    }
+
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @Fork(1)
+    public void testHeap() {
+        Op.terms = new HeapTermBuilder();
+        runTests();
+    }
+
 
 
 //    @Benchmark
@@ -55,18 +82,6 @@ public class NARTestBenchmark {
 //        junit(testclass);
 //    }
 
-//    /**
-//     * CONTROL
-//     */
-//    @Benchmark
-//    @BenchmarkMode(Mode.AverageTime)
-//    @Fork(0)
-//    public void testX() {
-//
-//
-//        JUnitNAR.junit(tests);
-//
-//    }
 }
 
 //public class TestBenchmark1 {

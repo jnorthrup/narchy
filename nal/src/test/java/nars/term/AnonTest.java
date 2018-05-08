@@ -138,7 +138,7 @@ public class AnonTest {
         assertEquals(v.hashCode(), a.hashCode());
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
-        assertEquals(Op.theCompound(PROD, v), Op.theCompound(PROD, a));
+        assertEquals(Op.terms.theCompound(PROD, v), Op.terms.theCompound(PROD, a));
 
         byte[] bytesExpected = IO.termToBytes($.pFast(v));
         byte[] bytesActual = IO.termToBytes($.pFast(a));

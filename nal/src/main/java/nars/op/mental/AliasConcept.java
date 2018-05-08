@@ -11,6 +11,7 @@ import nars.table.QuestionTable;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -77,7 +78,7 @@ public final class AliasConcept extends TaskConcept {
     @NotNull
     public final Concept abbr;
 
-    AliasConcept(@NotNull String abbreviation, Concept decompressed, NAR nar) {
+    AliasConcept(@NotNull String abbreviation, Concept decompressed, TimeAware timeAware) {
         super(new AliasAtom(abbreviation, decompressed.term()),
                 null, null, null, null,
                 new Bag[]{decompressed.termlinks(), decompressed.tasklinks()});

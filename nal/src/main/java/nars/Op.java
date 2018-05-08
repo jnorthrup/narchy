@@ -14,8 +14,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.compound.CachedCompound;
-import nars.term.compound.CachedUnitCompound;
 import nars.term.compound.util.Conj;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
@@ -23,9 +21,8 @@ import nars.term.var.VarDep;
 import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
-import nars.util.term.InternedCompound;
-import nars.util.term.SubtermsCache;
-import nars.util.term.TermCache;
+import nars.util.term.TermBuilder;
+import nars.util.term.builder.InterningTermBuilder;
 import nars.util.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.MutableSet;
@@ -60,30 +57,25 @@ public enum Op {
     NEG("--", 1, Args.One) {
 
 
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             //assert(u.length == 1);
             if (u.length != 1) //assert (dt == DTERNAL || dt == XTERNAL);
                 throw new RuntimeException("negation requires one subterm");
             return Neg.the(u[0]);
         }
 
-        @Override
-        protected boolean internable(int dt, Term[] u) {
-            //return false;
-            return true;
-        }
     },
 
     INH("-->", 1, OpType.Statement, Args.Two) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             assert(u.length==2);
             return statement(this, dt, u[0], u[1]);
         }
     },
     SIM("<->", true, 2, OpType.Statement, Args.Two) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             if (u.length == 1) { //similarity has been reduced
                 assert (this == SIM);
                 return u[0] == Null ? Null : True;
@@ -99,7 +91,7 @@ public enum Op {
      */
     SECTe("&", true, 3, Args.GTETwo) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             return intersect(/*Int.intersect*/(u),
                     SECTe,
                     SETe,
@@ -112,7 +104,7 @@ public enum Op {
      */
     SECTi("|", true, 3, Args.GTETwo) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             return intersect(/*Int.intersect*/(u),
                     SECTi,
                     SETi,
@@ -125,7 +117,7 @@ public enum Op {
      */
     DIFFe("~", false, 3, Args.Two) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             return differ(this, u);
         }
     },
@@ -135,7 +127,7 @@ public enum Op {
      */
     DIFFi("-", false, 3, Args.Two) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             return differ(this, u);
         }
     },
@@ -155,7 +147,7 @@ public enum Op {
      */
     CONJ("&&", true, 5, Args.GTETwo) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             final int n = u.length;
             switch (n) {
 
@@ -165,12 +157,13 @@ public enum Op {
                 case 1:
                     Term only = u[0];
                     if (only instanceof EllipsisMatch) {
-                        return the(dt, ((EllipsisMatch) only).arrayShared()); //unwrap
+                        //unwrap
+                        return compound(dt, ((EllipsisMatch) only).arrayShared());
                     } else {
 
                         //preserve unitary ellipsis for patterns etc
                         return only instanceof Ellipsislike ?
-                                instance(CONJ, dt, only) //special; preserve the surrounding conjunction
+                                compound(CONJ, dt, only) //special; preserve the surrounding conjunction
                                 :
                                 only;
                     }
@@ -230,7 +223,7 @@ public enum Op {
 
                         if (!u[0].hasAny(Op.CONJ.bit | Op.NEG.bit) && !u[1].hasAny(Op.CONJ.bit | Op.NEG.bit)) {
                             //fast case: no inner conjunction or negations
-                            return instance(CONJ, dt, sorted(u[0], u[1]));
+                            return compound(CONJ, dt, sorted(u[0], u[1]));
                         } else if (u[0].equalsNeg(u[1]))
                             return False;
 
@@ -306,9 +299,7 @@ public enum Op {
                                     //if left remains heavier by donating its smallest
                                     if ((va - vamin) > (vb + vamin)) {
                                         int min = va0 <= va1 ? 0 : 1;
-                                        return CONJ.the(XTERNAL,
-                                                CONJ.the(XTERNAL, b, aa[min] /* a to b */),
-                                                aa[1 - min]);
+                                        return CONJ.compound(XTERNAL, new Term[]{CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]});
                                     }
                                 }
 
@@ -321,7 +312,7 @@ public enum Op {
                     }
 
                     if (u.length > 1) {
-                        return instance(CONJ, XTERNAL, u);
+                        return compound(CONJ, XTERNAL, u);
                     } else {
                         return u[0];
                     }
@@ -368,7 +359,7 @@ public enum Op {
      */
     IMPL("==>", 5, OpType.Statement, Args.Two) {
         @Override
-        public Term instance(int dt, Term[] u) {
+        public Term compound(int dt, Term[] u) {
             assert(u.length==2);
             return statement(this, dt, u[0], u[1]);
         }
@@ -589,10 +580,15 @@ public enum Op {
     public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
-    public static final Compound EmptyProduct = theCompound(Op.PROD, Subterms.Empty);
+
+    public static TermBuilder terms =
+            new InterningTermBuilder();
+            //new TermBuilder.HeapTermBuilder();
+
+    public static final Term EmptyProduct = terms.compound(Op.PROD, Term.EmptyArray);
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
-    public final static SubtermsCache subtermCache = new SubtermsCache(64 * 1024, 4, false);
+
     static final ImmutableMap<String, Op> stringToOperator;
     /**
      * ops across which reflexivity of terms is allowed
@@ -606,8 +602,6 @@ public enum Op {
     public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
             c -> !c.isAny(relationDelimeterWeak);
 
-    final static TermCache termCache = new TermCache(128 * 1024, 4, false);
-    final static TermCache termTemporalCache = new TermCache(128 * 1024, 4, false);
     /**
      * specifier for any NAL level
      */
@@ -858,7 +852,7 @@ public enum Op {
 
         //if (base.dt() == nextDT) return base;
 
-        return base.op().the(nextDT, base.arrayShared());
+        return base.op().compound(nextDT, base.arrayShared());
 
 //        if (nextDT == XTERNAL) {
 //            return new CompoundDTLight(base, XTERNAL);
@@ -1149,7 +1143,7 @@ public enum Op {
 //        }
 //    }
 
-    static boolean hasNull(Term[] t) {
+    public static boolean hasNull(Term[] t) {
         for (Term x : t)
             if (x == Null)
                 return true;
@@ -1175,17 +1169,18 @@ public enum Op {
                     return differ(op, ((Subterms) single).arrayShared());
                 }
                 return single instanceof Ellipsislike ?
-                        instance(op, DTERNAL, single) :
+                        compound(op, DTERNAL, single) :
                         Null;
             case 2:
                 Term et0 = t[0], et1 = t[1];
+
+                if (et0 == Null || et1 == Null)
+                    return Null;
 
                 //false tautology - the difference of something with itself will always be nothing, ie. freq=0, ie. False
                 if (et0.equals(et1))
                     return False;
 
-                if (et0 == Null || et1 == Null)
-                    return Null;
 
                 //the difference of something with its negation; depends if the first argument is positive or not
                 if (et1.neg().equals(et0)) {
@@ -1265,7 +1260,7 @@ public enum Op {
             }
         }
 
-        return instance(diffOp, DTERNAL, a, b);
+        return compound(diffOp, DTERNAL, a, b);
     }
 
     /*@NotNull*/
@@ -1342,41 +1337,6 @@ public enum Op {
 
 
 
-    /**
-     * direct constructor
-     * no reductions or validatios applied
-     * use with caution
-     */
-    public static Term instance(Op o, int dt, Term... u) {
-        assert (!o.atomic) : o + " is atomic, with subterms: " + (u);
-
-        boolean hasEllipsis = false;
-
-        for (Term x : u) {
-            if (!hasEllipsis && (x instanceof Ellipsislike ))
-                hasEllipsis = true;
-            if (x == Null)
-                return Null;
-        }
-
-        int s = u.length;
-        assert (o.maxSize >= s) :
-                "subterm overflow: " + o + ' ' + (u);
-        assert (o.minSize <= s || hasEllipsis) :
-                "subterm underflow: " + o + ' ' + (u);
-
-        if (s == 1) {
-            switch (o) {
-                case NEG:
-                    //return Neg.the(u[0]);
-                    throw new UnsupportedOperationException("should have been intercepted by NEG builder");
-                default:
-                    return new CachedUnitCompound(o, u[0]);
-            }
-        } else {
-            return theCompound(o, dt, Subterms.subtermsInterned(u));
-        }
-    }
 
     static boolean in(int needle, int haystack) {
         return (needle & haystack) == needle;
@@ -1401,10 +1361,10 @@ public enum Op {
 
         boolean dtConcurrent = concurrent(dt);
         if (dtConcurrent) {
-            //if (subject.equals(predicate))
-            //return True;
-            if (subject.equalsRoot(predicate))
+            if (subject.equals(predicate))
                 return True;
+//            if (subject.equalsRoot(predicate))
+//                return True;
         }
 
         if (op == INH || op == SIM) {
@@ -1426,18 +1386,22 @@ public enum Op {
 
             //if (dtConcurrent) { //no temporal basis
             if (subject == True)
+                //return Null;
                 return predicate; //true tautology
-            else if (subject == False)
+            if (subject == False)
+                //return Null;
                 return predicate.neg(); //false tautology
-            else if (predicate instanceof Bool)
-                return Null; //nothing is the "cause" of tautological trueness or falseness
 
-            if (subject.hasAny(InvalidImplicationSubj))
-                return Null; //throw new InvalidTermException(op, dt, "Invalid equivalence subject", subject, predicate);
+//            if (predicate instanceof Bool)
+//                return Null; //nothing is the "cause" of tautological trueness or falseness
+            if (predicate == True)
+                return subject;
+            if (predicate == False)
+                return subject.neg();
 
             if (predicate.op() == NEG) {
                 //negated predicate gets unwrapped to outside
-                return IMPL.the(dt, subject, predicate.unneg()).neg();
+                return IMPL.compound(dt, new Term[]{subject, predicate.unneg()}).neg();
             }
 
 
@@ -1531,13 +1495,14 @@ public enum Op {
 //
 //                }
 
+            if (subject.hasAny(InvalidImplicationSubj))
+                return Null; //throw new InvalidTermException(op, dt, "Invalid equivalence subject", subject, predicate);
+
 
             // (C ==>+- (A ==>+- B))   <<==>>  ((C &&+- A) ==>+- B)
             switch (predicate.op()) {
                 case IMPL: {
-                    return IMPL.the(predicate.dt(),
-                            CONJ.the(dt /*caDT */, subject, predicate.sub(0)),
-                            predicate.sub(1));
+                    return IMPL.compound(predicate.dt(), new Term[]{CONJ.compound(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1)});
                 }
 //                case CONJ: {
 //                    // (C ==>+- (A &&+ B))   <<==>>  ((C &&+- A) ==>+ B)
@@ -1557,6 +1522,7 @@ public enum Op {
 
 
             //filter duplicate events and detect contradictions
+            //TODO use CONJ and slice at the temporal boundary?
 
             if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
@@ -1616,7 +1582,7 @@ public enum Op {
 
                                         for (int i = 0; i < subPextsN; i++) {
                                             Term subPext = subPexts.sub(i);
-                                            Term merge = CONJ.the(dt, sset, subPext);
+                                            Term merge = CONJ.compound(dt, new Term[]{sset, subPext});
                                             if (merge == Null) return Null; //invalid
                                             else if (merge == False) {
                                                 //contradict
@@ -1637,7 +1603,7 @@ public enum Op {
                                         //completely absorbed
                                         pi.remove();
                                     } else {
-                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
+                                        pi.set(pair(at, CONJ.compound(pdt, subPexts.termsExcept(pextRemovals))));
                                     }
                                     peChange[0] = true;
                                 }
@@ -1673,7 +1639,7 @@ public enum Op {
                         newPredicate = Conj.conj(pe);
                     }
 
-                    return IMPL.the(ndt, subject, newPredicate);
+                    return IMPL.compound(ndt, new Term[]{subject, newPredicate});
                 }
 //                        break;
 //                    default: {
@@ -1722,7 +1688,9 @@ public enum Op {
         }
 
 
-        if ((dtConcurrent || op != IMPL) && (subject.varPattern() == 0 && predicate.varPattern() == 0)) {
+
+        if ((dtConcurrent || op != IMPL) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
+
             Predicate<Term> delim = (op == IMPL && dtConcurrent) ?
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
 
@@ -1771,7 +1739,7 @@ public enum Op {
 //        }
 
 
-        return instance(op, dt, subject, predicate);
+        return compound(op, dt, subject, predicate);
     }
 
     public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
@@ -1866,7 +1834,7 @@ public enum Op {
                     return intersect(((Subterms) single).arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
-                        instance(intersection, DTERNAL, single) :
+                        compound(intersection, DTERNAL, single) :
                         single;
 
             case 2:
@@ -1932,27 +1900,12 @@ public enum Op {
         if (aaa == 1)
             return args.first();
         else {
-            return instance(intersection, DTERNAL, args.toArray(new Term[aaa]));
+            return compound(intersection, DTERNAL, args.toArray(new Term[aaa]));
         }
     }
 
     public static boolean goalable(Term c) {
         return !c.hasAny(Op.NonGoalable);// && c.op().goalable;
-    }
-
-    public static boolean internable(Term[] u) {
-        if (u.length == 0)
-            return false;
-
-        boolean cache = true;
-        for (Term x : u) {
-            if (!(x instanceof The)) {
-                //HACK caching these interferes with unification.  instead fix unification then allow caching of these
-                cache = false;
-                break;
-            }
-        }
-        return cache;
     }
 
     /**
@@ -1978,7 +1931,7 @@ public enum Op {
                 Op o = container.op();
                 return o.isSet() ? o.the(remain) : remain;
             default:
-                return container.op().the(container.dt(), cs.termsExcept(i));
+                return container.op().compound(container.dt(), cs.termsExcept(i));
         }
 
     }
@@ -2007,25 +1960,7 @@ public enum Op {
         if (end - start == 1)
             return events.get(start).getTwo();
         else
-            return CONJ.the(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
-    }
-
-    public static Compound theCompound(/*@NotNull*/ Op op, Subterms subterms) {
-        return theCompound(op, DTERNAL, subterms);
-    }
-
-    public static Compound theCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
-        //HACK predict if compound will differ from its root
-        boolean dTernal = dt == DTERNAL;
-        if (dTernal && !op.temporal && !subterms.hasAny(Temporal)) { //TODO there are more cases
-            return new CachedCompound.SimpleCachedCompound(op, subterms);
-        } else {
-
-            if (!dTernal && !op.temporal)
-                throw new RuntimeException(op + " is non-temporal and can not accept dt=" + dt);
-
-            return new CachedCompound.TemporalCachedCompound(op, dt, subterms);
-        }
+            return CONJ.compound(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
     }
 
     public final Term the(Subterms s) {
@@ -2033,7 +1968,7 @@ public enum Op {
     }
 
     public final Term the(/*@NotNull*/ Term... u) {
-        return the(DTERNAL, u);
+        return compound(DTERNAL, u);
     }
 
     @Override
@@ -2110,47 +2045,17 @@ public enum Op {
 
     public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
         int s = sub.size();
-        return the(dt, sub.toArray(new Term[s]));
-    }
-
-    /*@NotNull*/
-    public Term the(int dt, Term... u) {
-        return the(dt, u, true);
+        Term[] u = sub.toArray(Term.EmptyArray);
+        return compound(dt, u);
     }
 
     /**
      * alternate method args order for 2-term w/ infix DT
      */
     public final Term the(Term a, int dt, Term b) {
-        return the(dt, a, b);
+        return compound(dt, a, b);
     }
 
-
-    /**
-     * syntax shortcut for non-interned (heap) term construction
-     */
-    public final Term a(int dt, Term... u) {
-        return the(dt, u, false);
-    }
-
-    public Term the(int dt, Term[] u, boolean intern) {
-        if (Op.hasNull(u))
-            return Null;
-        return compound(dt, commute(dt, u.length) ? sorted(u) : u, intern);
-    }
-
-    protected boolean internable(int dt, Term[] u) {
-//        if (dt ... )
-//            return false;
-
-        return internable(u);
-    }
-
-    protected final Term compound(int dt, Term[] u, boolean intern) {
-        return (intern && internable(dt, u)) ?
-                (dt == DTERNAL ? termCache : termTemporalCache).apply(new InternedCompound(this, dt, u)) :
-                instance(dt, u);
-    }
 
     /**
      * entry point into the term construction process.
@@ -2158,11 +2063,21 @@ public enum Op {
      * - instance(..)
      * - reduction to another term or True/False/Null
      */
-    public Term instance(int dt, Term... u) {
-        return instance(this, dt, u); //default
+    public Term compound(int dt, Term... u) {
+        return terms.compound(this, dt, u);
     }
-    public final Term instance(Term... u) {
-        return instance(DTERNAL, u); //default
+
+    public final Term compound(Term... u) {
+        return compound(DTERNAL, u);
+    }
+
+    /**
+     * direct constructor
+     * no reductions or validatios applied
+     * use with caution
+     */
+    public static Term compound(Op o, int dt, Term... u) {
+        return terms.compound(o, dt, u);
     }
 
     /**

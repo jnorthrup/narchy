@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.task.util.TaskRegion;
+import nars.util.TimeAware;
 
 
 /**
@@ -65,7 +66,7 @@ public enum Tense {
         return order(b - a, durationCycles);
     }
 
-    public static long getRelativeOccurrence(Tense tense, NAR m) {
+    public static long getRelativeOccurrence(Tense tense, TimeAware m) {
         return getRelativeOccurrence(m.time(), tense, 1 /*m.duration()*/);
     }
 

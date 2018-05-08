@@ -13,6 +13,7 @@ import nars.gui.Vis;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
+import nars.util.TimeAware;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
@@ -248,7 +249,7 @@ public class Line1D {
 
     }
 
-    static class Line1DExperiment implements FloatFunction<NAR> {
+    static class Line1DExperiment implements FloatFunction<TimeAware> {
 
 
         float tHz = 0.05f; //in time units
@@ -259,7 +260,7 @@ public class Line1D {
         public Line1DSimplest agent;
 
         @Override
-        public float floatValueOf(NAR n) {
+        public float floatValueOf(TimeAware n) {
 
             //n.truthResolution.setValue(0.05f);
 
@@ -301,13 +302,13 @@ public class Line1D {
             //ImplicationBooster.implAccelerator(a);
 
 
-            NAR nar = agent.nar();
+            TimeAware timeAware = agent.nar();
             agent.onFrame((z) -> {
 
                 if (AUTO.get()) {
                     agent.target(
                             //Math.signum(Math.sin(a.nar.time() * tHz * 2 * PI) ) > 0 ? 1f : -1f
-                            Util.round((float) (0.5f + 0.5f * Math.sin(nar.time() * tHz * 2 * PI / nar.dur())), yResolution)
+                            Util.round((float) (0.5f + 0.5f * Math.sin(timeAware.time() * tHz * 2 * PI / timeAware.dur())), yResolution)
                             //(float) ( Math.sin(a.nar.time() * tHz * 2 * PI) )
                             //Util.sqr((float) (0.5f * (Math.sin(n.time()/90f) + 1f)))
                             //(0.5f * (Math.sin(n.time()/90f) + 1f)) > 0.5f ? 1f : 0f

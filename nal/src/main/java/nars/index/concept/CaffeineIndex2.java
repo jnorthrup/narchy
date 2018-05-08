@@ -171,7 +171,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
         Subterms xs = x.subterms();
         if (xs.subs() == 0) {
             //atomic
-            return Subterms.subtermsInterned(x, True); //to distinguish from: (x)
+            return Op.terms.newSubterms(x, True); //to distinguish from: (x)
         } else {
             return xs;
         }

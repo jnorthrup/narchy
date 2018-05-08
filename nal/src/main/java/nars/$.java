@@ -199,7 +199,7 @@ public enum $ {
      * returns a Term if the two inputs are equal to each other
      */
     public static <T extends Term> T inh(Term subj, Term pred) {
-        return (T) INH.the(DTERNAL, subj, pred);
+        return (T) INH.compound(DTERNAL, new Term[]{subj, pred});
     }
 
     public static <T extends Term> T inh(Term subj, String pred) {
@@ -246,7 +246,7 @@ public enum $ {
 
 
     public static <T extends Term> T impl(Term a, int dt, Term b) {
-        return (T) IMPL.the(dt, a, b);
+        return (T) IMPL.compound(dt, new Term[]{a, b});
     }
 
 
@@ -480,7 +480,7 @@ public enum $ {
         for (Term t : append) {
             ca[i++] = t;
         }
-        return CONJ.the(DTERNAL, ca);
+        return CONJ.compound(DTERNAL, ca);
     }
 
 
@@ -488,7 +488,7 @@ public enum $ {
      * parallel conjunction &| aka &&+0
      */
     public static Term parallel(Term... s) {
-        return CONJ.the(0, s);
+        return CONJ.compound(0, s);
     }
 
     public static Term parallel(Collection<Term> s) {
@@ -498,7 +498,7 @@ public enum $ {
     public static Term disj(Term... a) {
         Term[] b = a.clone();
         neg(b);
-        return CONJ.the(DTERNAL, b).neg();
+        return CONJ.compound(DTERNAL, b).neg();
     }
 
 
@@ -651,7 +651,8 @@ public enum $ {
      * conjunction sequence (2-ary)
      */
     public static Term seq(Term x, int dt, Term y) {
-        return CONJ.the(dt, x, y); //must be a vector, not set
+        //must be a vector, not set
+        return CONJ.compound(dt, new Term[]{x, y});
     }
 
 

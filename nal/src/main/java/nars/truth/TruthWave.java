@@ -3,6 +3,7 @@ package nars.truth;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
+import nars.util.TimeAware;
 import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +55,7 @@ public class TruthWave {
         truth = new float[ENTRY_SIZE * cap];
     }
 
-    public TruthWave(@NotNull BeliefTable b, @NotNull NAR n) {
+    public TruthWave(@NotNull BeliefTable b, @NotNull TimeAware n) {
         this(b.size());
         set(b, n.time(), n.dur(), n, Long.MIN_VALUE, Long.MAX_VALUE);
     }
@@ -62,7 +63,7 @@ public class TruthWave {
     /**
      * clears and fills this wave with the data from a table
      */
-    public void set(BeliefTable b, long now, int dur, NAR nar, long minT, long maxT) {
+    public void set(BeliefTable b, long now, int dur, TimeAware timeAware, long minT, long maxT) {
         int s = b.size();
         if (s == 0) {
             this.current = null;

@@ -8,6 +8,7 @@ import nars.concept.scalar.Scalar;
 import nars.control.DurService;
 import nars.gui.Vis;
 import nars.truth.Truth;
+import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DSensor;
 import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
@@ -124,7 +125,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
 
 
-    public void accept(NAR nn) {
+    public void accept(TimeAware nn) {
         long now = nn.time();
         dur = nn.dur();
         this.start = now - dur;

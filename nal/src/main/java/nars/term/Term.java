@@ -26,6 +26,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.*;
 import nars.op.mental.AliasConcept;
+import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.subterm.util.TermMetadata;
@@ -211,7 +212,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
         }
 
-        return csrc.op().the(csrc.dt(), target);
+        return csrc.op().compound(csrc.dt(), target);
     }
 
     default <X> boolean pathsTo(/*@NotNull*/ Function<Term, X> target, Predicate<Term> descendIf, /*@NotNull*/ BiPredicate<ByteList, X> receiver) {
@@ -828,7 +829,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default Term neg() {
-        return NEG.the(this);
+        return Neg.the(this);
     }
 
     default Term negIf(boolean negate) {

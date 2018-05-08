@@ -12,6 +12,7 @@ import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Int;
 import nars.term.var.Variable;
+import nars.util.TimeAware;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
@@ -156,11 +157,11 @@ public class ArithmeticIntroduction extends LeakBack {
 
     public static final Logger logger = LoggerFactory.getLogger(ArithmeticIntroduction.class);
 
-    private final NAR nar;
+    private final TimeAware timeAware;
 
     public ArithmeticIntroduction(int taskCapacity, NAR n) {
         super(taskCapacity, n);
-        this.nar = n;
+        this.timeAware = n;
     }
 
     @Override
@@ -171,7 +172,7 @@ public class ArithmeticIntroduction extends LeakBack {
     @Override
     protected float leak(Task xx) {
         Term x = xx.term();
-        Term y = apply(x, nar.random());
+        Term y = apply(x, timeAware.random());
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
             if (yy!=null) {

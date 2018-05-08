@@ -1,8 +1,8 @@
 package nars.task.signal;
 
 import jcog.Skill;
-import nars.NAR;
 import nars.Param;
+import nars.util.TimeAware;
 
 import static nars.util.time.Tense.ETERNAL;
 
@@ -19,8 +19,8 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
 
     int dur;
 
-    public SustainTruthlet(RangeTruthlet r, NAR nar) {
-        this(r, nar.dur());
+    public SustainTruthlet(RangeTruthlet r, TimeAware timeAware) {
+        this(r, timeAware.dur());
     }
 
     public SustainTruthlet(RangeTruthlet r, int dur) {

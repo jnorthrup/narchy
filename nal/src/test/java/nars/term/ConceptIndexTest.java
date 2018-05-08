@@ -5,6 +5,7 @@ import nars.index.concept.ConceptIndex;
 import nars.index.concept.MapConceptIndex;
 import nars.index.concept.MaplikeConceptIndex;
 import nars.term.atom.Atomic;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -119,7 +120,7 @@ public class ConceptIndexTest {
 //
 //    }
 
-    private void testNotShared(@NotNull NAR n, @NotNull String s) throws Narsese.NarseseException {
+    private void testNotShared(@NotNull TimeAware n, @NotNull String s) throws Narsese.NarseseException {
         Termed t1 = $.$(s); //create by parsing
         Termed t2 = $.$(s); //create by parsing again
         assertEquals(t1, t2);

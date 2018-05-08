@@ -23,6 +23,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import org.eclipse.collections.api.block.function.primitive.ByteToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToShortFunction;
+import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -8906,4 +8907,23 @@ public enum ArrayUtils { ;
         }
 //        }
     }
+
+    /** sorts descending */
+    public static void sort(long[] a, LongToLongFunction v) {
+        sort(a, 0, a.length-1, v);
+    }
+
+    /** sorts descending */
+    public static void sort(long[] a, int left, int right /* inclusive */, LongToLongFunction v) {
+        for (int i = left, j = i; i < right; j = ++i) {
+            long ai = a[i + 1];
+            while (v.valueOf(ai) > v.valueOf(a[j])) {
+                a[j + 1] = a[j];
+                if (j-- == left)
+                    break;
+            }
+            a[j + 1] = ai;
+        }
+    }
+
 }

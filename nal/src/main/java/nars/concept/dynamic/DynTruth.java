@@ -17,6 +17,7 @@ import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.util.TimeAware;
 import nars.util.time.Tense;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -100,9 +101,9 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     /** TODO make Task truth dithering optional */
-    public Truthed eval(@NotNull Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
+    public Truthed eval(@NotNull Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR timeAware) {
 
-        Truth t = truthModel.apply(this, nar);
+        Truth t = truthModel.apply(this, timeAware);
         if (t == null)
             return null;
 
@@ -207,7 +208,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
                 Truth.theDithered(r.getTwo() ? (1-f) : f, freqRes, evi, confRes, w2cSafe(eviMin)),
-                nar, start, end,
+                timeAware, start, end,
                 ss.getOne());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 
@@ -267,18 +268,18 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return true;
     }
 
-    public final Truth truth(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
-        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, Float.MIN_NORMAL /*Truth.EVI_MIN*/, nar);
+    public final Truth truth(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR timeAware) {
+        return (Truth) eval(term, o, false, beliefOrGoal, 0, 0, Float.MIN_NORMAL /*Truth.EVI_MIN*/, timeAware);
     }
 
-    public final Task task(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR nar) {
-        return (Task) eval(term, o, true, beliefOrGoal, 0, 0, Float.MIN_NORMAL /*Truth.EVI_MIN*/, nar);
+    public final Task task(Term term, BiFunction<DynTruth,NAR,Truth> o, boolean beliefOrGoal, NAR timeAware) {
+        return (Task) eval(term, o, true, beliefOrGoal, 0, 0, Float.MIN_NORMAL /*Truth.EVI_MIN*/, timeAware);
     }
 
     public static class DynamicTruthTask extends NALTask {
 
-        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, NAR nar, long start, long end, long[] stamp) throws InvalidTaskException {
-            super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, nar.time(), start, end, stamp);
+        DynamicTruthTask(Term c, boolean beliefOrGoal, Truth tr, TimeAware timeAware, long start, long end, long[] stamp) throws InvalidTaskException {
+            super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, timeAware.time(), start, end, stamp);
             if (c.op()==NEG)
                 throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
         }

@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.HashCachedBytes;
 import jcog.memoize.HijackMemoize;
 import jcog.pri.AbstractPLink;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 
@@ -64,6 +65,6 @@ public final class InternedSubterms extends AbstractPLink<Subterms> implements H
     public Subterms compute() {
         Term[] rawSubs = this.rawSubs;
         this.rawSubs = null;
-        return Subterms.subtermsInstance(rawSubs);
+        return Op.terms.subtermsInstance(rawSubs);
     }
 }

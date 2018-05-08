@@ -5,6 +5,7 @@ import jcog.signal.Bitmap2D;
 import nars.*;
 import nars.op.java.Opjects;
 import nars.term.Term;
+import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DSensor;
 
 import java.util.Arrays;
@@ -527,7 +528,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         //
 
 
-        NAR nn = NAgentX.runRT((n) -> {
+        TimeAware nn = NAgentX.runRT((n) -> {
             Tetris a = null;
             try {
 

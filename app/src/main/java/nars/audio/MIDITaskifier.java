@@ -11,6 +11,7 @@ import nars.gui.Vis;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.util.TimeAware;
 import nars.util.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
@@ -93,8 +94,8 @@ public class MIDITaskifier {
             nar.on(c);
 
             //c.beliefs().capacity(1, c.beliefs().capacity());
-            nar.input(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()));
-            nar.input(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.time.nextStampArray()));
+            nar.input(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.evidence()));
+            nar.input(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.evidence()));
             nar.onCycle(n -> {
 
                 float v = volume[finalI];
@@ -151,7 +152,7 @@ public class MIDITaskifier {
         new MIDITaskifier();
     }
 
-    public MidiInReceiver MIDI(NAR nar) {
+    public MidiInReceiver MIDI(TimeAware timeAware) {
         // Obtain information about all the installed synthesizers.
         MidiDevice device;
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
@@ -169,7 +170,7 @@ public class MIDITaskifier {
                 System.out.println("\trx: " + device.getReceivers());
 
                 if (receive(device)) {
-                    return new MidiInReceiver(device, nar);
+                    return new MidiInReceiver(device, timeAware);
                 }
 
                 /*if (device instanceof Synthesizer) {
@@ -194,11 +195,11 @@ public class MIDITaskifier {
         //public final Map<Term,FloatParam> key = new ConcurrentHashMap<>();
 
         private final MidiDevice device;
-        private final NAR nar;
+        private final TimeAware timeAware;
 
-        public MidiInReceiver(MidiDevice device, NAR nar) throws MidiUnavailableException {
+        public MidiInReceiver(MidiDevice device, TimeAware timeAware) throws MidiUnavailableException {
             this.device = device;
-            this.nar = nar;
+            this.timeAware = timeAware;
 
             if (!device.isOpen()) {
                 device.open();

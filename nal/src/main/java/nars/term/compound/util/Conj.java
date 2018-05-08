@@ -2,14 +2,16 @@ package nars.term.compound.util;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
-import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.util.TimeAware;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +42,6 @@ public class Conj {
     /**
      * unnegated events
      */
-    //final Map<Term,Byte> terms = new TermHashMap();
     final ObjectByteHashMap<Term> terms = new ObjectByteHashMap<>(4);
 
 //    /**
@@ -112,7 +113,7 @@ public class Conj {
                 if (csDropped.length == 1)
                     return csDropped[0];
                 else
-                    return CONJ.the(cdt, csDropped);
+                    return CONJ.compound(cdt, csDropped);
             }
         }
 
@@ -205,7 +206,7 @@ public class Conj {
         return ce.term();
     }
 
-    public static Term without(Term conj, Term event, boolean includeNeg, NAR nar) {
+    public static Term without(Term conj, Term event, boolean includeNeg, TimeAware timeAware) {
         if (conj.op() != CONJ || conj.impossibleSubTerm(event))
             return Null;
 
@@ -318,13 +319,100 @@ public class Conj {
                 int ls = left.subs(), rs = right.subs();
                 if ((ls > 1 + rs) || (rs > ls)) {
                     //seq imbalance; send through again
-                    return CONJ.the(dt, left, right);
+                    return CONJ.compound(dt, new Term[]{left, right});
                 }
             }
         }
 
 
-        return instance(CONJ, dt, left, right);
+        return Op.compound(CONJ, dt, left, right);
+    }
+
+    /** similar to conjMerge but interpolates events so the resulting
+     * intermpolation is not considerably more complex than either of the inputs */
+    public static Term conjIntermpolate(Term a, Term b, long bOffset) {
+        return new Conjterpolate(a, b, bOffset).term();
+    }
+
+    /** for each of b's events, find the nearest matching event in a while constructing a new Conj consisting of their mergers */
+    static class Conjterpolate extends Conj {
+
+        private final Conj aa;
+        private final Term b;
+
+        public Conjterpolate(Term a, Term b, long bOffset) {
+            //        int maxVol = Math.max(a.volume(), b.volume());
+            Conj aa = new Conj(); aa.add(a, 0);
+            this.aa = aa;
+            this.b = b;
+            add(b, bOffset);
+        }
+
+        @Override
+        public boolean add(Term t, long bt) {
+            assert(bt!=XTERNAL);
+
+            if (t == b)
+                return super.add(t, bt);
+            else {
+                //component merge
+                //find closest event in aa
+                byte tInA = aa.terms.get(t);
+
+                //potential event times to compare and choose from
+                LongArrayList whens = new LongArrayList(2);
+
+                aa.event.forEachKeyValue((long when, Object wat)-> {
+                    if (wat instanceof RoaringBitmap) {
+                        RoaringBitmap r = (RoaringBitmap) wat;
+                        if (r.contains(tInA) && !r.contains(-tInA)) {
+                            whens.add(when);
+                        }
+                    } else {
+                        byte[] ii = (byte[]) wat;
+                        if (ArrayUtils.indexOf(ii, tInA)!=-1 && ArrayUtils.indexOf(ii, (byte) -tInA)==-1) {
+                            whens.add(when);
+                        }
+                    }
+                });
+
+                int ws = whens.size();
+                if (ws == 0) {
+                    return super.add(t, bt); //unknown why it didnt match, so just add it
+                }
+
+                long theWhen;
+                if (!whens.isEmpty() && ws > 1) {
+                    LongToLongFunction TemporalDistance;
+                    if (bt == ETERNAL) {
+                        TemporalDistance = (at) -> at == ETERNAL ? 0 : 1; //prefer eternal, but no further preference
+                    } else {
+                        long finalBt = bt;
+                        TemporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE; //prefer same/similar time, and avoid eternal if possible
+                    }
+                    long[] whensArray = whens.toArray();
+                    ArrayUtils.sort(whensArray, TemporalDistance);
+
+                    theWhen = whensArray[whensArray.length-1];
+                } else {
+                    theWhen = whens.get(0);
+                }
+
+                return super.add(t, merge(theWhen, bt));
+            }
+
+        }
+
+        static long merge(long x, long y) {
+            if (x == y) return x;
+            if (x == ETERNAL ^ y==ETERNAL) return ETERNAL;
+            //TODO dtMergeOrChoose
+
+//            if (Math.abs(x-y)==1)
+//                return rng.next
+            return (x+y)/2L; //merge
+        }
+
     }
 
     /**
@@ -631,7 +719,7 @@ public class Conj {
 
             ci = eternal != null ?
                     //CONJ.the(DTERNAL, sorted(temporal, eternal))
-                    CONJ.instance(DTERNAL, sorted(temporal, eternal))
+                    CONJ.compound(DTERNAL, sorted(temporal, eternal))
                     //instance(CONJ, DTERNAL, sorted(temporal, eternal))
                     :
                     temporal;
@@ -677,7 +765,7 @@ public class Conj {
                             }
                         }
                         if (toRemove.getCardinality() > 0) {
-                            return CONJ.the(ciDT, cci.termsExcept(toRemove));
+                            return CONJ.compound(ciDT, cci.termsExcept(toRemove));
                         }
                     }
 
@@ -769,7 +857,7 @@ public class Conj {
                                     if (csa == null)
                                         csa = new FasterList(1);
                                     csa.add(
-                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
+                                            CONJ.compound(disj.dt(), sorted(disjSubs)).neg()
                                     );
                                 }
                             }
@@ -800,7 +888,7 @@ public class Conj {
                 }
                 return
                         //CONJ.the(
-                        Op.instance(CONJ,
+                        Op.compound(CONJ,
                                 dt,
                                 sorted(t));
                 //t);

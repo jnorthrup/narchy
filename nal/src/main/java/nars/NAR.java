@@ -42,6 +42,7 @@ import nars.term.atom.Atomic;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import nars.util.TimeAware;
 import nars.util.time.Tense;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
@@ -82,9 +83,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * * step mode - controlled by an outside system, such as during debugging or testing
  * * thread mode - runs in a pausable closed-loop at a specific maximum framerate.
  */
-public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled {
-
-
+public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled, nars.util.TimeAware {
 
     static final String VERSION = "NARchy v?.?";
 
@@ -218,7 +217,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         SortedMap<String, Object> x = new TreeMap();
 
-        synchronized (exe) {
+        //synchronized (exe)
+        {
 
             concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
 
@@ -294,9 +294,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Util.toMap( clazz, "concept class", x::put);
         
-        x.put("term cache eternal", Op.termCache.summary());
-        x.put("term cache temporal", Op.termTemporalCache.summary());
-        x.put("subterm cache", Op.subtermCache.summary());
+//        x.put("term cache eternal", Op.termCache.summary());
+//        x.put("term cache temporal", Op.termTemporalCache.summary());
+//        x.put("subterm cache", Op.subtermCache.summary());
 
         emotion.getter(()->x).run(); //HACK this is slow TODO cache the monitor list in a Stats instance
 
@@ -450,7 +450,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     
-    public NAR believe( String term,  Tense tense, float freq, float conf) {
+    public TimeAware believe(String term, Tense tense, float freq, float conf) {
         try {
             believe(priDefault(BELIEF), $(term), time(tense), freq, conf);
         } catch (NarseseException e) {
@@ -476,7 +476,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
     }
 
-    public NAR believe(String... tt) throws NarseseException {
+    public TimeAware believe(String... tt) throws NarseseException {
 
         for (String b : tt)
             believe(b, true);
@@ -485,7 +485,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     
-    public NAR believe( String termString, boolean isTrue) throws NarseseException {
+    public TimeAware believe(String termString, boolean isTrue) throws NarseseException {
         believe($(termString), isTrue);
         return this;
     }
@@ -553,7 +553,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
         @Nullable Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
-            Task y = new NALTask(c, punc, truth, time(), start, end, new long[]{time.nextStamp()});
+            Task y = new NALTask(c, punc, truth, time(), start, end, evidence());
             y.priSet(pri);
             return y;
         }, false);
@@ -591,7 +591,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * logs tasks and other budgeted items with a summary exceeding a threshold
      */
-    public NAR logPriMin(Appendable out, float priThresh) {
+    public TimeAware logPriMin(Appendable out, float priThresh) {
         return log(out, v -> {
             Prioritized b = null;
             if (v instanceof Prioritized) {
@@ -605,7 +605,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-    public NAR logWhen(Appendable out, boolean past, boolean present, boolean future) {
+    public TimeAware logWhen(Appendable out, boolean past, boolean present, boolean future) {
 
         if (past && present && future)
             return log(out);
@@ -722,6 +722,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return op;
     }
 
+    @Override
     public final int dur() {
         return time.dur();
     }
@@ -729,7 +730,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * provides a Random number generator
      */
-    public final Random random() {
+    @Override public final Random random() {
         return random;
     }
 
@@ -1100,7 +1101,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @NotNull
-    public NAR trace() {
+    public TimeAware trace() {
         trace(System.out);
         return this;
     }
@@ -1122,7 +1123,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this == obj;
     }
 
-    public NAR believe(@NotNull Term c, @NotNull Tense tense) {
+    public TimeAware believe(@NotNull Term c, @NotNull Tense tense) {
         believe(c, tense, 1f);
         return this;
     }
@@ -1155,6 +1156,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return on(termAtom, (Subterms s)->s.subs()==1 ? f.apply(s.sub(0)) : null);
     }
 
+    @Override
     public final long time() {
         return time.now();
     }
@@ -1165,19 +1167,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return inputBinary(new GZIPInputStream(new FileInputStream(input), FILE_STREAM_BUFFER_SIZE));
     }
 
-    public NAR outputBinary(@NotNull File f) throws IOException {
+    public TimeAware outputBinary(@NotNull File f) throws IOException {
         return outputBinary(f, false);
     }
 
-    public final NAR outputBinary(@NotNull File f, boolean append) throws IOException {
+    public final TimeAware outputBinary(@NotNull File f, boolean append) throws IOException {
         return outputBinary(f, append, ((Task t) -> t));
     }
 
-    public final NAR outputBinary(@NotNull File f, boolean append, Predicate<Task> each) throws IOException {
+    public final TimeAware outputBinary(@NotNull File f, boolean append, Predicate<Task> each) throws IOException {
         return outputBinary(f, append, (Task t) -> each.test(t) ? t : null);
     }
 
-    public NAR outputBinary(@NotNull File f, boolean append, Function<Task, Task> each) throws IOException {
+    public TimeAware outputBinary(@NotNull File f, boolean append, Function<Task, Task> each) throws IOException {
         FileOutputStream f1 = new FileOutputStream(f, append);
         OutputStream ff = new GZIPOutputStream(f1, FILE_STREAM_BUFFER_SIZE);
         outputBinary(ff, each);
@@ -1185,10 +1187,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    public final NAR outputBinary(OutputStream o) {
+    public final TimeAware outputBinary(OutputStream o) {
         return outputBinary(o, (Task x)->x);
     }
-    public final NAR outputBinary(OutputStream o, Predicate<Task> filter) {
+    public final TimeAware outputBinary(OutputStream o, Predicate<Task> filter) {
         return outputBinary(o, (Task x)-> filter.test(x) ? x : null);
     }
 
@@ -1198,7 +1200,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * the each function allows transforming each task to an optional output form.
      * if this function returns null it will not output that task (use as a filter).
      */
-    public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
+    public TimeAware outputBinary(OutputStream o, Function<Task, Task> each) {
 
         //runLater(() -> {
             DataOutputStream oo = new DataOutputStream(o);
@@ -1240,7 +1242,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @NotNull
-    public NAR outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
+    public TimeAware outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
 
         //runLater(() -> {
             //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
@@ -1266,17 +1268,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @NotNull
-    public NAR output(@NotNull File o, boolean binary) throws FileNotFoundException {
+    public TimeAware output(@NotNull File o, boolean binary) throws FileNotFoundException {
         return output(new FileOutputStream(o), binary);
     }
 
     @NotNull
-    public NAR output(@NotNull File o, Function<Task, Task> f) throws FileNotFoundException {
+    public TimeAware output(@NotNull File o, Function<Task, Task> f) throws FileNotFoundException {
         return outputBinary(new FileOutputStream(o), f);
     }
 
 
-    public NAR output(OutputStream o, boolean binary) {
+    public TimeAware output(OutputStream o, boolean binary) {
         if (binary) {
             return outputBinary(o, (Task x) -> x.isDeleted() ? null : x);
         } else {
@@ -1413,14 +1415,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /** changes the concept builder */
-    public NAR conceptBuilder(@NotNull ConceptBuilder cb) {
+    public TimeAware conceptBuilder(@NotNull ConceptBuilder cb) {
         conceptBuilder = cb;
         return this;
     }
 
-    /** creates a new evidence stamp */
+    /** creates a new evidence stamp (1-element array) */
     public final long[] evidence() {
-        return time.nextStampArray();
+        return new long[]{time.nextStamp()};
+    }
+
+    @Override public final boolean dtMergeOrChoose() {
+        return dtMergeOrChoose.get();
     }
 
 //    /**
@@ -1520,13 +1526,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         private final short ci;
 
-        /** dont change this array's element */
-        private final short[] sharedOneElement;
+//        /** dont change this array's element */
+//        private final short[] sharedOneElement;
 
         TaskChannel(Cause cause) {
             super(cause);
             this.ci = cause.id;
-            this.sharedOneElement = new short[ ci ];
+//            this.sharedOneElement = new short[ ci ];
         }
 
         @Override

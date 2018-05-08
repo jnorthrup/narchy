@@ -16,7 +16,6 @@ import spacegraph.audio.sample.SampleLoader;
 import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.synth.SineWave;
 
-import javax.sound.sampled.LineUnavailableException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;

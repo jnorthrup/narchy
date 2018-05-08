@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
@@ -47,7 +48,7 @@ public class Arkancide extends NAgentX {
         //runRT(Arkancide::new);
         //nRT(Arkancide::new, 25, 5);
 
-        NAR nar = runRT((NAR n) -> {
+        TimeAware timeAware = runRT((NAR n) -> {
 
             Arkancide a = new Arkancide(n, cam, numeric);
                 //a.curiosity.setValue(0.05f);

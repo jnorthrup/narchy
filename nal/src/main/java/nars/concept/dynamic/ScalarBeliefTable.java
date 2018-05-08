@@ -16,6 +16,7 @@ import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -49,7 +50,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         /** the provided truth value should already be dithered */
         SignalTask add(Term term, byte punc, long start, long end, Truth nextValue, int dur, NAR nar);
 
-        @Nullable DynTruth truth(long start, long end, long dur, NAR nar);
+        @Nullable DynTruth truth(long start, long end, long dur, TimeAware timeAware);
 
         int size();
 
@@ -218,7 +219,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         final static int MAX_TASKS_TRUTHPOLATED = Param.STAMP_CAPACITY - 1;
 
         @Override
-        public DynTruth truth(long start, long end, long dur, NAR nar) {
+        public DynTruth truth(long start, long end, long dur, TimeAware timeAware) {
 
             int size = size();
             if (size == 0)

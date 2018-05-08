@@ -12,7 +12,7 @@ public class DisposableTermList extends TermList {
     /** can only be used once, and it stops this TermList from further use */
     @Override public Term[] arrayShared() {
 
-        Term[] l = arraySharedSafe();
+        Term[] l = arraySharedKeep();
 
         //kill this TermList from being used again
         this.items = null;

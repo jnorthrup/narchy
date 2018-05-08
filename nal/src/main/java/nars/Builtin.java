@@ -273,7 +273,7 @@ public class Builtin {
 
                         long dt = nar.time.toCycles(((QuantityTerm) dtTerm).quant);
                         if (Math.abs(dt) < Integer.MAX_VALUE-2) {
-                            return o.the((int)dt, args);
+                            return o.compound((int)dt, args);
                         } else {
                             throw new UnsupportedOperationException("time unit too large for 32-bit DT interval");
                         }

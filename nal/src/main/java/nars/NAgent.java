@@ -23,6 +23,7 @@ import nars.term.atom.Atomic;
 import nars.term.var.Variable;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DSensor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -222,8 +223,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
     public Random random() {
-        NAR nar = this.nar;
-        return nar!=null ? nar.random() : ThreadLocalRandom.current();
+        TimeAware timeAware = this.nar;
+        return timeAware !=null ? timeAware.random() : ThreadLocalRandom.current();
     }
 
     @NotNull
@@ -672,7 +673,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             Task t = new NALTask(term, punct, truth, now,
                     start, end,
-                    new long[]{nar.time.nextStamp()});
+                    nar.evidence());
 
             return () -> {
 

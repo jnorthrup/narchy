@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -468,13 +469,13 @@ import static nars.util.time.Tense.ETERNAL;
 
 
     @NotNull
-    public final TaskBuilder present(@NotNull NAR nar) {
-        return time(nar.time());
+    public final TaskBuilder present(@NotNull TimeAware timeAware) {
+        return time(timeAware.time());
     }
 
     @NotNull
-    public final TaskBuilder time(@NotNull NAR nar, int dt) {
-        return time(nar.time() + dt);
+    public final TaskBuilder time(@NotNull TimeAware timeAware, int dt) {
+        return time(timeAware.time() + dt);
     }
 
     @NotNull

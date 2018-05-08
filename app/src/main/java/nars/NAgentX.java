@@ -13,10 +13,12 @@ import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.concept.CaffeineIndex;
+import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.RealTime;
+import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DSensor;
 import nars.util.time.Tense;
 import nars.video.*;
@@ -53,6 +55,7 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -86,14 +89,14 @@ abstract public class NAgentX extends NAgent {
 //        }
     }
 
-    public static NAR runRT(Function<NAR, NAgent> init, float fps) {
+    public static TimeAware runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
                 //fps * 2, //NYQUIST
                 fps * 1, //1:1
                 fps);
     }
 
-    public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
+    public static TimeAware runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
         //The.Subterms.the =
         //The.Subterms.CaffeineSubtermBuilder.get();
@@ -326,12 +329,12 @@ abstract public class NAgentX extends NAgent {
 //        ), 800, 600);
 
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
+        //ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 32);
 
-        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
 
-        //ArithmeticIntroduction arith = new ArithmeticIntroduction(4, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(4, n);
 
 //        RelationClustering relCluster = new RelationClustering(n,
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,

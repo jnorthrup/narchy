@@ -11,6 +11,7 @@ import nars.Param;
 import nars.Task;
 import nars.term.Term;
 import nars.unify.Unify;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +56,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     }
 
     public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, @NotNull BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
-        super(term.the(), punc, null, nar.time(), occ, occ, new long[]{nar.time.nextStamp()});
+        super(term.the(), punc, null, nar.time(), occ, occ, nar.evidence());
 
         budget(nar);
 
@@ -122,8 +123,8 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
 
     @Override
-    public @Nullable Task onAnswered(Task answer, NAR nar) {
-        Task x = super.onAnswered(answer, nar);
+    public @Nullable Task onAnswered(Task answer, TimeAware timeAware) {
+        Task x = super.onAnswered(answer, timeAware);
         onAnswer(answer);
         return x;
     }

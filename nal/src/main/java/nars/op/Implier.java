@@ -309,7 +309,7 @@ public class Implier extends DurService {
             long w = tw.getOne();
             long wEnd = w + dur;
             @Nullable Truth uu = a.commitSum().dither(freqRes, confRes, confMin, strength);
-            long stamp = nar.time.nextStamp();
+            long stamp = nar.evidence()[0];
             NALTask y;
             if (uu != null && uu.conf() >= confMin) {
                 y = new SignalTask(t, punc, uu, now, w, wEnd, stamp);

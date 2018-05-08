@@ -31,10 +31,10 @@ import static nars.util.time.Tense.XTERNAL;
  */
 public class PremisePatternIndex extends MapConceptIndex {
 
-    final Map<InternedSubterms,Subterms> subterms = new HashMap<>(512);
+    final Map<InternedSubterms,Subterms> subterms = new HashMap<>(1024);
 
     public PremisePatternIndex() {
-        super(new HashMap<>(512));
+        super(new HashMap<>(1024));
     }
 
     public PremisePatternIndex(NAR nar) {
@@ -118,7 +118,7 @@ public class PremisePatternIndex extends MapConceptIndex {
         Ellipsis e = Ellipsis.firstEllipsis(v);
         return e != null ?
                 ellipsis(x, v, e) :
-                theCompound(x.op(), x.dt(), v);
+                Op.terms.theCompound(x.op(), x.dt(), v);
                     //x.op().the(x.dt(), v.arrayShared()); //new PatternCompound.PatternCompoundSimple(x.op(), x.dt(), v);
     }
 
@@ -568,7 +568,7 @@ public class PremisePatternIndex extends MapConceptIndex {
                             //permute may be necessary to unify the correct dep/indep terms for 2nd layer
                             if (xFixed.size()==match.subs())
                                 return u.termutes.add(new CommutivePermutations(
-                                        Subterms.subterms(xFixed),
+                                        Op.terms.subterms(xFixed),
                                         match.subterms().sorted()));
                             else
                                 return false; //?

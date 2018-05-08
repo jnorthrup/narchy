@@ -24,6 +24,7 @@ import nars.subterm.UnitSubterm;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.match.EllipsisMatch;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -399,7 +400,7 @@ public class TermTest {
         Term xy = EllipsisMatch.match($.the("x"), $.the("y"));
 
         for (Op o : new Op[] { Op.SECTi, SECTe, DIFFe, DIFFi, CONJ }) {
-            Term z = o.the(DTERNAL, xy);
+            Term z = o.compound(DTERNAL, xy);
             assertEquals("(x" + o.str + "y)", z.toString());
             assertEquals(3, z.volume());
             assertEquals(Op.ATOM, z.sub(0).op());
@@ -541,7 +542,7 @@ public class TermTest {
         String s = "(&&, <<$1 --> key> ==> <#2 --> ( open, $1 )>>, <#2 --> lock>)";
         Termed a = $.$(s);
 
-        NAR n2 = NARS.shell();
+        TimeAware n2 = NARS.shell();
         Termed b = $.$(s);
 
         //assertTrue(a != b);
@@ -630,11 +631,11 @@ public class TermTest {
         testTermComplexityMass(n, "<$a --> (c & #d)>", 3, 5, 1, 1, 0);
     }
 
-    private void testTermComplexityMass(@NotNull NAR n, @NotNull String x, int complexity, int mass) throws Narsese.NarseseException {
+    private void testTermComplexityMass(@NotNull TimeAware n, @NotNull String x, int complexity, int mass) throws Narsese.NarseseException {
         testTermComplexityMass(n, x, complexity, mass, 0, 0, 0);
     }
 
-    private void testTermComplexityMass(@NotNull NAR n, @NotNull String x, int complexity, int mass, int varIndep, int varDep, int varQuery) throws Narsese.NarseseException {
+    private void testTermComplexityMass(@NotNull TimeAware n, @NotNull String x, int complexity, int mass, int varIndep, int varDep, int varQuery) throws Narsese.NarseseException {
         Term t = $.$(x).term();
 
         assertNotNull(t);
@@ -695,9 +696,14 @@ public class TermTest {
 
 
 
-    public static void assertValid(Term o) {
+    public static void assertValid(String o) {
+        assertEquals(o, assertValid($$(o)).toString());
+    }
+
+    public static Term assertValid(Term o) {
         assertNotNull(o);
         assertTrue(!(o instanceof Bool));
+        return o;
     }
 
     public static void assertValidTermValidConceptInvalidTaskContent(@NotNull Supplier<Term> o) {
@@ -895,7 +901,7 @@ public class TermTest {
 
     public void testUniqueHash(@NotNull String a, @NotNull String b) throws Narsese.NarseseException {
 
-        NAR t = NARS.shell();
+        TimeAware t = NARS.shell();
         int h1 = $.$(a).hashCode();
         int h2 = $.$(b).hashCode();
         assertNotEquals(h1, h2);

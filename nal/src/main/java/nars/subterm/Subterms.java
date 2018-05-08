@@ -12,13 +12,9 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Terms;
-import nars.term.anon.AnonID;
-import nars.term.anon.AnonVector;
 import nars.term.var.Variable;
 import nars.unify.Unify;
-import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.CommutivePermutations;
-import nars.util.term.InternedSubterms;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.set.MutableSet;
@@ -32,7 +28,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static nars.Op.internable;
+
 
 
 /**
@@ -63,61 +59,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return container.intifyShallow((h, x) -> Util.hashCombine(h, x.hashCode()), 1);
     }
 
-    /* @NotNull */
-    static Subterms subterms(Collection<? extends Term> s) {
-        return subtermsInterned(s.toArray(new Term[s.size()]));
-    }
-
-    static Subterms subtermsInterned(Term... s) {
-        //return The.Subterms.the.apply(s);
-        //return compound(PROD, s).subterms();
-        if (s.length > 1 && internable(s))
-            return Op.subtermCache.apply(new InternedSubterms(s));
-        else
-            return subtermsInstance(s);
-    }
-
-    static Subterms subtermsInstance(Term... t) {
-        final int tLength = t.length;
-        if (tLength == 0)
-            return Empty;
-
-        boolean purelyAnon = true;
-        for (int i = 0; i < tLength; i++) {
-            Term x = t[i];
-            if (x instanceof EllipsisMatch)
-                throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
-
-            if (purelyAnon) {
-                if (!(x instanceof AnonID)) {
-                    Term ux = x.unneg();
-                    if (x != ux && ux instanceof AnonID) {
-                        //allow anon here, but not t.length > 1 there is still some problem probably with commutives
-                        //purelyAnon = true
-                    } else {
-                        purelyAnon = false;
-                    }
-                }
-            }
-        }
-
-        if (!purelyAnon) {
-            switch (t.length) {
-                case 0:
-                    throw new UnsupportedOperationException();
-                case 1:
-                    //return new TermVector1(t[0]);
-                    return new UnitSubterm(t[0]);
-                //case 2:
-                //return new TermVector2(t);
-                default:
-                    return new ArrayTermVector(t);
-            }
-        } else {
-            return new AnonVector(t);
-        }
-
-    }
 
 
 //    //TODO optionally allow atomic structure positions to differ
@@ -1154,7 +1095,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms sorted() {
-        return isSorted() ? this : subtermsInterned(Terms.sorted(arrayShared()));
+        return isSorted() ? this : Op.terms.newSubterms(Terms.sorted(arrayShared()));
     }
 
     default Term[] termsExcept(int i) {

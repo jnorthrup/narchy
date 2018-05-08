@@ -72,8 +72,10 @@ public class BoolTest {
         assertEquals("x", IMPL.the(True, x).toString());
         assertEquals("(--,x)", IMPL.the(False, x).toString());
         assertEquals(Null, IMPL.the(Null, x));
-        assertEquals(Null, IMPL.the(x, True));
-        assertEquals(Null, IMPL.the(x, False));
+        assertEquals(x, IMPL.the(x, True));
+        assertEquals(x.neg(), IMPL.the(x, False));
+//        assertEquals(Null, IMPL.the(x, True));
+//        assertEquals(Null, IMPL.the(x, False));
         assertEquals(Null, IMPL.the(x, Null));
     }
 

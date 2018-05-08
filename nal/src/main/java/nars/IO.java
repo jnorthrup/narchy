@@ -402,7 +402,7 @@ public class IO {
             dt = DTERNAL;
         }
 
-        Term y = o.the(dt, v);
+        Term y = o.compound(dt, v);
         if (y instanceof Bool)
             throw new Term.InvalidTermException(o, dt, v, "invalid term");
 

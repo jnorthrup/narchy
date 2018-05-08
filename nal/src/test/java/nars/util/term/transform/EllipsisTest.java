@@ -526,13 +526,13 @@ public class EllipsisTest {
             if (o.statement) continue;
 
             if (o != DIFFe && o != DIFFi) {
-                assertEquals(a, o.the(DTERNAL, a), o + " with normal term");
+                assertEquals(a, o.compound(DTERNAL, a), o + " with normal term");
             } else {
-                assertEquals(Null, o.the(DTERNAL, a));
+                assertEquals(Null, o.compound(DTERNAL, a));
             }
 
             assertEquals(o.statement ? VAR_PATTERN : o,
-                    o.the(DTERNAL, b).op(),
+                    o.compound(DTERNAL, b).op(),
                     o + " with ellipsis not reduced");
         }
     }

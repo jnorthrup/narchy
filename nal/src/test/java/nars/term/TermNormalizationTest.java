@@ -1,9 +1,9 @@
 package nars.term;
 
 import nars.$;
-import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.util.TimeAware;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
@@ -32,7 +32,7 @@ public class TermNormalizationTest {
 
         assertEquals($.$(a), $.$(b));
 
-        NAR t = NARS.shell();
+        TimeAware t = NARS.shell();
         assertEquals($.$(a), $.$(b));
     }
 }

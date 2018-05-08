@@ -10,6 +10,7 @@ import nars.concept.PermanentConcept;
 import nars.control.DurService;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.util.TimeAware;
 import org.HdrHistogram.IntCountsHistogram;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -101,7 +102,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
 
-    public void commit(NAR n) {
+    public void commit(TimeAware n) {
         table.commit();
     }
 

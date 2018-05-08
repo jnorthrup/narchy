@@ -25,6 +25,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.util.TimeAware;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -475,7 +476,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     /**
      * creates lazily computing proxy task which facades the task to the target time range
      */
-    static Task project(@Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
+    static Task project(@Nullable Task t, long subStart, long subEnd, TimeAware n, boolean negated) {
         if (t.isEternal() || t.containedBy(subStart, subEnd)) {
             //no need to project, but apply negation if negate
             return negated ? Task.negated(t) : t;
@@ -733,7 +734,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * to cancel any matched premise belief.
      */
     @Nullable
-    default Task onAnswered(/*@NotNull*/Task answer, /*@NotNull*/NAR nar) {
+    default Task onAnswered(/*@NotNull*/Task answer, /*@NotNull*/TimeAware timeAware) {
         return answer;
     }
 

@@ -2,6 +2,7 @@ package nars.derive.premise;
 
 import nars.$;
 import nars.Narsese;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.ProxyTerm;
@@ -10,7 +11,6 @@ import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -84,7 +84,7 @@ public class PremiseDeriverSource extends ProxyTerm {
 
     public static final Pattern ruleImpl = Pattern.compile("\\|\\-");
 
-    static Subterms parseRuleComponents(@NotNull String src) throws Narsese.NarseseException {
+    static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
 
         //(Compound) index.parseRaw(src)
         String[] ab = ruleImpl.split(src);
@@ -101,7 +101,7 @@ public class PremiseDeriverSource extends ProxyTerm {
         if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
-        return Subterms.subtermsInterned(a, b);
+        return Op.terms.newSubterms(a, b);
     }
 }
 

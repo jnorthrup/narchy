@@ -1,6 +1,7 @@
 package nars.gui;
 
 import nars.NAR;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meta.WindowToggleButton;
@@ -13,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CycleView implements Runnable {
 
-    public final NAR nar;
+    public final TimeAware timeAware;
 
     public final AtomicBoolean run;
 
@@ -25,7 +26,7 @@ public class CycleView implements Runnable {
 
     public CycleView(@NotNull NAR nar) {
 
-        this.nar = nar;
+        this.timeAware = nar;
 
 
         run = new AtomicBoolean(false);
@@ -42,7 +43,7 @@ public class CycleView implements Runnable {
 
     @Override
     public void run() {
-        time.text("@: " + Long.toString(nar.time()));
+        time.text("@: " + Long.toString(timeAware.time()));
     }
 
 }

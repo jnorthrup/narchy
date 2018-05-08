@@ -117,7 +117,7 @@ public class BeliefPredict {
             Task p = new SignalTask(predicted[i].term(), BELIEF,
                     t,
                     when - sampleDur/2, when + sampleDur/2,
-                    nar.time.nextStamp()
+                    nar.evidence()[0]
             ).pri(nar.priDefault(BELIEF));
 
             predict.input(

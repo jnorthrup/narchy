@@ -353,7 +353,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         MultiArgTerm(PROD, COMPOUND_TERM_CLOSER, false, false)
                 ),
 
-                push( INH.the(DTERNAL, (Term) pop(), $.the(pop())))
+                push(INH.compound(DTERNAL, new Term[]{(Term) pop(), $.the(pop())}))
 
         );
     }
@@ -395,7 +395,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             return null;
         else {
             if (timeDelta instanceof Integer) {
-                return o.the((int)timeDelta, subj, pred);
+                return o.compound((int)timeDelta, subj, pred);
             } else {
                 //encode as a term that will be dynamically decoded as a functor by the receiving NAR according to its clock
                 QuantityTerm q = (QuantityTerm)timeDelta;

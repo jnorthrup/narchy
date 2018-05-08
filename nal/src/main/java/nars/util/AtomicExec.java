@@ -53,7 +53,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     static final Logger logger = LoggerFactory.getLogger(AtomicExec.class);
 
-    final BiConsumer<Term, NAR> exe;
+    final BiConsumer<Term, TimeAware> exe;
 
     final static int ACTIVE_CAPACITY = 16;
     final ArrayBag<Term, PriReference<Term>> active = new PLinkArrayBag<>(PriMerge.max, ACTIVE_CAPACITY);
@@ -63,11 +63,11 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
 
 
-    public AtomicExec(@Nullable BiConsumer<Term, NAR> exe, float exeThresh) {
+    public AtomicExec(@Nullable BiConsumer<Term, TimeAware> exe, float exeThresh) {
         this(exe, new FloatRange(exeThresh, 0.5f, 1f));
     }
 
-    public AtomicExec(@Nullable BiConsumer<Term, NAR> exe, FloatRange exeThresh) {
+    public AtomicExec(@Nullable BiConsumer<Term, TimeAware> exe, FloatRange exeThresh) {
         this.exe = exe == null ? ((BiConsumer) this) : exe;
         active.setCapacity(ACTIVE_CAPACITY);
         this.exeThresh = exeThresh;

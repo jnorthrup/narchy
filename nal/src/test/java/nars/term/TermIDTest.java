@@ -1,9 +1,9 @@
 package nars.term;
 
 import nars.$;
-import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class TermIDTest {
 
-    final NAR nar = NARS.shell();
+    final TimeAware timeAware = NARS.shell();
 
 
     /* i will make these 3 pass soon, this is an improvement on the representation
