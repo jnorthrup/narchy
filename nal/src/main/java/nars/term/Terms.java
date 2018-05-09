@@ -8,10 +8,8 @@ import nars.IO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
-import nars.term.atom.Bool;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +18,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
-import static nars.Op.*;
-import static nars.util.time.Tense.DTERNAL;
+import static nars.Op.NEG;
 
 /**
  * Static utility class for static methods related to Terms
@@ -566,132 +563,132 @@ public enum Terms {
 
 //    static final Comparator<Term> volumeComparator = Comparator.comparingInt(Term::volume);
 
-    /**
-     * for commutive conjunction
-     *
-     * @param dt will be either 0 or DTERNAL (commutive relation)
-     * @return
-     *      True   -- short-circuit to True
-     *      False  -- short-circuit to False
-     *      Null   -- short-circuit to Null (failure)
-     *      null   -- ok
-     */
-    public static Term flatten(/*@NotNull*/ Op op, Term[] u, int dt, ObjectByteHashMap<Term> s) {
-        for (Term x : u) {
-            Term xx = flatten(op, dt, x, s);
-            if (xx == null || xx == True)
-                continue; //ignore
-            else if (xx == False)
-                return False; //short-circuit
-            else if (xx == Null)
-                return Null; //short-circuit
-        }
-        return null; //ok
-    }
-    public static Term flatten(/*@NotNull*/ Op op, Subterms u, int dt, ObjectByteHashMap<Term> s) {
-        //TODO use a reduction lambda
-        for (Term x : u) {
-            Term xx = flatten(op, dt, x, s);
-            if (xx == null || xx == True)
-                continue; //ignore
-            else if (xx == False)
-                return False; //short-circuit
-            else if (xx == Null)
-                return Null; //short-circuit
-        }
-        return null; //ok
-    }
-
-
-    public static boolean flattenMatchDT(int candidate, int target) {
-        return (candidate == target)
-                || ((target == 0) && (candidate == DTERNAL))
-                //|| ((target == DTERNAL) && (candidate == 0))
-                ; //promotes DTERNAL to parallel as necessary
-    }
-
-    public static Term flatten(/*@NotNull*/ Op op, int dt, Term x, ObjectByteHashMap<Term> s) {
-        if (x instanceof Bool) {
-            return x;
-        }
-
-        Op xo = x.op();
-
-        if ((xo == op) && (flattenMatchDT(x.dt(), dt))) {
-            return flatten(op, x.subterms(), dt, s);
-
-        } else {
-            if (!testCoNegate(x, s))
-                return False;
-
-//            if (x.op() == CONJ) {
-//                int xdt = x.dt();
-//                if (xdt != 0) {
-//                    //test for x's early subterm (left aligned t=0) in case it matches with a term in the superconjunction that x is a subterm of
-//                    Term early = x.sub(xdt > 0 ? 0 : 1);
+//    /**
+//     * for commutive conjunction
+//     *
+//     * @param dt will be either 0 or DTERNAL (commutive relation)
+//     * @return
+//     *      True   -- short-circuit to True
+//     *      False  -- short-circuit to False
+//     *      Null   -- short-circuit to Null (failure)
+//     *      null   -- ok
+//     */
+//    public static Term flatten(/*@NotNull*/ Op op, Term[] u, int dt, ObjectByteHashMap<Term> s) {
+//        for (Term x : u) {
+//            Term xx = flatten(op, dt, x, s);
+//            if (xx == null || xx == True)
+//                continue; //ignore
+//            else if (xx == False)
+//                return False; //short-circuit
+//            else if (xx == Null)
+//                return Null; //short-circuit
+//        }
+//        return null; //ok
+//    }
+//    public static Term flatten(/*@NotNull*/ Op op, Subterms u, int dt, ObjectByteHashMap<Term> s) {
+//        //TODO use a reduction lambda
+//        for (Term x : u) {
+//            Term xx = flatten(op, dt, x, s);
+//            if (xx == null || xx == True)
+//                continue; //ignore
+//            else if (xx == False)
+//                return False; //short-circuit
+//            else if (xx == Null)
+//                return Null; //short-circuit
+//        }
+//        return null; //ok
+//    }
 //
-//                    //check if the early event is present, and if it is (with correct polarity) then include x without the early event
-//                    Term earlyUnneg = early.unneg();
-//                    byte earlyExisting = s.getIfAbsent(earlyUnneg, (byte) 0);
-//                    if (earlyExisting != 0) {
-//                        if (early.op() == NEG ^ (earlyExisting == -1))
-//                            return False; //wrong polarity
-//                        else {
-//                            //subsume the existing term by removing it from the list, since it is part of 'x' which has been added in entirity already
-//                            s.remove(earlyUnneg);
-//                        }
 //
-//                    }
+//    public static boolean flattenMatchDT(int candidate, int target) {
+//        return (candidate == target)
+//                || ((target == 0) && (candidate == DTERNAL))
+//                //|| ((target == DTERNAL) && (candidate == 0))
+//                ; //promotes DTERNAL to parallel as necessary
+//    }
 //
-//                }
-            //}
-
-            return null; //ok
-        }
-
-    }
-
-    static boolean testCoNegate(Term x, ObjectByteHashMap<Term> s) {
-
-        byte polarity;
-        Term t;
-        if (x.op() == NEG || x == False) {
-            polarity = -1;
-            t = x.unneg();
-        } else {
-            polarity = +1;
-            t = x;
-        }
-        if (s.isEmpty()) {
-            s.put(t, polarity);
-        } else {
-            if (s.getIfAbsentPut(t, polarity) != polarity) {
-                return false;
-            } else {
-                //HACK check for co-negation of conjunctions of DTERNAL/0 interaction
-                if (polarity == -1) {
-                    return !s.keyValuesView().anySatisfy(kv -> {
-                        if (kv.getTwo() == +1) {
-                            Term sk = kv.getOne();
-                            if (sk.op() == CONJ) {
-                                int dt = sk.dt();
-                                if ((dt == DTERNAL || dt == 0)) {
-                                    return sk.contains(t);
-                                }
-                            }
-                        }
-                        return false;
-                    });
-
-//                    for (Term sk : s.entrys()) {
+//    public static Term flatten(/*@NotNull*/ Op op, int dt, Term x, ObjectByteHashMap<Term> s) {
+//        if (x instanceof Bool) {
+//            return x;
+//        }
+//
+//        Op xo = x.op();
+//
+//        if ((xo == op) && (flattenMatchDT(x.dt(), dt))) {
+//            return flatten(op, x.subterms(), dt, s);
+//
+//        } else {
+//            if (!testCoNegate(x, s))
+//                return False;
+//
+////            if (x.op() == CONJ) {
+////                int xdt = x.dt();
+////                if (xdt != 0) {
+////                    //test for x's early subterm (left aligned t=0) in case it matches with a term in the superconjunction that x is a subterm of
+////                    Term early = x.sub(xdt > 0 ? 0 : 1);
+////
+////                    //check if the early event is present, and if it is (with correct polarity) then include x without the early event
+////                    Term earlyUnneg = early.unneg();
+////                    byte earlyExisting = s.getIfAbsent(earlyUnneg, (byte) 0);
+////                    if (earlyExisting != 0) {
+////                        if (early.op() == NEG ^ (earlyExisting == -1))
+////                            return False; //wrong polarity
+////                        else {
+////                            //subsume the existing term by removing it from the list, since it is part of 'x' which has been added in entirity already
+////                            s.remove(earlyUnneg);
+////                        }
+////
+////                    }
+////
+////                }
+//            //}
+//
+//            return null; //ok
+//        }
+//
+//    }
+//
+//    static boolean testCoNegate(Term x, ObjectByteHashMap<Term> s) {
+//
+//        byte polarity;
+//        Term t;
+//        if (x.op() == NEG || x == False) {
+//            polarity = -1;
+//            t = x.unneg();
+//        } else {
+//            polarity = +1;
+//            t = x;
+//        }
+//        if (s.isEmpty()) {
+//            s.put(t, polarity);
+//        } else {
+//            if (s.getIfAbsentPut(t, polarity) != polarity) {
+//                return false;
+//            } else {
+//                //HACK check for co-negation of conjunctions of DTERNAL/0 interaction
+//                if (polarity == -1) {
+//                    return !s.keyValuesView().anySatisfy(kv -> {
+//                        if (kv.getTwo() == +1) {
+//                            Term sk = kv.getOne();
+//                            if (sk.op() == CONJ) {
+//                                int dt = sk.dt();
+//                                if ((dt == DTERNAL || dt == 0)) {
+//                                    return sk.contains(t);
+//                                }
 //                            }
 //                        }
-//                    }
-                }
-            }
-        }
-        return true;
-    }
+//                        return false;
+//                    });
+//
+////                    for (Term sk : s.entrys()) {
+////                            }
+////                        }
+////                    }
+//                }
+//            }
+//        }
+//        return true;
+//    }
 
 
     public static Term[] dropRandom(Random random, Subterms t) {

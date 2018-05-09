@@ -10,7 +10,6 @@ import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.exe.Causable;
 import nars.task.ITask;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -82,15 +81,17 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     final FloatFloatToObjectFunction<Truth> DIFF;
 
 
-    public static Int2Function<Compound> XY(Term root, int width, int height) {
+    public static Int2Function<Term> XY(Term root) {
         return (x, y) -> $.inh($.p(x, y), root);
     }
 
-    public static Int2Function<Compound> XY(Term root, int radix, int width, int height) {
-        return (x, y) -> $.inh($.p($.pRadix(x, radix, width), $.pRadix(y, radix, height)), root);
+    public static Int2Function<Term> XY(Term root, int radix, int width, int height) {
+        return (x, y) ->
+                //$.inh($.p($.pRadix(x, radix, width), $.pRadix(y, radix, height)), root);
+                $.p(root, $.pRadix(x, radix, width), $.pRadix(y, radix, height));
     }
 
-    private static Int2Function<Term> RadixProduct(@Nullable Term root, int width, int height, int radix) {
+    public static Int2Function<Term> RadixProduct(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.p(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
@@ -101,7 +102,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         };
     }
 
-    private static Int2Function<Term> RadixRecurse(@Nullable Term root, int width, int height, int radix) {
+    public static Int2Function<Term> RadixRecurse(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.pRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :
@@ -110,7 +111,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         };
     }
 
-    private static Int2Function<Term> InhRecurse(@Nullable Term root, int width, int height, int radix) {
+    public static Int2Function<Term> InhRecurse(@Nullable Term root, int width, int height, int radix) {
         return (x, y) -> {
             Term coords = radix > 1 ?
                     $.inhRecurse(zipCoords(coord(x, width, radix), coord(y, height, radix))) :

@@ -82,8 +82,8 @@ abstract public class Bool extends AtomicConst implements The {
     }
 
 
-    UnsupportedOperationException never(String eval) {
-        return new UnsupportedOperationException(this + " Bool leak attemping: " + eval);
-    }
+//    UnsupportedOperationException never(String eval) {
+//        return new UnsupportedOperationException(this + " Bool leak attemping: " + eval);
+//    }
 
 }

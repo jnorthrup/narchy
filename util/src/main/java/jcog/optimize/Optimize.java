@@ -1,9 +1,8 @@
 package jcog.optimize;
 
 import com.google.common.base.Joiner;
+import jcog.io.arff.ARFF;
 import jcog.list.FasterList;
-import jcog.meter.event.CSVOutput;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.SimpleBounds;
@@ -14,6 +13,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
 import org.slf4j.Logger;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -44,10 +43,8 @@ public class Optimize<X> {
     final List<Tweak<X, ?>> tweaks;
     final Supplier<X> subject;
 
-    private final boolean trace = true;
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
-
-    private CSVOutput csv;
+    private ARFF data;
 
     protected Optimize(Supplier<X> subject, Tweaks<X> t) {
         this(subject, t, Map.of("autoInc", autoInc_default));
@@ -136,8 +133,12 @@ public class Optimize<X> {
             }
 
 
-            if (trace)
-                csv.out(ArrayUtils.add(point, 0, score));
+//            if (trace)
+//                csv.out(ArrayUtils.add(point, 0, score));
+            MutableList p = new FasterList(tweaks.size()+1).with(score);
+            for (double x : point)
+                p.add(x);
+            data.add( p.toImmutable() );
 
             maxScore[0] = Math.max(maxScore[0], score);
 //            System.out.println(
@@ -150,10 +151,14 @@ public class Optimize<X> {
         });
 
 
-        if (trace)
-            csv = new CSVOutput(System.out, Stream.concat(
-                    Stream.of("score"), tweaks.stream().map(t -> t.id)
-            ).toArray(String[]::new));
+//        if (trace)
+//            csv = new CSVOutput(System.out, Stream.concat(
+//                    Stream.of("score"), tweaks.stream().map(t -> t.id)
+//            ).toArray(String[]::new));
+
+        data = new ARFF();
+        data.defineNumeric("score");
+        tweaks.forEach(t -> t.defineIn(data));
 
         experimentStart();
 
@@ -163,12 +168,10 @@ public class Optimize<X> {
             logger.info("solve {} {}", func, t);
         }
 
-        return new Result<>(experiments, tweaks);
-
-
+        return new Result<>(data, experiments, tweaks);
     }
 
-    public void solve(int dim, ObjectiveFunction func, double[] mid, double[] min, double[] max, double[] inc, int maxIterations) {
+    void solve(int dim, ObjectiveFunction func, double[] mid, double[] min, double[] max, double[] inc, int maxIterations) {
         if (dim == 1) {
             //use a solver capable of 1 dim
             new SimplexOptimizer(1e-10, 1e-30).optimize(
@@ -229,6 +232,7 @@ public class Optimize<X> {
 
     /**
      * builds an experiment subject (input)
+     * TODO handle non-numeric point entries
      */
     private X subject(double[] point) {
         X x = subject.get();

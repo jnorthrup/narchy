@@ -236,24 +236,24 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(0.5f); //nyquist alert
-        //n.timeFocus.set(4);
+        n.dtDither.set(1f); //nyquist alert
+        n.timeFocus.set(4);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(48);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
 
-        float priFactor = 0.2f;
-        n.beliefPriDefault.set(1f * priFactor);
+        float priFactor = 0.5f;
+        n.beliefPriDefault.set(0.5f * priFactor);
         n.goalPriDefault.set(1f * priFactor);
-        n.questionPriDefault.set(1f * priFactor);
-        n.questPriDefault.set(1f * priFactor);
+        n.questionPriDefault.set(0.5f * priFactor);
+        n.questPriDefault.set(0.5f * priFactor);
 
-        n.activationRate.set(0.5f);
+        n.activationRate.set(0.1f);
 
 //        new RLBooster(a, HaiQAgent::new, 1);
 

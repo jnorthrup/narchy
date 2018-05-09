@@ -10,7 +10,7 @@ import nars.term.var.NormalizedVariable;
  */
 public interface AnonID extends Term, The {
 
-    short ATOM_MASK = 0 << 8;
+    short ATOM_MASK = 0;
     short VARDEP_MASK = 1 << 8;
     short VARINDEP_MASK = 2 << 8;
     short VARQUERY_MASK = 3 << 8;

@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.ATOM;
 
-public class Evaluation {
+public final class Evaluation {
 
     static final ThreadLocal<Evaluation> solving = ThreadLocal.withInitial(Evaluation::new);
 

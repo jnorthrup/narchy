@@ -896,7 +896,7 @@ public class NAL8Test extends NALTest {
                 .inputAt(0, "(a). :|:")
                 .inputAt(4, "(b)@ :|:")
                 //TODO needs a 'mustAsk' condition
-                .mustOutput( cycles, "((b) ==>-4 (a))?", QUESTION, 0f, 1f, 0f, 1f, 4);
+                .mustOutput( cycles, "((b) ==>-4 (a))", QUESTION, 0f, 1f, 0f, 1f, 4);
     }
 //
 //    @Test
@@ -914,18 +914,48 @@ public class NAL8Test extends NALTest {
     public void testConjPrior() {
         test.input("happy!")
             .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
-            .mustGoal(cycles, "(y &&+2 (--,y))!", 1f, 0.5f, (t) -> t >= 0);
+            .mustGoal(cycles, "(y &&+2 (--,y))", 1f, 0.5f, (t) -> t >= 0);
     }
     @Test
     public void testSimilarityGoalPosBelief() {
         test.goal("(it<->here)")
             .believe("(here<->near)")
-            .mustGoal(cycles, "(it<->near)!", 1f, 0.45f);
+            .mustGoal(cycles, "(it<->near)", 1f, 0.45f);
     }
     @Test
     public void testSimilarityGoalNegBelief() {
         test.goal("--(it<->here)")
             .believe("(here<->near)")
-            .mustGoal(cycles, "(it<->near)!", 0f, 0.45f);
+            .mustGoal(cycles, "(it<->near)", 0f, 0.45f);
+    }
+
+    @Test public void testGoalByConjAssociationPosPos() {
+//        X, C, eventOfPosOrNeg(C,X)   |- polarize(C,task), (Goal:WeakDepolarizedTask)
+        test.goal("a")
+                .believe("(b &&+1 (a &&+1 c))")
+                .mustGoal(cycles, "(b &&+1 (a &&+1 c))", 1f, 0.45f)
+                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, (x)->true); //error if opposite freq is generated
+    }
+
+    @Test public void testGoalByConjAssociationNegPos() {
+//        X, C, eventOfPosOrNeg(C,X)   |- polarize(C,task), (Goal:WeakDepolarizedTask)
+        test.goal("--a")
+                .believe("(b &&+1 (a &&+1 c))")
+                .mustGoal(cycles, "(b &&+1 (a &&+1 c))", 0f, 0.45f)
+                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, (x)->true); //error if opposite freq is generated
+    }
+@Test public void testGoalByConjAssociationPosNeg() {
+//        X, C, eventOfPosOrNeg(C,--X) |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
+    test.goal("a")
+            .believe("(b &&+1 (--a &&+1 c))")
+            .mustGoal(cycles, "(b &&+1 (--a &&+1 c))", 0f, 0.45f)
+            .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, (x)->true); //error if opposite freq is generated
+}
+    @Test public void testGoalByConjAssociationNegNeg() {
+//        X, C, eventOfPosOrNeg(C,--X) |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
+        test.goal("--a")
+                .believe("(b &&+1 (--a &&+1 c))")
+                .mustGoal(cycles, "(b &&+1 (--a &&+1 c))", 1f, 0.45f)
+                .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, (x)->true); //error if opposite freq is generated
     }
 }

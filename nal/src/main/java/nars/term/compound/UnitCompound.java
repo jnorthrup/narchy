@@ -187,4 +187,14 @@ public abstract class UnitCompound implements Compound {
     public int varQuery() {
         return sub().varQuery();
     }
+
+    @Override
+    public int vars() {
+        return sub().vars();
+    }
+
+    @Override
+    public boolean hasVars() {
+        return sub().hasVars();
+    }
 }

@@ -1,5 +1,6 @@
 package jcog.optimize;
 
+import jcog.io.arff.ARFF;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
 import org.eclipse.collections.impl.list.mutable.FastList;
@@ -11,11 +12,13 @@ import java.util.List;
 /** result = t in tweaks(subject) { eval(subject + tweak(t)) } */
 public class Result<X> {
 
-    final FastList<DoubleObjectPair<double[]>> experiments;
+    @Deprecated final FastList<DoubleObjectPair<double[]>> experiments;
     final List<Tweak<X,?>> tweaks;
+    final ARFF data;
 
 
-    public Result(FastList<DoubleObjectPair<double[]>> experiments, List<Tweak<X,?>> tweaks) {
+    public Result(ARFF data, @Deprecated FastList<DoubleObjectPair<double[]>> experiments, List<Tweak<X,?>> tweaks) {
+        this.data = data;
         experiments.sortThisByDouble(DoubleObjectPair::getOne);
         this.experiments = experiments;
         this.tweaks = tweaks;
@@ -37,6 +40,7 @@ public class Result<X> {
             System.out.println("(no experiments completed)");
         }
 
+        data.print();
     }
 
     public RealDecisionTree tree(int discretization, int maxDepth) {

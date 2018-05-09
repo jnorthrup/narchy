@@ -2,6 +2,7 @@ package nars.term.var;
 
 import nars.Op;
 import nars.term.Term;
+import nars.term.anon.AnonID;
 import org.eclipse.collections.api.set.primitive.ImmutableByteSet;
 import org.eclipse.collections.impl.factory.primitive.ByteSets;
 
@@ -60,21 +61,21 @@ public final class CommonVariable extends UnnormalizedVariable {
         boolean aa = A instanceof NormalizedVariable;
         boolean bb = B instanceof NormalizedVariable;
         if (aa && bb) {
-            byte ai = ((NormalizedVariable)A).anonNum();
-            byte bi = ((NormalizedVariable)B).anonNum();
+            byte ai = ((AnonID) A).anonNum();
+            byte bi = ((AnonID) B).anonNum();
             return new CommonVariable(Aop, ai, bi);
         }
 
         if (!aa && bb) {
             ImmutableByteSet ai = ((CommonVariable)A).vars;
-            byte bi = ((NormalizedVariable)B).anonNum();
+            byte bi = ((AnonID) B).anonNum();
             if (ai.contains(bi))
                 return A;
             return new CommonVariable(Aop, ai.newWith(bi));
         }
 
         if (aa && !bb) {
-            byte ai = ((NormalizedVariable)A).anonNum();
+            byte ai = ((AnonID) A).anonNum();
             ImmutableByteSet bi = ((CommonVariable)B).vars;
             if (bi.contains(ai))
                 return B;

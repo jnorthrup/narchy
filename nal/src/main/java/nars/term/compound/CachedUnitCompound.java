@@ -4,7 +4,7 @@ import nars.Op;
 import nars.The;
 import nars.term.Term;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 
 
 /** 1-element Compound impl */
@@ -36,7 +36,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
     }
 
     @Override
-    public int volume() {
+    public final int volume() {
         return volume;
     }
 
@@ -74,4 +74,35 @@ public class CachedUnitCompound extends UnitCompound implements The {
     }
 
 
+    @Override
+    public int varPattern() {
+        return sub().varPattern();
+    }
+
+    @Override
+    public int varDep() {
+        return hasAny(Op.VAR_DEP) ? sub().varDep() : 0;
+    }
+
+    @Override
+    public int varIndep() {
+        return hasAny(Op.VAR_INDEP) ? sub().varIndep() : 0;
+
+    }
+
+    @Override
+    public int varQuery() {
+        return hasAny(Op.VAR_QUERY) ? sub().varQuery() : 0;
+    }
+
+    @Override
+    public int vars() {
+        return hasVars() ? sub().vars() : 0;
+    }
+
+    @Override
+    public boolean hasVars() {
+        //same as Termlike.hasVars()
+        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit);
+    }
 }

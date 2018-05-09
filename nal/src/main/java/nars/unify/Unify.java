@@ -147,17 +147,21 @@ public abstract class Unify extends Versioning implements Subst {
 
     public final boolean tryMutate(Termutator[] chain, int next) {
 
-        if (!use(Param.TTL_MUTATE))
-            return false;
-
         if (++next < chain.length) {
+
+            if (!use(Param.TTL_MUTATE))
+                return false;
+
             chain[next].mutate(this, chain, next);
+
         } else {
             tryMatch(); //end of chain
         }
         return true;
     }
 
+
+    /** only really useful with atom/variable parameters.  compounds arent unified here like apply() will */
     @Nullable
     @Override
     public final Term xy(Term x0) {
@@ -228,7 +232,7 @@ public abstract class Unify extends Versioning implements Subst {
             return true;
         }
 
-        assert (matches == null);
+        //assert (matches == null);
         return false;
     }
 
@@ -337,11 +341,27 @@ public abstract class Unify extends Versioning implements Subst {
      * returns true if the assignment was allowed, false otherwise
      * args should be non-null. the annotations are removed for perf reasons
      */
-    public final boolean putXY(final Term x, final Term y) {
+    public final boolean putXY(final Term x, Term y) {
 
         if (y.containsRecursively(x)) {
-            //TODO maybe create a common variable
-            return false; //cyclic
+            //create a variation of y with a new unique unnormalized variable
+//            if (x instanceof Variable) {
+//                Op xo = x.op();
+//                if (xo == Op.VAR_INDEP)
+                    return false; //doesnt seem possible; DEP and QUERY only for now
+
+//                Term z = xy(y);
+//                if (z!=null) {
+//                   xy.remove(y);
+//                }
+//                y = y.replace(x, $.v(x.op(), random.nextInt(100) + "x")); //"" + x + "_" + y + "" )); //HACK
+//                if (z!=null) {
+//                    replaceXY(y, z);
+//                }
+                //continue..
+//            } else {
+//                return false; //cyclic constantly
+//            }
         }
 
 //        //TODO use a single Map.compute() function to avoid repeat hashmap gets

@@ -134,7 +134,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
      * Construct an empty ArffFile.
      */
     public ARFF(Collection<ImmutableList> data) {
-        super(null);
+        super();
         relation = "";
         comment = null;
         this.data = data;
@@ -275,36 +275,6 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         relation = line.substring(i + 1);
     }
 
-    /**
-     * Define a new attribute. Type must be one of "numeric", "string", and
-     * "nominal". For nominal attributes, the allowed values
-     * must also be given. This variant of defineAttribute allows to set this data.
-     */
-    public ARFF define(String name, AttributeType type) {
-        assert (type != Nominal);
-        attribute_names.add(name);
-        attrTypes.put(name, type);
-        return this;
-    }
-
-    public ARFF defineText(String attr) {
-        return define(attr, Text);
-    }
-
-    public ARFF defineNumeric(String attr) {
-        return define(attr, Numeric);
-    }
-
-    public ARFF defineNominal(String nominalAttribute, String... categories) {
-        if (categories.length < 2)
-            throw new RuntimeException("nominal types require > 1 categories");
-
-        attribute_names.add(nominalAttribute);
-        attrTypes.put(nominalAttribute, Nominal);
-        String[] prev = nominalCats.put(nominalAttribute, categories);
-        assert (prev == null);
-        return this;
-    }
 
     private void readAttributeDefinition(int lineno, String line) throws ARFFParseError {
         Scanner s = new Scanner(line);

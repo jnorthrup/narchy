@@ -113,13 +113,13 @@ abstract public class CachedCompound implements Compound, The {
 
     }
 
-    private static class CachedCompoundDT extends TemporalCachedCompound {
-
-        CachedCompoundDT(Op op, int dt, Subterms subterms) {
-            super(op, dt, subterms);
-
-        }
-    }
+//    private static class CachedCompoundDT extends TemporalCachedCompound {
+//
+//        CachedCompoundDT(Op op, int dt, Subterms subterms) {
+//            super(op, dt, subterms);
+//
+//        }
+//    }
 
 
     private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {

@@ -9,6 +9,7 @@ import nars.$;
 import nars.derive.Derivation;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.control.AbstractPred;
 import nars.term.control.AndCondition;
 import nars.term.control.PrediTerm;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static nars.Op.NEG;
 import static nars.Op.SETe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -97,11 +99,14 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
     abstract public static class RelationConstraint extends MatchConstraint {
 
 
-        protected final Term y;
+        protected final Term y, yUnneg;
+        protected final boolean yNeg;
 
         protected RelationConstraint(Term x, Term y, String func, Term... args) {
             super(x, func, args.length > 0 ? $.p(y, $.p(args)) : y);
             this.y = y;
+            this.yUnneg = y.unneg();
+            this.yNeg = y.op()==NEG;
         }
 
         @Override
@@ -118,8 +123,10 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
         @Override
         public final boolean invalid(Term xx, Unify f) {
-            Term yy = f.xy(y);
-            return yy != null && invalid(xx, yy);
+            Termed yy =
+                    f.xy(yUnneg);
+                    //f.apply(yUnneg);
+            return yy != null && invalid(xx, yy.term().negIf(yNeg));
         }
 
         abstract public boolean invalid(Term xx, Term yy);

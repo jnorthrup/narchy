@@ -80,7 +80,7 @@ public class BenchmarkUnify {
             Derivation._termMapBuilder = mapBuilder;
             return n;
         };
-        JUnitNAR.tests(MoreExecutors.directExecutor(), s,
+        JUnitNAR.tests(MoreExecutors.directExecutor(), s, 1f,
             NAL5Test.class, NAL6Test.class
 //                NAL1Test.class
 //                , NAL2Test.class, NAL1MultistepTest.class

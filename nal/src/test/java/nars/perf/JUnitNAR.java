@@ -34,17 +34,28 @@ public class JUnitNAR {
     }
 
     /**
-     * HACK runs all Junit test methods, summing the scores.
+     * HACK runs all Junit test methods, returnign the sum of the test scores divided by tests (mean test score)
      */
-    public static float tests(Executor exe, Supplier<NAR> s, Class<? extends NALTest>... c) {
-
+    public static float tests(Executor exe, Supplier<NAR> s, float fractionToRun, Class<? extends NALTest>... c) {
 
         List<Method> methods = Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getMethods())
                         .filter(x -> x.getAnnotation(Test.class) != null))
                 .collect(toList());
 
-        final CountDownLatch remain = new CountDownLatch(methods.size());
+        int mm = methods.size();
+        if (fractionToRun < 1f) {
+            int toRemove = Math.round((1f-fractionToRun)* mm);
+            for (int i = 0; i < toRemove; i++){
+                methods.remove(Math.round(Math.random() * (--mm)));
+            }
+        }
+
+        if (methods.isEmpty())
+            throw new RuntimeException("no tests remain");
+
+        int totalTests = mm;
+        final CountDownLatch remain = new CountDownLatch(totalTests);
         final AtomicDouble sum = new AtomicDouble(0);
         methods.forEach(m -> exe.execute(() -> {
             try {
@@ -58,7 +69,7 @@ public class JUnitNAR {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return sum.floatValue();
+        return sum.floatValue()/totalTests;
     }
 
     private static float test(Supplier<NAR> s, Method m) {

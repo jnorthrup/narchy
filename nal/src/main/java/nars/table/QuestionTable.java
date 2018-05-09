@@ -7,7 +7,6 @@ import nars.concept.TaskConcept;
 import nars.task.NALTask;
 import nars.term.Term;
 
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -108,14 +107,14 @@ public interface QuestionTable extends TaskTable {
             }
         }
 
-        @Override
-        protected void onEvict(Map.Entry<Task, Task> entry) {
-//            Task x = entry.getKey();
-//            Task y = entry.getValue();
-//            x.delete();
-//            if (y != x)
-//                y.delete();
-        }
+//        @Override
+//        protected void onEvict(Map.Entry<Task, Task> entry) {
+////            Task x = entry.getKey();
+////            Task y = entry.getValue();
+////            x.delete();
+////            if (y != x)
+////                y.delete();
+//        }
 
         @Override
         public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {

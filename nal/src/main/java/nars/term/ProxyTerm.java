@@ -5,8 +5,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.unify.Unify;
 import nars.util.term.transform.Retemporalize;
-import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -145,20 +143,20 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
         return ref.isNormalized();
     }
 
-    @Override
-    public @Nullable byte[] pathTo(Term subterm) {
-        return ref.pathTo(subterm);
-    }
-
-    @Override
-    public ByteList structureKey() {
-        return ref.structureKey();
-    }
-
-    @Override
-    public ByteList structureKey(ByteArrayList appendTo) {
-        return ref.structureKey(appendTo);
-    }
+//    @Override
+//    public @Nullable byte[] pathTo(Term subterm) {
+//        return ref.pathTo(subterm);
+//    }
+//
+//    @Override
+//    public ByteList structureKey() {
+//        return ref.structureKey();
+//    }
+//
+//    @Override
+//    public ByteList structureKey(ByteArrayList appendTo) {
+//        return ref.structureKey(appendTo);
+//    }
 
 
     @Override

@@ -155,7 +155,7 @@ public class SetFunc {
                 //deduce specific terms present in 'y' but not 'x'
 
                 //HACK simple case of 1
-                if (y.vars() == 0 && x.vars() == 1) {
+                if (!y.hasVars() && x.vars() == 1) {
                     Subterms xx = x.subterms();
                     Subterms yy = y.subterms();
                     List<Term> missing = new FasterList(1);

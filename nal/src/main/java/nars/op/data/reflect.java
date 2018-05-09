@@ -205,7 +205,7 @@ public class reflect {
                 int rvol = reflectionSim.volume();
                 if (rvol <= n.termVolumeMax.intValue()) {
 
-                    float c = x.vars() == 0 ?
+                    float c = !x.hasVars() ?
                             n.confDefault(BELIEF) :
                             n.confMin.floatValue(); //if there is a variable, avoid becoming overconfident about linking across it. maybe this is too extreme of a conf discount
 

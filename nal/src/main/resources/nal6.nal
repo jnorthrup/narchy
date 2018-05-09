@@ -305,6 +305,12 @@
 
     X, C, eventOfPosOrNeg(C,X) |- (--,conjWithout(C,(--,polarize(X,task)))), (Goal:WeakDepolarizedTask)
 
+    //goal contained in conjunction, weakly desire the entire conj; guilt by association
+    X, C, eventOf(C,X) |- polarize(C,task), (Goal:WeakDepolarizedTask)
+    X, C, eventOfNeg(C,X) |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
+    X, C, eventOf(C,X)         |- (--,polarize(C,task)), (Goal:WeakDepolarizedTaskN)
+    X, C, eventOfNeg(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTaskN)
+
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
     //X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing

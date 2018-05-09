@@ -13,7 +13,6 @@ public interface Subst extends TermTransform {
 //        return xy(atomic);
         Term y = xy(atomic);
         return y != null ? y : atomic;
-
     }
 
     @Override @Nullable

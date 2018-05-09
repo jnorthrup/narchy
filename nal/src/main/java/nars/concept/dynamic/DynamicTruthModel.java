@@ -275,8 +275,13 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 long range = start!=ETERNAL ? end-start : 0;
                 sub = (when, event) -> each.accept(event, when, when+range);
             }
-            return superterm.eventsWhile(sub, start,
-                    !xternal && !dternal, dternal, xternal, 0);
+
+            return superterm.eventsWhile((when,event)->{
+                if (!event.equals(superterm)) //prevent fatal loop
+                    return sub.accept(when, event);
+                else
+                    return false; //fail
+                }, start, !xternal && !dternal, dternal, xternal, 0);
         }
     }
 

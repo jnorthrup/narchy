@@ -40,7 +40,7 @@ public final class Anom extends Int implements AnonID {
 
     @Override
     public String toString() {
-        return "_" +  Integer.toString(id);
+        return '_' +  Integer.toString(id);
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class Anom extends Int implements AnonID {
 
         Term y = yy.term();
         if (y instanceof Anom) {
-            return Integer.compare(id, ((Anom) y).id);
+            return Integer.compare(id, ((Int) y).id);
         } else {
             int vc = Integer.compare(y.volume(), this.volume());
             if (vc != 0)

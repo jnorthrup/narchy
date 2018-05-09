@@ -807,13 +807,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
         //return equals(Y) || ANDwith((xi,i)->xi.unify(Y.sub(i), u));
+        return ANDwith((xi,i)->xi.unify(Y.sub(i), u));
 
-        int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).unify(Y.sub(i), u))
-                return false;
-        }
-        return true;
+//        int s = subs();
+//        for (int i = 0; i < s; i++) {
+//            if (!sub(i).unify(Y.sub(i), u))
+//                return false;
+//        }
+//        return true;
 
 //        /**
 //         * a branch for comparing a particular permutation, called from the main next()

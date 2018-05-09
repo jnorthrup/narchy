@@ -138,7 +138,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
     public static <X extends Term> LambdaFunctor f1Const(@NotNull String termAtom, @NotNull Function<X, Term> ff) {
         return f1(fName(termAtom), (Term x) -> {
-            if (x == null || x.vars() > 0)
+            if (x == null || x.hasVars())
                 return null;
             return ff.apply((X) x);
         });

@@ -115,7 +115,7 @@ public class PremisePatternIndex extends MapConceptIndex {
 //                Terms.sorted(bb) :
 //                bb) : s;
 
-        Ellipsis e = Ellipsis.firstEllipsis(v);
+        Ellipsis e = Ellipsis.firstEllipsis(bb);
         return e != null ?
                 ellipsis(x, v, e) :
                 Op.terms.theCompound(x.op(), x.dt(), v);

@@ -37,8 +37,6 @@ import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
-import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +44,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -164,14 +163,14 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    @Override
-    /*@NotNull*/
-    default ByteList structureKey(ByteArrayList appendTo) {
-        appendTo.add(op().id);
-        appendTo.add((byte) subs());
-        forEach(x -> x.structureKey(appendTo));
-        return appendTo;
-    }
+//    @Override
+//    /*@NotNull*/
+//    default ByteList structureKey(ByteArrayList appendTo) {
+//        appendTo.add(op().id);
+//        appendTo.add((byte) subs());
+//        forEach(x -> x.structureKey(appendTo));
+//        return appendTo;
+//    }
 
     default void append(ByteArrayDataOutput out) {
 
@@ -604,22 +603,22 @@ public interface Compound extends Term, IPair, Subterms {
 //    }
 
 
-    /**
-     * finds the first occurring index path to a recursive subterm equal
-     * to 't'
-     */
-    static boolean pathFirst(/*@NotNull*/ Compound container, /*@NotNull*/ Term t, /*@NotNull*/ ByteArrayList l) {
-        int s = container.subs();
-        for (int i = 0; i < s; i++) {
-            Term xx = container.sub(i);
-            if (xx.equals(t) || ((xx.contains(t)) && pathFirst((Compound) xx, t, l))) {
-                l.add((byte) i);
-                return true;
-            } //else, try next subterm and its subtree
-        }
-
-        return false;
-    }
+//    /**
+//     * finds the first occurring index path to a recursive subterm equal
+//     * to 't'
+//     */
+//    static boolean pathFirst(/*@NotNull*/ Compound container, /*@NotNull*/ Term t, /*@NotNull*/ ByteArrayList l) {
+//        int s = container.subs();
+//        for (int i = 0; i < s; i++) {
+//            Term xx = container.sub(i);
+//            if (xx.equals(t) || ((xx.contains(t)) && pathFirst((Compound) xx, t, l))) {
+//                l.add((byte) i);
+//                return true;
+//            } //else, try next subterm and its subtree
+//        }
+//
+//        return false;
+//    }
 
 
 //    @Override
@@ -851,9 +850,9 @@ public interface Compound extends Term, IPair, Subterms {
             Term pred, subj;
             if ((pred=uu.sub(1)) instanceof Functor && (subj=uu.sub(0)).op() == PROD) {
 
-                Term v = ((Functor)pred).apply(subj.subterms());
+                Term v = ((Function<Subterms, Term>) pred).apply(subj.subterms());
                 if (v instanceof AbstractPred) {
-                    u = $.the(((AbstractPred) v).test(null));
+                    u = $.the(((Predicate) v).test(null));
                 } else if (v == null) {
                     //null means to keep 'u' unchanged same
                 } else  {

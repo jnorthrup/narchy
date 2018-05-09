@@ -5,7 +5,7 @@ import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.term.control.PrediTerm;
-import org.eclipse.collections.api.block.function.primitive.ObjectIntToObjectFunction;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 
 import java.util.function.Function;
 
@@ -31,10 +31,10 @@ public class ValueFork extends ForkDerivation<Derivation> {
     /**
      * choice id to branch mapping function
      */
-    private final ObjectIntToObjectFunction<Derivation, PrediTerm<Derivation>> branchChoice;
+    private final ObjectIntProcedure<Derivation> branchChoice;
 
 
-    public ValueFork(PrediTerm[] branches, Cause[] causes, Function<Derivation, float[]> value, ObjectIntToObjectFunction<Derivation, PrediTerm<Derivation>> choiceToBranch) {
+    public ValueFork(PrediTerm[] branches, Cause[] causes, Function<Derivation, float[]> value, ObjectIntProcedure<Derivation> choiceToBranch) {
         super(branches);
 
         assert (branches.length > 0);
@@ -55,7 +55,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
             b -> {
 
-                branchChoice.valueOf(d, b).test(d); //fork's return value ignored
+                branchChoice.value(d, b); //fork's return value ignored
 
                 return d.revertLive(before, Param.TTL_BRANCH);
 
@@ -65,6 +65,9 @@ public class ValueFork extends ForkDerivation<Derivation> {
         return true;
     }
 
+    protected void run(int b) {
+
+    }
 
 //    void forkRoulette(Derivation d, short[] choices) {
 //        int N = choices.length;

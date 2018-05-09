@@ -34,24 +34,6 @@ public interface Termed extends Termlike {
         return term().op();
     }
 
-//    default int varPattern() {
-//        return term().varPattern();
-//    }
-//
-//    default int varQuery() {
-//        return term().varQuery();
-//    }
-//
-//    default int varIndep() {
-//        return term().varIndep();
-//    }
-//
-//    default int varDep() {
-//        return term().varDep();
-//    }
-//    default boolean levelValid(int nal) {
-//        return term().levelValid(nal);
-//    }
 
     default boolean isNormalized() {
         return term().isNormalized();
@@ -64,21 +46,25 @@ public interface Termed extends Termlike {
 
     @Override
     default int volume() {
-        Term t = term(); if (this!=t) return t.volume(); else return Termlike.super.volume();
+        Term t = term();
+        return this != t ? t.volume() : Termlike.super.volume();
     }
 
     @Override
     default int complexity() {
-        Term t = term(); if (this!=t) return t.complexity(); else return Termlike.super.complexity();
+        Term t = term();
+        return this != t ? t.complexity() : Termlike.super.complexity();
     }
 
     @Override
     default int structure() {
-        Term t = term(); if (this!=t) return t.structure(); else return Termlike.super.structure();
+        Term t = term();
+        return this != t ? t.structure() : Termlike.super.structure();
     }
     @Override
     default int vars() {
-        Term t = term(); if (this!=t) return t.vars(); else return Termlike.super.vars();
+        Term t = term();
+        return this != t ? t.vars() : Termlike.super.vars();
     }
 
     /*@NotNull*/

@@ -18,8 +18,8 @@ import java.util.function.Function;
 public class SimpleConceptGraph2D {
     public static void main(String[] args) {
 
-        NAR n = NARS.tmp(1);
-        n.termVolumeMax.set(9);
+        NAR n = NARS.tmp(4);
+        n.termVolumeMax.set(10);
 //        n.input("a:b.");
 //        n.input("b:c.");
 //        n.input("c:d.");
@@ -35,7 +35,7 @@ public class SimpleConceptGraph2D {
                             float pri = ((AbstractExec)n.exe).active.pri(nn.id, 0f);
                             nn.color(pri, pri/2f, 0f);
 
-                            float p = (float) (30f + Math.sqrt(pri) * 40f);
+                            float p = (float) (20f + Math.sqrt(pri) * 60f);
                             nn.pos(RectFloat2D.XYWH(nn.cx(), nn.cy(), p, p));
                         });
                         super.layout(g, dtMS);

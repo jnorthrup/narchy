@@ -2,6 +2,7 @@ package nars.term.var;
 
 import nars.Op;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +64,7 @@ public interface Variable extends Atomic {
 //    }
 
     static boolean commonalizableVariable(Op x) {
-        return x.in(Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
+        return x.in(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
     }
 
     @Override
@@ -91,8 +92,9 @@ public interface Variable extends Atomic {
                     if (common == this || common == y)
                         return true; //no change
 
-                    Term xBound = u.xy.get(this);
-                    Term yBound = u.xy.get(y);
+                    Term xBound = u.xy(this);
+                    Termed _yBound = u.apply(y); //full resolve via apply
+                    Term yBound  = _yBound == null ? null : _yBound.term(); //HACK
 
                     if (yBound!=null && yBound.equals(this))
                         return true;

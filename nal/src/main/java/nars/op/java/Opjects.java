@@ -238,16 +238,16 @@ public class Opjects extends DefaultTermizer {
     }
 
 
-    @Override
-    protected void onInstanceChange(Term oterm, Term prevOterm) {
-
-//        Term s = $.sim(oterm, prevOterm);
-//        if (s instanceof Compound)
-//            nar.believe(metadataPriority, s,
-//                    Tense.ETERNAL,
-//                    metadataBeliefFreq, metadataBeliefConf);
-
-    }
+//    @Override
+//    protected void onInstanceChange(Term oterm, Term prevOterm) {
+//
+////        Term s = $.sim(oterm, prevOterm);
+////        if (s instanceof Compound)
+////            nar.believe(metadataPriority, s,
+////                    Tense.ETERNAL,
+////                    metadataBeliefFreq, metadataBeliefConf);
+//
+//    }
 
     /** registers an alias/binding shortcut term rewrite macro */
     public Concept alias(String op, Term instance, String method) {

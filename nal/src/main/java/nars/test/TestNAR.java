@@ -177,9 +177,10 @@ public class TestNAR {
 
         long time = nar.time();
         int runtime = (int)(time - startTime);
+
         this.score = success ?
                 //(+1/(+1f+runtime))
-                (float) (+1 / (Math.log(1 + runtime)))
+                (float) (+1f / (1f + ((1f+runtime)/(1f+finalCycle-startTime))))
                 :
                 0;
 

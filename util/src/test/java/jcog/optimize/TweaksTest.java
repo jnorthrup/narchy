@@ -39,7 +39,7 @@ public class TweaksTest {
     public void test1() {
         Tweaks<Model> a = new Tweaks<>(Model::new).discover();
         a.tweaks.forEach(
-                t -> System.out.println(t)
+                System.out::println
         );
         assertTrue(a.tweaks.size() >= 4);
 
@@ -48,5 +48,7 @@ public class TweaksTest {
         r.print();
         r.tree(3, 4).print();
         assertTrue(r.best().getOne() > 5f);
+
+        r.data.print();
     }
 }

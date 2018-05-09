@@ -20,6 +20,7 @@ import nars.unify.op.TaskBeliefOp;
 import nars.unify.op.UnifyTerm;
 import nars.util.term.TermTrie;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -83,6 +84,9 @@ public enum PremiseDeriverCompiler { ;
                     .map(i -> compileBranch(conclusions.get(i))).toArray(PrediTerm[]::new);
             assert (branches.length > 0);
 
+            //choice -> branch mapping: directly to the branch #
+            ObjectIntProcedure<Derivation> takeBranch =
+                    (d,choice) -> { branches[choice].test(d); };
 
             ValueFork f;
             {
@@ -101,8 +105,7 @@ public enum PremiseDeriverCompiler { ;
                                 c -> Util.softmax(causes[c].value(), TRIE_DERIVER_TEMPERATURE),
                                 new float[causes.length]),
 
-                    //choice -> branch mapping: directly to the branch #
-                    (d,choice) -> branches[choice]
+                    takeBranch
                 );
             }
 
@@ -137,17 +140,17 @@ public enum PremiseDeriverCompiler { ;
                 d -> {
                     short[] will = d.will;
                     int n = will.length;
-                    return Util.map(n, (i) ->
+                    return Util.map(n, (choice) ->
                         // sum of downstream cause values, applied to some activation function
                         Util.sum(
                             (Cause c) -> Util.softmax(c.value(), TRIE_DERIVER_TEMPERATURE),
-                            rootBranches[will[i]].causes
+                            rootBranches[will[choice]].causes
                         ),
                         new float[n]);
                 },
 
                 //choice -> branch mapping: mapped through the derivation's calculated possibilty set
-                (d,choice) -> rootBranches[d.will[choice]]
+                (d,choice) -> { rootBranches[d.will[choice]].test(d); }
         ));
     }
 

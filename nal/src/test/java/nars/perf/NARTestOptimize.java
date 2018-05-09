@@ -10,8 +10,6 @@ import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
-import nars.nal.nal3.NAL3Test;
-import nars.nal.nal5.NAL5Test;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -77,13 +75,13 @@ public class NARTestOptimize {
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(32*1024, 3, (n) ->
-                        JUnitNAR.tests(exe, n,
+                .optimize(4 /*32*1024*/, 1, (n) ->
+                        JUnitNAR.tests(exe, n, 0.25f,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
-                                NAL2Test.class,
-                                NAL3Test.class
-                                ,NAL5Test.class
+                                NAL2Test.class
+//                                NAL3Test.class
+//                                ,NAL5Test.class
                                 //NAL6Test.class
 
                                 //NAL7Test.class,

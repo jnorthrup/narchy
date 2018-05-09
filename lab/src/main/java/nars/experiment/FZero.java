@@ -1,5 +1,6 @@
 package nars.experiment;
 
+import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.learn.pid.MiniPID;
@@ -12,6 +13,8 @@ import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.concept.scalar.SwitchAction;
 import nars.gui.Vis;
+import nars.op.AutoConceptualizer;
+import nars.term.Term;
 import nars.util.signal.BeliefPredict;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.util.time.Tense;
@@ -27,6 +30,7 @@ import java.awt.image.BufferedImage;
 
 import static com.google.common.collect.Iterables.concat;
 import static nars.Op.INH;
+import static nars.Op.QUESTION;
 
 /**
  * Created by me on 3/21/17.
@@ -69,7 +73,7 @@ public class FZero extends NAgentX {
 
         this.fz = new FZeroGame();
 
-        Bitmap2DConcepts<Scale> c = senseCamera(id /*$.the("cam")*/, new Scale(() -> fz.image,
+        Bitmap2DConcepts<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
                 24, 16
                 //10,4
@@ -84,13 +88,13 @@ public class FZero extends NAgentX {
 //        )/*.blur()*/).modeDiffer().resolution(0.1f);
 
 
-//        new AutoConceptualizer(c.pixels, true, 10, nar) {
-//            @Override
-//            protected void onFeature(Term feature) {
-////                System.out.println(feature);
-//                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
-//            }
-//        };
+        new AutoConceptualizer(Lists.newArrayList(c.iter.iterator() ), true, 10, nar) {
+            @Override
+            protected void onFeature(Term feature) {
+//                System.out.println(feature);
+                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
+            }
+        };
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
 
@@ -542,7 +546,7 @@ public class FZero extends NAgentX {
         boolean[] K = new boolean[65535]; // pressed keys
         public double power;
         public int rank;
-        double rotVel = 0.03;
+        double rotVel = 0.06;
         float fwdVel = 0.7f;
         final double VIEWER_X = 159.5;
         final double VIEWER_Y = 32;

@@ -84,7 +84,7 @@ public class ConjClustering extends Causable {
         nar.onTask(t -> {
             if (!t.isEternal()
                     && t.punc() == punc
-                    && t.vars()==0 //<-- excludes any variable-containing terms
+                    && !t.hasVars() //<-- excludes any variable-containing terms
                     && filter.test(t)) {
                 bag.put(t,
                         //t.priElseZero() * (1f / t.volume()) //prefer smaller events

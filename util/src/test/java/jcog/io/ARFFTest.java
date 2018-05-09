@@ -43,9 +43,8 @@ class ARFFTest {
 
     @Test
     public void testGenerate() throws IOException {
-        ARFF a = new ARFF()
-                .defineText("test")
-                .defineNumeric("score");
+        ARFF a = new ARFF();
+        a.defineText("test").defineNumeric("score");
 
         a.add("should be in quotes", 238428834);
         for (int i = 0; i < 4; i++) {

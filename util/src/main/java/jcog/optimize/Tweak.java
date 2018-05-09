@@ -1,5 +1,7 @@
 package jcog.optimize;
 
+import jcog.io.Schema;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,4 +57,9 @@ public class Tweak<X,Y> {
     }
 
 
+    /** add this tweak to a schema that will collect its values */
+    public void defineIn(Schema schema) {
+        //HACK default functionality for numeric types only
+        schema.defineNumeric(id);
+    }
 }

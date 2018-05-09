@@ -102,7 +102,7 @@ public class Anon {
 
     public Term get(Term x) {
         if (x instanceof Anom) {
-            return rev.get(((Anom) x).id - 1); //assume it is an int
+            return rev.get(((Int) x).id - 1); //assume it is an int
         } else if (x instanceof Compound) {
             return GET.transformCompound((Compound) x);
         } else {

@@ -674,8 +674,8 @@ public class Int implements Intlike, The {
                     }
                 }
             }
-            for (int k = 0; k < yAuxSize; k++) {
-                r[j++] = yAux.get(k);
+            for (Term aYAux : yAux) {
+                r[j++] = aYAux;
             }
         }
         return sorted(r);

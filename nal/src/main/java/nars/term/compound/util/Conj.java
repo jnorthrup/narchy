@@ -17,6 +17,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -77,7 +78,7 @@ public class Conj {
         if (what instanceof byte[]) {
             return indexOfZeroTerminated((byte[]) what, (byte) 0);
         } else {
-            return ((RoaringBitmap) what).getCardinality();
+            return ((ImmutableBitmapDataProvider) what).getCardinality();
         }
     }
 
