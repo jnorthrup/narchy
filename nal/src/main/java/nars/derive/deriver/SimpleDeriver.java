@@ -68,6 +68,8 @@ public class SimpleDeriver extends Deriver {
 
             Concept c = a.get();
 
+            Concept[] templates = templates(c, nar);
+
             LinkModel model = linking.apply(c, d);
 
             Iterable<TaskLink> tasklinks = model.tasklinks(tasklinksPerConcept.intValue());
@@ -76,7 +78,7 @@ public class SimpleDeriver extends Deriver {
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
             for (TaskLink tasklink : tasklinks) {
 
-                activate(c, tasklink, nar);
+                activate(tasklink, templates);
 
                 Task task = tasklink.get(nar);
                 if (task != null) {

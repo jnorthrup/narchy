@@ -71,7 +71,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
             @Override
             protected float leak(Task b) {
-                return input(b, nar) && abbreviate((Compound)b.term(), nar) ? 1f : 0f;
+                return input(b, nar) && abbreviate(b, nar) ? 1f : 0f;
             }
 
             //            @Override
@@ -155,7 +155,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
 
     @NotNull
-    protected String newSerialTerm() {
+    protected String nextSerialTerm() {
 
         return termPrefix + Integer.toString(currentTermSerial.incrementAndGet(), 36);
 
@@ -195,19 +195,20 @@ public class Abbreviation/*<S extends Term>*/ {
 //    }
 
 
-    //private boolean createRelation = false;
 
 
-    protected boolean abbreviate(Compound abbreviated, NAR nar) {
+    protected boolean abbreviate(Task t, NAR nar) {
 
-        @Nullable Concept abbrConcept = nar.concept(abbreviated);
+        Term abbreviated = t.term();
+        Concept abbrConcept = t.concept(nar, false);
+
         if (abbrConcept != null && !(abbrConcept instanceof AliasConcept) && !(abbrConcept instanceof PermanentConcept)) {
 
             //final boolean[] succ = {false};
 
             //abbrConcept.meta("abbr", (ac) -> {
 
-                Term abbreviatedTerm =abbreviated.term();
+//                Term abbreviatedTerm =abbreviated.term();
 
 //                AliasConcept a1 = new AliasConcept(newSerialTerm(), abbrConcept, nar);
 //
@@ -216,11 +217,12 @@ public class Abbreviation/*<S extends Term>*/ {
 //                if (!abbreviatedTerm.equals(abbreviated.term()))
 //                    nar.concepts.set(abbreviatedTerm, a1); //set the abbreviated term to resolve to the abbreviation
 
-                Compound abbreviation = newRelation(abbreviated, newSerialTerm());
+                Compound abbreviation = newRelation(abbreviated, nextSerialTerm());
                 if (abbreviation == null)
                     return false; //maybe could happen
 
-                Task abbreviationTask = Task.tryTask(abbreviation, BELIEF, $.t(1f, abbreviationConfidence.floatValue()),
+                Task abbreviationTask = Task.tryTask(abbreviation, BELIEF,
+                        $.t(1f, abbreviationConfidence.floatValue()),
                         (te, tr) -> {
 
                             NALTask ta = new NALTask(
@@ -232,7 +234,7 @@ public class Abbreviation/*<S extends Term>*/ {
 //
                             //ta.meta(Abbreviation.class, new Term[]{abbreviatedTerm, aliasTerm.term()});
                             ta.log("Abbreviate"); //, abbreviatedTerm, aliasTerm
-                            ta.pri(nar.beliefConfDefault.floatValue());
+                            ta.pri(t.priElseZero()); //same as input task
 //
                             return ta;
                         });
@@ -292,7 +294,7 @@ public class Abbreviation/*<S extends Term>*/ {
 //        }
 
     @Nullable
-    Compound newRelation(Compound abbreviated, String id) {
+    Compound newRelation(Term abbreviated, String id) {
         return compoundOrNull(
                 $.sim(abbreviated, Atomic.the(id))
                 //$.equi

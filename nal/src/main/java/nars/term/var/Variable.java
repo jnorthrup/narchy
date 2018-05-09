@@ -2,7 +2,6 @@ package nars.term.var;
 
 import nars.Op;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +16,10 @@ import static nars.Op.Null;
  **/
 public interface Variable extends Atomic {
 
+
+    static boolean commonalizableVariable(Op x) {
+        return x.in(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
+    }
 
     @Override
     @Nullable
@@ -43,11 +46,6 @@ public interface Variable extends Atomic {
         return 0;
     }
 
-    @Override
-    default float voluplexity() {
-        return 0.5f;
-    }
-
 //    @Override
 //    default Term concept() {
 //        //throw new UnsupportedOperationException();
@@ -63,8 +61,9 @@ public interface Variable extends Atomic {
 //            return null;
 //    }
 
-    static boolean commonalizableVariable(Op x) {
-        return x.in(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit);
+    @Override
+    default float voluplexity() {
+        return 0.5f;
     }
 
     @Override
@@ -87,29 +86,35 @@ public interface Variable extends Atomic {
 
                 if (u.varCommonalize && commonalizableVariable(xOp) && commonalizableVariable(yOp)) {
                     //TODO check if this is already a common variable containing y
-                    Term common = CommonVariable.common(this, (Variable) y);
 
+
+                    Term xBound = u.xy(this);
+                    Term yBound = u.xy(y);
+//                    Termed _yBound = u.apply(y); //full resolve via apply
+//                    Term yBound  = _yBound == null ? null : _yBound.term(); //HACK
+
+                    if (yBound != null) {
+                        if (yBound.equals(this))
+                            return true;
+                        if (xBound != null) {
+                            if (xBound.equals(y)||xBound.equals(yBound))
+                                return true;
+
+                            return xBound.unify(yBound, u);
+                        }
+                    }
+
+                    Term common = CommonVariable.common(this, (Variable) y);
                     if (common == this || common == y)
                         return true; //no change
 
-                    Term xBound = u.xy(this);
-                    Termed _yBound = u.apply(y); //full resolve via apply
-                    Term yBound  = _yBound == null ? null : _yBound.term(); //HACK
-
-                    if (yBound!=null && yBound.equals(this))
-                        return true;
-                    if (xBound!=null && xBound.equals(y))
-                        return true;
-                    if (xBound!=null && yBound!=null)
-                        return xBound.unify(yBound, u);
-
                     Term target;
-                    if (xBound!=null) target = xBound;
-                    else if (yBound!=null) target = yBound;
+                    if (xBound != null) target = xBound;
+                    else if (yBound != null) target = yBound;
                     else target = null;
 
                     if (u.replaceXY(this, common) && u.replaceXY(y, common)) {
-                        if (target!=null)
+                        if (target != null)
                             return u.putXY(common, target);
                         else
                             return true;

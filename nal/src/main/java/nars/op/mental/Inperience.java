@@ -42,7 +42,7 @@ public class Inperience extends LeakBack {
     //public static final Atomic happy = the("happy");
     //public static final Atomic sad = the("sad");
     public static final Atomic wonder = the("wonder");
-    public static final Atomic evaluate = the("evaluate");
+    public static final Atomic evaluate = the("plan"); //the("evaluate");
     public static final Atomic reflect = the("reflect");
     public static final ImmutableSet<Atomic> operators = Sets.immutable.of(
             believe, want, wonder, evaluate, reflect);

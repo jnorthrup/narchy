@@ -196,12 +196,16 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public void whileEachIntersecting(HyperRegion rect, Predicate<T> t) {
-        root.intersecting(rect, t, model);
+        HyperRegion b = root.bounds();
+        if (b!=null && rect.intersects(b))
+            root.intersecting(rect, t, model);
     }
 
     @Override
     public void whileEachContaining(HyperRegion rect, final Predicate<T> t) {
-        root.containing(rect, t, model);
+        HyperRegion b = root.bounds();
+        if (b!=null && rect.intersects(b))
+            root.containing(rect, t, model);
     }
 
     /**

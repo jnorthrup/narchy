@@ -54,7 +54,7 @@ public final class InternedSubterms extends AbstractPLink<Subterms> implements H
     }
 
     @Override
-    public InternedSubterms x() {
+    public final InternedSubterms x() {
         return this;
     }
 

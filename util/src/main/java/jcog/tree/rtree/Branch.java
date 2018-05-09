@@ -363,11 +363,11 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     @Override
     public boolean containing(final HyperRegion rect, final Predicate<T> t, Spatialization<T> model) {
         HyperRegion b = this.bounds;
-        if (b != null && rect.intersects(b)) {
+        if (b != null) {
             for (Node d : data) {
                 if (d == null)
                     break; //end of array
-                if (!d.containing(rect, t, model))
+                else if (!d.containing(rect, t, model))
                     return false;
             }
         }
@@ -377,7 +377,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         HyperRegion b = this.bounds;
-        if (b != null && rect.intersects(b)) {
+        if (b != null) {
             for (Node d : data) {
                 if (d == null)
                     break; //end of array

@@ -1,7 +1,6 @@
 package nars.link;
 
 import jcog.bag.Bag;
-import jcog.list.FasterList;
 import jcog.pri.Pri;
 import nars.NAR;
 import nars.Task;
@@ -78,24 +77,18 @@ public class Tasklinks {
             return link;
     }
 
+//    public static void linkTask(TaskLink tasklink, float priTransferred, FasterList<Concept> targets) {
+//        linkTask(tasklink, priTransferred, targets.toArrayRecycled(Concept[]::new));
+//    }
+
     /** propagate tasklink to templates */
-    public static void linkTaskTemplates(Concept c, TaskLink tasklink, float priTransferred, NAR nar) {
-        linkTask(tasklink, priTransferred,
-                c.templates().conceptsShuffled(nar, true)
-        );
-    }
-
-    public static void linkTask(TaskLink tasklink, float priTransferred, FasterList<Concept> targets) {
-        linkTask(tasklink, priTransferred, targets.toArrayRecycled(Concept[]::new));
-    }
-
     public static void linkTask(TaskLink tasklink, float priTransferred, Concept... targets) {
-        int ccs = targets.length;
-        if (ccs <= 0)
+        int nTargets = targets.length;
+        if (nTargets <= 0)
             return;
 
         float pEach = Math.max(Pri.EPSILON,
-                priTransferred / ccs  //divided
+                priTransferred / nTargets  //divided
                 //priTransferred //keep original priority
         );
         {
@@ -105,7 +98,7 @@ public class Tasklinks {
 
             final float headRoom = 1f - pEach;
             MutableFloat overflow = new MutableFloat();
-            for (int i = 0; i < ccs; i++) {
+            for (int i = 0; i < nTargets; i++) {
 //                float o = overflow.get();
 //
 //                //spread overflow of saturated targets to siblings

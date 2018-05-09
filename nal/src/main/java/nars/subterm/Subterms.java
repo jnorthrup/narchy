@@ -1087,8 +1087,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
         forEach(s -> s.recurseTerms(v));
     }
 
-    default boolean recurseTerms(Predicate<Term> parentsMust, Predicate<Term> whileTrue, Term parent) {
-        return AND(s -> whileTrue.test(s) && s.recurseTerms(parentsMust, whileTrue, parent));
+    default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
+        return AND(s -> whileTrue.test(s) && s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
 
     default Subterms reversed() {

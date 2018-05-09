@@ -112,9 +112,9 @@ public class NALTask extends Pri implements Task {
     @Override
     public final boolean equals(Object that) {
         if (this == that) return true;
+        if (hash != that.hashCode()) return false;
         Task t;
         if (that instanceof Task) {
-            if (hash != that.hashCode()) return false;
             t = (Task) that;
 //        } else if (that instanceof Tasked) {
 //

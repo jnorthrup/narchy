@@ -3,6 +3,7 @@ package nars.concept.action;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.NAct;
+import nars.Param;
 import nars.Task;
 import nars.concept.dynamic.ScalarBeliefTable;
 import nars.task.ITask;
@@ -74,8 +75,13 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth goal;
 
-        long gStart = pNow - dur/2;
-        long gEnd = pNow + dur/2;
+        long gStart =
+                pNow;
+                //pNow - dur/2;
+        long gEnd =
+                pNow + dur;
+                //pNow + dur/2;
+
         goal = this.goals().truth(gStart, gEnd, nar);
 
 //        if (goals.size() > 0)
@@ -88,7 +94,7 @@ public class GoalActionConcept extends ActionConcept {
             float curiConf =
                     //nar.confDefault(GOAL); //<- to max out expectation-driven action
                     //nar.confDefault(GOAL)/4; //<- to max out expectation-driven action
-                    nar.confMin.floatValue() * 8;
+                    Math.min(Param.TRUTH_MAX_CONF, nar.confMin.floatValue() * 16);
 //                    Math.max(goal != null ? goal.conf() : 0, //match goal conf
 //                            //nar.confMin.floatValue() * 2
 //                            nar.confDefault(GOAL)

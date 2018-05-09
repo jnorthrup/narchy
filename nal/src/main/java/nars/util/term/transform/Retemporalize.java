@@ -1,7 +1,6 @@
 package nars.util.term.transform;
 
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -184,40 +183,10 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
 
     default Term transformTemporal(Compound x, int dtNext) {
-        Subterms xx = x.subterms();
-
-        if (x.dt() == dtNext && !xx.hasAny(Temporal))
+        if (x.dt() == dtNext && !x.subterms().hasAny(Temporal))
             return x; //no change
-
-        Op op = x.op();
-//        if (dtNext == XTERNAL && op == CONJ && xx.hasAny(CONJ)) {
-//            //recursive conj, decompose to events
-//            ArrayHashSet<Term> s = new ArrayHashSet();
-//            x.eventsWhile((when, zz) -> {
-//                if (!zz.equals(x)) {
-//                    s.add(zz);
-//                }
-//                return true;
-//            }, 0, false, false, false, 0);
-//            List<Term> sl = s.list;
-//            int sln = sl.size();
-//            if (sln > 1) {
-//                for (int i = 0; i < sln; i++) {
-//                    Term sli = sl.get(i).transform(Retemporalize.this);
-//                    if (sli == null)
-//                        return null; //fail
-//                    sl.set(i, sli);
-//                }
-//                Term y = CONJ.the(XTERNAL, sl);
-//                if (x!=y && x.equals(y))
-//                    return x;
-//                else
-//                    return y;
-//            }
-//        }
-
-
-        return TermTransform.NegObliviousTermTransform.super.transformCompound(x, op, dtNext);
+        else
+            return TermTransform.NegObliviousTermTransform.super.transformCompound(x, x.op(), dtNext);
     }
 
 

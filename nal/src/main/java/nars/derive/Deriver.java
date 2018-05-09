@@ -104,8 +104,10 @@ abstract public class Deriver extends Causable {
     abstract protected void derive(NAR n, int iterations, Derivation d);
 
 
-    protected void activate(Concept concept, TaskLink tasklink, NAR nar) {
-        Tasklinks.linkTaskTemplates(concept, tasklink, tasklink.priElseZero(), nar);
+    protected final void activate(TaskLink tasklink, Concept[] templates) {
+        Tasklinks.linkTask(tasklink, tasklink.priElseZero(),
+                templates
+        );
     }
 
     static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, @Nullable Bag<Term, PriReference<Term>> termlinks) {
@@ -123,6 +125,10 @@ abstract public class Deriver extends Causable {
         } else {
             return true;
         }
+    }
+
+    protected Concept[] templates(Concept concept, NAR nar) {
+        return concept.templates().conceptsShuffled(nar, true);
     }
 
 

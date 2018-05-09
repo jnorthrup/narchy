@@ -230,15 +230,12 @@ public class Leaf<T> extends AbstractNode<T, T> {
     public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
         if (s > 0) {
-            HyperRegion r = this.bounds;
-            if (r!=null && rect.intersects(r)) {
-                boolean fullyContained = s > 1 && rect.contains(r); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
-                T[] data = this.data;
-                for (int i = 0; i < s; i++) {
-                    T d = data[i];
-                    if (d != null && (fullyContained || rect.intersects(model.bounds(d))) && !t.test(d))
-                        return false;
-                }
+            boolean containsAll = s > 1 ? rect.contains(bounds) : false; //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
+            T[] data = this.data;
+            for (int i = 0; i < s; i++) {
+                T d = data[i];
+                if (d != null && (containsAll || rect.intersects(model.bounds(d))) && !t.test(d))
+                    return false;
             }
         }
         return true;
@@ -248,15 +245,12 @@ public class Leaf<T> extends AbstractNode<T, T> {
     public boolean containing(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
         if (s > 0) {
-            HyperRegion r = this.bounds;
-            if (r != null && rect.intersects(r)) { //not sure why but it seems this has to be intersects and not contains
-                boolean fullyContained = s > 1 && rect.contains(r); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
-                T[] data = this.data;
-                for (int i = 0; i < s; i++) {
-                    T d = data[i];
-                    if (d != null && (fullyContained || rect.contains(model.bounds(d))) && !t.test(d))
-                        return false;
-                }
+            boolean containsAll = rect.contains(bounds); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
+            T[] data = this.data;
+            for (int i = 0; i < s; i++) {
+                T d = data[i];
+                if (d != null && (containsAll || rect.contains(model.bounds(d))) && !t.test(d))
+                    return false;
             }
         }
         return true;

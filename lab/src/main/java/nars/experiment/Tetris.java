@@ -13,7 +13,6 @@ import java.util.Random;
 import java.util.Vector;
 
 import static nars.experiment.Tetris.TetrisState.*;
-import static nars.util.signal.Bitmap2DSensor.XY;
 
 /**
  * Created by me on 7/28/16.
@@ -98,8 +97,9 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         addCamera(
                 pixels = new Bitmap2DSensor<>(
+                    (x, y)->$.p(id,$.the(x),$.the(y))
                     //(x, y)->$.inh($.p(x,y), id)
-                    XY(id, 4, width, height)
+                    //XY(id, 4, width, height)
                     //InhRecurse(id, width, height, 2)
                     //RadixRecurse(id, width, height, 2)
                     //RadixProduct(id, width,height,2)

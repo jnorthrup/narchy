@@ -277,7 +277,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             }
 
             return superterm.eventsWhile((when,event)->{
-                if (!event.equals(superterm)) //prevent fatal loop
+                if (event!=superterm) //prevent fatal loop
                     return sub.accept(when, event);
                 else
                     return false; //fail

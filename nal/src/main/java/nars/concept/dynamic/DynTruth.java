@@ -14,19 +14,15 @@ import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.TimeAware;
 import nars.util.time.Tense;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
@@ -101,7 +97,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     /** TODO make Task truth dithering optional */
-    public Truthed eval(@NotNull Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR timeAware) {
+    public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR timeAware) {
 
         Truth t = truthModel.apply(this, timeAware);
         if (t == null)
@@ -111,9 +107,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (evi < eviMin)
             return null;
 
-        //this may have already been done in truth calculation
 //        //TODO compute max valid overlap to terminate the zip early
-        ObjectFloatPair<long[]> ss = Stamp.zip((List) this, Param.STAMP_CAPACITY);
+//        ObjectFloatPair<long[]> ss = Stamp.zip((List) this, Param.STAMP_CAPACITY);
 
 //        evi = evi * Param.overlapFactor(ss.getTwo());
 //        if (evi < eviMin)
@@ -209,7 +204,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 r.getOne(), beliefOrGoal,
                 Truth.theDithered(r.getTwo() ? (1-f) : f, freqRes, evi, confRes, w2cSafe(eviMin)),
                 timeAware, start, end,
-                ss.getOne());
+                this.evi.toArray());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 
         dyn.cause = cause();

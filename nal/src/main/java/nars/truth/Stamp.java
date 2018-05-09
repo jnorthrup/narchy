@@ -458,7 +458,8 @@ public interface Stamp {
             return pair(s.get(0).stamp(), 0f);
         } else if (S > maxLen) {
             //too many stamps, not enough to sample one evidence from any
-            throw new RuntimeException("stamp overflow (capacity=" + maxLen + "): " + s);
+            //throw new RuntimeException("stamp overflow (capacity=" + maxLen + "): " + s);
+            S = maxLen; //HACK
         }
 
         LongHashSet l = new LongHashSet(maxLen);
@@ -469,7 +470,7 @@ public interface Stamp {
         int totalEvidence = 0;
 
         byte[] ptr = new byte[S]; //assumes stamps are < 127 in length
-        for (int i = 0, sSize = s.size(); i < sSize; i++) {
+        for (int i = 0, sSize = S; i < sSize; i++) {
             Stamp si = s.get(i);
             long[] x = si.stamp();
             if (x == UNSTAMPED_OVERLAPPING)

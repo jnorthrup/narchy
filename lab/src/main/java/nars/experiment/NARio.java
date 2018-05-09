@@ -59,7 +59,16 @@ public class NARio extends NAgentX {
 
         //Eye eye = new Eye(nar, cc);
 
-        addCamera(new Bitmap2DSensor(id, cc, this.nar)).resolution(0.05f);
+        Bitmap2DSensor ccb;
+        addCamera(ccb = new Bitmap2DSensor(id, cc, this.nar)).resolution(0.03f);
+
+//        new AutoConceptualizer(Lists.newArrayList(ccb.iter.iterator() ), true, 10, nar) {
+//            @Override
+//            protected void onFeature(Term feature) {
+////                System.out.println(feature);
+//                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
+//            }
+//        };
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(()->mario.image),this);
 

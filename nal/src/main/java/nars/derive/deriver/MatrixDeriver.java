@@ -166,6 +166,8 @@ public class MatrixDeriver extends Deriver {
         if (!commit(nar, tasklinks, termlinks))
             return;
 
+        Concept[] templates = templates(concept, nar);
+
         int[] conceptTTL = { _tasklinks *  _termlinksPerTasklink };
 
         //((TaskLinkCurveBag)tasklinks).compress(nar);
@@ -183,7 +185,8 @@ public class MatrixDeriver extends Deriver {
 //
 //                float priTransferred = tPri;
 
-                activate(concept, tasklink, nar);
+
+                activate(tasklink, templates);
 
                 termlinks.sample(rng, _termlinksPerTasklink, termlink -> {
                     if (!continueHypothesizing.test(task, termlink)) {
@@ -202,7 +205,6 @@ public class MatrixDeriver extends Deriver {
         });
 
     }
-
 
 
 }

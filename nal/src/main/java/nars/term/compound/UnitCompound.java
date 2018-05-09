@@ -197,4 +197,9 @@ public abstract class UnitCompound implements Compound {
     public boolean hasVars() {
         return sub().hasVars();
     }
+
+    @Override
+    public boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term parent) {
+        return (!aSuperCompoundMust.test(this)) || (sub().recurseTerms(aSuperCompoundMust, whileTrue, this));
+    }
 }

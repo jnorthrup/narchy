@@ -58,7 +58,7 @@ public abstract class Param {
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 3f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min=1, max=32)
@@ -183,7 +183,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(48, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(64, 0, 1024);
 
 
     /** estimate */
@@ -210,7 +210,7 @@ public abstract class Param {
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 4;
+    public static int TTL_DERIVE_TASK_SUCCESS = 5;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
@@ -288,12 +288,12 @@ public abstract class Param {
      */
     public static final int COMPOUND_SUBTERMS_MAX = 127;
 
-    /**
-     * how many answers to record per input question task (per each concept's answer bag)
-     */
-    public static final int ANSWER_BAG_CAPACITY = 8;
-
-    public static final boolean DEBUG_REPORT_ANSWERS = false;
+//    /**
+//     * how many answers to record per input question task (per each concept's answer bag)
+//     */
+//    public static final int ANSWER_BAG_CAPACITY = 8;
+//
+//    public static final boolean DEBUG_REPORT_ANSWERS = false;
 
 
     /**
@@ -328,7 +328,7 @@ public abstract class Param {
      * Maximum length of the evidental base of the Stamp, a power of 2
      * TODO IntRange
      */
-    public static final int STAMP_CAPACITY = 16;
+    public static final int STAMP_CAPACITY = 12;
 
     public static final IntRange causeCapacity = new IntRange(64, 0, 128);
 
@@ -507,12 +507,7 @@ public abstract class Param {
     public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f-Param.TRUTH_EPSILON);
 
 
-    /** returns evidence factor corresponding to the amount of overlap */
-    public static float overlapFactor(float overlap) {
-        return overlap > 0 ? 0 : 1; //prevents any overlap
-        //return Util.sqr(1f-Util.unitize(overlap));
-        //return (1f-overlap);
-    }
+
 
     public static float beliefValue(Task beliefOrGoal) {
         //return (1f + beliefOrGoal.conf())/2f;

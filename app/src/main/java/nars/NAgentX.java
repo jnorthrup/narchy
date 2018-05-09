@@ -244,7 +244,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(48);
+        n.termVolumeMax.set(26);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -337,7 +337,7 @@ abstract public class NAgentX extends NAgent {
 
         ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(4, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(8, n);
 
 //        RelationClustering relCluster = new RelationClustering(n,
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,

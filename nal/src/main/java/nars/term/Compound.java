@@ -144,11 +144,8 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    default boolean recurseTerms(Predicate<Term> descendFilter, Predicate<Term> whileTrue, @Nullable Term parent) {
-        if (descendFilter.test(this)) {
-            return subterms().recurseTerms(descendFilter, whileTrue, this);
-        }
-        return true; //continue
+    default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, @Nullable Term parent) {
+        return (!aSuperCompoundMust.test(this)) || (subterms().recurseTerms(aSuperCompoundMust, whileTrue, this));
     }
 
 

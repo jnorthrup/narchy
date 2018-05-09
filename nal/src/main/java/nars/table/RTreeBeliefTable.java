@@ -56,7 +56,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * max allowed truths to be truthpolated in one test
      * must be less than or equal to Stamp.CAPACITY otherwise stamp overflow
      */
-    private static final int TRUTHPOLATION_LIMIT = Param.STAMP_CAPACITY / 2;
+    private static final int TRUTHPOLATION_LIMIT = Param.STAMP_CAPACITY/2;
 
     /**
      * max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task
@@ -64,13 +64,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
     private static final int COMPLEX_EVENT_MATCH_LIMIT = Math.max(1, SIMPLE_EVENT_MATCH_LIMIT / 2);
 
-    private static final int SAMPLE_MATCH_LIMIT = TRUTHPOLATION_LIMIT/2;
+    private static final int SAMPLE_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
             //1.5f;
-            2f;
-            //4f;
+            //2f;
+            4f;
             //8f;
             //10f;
 
