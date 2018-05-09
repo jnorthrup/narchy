@@ -1,11 +1,11 @@
 package nars.exe;
 
 import jcog.Util;
+import jcog.exe.util.RunnableForkJoin;
 import nars.NAR;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RunnableFuture;
 
 /**
  * uses global ForkJoinPool for scheduling execution
@@ -39,8 +39,11 @@ public class PoolMultiExec extends AbstractExec {
             this.focus = new Focus(nar, revaluator);
         }
 
-        for (int i = 0; i < parallelization; i++)
-            new Next();
+        for (int i = 0; i < parallelization; i++) {
+            Next n = new Next();
+            n.cursor = i; //stagger TODO this isnt great
+            execute(n);
+        }
 
     }
 
@@ -49,25 +52,7 @@ public class PoolMultiExec extends AbstractExec {
         ForkJoinPool.commonPool().execute(async);
     }
 
-    /**
-     * from: ForkJoinPool.java
-     */
-    abstract static class RunnableForkJoin extends ForkJoinTask<Void> implements RunnableFuture<Void> {
-        public final Void getRawResult() {
-            return null;
-        }
-
-        public final void setRawResult(Void v) {
-        }
-
-        abstract public boolean exec();
-
-        public final void run() {
-            invoke();
-        }
-    }
-
-//    final static AtomicInteger serial = new AtomicInteger(0);
+    //    final static AtomicInteger serial = new AtomicInteger(0);
 
     private class Next extends RunnableForkJoin {
 
@@ -80,7 +65,6 @@ public class PoolMultiExec extends AbstractExec {
         public Next() {
             cursor = 0;
 
-            execute(this); //start
         }
 
         @Override
