@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 /**
  * containment test of x to y's subterms and y to x's subterms
  */
-public final class NoCommonSubtermConstraint extends MatchConstraint.RelationConstraint {
+public final class NoCommonSubtermConstraint extends RelationConstraint {
 
     public final boolean recurse;
 

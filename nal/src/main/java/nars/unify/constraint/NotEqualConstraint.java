@@ -3,7 +3,7 @@ package nars.unify.constraint;
 import nars.term.Term;
 
 
-public final class NotEqualConstraint extends MatchConstraint.RelationConstraint {
+public final class NotEqualConstraint extends RelationConstraint {
 
     public NotEqualConstraint(Term target, Term other) {
         super(target, other, "neq");

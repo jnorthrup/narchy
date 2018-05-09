@@ -3,7 +3,7 @@ package nars.unify.constraint;
 import nars.subterm.util.Contains;
 import nars.term.Term;
 
-public class SubOfConstraint extends MatchConstraint.RelationConstraint {
+public class SubOfConstraint extends RelationConstraint {
     private final boolean forward;
 
     /** if the terms can be equal to be valid */

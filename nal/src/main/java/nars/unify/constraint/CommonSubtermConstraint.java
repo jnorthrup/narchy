@@ -9,7 +9,7 @@ import nars.term.Term;
  *      a term contains the other
  *      the terms have no non-variable subterms in common
  */
-public final class CommonSubtermConstraint extends MatchConstraint.RelationConstraint {
+public final class CommonSubtermConstraint extends RelationConstraint {
 
     public CommonSubtermConstraint(Term target, Term x) {
         super(target, x, "common_subterms");

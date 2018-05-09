@@ -158,29 +158,29 @@ public class PoleCart extends NAgentX {
 //            return a;
 //        });
 
-        actionBipolarFrequencyDifferential(id, false, false, (a) -> {
-            if (!manualOverride) {
-                action = a;
-                //action = Util.tanhFast(a*4);
-                //action = Util.lerp(acc[0], a, Util.tanhFast(a*2));
-            }
-            return a;
-        });
+//        actionBipolarFrequencyDifferential(id, false, false, (a) -> {
+//            if (!manualOverride) {
+//                action = a;
+//                //action = Util.tanhFast(a*4);
+//                //action = Util.lerp(acc[0], a, Util.tanhFast(a*2));
+//            }
+//            return a;
+//        });
 //            //eternal bias to stop
 //            nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //            nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
 
 
-//        actionUnipolar($.p("left"), (a) -> {
-//            if (!manualOverride)
-//                action = Util.clampBi((float) (action + a));
-//            return a;
-//        });
-//        actionUnipolar($.p("right"), (a) -> {
-//            if (!manualOverride)
-//                action = Util.clampBi((float) (action - a));
-//            return a;
-//        });
+        actionUnipolar($.p("left"), (a) -> {
+            if (!manualOverride)
+                action = Util.clampBi((float) (action + a));
+            return a;
+        });
+        actionUnipolar($.p("right"), (a) -> {
+            if (!manualOverride)
+                action = Util.clampBi((float) (action - a));
+            return a;
+        });
 
 
 //        new BeliefPredict(

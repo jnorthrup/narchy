@@ -14,6 +14,7 @@ import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
+import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -224,12 +225,14 @@ abstract public class NAgentX extends NAgent {
                 )
                 .get();
 
-        new MatrixDeriver(Derivers.nal(1, 1, n));
-        new MatrixDeriver(Derivers.nal(2, 2, n));
-        new MatrixDeriver(Derivers.nal(3, 3, n));
-        new MatrixDeriver(Derivers.nal(5, 5, n));
-        new MatrixDeriver(Derivers.nal(6, 8, n));
-        new MatrixDeriver(Derivers.files(n, "motivation.nal"));
+        new MatrixDeriver(Derivers.nal(1, 8, n));
+//        new MatrixDeriver(Derivers.nal(1, 1, n));
+//        new MatrixDeriver(Derivers.nal(2, 2, n));
+//        new MatrixDeriver(Derivers.nal(3, 3, n));
+//        new MatrixDeriver(Derivers.nal(4, 4, n));
+//        new MatrixDeriver(Derivers.nal(5, 5, n));
+//        new MatrixDeriver(Derivers.nal(6, 8, n));
+        //new MatrixDeriver(Derivers.files(n, "motivation.nal"));
 
         //.deriverAdd("goal_analogy.nal")
         //.deriverAdd(6,6) //extra NAL6
@@ -253,7 +256,7 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.5f * priFactor);
         n.questPriDefault.set(0.5f * priFactor);
 
-        n.activationRate.set(0.1f);
+        n.activationRate.set(0.5f);
 
 //        new RLBooster(a, HaiQAgent::new, 1);
 
@@ -353,10 +356,10 @@ abstract public class NAgentX extends NAgent {
 
 
         ///needs tryContent before its safe
-        Inperience inp = new Inperience(n, 64);
+        Inperience inp = new Inperience(n, 32);
 //
 
-//        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);
+        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);
 
         //reflect.ReflectSimilarToTaskTerm refSim = new reflect.ReflectSimilarToTaskTerm(16, n);
         //reflect.ReflectClonedTask refTask = new reflect.ReflectClonedTask(16, n);
@@ -656,10 +659,7 @@ abstract public class NAgentX extends NAgent {
 //
 //        MySTMClustered stm = new MySTMClustered(nar, 64, '.', 8, true, 3);
 //        MySTMClustered stmGoal = new MySTMClustered(nar, 32, '!', 8, true, 3);
-//
-////        Abbreviation abbr = new Abbreviation(nar, "the",
-////                4, 16,
-////                0.05f, 32);
+
 //
 //        new Inperience(nar, 0.05f, 16);
 //

@@ -1,20 +1,14 @@
 package nars.op.mental;
 
 
-import jcog.bag.impl.PLinkArrayBag;
 import jcog.math.MutableIntRange;
-import jcog.pri.PLink;
-import jcog.pri.PriReference;
-import jcog.pri.Prioritized;
-import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.bag.leak.DtLeak;
+import nars.bag.leak.TaskLeak;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.control.DurService;
-import nars.control.TaskService;
+import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -24,27 +18,25 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 import static nars.term.Terms.compoundOrNull;
+import static nars.util.time.Tense.ETERNAL;
 
 /**
  * compound<->dynamic atom abbreviation.
  *
  * @param S serial term type
  */
-public class Abbreviation/*<S extends Term>*/ extends TaskService {
+public class Abbreviation/*<S extends Term>*/ {
 
 
     /**
      * generated abbreviation belief's confidence
      */
-    @NotNull
     public final MutableFloat abbreviationConfidence;
-    private final DtLeak<Compound, PriReference<Compound>> bag;
+    private final TaskLeak bag;
 
     /**
      * whether to use a (strong, proxying) alias atom concept
@@ -61,30 +53,38 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
      * accepted volume range, inclusive
      */
     public final MutableIntRange volume;
-    private DurService onDur;
 
 
-    public Abbreviation(@NotNull NAR nar, String termPrefix, int volMin, int volMax, float selectionRate, int capacity) {
-        super(nar);
-        bag = new DtLeak<>(new PLinkArrayBag<Compound>(PriMerge.plus, capacity)
-//       {     @Nullable
+    public Abbreviation(NAR nar, String termPrefix, int volMin, int volMax, float selectionRate, int capacity) {
+        super();
+        bag = new TaskLeak(capacity, selectionRate, nar)//new PLinkArrayBag<Compound>(PriMerge.plus, capacity)
+       {//     @Nullable
 //            @Override
 //            public Compound key(PriReference<Compound> l) {
 //                return l.get();
 //            } }
-        , new MutableFloat(selectionRate)) {
-
+        //, new MutableFloat(selectionRate)) {
             @Override
-            protected Random random() {
-                return nar.random();
+            public float value() {
+                return 1f; //HACK TODO use Cause
             }
 
             @Override
-            protected float receive(PriReference<Compound> b) {
-                return abbreviate(b.get(), b, nar) ? 1f : 0f;
+            protected float leak(Task b) {
+                return input(b, nar) && abbreviate((Compound)b.term(), nar) ? 1f : 0f;
             }
+
+            //            @Override
+//            protected Random random() {
+//                return nar.random();
+//            }
+//
+//            @Override
+//            protected float receive(PriReference<Compound> b) {
+//                return abbreviate(b.get(), b, nar) ? 1f : 0f;
+//            }
         };
-        bag.setCapacity(capacity);
+        //bag.setCapacity(capacity);
 
         this.termPrefix = termPrefix;
         this.abbreviationConfidence =
@@ -94,64 +94,63 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
         volume = new MutableIntRange(volMin, volMax);
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        onDur = DurService.on(nar, this::update);
-    }
-
-
-    @Override
-    protected void stopping(NAR nar) {
-        onDur.off();
-    }
-
-    protected void update(NAR nar) {
-        bag.commit(nar, 1f);
-    }
+//    @Override
+//    protected void starting(NAR nar) {
+//        onDur = DurService.on(nar, this::update);
+//    }
 
 
 
-    @Override
-    public void clear() {
-        bag.clear();
-    }
 
-    @Override
-    public void accept(NAR nar, Task task) {
+//    protected void update(NAR nar) {
+//        bag.commit(nar, 1f);
+//    }
 
-        Term taskTerm = task.term();
-        if ((!(taskTerm instanceof Compound)) || taskTerm.vars() > 0)
-            return;
 
-        Prioritized b = task;
 
-        input(b, bag.bag::put, (Compound) taskTerm, 1f, nar);
-    }
+//    @Override
+//    public void clear() {
+//        bag.clear();
+//    }
 
-    private void input( Prioritized b, Consumer<PLink<Compound>> each, Compound t, float scale, NAR nar) {
+//    @Override
+//    public void accept(NAR nar, Task task) {
+//
+//        Term taskTerm = task.term();
+//        if ((!(taskTerm instanceof Compound)) || taskTerm.vars() > 0)
+//            return;
+//
+//        Prioritized b = task;
+//
+//        input(b, bag.bag::put, (Compound) taskTerm, 1f, nar);
+//    }
+
+    private boolean input(Task t, NAR nar) {
         int vol = t.volume();
         if (vol < volume.lo())
-            return;
+            return false;
 
         if (vol <= volume.hi()) {
-            if (t.concept().equals(t) /* identical to its conceptualize */) {
+            if (t.concept(nar,true).equals(t) /* identical to its conceptualize */) {
                 Concept abbreviable = nar.concept(t);
                 if ((abbreviable != null) &&
                         !(abbreviable instanceof PermanentConcept) &&
                                 abbreviable.meta("abbr") == null) {
 
-                    each.accept(new PLink<>(t, b.priElseZero()));
+                    //each.accept(new PLink<>(t, b.priElseZero()));
+                    return true;
                 }
             }
         } else {
-            //recursiely try subterms of a temporal or exceedingly large concept
-            //budget with a proportion of this compound relative to their volume contribution
-            float subScale = 1f / (1 + t.subs());
-            t.forEach(x -> {
-                if (x.subs() > 0)
-                    input(b, each, ((Compound) x), subScale, nar);
-            });
+//            //recursiely try subterms of a temporal or exceedingly large concept
+//            //budget with a proportion of this compound relative to their volume contribution
+//            float subScale = 1f / (1 + t.subs());
+//            t.forEach(x -> {
+//                if (x.subs() > 0)
+//                    input(b, each, ((Compound) x), subScale, nar);
+//            });
         }
+        return false;
     }
 
 
@@ -199,44 +198,44 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
     //private boolean createRelation = false;
 
 
-    protected boolean abbreviate(@NotNull Compound abbreviated, @NotNull Prioritized b, NAR nar) {
+    protected boolean abbreviate(Compound abbreviated, NAR nar) {
 
         @Nullable Concept abbrConcept = nar.concept(abbreviated);
         if (abbrConcept != null && !(abbrConcept instanceof AliasConcept) && !(abbrConcept instanceof PermanentConcept)) {
 
-            final boolean[] succ = {false};
+            //final boolean[] succ = {false};
 
-            abbrConcept.meta("abbr", (ac) -> {
+            //abbrConcept.meta("abbr", (ac) -> {
 
                 Term abbreviatedTerm =abbreviated.term();
 
-                AliasConcept a1 = new AliasConcept(newSerialTerm(), abbrConcept, nar);
+//                AliasConcept a1 = new AliasConcept(newSerialTerm(), abbrConcept, nar);
+//
+//                nar.on(a1);
+//                nar.concepts.set(abbreviated.term(), a1); //set the abbreviated term to resolve to the abbreviation
+//                if (!abbreviatedTerm.equals(abbreviated.term()))
+//                    nar.concepts.set(abbreviatedTerm, a1); //set the abbreviated term to resolve to the abbreviation
 
-                nar.on(a1);
-                nar.concepts.set(abbreviated.term(), a1); //set the abbreviated term to resolve to the abbreviation
-                if (!abbreviatedTerm.equals(abbreviated.term()))
-                    nar.concepts.set(abbreviatedTerm, a1); //set the abbreviated term to resolve to the abbreviation
+                Compound abbreviation = newRelation(abbreviated, newSerialTerm());
+                if (abbreviation == null)
+                    return false; //maybe could happen
 
-//                Compound abbreviation = newRelation(abbreviated, id);
-//                if (abbreviation == null)
-//                    return null; //maybe could happen
-//
-//                Task abbreviationTask = Task.tryTask(abbreviation, BELIEF, $.t(1f, abbreviationConfidence.floatValue()),
-//                        (te, tr) -> {
-//
-//                            NALTask ta = new NALTask(
-//                                    te, BELIEF, tr,
-//                                    nar.time(), ETERNAL, ETERNAL,
-//                                    new long[]{nar.time.nextStamp()}
-//                            );
+                Task abbreviationTask = Task.tryTask(abbreviation, BELIEF, $.t(1f, abbreviationConfidence.floatValue()),
+                        (te, tr) -> {
+
+                            NALTask ta = new NALTask(
+                                    te, BELIEF, tr,
+                                    nar.time(), ETERNAL, ETERNAL,
+                                    nar.evidence()
+                            );
 //
 //
-//                            ta.meta(Abbreviation.class, new Term[]{abbreviatedTerm, aliasTerm.term()});
-//                            ta.log("Abbreviate"); //, abbreviatedTerm, aliasTerm
-//                            ta.setPri(b);
+                            //ta.meta(Abbreviation.class, new Term[]{abbreviatedTerm, aliasTerm.term()});
+                            ta.log("Abbreviate"); //, abbreviatedTerm, aliasTerm
+                            ta.pri(nar.beliefConfDefault.floatValue());
 //
-//                            nar.runLater(()->nar.input(ta));
-                logger.info("{} => {}", a1, abbreviatedTerm);
+                            return ta;
+                        });
 //
 
 //
@@ -264,12 +263,20 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
 //        return this;
 
 
-                succ[0] = true;
-                return a1;
+//                succ[0] = true;
+//                return a1;
+//
+//            });
 
-            });
 
-            return succ[0];
+//            return succ[0];
+
+            if (abbreviationTask!=null) {
+                nar.input(abbreviationTask);
+                logger.info("{}", abbreviationTask.term());
+
+                return true;
+            }
 
         }
 
@@ -278,14 +285,14 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
 
 //        final NLPGen nlpGen = new NLPGen();
 //
-//        @Nullable private String newCanonicalTerm(@NotNull Termed abbreviated) {
+//        @Nullable private String newCanonicalTerm(Termed abbreviated) {
 //            if (abbreviated.volume() < 12)
 //                return "\"" + nlpGen.toString(abbreviated.term(), 1f, 1f, Tense.Eternal) + "\"";
 //            return null;
 //        }
 
     @Nullable
-    Compound newRelation(@NotNull Compound abbreviated, @NotNull String id) {
+    Compound newRelation(Compound abbreviated, String id) {
         return compoundOrNull(
                 $.sim(abbreviated, Atomic.the(id))
                 //$.equi
@@ -300,11 +307,11 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
 
 
 //    public static class AbbreviationAlias extends Abbreviation {
-//        public AbbreviationAlias(@NotNull NAR n, String termPrefix, int volMin, int volMax, float selectionRate, int capacity) {
+//        public AbbreviationAlias(NAR n, String termPrefix, int volMin, int volMax, float selectionRate, int capacity) {
 //            super(n, termPrefix, volMin, volMax, selectionRate, capacity);
 //        }
 //
-//        protected void abbreviate(@NotNull CompoundConcept abbreviated, Budget b) {
+//        protected void abbreviate(CompoundConcept abbreviated, Budget b) {
 //
 //            String id = newSerialTerm();
 //
@@ -327,7 +334,7 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
 //        @NotNull
 //        private final Term alias;
 //
-//        public AbbreviationTask(Compound term, byte punc, Truth truth, long creation, long start, long end, long[] evidence, @NotNull Compound abbreviated, @NotNull Termed alias) {
+//        public AbbreviationTask(Compound term, byte punc, Truth truth, long creation, long start, long end, long[] evidence, Compound abbreviated, Termed alias) {
 //            super(term, punc, truth, creation, start, end, evidence);
 //            this.abbreviated = abbreviated;
 //            this.alias = alias.term();
@@ -335,7 +342,7 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
 //
 //
 ////        @Override
-////        public void feedback(TruthDelta delta, float deltaConfidence, float deltaSatisfaction, @NotNull NAR nar) {
+////        public void feedback(TruthDelta delta, float deltaConfidence, float deltaSatisfaction, NAR nar) {
 ////
 ////            super.feedback(delta, deltaConfidence, deltaSatisfaction, nar);
 ////
