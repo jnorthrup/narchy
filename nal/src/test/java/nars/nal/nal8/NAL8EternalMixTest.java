@@ -19,7 +19,7 @@ import static nars.util.time.Tense.ETERNAL;
  */
 public class NAL8EternalMixTest extends NALTest {
 
-    final int cycles = 550;
+    final int cycles = 450;
 
     @BeforeEach
     public void setTolerance() {

@@ -20,7 +20,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.TimeAware;

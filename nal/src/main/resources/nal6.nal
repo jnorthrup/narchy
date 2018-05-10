@@ -257,17 +257,19 @@
 
     //Conjunction Anti-Contradiction: ((X&&A)==>C) and ((--X&&A)==>C)  |-  (A==>C), since X or --X doesnt make a difference
     ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==>+- C), (Belief:InductionPB)
-        (--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- (--(&&,A..+) ==>+- C), (Belief:InductionPB)
+        (--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- ((--,(&&,A..+)) ==>+- C), (Belief:InductionPB)
     (C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB)
 
-//precondition combiner inference rule (variable_unification6):
+//precondition/post-condition combiner inference rule (variable_unification6):
 
-    ((&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- subIfUnifiesAny(((&&,A..+) ==>+- (&&,B..+)),X,Y,"$"), (Belief:InductionPB)
-    ((&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- subIfUnifiesAny(((&&,B..+) ==>+- (&&,A..+)),X,Y,"$"), (Belief:InductionPB)
-        (--(&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- subIfUnifiesAny((--(&&,A..+) ==>+- (&&,B..+)),X,Y,"$"), (Belief:InductionPB)
-        (--(&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- subIfUnifiesAny(--((&&,B..+) ==>+- (&&,A..+)),X,Y,"$"), (Belief:InductionPB)
-    (X ==> (&&,C,A..+)), (Y ==> (&&,C,B..+)) |- subIfUnifiesAny(((&&,A..+) ==>+- (&&,B..+)),X,Y,"$"), (Belief:AbductionPB)
-    (X ==> (&&,C,A..+)), (Y ==> (&&,C,B..+)) |- subIfUnifiesAny(((&&,B..+) ==>+- (&&,A..+)),X,Y,"$"), (Belief:AbductionPB)
+    //TODO something like:
+    // (A ==> X), (B ==> Y), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
+    ((&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:InductionPB)
+    ((&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- ((&&,B..+) ==>+- (&&,A..+)), (Belief:InductionPB)
+        ((--,(&&,C,A..+)) ==> X), ((&&,C,B..+) ==> Y) |- ((--,(&&,A..+)) ==>+- (&&,B..+)), (Belief:InductionPB)
+        ((--,(&&,C,A..+)) ==> X), ((&&,C,B..+) ==> Y) |- ((--,(&&,B..+)) ==>+- (&&,A..+)), (Belief:InductionPB)
+    (X ==> (&&,C,A..+)), (Y ==> (&&,C,B..+)) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:AbductionPB)
+    (X ==> (&&,C,A..+)), (Y ==> (&&,C,B..+)) |- ((&&,B..+) ==>+- (&&,A..+)), (Belief:AbductionPB)
         //((&&,C,A..+) ==> Z), ((&&,C,B..+) ==> Z), neq(A..+,B..+) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:Induction)
         //((&&,C,A..+) ==> Z), ((&&,C,B..+) ==> Z), neq(A..+,B..+) |- ((&&,B..+) ==>+- (&&,A..+)), (Belief:Induction)
         //(Z ==> (&&,C,A..+)), (Z ==> (&&,C,B..+)), neq(A..+,B..+) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:Abduction)

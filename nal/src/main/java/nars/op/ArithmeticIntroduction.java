@@ -11,7 +11,7 @@ import nars.term.Term;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Int;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;

@@ -1,9 +1,7 @@
 package nars.unify.match;
 
-import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermList;
 import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.compound.CompoundLight;
@@ -32,15 +30,15 @@ public class EllipsisMatch extends CompoundLight {
 //    }
 
 
-    public final static EllipsisMatch empty = new EllipsisMatch(Term.EmptyArray);
+    public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
 
 
     protected EllipsisMatch(Term[] t) {
-        super(PROD, $.vFast(t));
+        super(PROD, t);
     }
 
     public EllipsisMatch(Collection<Term> term) {
-        super(PROD, new TermList(term));
+        this(term.toArray(Op.EmptyTermArray));
     }
 
     public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
@@ -211,8 +209,7 @@ public class EllipsisMatch extends CompoundLight {
 
     @Override
     public boolean isCommutative() {
-        //throw new UnsupportedOperationException("it depends");
-        return false; //to be careful
+        return false;
     }
 
 

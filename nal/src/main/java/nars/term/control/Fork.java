@@ -1,5 +1,6 @@
 package nars.term.control;
 
+import jcog.TODO;
 import nars.$;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ public class Fork<X> extends AbstractPred<X> {
     public final PrediTerm<X>[] branch;
 
     public Fork(PrediTerm<X>[] actions) {
-        super($.sFast((Term[]) actions));
+        super($.pFast((Term[]) actions) /* doesnt force sorting. in some impl, the index order must remain intact */);
         assert (actions.length > 0);
         this.branch = actions;
     }
@@ -35,7 +36,6 @@ public class Fork<X> extends AbstractPred<X> {
         return true;
     }
 
-
     @Override
     public float cost() {
         return Integer.MAX_VALUE; //post-condition: must be the last element in any sequence
@@ -43,7 +43,8 @@ public class Fork<X> extends AbstractPred<X> {
 
     @Override
     public PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
-        return fork(PrediTerm.transform(f, branch), Fork::new);
+        throw new TODO();
+        //return fork(PrediTerm.transform(f, branch), Fork::new);
     }
 
 

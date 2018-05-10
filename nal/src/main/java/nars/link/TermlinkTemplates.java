@@ -22,7 +22,7 @@ import static nars.Op.PROD;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
-    static final TermlinkTemplates EMPTY = new TermlinkTemplates(Term.EmptyArray) {
+    static final TermlinkTemplates EMPTY = new TermlinkTemplates(Op.EmptyTermArray) {
         {
             concepts = 0;
         }

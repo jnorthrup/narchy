@@ -9,7 +9,7 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

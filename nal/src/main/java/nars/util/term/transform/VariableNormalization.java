@@ -3,7 +3,7 @@ package nars.util.term.transform;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.var.Variable;
+import nars.term.Variable;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -24,6 +24,7 @@ package nars.term.var;
 import nars.$;
 import nars.Op;
 import nars.Param;
+import nars.term.Variable;
 import nars.term.anon.AnonID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

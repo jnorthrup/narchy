@@ -8,6 +8,7 @@ import nars.IO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
+import nars.unify.Unify;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -229,7 +230,7 @@ public enum Terms {
         switch (len) {
 
             case 0:
-                return Term.EmptyArray;
+                return Op.EmptyTermArray;
 
             case 1:
                 return arg;
@@ -708,6 +709,33 @@ public enum Terms {
         return new StableBloomFilter<>(
                 cells, 2, 1f/cells, rng,
                 new BytesHashProvider<>(IO::termToBytes));
+    }
+
+    /** non-symmetric use only */
+    public static boolean commonStructureExcept(Termlike requirer, Termlike required, int maskedBits) {
+        int xStruct = requirer.structure() & ~(maskedBits); //without the variable bits
+        if (xStruct!=0) {
+            int yStruct = required.structure() & ~(maskedBits); //without the variable bits
+            if (!Op.hasAll(yStruct, xStruct))
+                return false;
+//            if (yStruct!=0) {
+////                if (xStruct == yStruct) return true;
+////                boolean xLessSpecific = Integer.bitCount(xStruct) < Integer.bitCount(yStruct);
+////                if (xLessSpecific)
+////                    return Op.hasAll(xStruct,yStruct);
+////                else
+////                    return Op.hasAll(yStruct, xStruct);
+//                if ((xStruct & yStruct) == 0) //no commonality whatsoever among non-masked terms
+//                    return false;
+//            }
+        }
+        return true;
+    }
+
+    public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
+        if (u.varSymmetric)
+            return true;
+        return commonStructureExcept( x, y, u.typeBits() );
     }
 }
 

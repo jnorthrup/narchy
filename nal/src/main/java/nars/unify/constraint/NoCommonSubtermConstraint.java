@@ -2,7 +2,7 @@ package nars.unify.constraint;
 
 import nars.Op;
 import nars.term.Term;
-import nars.term.var.Variable;
+import nars.term.Variable;
 
 import java.util.function.Predicate;
 

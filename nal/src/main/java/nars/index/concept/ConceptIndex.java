@@ -9,7 +9,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;

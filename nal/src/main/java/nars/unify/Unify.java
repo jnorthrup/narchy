@@ -439,6 +439,14 @@ public abstract class Unify extends Versioning implements Subst {
         }
     }
 
+    public int typeBits() {
+        if (type == null) {
+            return Op.varBits;
+        } else {
+            return type.bit;
+        }
+    }
+
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {
         public ConstrainedVersionMap(Versioning versioning, Map<Term,Versioned<Term>> termMap) {
             super(versioning,

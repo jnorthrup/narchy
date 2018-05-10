@@ -11,7 +11,7 @@ import nars.$;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -63,24 +63,24 @@ public class PrologToNAL {
                     post = impl.sub(1);
 
                     if (pre.varQuery()>0 && post.varQuery()>0) {
-                        MutableSet<nars.term.var.Variable> prev = new UnifiedSet();
+                        MutableSet<Variable> prev = new UnifiedSet();
                         pre.recurseTerms(Termlike::hasVarQuery, (a) -> {
                             if (a.op() == Op.VAR_QUERY)
                                 prev.add((Variable)a);
                             return true;
                         }, null);
-                        MutableSet<nars.term.var.Variable> posv = new UnifiedSet();
+                        MutableSet<Variable> posv = new UnifiedSet();
                         post.recurseTerms(Termlike::hasVarQuery, (a) -> {
                             if (a.op() == Op.VAR_QUERY)
                                 posv.add((Variable)a);
                             return true;
                         }, null);
 
-                        MutableSet<nars.term.var.Variable> common = prev.intersect(posv);
+                        MutableSet<Variable> common = prev.intersect(posv);
                         int cs = common.size();
                         if (cs > 0) {
                             Map<nars.term.Term,nars.term.Term> x = new UnifiedMap(cs);
-                            for (nars.term.var.Variable c : common) {
+                            for (Variable c : common) {
                                 x.put(c, $.varIndep(c.toString().substring(1)));
                             }
                             impl = impl.replace(x);

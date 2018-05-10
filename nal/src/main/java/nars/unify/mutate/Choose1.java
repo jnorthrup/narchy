@@ -1,8 +1,8 @@
 package nars.unify.mutate;
 
 import nars.$;
+import nars.Op;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
@@ -20,14 +20,14 @@ public class Choose1 extends Termutator.AbstractTermutator {
     private final Term xEllipsis;
     private final Term[] yy;
 
-    public Choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree) {
-        this(xEllipsis, x, Terms.sorted(yFree));
-    }
-
     final static Atom CHOOSE_1 = $.the(Choose1.class);
 
-    Choose1(Ellipsis xEllipsis, Term x, Term[] yFree) {
-        super(CHOOSE_1, x, xEllipsis, $.pFast(yFree));
+    public Choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree) {
+        this(xEllipsis, x, yFree.toArray(Op.EmptyTermArray));
+    }
+
+    private Choose1(Ellipsis xEllipsis, Term x, Term[] yFree /* sorted */) {
+        super(CHOOSE_1, x, xEllipsis, $.sFast(false, yFree));
 
         int ysize = yFree.length;  assert(ysize >= 2): Arrays.toString(yFree) + " must offer choice";
 

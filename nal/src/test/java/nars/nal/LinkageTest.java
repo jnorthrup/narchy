@@ -10,7 +10,7 @@ import nars.Narsese;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import nars.util.graph.TermGraph;

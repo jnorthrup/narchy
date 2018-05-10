@@ -28,6 +28,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
         else if (ac < bc) return -1;
         else return a.compareTo(b);
     };
+    PrediTerm[] EmptyPrediTermArray = new PrediTerm[0];
 
     static Comparator<PrediTerm<?>> sort(ToIntFunction<PrediTerm<?>> count) {
         return (a, b) -> {

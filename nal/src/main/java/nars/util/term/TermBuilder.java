@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static nars.Op.Null;
-import static nars.subterm.Subterms.Empty;
 import static nars.term.Terms.sorted;
 import static nars.util.time.Tense.DTERNAL;
 
@@ -46,13 +45,13 @@ public abstract class TermBuilder {
 
 
     public Subterms subterms(Collection<? extends Term> s) {
-        return newSubterms(s.toArray(new Term[s.size()]));
+        return newSubterms(s.toArray(Op.EmptyTermArray));
     }
 
     public Subterms subtermsInstance(Term... t) {
         final int tLength = t.length;
         if (tLength == 0)
-            return Empty;
+            return Op.EmptySubterms;
 
         boolean purelyAnon = true;
         for (int i = 0; i < tLength; i++) {

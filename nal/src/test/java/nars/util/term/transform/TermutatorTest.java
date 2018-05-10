@@ -7,7 +7,7 @@ import nars.Op;
 import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
 import nars.unify.mutate.Choose1;

@@ -3,6 +3,7 @@ package nars.term.var;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.AtomicConst;
 import org.jetbrains.annotations.NotNull;
 

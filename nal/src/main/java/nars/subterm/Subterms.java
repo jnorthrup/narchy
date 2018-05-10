@@ -4,17 +4,15 @@ import com.google.common.base.Joiner;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
-import nars.subterm.util.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Terms;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,8 +34,6 @@ import java.util.function.Predicate;
  * T = subterm type
  */
 public interface Subterms extends Termlike, Iterable<Term> {
-
-    /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);
 
 
     static int hash(List<Term> term) {
@@ -245,6 +241,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted() {
         TreeSet u = new TreeSet();
+        forEach(u::add);
+        return u;
+    }
+
+    default /*@NotNull*/ FasterList<Term> toList() {
+        FasterList<Term> u = new FasterList(subs());
         forEach(u::add);
         return u;
     }
@@ -464,6 +466,29 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
+     * if subterms are already sorted, returns arrayShared().
+     * otherwise a sorted clone is returned.
+     */
+    default Term[] arraySharedSorted(boolean dedup) {
+        Term[] aa = arrayShared();
+        if (dedup) {
+            Term[] ss = Terms.sorted();
+            if (ss == aa)
+                return aa;
+            else
+                return ss;
+        } else {
+            if (Util.isSorted(aa))
+                return aa;
+            else {
+                Term[] ss = aa.clone();
+                Arrays.sort(ss);
+                return ss;
+            }
+        }
+    }
+
+    /**
      * an array of the subterms
      * this is meant to be a clone always
      */
@@ -471,7 +496,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
         switch (s) {
             case 0:
-                return Term.EmptyArray;
+                return Op.EmptyTermArray;
             case 1:
                 return new Term[]{sub(0)};
             case 2:
@@ -517,7 +542,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 added++;
             }
         }
-        return added == 0 ? Term.EmptyArray : l.toArray(new Term[added]);
+        return added == 0 ? Op.EmptyTermArray : l.toArray(new Term[added]);
     }
 
 //    /**
@@ -868,13 +893,20 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //            }
 
 
-    default boolean unifyCommute(Subterms y, /*@NotNull*/ Unify u) {
+    /**
+     * the term that y is from may not be commutive in some temporal cases like
+     * (x &&+1 x). special care is needed to preserve the appearance of
+     * both subterms unlike how creating a Set would remove the duplicate.
+     */
+    default boolean unifyCommute(Subterms y, boolean yCommutative, /*@NotNull*/ Unify u) {
 
         int xv = u.vars(this);
         int yv = u.vars(y);
-        if (xv == 0 && yv == 0) {
-            if (u.constant(this) && u.constant(y))
-                return y.equals(this); //fully constant, no variables or sub-term with variables that could line-up unless equal
+        if (yCommutative) {
+            if (xv == 0 && yv == 0) {
+                if (u.constant(this) && u.constant(y))
+                    return y.equals(this); //fully constant, no variables or sub-term with variables that could line-up unless equal
+            }
         }
 
         int s = subs();
@@ -886,54 +918,103 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return true;
         }
 
-
-        MutableSet<Term> xx = toSet();
-        MutableSet<Term> yy = y.toSet();
-        MutableSet<Term> xy = Sets.intersect(xx, yy);
-        if (!xy.isEmpty()) {
-
-            //filter out non-constant terms, these are free to permute.
-            xy.removeIf(z -> !u.constant(z));
-            if (!xy.isEmpty()) {
-                //the terms remaining in xy are constant and common to both, so remove these from each
-                xx.removeAll(xy);
-                yy.removeAll(xy);
-                s = xx.size();
-                if (s != yy.size()) {
-                    throw new WTF();
-                }
-            }
-        }
         //TODO check the symmetric difference for terms that are unique to either, and ensure that there are enough variables to cover each otherwise the match will always fail.
 
+        final SortedSet<Term> xx = toSetSorted();
+
+        if (!yCommutative) {
+            //cancel terms only one copy at a time
+            assert (s == 2); //yy must be temporal when commutive term gets compared to non-commutive term
+            Term y0 = y.sub(0);
+            boolean y0inX = xx.contains(y0);
+            Term y1 = y.sub(1);
+            boolean y1inX = xx.contains(y1);
+
+            boolean y0c = u.constant(y0);
+            boolean y1c = u.constant(y1);
+
+            if (y0inX && y1inX && (y0c && y1c)) {
+                return true; //all constant
+            }
+
+            if ((!y0inX && !y1inX) || (!y0c && !y1c)) {
+
+                if (u.constant(this) && (y0c && y1c))
+                    return false; //if both are constant and there is nothing in common, fail
+
+
+                //nothing in common OR y is all non-constant, requiring actual unification
+                //y doesnt need sorted. it must not be deduplicated either.
+                u.termutes.add(new CommutivePermutations(this, y));
+                return true;
+            } else {
+                if (y0c && y0inX) {
+                    xx.remove(y0);
+                    return xx.first().unify(y1, u);
+                }
+                if (y1c && y1inX) {
+                    xx.remove(y1);
+                    return xx.first().unify(y0, u);
+                }
+
+                if (u.constant(sub(0)) && u.constant(sub(1)))
+                    return false; //probably impossible
+                else {
+                    //is this necessary?
+                    u.termutes.add(new CommutivePermutations(this, y));
+                    return true;
+                }
+            }
+
+        } else {
+
+            SortedSet<Term> yy = y.toSetSorted();
+            MutableSet<Term> xy = Sets.intersect(xx, (Set) yy);
+            if (!xy.isEmpty()) {
+
+                //filter out non-constant terms, these are free to permute.
+                xy.removeIf(z -> !u.constant(z));
+                if (!xy.isEmpty()) {
+                    //the terms remaining in xy are constant and common to both, so remove these from each
+                    xx.removeAll(xy);
+                    yy.removeAll(xy);
+                    s = xx.size();
+                    if (s != yy.size()) {
+                        throw new RuntimeException("set size should have remained equal");
+                    }
+                }
+            }
+
+
+            if (s == 1) {
+                //special case
+                //  ex: {x,%1} vs. {x,z} --- there is actually no combination here
+                //  Predicate<Term> notType = (x) -> !subst.matchType(x);
+                //another case:
+                //  xss > 1, yss=1: because of duplicates in ys that were removed; instead apply ys.first() to each of xs
+                //  note for validation: the reverse will not work (trying to assign multiple different terms to the same variable in x)
+
+
+                return xx.first().unify(yy.first(), u);
+
+            } else if (originalS == s) {
+                //no commonality could be eliminated, so termute using this and Y directly avoiding the need to instantite new Termute label terms
+                u.termutes.add(new CommutivePermutations(this, y));
+                return true;
+            } else {
+
+                u.termutes.add(new CommutivePermutations(
+                        $.vFast(Terms.sorted(xx.toArray(Op.EmptyTermArray))),
+                        $.vFast(Terms.sorted(yy.toArray(Op.EmptyTermArray)))
+                ));
+                return true;
+
+            }
+        }
 
         //subst.termutes.add(new CommutivePermutations(TermVector.the(xs), TermVector.the(ys)));
 
 
-        if (s == 1) {
-            //special case
-            //  ex: {x,%1} vs. {x,z} --- there is actually no combination here
-            //  Predicate<Term> notType = (x) -> !subst.matchType(x);
-            //another case:
-            //  xss > 1, yss=1: because of duplicates in ys that were removed; instead apply ys.first() to each of xs
-            //  note for validation: the reverse will not work (trying to assign multiple different terms to the same variable in x)
-
-
-            return xx.getOnly().unify(yy.getOnly(), u);
-
-        } else if (originalS == s) {
-            //no commonality could be eliminated, so termute using this and Y directly avoiding the need to instantite new Termute label terms
-            u.termutes.add(new CommutivePermutations(this, y));
-            return true;
-        } else {
-
-            u.termutes.add(new CommutivePermutations(
-                    new TermList(Terms.sorted(xx.toArray(Term.EmptyArray))),
-                    new TermList(Terms.sorted(yy.toArray(Term.EmptyArray)))
-            ));
-            return true;
-
-        }
 //        } else /* yss!=xss */ {
 //            return false; //TODO this may possibly be handled
 //        }
@@ -950,7 +1031,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (!toRemove.contains(i))
                 t[j++] = sub(i);
         }
-        return (t.length == 0) ? Compound.EmptyArray : t;
+        return (t.length == 0) ? Op.EmptyTermArray : t;
     }
 
     default Term[] termsExcept(MetalBitSet toRemove) {
@@ -963,7 +1044,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (!toRemove.get(i))
                 t[j++] = sub(i);
         }
-        return t.length == 0 ? Compound.EmptyArray : t;
+        return t.length == 0 ? Op.EmptyTermArray : t;
     }
 
     default Term[] termsExcept(Collection<Term> except) {

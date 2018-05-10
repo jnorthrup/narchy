@@ -197,10 +197,17 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default boolean unify(/*@NotNull*/ Term ty, /*@NotNull*/ Unify u) {
-        return Term.super.unify(ty, u) || (op() == ty.op() && unifySubterms(ty, u));
+        return  Term.super.unify(ty, u)
+                ||
+                ( op() == ty.op() &&
+                unifySubterms(ty, u)
+        );
     }
 
     default boolean unifySubterms(Term ty, Unify u) {
+        if (!Terms.commonStructureTest(this, ty, u))
+            return false;
+
         Subterms xsubs = subterms();
         Subterms ysubs = ty.subterms();
 
@@ -210,8 +217,10 @@ public interface Compound extends Term, IPair, Subterms {
 
 
 
+
+
         if (xs>1 && isCommutative()) {
-            return xsubs.unifyCommute(ysubs, u);
+            return xsubs.unifyCommute(ysubs, ty.isCommutative(), u);
         } else {
             if (xs == 1) {
                 return sub(0).unify(ysubs.sub(0), u);

@@ -2,9 +2,9 @@ package nars.unify.mutate;
 
 import jcog.math.Combinations;
 import nars.$;
+import nars.Op;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermList;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
@@ -35,12 +35,12 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
     public Choose2(Ellipsis xEllipsis, Unify f, SortedSet<Term> x, SortedSet<Term> yFree) {
         this(xEllipsis, f,
-                x.toArray(new Term[x.size()]),
-                new TermList(yFree.toArray(new Term[yFree.size()])));
+                x.toArray(Op.EmptyTermArray),
+                $.vFast(yFree.toArray(Op.EmptyTermArray)));
     }
 
-    Choose2(Ellipsis xEllipsis, Unify f, Term[] x, TermList yFree) {
-        super(CHOOSE_2, $.pFast(x), xEllipsis, $.pFast((Subterms)yFree));
+    Choose2(Ellipsis xEllipsis, Unify f, Term[] x, Subterms yFree) {
+        super(CHOOSE_2, $.pFast(x), xEllipsis, $.sFast(yFree));
 
         this.f = f;
 

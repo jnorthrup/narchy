@@ -2,7 +2,6 @@ package nars.term;
 
 import nars.$;
 import nars.term.var.CommonVariable;
-import nars.term.var.Variable;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,12 +23,12 @@ public class CommonVariableTest {
     public void commonVariableTest1() {
         //same forward and reverse
         Variable p1p2 = CommonVariable.common(p1, p2);
-        assertEquals("#1_2", p1p2.toString());
+        assertEquals("##1#2#", p1p2.toString());
         Variable p2p1 = CommonVariable.common(p2, p1);
-        assertEquals("#1_2", p2p1.toString());
+        assertEquals("##2#1#", p2p1.toString());
     }
     @Test public void testInvalid() {
-        assertThrows(RuntimeException.class, ()-> {
+        assertThrows(Throwable.class, ()-> {
             Variable p1p1 = CommonVariable.common(p1, p1);
             assertEquals("#x1y1", p1p1.toString());
         });
@@ -42,19 +41,17 @@ public class CommonVariableTest {
 
         Variable c12_reverse = CommonVariable.common(p2, p1);
 
-        assertEquals(c12, c12_reverse);
-        assertEquals(0, c12.compareTo(c12_reverse));
-        assertEquals(0, c12_reverse.compareTo(c12));
+        assertNotEquals(c12, c12_reverse);
     }
 
     @Test
     public void CommonVariableOfCommonVariable() {
         Variable c123 = CommonVariable.common( c12,  p3);
-        assertEquals("#1_2_3 class nars.term.var.CommonVariable", (c123 + " " + c123.getClass()));
+        assertEquals("###1#2##3# class nars.term.var.CommonVariable", (c123 + " " + c123.getClass()));
 
         //duplicate: already included
-        assertSame(c123, CommonVariable.common( c123, p2));
-        assertEquals(c123, CommonVariable.common( c123, p1));
+        assertEquals("####1#2##3##2#", CommonVariable.common( c123, p2).toString());
+
 
 
     }

@@ -2,7 +2,7 @@ package nars.subterm;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
-import nars.term.Compound;
+import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
@@ -78,7 +78,7 @@ abstract public class AbstractUnitSubterm implements Subterms {
 
     public final Term[] termsExcept(int i) {
         assert(i==0);
-        return Compound.EmptyArray;
+        return Op.EmptyTermArray;
     }
 
     @Override

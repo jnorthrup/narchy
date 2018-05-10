@@ -22,7 +22,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;

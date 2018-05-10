@@ -4,6 +4,7 @@ import jcog.decide.MutableRoulette;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
+import nars.term.control.Fork;
 import nars.term.control.PrediTerm;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 
@@ -12,7 +13,7 @@ import java.util.function.Function;
 /**
  * AIKR value-determined fork (aka choice-point)
  */
-public class ValueFork extends ForkDerivation<Derivation> {
+public class ValueFork extends Fork<Derivation> {
 
 
 
@@ -47,42 +48,50 @@ public class ValueFork extends ForkDerivation<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-        int ttlAtStart = d.ttl;
-        if (ttlAtStart < Param.TTL_MIN)
-            return false; //done
+        if (d.ttl < Param.TTL_MIN)
+            return false;
+
+
+        float[] paths = value.apply(d);
+        int fanOut = paths.length;
+        assert(fanOut > 0);
 
         int before = d.now();
 
-        float[] paths = value.apply(d);
-        int nPaths = paths.length;
+        if (fanOut == 1) {
 
-        int subBudget = Math.max(Param.TTL_MIN, ttlAtStart / nPaths);
 
-        MutableRoulette.run(paths, d.random,
+            branchChoice.value(d, 0);
 
-            wi -> 0      //once per path only: after a branch is tried, dont try again
-                  //wi/2 //harmonic decay
+            return d.revertLive(before, Param.TTL_BRANCH);
 
-            , b -> {
+        } else {
 
-                int beforeTTL = d.ttl;
-                d.ttl = subBudget;
-                branchChoice.value(d, b); //fork's return bool is ignored
-                int spent = subBudget - d.ttl;
-                int afterTTL = beforeTTL - Math.max(spent, 0);
-                d.ttl = afterTTL;
+            MutableRoulette.run(paths, d.random,
 
-                return d.revertLive(before, Param.TTL_BRANCH);
+                    wi -> 0      //once per path only: after a branch is tried, dont try again
 
-            }
+                    , b -> {
 
-        );
-        return true;
+                        int beforeTTL = d.ttl;
+                        int subBudget = beforeTTL / fanOut;
+                        if (subBudget < Param.TTL_MIN)
+                            return false;
+
+                        d.ttl = subBudget;
+
+                        branchChoice.value(d, b); //fork's return bool is ignored
+
+                        int spent = subBudget - d.ttl;
+                        d.ttl = beforeTTL - Math.max(spent, 0);
+
+                        return d.revertLive(before, Param.TTL_BRANCH);
+                    }
+            );
+            return true;
+        }
     }
 
-    protected void run(int b) {
-
-    }
 
 //    void forkRoulette(Derivation d, short[] choices) {
 //        int N = choices.length;

@@ -11,7 +11,9 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
+import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
+import nars.subterm.UnitSubterm;
 import nars.subterm.util.TermList;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
@@ -27,7 +29,7 @@ import nars.term.obj.JsonTerm;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
@@ -878,29 +880,54 @@ public enum $ {
 
 
     public static Term pFast(Subterms x) {
+        if (x.subs() == 0) return Op.EmptyProduct;
         return new CompoundLight(Op.PROD,x);
     }
+
     public static Term pFast(Term... x) {
-        if (x.length == 0)
-            return Op.EmptyProduct;
-        else
-            return new CompoundLight(Op.PROD, $.vFast(x));
+        if (x.length == 0) return Op.EmptyProduct;
+        return new CompoundLight(Op.PROD,x);
     }
 
-    public static Term  sFast(Term... x) {
-        return new CompoundLight(Op.SETe, $.vFast(Terms.sorted(x)));
+    public static Term sFast(Subterms x) {
+        if (x.subs() == 0) return Op.EmptySet;
+        return new CompoundLight(Op.SETe, x);
+    }
+
+    public static Term sFast(SortedSet<Term> x) {
+        return sFast(false, x.toArray(EmptyTermArray));
+    }
+
+    public static Term sFast(boolean sort, Term... x) {
+        if (x.length == 0) return Op.EmptySet;
+        if (x.length > 1 && sort)
+            x = Terms.sorted(x);
+        return new CompoundLight(Op.SETe, x);
     }
 
     public static Term sFast(RoaringBitmap b) {
-        return sFast(ints(b)); //non-interned
+        return sFast(true, ints(b)); //non-interned
     }
 
     public static Term pFast(Collection<? extends Term> x) {
-        return new CompoundLight(Op.PROD, $.vFast(x.toArray(new Term[x.size()])));
+        return pFast(x.toArray(EmptyTermArray));
     }
 
+    /** on-stack/on-heap cheaply constructed Subterms */
     public static Subterms vFast(Term[] t) {
-        return new TermList(t);
+        switch (t.length) {
+            case 0:
+                return Op.EmptySubterms;
+            case 1:
+                return new UnitSubterm(t[0]);
+            default:
+                if (t.length < 3)
+                    return new ArrayTermVector(t);
+                else
+                    return new TermList(t);
+        }
+
+        //return Op.terms.subtermsInstance(t);
     }
 
 //    public static Term[] $$(String[] s) {

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 12/12/15.
  */
-public class TrieDeriverTest {
+public class DeriverTest {
 
     public static void print(NAR n, PrintStream p) {
         derivers(n).forEach(d -> {

@@ -2477,6 +2477,16 @@ public enum Util {
         else return otherwise;
     }
 
+    /** tests if the array is already in natural order */
+    public static <X extends Comparable> boolean isSorted(X[] x) {
+        if (x.length < 2) return true;
+        for (int i = 1; i < x.length; i++) {
+            if (x[i-1].compareTo(x[i]) > 0)
+                return false;
+        }
+        return true;
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,

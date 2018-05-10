@@ -1,11 +1,9 @@
 package nars.unify.mutate;
 
 import nars.$;
-import nars.Op;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
-import nars.term.compound.CompoundLight;
 import nars.unify.Unify;
 
 /**
@@ -24,7 +22,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
      * values could result in duplicate termutes HACK
      */
     public CommutivePermutations(Subterms X, Subterms Y) {
-        super(COMMUTIVE_PERMUTATIONS, new CompoundLight(Op.SETe,X), new CompoundLight(Op.SETe,Y));
+        super(COMMUTIVE_PERMUTATIONS, $.sFast(X), $.sFast(Y));
 
         this.x = X;
         this.y = Y;

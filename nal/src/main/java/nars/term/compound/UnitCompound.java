@@ -8,6 +8,7 @@ import nars.subterm.UnitSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
+import nars.term.Terms;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -83,10 +84,10 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public final boolean unifyLinear(Subterms Y, Unify u) {
-        if (Y.subs()!=1) return false;
-
-        return sub().unify(Y.sub(0), u);
+    public final boolean unifySubterms(Term y, Unify u) {
+        if ((y.subs()!=1) || !Terms.commonStructureTest(this, y, u))
+            return false;
+        return sub().unify(y.sub(0), u);
     }
 
 
@@ -122,10 +123,6 @@ public abstract class UnitCompound implements Compound {
         return sub().isNormalized();
     }
 
-    @Override
-    public final boolean isCommutative() {
-        return false;
-    }
 
     @Override
     public final int dt() {

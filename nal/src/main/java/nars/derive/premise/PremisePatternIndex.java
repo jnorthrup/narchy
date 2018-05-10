@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import jcog.TODO;
 import nars.NAR;
 import nars.Op;
 import nars.index.concept.MapConceptIndex;
@@ -8,7 +9,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.compound.LightCompoundDT;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
@@ -281,13 +282,11 @@ public class PremisePatternIndex extends MapConceptIndex {
                 //this.structureRequired = subterms.structure() & ~(Op.VariableBits);
             }
 
-            abstract protected boolean matchEllipsis(Subterms y, Unify subst);
+            abstract protected boolean matchEllipsis(Term y, Unify subst);
 
             @Override
             public final boolean unifySubterms(Term y, Unify u) {
-    //            if (y.volume() < volume())
-    //                return false;
-                return /*y.hasAll(structureRequired) && */matchEllipsis(y.subterms(), u);
+                return matchEllipsis(y, u);
             }
         }
 
@@ -296,11 +295,6 @@ public class PremisePatternIndex extends MapConceptIndex {
 
             public PremisePatternCompoundWithEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
                 super(op, dt, ellipsis, subterms);
-            }
-
-            @Override
-            protected boolean matchEllipsis(Subterms y, Unify subst) {
-                return matchEllipsedLinear(y, subst);
             }
 
             /**
@@ -312,8 +306,9 @@ public class PremisePatternIndex extends MapConceptIndex {
              * WARNING this implementation only works if there is one ellipse in the subterms
              * this is not tested for either
              */
-            final boolean matchEllipsedLinear(Subterms Y, Unify u) {
-
+            @Override
+            protected boolean matchEllipsis(Term y, Unify u) {
+                Subterms Y = y.subterms();
                 int i = 0, j = 0;
                 int xsize = subs();
                 int ysize = Y.subs();
@@ -434,7 +429,11 @@ public class PremisePatternIndex extends MapConceptIndex {
              * @param y the compound being matched to this
              */
             @Override
-            protected boolean matchEllipsis(Subterms y, Unify u) {
+            protected boolean matchEllipsis(Term Y, Unify u) {
+                if (Y.op().temporal && (dt!=XTERNAL) && !Y.isCommutative())
+                    throw new TODO();
+
+                Subterms y = Y.subterms();
                 //return subst.matchEllipsedCommutative(
                 //        this, ellipsis, y
                 //);

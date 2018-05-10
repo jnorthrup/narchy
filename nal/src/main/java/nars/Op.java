@@ -6,6 +6,7 @@ import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import nars.op.SetFunc;
 import nars.op.mental.AliasConcept;
+import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -14,6 +15,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.compound.CachedCompound;
 import nars.term.compound.util.Conj;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
@@ -585,7 +587,11 @@ public enum Op {
             new InterningTermBuilder();
             //new TermBuilder.HeapTermBuilder();
 
-    public static final Term EmptyProduct = terms.compound(Op.PROD, Term.EmptyArray);
+    public static final Term[] EmptyTermArray = new Term[0];
+    public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
+    public static final Term EmptyProduct = new CachedCompound.SimpleCachedCompound(Op.PROD, EmptySubterms);
+    public static final Term EmptySet = new CachedCompound.SimpleCachedCompound(Op.SETe, EmptySubterms);
+
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
 
@@ -1386,18 +1392,16 @@ public enum Op {
 
             //if (dtConcurrent) { //no temporal basis
             if (subject == True)
-                //return Null;
-                return predicate; //true tautology
+                return predicate; //true tautology: always
             if (subject == False)
-                //return Null;
-                return predicate.neg(); //false tautology
+                return Null; //false tautology: never happens, so the rule is better forgotten
 
-//            if (predicate instanceof Bool)
-//                return Null; //nothing is the "cause" of tautological trueness or falseness
-            if (predicate == True)
-                return subject;
-            if (predicate == False)
-                return subject.neg();
+            if (predicate instanceof Bool)
+                return Null; //nothing is the "cause" of tautological trueness or falseness
+//            if (predicate == True)
+//                return subject;
+//            if (predicate == False)
+//                return subject.neg();
 
             if (predicate.op() == NEG) {
                 //negated predicate gets unwrapped to outside
@@ -2045,7 +2049,7 @@ public enum Op {
 
     public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
         int s = sub.size();
-        Term[] u = sub.toArray(Term.EmptyArray);
+        Term[] u = sub.toArray(EmptyTermArray);
         return compound(dt, u);
     }
 

@@ -25,7 +25,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     public TermList(Collection<Term> copied) {
-        this(copied.toArray(Term.EmptyArray));
+        this(copied.toArray(Op.EmptyTermArray));
     }
 
     public TermList(Iterable<Term> copied) {
@@ -36,6 +36,11 @@ public class TermList extends FasterList<Term> implements Subterms {
     @Override
     public int hashCode() {
         return Subterms.hash((List)this);
+    }
+
+    @Override
+    public FasterList<Term> toList() {
+        return clone();
     }
 
     @Override

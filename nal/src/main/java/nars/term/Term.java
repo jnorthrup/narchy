@@ -24,17 +24,18 @@ package nars.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.list.FasterList;
-import nars.*;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
+import nars.The;
 import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
-import nars.subterm.TermVector;
 import nars.subterm.util.TermMetadata;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.var.NormalizedVariable;
-import nars.term.var.Variable;
 import nars.unify.Unify;
 import nars.util.SoftException;
 import nars.util.term.transform.MapSubst;
@@ -70,185 +71,32 @@ import static nars.util.time.Tense.XTERNAL;
 
 public interface Term extends Termed, Comparable<Termed> {
 
-
-    //@NotNull public static final int[] ZeroIntArray = new int[0];
-    Term[] EmptyArray = new Term[0];
     ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
 
-    @Override
-    default Term term() {
-        return this;
-    }
-
-
-    /*@NotNull*/
-    @Override
-    Op op();
-
-    @Override
-    int volume();
-
-    @Override
-    int complexity();
-
-//    @Override
-//    int varPattern();
-//
-//    @Override
-//    int varQuery();
-//
-//    @Override
-//    int varIndep();
-//
-//    @Override
-//    int varDep();
-
-    @Override
-    int structure();
-
-    @Override
-    boolean contains(Term t);
-
-    boolean containsRoot(Term t);
-
-    void append(ByteArrayDataOutput out);
-
-    @Override
-    boolean equals(Object o);
-
-    @Override
-    int hashCode();
-
-
-    /**
-     * parent compounds must pass the descent filter before ts subterms are visited;
-     * but if descent filter isnt passed, it will continue to the next sibling:
-     * whileTrue must remain true after vistiing each subterm otherwise the entire
-     * iteration terminates
-     */
-    default boolean recurseTerms(Predicate<Term> descendFilter, Predicate<Term> whileTrue, Term parent) {
-        return whileTrue.test(this);
-    }
-
-    @Override
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return reduce.intValueOf(v, this);
-    }
-
-    //    default boolean recurseTerms(Predicate<Term> parentsMust, Predicate<Term> whileTrue) {
-//        return recurseTerms(parentsMust, whileTrue, this);
-//    }
-
-    /**
-     * whether this term is or contains, as subterms, any temporal terms
-     */
-    boolean isTemporal();
-
-    /**
-     * whether this term contains any XTERNAL relations
-     */
-    default boolean hasXternal() {
-        return (dt() == XTERNAL) ||
-               (hasAny(Op.Temporal) && OR(Term::hasXternal));
-    }
-
-//    /**
-//     * returns an int[] path to the first occurrence of the specified subterm
-//     *
-//     * @return null if not a subterm, an empty int[] array if equal to this term, or a non-empty int[] array specifying subterm paths to reach it
-//     */
 //    @Nullable
-//    default byte[] pathTo(/*@NotNull*/ Term subterm) {
-//        if (subterm.equals(this)) return ArrayUtils.EMPTY_BYTE_ARRAY;
-//        //if (!containsRecursively(subterm)) return null;
-//        return
-//                this instanceof Compound && !impossibleSubTerm(subterm) ?
-//                        pathTo(new ByteArrayList(0), this.subterms(), subterm) : null;
+//    static byte[] pathTo(ByteArrayList p, Subterms superTerm, Term target) {
+//
+//        int n = superTerm.subs();
+//        for (int i = 0; i < n; i++) {
+//            Term s = superTerm.sub(i);
+//            if (s.equals(target)) {
+//                p.add((byte) i);
+//                return p.toArray();
+//            }
+//            if (s instanceof Compound && !s.impossibleSubTerm(target)) {
+//                byte[] pt = pathTo(p, s.subterms(), target);
+//                if (pt != null) {
+//                    p.add((byte) i);
+//                    return pt;
+//                }
+//
+//            }
+//        }
+//
+//        return null;
 //    }
 
-    @Nullable default Term transform(TermTransform t) {
-        Termed y = t.transformAtomic(this);
-        return y == null ? null : y.term();
-    }
-
-    @Nullable
-    default Term transform(/*@NotNull*/ ByteList path, Term replacement) {
-        return transform(path, 0, replacement);
-    }
-
-
-    @Nullable
-    default Term transform(/*@NotNull*/ ByteList path, int depth, Term replacement) {
-        final Term src = this;
-        int ps = path.size();
-        if (ps == depth)
-            return replacement;
-        if (ps < depth)
-            throw new RuntimeException("path overflow");
-
-        if (!(src instanceof Compound))
-            return src; //path wont continue inside an atom
-
-        Compound csrc = (Compound) src;
-        Subterms css = csrc.subterms();
-
-        int n = css.subs();
-        if (n == 0) return src;
-
-        Term[] target = new Term[n];
-
-        for (int i = 0; i < n; i++) {
-            Term x = css.sub(i);
-            if (path.get(depth) != i)
-                //unchanged subtree
-                target[i] = x;
-            else {
-                //replacement is in this subtree
-                target[i] = x.subs() == 0 ? replacement : x.transform(path, depth + 1, replacement);
-            }
-
-        }
-
-        return csrc.op().compound(csrc.dt(), target);
-    }
-
-    default <X> boolean pathsTo(/*@NotNull*/ Function<Term, X> target, Predicate<Term> descendIf, /*@NotNull*/ BiPredicate<ByteList, X> receiver) {
-        X ss = target.apply(this);
-        if (ss != null) {
-            if (!receiver.test(EmptyByteList, ss))
-                return false;
-        }
-        if (this.subs() > 0) {
-            return pathsTo(this, new ByteArrayList(0), descendIf, target, receiver);
-        } else {
-            return true;
-        }
-    }
-
-    @Nullable
-    static byte[] pathTo(/*@NotNull*/ ByteArrayList p, Subterms superTerm, /*@NotNull*/ Term target) {
-
-        int n = superTerm.subs();
-        for (int i = 0; i < n; i++) {
-            Term s = superTerm.sub(i);
-            if (s.equals(target)) {
-                p.add((byte) i);
-                return p.toArray();
-            }
-            if (s instanceof Compound && !s.impossibleSubTerm(target)) {
-                byte[] pt = pathTo(p, s.subterms(), target);
-                if (pt != null) {
-                    p.add((byte) i);
-                    return pt;
-                }
-
-            }
-        }
-
-        return null;
-    }
-
-    static <X> boolean pathsTo(Term that, /*@NotNull*/ ByteArrayList p, Predicate<Term> descendIf,/*@NotNull*/ Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
+    static <X> boolean pathsTo(Term that, ByteArrayList p, Predicate<Term> descendIf, Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
         if (!descendIf.test(that))
             return true;
 
@@ -284,6 +132,160 @@ public interface Term extends Termed, Comparable<Termed> {
         return true;
     }
 
+    static Term nullIfNull(@Nullable Term maybeNull) {
+        return (maybeNull == null) ? Null : maybeNull;
+    }
+
+    /**
+     * opX function
+     */
+    static int opX(Op o, short subOp) {
+        return (o.id << 16) | (subOp);
+    }
+
+    /**
+     * for convenience, delegates to the byte function
+     */
+    @Deprecated
+    static int opX(Op o, int subOp) {
+        assert (subOp < Short.MAX_VALUE - 1);
+        return opX(o, (short) subOp);
+    }
+
+    @Override
+    default Term term() {
+        return this;
+    }
+
+    @Override
+    Op op();
+
+    @Override
+    int volume();
+
+    @Override
+    int complexity();
+
+    @Override
+    int structure();
+
+    @Override
+    boolean contains(Term t);
+
+    boolean containsRoot(Term t);
+
+    //    default boolean recurseTerms(Predicate<Term> parentsMust, Predicate<Term> whileTrue) {
+//        return recurseTerms(parentsMust, whileTrue, this);
+//    }
+
+    void append(ByteArrayDataOutput out);
+
+    @Override
+    boolean equals(Object o);
+
+//    /**
+//     * returns an int[] path to the first occurrence of the specified subterm
+//     *
+//     * @return null if not a subterm, an empty int[] array if equal to this term, or a non-empty int[] array specifying subterm paths to reach it
+//     */
+//    @Nullable
+//    default byte[] pathTo( Term subterm) {
+//        if (subterm.equals(this)) return ArrayUtils.EMPTY_BYTE_ARRAY;
+//        //if (!containsRecursively(subterm)) return null;
+//        return
+//                this instanceof Compound && !impossibleSubTerm(subterm) ?
+//                        pathTo(new ByteArrayList(0), this.subterms(), subterm) : null;
+//    }
+
+    @Override
+    int hashCode();
+
+    /**
+     * parent compounds must pass the descent filter before ts subterms are visited;
+     * but if descent filter isnt passed, it will continue to the next sibling:
+     * whileTrue must remain true after vistiing each subterm otherwise the entire
+     * iteration terminates
+     */
+    default boolean recurseTerms(Predicate<Term> descendFilter, Predicate<Term> whileTrue, Term parent) {
+        return whileTrue.test(this);
+    }
+
+    @Override
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        return reduce.intValueOf(v, this);
+    }
+
+    /**
+     * whether this term is or contains, as subterms, any temporal terms
+     */
+    boolean isTemporal();
+
+    /**
+     * whether this term contains any XTERNAL relations
+     */
+    default boolean hasXternal() {
+        return (dt() == XTERNAL) ||
+                (hasAny(Op.Temporal) && OR(Term::hasXternal));
+    }
+
+    @Nullable
+    default Term transform(TermTransform t) {
+        Termed y = t.transformAtomic(this);
+        return y == null ? null : y.term();
+    }
+
+    @Nullable
+    default Term transform(ByteList path, Term replacement) {
+        return transform(path, 0, replacement);
+    }
+
+    @Nullable
+    default Term transform(ByteList path, int depth, Term replacement) {
+        final Term src = this;
+        int ps = path.size();
+        if (ps == depth)
+            return replacement;
+        if (ps < depth)
+            throw new RuntimeException("path overflow");
+
+        if (!(src instanceof Compound))
+            return src; //path wont continue inside an atom
+
+        Compound csrc = (Compound) src;
+        Subterms css = csrc.subterms();
+
+        int n = css.subs();
+        if (n == 0) return src;
+
+        Term[] target = new Term[n];
+
+        for (int i = 0; i < n; i++) {
+            Term x = css.sub(i);
+            if (path.get(depth) != i)
+                //unchanged subtree
+                target[i] = x;
+            else {
+                //replacement is in this subtree
+                target[i] = x.subs() == 0 ? replacement : x.transform(path, depth + 1, replacement);
+            }
+
+        }
+
+        return csrc.op().compound(csrc.dt(), target);
+    }
+
+    default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
+        X ss = target.apply(this);
+        if (ss != null) {
+            if (!receiver.test(EmptyByteList, ss))
+                return false;
+        }
+        if (this.subs() > 0) {
+            return pathsTo(this, new ByteArrayList(0), descendIf, target, receiver);
+        } else {
+            return true;
+        }
+    }
 
     @Nullable
     default Term commonParent(List<ByteList> subpaths) {
@@ -316,7 +318,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    default Term subPath(/*@NotNull*/ ByteList path) {
+    default Term subPath(ByteList path) {
         Term ptr = this;
         int s = path.size();
         for (int i = 0; i < s; i++)
@@ -330,12 +332,12 @@ public interface Term extends Termed, Comparable<Termed> {
      * returns null if specified subterm does not exist
      */
     @Nullable
-    default Term subPath(/*@NotNull*/ byte... path) {
+    default Term subPath(byte... path) {
         return subPath(path.length, path);
     }
 
     @Nullable
-    default Term subPath(int n, /*@NotNull*/ byte... path) {
+    default Term subPath(int n, byte... path) {
         Term ptr = this;
         for (byte b : path) {
             if ((ptr = ptr.sub(b)) == Null)
@@ -345,7 +347,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    default Term subPath(int n, /*@NotNull*/ ByteList path) {
+    default Term subPath(int n, ByteList path) {
         Term ptr = this;
         for (int i = 0; i < n; i++) {
             if ((ptr = ptr.sub(path.get(i))) == Null)
@@ -353,6 +355,18 @@ public interface Term extends Termed, Comparable<Termed> {
         }
         return ptr;
     }
+
+//    /** for multiple Op comparsions, use Op.or to produce an int and call isAny(int vector) */
+//    default boolean isA( Op otherOp) {
+//        return op() == otherOp;
+//    }
+
+
+//    default boolean hasAll(int structuralVector) {
+//        final int s = structure();
+//        return (s & structuralVector) == s;
+//    }
+//
 
     /**
      * Commutivity in NARS means that a Compound term's
@@ -367,52 +381,6 @@ public interface Term extends Termed, Comparable<Termed> {
      * @return The default value is false
      */
     boolean isCommutative();
-
-
-    /**
-     * equlity has already been tested prior to calling this
-     *
-     * @param y       another term
-     * @param ignored the unification context
-     * @return whether unification succeeded
-     */
-    default boolean unify(Term y, Unify u) {
-//        if (((this instanceof Atomic) || !isCommutative() || u.constant(this, y)) && this.equals(y)) {
-//            return true; //only assume unification via equality if not a compound, since
-        if (equals(y) && (!isCommutative() || u.constant(this, y))) {
-            return true; //only assume unification via equality if not a compound, since
-        } else if (y instanceof Variable && !(this instanceof Variable) && u.varSymmetric && u.matchType(y.op())) {
-            return y.unify(this, u); //reverse
-        } else if (y instanceof AliasConcept.AliasAtom) {
-            return unify(((AliasConcept.AliasAtom) y).target, u); //dereference alias
-        } else {
-            return false;
-        }
-    }
-
-
-    /**
-     * true if the operator bit is included in the enabld bits of the provided vector
-     */
-    default boolean isAny(int bitsetOfOperators) {
-        int s = op().bit;
-        return (bitsetOfOperators & s) > 0;
-    }
-
-//    /** for multiple Op comparsions, use Op.or to produce an int and call isAny(int vector) */
-//    default boolean isA(/*@NotNull*/ Op otherOp) {
-//        return op() == otherOp;
-//    }
-
-
-//    default boolean hasAll(int structuralVector) {
-//        final int s = structure();
-//        return (s & structuralVector) == s;
-//    }
-//
-
-
-    void append(Appendable w) throws IOException;
 
 //    default public void append(Writer w, boolean pretty) throws IOException {
 //        //try {
@@ -432,6 +400,39 @@ public interface Term extends Termed, Comparable<Termed> {
 //        return toStringBuilder(pretty).toString();
 //    }
 
+    /**
+     * equlity has already been tested prior to calling this
+     *
+     * @param y       another term
+     * @param ignored the unification context
+     * @return whether unification succeeded
+     */
+    default boolean unify(Term y, Unify u) {
+//        if (((this instanceof Atomic) || !isCommutative() || u.constant(this, y)) && this.equals(y)) {
+//            return true; //only assume unification via equality if not a compound, since
+        //if (equals(y) && (!isCommutative() || u.constant(this, y))) {
+        if (equals(y) && (u.constant(this, y))) {
+            return true; //only assume unification via equality if not a compound, since
+        }
+        //TODO replace with a Term.unifiedWith() method that can override the current false return value
+        if (y instanceof Variable && u.varSymmetric && u.matchType(y.op())) {
+            return y.unify(this, u); //reverse
+        } else if (y instanceof AliasConcept.AliasAtom) {
+            return unify(((AliasConcept.AliasAtom) y).target, u); //dereference alias
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * true if the operator bit is included in the enabld bits of the provided vector
+     */
+    default boolean isAny(int bitsetOfOperators) {
+        int s = op().bit;
+        return (bitsetOfOperators & s) > 0;
+    }
+
+    void append(Appendable w) throws IOException;
 
     default String structureString() {
         return String.format("%16s",
@@ -439,48 +440,23 @@ public interface Term extends Termed, Comparable<Termed> {
                 .replace(" ", "0");
     }
 
-
     @Override
     default boolean isNormalized() {
         return true;
     }
-
 
     /**
      * computes the first occuring event's time relative to the start of a conjunction
      *
      * @param x subterm which must be present
      */
-    default int subTime(/*@NotNull*/ Term x) {
+    default int subTime(Term x) {
 
         int d = subTimeSafe(x);
         if (d != DTERNAL)
             return d;
 
         throw new RuntimeException(x + " not contained by " + this);
-    }
-
-    /**
-     * computes the first occuring event's time relative to the start of the
-     * temporal term
-     *
-     * @param dt the current offset in the search
-     * @return DTERNAL if the subterm was not found
-     */
-    default int subTimeSafe(/*@NotNull*/ Term x, int after) {
-        return equals(x) ? 0 : DTERNAL;
-    }
-
-    default int subTimeSafe(/*@NotNull*/ Term x) {
-        return subTimeSafe(x, 0);
-    }
-
-
-    /**
-     * total span across time represented by a sequence conjunction compound
-     */
-    default int dtRange() {
-        return 0;
     }
 
 
@@ -502,7 +478,7 @@ public interface Term extends Termed, Comparable<Termed> {
 //    }
 //
 //
-//    default ByteList structureKey(/*@NotNull*/ ByteArrayList appendTo) {
+//    default ByteList structureKey( ByteArrayList appendTo) {
 //        appendTo.add(op().id);
 //        return appendTo;
 //    }
@@ -530,13 +506,34 @@ public interface Term extends Termed, Comparable<Termed> {
 //        return list;
 //    }
 
-    default boolean pathsTo(/*@NotNull*/ Term target, /*@NotNull*/ BiPredicate<ByteList, Term> receiver) {
+    /**
+     * computes the first occuring event's time relative to the start of the
+     * temporal term
+     *
+     * @param dt the current offset in the search
+     * @return DTERNAL if the subterm was not found
+     */
+    default int subTimeSafe(Term x, int after) {
+        return equals(x) ? 0 : DTERNAL;
+    }
+
+    default int subTimeSafe(Term x) {
+        return subTimeSafe(x, 0);
+    }
+
+    /**
+     * total span across time represented by a sequence conjunction compound
+     */
+    default int dtRange() {
+        return 0;
+    }
+
+    default boolean pathsTo(Term target, BiPredicate<ByteList, Term> receiver) {
         return pathsTo(
                 x -> target.equals(x) ? x : null,
                 x -> !x.impossibleSubTerm(target),
                 receiver);
     }
-
 
     /**
      * operator extended:
@@ -548,7 +545,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * GLOBAL TERM COMPARATOR FUNCTION
      */
     @Override
-    default int compareTo(/*@NotNull*/ Termed _y) {
+    default int compareTo(Termed _y) {
         if (this == _y) return 0;
 
         Term y = _y.term();
@@ -596,14 +593,13 @@ public interface Term extends Termed, Comparable<Termed> {
 
     @Override
     default Subterms subterms() {
-        return TermVector.Empty;
+        return EmptySubterms;
     }
-
 
     /**
      * unwraps any negation superterm
      */
-    /*@NotNull*/
+
     @Override
     default Term unneg() {
         return this;
@@ -612,42 +608,13 @@ public interface Term extends Termed, Comparable<Termed> {
     /**
      * for safety, dont override this method. override evalSafe
      */
-    /*@NotNull*/
+
     default Term eval(Evaluation.TermContext context) {
         return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
     }
+
     default Term eval(NAR nar) {
         return eval(nar.concepts.functors);
-    }
-    /*@NotNull*/
-
-    /**
-     *
-     * @param context
-     * @param whichSubterm current subterm index being evaluated
-     * @param remain recursion limit (valid until decreases to zero)
-     * @return
-     */
-    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int whichSubterm, int remain) {
-        return /*remain <= 0 ? Null : */
-                context.applyTermIfPossible(this, supertermOp, whichSubterm);
-    }
-
-
-    /**
-     * includes itself in the count unless it's a CONJ sequence in which case it becomes the sum of the subterms event counts
-     */
-    default int eventCount() {
-        return 1;
-    }
-
-
-    /* collects any contained events */
-    @Deprecated default void events(Consumer<LongObjectPair<Term>> events) {
-        eventsWhile((w, t) -> {
-            events.accept(PrimitiveTuples.pair(w, t));
-            return true; //continue
-        }, 0);
     }
 
 //    default MutableSet<LongObjectPair<Term>> eventSet(long offset) {
@@ -660,24 +627,22 @@ public interface Term extends Termed, Comparable<Termed> {
 //        return events;
 //    }
 
-    default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
-        return eventList(offset, dtDither, true, false);
+    /**
+     * @param context
+     * @param whichSubterm current subterm index being evaluated
+     * @param remain       recursion limit (valid until decreases to zero)
+     * @return
+     */
+    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int whichSubterm, int remain) {
+        return /*remain <= 0 ? Null : */
+                context.applyTermIfPossible(this, supertermOp, whichSubterm);
     }
-    /** sorted by time; decomposes inner parallel conj
-     * TODO make sorting optional
-     * */
-    default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither, boolean decomposeParallel, boolean decomposeEternal) {
-        FasterList<LongObjectPair<Term>> events = new FasterList(2);
-        eventsWhile((w, t) -> {
-            events.add(PrimitiveTuples.pair(
-                    (dtDither > 1) ? Tense.dither(w, dtDither) : w,
-                    t));
-            return true; //continue
-        }, offset, decomposeParallel, decomposeEternal, false, 0);
-        if (events.size() > 1) {
-            events.sortThisByLong(LongObjectPair::getOne);
-        }
-        return events;
+
+    /**
+     * includes itself in the count unless it's a CONJ sequence in which case it becomes the sum of the subterms event counts
+     */
+    default int eventCount() {
+        return 1;
     }
 
 //    default LongObjectHashMap<Term> eventMap(long offset) {
@@ -692,17 +657,48 @@ public interface Term extends Termed, Comparable<Termed> {
 //        return events;
 //    }
 
+    /* collects any contained events */
+    @Deprecated
+    default void events(Consumer<LongObjectPair<Term>> events) {
+        eventsWhile((w, t) -> {
+            events.accept(PrimitiveTuples.pair(w, t));
+            return true; //continue
+        }, 0);
+    }
+
+    default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
+        return eventList(offset, dtDither, true, false);
+    }
+
+    /**
+     * sorted by time; decomposes inner parallel conj
+     * TODO make sorting optional
+     */
+    default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither, boolean decomposeParallel, boolean decomposeEternal) {
+        FasterList<LongObjectPair<Term>> events = new FasterList(2);
+        eventsWhile((w, t) -> {
+            events.add(PrimitiveTuples.pair(
+                    (dtDither > 1) ? Tense.dither(w, dtDither) : w,
+                    t));
+            return true; //continue
+        }, offset, decomposeParallel, decomposeEternal, false, 0);
+        if (events.size() > 1) {
+            events.sortThisByLong(LongObjectPair::getOne);
+        }
+        return events;
+    }
+
     /**
      * event list, sorted by time
      * sorted by time; decomposes inner parallel conj
      */
-    /* final */ default FasterList<LongObjectPair<Term>> eventList() {
+    /* final */
+    default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0, 1);
     }
 
-
-
-    /* final */ default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {
+    /* final */
+    default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {
         return eventsWhile(whileEachEvent, dt, true, false, false, 0);
     }
 
@@ -711,6 +707,11 @@ public interface Term extends Termed, Comparable<Termed> {
         return whileEachEvent.accept(dt, this);
     }
 
+//    /** https://google.github.io/guava/releases/snapshot/api/docs/com/google/common/collect/TreeTraverser.html */
+//    default TreeTraverser<Term> termverse() {
+//        return TreeTraverser.using(x -> x instanceof Compound ? ((Compound)x).subterms() : Collections.emptyList());
+//    }
+
     default void printRecursive() {
         printRecursive(System.out);
     }
@@ -718,31 +719,6 @@ public interface Term extends Termed, Comparable<Termed> {
     default void printRecursive(@NotNull PrintStream out) {
         Terms.printRecursive(out, this);
     }
-
-    static Term nullIfNull(@Nullable Term maybeNull) {
-        return (maybeNull == null) ? Null : maybeNull;
-    }
-
-//    /** https://google.github.io/guava/releases/snapshot/api/docs/com/google/common/collect/TreeTraverser.html */
-//    default TreeTraverser<Term> termverse() {
-//        return TreeTraverser.using(x -> x instanceof Compound ? ((Compound)x).subterms() : Collections.emptyList());
-//    }
-
-    /**
-     * opX function
-     */
-    static int opX(Op o, short subOp) {
-        return (o.id << 16) | (subOp);
-    }
-
-    /**
-     * for convenience, delegates to the byte function
-     */
-    @Deprecated static int opX(/*@NotNull*/ Op o, int subOp) {
-        assert(subOp < Short.MAX_VALUE-1);
-        return opX(o, (short) subOp);
-    }
-
 
     default Term dt(int dt) {
 //        if (dt!=DTERNAL)
@@ -813,7 +789,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
 
     @Nullable
-    default Term replace(/*@NotNull*/ Map<Term, Term> m) {
+    default Term replace(Map<Term, Term> m) {
         Subst s = MapSubst.the(m);
         return s != null ? transform(s) : this;
     }
@@ -880,25 +856,28 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     final class InvalidTermException extends SoftException {
 
-        @NotNull private final Op op;
+        @NotNull
+        private final Op op;
         private final int dt;
-        @NotNull private final Term[] args;
-        @NotNull private final String reason;
+        @NotNull
+        private final Term[] args;
+        @NotNull
+        private final String reason;
 
 
-        public InvalidTermException(/*@NotNull*/ Op op, @NotNull Term[] args, @NotNull String reason) {
+        public InvalidTermException(Op op, @NotNull Term[] args, @NotNull String reason) {
             this(op, DTERNAL, reason, args);
         }
 
-        public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull Term[] args, @NotNull String reason) {
+        public InvalidTermException(Op op, int dt, @NotNull Term[] args, @NotNull String reason) {
             this(op, dt, reason, args);
         }
 
-        public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull Subterms args, @NotNull String reason) {
+        public InvalidTermException(Op op, int dt, @NotNull Subterms args, @NotNull String reason) {
             this(op, dt, reason, args.arrayShared());
         }
 
-        public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull String reason, @NotNull Term... args) {
+        public InvalidTermException(Op op, int dt, @NotNull String reason, @NotNull Term... args) {
             this.op = op;
             this.dt = dt;
             this.args = args;

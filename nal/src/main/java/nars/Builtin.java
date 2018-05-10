@@ -20,7 +20,7 @@ import nars.term.atom.Int;
 import nars.term.compound.util.Conj;
 import nars.term.compound.util.Image;
 import nars.term.obj.QuantityTerm;
-import nars.term.var.Variable;
+import nars.term.Variable;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;

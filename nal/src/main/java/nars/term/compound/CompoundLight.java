@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -13,6 +14,10 @@ public class CompoundLight implements Compound {
     final Subterms subs;
     private final Op op;
     private final int hash;
+
+    public CompoundLight(Op o, Term... s) {
+        this(o, $.vFast(s));
+    }
 
     public CompoundLight(Op o, Subterms s) {
         this.op = o;
