@@ -1,17 +1,17 @@
 package nars.perf;
 
-import jcog.data.MultiOutputStream;
+import jcog.io.arff.ARFF;
 import jcog.optimize.Result;
 import jcog.optimize.Tweaks;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
 import nars.control.MetaGoal;
-import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
+import nars.nal.nal3.NAL3Test;
 
-import java.io.*;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 public class NARTestOptimize {
 
     static final int threads =
-            5;
+            3;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
@@ -30,14 +30,25 @@ public class NARTestOptimize {
 
     public static void main(String[] args) {
 
-        try {
-            PrintStream out = System.out;
-            OutputStream fout = new FileOutputStream(new File("/tmp/" + NARTestOptimize.class.getSimpleName() + ".csv"));
-            System.setOut(new PrintStream(new MultiOutputStream(out, fout)));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            PrintStream out = System.out;
+//            OutputStream fout = new FileOutputStream(new File("/tmp/" + NARTestOptimize.class.getSimpleName() + ".csv"));
+//            System.setOut(new PrintStream(new MultiOutputStream(out, fout)));
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
+        final ARFF[] results = new ARFF[1];
+
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            String file = "/tmp/" + NARTestOptimize.class + "_" + System.currentTimeMillis() + ".arff";
+            try {
+                results[0].writeToFile(file);
+                System.out.println("saved: " + file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
         while (true) {
             Result<NAR> r = new Tweaks<>(() -> {
                 NAR n = NARS.tmp();
@@ -75,22 +86,26 @@ public class NARTestOptimize {
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(4 /*32*1024*/, 1, (n) ->
-                        JUnitNAR.tests(exe, n, 0.25f,
+                .optimize(2 /*32*1024*/, 1, (n) ->
+                        JUnitNAR.tests(exe, n, 0.05f,
                                 NAL1Test.class,
-                                NAL1MultistepTest.class,
-                                NAL2Test.class
-//                                NAL3Test.class
-//                                ,NAL5Test.class
-                                //NAL6Test.class
-
-                                //NAL7Test.class,
-                                //NAL8Test.class
+//                                NAL1MultistepTest.class,
+                                NAL2Test.class,
+                                NAL3Test.class
+//                                NAL5Test.class,
+//                                NAL6Test.class,
+//                                NAL7Test.class,
+//                                NAL8Test.class
                         ));
 
-            r.print();
-            r.tree(2, 8).print();
-            System.out.println();
+            //r.print();
+            //r.tree(2, 8).print();
+            if (results[0] == null)
+                results[0] = r.data;
+            else {
+                results[0].addAll(r.data);
+            }
+            System.out.println("ARFF: " + results[0].data.size());
         }
 
 

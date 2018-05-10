@@ -15,8 +15,8 @@ import static nars.Op.*;
  */
 abstract public class Truthify extends AbstractPred<Derivation>  {
 
-    public final TruthOperator belief;
-    public final TruthOperator goal;
+    private final TruthOperator belief;
+    private final TruthOperator goal;
     private final boolean projectBeliefToTask;
 
     Truthify(Term id, TruthOperator belief, TruthOperator goal, boolean projectBeliefToTask) {
@@ -28,7 +28,7 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
 
     @Override
     public float cost() {
-        return 2f;
+        return 2.0f;
     }
 
 
@@ -98,11 +98,8 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
     }
 
 
-    public byte punc(Derivation d) {
-        return d.taskPunc;
-    }
+    abstract byte punc(Derivation d);
 
-    public abstract byte punc(byte taskPunc);
 
 
     /**
@@ -112,16 +109,11 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
         private final byte puncOverride;
 
 
-        public TruthifyPuncOverride(Term i, byte puncOverride, TruthOperator belief, TruthOperator desire, boolean projectBeliefToTask) {
-            super(i, belief, desire, projectBeliefToTask);
+        public TruthifyPuncOverride(Term id, byte puncOverride, TruthOperator belief, TruthOperator desire, boolean projectBeliefToTask) {
+            super(id, belief, desire, projectBeliefToTask);
             this.puncOverride = puncOverride;
         }
 
-
-        @Override
-        public byte punc(byte taskPunc) {
-            return puncOverride;
-        }
 
         @Override
         public byte punc(Derivation d) {
@@ -140,9 +132,10 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
         }
 
         @Override
-        public byte punc(byte taskPunc) {
-            return taskPunc;
+        byte punc(Derivation d) {
+            return d.taskPunc;
         }
+
     }
 
 //    static byte unpunc(byte punc) {

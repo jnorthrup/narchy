@@ -5,6 +5,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.Concept;
+import nars.control.DurService;
 import nars.exe.AbstractExec;
 import nars.test.DeductiveMeshTest;
 import spacegraph.SpaceGraph;
@@ -25,7 +26,7 @@ public class SimpleConceptGraph2D {
 //        n.input("c:d.");
 //        n.input("d:e.");
 //        n.run(10);
-        new DeductiveMeshTest(n, 3, 3);
+        new DeductiveMeshTest(n, 5, 5);
 
         Graph2D<Concept> g = new Graph2D<Concept>()
                 .layout(new ForceDirected2D<>() {
@@ -35,7 +36,7 @@ public class SimpleConceptGraph2D {
                             float pri = ((AbstractExec)n.exe).active.pri(nn.id, 0f);
                             nn.color(pri, pri/2f, 0f);
 
-                            float p = (float) (20f + Math.sqrt(pri) * 60f);
+                            float p = (float) (1f + Math.sqrt(pri) * 60f);
                             nn.pos(RectFloat2D.XYWH(nn.cx(), nn.cy(), p, p));
                         });
                         super.layout(g, dtMS);
@@ -51,12 +52,12 @@ public class SimpleConceptGraph2D {
             //)
             ,800, 800
         );
-        n.onCycle(()->{
+        DurService.on(n, (()->{
             g.update(
                 ()->n.conceptsActive().map(PLink::get).iterator(),
-            true);
-        });
-        n.startFPS(40f);
+            false);
+        }));
+        n.startFPS(80f);
     }
 
     private static class TermlinkVis implements Graph2D.Graph2DLayer<Concept> {

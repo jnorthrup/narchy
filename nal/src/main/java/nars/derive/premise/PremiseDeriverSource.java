@@ -101,7 +101,7 @@ public class PremiseDeriverSource extends ProxyTerm {
         if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
-        return Op.terms.newSubterms(a, b);
+        return Op.terms.subtermsInstance(a, b); //direct
     }
 }
 

@@ -33,15 +33,15 @@ abstract public class TermMetadata implements Termlike {
      */
     public final int hash;
 
-    public static class SubtermMetadataCollector {
+    public static final class SubtermMetadataCollector {
         public int structure = 0;
         public int vol = 1;
         public int varPattern = 0, varQuery = 0, varDep = 0, varIndep = 0;
         public int hash = 1;
 
         public void collectNonVar(Op type, int hash) {
-            vol++;
-            structure |= type.bit;
+            this.vol++;
+            this.structure |= type.bit;
             this.hash = Util.hashCombine(this.hash, hash);
         }
     }

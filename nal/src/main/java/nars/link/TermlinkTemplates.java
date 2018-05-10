@@ -246,7 +246,7 @@ public class TermlinkTemplates extends FasterList<Term> {
     }
 
     /** creates a sub-array of the conceptualizable terms and shuffles them */
-    public Concept[] conceptsShuffled(NAR nar, boolean conceptualize) {
+    public Concept[] concepts(NAR nar, boolean conceptualize) {
         int concepts = this.concepts;
         if (concepts == 0)
             return Concept.EmptyArray;
@@ -260,13 +260,10 @@ public class TermlinkTemplates extends FasterList<Term> {
         if (nulls == concepts)
             return Concept.EmptyArray; //none conceptualizable
         else if (nulls > 0) {
-            x = ArrayUtils.removeNulls(x, Concept[]::new);
+            return ArrayUtils.removeNulls(x, Concept[]::new);
+        } else {
+            return x;
         }
-
-        if (x.length > 1)
-            ArrayUtils.shuffle(x, nar.random());
-
-        return x;
     }
 
     public static boolean conceptualizable(Term x) {

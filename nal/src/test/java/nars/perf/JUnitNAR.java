@@ -55,7 +55,7 @@ public class JUnitNAR {
             throw new RuntimeException("no tests remain");
 
         int totalTests = mm;
-        final CountDownLatch remain = new CountDownLatch(totalTests);
+        final CountDownLatch remain = new CountDownLatch(methods.size());
         final AtomicDouble sum = new AtomicDouble(0);
         methods.forEach(m -> exe.execute(() -> {
             try {

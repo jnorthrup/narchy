@@ -5,6 +5,7 @@ import nars.*;
 import nars.derive.premise.PremisePatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.anon.Anon;
 import nars.test.TestNAR;
 import nars.unify.Unify;
 import nars.util.signal.RuleTest;
@@ -43,37 +44,57 @@ public class UnifyTest {
 //        return t;
 //    }
 
-    static /**/ Compound pattern(/**/ String s) throws Narsese.NarseseException {
-        return (Compound) new PremisePatternIndex().pattern(Narsese.the().term(s, false));
+    public static /**/ Term pattern(/**/ String s) throws Narsese.NarseseException {
+        Term ss = Narsese.the().term(s, false);
+        return pattern(ss);
     }
 
-    
-    Unify test(/**/ Op type,  String s1,  String s2, boolean shouldSub) {
+    public static Term pattern(Term ss) {
+        return new PremisePatternIndex().pattern(ss);
+    }
+
+
+    void test(/**/ Op type,  String s1,  String s2, boolean shouldSub) {
+        test(type, s1, s2, shouldSub, false, false);
+//        test(type, s1, s2, shouldSub, true, true);
+        test(type, s1, s2, shouldSub, true, true);
+    }
+
+    Unify test(/**/ Op type,  String s1,  String s2, boolean shouldSub, boolean anon1, boolean anon2) {
 
         //
 
         //NAR nar = NARS.shell();
+        Anon a = new Anon();
+
         try {
 
-            Compound t2 = (Compound) Narsese.the().term(s2, true);
+            Term t2 = Narsese.the().term(s2, true);
+            if (anon2) t2 = a.put(t2).normalize();
+
+            Term t1;
+            if (type == Op.VAR_PATTERN) {
+                t1 = Narsese.the().term(s1, false); //special handling for ellipsis
+                if (anon1) t1 = pattern(a.put(t1)).normalize();
+                else t1 = pattern(t1).normalize();
+            } else {
+                t1 = Narsese.the().term(s1, true);
+                if (anon1) t1 = a.put(t1).normalize();
+            }
+
+
+            assertNotNull(t1);
             assertNotNull(t2);
 
-            Compound t1;
-            if (type == Op.VAR_PATTERN) {
-                t1 = pattern(s1); //special handling for ellipsis
-                assertNotNull(t1);
-            } else {
-                t1 = (Compound) Narsese.the().term(s1, true);
-            }
 
 
 //            nar.question(s2);
 //            nar.run(cycles);
 
 
-            Set<Term> t1u = t1.recurseTermsToSet(type);
+            Set<Term> t1u = ((Compound)t1).recurseTermsToSet(type);
             //assertTrue(t1u.size() > 0);
-            Set<Term> t2u = t2.recurseTermsToSet(type);
+            //Set<Term> t2u = ((Compound)t2).recurseTermsToSet(type);
             //assertTrue(t2u.size() == 0);
 
             int n1 = t1u.size(); //Sets.difference(t1u, t2u).size();
@@ -122,7 +143,7 @@ public class UnifyTest {
                 }
             };
 
-            sub.unify(t1.term(), t2.term(), true);
+            sub.unify(t1, t2, true);
 
             sub.revert(0); //for testing
 
@@ -225,7 +246,7 @@ public class UnifyTest {
 
     @Test
     public void pattern_trySubs_Var_2_product_and_common_depvar_bidirectional() {
-        Unify sub = test(Op.VAR_DEP,
+        test(Op.VAR_DEP,
                 "(<(#1,x) --> on>,<(SELF,x) --> at>)",
                 "(<(SELF,x) --> on>,<(#1,x) --> at>)",
                 true);
@@ -910,7 +931,7 @@ public class UnifyTest {
 
     @Test
     public void patternMatchesQuery1() {
-        Unify f = test(Op.VAR_PATTERN,
+        test(Op.VAR_PATTERN,
                 "(<%1 <-> %2>, <%3 <-> %2>)",
                 "(<x <-> ?1>, <y <-> ?1>)",
                 true);
@@ -918,7 +939,7 @@ public class UnifyTest {
 
     @Test
     public void patternMatchesQuery2() {
-        Unify f = test(Op.VAR_PATTERN,
+        test(Op.VAR_PATTERN,
                 "(<%1 <-> %2>, <%3 <-> %2>)",
                 "(<bird <-> {?1}>, <bird <-> {?1}>)",
                 true);
@@ -926,7 +947,7 @@ public class UnifyTest {
 
     @Test
     public void varDep2() {
-        Unify f = test(Op.VAR_DEP,
+        test(Op.VAR_DEP,
                 "t:(#x | {#y})",
                 "t:(x | {y})",
                 true);

@@ -5,12 +5,6 @@ import nars.Op;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
-import nars.nal.nal4.NAL4Test;
-import nars.nal.nal5.NAL5Test;
-import nars.nal.nal6.NAL6Test;
-import nars.nal.nal7.NAL7Test;
-import nars.nal.nal8.NAL8Test;
-import nars.util.term.builder.HeapTermBuilder;
 import nars.util.term.builder.InterningTermBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
@@ -38,11 +32,11 @@ public class NARTestBenchmark {
             NAL1Test.class,
             NAL2Test.class,
             NAL3Test.class,
-            NAL4Test.class,
-            NAL5Test.class,
-            NAL6Test.class,
-            NAL7Test.class,
-            NAL8Test.class
+//            NAL4Test.class,
+//            NAL5Test.class,
+//            NAL6Test.class,
+//            NAL7Test.class,
+//            NAL8Test.class
     };
 
 
@@ -62,13 +56,13 @@ public class NARTestBenchmark {
     }
 
 
-    @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @Fork(1)
-    public void testHeap() {
-        Op.terms = new HeapTermBuilder();
-        runTests();
-    }
+//    @Benchmark
+//    @BenchmarkMode(Mode.AverageTime)
+//    @Fork(1)
+//    public void testHeap() {
+//        Op.terms = new HeapTermBuilder();
+//        runTests();
+//    }
 
 
 

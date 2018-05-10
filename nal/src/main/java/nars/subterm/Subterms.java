@@ -135,7 +135,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         UnifiedSet u = new UnifiedSet(s);
         if (s > 0) {
             forEach(u::add);
-            u.trimToSize();
+            //u.trimToSize();
         }
         return u;
 
@@ -507,14 +507,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default int indexOf(Predicate<Term> t, Random r) {
         IntArrayList a = indicesOf(t);
-        if (a == null)
-            return -1;
+        return (a == null) ? -1 :
+                    a.get(a.size() == 1 ? 0
+                        : r.nextInt(a.size()));
 
-        int as = a.size();
-        if (as == 1)
-            return a.get(0);
-        else
-            return a.get(r.nextInt(as));
     }
 
     @Nullable
@@ -707,27 +703,27 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return output;
     }
 
-    /**
-     * a must be in input, and output must be of size input.length-1
-     * equality is compared by instance for speed
-     */
-    /*@NotNull*/
-    static Term[] exceptThe(/*@NotNull*/ Term[] input, Term a, /*@NotNull*/ Term[] output) {
-//        int targetLen = input.size() - 1;
-//        if (output.length!= targetLen) {
-//            throw new RuntimeException("wrong size");
+//    /**
+//     * a must be in input, and output must be of size input.length-1
+//     * equality is compared by instance for speed
+//     */
+//    /*@NotNull*/
+//    static Term[] exceptThe(/*@NotNull*/ Term[] input, Term a, /*@NotNull*/ Term[] output) {
+////        int targetLen = input.size() - 1;
+////        if (output.length!= targetLen) {
+////            throw new RuntimeException("wrong size");
+////        }
+//        int j = 0;
+//        for (Term x : input) {
+//            if (x != a)
+//                output[j++] = x;
 //        }
-        int j = 0;
-        for (Term x : input) {
-            if (x != a)
-                output[j++] = x;
-        }
-
-        assert (j == output.length) : "permute underflow";
-
-
-        return output;
-    }
+//
+//        assert (j == output.length) : "permute underflow";
+//
+//
+//        return output;
+//    }
 
 
 //    /*@NotNull*/
@@ -807,58 +803,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
         //return equals(Y) || ANDwith((xi,i)->xi.unify(Y.sub(i), u));
-        return ANDwith((xi,i)->xi.unify(Y.sub(i), u));
+        //return ANDwith((xi,i)->xi.unify(Y.sub(i), u));
 
-//        int s = subs();
-//        for (int i = 0; i < s; i++) {
-//            if (!sub(i).unify(Y.sub(i), u))
-//                return false;
-//        }
-//        return true;
-
-//        /**
-//         * a branch for comparing a particular permutation, called from the main next()
-//         */
-//        switch (s) {
-//            case 0:
-//                return true; //shouldnt ever happen
-//
-//            case 1:
-//                return sub(0).unify(Y.sub(0), u);
-//
-////                case 2: {
-////
-////                    int i = u.random.nextInt(1);
-////                    if (u.unify(sub(i), Y.sub(i))) {
-////                        i = 1 - i;
-////                        return u.unify(sub(i), Y.sub(i));
-////                    } else {
-////                        return false;
-////                    }
-////                }
-//
-//            default:
-//                //TODO unify variables last after matching all constants by saving them to a secondary list as they are encountered in the below loop
-//
-//                //begin at random offset to shuffle the order of the match sequence
-//                int jj = u.random.nextInt();
-//                int j = Math.abs(jj) % s;
-//                boolean direction = (jj & (1 << 15)) == 0;
-//                for (int i = s - 1; ; ) {
-//                    if (!sub(j).unify(Y.sub(j), u))
-//                        return false;
-//
-//                    if (--i == -1)
-//                        break;
-//
-//                    if (direction) {
-//                        if (++j == s) j = 0;
-//                    } else {
-//                        if (--j == -1) j = s - 1;
-//                    }
-//                }
-//                return true;
-//        }
+        int s = subs();
+        for (int i = 0; i < s; i++) {
+            if (!sub(i).unify(Y.sub(i), u))
+                return false;
+        }
+        return true;
 
     }
 
@@ -878,7 +830,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Collection<Term> yys = y.toSet();
         ////xs.removeIf(s -> !subst.matchType(s) && ys.remove(s));
 
-        Map<Term, byte[]> constCommon = new LinkedHashMap<>(0);
+        Map<Term, byte[]> constCommon = new LinkedHashMap<>(8);
 
         forEach(x -> {
             if (u.constant(x) && yys.contains(x)) { //attempt to eliminate a common constant term
@@ -1109,8 +1061,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     @Nullable default Term[] termsExcept(Term x) {
         int index = indexOf(x);
-        if (index == -1) return null;
-        return termsExcept(index);
+        return (index == -1) ? null : termsExcept(index);
     }
 
     default void append(ByteArrayDataOutput out) {

@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.map.MRUCache;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -131,7 +132,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exe = () -> new UniExec(64);
+        exe = () -> new UniExec(96);
 
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
@@ -254,16 +255,16 @@ public class NARS {
         protected void init(NAR nar) {
 
             nar.activationRate.set(
-                1f/Math.sqrt(((AbstractExec)nar.exe).active.capacity())
+                Util.unitize(5f/Math.sqrt(((AbstractExec)nar.exe).active.capacity()))
             );
 
-            nar.termVolumeMax.set(30);
+            nar.termVolumeMax.set(32);
             //nar.confMin.setValue(0.05f);
 
             nar.beliefPriDefault.set(0.5f);
-            nar.goalPriDefault.set(0.6f);
-            nar.questionPriDefault.set(0.2f);
-            nar.questPriDefault.set(0.2f);
+            nar.questionPriDefault.set(0.5f);
+            nar.goalPriDefault.set(0.25f);
+            nar.questPriDefault.set(0.25f);
 
             //nar.emotion.want(Perceive, -0.1f);
 

@@ -417,8 +417,8 @@ public enum Util {
     /**
      * == hashCombine(1, b)
      */
-    public static int hashCombine1(int b) {
-        return 1 ^ (b + 0x9e3779b9 + (1 << 6) + (1 >> 2));
+    public static int hashCombine1(Object bb) {
+        return 1 ^ (bb.hashCode() + 0x9e3779b9 + (1 << 6) + (1 >> 2));
     }
 
     public static int hashCombine(int a, int b, int c) {

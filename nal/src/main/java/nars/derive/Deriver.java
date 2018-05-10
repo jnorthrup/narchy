@@ -22,6 +22,7 @@ import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -104,10 +105,8 @@ abstract public class Deriver extends Causable {
     abstract protected void derive(NAR n, int iterations, Derivation d);
 
 
-    protected final void activate(TaskLink tasklink, Concept[] templates) {
-        Tasklinks.linkTask(tasklink, tasklink.priElseZero(),
-                templates
-        );
+    protected final void activate(TaskLink tasklink, Concept[] templates, Random r) {
+        Tasklinks.linkTask(tasklink, tasklink.priElseZero(), templates, r);
     }
 
     static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, @Nullable Bag<Term, PriReference<Term>> termlinks) {
@@ -128,7 +127,7 @@ abstract public class Deriver extends Causable {
     }
 
     protected Concept[] templates(Concept concept, NAR nar) {
-        return concept.templates().conceptsShuffled(nar, true);
+        return concept.templates().concepts(nar, true);
     }
 
 

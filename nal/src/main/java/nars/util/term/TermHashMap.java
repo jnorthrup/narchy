@@ -29,7 +29,8 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public int size() {
-        return (id != null ? id.size() : 0) + (other != null ? other.size() : 0);
+        return (id != null ?
+                id.size() : 0) + (other != null ? other.size() : 0);
     }
 
     public void clear() {
@@ -265,7 +266,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
         private final ShortObjectPair<X> x;
 
-        public AnonEntry(ShortObjectPair<X> x) {
+        AnonEntry(ShortObjectPair<X> x) {
             this.x = x;
         }
 

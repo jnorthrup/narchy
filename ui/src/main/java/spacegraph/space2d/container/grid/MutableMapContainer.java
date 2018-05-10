@@ -81,6 +81,15 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         cache.invalidate();
     }
 
+    protected void removeAll(Iterable<K> x) {
+        final boolean[] changed = {false};
+        x.forEach(xx ->{
+            changed[0] |= cache.remove(xx)!=null;
+        });
+        if (changed[0])
+            cache.invalidate();
+    }
+
     @Nullable public V getValue(K x) {
         CacheCell<K, V> y = cache.get(x);
         if (y !=null)

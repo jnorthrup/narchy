@@ -148,10 +148,8 @@ public interface Term extends Termed, Comparable<Termed> {
      * whether this term contains any XTERNAL relations
      */
     default boolean hasXternal() {
-        if (dt() == XTERNAL) return true;
-
-        Subterms xs = subterms();
-        return xs.isTemporal() && xs.OR(Term::hasXternal);
+        return (dt() == XTERNAL) ||
+               (hasAny(Op.Temporal) && OR(Term::hasXternal));
     }
 
 //    /**

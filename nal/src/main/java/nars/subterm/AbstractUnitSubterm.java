@@ -45,14 +45,14 @@ abstract public class AbstractUnitSubterm implements Subterms {
         if (this == obj) return true;
         if (!(obj instanceof Subterms)) return false;
         Subterms s = (Subterms)obj;
-        return (hashCodeSubterms() == s.hashCodeSubterms()) &&
+        return
                 (s.subs() == 1) &&
                 (sub().equals(s.sub(0)));
     }
 
     @Override
     public int hashCode() {
-        return Util.hashCombine1(sub().hashCode());
+        return Util.hashCombine1(sub());
     }
 
     @Override

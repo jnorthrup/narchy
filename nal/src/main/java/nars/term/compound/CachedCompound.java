@@ -55,6 +55,11 @@ abstract public class CachedCompound implements Compound, The {
         }
 
         @Override
+        public boolean hasXternal() {
+            return false;
+        }
+
+        @Override
         public boolean isTemporal() {
             return false;
         }

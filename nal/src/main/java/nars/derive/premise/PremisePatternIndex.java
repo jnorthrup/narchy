@@ -562,7 +562,7 @@ public class PremisePatternIndex extends MapConceptIndex {
 
                         Term match = ys > 0 ? EllipsisMatch.match(yFree) : EllipsisMatch.empty;
 
-                        if (subs() == 1 || match.subs()==0 || xFixed.isEmpty()) {
+                        if (subs() == 1 + match.subs() || xFixed.isEmpty()) {
                             return this.ellipsis.unify(match, u);
                         } else {
                             //permute may be necessary to unify the correct dep/indep terms for 2nd layer

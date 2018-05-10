@@ -37,6 +37,7 @@ package jcog.io.arff;
 
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
+import jcog.TODO;
 import jcog.list.FasterList;
 import jcog.util.Reflect;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -538,6 +539,18 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
     public Stream<ImmutableList> stream() {
         return data.stream();
+    }
+
+    public boolean addAll(ARFF incoming) {
+        if (this == incoming)
+            return false;
+        if (!equalSchema(incoming))
+            throw new TODO("schemas differe");
+        final boolean[] changed = {false};
+        incoming.forEach(p -> {
+            changed[0] |= add(p);
+        });
+        return changed[0];
     }
 
     public enum AttributeType {

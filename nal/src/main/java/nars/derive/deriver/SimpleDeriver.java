@@ -78,10 +78,11 @@ public class SimpleDeriver extends Deriver {
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
             for (TaskLink tasklink : tasklinks) {
 
-                activate(tasklink, templates);
 
                 Task task = tasklink.get(nar);
                 if (task != null) {
+
+                    activate(tasklink, templates, d.random);
 
                     for (int z = 0; z < termlinks; z++) {
 

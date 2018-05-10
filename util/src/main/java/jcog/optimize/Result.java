@@ -14,7 +14,7 @@ public class Result<X> {
 
     @Deprecated final FastList<DoubleObjectPair<double[]>> experiments;
     final List<Tweak<X,?>> tweaks;
-    final ARFF data;
+    public final ARFF data;
 
 
     public Result(ARFF data, @Deprecated FastList<DoubleObjectPair<double[]>> experiments, List<Tweak<X,?>> tweaks) {

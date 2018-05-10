@@ -9,6 +9,8 @@ import nars.concept.TaskConcept;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
+
 
 public class Tasklinks {
 
@@ -82,7 +84,7 @@ public class Tasklinks {
 //    }
 
     /** propagate tasklink to templates */
-    public static void linkTask(TaskLink tasklink, float priTransferred, Concept... targets) {
+    public static void linkTask(TaskLink tasklink, float priTransferred, Concept[] targets, Random rng) {
         int nTargets = targets.length;
         if (nTargets <= 0)
             return;
@@ -98,7 +100,12 @@ public class Tasklinks {
 
             final float headRoom = 1f - pEach;
             MutableFloat overflow = new MutableFloat();
+
+            //shuffle the offset to spread the link activation fairly, when budget backpressure (change) is involved
+            //TODO shuffle iteration direction
+            int j = rng.nextInt(nTargets);
             for (int i = 0; i < nTargets; i++) {
+
 //                float o = overflow.get();
 //
 //                //spread overflow of saturated targets to siblings
@@ -114,7 +121,9 @@ public class Tasklinks {
                         //new TaskLink.DirectTaskLink(t, pEach + change);
                         new TaskLink.GeneralTaskLink(tlSeed, pEach + change);
 
-                linkTask(xx, targets[i].tasklinks(), overflow);
+                linkTask(xx, targets[j++].tasklinks(), overflow);
+
+                if (j == nTargets) j = 0;
             }
         }
     }

@@ -177,16 +177,7 @@ public class MatrixDeriver extends Deriver {
             Task task = tasklink.get(nar);
             if (task != null) {
 
-////                float taskLinkMomentum = nar.taskLinkMomentum.floatValue();
-//                float tPri = tasklink.priElseZero();
-////                float priTransferred = (1f - taskLinkMomentum) * tPri;
-////                tasklink.priSub(priTransferred);
-////                tasklinks.pressurize(-priTransferred); //HACK depressurize to compensate for the tasklink drain
-//
-//                float priTransferred = tPri;
-
-
-                activate(tasklink, templates);
+                activate(tasklink, templates, nar.random());
 
                 termlinks.sample(rng, _termlinksPerTasklink, termlink -> {
                     if (!continueHypothesizing.test(task, termlink)) {

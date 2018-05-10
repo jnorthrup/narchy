@@ -128,8 +128,9 @@ public final class Termify extends AbstractPred<Derivation> {
 //            }
 
         } else {
-            if (d.concPunc == BELIEF || d.concPunc == GOAL) {
-                c2 = c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            if ((d.concPunc == BELIEF || d.concPunc == GOAL) && c1.hasXternal()) {
+                c2 =
+                        c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
                 if (c1 != c2 && !Taskify.valid(c2)) {
                     d.nar.emotion.deriveFailTemporal.increment();
                     return false;

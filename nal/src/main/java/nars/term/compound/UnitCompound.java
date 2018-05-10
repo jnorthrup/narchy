@@ -8,6 +8,7 @@ import nars.subterm.UnitSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
+import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +43,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public final int hashCodeSubterms() {
-        return Util.hashCombine1(sub().hashCode());
+        return Util.hashCombine1(sub());
     }
 
 
@@ -79,6 +80,13 @@ public abstract class UnitCompound implements Compound {
             return (root ? sub.equalsRoot(t) : sub.equals(t)) || sub.containsRecursively(t, root, inSubtermsOf);
         }
         return false;
+    }
+
+    @Override
+    public final boolean unifyLinear(Subterms Y, Unify u) {
+        if (Y.subs()!=1) return false;
+
+        return sub().unify(Y.sub(0), u);
     }
 
 

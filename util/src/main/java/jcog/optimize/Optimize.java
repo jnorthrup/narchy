@@ -202,7 +202,7 @@ public class Optimize<X> {
                     new SimpleBounds(min, max),
                     new InitialGuess(mid)
             );
-            m.print(System.out);
+            //m.print(System.out);
 
 //            final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
 //            new BOBYQAOptimizer(numIterpolationPoints,

@@ -6,6 +6,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
+import nars.term.var.UnnormalizedVariable;
 import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
@@ -91,6 +92,7 @@ public class Anon {
             return x; //ignore normalized variables since they are AnonID
         } else if (x instanceof Atomic) {
 
+            if (x instanceof UnnormalizedVariable) return x; //leave unnormalized variables alone
             if (x instanceof Int.IntRange) return x; //HACK
 
             return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];

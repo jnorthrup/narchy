@@ -1,17 +1,23 @@
 package nars.term.anon;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.data.bit.MetalBitSet;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.term.Term;
+import nars.unify.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
+import static nars.Op.ATOM;
 import static nars.Op.NEG;
+import static nars.term.anon.AnonID.idToTerm;
+import static nars.term.anon.AnonID.idToTermWithNegationTest;
+import static nars.term.anon.AnonID.isAnomOrNegatedAnom;
 
 /**
  * a vector which consists purely of AnonID terms
@@ -42,9 +48,10 @@ public class AnonVector extends TermVector {
 
     }
 
+
     @Override
     public final Term sub(int i) {
-        return AnonID.idToTermWithNegationTest(subterms[i]);
+        return idToTermWithNegationTest(subterms[i]);
     }
 
     @Override
@@ -53,13 +60,11 @@ public class AnonVector extends TermVector {
         out.writeByte(ss.length);
         for (short s : ss) {
             if (s > 0) {
-                AnonID.idToTerm(s).append(out);
+                idToTerm(s).append(out);
             } else {
-                s = (short) -s;
-
                 //wrap (prepend) with a virtual NEG
                 out.writeByte(Op.NEG.id);
-                AnonID.idToTerm(s).append(out);
+                idToTerm((short)-s).append(out);
             }
         }
 
@@ -69,17 +74,6 @@ public class AnonVector extends TermVector {
     public int subs() {
         return subterms.length;
     }
-
-//    @Override
-//    public boolean unifyLinear(Subterms Y, Unify u) {
-//        if (Y instanceof AnonVector) {
-//            short[] x = subterms;
-//            short[] y = ((AnonVector)Y).subterms;
-//            //TODO
-//        } else {
-//            return super.unifyLinear(Y, u);
-//        }
-//    }
 
     int indexOf(AnonID t, boolean neg) {
         short id = t.anonID();
@@ -162,4 +156,81 @@ public class AnonVector extends TermVector {
         return false;
     }
 
+    @Override
+    public boolean unifyLinear(Subterms Y, Unify u) {
+        int s = subs();
+        if (Y instanceof AnonVector) {
+            //accelerated AnonVector vs. AnonVector unification
+
+            MetalBitSet ok;
+            AnonVector yy = (AnonVector) Y;
+            //1. if both contain constant atoms, check for any conflicting constant terms before attempting any variable matching
+            if (((structure & ATOM.bit) > 0) && ((yy.structure & ATOM.bit) > 0)) {
+                ok = MetalBitSet.bits(s);
+                for (int i = 0; i < s; i++) {
+                    short xi = subterms[i];
+                    short yi = yy.subterms[i];
+                    if ((isAnomOrNegatedAnom(xi) && isAnomOrNegatedAnom(yi))) {
+                        if (xi != yi)
+                            return false; //both constants, so not equal
+                        else
+                            ok.set(i); //continue
+                    }
+                }
+            } else {
+                ok = null;
+            }
+
+            //2. fully unify any variable-containing indices
+            for (int i = 0; i < s; i++) {
+                if (ok!=null && ok.get(i))
+                    continue; //already checked in first pass
+
+                short xi = subterms[i];
+                short yi = yy.subterms[i];
+
+                if (xi < 0 && yi < 0) {
+                    //both negations so unwrap these simultaneously
+                    xi = (short) -xi;
+                    yi = (short) -yi;
+                }
+
+                //one or both are variables, so decode to terms and unify normally
+                if (!idToTermWithNegationTest(xi).unify(idToTermWithNegationTest(yi), u))
+                    return false;
+            }
+        } else {
+            //TODO do the constant pass first like the above case
+
+            for (int i = 0; i < s; i++) {
+                short xi = subterms[i];
+                Term yi = Y.sub(i);
+                if (isAnomOrNegatedAnom(xi)) {
+                    //stupid test for constant negation mismatch
+                    Op yio = yi.op();
+                    if (!yio.var) {
+                        //both are constant, only a few possibilities exist...
+                        // plus opportunity to simultaneously unwrap if both are negated
+                        if (yio != NEG ^ xi > 0 /* polarity differ, and yi isnt a var */)
+                            return false;
+
+                        if (yio == NEG) {
+                            //then unwrap simultaneously both
+                            yi = yi.unneg();
+                            yio = yi.op();
+                            xi = (short) -xi;
+                        }
+                        if (yio!=ATOM)
+                            return false; //had to be negated atom
+                        return idToTerm(xi) == yi; //note the instance equality test, it is all that must be tested
+                    }
+                }
+
+                Term xxi = idToTermWithNegationTest(xi);
+                if (!xxi.unify(yi, u))
+                    return false;
+            }
+        }
+        return true;
+    }
 }

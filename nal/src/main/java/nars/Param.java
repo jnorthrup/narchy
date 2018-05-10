@@ -183,7 +183,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(64, 0, 1024);
+    public final IntRange deriveTTL = new IntRange(32, 0, 1024);
 
 
     /** estimate */
@@ -328,7 +328,7 @@ public abstract class Param {
      * Maximum length of the evidental base of the Stamp, a power of 2
      * TODO IntRange
      */
-    public static final int STAMP_CAPACITY = 12;
+    public static final int STAMP_CAPACITY = 16;
 
     public static final IntRange causeCapacity = new IntRange(64, 0, 128);
 

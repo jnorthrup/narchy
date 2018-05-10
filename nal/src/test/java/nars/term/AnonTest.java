@@ -13,6 +13,7 @@ import nars.subterm.UnitSubterm;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
+import nars.util.term.transform.UnifyTest;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,10 @@ public class AnonTest {
 
         assertNotEquals(Anom.the(0), $.the(0));
         assertNotEquals(Anom.the(2), $.the(2));
+    }
+
+    @Test public void testThatAnonDoesntEatEllipsis() throws Narsese.NarseseException {
+        assertEquals("(_1,%1..*)", UnifyTest.pattern("(a, %X..*)").anon().toString());
     }
 
     @Test

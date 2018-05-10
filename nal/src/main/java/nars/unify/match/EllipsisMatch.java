@@ -10,7 +10,6 @@ import nars.term.compound.CompoundLight;
 import nars.unify.Unify;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -44,7 +43,7 @@ public class EllipsisMatch extends CompoundLight {
         super(PROD, new TermList(term));
     }
 
-    @NotNull public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
+    public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
         int n = xy.length;
         Term[] z = new Term[n + expectedEllipsisAdds - expectedEllipsisRemoves];
         int k = 0;

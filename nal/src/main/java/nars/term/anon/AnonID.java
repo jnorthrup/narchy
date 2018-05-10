@@ -10,6 +10,7 @@ import nars.term.var.NormalizedVariable;
  */
 public interface AnonID extends Term, The {
 
+    //leave the last bit alone, it will get affected by negation. that leaves 7 bits to play with here
     short ATOM_MASK = 0;
     short VARDEP_MASK = 1 << 8;
     short VARINDEP_MASK = 2 << 8;
@@ -50,9 +51,20 @@ public interface AnonID extends Term, The {
         }
     }
 
+    /** fast Anom (non-Var) test. works for either positive or negative */
+    static boolean isAnomOrNegatedAnom(short i) {
+        return isAnom(Math.abs(i));
+    }
+
+    /** fast Anom (non-Var) test. assumes positive */
+    static boolean isAnom(int i) {
+        return (i & 0xff00) == ATOM_MASK;
+    }
+
+    /** assumes non-negative */
     static Term idToTerm(short /* short */ i) {
         byte num = (byte) (i & 0xff);
-        int m = ((i & 0xff00));
+        int m = (i & 0xff00);
         switch (m) {
             case ATOM_MASK:
                 return Anom.the[num];

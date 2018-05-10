@@ -49,7 +49,7 @@ public abstract class TermBuilder {
         return newSubterms(s.toArray(new Term[s.size()]));
     }
 
-    protected Subterms subtermsInstance(Term... t) {
+    public Subterms subtermsInstance(Term... t) {
         final int tLength = t.length;
         if (tLength == 0)
             return Empty;

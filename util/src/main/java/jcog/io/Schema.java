@@ -33,6 +33,15 @@ public class Schema {
         this.nominalCats = new HashMap<>();
     }
 
+    public boolean equalSchema(Schema other) {
+        return (this == other) ||
+
+               ( attribute_names.equals(other.attribute_names) &&
+                 attrTypes.equals(other.attrTypes) &&
+                 nominalCats.equals(other.nominalCats)
+        );
+    }
+
 
     /**
      * Define a new attribute. Type must be one of "numeric", "string", and
