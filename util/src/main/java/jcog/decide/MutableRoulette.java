@@ -147,7 +147,7 @@ public class MutableRoulette {
             float nextWeight = weightUpdate.valueOf(wi);
             if (nextWeight < EPSILON) {
                 w[i] = 0;
-                weightSum += wi;
+                weightSum -= wi;
 
                 remaining--;
 
