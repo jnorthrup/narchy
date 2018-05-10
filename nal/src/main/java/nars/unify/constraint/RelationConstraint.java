@@ -47,4 +47,5 @@ abstract public class RelationConstraint extends MatchConstraint {
     }
 
     abstract public boolean invalid(Term xx, Term yy);
+
 }

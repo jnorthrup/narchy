@@ -265,6 +265,29 @@ public class ConjTest {
         assertEquals(False, yParallelContradict);
     }
 
+    @Test public void testConjWithoutAll() {
+        assertEquals("(a&&b)", Conj.withoutAll(
+                    $$("(&&,a,b,c)"),
+                    $$("(&&,c,d,e)")).toString());
+
+        assertEquals("(a&|b)", Conj.withoutAll(
+                $$("(&|,a,b,c)"),
+                $$("(&|,c,d,e)")).toString());
+
+        //unchanged DTERNAL vs. 0
+        assertEquals("(&&,a,b,c)", Conj.withoutAll(
+                $$("(&&,a,b,c)"),
+                $$("(&|,c,d,e)")).toString());
+
+        assertEquals("(a&&b)", Conj.withoutAll(
+                $$("(&&,a,b,--c)"),
+                $$("(&&,--c,d,e)")).toString());
+
+        assertEquals("(x&&y)", Conj.withoutAll(
+                $$("(&|,(x&&y),(b&&c))"),
+                $$("(&|,(b&&c),x)")).toString());
+
+    }
 
 }
 

@@ -129,12 +129,16 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             arg1 = arg2 = null;*/
             //}
 
-            String XString = X.toString();
+
             switch (predicateNameStr) {
 
 
                 case "neq":
                     neq(constraints, X, Y); //should the constraints be ommited in this case?
+                    break;
+
+                case "neqTaskBelief":
+                    pre.add(neqTaskBelief);
                     break;
 
                 case "neqUnneg":
@@ -223,8 +227,6 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, -1));
                     break;
 
-
-
                 case "eventOf":
                     neq(constraints, X, Y);
                     eventPrefilter(pre, X, taskPattern, beliefPattern);
@@ -245,7 +247,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
                     break;
-
+                case "eventCommon":
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
+                    eventPrefilter(pre, Y, taskPattern, beliefPattern);
+                    constraints.add(new CommonSubEventConstraint(X, Y));
+                    constraints.add(new CommonSubEventConstraint(Y, X));
+                    break;
 
                 case "eqOrIn": //recursive
                     constraints.add(new SubOfConstraint(X, Y, false, true, Recursive));
@@ -427,6 +434,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 //                    break;
 
                 case "task":
+                    String XString = X.toString();
                     switch (XString) {
 //                        case "containsBelief":
 //                            pres.add(TaskPolarity.taskContainsBelief);
@@ -1036,6 +1044,19 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             return 0.1f;
         }
     }
+
+    private static final AbstractPred<PreDerivation> neqTaskBelief = new AbstractPred<PreDerivation>($.the("neqTaskBelief")) {
+
+        @Override
+        public float cost() {
+            return 0.2f;
+        }
+
+        @Override
+        public boolean test(PreDerivation preDerivation) {
+            return !preDerivation.taskTerm.equals(preDerivation.beliefTerm);
+        }
+    };
 
 
 //    /**

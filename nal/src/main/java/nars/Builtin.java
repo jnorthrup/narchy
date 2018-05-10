@@ -63,6 +63,16 @@ public class Builtin {
             Image.imageInt,
             Image.imageExt,
 
+            /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
+            Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) ->
+                    Conj.without(conj, event, false)
+            ),
+
+            /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
+            Functor.f2((Atom) $.the("conjWithoutAll"), (Term include, Term exclude) ->
+                    Conj.withoutAll(include, exclude)
+            ),
+
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
                 if (from.equals(to))
@@ -473,14 +483,11 @@ public class Builtin {
 //            return c.sub(target);
         }));
 
-        /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
-        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) ->
-            Conj.without(conj, event, false, nar)
-        ));
+
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
         nar.on(Functor.f2((Atom) $.the("conjWithoutPosOrNeg"), (Term conj, Term event) ->
-            Conj.without(conj, event, true, nar)
+            Conj.without(conj, event, true)
         ));
 
         /** extracts only the events preceding the specified events */

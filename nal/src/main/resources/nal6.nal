@@ -263,24 +263,13 @@
 //precondition/post-condition combiner inference rule (variable_unification6):
 
     //TODO something like:
-    // (A ==> X), (B ==> Y), neq(A,B), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
-    ((&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:InductionPB)
-    ((&&,C,A..+) ==> X), ((&&,C,B..+) ==> Y) |- ((&&,B..+) ==>+- (&&,A..+)), (Belief:InductionPB)
-        ((--,(&&,C,A..+)) ==> X), ((&&,C,B..+) ==> Y) |- ((--,(&&,A..+)) ==>+- (&&,B..+)), (Belief:InductionPB)
-        ((--,(&&,C,A..+)) ==> X), ((&&,C,B..+) ==> Y) |- ((--,(&&,B..+)) ==>+- (&&,A..+)), (Belief:InductionPB)
-    (X ==> (&&,C,A..+)), (Y ==> (&&,C,B..+)) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:AbductionPB)
-    (X ==> (&&,C,A..+)), (Y ==> (&&,C,B..+)) |- ((&&,B..+) ==>+- (&&,A..+)), (Belief:AbductionPB)
-        //((&&,C,A..+) ==> Z), ((&&,C,B..+) ==> Z), neq(A..+,B..+) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:Induction)
-        //((&&,C,A..+) ==> Z), ((&&,C,B..+) ==> Z), neq(A..+,B..+) |- ((&&,B..+) ==>+- (&&,A..+)), (Belief:Induction)
-        //(Z ==> (&&,C,A..+)), (Z ==> (&&,C,B..+)), neq(A..+,B..+) |- ((&&,A..+) ==>+- (&&,B..+)), (Belief:Abduction)
-        //(Z ==> (&&,C,A..+)), (Z ==> (&&,C,B..+)), neq(A..+,B..+) |- ((&&,B..+) ==>+- (&&,A..+)), (Belief:Abduction)
+    (A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:InductionPB)
+        (--A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
+        (--A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- (--,conjWithoutAll(A,B))), (Belief:InductionPB)
 
-    //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C), neq(X,Y) |- (X ==>+- Y), (Belief:InductionPB)
-    //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C), neq(X,Y) |- (Y ==>+- X), (Belief:InductionPB)
-    //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+)), neq(X,Y) |- (X ==>+- Y), (Belief:AbductionPB)
-    //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+)), neq(X,Y) |- (Y ==>+- X), (Belief:AbductionPB)
-        //((&&,B,A..+) ==> C), ((&&,A..+) ==> C) |- (B ==>+- C), (Belief:Induction)
-
+    (X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:AbductionPB)
 
 
 

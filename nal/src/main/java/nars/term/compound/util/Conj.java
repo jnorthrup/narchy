@@ -7,7 +7,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.util.TimeAware;
 import nars.util.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
@@ -38,7 +37,7 @@ public class Conj {
     //capacity of the initial array before upgrading to RoaringBitmap
     private static final int ROARING_UPGRADE_THRESH = 4;
 
-//    private static final byte EMPTY = 0;
+    //    private static final byte EMPTY = 0;
 //    private static final byte POSITIVE = 1;
 //    private static final byte NEGATIVE = 2;
     public final LongObjectHashMap event = new LongObjectHashMap<>(2);
@@ -47,7 +46,7 @@ public class Conj {
      */
     final ObjectByteHashMap<Term> terms = new ObjectByteHashMap<>(4);
 
-//    /**
+    //    /**
 //     * keys are encoded 8-bits + 8-bits vector of the time,term index
 //     *
 //     * values are:
@@ -209,16 +208,44 @@ public class Conj {
         return ce.term();
     }
 
-    public static Term without(Term conj, Term event, boolean includeNeg, TimeAware timeAware) {
-        if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+    public static Term without(Term x, Term event, boolean includeNeg) {
+        if (x.op() != CONJ || x.impossibleSubTerm(event))
             return Null;
 
-        Conj c = Conj.from(conj);
-        if (c.removeAll(event, true, includeNeg)) {
-            return c.term(); //return the changed conj
+        Conj xx = Conj.from(x);
+        if (xx.removeEventsByTerm(event, true, includeNeg)) {
+            return xx.term(); //return the changed conj
         } else {
-            return Null; //same
+            //return Null; //same
+            return x;
         }
+    }
+
+    public static Term withoutAll(Term include, Term exclude) {
+        if (include.op() != CONJ || exclude.op() != CONJ)
+            return Null;
+
+        if (exclude.equals(include))
+            return True;
+
+        Conj x = Conj.from(include);
+        int edt = exclude.dt();
+        boolean[] removed = new boolean[] { false };
+        exclude.eventsWhile((when, what) -> {
+            removed[0] |= x.remove(what, when);
+            return true;
+        }, edt == DTERNAL ? ETERNAL : 0, true, edt == DTERNAL, false, 0);
+
+        if (removed[0])
+            return x.term();
+        else
+            return include;
+
+//        Term xx = x.term();
+//        if (!xx.equals(include))
+//            return xx;
+//        else
+//            return include; //unchanged
     }
 
     public static Term conjMerge(Term a, Term b, int dt) {
@@ -331,109 +358,16 @@ public class Conj {
         return Op.compound(CONJ, dt, left, right);
     }
 
-    /** similar to conjMerge but interpolates events so the resulting
-     * intermpolation is not considerably more complex than either of the inputs */
+    /**
+     * similar to conjMerge but interpolates events so the resulting
+     * intermpolation is not considerably more complex than either of the inputs
+     */
     public static Term conjIntermpolate(Term a, Term b, long bOffset, NAR nar) {
         return new Conjterpolate(a, b, bOffset, nar).term();
     }
 
-    /** for each of b's events, find the nearest matching event in a while constructing a new Conj consisting of their mergers */
-    static class Conjterpolate extends Conj {
-
-        private final Conj aa;
-        private final Term b;
-        private final NAR nar;
-        private final Random rng;
-        private final boolean mergeOrChoose;
-
-        public Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
-            //        int maxVol = Math.max(a.volume(), b.volume());
-            this.b = b;
-            this.nar = nar;
-            this.mergeOrChoose = nar.dtMergeOrChoose();
-            this.rng = nar.random();
-            Conj aa = new Conj(); aa.add(a, 0);
-            this.aa = aa;
-            add(b, bOffset);
-        }
-
-        @Override
-        public boolean add(final Term t, long bt) {
-            assert(bt!=XTERNAL);
-
-
-            if (t == b)
-                return super.add(t, bt);
-            else {
-                boolean neg = t.op()==NEG;
-
-
-                //component merge
-                //find closest event in aa
-                byte tInA = (byte) ((aa.terms.get(neg ? t.unneg() : t)+1) * (neg ? -1 : +1));
-
-                //potential event times to compare and choose from
-                LongArrayList whens = new LongArrayList(2);
-
-                aa.event.forEachKeyValue((long when, Object wat)-> {
-                    if (wat instanceof RoaringBitmap) {
-                        RoaringBitmap r = (RoaringBitmap) wat;
-                        if (r.contains(tInA) && !r.contains(-tInA)) {
-                            whens.add(when);
-                        }
-                    } else {
-                        byte[] ii = (byte[]) wat;
-                        if (ArrayUtils.indexOf(ii, tInA)!=-1 && ArrayUtils.indexOf(ii, (byte) -tInA)==-1) {
-                            whens.add(when);
-                        }
-                    }
-                });
-
-                int ws = whens.size();
-                if (ws == 0) {
-                    return super.add(t, bt); //unknown why it didnt match, so just add it
-                }
-
-                long theWhen;
-                if (ws > 1) {
-                    LongToLongFunction TemporalDistance;
-                    if (bt == ETERNAL) {
-                        TemporalDistance = (at) -> at == ETERNAL ? 0 : 1; //prefer eternal, but no further preference
-                    } else {
-                        long finalBt = bt;
-                        TemporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE; //prefer same/similar time, and avoid eternal if possible
-                    }
-                    long[] whensArray = whens.toArray();
-                    ArrayUtils.sort(whensArray, TemporalDistance);
-
-                    theWhen = whensArray[whensArray.length-1];
-                } else {
-                    theWhen = whens.get(0);
-                }
-
-                return super.add(t, Tense.dither(merge(theWhen, bt), nar));
-            }
-
-        }
-
-        long merge(long x, long y) {
-            if (x == y) return x;
-            if (x == ETERNAL ^ y==ETERNAL)
-                return ETERNAL;
-
-
-            //TODO weighted random selection (ie. by evidence)
-            if (mergeOrChoose) {
-                if (Math.abs(x-y)>1) {
-                    //merge (mean)
-                    return (x + y) / 2L;
-                }
-            }
-
-            //choose
-            return rng.nextBoolean() ? x : y; //choose one or the other
-        }
-
+    public boolean hasTerm(Term what) {
+        return termsIndex.contains(what);
     }
 
     /**
@@ -560,6 +494,21 @@ public class Conj {
         }) + 1;
     }
 
+    public boolean remove(Term t, long at) {
+
+        Object o = event.get(at);
+        if (o == null)
+            return false; //nothing at that time
+
+        if (term != null) term = null; //reset result
+
+        boolean neg = t.op() == NEG;
+        int i = add(t); //should be get(), add doesnt apply
+        if (neg)
+            i = -i;
+        return removeFromEvent(at, o, i);
+    }
+
 //    private byte id(long w) {
 //
 //        int i = times.indexOf(w);
@@ -586,20 +535,6 @@ public class Conj {
 //        return (byte) (s & 0xff);
 //    }
 
-    public boolean remove(Term t, long at) {
-
-
-        Object o = event.get(at);
-        if (o == null)
-            return false; //nothing at that time
-
-        boolean neg = t.op() == NEG;
-        int i = add(t); //should be get(), add doesnt apply
-        if (neg)
-            i = -i;
-        return removeFromEvent(at, o, i);
-    }
-
     private boolean removeFromEvent(long at, Object o, int... i) {
         if (o instanceof RoaringBitmap) {
             boolean b = false;
@@ -625,7 +560,7 @@ public class Conj {
         }
     }
 
-    public boolean removeAll(Term t, boolean pos, boolean neg) {
+    public boolean removeEventsByTerm(Term t, boolean pos, boolean neg) {
 
         boolean negateInput;
         if (t.op() == NEG) {
@@ -638,11 +573,11 @@ public class Conj {
         int i = add(t); //should be get(), add doesnt apply
         int[] ii;
         if (pos && neg) {
-            ii = new int[] { i, -i };
+            ii = new int[]{i, -i};
         } else if (pos) {
-            ii = new int[] { negateInput ? -i : i };
+            ii = new int[]{negateInput ? -i : i};
         } else if (neg) {
-            ii = new int[] { negateInput ? i : -i };
+            ii = new int[]{negateInput ? i : -i};
         } else {
             throw new UnsupportedOperationException();
         }
@@ -940,6 +875,108 @@ public class Conj {
                 negatives[0] = true;
         }
         return c;
+    }
+
+    /**
+     * for each of b's events, find the nearest matching event in a while constructing a new Conj consisting of their mergers
+     */
+    static class Conjterpolate extends Conj {
+
+        private final Conj aa;
+        private final Term b;
+        private final NAR nar;
+        private final Random rng;
+        private final boolean mergeOrChoose;
+
+        public Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
+            //        int maxVol = Math.max(a.volume(), b.volume());
+            this.b = b;
+            this.nar = nar;
+            this.mergeOrChoose = nar.dtMergeOrChoose();
+            this.rng = nar.random();
+            Conj aa = new Conj();
+            aa.add(a, 0);
+            this.aa = aa;
+            add(b, bOffset);
+        }
+
+        @Override
+        public boolean add(final Term t, long bt) {
+            assert (bt != XTERNAL);
+
+
+            if (t == b)
+                return super.add(t, bt);
+            else {
+                boolean neg = t.op() == NEG;
+
+
+                //component merge
+                //find closest event in aa
+                byte tInA = (byte) ((aa.terms.get(neg ? t.unneg() : t) + 1) * (neg ? -1 : +1));
+
+                //potential event times to compare and choose from
+                LongArrayList whens = new LongArrayList(2);
+
+                aa.event.forEachKeyValue((long when, Object wat) -> {
+                    if (wat instanceof RoaringBitmap) {
+                        RoaringBitmap r = (RoaringBitmap) wat;
+                        if (r.contains(tInA) && !r.contains(-tInA)) {
+                            whens.add(when);
+                        }
+                    } else {
+                        byte[] ii = (byte[]) wat;
+                        if (ArrayUtils.indexOf(ii, tInA) != -1 && ArrayUtils.indexOf(ii, (byte) -tInA) == -1) {
+                            whens.add(when);
+                        }
+                    }
+                });
+
+                int ws = whens.size();
+                if (ws == 0) {
+                    return super.add(t, bt); //unknown why it didnt match, so just add it
+                }
+
+                long theWhen;
+                if (ws > 1) {
+                    LongToLongFunction TemporalDistance;
+                    if (bt == ETERNAL) {
+                        TemporalDistance = (at) -> at == ETERNAL ? 0 : 1; //prefer eternal, but no further preference
+                    } else {
+                        long finalBt = bt;
+                        TemporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE; //prefer same/similar time, and avoid eternal if possible
+                    }
+                    long[] whensArray = whens.toArray();
+                    ArrayUtils.sort(whensArray, TemporalDistance);
+
+                    theWhen = whensArray[whensArray.length - 1];
+                } else {
+                    theWhen = whens.get(0);
+                }
+
+                return super.add(t, Tense.dither(merge(theWhen, bt), nar));
+            }
+
+        }
+
+        long merge(long x, long y) {
+            if (x == y) return x;
+            if (x == ETERNAL ^ y == ETERNAL)
+                return ETERNAL;
+
+
+            //TODO weighted random selection (ie. by evidence)
+            if (mergeOrChoose) {
+                if (Math.abs(x - y) > 1) {
+                    //merge (mean)
+                    return (x + y) / 2L;
+                }
+            }
+
+            //choose
+            return rng.nextBoolean() ? x : y; //choose one or the other
+        }
+
     }
 
 //    public void forEachTerm(Object what, Consumer<Term> each) {

@@ -711,8 +711,19 @@ public enum Terms {
                 new BytesHashProvider<>(IO::termToBytes));
     }
 
+    public static boolean commonStructure(Termlike x, Termlike y) {
+        int xStruct = x.structure();
+        int yStruct = y.structure();
+        return (xStruct & yStruct) != 0;
+    }
+    public static boolean commonStructureExcept(Termlike x, Termlike y, int maskedBits) {
+        int xStruct = x.structure() & ~(maskedBits);
+        int yStruct = y.structure() & ~(maskedBits);
+        return (xStruct & yStruct) != 0;
+    }
+
     /** non-symmetric use only */
-    public static boolean commonStructureExcept(Termlike requirer, Termlike required, int maskedBits) {
+    public static boolean hasAllExcept(Termlike requirer, Termlike required, int maskedBits) {
         int xStruct = requirer.structure() & ~(maskedBits); //without the variable bits
         if (xStruct!=0) {
             int yStruct = required.structure() & ~(maskedBits); //without the variable bits
@@ -735,7 +746,7 @@ public enum Terms {
     public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
         if (u.varSymmetric)
             return true;
-        return commonStructureExcept( x, y, u.typeBits() );
+        return hasAllExcept( x, y, u.typeBits() );
     }
 }
 
