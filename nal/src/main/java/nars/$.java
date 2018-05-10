@@ -875,6 +875,8 @@ public enum $ {
         return JsonTerm.the(j);
     }
 
+
+
     public static Term pFast(Subterms x) {
         return new CompoundLight(Op.PROD,x);
     }
@@ -885,7 +887,7 @@ public enum $ {
             return new CompoundLight(Op.PROD, $.vFast(x));
     }
 
-    public static Term sFast(Term... x) {
+    public static Term  sFast(Term... x) {
         return new CompoundLight(Op.SETe, $.vFast(Terms.sorted(x)));
     }
 

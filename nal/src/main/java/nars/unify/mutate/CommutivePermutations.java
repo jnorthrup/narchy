@@ -1,10 +1,11 @@
 package nars.unify.mutate;
 
 import nars.$;
+import nars.Op;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
-import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.compound.CompoundLight;
 import nars.unify.Unify;
 
 /**
@@ -16,45 +17,25 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
     private final Subterms y;
     private final Subterms x;
 
-//    public CommutivePermutations(Set<Term> x, Set<Term> y) {
-//        this(
-//            The.Subterms.RawSubtermBuilder.apply(Terms.sorted(x)),
-//            The.Subterms.RawSubtermBuilder.apply(Terms.sorted(y))
-//        );
-//
-//    }
-//
-//    public CommutivePermutations(SortedSet<Term> x, SortedSet<Term> y) {
-//        this(
-//            The.Subterms.RawSubtermBuilder.apply(x.toArray(new Term[x.size()])),
-//            The.Subterms.RawSubtermBuilder.apply(y.toArray(new Term[y.size()]))
-//        );
-//
-//    }
-    public CommutivePermutations(Subterms x, Subterms y) {
-        this(
-            $.pFast(x), $.pFast(y)
-        );
-    }
-
     final static Atom COMMUTIVE_PERMUTATIONS = $.the(CommutivePermutations.class);
 
     /**
-     * important note: using raw Set<Term> here to avoid the clobbering of PatternCompound subterms if interned with current impl
-     * x and y must have same size
+     * NOTE X and Y should be pre-sorted using Terms.sort otherwise diferent permutations of the same
+     * values could result in duplicate termutes HACK
      */
-    public CommutivePermutations(Term x, Term y) {
-        super(COMMUTIVE_PERMUTATIONS,x, y);
+    public CommutivePermutations(Subterms X, Subterms Y) {
+        super(COMMUTIVE_PERMUTATIONS, new CompoundLight(Op.SETe,X), new CompoundLight(Op.SETe,Y));
 
-        int xs = x.subs();
+        this.x = X;
+        this.y = Y;
+
+        int xs = X.subs();
         assert(xs > 1);
-        assert(xs == y.subs());
+        assert(xs == Y.subs());
+        //itis ok if the terms are equal. they could match in opposite permutations of themselves
 
-        if (y.subs()==2 && y.sub(0).equals(y.sub(1)))
-            throw new RuntimeException("pointless permute");
-
-        this.y = y.subterms();
-        this.x = x.subterms();
+//        if (y.subs()==2 && y.sub(0).equals(y.sub(1)))
+//            throw new RuntimeException("pointless permute");
     }
 
     @Override

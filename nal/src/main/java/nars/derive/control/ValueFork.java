@@ -47,15 +47,30 @@ public class ValueFork extends ForkDerivation<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
+        int ttlAtStart = d.ttl;
+        if (ttlAtStart < Param.TTL_MIN)
+            return false; //done
+
         int before = d.now();
 
-        MutableRoulette.run(value.apply(d), d.random,
+        float[] paths = value.apply(d);
+        int nPaths = paths.length;
 
-            wi -> wi / 2 /* harmonic decay */,
+        int subBudget = Math.max(Param.TTL_MIN, ttlAtStart / nPaths);
 
-            b -> {
+        MutableRoulette.run(paths, d.random,
 
-                branchChoice.value(d, b); //fork's return value ignored
+            wi -> 0      //once per path only: after a branch is tried, dont try again
+                  //wi/2 //harmonic decay
+
+            , b -> {
+
+                int beforeTTL = d.ttl;
+                d.ttl = subBudget;
+                branchChoice.value(d, b); //fork's return bool is ignored
+                int spent = subBudget - d.ttl;
+                int afterTTL = beforeTTL - Math.max(spent, 0);
+                d.ttl = afterTTL;
 
                 return d.revertLive(before, Param.TTL_BRANCH);
 

@@ -364,7 +364,7 @@ public interface Termlike {
      * counts subterms matching the supplied op
      */
     default int subs(Op matchingOp) {
-        return subs(x -> x.op() == matchingOp);
+        return hasAny(matchingOp) ? subs(x -> x.op() == matchingOp) : 0;
     }
 
     /**

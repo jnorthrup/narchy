@@ -425,9 +425,18 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public boolean constant(Termlike x) {
         return !(type == null ?
-                x.hasAny(Op.VAR_DEP.bit | Op.VAR_INDEP.bit | Op.VAR_QUERY.bit) || x.varPattern() > 0 :
+                x.hasAny(Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit | Op.VAR_PATTERN.bit) :
                 x.hasAny(type)
         );
+    }
+
+    /** counts the number of variables are unifiable in the given term */
+    public int vars(Termlike x) {
+        if (type == null) {
+            return x.vars() + x.varPattern(); //all var types
+        } else {
+            return x.subs(type);
+        }
     }
 
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {

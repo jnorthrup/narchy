@@ -14,7 +14,6 @@ import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
-import nars.unify.mutate.CommutivePermutations;
 import nars.util.term.InternedSubterms;
 import nars.util.term.transform.VariableNormalization;
 
@@ -562,17 +561,21 @@ public class PremisePatternIndex extends MapConceptIndex {
 
                         Term match = ys > 0 ? EllipsisMatch.match(yFree) : EllipsisMatch.empty;
 
-                        if (subs() == 1 + match.subs() || xFixed.isEmpty()) {
+//                        if (complexity()==subs()-1) {
+                            //all terms are matched, the ellipsis disappears, and there is only one canonical ordering
                             return this.ellipsis.unify(match, u);
-                        } else {
-                            //permute may be necessary to unify the correct dep/indep terms for 2nd layer
-                            if (xFixed.size()==match.subs())
-                                return u.termutes.add(new CommutivePermutations(
-                                        Op.terms.subterms(xFixed),
-                                        match.subterms().sorted()));
-                            else
-                                return false; //?
-                        }
+//                        } else {
+//                            //permute may be necessary to unify the correct dep/indep terms for 2nd layer
+//                            int xcs = xFixed.size();
+//                            if (xcs == match.subs()) {
+//
+//
+//                                return u.termutes.add(new CommutivePermutations(
+//                                        Op.terms.subterms(xFixed),
+//                                        match.subterms().sorted()));
+//                            } else
+//                                return false; //?
+//                        }
 
                     case 1:
                         Term x0 = xFixed.first();

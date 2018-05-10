@@ -208,9 +208,15 @@ public interface Compound extends Term, IPair, Subterms {
         if ((xs=xsubs.subs()) != ysubs.subs())
             return false;
 
+
+
         if (xs>1 && isCommutative()) {
             return xsubs.unifyCommute(ysubs, u);
         } else {
+            if (xs == 1) {
+                return sub(0).unify(ysubs.sub(0), u);
+            }
+
             //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
             return xsubs.unifyLinear(ysubs, u);
         }

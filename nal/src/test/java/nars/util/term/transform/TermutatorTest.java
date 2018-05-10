@@ -117,22 +117,22 @@ public class TermutatorTest {
 
     @Test public void testComm2() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations((Term)$("{%A,%B}"),
+                new CommutivePermutations($("{%A,%B}"),
                         $("{x,y}")), 2);
     }
     @Test public void testComm3() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations((Term)$("{%A,%B,%C}"),
+                new CommutivePermutations($("{%A,%B,%C}"),
                         $("{x,y,z}")), 6);
     }
     @Test public void testComm3Conj() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations((Term)$("(&&,%A,%B,%C)"),
+                new CommutivePermutations($("(&&,%A,%B,%C)"),
                         $("(&&,x,y,z)")), 6);
     }
     @Test public void testComm4() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
-                new CommutivePermutations((Term)$("{%A,%B,%C,%D}"),
+                new CommutivePermutations($("{%A,%B,%C,%D}"),
                         $("{w,x,y,z}")), 24);
     }
 
@@ -148,21 +148,17 @@ public class TermutatorTest {
         unifier.setTTL(TTL);
         //unifier.freeCount.set( Integer.MAX_VALUE ); //MOCK
 
-        t.mutate(unifier, new Termutator[] { t,  new Termutator() {
+        t.mutate(unifier, new Termutator[] { t, (f, chain, current) -> {
+            TreeMap t1 = new TreeMap(); //use treemap for sorted keys
+            f.xy.map.forEach(t1::put);
 
-            @Override public void mutate(@NotNull Unify f, Termutator[] chain, int current) {
-                TreeMap t = new TreeMap(); //use treemap for sorted keys
-                f.xy.map.forEach(t::put);
-
-                if (s.add( t.toString() )) {
-                    actual[0]++;
-                } else {
-                    duplicates[0]++;
-                }
-
+            if (s.add( t1.toString() )) {
+                actual[0]++;
+            } else {
+                duplicates[0]++;
             }
 
-         }}, 0);
+        }}, 0);
 
 
         String res = s.toString();
