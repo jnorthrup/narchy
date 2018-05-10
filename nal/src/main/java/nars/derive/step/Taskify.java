@@ -49,7 +49,7 @@ public class Taskify extends AbstractPred<Derivation> {
         return false;
     }
 
-    private static boolean spam(Derivation p, int cost) {
+    protected static boolean spam(Derivation p, int cost) {
         p.use(cost);
         return true; //just does
     }

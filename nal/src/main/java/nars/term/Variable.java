@@ -7,6 +7,7 @@ import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.Null;
+import static nars.Op.VAR_PATTERN;
 
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
@@ -98,41 +99,36 @@ public interface Variable extends Atomic {
         //see: https://github.com/opennars/opennars/blob/4515f1d8e191a1f097859decc65153287d5979c5/nars_core/nars/language/Variables.java#L18
         Op xOp = x.op();
         Op yOp = y.op();
-        if (xOp == yOp) {
+        if (xOp == yOp && xOp!=VAR_PATTERN) {
 
-            if (u.varCommonalize && commonalizableVariable(xOp) && commonalizableVariable(yOp)) {
-                //TODO check if this is already a common variable containing y
-
-
-                Term xBound = u.xy(x);
-                Term yBound = u.xy(y);
+            Term xBound = u.xy(x);
+            Term yBound = u.xy(y);
 //                    Termed _yBound = u.apply(y); //full resolve via apply
 //                    Term yBound  = _yBound == null ? null : _yBound.term(); //HACK
 
-                if (yBound != null) {
-                    if (yBound.equals(x))
+            if (yBound != null) {
+                if (yBound.equals(x))
+                    return true;
+                if (xBound != null) {
+                    if (xBound.equals(y)||xBound.equals(yBound))
                         return true;
-                    if (xBound != null) {
-                        if (xBound.equals(y)||xBound.equals(yBound))
-                            return true;
 
-                        return xBound.unify(yBound, u);
-                    }
+                    return xBound.unify(yBound, u);
                 }
+            }
 
-                Term common = forward ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
+            Term common = forward ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
 
-                Term target;
-                if (xBound != null) target = xBound;
-                else if (yBound != null) target = yBound;
-                else target = null;
+            Term target;
+            if (xBound != null) target = xBound;
+            else if (yBound != null) target = yBound;
+            else target = null;
 
-                if (u.replaceXY(x, common) && u.replaceXY(y, common)) {
-                    if (target != null)
-                        return u.putXY(common, target);
-                    else
-                        return true;
-                }
+            if (u.replaceXY(x, common) && u.replaceXY(y, common)) {
+                if (target != null)
+                    return u.putXY(common, target);
+                else
+                    return true;
             }
 
         } else {
@@ -147,5 +143,13 @@ public interface Variable extends Atomic {
         }
 
         return u.putXY(x, y);
+    }
+
+    @Override
+    default boolean unifyReverse(Term x, Unify u) {
+        return
+            u.varSymmetric &&
+            u.matchType(op()) &&
+            unifyVar(x, u, false);
     }
 }

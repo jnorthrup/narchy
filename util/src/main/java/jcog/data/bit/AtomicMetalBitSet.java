@@ -64,13 +64,8 @@ public class AtomicMetalBitSet extends MetalBitSet {
     }
 
     @Override
-    public int getCardinality() {
+    public int cardinality() {
         return Integer.bitCount(x);
-    }
-
-    @Override
-    public boolean isAllOff() {
-        return x == 0;
     }
 
     public void copyFrom(AtomicMetalBitSet copyFrom) {

@@ -2154,6 +2154,11 @@ public enum Op {
         }
 
         @Override
+        public boolean unifyReverse(Term x, Unify u) {
+            return x == this; //shouldnt get called
+        }
+
+        @Override
         public final void append(Appendable w) throws IOException {
             w.append(symChar);
         }

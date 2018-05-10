@@ -19,6 +19,7 @@ package org.apache.commons.lang3;
 
 import jcog.data.array.IntComparator;
 import jcog.data.array.Swapper;
+import jcog.data.bit.MetalBitSet;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.eclipse.collections.api.block.function.primitive.ByteToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
@@ -7389,6 +7390,17 @@ public enum ArrayUtils { ;
             System.arraycopy(array, srcIndex, result, destIndex, count);
         }
         return result;
+    }
+
+    public static byte[] removeAll(final byte[] x, final MetalBitSet indices) {
+        final int srcLength = x.length;
+        final byte[] y = new byte[srcLength - indices.cardinality()];
+        int j = 0;
+        for (int i = 0; i < srcLength; i++) {
+            if (!indices.get(i))
+                y[j++] = x[i];
+        }
+        return y;
     }
 
     /**

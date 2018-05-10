@@ -960,7 +960,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 if (u.constant(sub(0)) && u.constant(sub(1)))
                     return false; //probably impossible
                 else {
-                    //is this necessary?
+                    //is this necessary? seems to be sometimes
                     u.termutes.add(new CommutivePermutations(this, y));
                     return true;
                 }
@@ -1035,7 +1035,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Term[] termsExcept(MetalBitSet toRemove) {
-        int numRemoved = toRemove.getCardinality();
+        int numRemoved = toRemove.cardinality();
         int size = subs();
         int newSize = size - numRemoved;
         Term[] t = new Term[newSize];

@@ -21,9 +21,7 @@ abstract public class MetalBitSet {
 
     public abstract void setAll();
 
-    public abstract int getCardinality();
-
-    public abstract boolean isAllOff();
+    public abstract int cardinality();
 
     public final void set(int i, boolean v) {
         if (v) set(i);
@@ -57,20 +55,15 @@ abstract public class MetalBitSet {
             Arrays.fill(data, 0xffffffffffffffffL);
         }
 
-        @Override
-        public int getCardinality() {
-            int bc = 0;
-            for (long x : data) {
-                bc += Long.bitCount(x);
-            }
-            return bc;
+        /**
+         * number of bits set to true
+         */
+        public int cardinality() {
+            int sum = 0;
+            for (long l : data)
+                sum += Long.bitCount(l);
+            return sum;
         }
-
-        @Override
-        public boolean isAllOff() {
-            throw new TODO("trivial");
-        }
-
         /**
          * Sets the bit at specified index.
          *
@@ -84,15 +77,7 @@ abstract public class MetalBitSet {
         }
 
 
-        /**
-         * number of bits set to true
-         */
-        public int cardinality() {
-            int sum = 0;
-            for (long l : data)
-                sum += Long.bitCount(l);
-            return sum;
-        }
+
 
         public boolean getAndSet(int index, boolean next) {
             int i = index >>> 6;
@@ -204,14 +189,11 @@ abstract public class MetalBitSet {
         }
 
         @Override
-        public int getCardinality() {
-            return Integer.bitCount(x);
+        public int cardinality() {
+            int x = this.x;
+            return x == 0 ? 0 : Integer.bitCount(x);
         }
 
-        @Override
-        public boolean isAllOff() {
-            return x == 0;
-        }
     }
 
     public static MetalBitSet bits(int size) {

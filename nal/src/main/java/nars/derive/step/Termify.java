@@ -2,6 +2,7 @@ package nars.derive.step;
 
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.derive.Derivation;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.term.Term;
@@ -38,6 +39,28 @@ public final class Termify extends AbstractPred<Derivation> {
 //        this.uniqueVars = pattern instanceof Compound ? ((PatternCompound)pattern).uniqueVars : Set.of();
     }
 
+    /**
+     * fast test; more exhaustive test is performed in Taskify but it may not be necessary if this is applied
+     */
+    public static boolean isParentQueDifferent(Derivation d, Term c1) {
+
+        //potentially duplicates parent as a result of unaffected functor work
+        byte punc = d.concPunc;
+        if ((punc ==QUESTION || punc == QUEST) && (punc == d.taskPunc)) {
+            if (c1.equals(d.taskTerm)) {
+                //same punctuation as parent task.
+                // the result will be of lower confidence that we can calculate by maximum bound
+                // in terms of evidence contribution from task and optionally belief that might boost
+                // higher than the input task.
+                if (d.belief == null) {
+                    d.nar.emotion.deriveFailParentDuplicate.increment();
+                    Taskify.spam(d, Param.TTL_DERIVE_TASK_SAME);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public final boolean test(Derivation d) {
@@ -49,17 +72,18 @@ public final class Termify extends AbstractPred<Derivation> {
         d.untransform.clear();
 
         Term c1 = pattern.transform(d);
-        if (c1==null || !c1.op().conceptualizable) {
+        if (c1 == null || !c1.op().conceptualizable)
             return false;
-        }
         c1 = c1.eval(d);
 
-        //Term c1 = pattern.eval(d);
 
         if (c1.volume() > d.termVolMax) {
             d.nar.emotion.deriveFailVolLimit.increment();
             return false;
         }
+
+        if (!isParentQueDifferent(d, c1))
+            return false; //belief doesnt contribute anything
 
         if (!Taskify.valid(c1)) {
             Term c1e = c1;
@@ -94,7 +118,7 @@ public final class Termify extends AbstractPred<Derivation> {
             }
 
 
-            assert(occ[1] >= occ[0]);
+            assert (occ[1] >= occ[0]);
 //            if (occ[0] > occ[1]) {
 //                //HACK swap the reversed occ
 //                long x = occ[0];
@@ -142,8 +166,6 @@ public final class Termify extends AbstractPred<Derivation> {
 
         return d.derivedTerm.set(c2) != null;
     }
-
-
 
 
 }

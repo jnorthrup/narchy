@@ -191,17 +191,17 @@ public interface Compound extends Term, IPair, Subterms {
     /**
      * unification matching entry point (default implementation)
      *
-     * @param ty compound to match against (the instance executing this method is considered 'x')
+     * @param y compound to match against (the instance executing this method is considered 'x')
      * @param u  the substitution context holding the match state
      * @return whether match was successful or not, possibly having modified subst regardless
      */
     @Override
-    default boolean unify(/*@NotNull*/ Term ty, /*@NotNull*/ Unify u) {
-        return  Term.super.unify(ty, u)
+    default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
+        return  (equals(y) && u.constant(this, y))
                 ||
-                ( op() == ty.op() &&
-                unifySubterms(ty, u)
-        );
+                ( op() == y.op() && unifySubterms(y, u))
+                ||
+                y.unifyReverse(this, u);
     }
 
     default boolean unifySubterms(Term ty, Unify u) {

@@ -13,6 +13,7 @@ import java.util.Random;
 
 import static nars.$.$$;
 import static nars.Op.False;
+import static nars.Op.True;
 import static nars.util.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
@@ -287,6 +288,11 @@ public class ConjTest {
                 $$("(&|,(x&&y),(b&&c))"),
                 $$("(&|,(b&&c),x)")).toString());
 
+    }
+
+    @Test public void testEmptyConjResultTerm() {
+        Conj c = new Conj();
+        assertEquals(True, c.term());
     }
 
 }

@@ -359,7 +359,7 @@ abstract public class NAgentX extends NAgent {
         Inperience inp = new Inperience(n, 32);
 //
 
-        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);
+        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 3f, 32);
 
         //reflect.ReflectSimilarToTaskTerm refSim = new reflect.ReflectSimilarToTaskTerm(16, n);
         //reflect.ReflectClonedTask refTask = new reflect.ReflectClonedTask(16, n);

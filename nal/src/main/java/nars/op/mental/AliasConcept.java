@@ -37,7 +37,13 @@ public final class AliasConcept extends TaskConcept {
             this.target = target;
         }
 
-//        @Override
+        @Override
+        public boolean unifyReverse(Term x, Unify u) {
+            //dereference alias
+            return x.unify(target, u);
+        }
+
+        //        @Override
 //        public Term evalSafe(TermContext context, int remain) {
 //            Term e = target.evalSafe(context, remain);
 //            if (e != target)

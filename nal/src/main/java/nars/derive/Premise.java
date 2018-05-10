@@ -111,7 +111,6 @@ public class Premise {
                         return true; //keep going
                     }, matchTTL);
                     u.varSymmetric = true;
-                    u.varCommonalize = true;
                     u.unify(taskTerm, beliefTerm, true);
                     if (unifiedBeliefTerm[0] != null) {
                         beliefTerm = unifiedBeliefTerm[0];

@@ -28,7 +28,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.The;
-import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermMetadata;
@@ -408,20 +407,14 @@ public interface Term extends Termed, Comparable<Termed> {
      * @return whether unification succeeded
      */
     default boolean unify(Term y, Unify u) {
-//        if (((this instanceof Atomic) || !isCommutative() || u.constant(this, y)) && this.equals(y)) {
-//            return true; //only assume unification via equality if not a compound, since
-        //if (equals(y) && (!isCommutative() || u.constant(this, y))) {
-        if (equals(y) && (u.constant(this, y))) {
-            return true; //only assume unification via equality if not a compound, since
-        }
-        //TODO replace with a Term.unifiedWith() method that can override the current false return value
-        if (y instanceof Variable && u.varSymmetric && u.matchType(y.op())) {
-            return y.unify(this, u); //reverse
-        } else if (y instanceof AliasConcept.AliasAtom) {
-            return unify(((AliasConcept.AliasAtom) y).target, u); //dereference alias
-        } else {
-            return false;
-        }
+        return (equals(y) && u.constant(this, y))
+                ||
+               y.unifyReverse(this, u);
+    }
+
+    /** by default this has no effect by returning false */
+    default boolean unifyReverse(Term x, Unify u) {
+        return false;
     }
 
     /**
@@ -846,8 +839,10 @@ public interface Term extends Termed, Comparable<Termed> {
             return false;
         } else if (t.op() == NEG) {
             return equals(t.unneg());
+        } else if (op() == NEG) {
+            return unneg().equals(t);
         } else {
-            return hasAny(NEG) && equals(t.neg());
+            return false;
         }
     }
 

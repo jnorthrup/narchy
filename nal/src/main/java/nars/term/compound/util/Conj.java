@@ -208,24 +208,27 @@ public class Conj {
         return ce.term();
     }
 
-    public static Term without(Term x, Term event, boolean includeNeg) {
-        if (x.op() != CONJ || x.impossibleSubTerm(event))
-            return Null;
+    public static Term without(Term include, Term exclude, boolean includeNeg) {
+        if (include.equals(exclude))
+            return True;
+        if (includeNeg && include.equalsNeg(exclude))
+            return True;
+        if (include.op()!=CONJ || include.impossibleSubTerm(exclude))
+            return include;
 
-        Conj xx = Conj.from(x);
-        if (xx.removeEventsByTerm(event, true, includeNeg)) {
-            return xx.term(); //return the changed conj
+        Conj xx = Conj.from(include);
+        if (xx.removeEventsByTerm(exclude, true, includeNeg)) {
+            return xx.term(); //the changed conj
         } else {
-            //return Null; //same
-            return x;
+            return include; //same
         }
     }
 
     public static Term withoutAll(Term include, Term exclude) {
-        if (include.op() != CONJ || exclude.op() != CONJ)
-            return Null;
+        if (include.op()!=CONJ)
+            return include;
 
-        if (exclude.equals(include))
+        if (include.equals(exclude))
             return True;
 
         Conj x = Conj.from(include);
@@ -236,16 +239,7 @@ public class Conj {
             return true;
         }, edt == DTERNAL ? ETERNAL : 0, true, edt == DTERNAL, false, 0);
 
-        if (removed[0])
-            return x.term();
-        else
-            return include;
-
-//        Term xx = x.term();
-//        if (!xx.equals(include))
-//            return xx;
-//        else
-//            return include; //unchanged
+        return removed[0] ? x.term() : include;
     }
 
     public static Term conjMerge(Term a, Term b, int dt) {
@@ -328,6 +322,7 @@ public class Conj {
         if (dt == 0 || dt == DTERNAL) {
             if (left.equals(right)) return left;
             if (left.equalsNeg(right)) return False;
+
 
             //return CONJ.the(dt, left, right); //send through again
         }
@@ -457,7 +452,13 @@ public class Conj {
     }
 
     protected boolean addIfValid(long at, int id) {
-        Object what = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
+        Object what = event.get(at);
+        if (what == null) {
+            byte[] bwhat = new byte[ROARING_UPGRADE_THRESH];
+            bwhat[0] = (byte)id;
+            event.put(at, bwhat);
+            return true;
+        }
         if (what instanceof RoaringBitmap) {
             RoaringBitmap r = (RoaringBitmap) what;
             if (!r.contains(-id)) {
@@ -494,19 +495,42 @@ public class Conj {
         }) + 1;
     }
 
+    /** returns index of an item if it is present, or -1 if not */
+    public byte index(Term t) {
+        return terms.getIfAbsent(t.unneg(), (byte)-1);
+    }
+
+    public byte get(Term x) {
+        boolean neg;
+        if (neg = (x.op()==NEG))
+            x = x.unneg();
+        byte index = index(x);
+        if (index == -1)
+            return Byte.MIN_VALUE;
+
+        index++;
+        if (neg)
+            index =(byte)(-index);
+
+        return index;
+    }
+
     public boolean remove(Term t, long at) {
 
         Object o = event.get(at);
         if (o == null)
             return false; //nothing at that time
 
-        if (term != null) term = null; //reset result
 
         boolean neg = t.op() == NEG;
-        int i = add(t); //should be get(), add doesnt apply
+        int i = get(t); //should be get(), add doesnt apply
         if (neg)
             i = -i;
-        return removeFromEvent(at, o, i);
+        if (removeFromEvent(at, o, true, i)!=0) {
+            term = null; //reset result
+            return true;
+        }
+        return false;
     }
 
 //    private byte id(long w) {
@@ -535,32 +559,66 @@ public class Conj {
 //        return (byte) (s & 0xff);
 //    }
 
-    private boolean removeFromEvent(long at, Object o, int... i) {
+    /** returns:
+     *    +2 removed, and now this event time is empty
+     *    +1 removed
+     *    +0 not removed
+     */
+    private int removeFromEvent(long at, Object o, boolean autoRemoveIfEmpty, int... i) {
         if (o instanceof RoaringBitmap) {
             boolean b = false;
+            RoaringBitmap oo = (RoaringBitmap) o;
             for (int ii : i)
-                b |= ((RoaringBitmap) o).checkedRemove(ii);
-            return b;
+                b |= oo.checkedRemove(ii);
+            if (!b) return 0;
+            if (oo.isEmpty()) {
+                if (autoRemoveIfEmpty)
+                    event.remove(at);
+                return 2;
+            } else {
+                return 1;
+            }
         } else {
             byte[] b = (byte[]) o;
-            boolean removed = false;
+
+            int num = ArrayUtils.indexOf(b, (byte)0);
+            if (num == -1) num = b.length;
+
+            int removals = 0;
             for (int ii : i) {
                 int bi = ArrayUtils.indexOf(b, (byte) ii);
                 if (bi != -1) {
-                    b = ArrayUtils.remove(b, bi);
-                    removed = true;
+                    if (b[bi]!=0) {
+                        b[bi] = 0;
+                        removals++;
+                    }
                 }
             }
-            if (removed) {
-                event.put(at, b);
-                return true;
+
+            if (removals == 0)
+                return 0;
+            else if (removals == num) {
+                if (autoRemoveIfEmpty)
+                    event.remove(at);
+                return 2;
             } else {
-                return false;
+                //reconstruct new byte array
+
+                MetalBitSet toRemove = MetalBitSet.bits(b.length);
+                //HACK set to remove all empty indices
+                for (int zeroIndex = 0; zeroIndex < b.length; zeroIndex++) {
+                    if (b[zeroIndex]==0)
+                        toRemove.set(zeroIndex);
+                }
+
+                b = ArrayUtils.removeAll(b, toRemove);
+                event.put(at, b);
+                return 1;
             }
         }
     }
 
-    public boolean removeEventsByTerm(Term t, boolean pos, boolean neg) {
+    boolean removeEventsByTerm(Term t, boolean pos, boolean neg) {
 
         boolean negateInput;
         if (t.op() == NEG) {
@@ -570,7 +628,7 @@ public class Conj {
             negateInput = false;
         }
 
-        int i = add(t); //should be get(), add doesnt apply
+        int i = get(t); //should be get(), add doesnt apply
         int[] ii;
         if (pos && neg) {
             ii = new int[]{i, -i};
@@ -582,11 +640,26 @@ public class Conj {
             throw new UnsupportedOperationException();
         }
 
+
         final boolean[] removed = {false};
+        LongArrayList eventsToRemove = new LongArrayList(4);
         event.forEachKeyValue((when, o) -> {
-            removed[0] |= removeFromEvent(when, o, ii);
+            int result = removeFromEvent(when, o, false, ii);
+            if (result == 2) {
+                eventsToRemove.add(when);
+            }
+            removed[0] |= result > 0;
         });
-        return removed[0];
+
+        if (!eventsToRemove.isEmpty()) {
+            eventsToRemove.forEach(event::remove);
+        }
+
+        if (removed[0]) {
+            term = null;
+            return true;
+        }
+        return false;
     }
 
     public Term term() {
@@ -595,16 +668,9 @@ public class Conj {
 
 
         int numTimes = event.size();
-        switch (numTimes) {
-            case 0:
-                return Null;
-            case 1:
-                break;
-            default:
-                break;
-        }
+        if (numTimes == 0)
+            return True; //returns True in the empty case
 
-        //event.compact();
 
 
         IntPredicate validator = null;
@@ -638,10 +704,10 @@ public class Conj {
         if (eternal != null && numTimes == 1) {
             ci = eternal;
         } else {
-            FasterList<LongObjectPair<Term>> e = new FasterList<>(numTimes - (eternal != null ? 1 : 0));
-            Iterator<LongObjectPair> ii = event.keyValuesView().iterator();
+            FasterList<LongObjectPair<Term>> temporals = new FasterList<>(numTimes - (eternal != null ? 1 : 0));
+            Iterator<LongObjectPair<Term>> ii = event.keyValuesView().iterator();
             while (ii.hasNext()) {
-                LongObjectPair next = ii.next();
+                LongObjectPair<Term> next = ii.next();
                 long when = next.getOne();
                 if (when == ETERNAL)
                     continue; //already handled above
@@ -656,29 +722,34 @@ public class Conj {
                     return this.term = Null; //short-circuit null
                 }
 
-                e.add(pair(when, wt));
+                temporals.add(pair(when, wt));
             }
 
-            int ee = e.size();
             Term temporal;
+            int ee = temporals.size();
             switch (ee) {
                 case 0:
-                    return True;
+                    temporal = null;
+                    break;
                 case 1:
-                    temporal = e.get(0).getTwo();
+                    temporal = temporals.get(0).getTwo();
                     break;
                 default:
-                    e.sortThisBy(LongObjectPair::getOne);
-                    temporal = conjSeq(e);
+                    temporals.sortThisBy(LongObjectPair::getOne);
+                    temporal = conjSeq(temporals);
                     break;
             }
 
-            ci = eternal != null ?
-                    //CONJ.the(DTERNAL, sorted(temporal, eternal))
-                    CONJ.compound(DTERNAL, sorted(temporal, eternal))
-                    //instance(CONJ, DTERNAL, sorted(temporal, eternal))
-                    :
-                    temporal;
+            if (eternal != null && temporal!=null) {
+                ci = CONJ.compound(DTERNAL, sorted(temporal, eternal));
+            } else if (eternal == null) {
+                ci = temporal;
+            } else if (temporal == null) {
+                ci = eternal;
+            } else { //if (eternal == null || temporal == null) {
+                //ci = True; //shouldnt happen
+                throw new RuntimeException("shouldnt get here");
+            }
         }
 
 
@@ -720,7 +791,7 @@ public class Conj {
                                 }
                             }
                         }
-                        if (toRemove.getCardinality() > 0) {
+                        if (toRemove.cardinality() > 0) {
                             return CONJ.compound(ciDT, cci.termsExcept(toRemove));
                         }
                     }
