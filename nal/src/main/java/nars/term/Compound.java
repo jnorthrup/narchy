@@ -197,7 +197,7 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
-        return  (equals(y) && u.constant(this, y))
+        return  equals(y)
                 ||
                 ( op() == y.op() && unifySubterms(y, u))
                 ||
@@ -220,7 +220,7 @@ public interface Compound extends Term, IPair, Subterms {
             // since it allows repeats.
             // although the order doesnt matter like general commutivity
             // and we are in the commutive unification procedure already.
-            boolean yCommutive = ty.isCommutative() && (ty.dt()!=XTERNAL || ysubs.subs() != 2);
+            boolean yCommutive = ty.isCommutative() && (ty.dt()!=XTERNAL || ys != 2);
             return xsubs.unifyCommute(ysubs, yCommutive, u);
         } else {
             if (xs == 1) {

@@ -835,63 +835,33 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
         int s = subs();
 
-        MetalBitSet ok;
         //1. if both contain constant atoms, check for any conflicting constant terms before attempting any variable matching
-        if (complexity() > 0 && Y.complexity() > 0) {
-            //some structure detected
-            ok = MetalBitSet.bits(s);
-            for (int i = 0; i < s; i++) {
-                Term xi = sub(i);
-                boolean xc = u.constant(xi);
-                if (xc) {
-                    Term yi = Y.sub(i);
-                    if (xi.equals(yi)) {
-                        //equal constants; match.
-                        ok.set(i);
-                        continue;
-                    }
-                    boolean yc = u.constant(yi);
-                    if (yc) {
-                        //both constant and inequal, fail.
+        Term[] deferredPairs = new Term[s*2];
+        int dynPairs = 0;
+        for (int i = 0; i < s; i++) {
+            Term xi = sub(i);
+            Term yi = Y.sub(i);
+            boolean xc = u.constant(xi);
+            if (xc) {
+                boolean yc = u.constant(yi);
+                if (yc) {
+                    if (!xi.unify(yi, u))//both constant and inequal, fail.
                         return false;
-                    }
                 }
             }
-        } else {
-            ok = null;
+            //stored in reverse:
+            deferredPairs[dynPairs++] = yi;
+            deferredPairs[dynPairs++] = xi;
         }
 
-        for (int i = 0; i < s; i++) {
-            if (ok != null && ok.get(i))
-                continue;
-            if (!sub(i).unify(Y.sub(i), u))
+        //optional: sort the pairs by complexity, simplest comparisons first to pessimistically fail early
+        while (dynPairs > 0) {
+            if (!deferredPairs[--dynPairs].unify(deferredPairs[--dynPairs], u))
                 return false;
         }
+
         return true;
-
     }
-
-//            MetalBitSet ok;
-//            AnonVector yy = (AnonVector) Y;
-//            //1. if both contain constant atoms, check for any conflicting constant terms before attempting any variable matching
-//            if (((structure & ATOM.bit) > 0) && ((yy.structure & ATOM.bit) > 0)) {
-//                ok = MetalBitSet.bits(s);
-//                for (int i = 0; i < s; i++) {
-//                    short xi = subterms[i];
-//                    short yi = yy.subterms[i];
-//                    if ((isAnomOrNegatedAnom(xi) && isAnomOrNegatedAnom(yi))) {
-//                        if (xi != yi)
-//                            return false; //both constants, so not equal
-//                        else
-//                            ok.set(i); //continue
-//                    }
-//                }
-//                if (ok.getCardinality()==s)
-//                    return true; //wtf it was equal?
-//            } else {
-//                ok = null;
-//            }
-
 
     /**
      * the term that y is from may not be commutive in some temporal cases like

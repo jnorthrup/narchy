@@ -68,20 +68,19 @@ public interface Variable extends Atomic {
     }
 
     @Override
-    default boolean unify(Term y, Unify u) {
+    default boolean unify(Term _y, Unify u) {
 
-        y = u.resolve(y);
+        if (equals(_y)) return true;
 
-        //TODO non-recurse write loop version
-
-        if (equals(y))
-            return true;
-
+        Term y = u.resolve(_y);
         Term x = u.resolve(this);
-        if (x!=this)
-            return x.unify(y, u);
+
+        if (equals(y)) return true;
+
+        if (x instanceof Variable)
+            return ((Variable)x).unifyVar(y, u, true);
         else
-            return unifyVar(y, u, true);
+            return x.unify(y, u);
     }
 
     /** the direction parameter is to maintain correct provenance of variables when creating common vars.
@@ -90,7 +89,7 @@ public interface Variable extends Atomic {
      */
     default boolean unifyVar(Term y, Unify u, boolean forward) {
         final Term x = this;
-        if (x instanceof Variable && y instanceof Variable) {
+        if (y instanceof Variable) {
             return unifyVar((Variable)x, ((Variable)y), forward, u);
         } else {
             return u.putXY(x, y);

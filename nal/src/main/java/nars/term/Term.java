@@ -407,7 +407,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * @return whether unification succeeded
      */
     default boolean unify(Term y, Unify u) {
-        return (equals(y) && u.constant(this, y))
+        return equals(y)
                 ||
                y.unifyReverse(this, u);
     }
