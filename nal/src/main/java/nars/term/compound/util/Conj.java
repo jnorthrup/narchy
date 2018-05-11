@@ -522,10 +522,7 @@ public class Conj {
             return false; //nothing at that time
 
 
-        boolean neg = t.op() == NEG;
         int i = get(t); //should be get(), add doesnt apply
-        if (neg)
-            i = -i;
         if (removeFromEvent(at, o, true, i)!=0) {
             term = null; //reset result
             return true;

@@ -9,6 +9,8 @@ import nars.term.control.PrediTerm;
 import java.util.Collections;
 import java.util.List;
 
+import static nars.Op.VAR_PATTERN;
+
 /**
  * requires a specific subterm to have minimum bit structure
  */
@@ -29,6 +31,8 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
             List<SubTermStructure> components = $.newArrayList(numBits);
             for (Op o : Op.values()) {
 
+                if (o == VAR_PATTERN) continue; //skip
+
                 int b = o.bit;
                 if ((bits & b) > 0) { //HACK
                     components.add(new SubTermStructure(subterm, b));
@@ -39,7 +43,7 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
     }
 
     private SubTermStructure(int subterm, int bits) {
-        this(Op.VAR_PATTERN, subterm, bits);
+        this(VAR_PATTERN, subterm, bits);
     }
 
     private SubTermStructure(/*@NotNull*/ Op matchingType, int subterm, int bits) {
@@ -80,8 +84,7 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
     }
 
     static int filter(/*@NotNull*/ Op matchingType, int bits) {
-        if (matchingType != Op.VAR_PATTERN)
-            bits &= (~matchingType.bit);
+        bits &= (~matchingType.bit);
 
         //bits &= (~Op.NEG.bit); //filter based on negation
 

@@ -15,7 +15,7 @@ import static nars.util.time.Tense.ETERNAL;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 300;
+    final int cycles = 500;
 
     @Override
     protected NAR nar() {

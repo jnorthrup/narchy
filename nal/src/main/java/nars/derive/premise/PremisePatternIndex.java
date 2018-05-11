@@ -189,7 +189,7 @@ public class PremisePatternIndex extends MapConceptIndex {
 
         @Override
         protected boolean hasVars(Compound t) {
-            return t.hasVars() || t.varPattern() > 0;
+            return t.hasVars();
         }
 
         /*@NotNull*/

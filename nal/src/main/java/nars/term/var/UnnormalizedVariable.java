@@ -67,7 +67,7 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
     @Override
     public final int vars() {
         // pattern variable hidden in the count 0
-        return type == Op.VAR_PATTERN ? 0 : 1;
+        return 1;
     }
 
     /** produce a normalized version of this identified by the serial integer

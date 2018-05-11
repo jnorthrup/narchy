@@ -34,8 +34,7 @@ public class VariableTest {
         assertEquals(1, Narsese.term("?x").vars());
         assertEquals(0, Narsese.term("%x").vars());
 
-        //the pattern variable is not counted toward # vars
-        assertEquals(1, $("<$x <-> %y>").vars());
+        assertEquals(2, $("<$x <-> %y>").vars());
     }
 
 //    @Test

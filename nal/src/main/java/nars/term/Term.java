@@ -812,16 +812,18 @@ public interface Term extends Termed, Comparable<Termed> {
 
 
     default void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
-        s.varPattern += varPattern();
 
         int xstructure = structure();
-        if ((xstructure & VAR_DEP.bit) > 0)
-            s.varDep += varDep();
-        if ((xstructure & VAR_INDEP.bit) > 0)
-            s.varIndep += varIndep();
-        if ((xstructure & VAR_QUERY.bit) > 0)
-            s.varQuery += varQuery();
         s.structure |= xstructure;
+
+        if ((xstructure & VAR_PATTERN.bit) != 0)
+            s.varPattern += varPattern();
+        if ((xstructure & VAR_DEP.bit) != 0)
+            s.varDep += varDep();
+        if ((xstructure & VAR_INDEP.bit) != 0)
+            s.varIndep += varIndep();
+        if ((xstructure & VAR_QUERY.bit) != 0)
+            s.varQuery += varQuery();
 
         s.vol += volume();
         s.hash = Util.hashCombine(s.hash, hashCode());

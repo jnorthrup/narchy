@@ -34,7 +34,6 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -387,7 +386,7 @@ public enum Op {
 //    @Deprecated
 //    INSTANCE("-{-", 2, OpType.Statement, Args.Two) {
 //        @Override
-//        @NotNull protected Term _the(int dt, Term[] u) {
+//        protected Term _the(int dt, Term[] u) {
 //            assert (u.length == 2);
 //            return INH.the(SETe.the(u[0]), u[1]);
 //        }
@@ -396,7 +395,7 @@ public enum Op {
 //    @Deprecated
 //    PROPERTY("-]-", 2, OpType.Statement, Args.Two) {
 //        @Override
-//        @NotNull protected Term _the(int dt, Term[] u) {
+//        protected Term _the(int dt, Term[] u) {
 //            assert (u.length == 2);
 //            return INH.the(u[0], SETi.the(u[1]));
 //        }
@@ -405,7 +404,7 @@ public enum Op {
 //    @Deprecated
 //    INSTANCE_PROPERTY("{-]", 2, OpType.Statement, Args.Two) {
 //        @Override
-//        @NotNull protected Term _the(int dt, Term[] u) {
+//        protected Term _the(int dt, Term[] u) {
 //            assert (u.length == 2);
 //            return INH.the(SETe.the(u[0]), SETi.the(u[1]));
 //        }
@@ -414,7 +413,7 @@ public enum Op {
 //    @Deprecated
 //    DISJ("||", true, 5, Args.GTETwo) {
 //        @Override
-//        @NotNull protected Term _the(int dt, Term[] u) {
+//        protected Term _the(int dt, Term[] u) {
 //            assert (dt == DTERNAL);
 //            if (u.length == 1 && u[0].op() != VAR_PATTERN)
 //                return u[0];
@@ -615,13 +614,13 @@ public enum Op {
     //    public interface TermInstancer {
 //
 //
-//        default @NotNull Term compound(@NotNull NewCompound apc, int dt) {
+//        default Term compound(NewCompound apc, int dt) {
 //            return compound(apc.op(), apc.theArray()).dt(dt);
 //        }
 //
-//        @NotNull Compound compound(Op o, Term[] subterms);
+//        Compound compound(Op o, Term[] subterms);
 //
-//        @NotNull TermContainer subterms(@NotNull Term... x);
+//        TermContainer subterms(Term... x);
 //
 //    }
 //
@@ -650,7 +649,7 @@ public enum Op {
 //        };
 //
 //
-//    public static boolean internable(@NotNull Term[] x) {
+//    public static boolean internable(Term[] x) {
 //        boolean internable = true;
 //        for (Term y : x) {
 //            if (y instanceof NonInternable) { //"must not intern non-internable" + y + "(" +y.getClass() + ")";
@@ -682,7 +681,7 @@ public enum Op {
 //        }
 //
 //        @Override
-//        public @NotNull TermContainer subterms(@NotNull Term... x) {
+//        public TermContainer subterms(Term... x) {
 ////        if (s.length < 2) {
 ////            return _subterms(s);
 ////        } else {
@@ -782,29 +781,29 @@ public enum Op {
         this(c, minLevel, type, Args.None);
     }
 
-    Op(@NotNull String s, boolean commutative, int minLevel, @NotNull IntIntPair size) {
+    Op(String s, boolean commutative, int minLevel, IntIntPair size) {
         this(s, commutative, minLevel, OpType.Other, size);
     }
 
-    Op(char c, int minLevel, OpType type, @NotNull IntIntPair size) {
+    Op(char c, int minLevel, OpType type, IntIntPair size) {
         this(Character.toString(c), minLevel, type, size);
     }
 
 
-    Op(@NotNull String string, int minLevel, @NotNull IntIntPair size) {
+    Op(String string, int minLevel, IntIntPair size) {
         this(string, minLevel, OpType.Other, size);
     }
 
 
-    Op(@NotNull String string, int minLevel, OpType type) {
+    Op(String string, int minLevel, OpType type) {
         this(string, false /* non-commutive */, minLevel, type, Args.None);
     }
 
-    Op(@NotNull String string, int minLevel, OpType type, @NotNull IntIntPair size) {
+    Op(String string, int minLevel, OpType type, IntIntPair size) {
         this(string, false /* non-commutive */, minLevel, type, size);
     }
 
-    Op(@NotNull String string, boolean commutative, int minLevel, OpType type, @NotNull IntIntPair size) {
+    Op(String string, boolean commutative, int minLevel, OpType type, IntIntPair size) {
 
         this.id = (byte) (ordinal());
         this.str = string;
@@ -1470,7 +1469,7 @@ public enum Op {
 ////                                }
 ////                            }
 ////
-////                            @NotNull SortedSet<Term> ppp = preds.toSortedSet();
+////                            SortedSet<Term> ppp = preds.toSortedSet();
 ////                            boolean modifiedP = false;
 ////                            for (Term cc : common)
 ////                                modifiedP |= ppp.remove(cc);
@@ -2181,7 +2180,7 @@ public enum Op {
 //         * array implementation of the conjunction true/false filter
 //         */
 //        @NotNull
-//        private Term[] conjTrueFalseFilter(@NotNull Term... u) {
+//        private Term[] conjTrueFalseFilter(Term... u) {
 //            int trues = 0; //# of True subterms that can be eliminated
 //            for (Term x : u) {
 //                if (x == True) {

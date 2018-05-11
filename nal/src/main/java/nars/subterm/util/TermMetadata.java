@@ -55,7 +55,8 @@ abstract public class TermMetadata implements Termlike {
 
         this.hash = s.hash;
         this.structure = s.structure;
-        int varTot = (this.varPattern = (byte) s.varPattern) +
+        int varTot =
+                (this.varPattern = (byte) s.varPattern) +
                 (this.varQuery = (byte) s.varQuery) +
                 (this.varDep = (byte) s.varDep) +
                 (this.varIndep = (byte) s.varIndep);
@@ -74,7 +75,7 @@ abstract public class TermMetadata implements Termlike {
 //    }
 
     public final int vars() {
-        return varDep + varIndep + varQuery;
+        return varDep + varIndep + varQuery + varPattern;
     }
 
     public final int varQuery() {
@@ -108,6 +109,11 @@ abstract public class TermMetadata implements Termlike {
         return varDep > 0;
     }
 
+    @Override
+    public boolean hasVarPattern() {
+        return varPattern > 0;
+    }
+
     public final int structure() {
         return structure;
     }
@@ -115,7 +121,6 @@ abstract public class TermMetadata implements Termlike {
     public final int volume() {
         return volume;
     }
-
 
     public final int complexity() {
         return complexity;

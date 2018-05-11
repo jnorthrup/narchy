@@ -19,12 +19,6 @@ public class VarPattern extends NormalizedVariable {
     @Override public int opX() { return RANK;    }
 
 
-    /** special case: pattern variables contribute no structure currently */
-    @Override public final int structure() {
-        return 0;
-    }
-
-
     @NotNull
     @Override
     public final Op op() {

@@ -107,12 +107,6 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
     }
 
 
-    @Override
-    public int structure() {
-        return 0;
-    }
-
-
 
 //    @Override
 //    public final boolean equals(Object obj) {
@@ -142,6 +136,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
     /** this needs to use .term(x) instead of Term[] because of shuffle terms */
     @Nullable public static Ellipsis firstEllipsis(Term[] x) {
+
         for (Term xi : x) {
             if (xi instanceof Ellipsis) {
                 return (Ellipsis) xi;

@@ -98,48 +98,41 @@ public interface Termlike {
 
 
     default boolean hasAll(int structuralVector) {
-        return Op.hasAll(structure(), structuralVector)
-                &&
-               (((structuralVector & VAR_PATTERN.bit) == 0) || varPattern() > 0); //HACK since VAR_PATTERN will not appear structure vectors
+        return Op.hasAll(structure(), structuralVector);
     }
 
     default boolean hasAny(int structuralVector) {
-        return Op.hasAny(structure(), structuralVector)
-                ||
-               (((structuralVector & VAR_PATTERN.bit) == 1) && varPattern() > 0); //HACK since VAR_PATTERN will not appear structure vectors
+        return Op.hasAny(structure(), structuralVector);
     }
 
-    /** has special handling for VAR_PATTERN */
     default boolean hasAny(Op... oo) {
-        boolean checkVarPattern = false;
+        if (oo.length == 0)
+            return false;
+
         int checkStruct = 0;
-        for (Op o : oo) {
-            if (o == VAR_PATTERN)
-                checkVarPattern = true; //check last
-            else
-                checkStruct |= o.bit;
-        }
-        return (checkStruct != 0 && hasAny(checkStruct)) || (checkVarPattern && varPattern() > 0);
+        for (Op o : oo)
+            checkStruct |= o.bit;
+
+        return hasAny(checkStruct);
     }
 
-    /**
-     * tests if contains a term in the structural hash
-     * WARNING currently this does not detect presence of pattern variables
-     */
     default boolean hasAny(/*@NotNull*/ Op op) {
-        return op != VAR_PATTERN ? hasAny(op.bit) : varPattern() > 0;
+        return hasAny(op.bit);
     }
 
     default boolean hasVarIndep() {
-        return varIndep() > 0;
+        return hasAny(Op.VAR_INDEP);
     }
 
     default boolean hasVarDep() {
-        return varDep() > 0;
+        return hasAny(Op.VAR_DEP);
     }
 
     default boolean hasVarQuery() {
-        return varQuery() > 0;
+        return hasAny(Op.VAR_QUERY);
+    }
+    default boolean hasVarPattern() {
+        return hasAny(Op.VAR_PATTERN);
     }
 
     default boolean impossibleSubTerm(/*@NotNull*/Termlike target) {
@@ -293,19 +286,12 @@ public interface Termlike {
 //        return r;
 //    }
 
-    /**
-     * total # of variables, excluding pattern variables
-     * preferably use hasVar... methods to test presence
-     */
     default int vars() {
         return hasVars() ? sum(Term::vars) : 0;
     }
 
-    /**
-     * whether contains any variables, excluding pattern variables
-     */
     default boolean hasVars() {
-        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit);
+        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit | VAR_PATTERN.bit);
     }
 
     /**
@@ -324,7 +310,7 @@ public interface Termlike {
     }
 
     default int varPattern() {
-        return /*hasAny(Op.VAR_PATTERN) ? */sum(Term::varPattern); //since pattern vars are not included in structure, dont check it
+        return hasAny(Op.VAR_PATTERN) ? sum(Term::varPattern) : 0;
     }
 
 

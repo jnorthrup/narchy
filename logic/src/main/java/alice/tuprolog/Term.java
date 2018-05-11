@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * @see  NumberTerm
  */
 public abstract class Term implements Serializable, SubTree {
-	private static final long serialVersionUID = 1L;
 
     // true and false constants
     public static final Term TRUE  = new Struct("true");
