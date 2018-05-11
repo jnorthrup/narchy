@@ -2,7 +2,6 @@ package nars;
 
 import jcog.Util;
 import jcog.exe.Loop;
-import jcog.math.random.SplitMix64Random;
 import jcog.signal.Bitmap2D;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
@@ -155,8 +154,8 @@ abstract public class NAgentX extends NAgent {
 //                )
 
                 .exe(new WorkerMultiExec(
-                        //new Focus.DefaultRevaluator(),
-                        new Focus.AERevaluator(new SplitMix64Random(1)),
+                        new Focus.DefaultRevaluator(),
+                        //new Focus.AERevaluator(new SplitMix64Random(1)),
                         Util.concurrencyDefault(2),
                         512, 2048) {
                         {

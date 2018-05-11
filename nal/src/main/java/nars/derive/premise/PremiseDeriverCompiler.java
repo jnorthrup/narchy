@@ -32,6 +32,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.IntConsumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -42,6 +43,14 @@ import static nars.Param.TRIE_DERIVER_TEMPERATURE;
  */
 public enum PremiseDeriverCompiler {
     ;
+
+    private static final IntToFloatFunction throttleFlat =
+            (int choice)-> 1f;
+
+    private static IntToFloatFunction throttleSoftmax(Cause[] causes) {
+        return (int choice)->
+                Util.softmax(causes[choice].value(), TRIE_DERIVER_TEMPERATURE);
+    }
 
     private static final float[] ONE_CHOICE = new float[]{Float.NaN};
 
@@ -92,15 +101,19 @@ public enum PremiseDeriverCompiler {
                     AndCondition.last(b)
             ).eachMatch), Taskify[]::new, branches));
 
+
+
+            IntToFloatFunction throttle =
+                    //throttleSoftmax(causes);
+                    throttleFlat;
+
+
             ValueFork f;
             if (branches.length > 1) {
                 f = new ValueFork(branches, causes,
 
                         //weight vector func
-                        d ->
-                                Util.map(causes.length,
-                                        choice -> Util.softmax(causes[choice].value(), TRIE_DERIVER_TEMPERATURE),
-                                        new float[causes.length]),
+                        d -> Util.map(causes.length, throttle, new float[causes.length]),
 
                         //choice -> branch mapping: directly to the branch #
                         (d, choice) -> {
@@ -139,9 +152,10 @@ public enum PremiseDeriverCompiler {
         ValueFork[] rootBranches = postChoices.toArrayRecycled(ValueFork[]::new);
 
         // sum of downstream cause values, applied to some activation function
-        IntToFloatFunction branchWeight = branch ->
+        IntToFloatFunction branchThrottle = branch ->
                 Util.sum(
-                        (Cause cause) -> Util.softmax(cause.value(), TRIE_DERIVER_TEMPERATURE),
+                        //(Cause cause) -> Util.softmax(cause.value(), TRIE_DERIVER_TEMPERATURE), //softmax
+                        Cause::amp, //amp (TanH)
                         rootBranches[branch].causes
                 );
 
@@ -156,15 +170,17 @@ public enum PremiseDeriverCompiler {
                             if (n == 1)
                                 return ONE_CHOICE; //short-cut
                             else
-                                return Util.map(n, choice -> branchWeight.valueOf(will[choice]), new float[n]);
+                                return Util.map(n, choice -> branchThrottle.valueOf(will[choice]), new float[n]);
                         },
 
                         //choice -> branch mapping: mapped through the derivation's calculated possibilty set
-                        (d, choice) -> {
-                            rootBranches[d.will[choice]].test(d);
-                        }
+                        (d, choice) ->
+                            rootBranches[d.will[choice]].test(d)
+
                 ));
     }
+
+
 
     static PrediTerm compileBranch(PrediTerm<Derivation> branch) {
         return branch instanceof AndCondition ?

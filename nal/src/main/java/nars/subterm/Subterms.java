@@ -836,28 +836,36 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
 
         //1. if both contain constant atoms, check for any conflicting constant terms before attempting any variable matching
-        Term[] deferredPairs = new Term[s*2];
+        Term[] deferredPairs = null;
         int dynPairs = 0;
         for (int i = 0; i < s; i++) {
             Term xi = sub(i);
             Term yi = Y.sub(i);
-            boolean xc = u.constant(xi);
-            if (xc) {
-                boolean yc = u.constant(yi);
-                if (yc) {
-                    if (!xi.unify(yi, u))//both constant and inequal, fail.
-                        return false;
-                }
+
+            if (xi == yi)
+                continue; //likely
+
+            boolean now = (i==s-1) || (u.constant(xi) && u.constant(yi));
+
+            if (now) {
+                //tail: just call it
+                if (!xi.unify(yi, u))
+                    return false;
+            } else {
+                if (deferredPairs == null)
+                    deferredPairs = new Term[(s - i) * 2];
+                //stored in reversed pairs (lifo):
+                deferredPairs[dynPairs++] = yi;
+                deferredPairs[dynPairs++] = xi;
             }
-            //stored in reverse:
-            deferredPairs[dynPairs++] = yi;
-            deferredPairs[dynPairs++] = xi;
         }
 
-        //optional: sort the pairs by complexity, simplest comparisons first to pessimistically fail early
-        while (dynPairs > 0) {
-            if (!deferredPairs[--dynPairs].unify(deferredPairs[--dynPairs], u))
-                return false;
+        if (deferredPairs!=null) {
+            //optional: sort the pairs by complexity, simplest comparisons first to pessimistically fail early
+            while (dynPairs > 0) {
+                if (!deferredPairs[--dynPairs].unify(deferredPairs[--dynPairs], u))
+                    return false;
+            }
         }
 
         return true;
