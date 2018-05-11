@@ -6,7 +6,6 @@ import jcog.event.On;
 import jcog.exe.Every;
 import jcog.math.IntRange;
 import jcog.net.UDPeer;
-import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Splitting;
@@ -62,15 +61,15 @@ public class MeshChipTest {
         @Override
         public boolean start(SurfaceBase parent) {
             if (super.start(parent)){
-                recv = peer.onReceive.on(this::receive);
+                recv = peer.receive.on(this::receive);
                 return true;
             }
             return false;
         }
 
-        protected void receive(Pair<UDPeer.UDProfile,UDPeer.Msg> x) {
+        protected void receive(UDPeer.MsgReceived x) {
             try {
-                out.out(Util.fromBytes(x.getTwo().data(), Object.class));
+                out.out(Util.fromBytes(x.data(), Object.class));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -94,7 +94,7 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
         public final String name;
         public final long start, end;
 
-        SimpleEvent(String name, long start, long end) {
+        public SimpleEvent(String name, long start, long end) {
             this.name = name;
             this.start = start;
             this.end = end;

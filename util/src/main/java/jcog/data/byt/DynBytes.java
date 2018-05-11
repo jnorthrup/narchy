@@ -211,9 +211,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
             if (l > 0) {
                 byte[] b = this.bytes;
                 if (force || b.length != l || forceIfSameAs == bytes)
-                    this.bytes = Arrays.copyOfRange(b, 0, l);
+                    return this.bytes = Arrays.copyOfRange(b, 0, l);
             } else {
-                this.bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
+                return this.bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
             }
             return bytes;
         }

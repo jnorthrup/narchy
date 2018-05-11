@@ -3,6 +3,8 @@ package jcog;
 import jcog.io.SparkLine;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -34,5 +36,17 @@ public class UtilMiscTest {
             x[i] = Math.round(Util.sawtoothCurved((float)i/(N-1)) * N);
         }
         System.out.println(SparkLine.render(x));
+    }
+    @Test public void testMsgPackDecode(){
+        testMsgPackTranscode("skjfldksf", Object.class);
+    }
+
+    static void testMsgPackTranscode(Object x, Class cl) {
+        try {
+            Object result = Util.fromBytes(Util.toBytes(x, cl), cl);
+            assertEquals(x, result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

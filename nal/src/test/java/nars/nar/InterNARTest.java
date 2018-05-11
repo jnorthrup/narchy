@@ -100,8 +100,7 @@ public class InterNARTest {
         a.stop();
         b.stop();
 
-
-    }
+        }
 
     /** direct question answering */
     @Test public void testInterNAR1() {

@@ -3,10 +3,7 @@ package jcog;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.CharStreams;
@@ -1986,10 +1983,13 @@ public enum Util {
             ;
 
     /**
-     * msgpack serialization
+     * json/msgpack serialization
      */
     public static byte[] toBytes(Object x) throws JsonProcessingException {
-        return msgPackMapper./*writerFor(c).*/writeValueAsBytes(x);
+        return msgPackMapper.writeValueAsBytes(x);
+    }
+    public static byte[] toBytes(Object x, Class cl) throws JsonProcessingException {
+        return msgPackMapper.writerFor(cl).writeValueAsBytes(x);
     }
 
 //    public static byte[] pack(Object x, Class c) throws JsonProcessingException {

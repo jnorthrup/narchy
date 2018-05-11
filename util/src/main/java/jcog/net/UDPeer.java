@@ -1,5 +1,6 @@
 package jcog.net;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import jcog.Util;
@@ -19,7 +20,6 @@ import jcog.pri.Priority;
 import org.HdrHistogram.AtomicHistogram;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -39,7 +39,6 @@ import java.util.function.Consumer;
 
 import static jcog.net.UDPeer.Command.*;
 import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * UDP peer - self-contained generic p2p/mesh network node
@@ -85,7 +84,7 @@ public class UDPeer extends UDP {
      */
     final static int PEERS_CAPACITY = 64;
 
-    public final Topic<Pair<UDProfile,Msg>> onReceive = new ListTopic<>();
+    public final Topic<MsgReceived> receive = new ListTopic<>();
 
     /**
      * message memory
@@ -307,7 +306,12 @@ public class UDPeer extends UDP {
         seen(x, 1f);
         return y;
     }
-
+    public int tellSome(Object msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
+        Msg x = new Msg(TELL.id, (byte) ttl, me, null, Util.toBytes(msg,Object.class));
+        int y = tellSome(x, 1f, onlyIfNotSeen);
+        seen(x, 1f);
+        return y;
+    }
     /**
      * send to a specific known recipient
      */
@@ -347,6 +351,8 @@ public class UDPeer extends UDP {
 
     }
 
+
+
     protected void tellSome(HashMapTagSet set) {
         tellSome(new Msg(ATTN.id, DEFAULT_ATTN_TTL, me, null,
                 set.toBytes()), 1f, false);
@@ -366,7 +372,8 @@ public class UDPeer extends UDP {
 
         final byte[] inputArray = data;
 
-        Msg m = Msg.get(data, len);
+        //TODO verification
+        Msg m = new Msg(data, len);
         if (/*m == null || */m.id() == me)
             return;
 
@@ -451,8 +458,8 @@ public class UDPeer extends UDP {
     }
 
     protected void receive(@Nullable UDProfile from, Msg m) {
-        if (!onReceive.isEmpty())
-            onReceive.emit(pair(from, m));
+        if (!receive.isEmpty())
+            receive.emit(new MsgReceived(m, from));
     }
 
 
@@ -590,6 +597,17 @@ public class UDPeer extends UDP {
         }
     }
 
+    /** Msg extended with a UDProfile instance */
+    public static class MsgReceived extends Msg {
+
+        @Nullable
+        public final UDProfile from;
+
+        public MsgReceived(Msg m, @Nullable UDProfile from) {
+            super(m.array());
+            this.from = from;
+        }
+    }
 
     public static class Msg extends DynBytes implements Priority {
 
@@ -689,11 +707,6 @@ public class UDPeer extends UDP {
             if (ttl <= 0)
                 return false;
             return (--bytes[TTL_BYTE]) >= 0;
-        }
-
-        public static Msg get(byte[] data, int len) {
-            //TODO verification
-            return new Msg(data, len);
         }
 
         @Override

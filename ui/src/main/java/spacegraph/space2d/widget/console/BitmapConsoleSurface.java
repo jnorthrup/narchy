@@ -83,6 +83,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 
     public void setFillTextBackground(boolean fillTextBackground) {
         this.fillTextBackground = fillTextBackground;
+        //...setUpdateNecessary();
     }
 
     public BitmapConsoleSurface alpha(float alpha) {

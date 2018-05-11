@@ -609,8 +609,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         switch (best) {
 
             case EvictWeakest: {
-                treeRW.remove(W);
-                W.delete();
+                delete(treeRW, W, nar);
                 return true;
             }
 
@@ -622,8 +621,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             case MergeInputClosest: {
 
                 if (treeRW.add(IC)) {
-                    treeRW.remove(C);
-                    C.delete();
+                    delete(treeRW, C, nar);
                     //I.delete(); //allow inputter to think it was successful
                     return true;
                 } else {
@@ -635,10 +633,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
                 if (treeRW.add(AB)) {
-                    treeRW.remove(A);
-                    A.delete(/*fwd: c*/);
-                    treeRW.remove(B);
-                    B.delete(/*fwd: c*/);
+                    delete(treeRW, A, nar);
+                    delete(treeRW, B, nar);
 
                     return true;
                 } else {
@@ -655,30 +651,33 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     }
 
+    private void delete(Space<TaskRegion> treeRW, Task x, NAR nar) {
+        treeRW.remove(x);
+        eternalize(x,(added)->{}, nar);
+        //w.delete();
+    }
+
     private void eternalize(Task x, Consumer<Tasked> added, NAR nar) {
         if ((x instanceof SignalTask)) {
             //ignore for now
             return;
         }
 
-        float xPri = x.pri();
-        if (xPri != xPri)
-            return; //deleted already somehow
+        float xPri = x.priElseZero();
+//        if (xPri != xPri)
+//            return; //deleted already somehow
 
         float xc = x.conf();
-        float e = x.eviEternalized((1 / xc) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */);
+        float e = x.evi();
+                // (1 / xc) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */);
         float c = w2cSafe(e);
 
         if (c >= nar.confMin.floatValue()) {
 
-            added.accept(() -> {
+            //added.accept(() -> {
                 //        if (x.op().temporal) { //==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
                 //            //experimental eternalize
-
-                Task eternalized = Task.clone(x, x.term(),
-                        Truth.theDithered(x.freq(), e, nar),
-                        x.punc(), x.creation(), ETERNAL, ETERNAL
-                );
+                Task eternalized = Task.eternalized(x, 1f/size());
 
                 if (eternalized != null) {
 
@@ -693,8 +692,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                         x.delete(/*fwd: eternalized*/);
                 }
 
-                return null;
-            });
+            //    return null;
+            //});
         }
 
     }

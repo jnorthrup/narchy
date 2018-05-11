@@ -1,11 +1,13 @@
 package nars;
 
+import jcog.Util;
 import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.derive.deriver.SimpleDeriver;
-import nars.exe.MixMultiExec;
+import nars.exe.Focus;
+import nars.exe.WorkerMultiExec;
 import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
@@ -151,18 +153,18 @@ abstract public class NAgentX extends NAgent {
 //                    )
 //                )
 
-//                .exe(new WorkerMultiExec(
-//                        new Focus.DefaultRevaluator(),
-//                        //new Focus.AERevaluator(new SplitMix64Random(1)),
-//                        Util.concurrencyDefault(2),
-//                        512, 2048) {
-//                        {
-//                            Util.setExecutor(this);
-//                        }
-//                     }
-//                )
+                .exe(new WorkerMultiExec(
+                        new Focus.DefaultRevaluator(),
+                        //new Focus.AERevaluator(new SplitMix64Random(1)),
+                        Util.concurrencyDefault(2),
+                        512, 2048) {
+                        {
+                            Util.setExecutor(this);
+                        }
+                     }
+                )
 
-                .exe(new MixMultiExec(512))
+//                .exe(new MixMultiExec(512))
 
                 .time(clock)
                 .index(
