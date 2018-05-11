@@ -14,10 +14,7 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.Unify;
-import nars.unify.match.Ellipsis;
-import nars.unify.match.EllipsisMatch;
-import nars.unify.match.EllipsisOneOrMore;
-import nars.unify.match.EllipsisZeroOrMore;
+import nars.unify.match.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -49,7 +46,10 @@ public class EllipsisTest {
         default Set<Term> test(int arity, int repeats) throws Narsese.NarseseException {
             Set<Term> selectedFixed = $.newHashSet(arity);
 
-            Term y = getMatchable(arity);
+            PremisePatternIndex index = new PremisePatternIndex();
+
+            Term y = index.pattern(getMatchable(arity)).normalize();
+
             assertTrue(!(y instanceof Bool));
             assertNotNull(y);
             assertTrue(y.isNormalized());
@@ -57,18 +57,15 @@ public class EllipsisTest {
             assertEquals(0, y.vars());
             assertEquals(0, y.varPattern());
 
-            Term r =
-                    //getResult();
-                    new PremisePatternIndex().pattern( getResult() );
-            //assertTrue(r.isNormalized());
+            Term r = index.pattern( getResult() ).normalize();
 
-            Compound x = getPattern();
+            Term x = index.pattern( getPattern() ).normalize();
 
 
             //no unmatched variables
             ///x.forEach(xx -> { assertFalse(xx.toString() + " is var", xx instanceof Variable ); });
 
-            Term ellipsisTerm = firstEllipsis(x);
+            @Nullable Term ellipsisTerm = (Term) firstEllipsis(x);
             assertNotNull(ellipsisTerm);
 
 

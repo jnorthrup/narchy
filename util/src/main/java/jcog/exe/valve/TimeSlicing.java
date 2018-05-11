@@ -22,7 +22,7 @@ import static java.lang.System.nanoTime;
  * <p>
  * TODO abstract for different execution impl's
  */
-public class TimeSlicing<Who, What> extends Valve.Mix<Who, What> {
+public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,What>> {
 
     public final AtomicLong cycleTimeNS = new AtomicLong(/* 10hz default: = 100ms = */ 100 * 1000 * 1000);
 
@@ -38,19 +38,14 @@ public class TimeSlicing<Who, What> extends Valve.Mix<Who, What> {
 
     //TODO update fps rate: setFPS
 
+
     @Override
-    public Share<Who, What> put(Share<Who, What> s) {
-        if (!(s instanceof Work)) {
-            throw new UnsupportedOperationException(s + " must implement Work");
-        }
-        return super.put(s);
+    public InstrumentedWork<Who, What> put(InstrumentedWork<Who, What> x) {
+        return super.put(x);
     }
 
     @Override
-    public void onAdd(Share<Who, What> s) {
-        Work w = ((Work) s);
-        InstrumentedWork iw = new InstrumentedWork(w, s);
-
+    public void onAdd(InstrumentedWork<Who,What> iw) {
         queue(iw);
 
         //will spawn up to concurrency then no more will be created
@@ -71,15 +66,36 @@ public class TimeSlicing<Who, What> extends Valve.Mix<Who, What> {
     }
 
     @Override
-    public void onRemove(Share<Who, What> value) {
+    public void onRemove(InstrumentedWork<Who,What> value) {
         //TODO remove associated InstrumentedWork from queue
     }
 
     @Override
-    public Valve.Mix<Who, What> commit() {
+    public TimeSlicing commit() {
         //TODO wake sleeping queue items by moving them to the pending queue
-        return super.commit();
+        super.commit();
+
+//        work();
+        return this;
     }
+
+//    protected void work() {
+//
+////            if (getSurplusQueuedTaskCount()>0) {
+////                ForkJoinTask.helpQuiesce();
+////            }
+//
+//            ForkJoinTask<?> next;
+//            while ((next = ForkJoinPool.commonPool().) != null) {
+////                        try {
+//                    ((Runnable)next).run();
+////                        } catch (InterruptedException | ExecutionException e) {
+////                            e.printStackTrace();
+////                        }
+//
+//
+//            }
+//    }
 
     public void stop() {
         cycleTimeNS.set(-1);
@@ -110,7 +126,7 @@ public class TimeSlicing<Who, What> extends Valve.Mix<Who, What> {
 
                     if (x.start()) {
 
-                        float p = x.share.pri();
+                        float p = x.pri();
                         if (p == p) {
 
                             long runtimeNS = Math.round(cycleNS * p);

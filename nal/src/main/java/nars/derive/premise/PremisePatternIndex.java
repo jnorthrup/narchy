@@ -187,11 +187,6 @@ public class PremisePatternIndex extends MapConceptIndex {
 
     public static final class PremiseRuleVariableNormalization extends VariableNormalization {
 
-        @Override
-        protected boolean hasVars(Compound t) {
-            return t.hasVars();
-        }
-
         /*@NotNull*/
         @Override
         protected Variable newVariable(/*@NotNull*/ Variable x) {

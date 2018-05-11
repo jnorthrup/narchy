@@ -78,7 +78,7 @@ public abstract class TaskLeak extends Causable {
             return -1; //done for the cycle
 
         float done = queue.commit(nar, work);
-        return (int) Math.ceil(done);
+        return (int) Math.floor(done);
     }
 
     public final void accept(Task t) {

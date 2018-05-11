@@ -103,8 +103,8 @@ public enum PremiseDeriverCompiler {
 
 
             IntToFloatFunction throttle =
-                    //throttleSoftmax(causes);
-                    throttleFlat;
+                    throttleSoftmax(causes);
+                    //throttleFlat;
 
 
             ValueFork f;
@@ -153,8 +153,8 @@ public enum PremiseDeriverCompiler {
         // sum of downstream cause values, applied to some activation function
         IntToFloatFunction branchThrottle = branch ->
                 Util.sum(
-                        //(Cause cause) -> Util.softmax(cause.value(), TRIE_DERIVER_TEMPERATURE), //softmax
-                        Cause::amp, //amp (TanH)
+                        (Cause cause) -> Util.softmax(cause.value(), TRIE_DERIVER_TEMPERATURE), //softmax
+                        //Cause::amp, //amp (TanH)
                         rootBranches[branch].causes
                 );
 

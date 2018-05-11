@@ -4,10 +4,10 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_PATTERN;
@@ -58,7 +58,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
         @Override
         public
         @Deprecated
-        @NotNull Variable normalize(byte serial) {
+        Variable normalize(byte serial) {
             return make(serial, minArity);
         }
 
@@ -81,7 +81,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 //        //public final Variable name;
 //        public final Term from, to;
 //
-//        public EllipsisTransformPrototype(/*Op type, */@NotNull Variable name, Term from, Term to) {
+//        public EllipsisTransformPrototype(/*Op type, */Variable name, Term from, Term to) {
 //            super(Op.VAR_PATTERN,
 //                    name.toString()
 //                            + ".." + from + '=' + to + "..+");
@@ -90,7 +90,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 //            this.to = to;
 //        }
 //
-//        @Override public @NotNull Variable normalize(int serial) {
+//        @Override public Variable normalize(int serial) {
 //            //throw new RuntimeException("n/a");
 //            return this; //ignore
 //        }
@@ -120,15 +120,15 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
 
     /** this needs to use .term(x) instead of Term[] because of shuffle terms */
-    @Nullable public static Ellipsis firstEllipsis(Subterms x) {
+    @Nullable public static Ellipsislike firstEllipsis(Termlike x) {
         if (x.varPattern()==0)
             return null;
 
         int xsize = x.subs();
         for (int i = 0; i < xsize; i++) {
             Term xi = x.sub(i);
-            if (xi instanceof Ellipsis) {
-                return (Ellipsis) xi;
+            if (xi instanceof Ellipsislike) {
+                return (Ellipsislike) xi;
             }
         }
         return null;
@@ -170,7 +170,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
 
 //    @Nullable
-//    public static Ellipsis firstEllipsis(@NotNull Term[] xx) {
+//    public static Ellipsis firstEllipsis(Term[] xx) {
 //        for (Term x : xx) {
 //            if (x instanceof Ellipsis) {
 //                return (Ellipsis) x;
@@ -229,7 +229,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 //        return n;
 //    }
 
-//    public static int numNonEllipsisSubterms(@NotNull Compound x) {
+//    public static int numNonEllipsisSubterms(Compound x) {
 //        int xs = x.size();
 //        int n = xs;
 //        for (int i = 0; i < xs; i++) {

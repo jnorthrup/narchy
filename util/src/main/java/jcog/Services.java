@@ -88,7 +88,9 @@ public class Services<C /* context */, K /* service key */>  {
     final Logger logger;
     public final C id;
     private final Executor exe;
-    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
+    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>() {
+
+    };
     private final ConcurrentMap<K, Service<C>> services;
 
     enum ServiceState {

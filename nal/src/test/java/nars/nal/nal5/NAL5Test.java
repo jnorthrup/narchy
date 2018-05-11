@@ -15,12 +15,12 @@ import static nars.util.time.Tense.ETERNAL;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 500;
+    final int cycles = 700;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(32);
         return n;
     }
 

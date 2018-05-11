@@ -66,7 +66,6 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
 
     @Override
     public final int vars() {
-        // pattern variable hidden in the count 0
         return 1;
     }
 

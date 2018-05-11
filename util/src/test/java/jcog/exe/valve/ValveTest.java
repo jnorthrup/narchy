@@ -1,21 +1,25 @@
 package jcog.exe.valve;
 
 import jcog.Util;
+import org.junit.jupiter.api.Test;
 
 class ValveTest {
 
-    public static void main(String[] args) {
-        Valve<String,String> v = new Valve<>();
+    final Sharing<String,String> v = new Sharing<>();
+
+    @Test
+    public void testTimeSlicing1() {
+
         TimeSlicing<String, String> exe = new TimeSlicing<>("time", 2);
         v.can(
                 exe, //in fraction of the system's time cycle (whatever it currently is)
-                new Valve.Mix<>("memory"), //in bytes
-                new Valve.Mix<>("profiling"), //essentially boolean, on or off
-                new Valve.Mix<>("wan_bandwidth"), //in bits per second
-                new Valve.Mix<>("energy")  //in watts
+                new Mix<>("memory"), //in bytes
+                new Mix<>("profiling"), //essentially boolean, on or off
+                new Mix<>("wan_bandwidth"), //in bits per second
+                new Mix<>("energy")  //in watts
         );
 
-        Valve.Customer<String,String> a = v.start("A");
+        Demand<String,String> a = v.start("A");
         a.need("memory", 0.25f);
         a.need("profiling", 1);
         AbstractWork<String, String> aw = new AbstractWork<>(a, "time", 0.25f) {
@@ -28,7 +32,7 @@ class ValveTest {
         };
 
 
-        Valve.Customer b = v.start("B");
+        Demand b = v.start("B");
         b.need("memory", 0.1f);
         AbstractWork bw = new AbstractWork<>(b, "time", 0.5f) {
             @Override
@@ -40,19 +44,19 @@ class ValveTest {
         };
 
 
-        Valve.Customer c = v.start("idle");
+        Demand<String, String> c = v.start("idle");
         //c.need("time", 0.01f);
 
         v.commit();
 
         System.out.println(v.summary());
 
-        Util.sleep(1000);
+        Util.sleep(500);
 
         exe.stop();
         //await total shutdown...
 
-        Util.sleep(100);
+        Util.sleep(50);
 
         InstrumentedWork next;
         while ((next = exe.pending.poll())!=null) {

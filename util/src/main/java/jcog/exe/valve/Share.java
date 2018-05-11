@@ -3,6 +3,8 @@ package jcog.exe.valve;
 import jcog.Util;
 import jcog.pri.Pri;
 
+import static jcog.Texts.n4;
+
 /** an allocated share of some resource */
 public class Share<Who,What> extends Pri {
     public final What what;
@@ -29,6 +31,6 @@ public class Share<Who,What> extends Pri {
     }
 
     @Override public String toString() {
-        return "(" + what + "+" + pri() + "|" + need + "~" + who + ")";
+        return who + ":" + what + "=" + n4(pri()) + "/" + n4(need);
     }
 }

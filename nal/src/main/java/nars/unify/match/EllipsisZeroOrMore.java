@@ -24,12 +24,6 @@ public class EllipsisZeroOrMore extends Ellipsis {
         return new EllipsisZeroOrMore($.v(op(), vid));
     }
 
-//    @Override
-//    public @NotNull Variable clone(@NotNull AbstractVariable newVar, VariableNormalization normalizer) {
-////        if (newVar.hashCode()==hash)
-////            return this;
-//        return new EllipsisZeroOrMore(newVar);
-//    }
 
     @NotNull
     @Override

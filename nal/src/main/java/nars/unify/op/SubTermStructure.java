@@ -23,6 +23,10 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
     public final int bits;
 
     public static List<SubTermStructure> get(int subterm, int bits) {
+
+        //ensure pattern var isnt sought
+        bits &= ~VAR_PATTERN.bit;
+
         int numBits = Integer.bitCount(bits);
         assert (numBits > 0);
         if ((numBits == 1) || (numBits > SPLIT_THRESHOLD)) {
@@ -31,10 +35,9 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
             List<SubTermStructure> components = $.newArrayList(numBits);
             for (Op o : Op.values()) {
 
-                if (o == VAR_PATTERN) continue; //skip
 
                 int b = o.bit;
-                if ((bits & b) > 0) { //HACK
+                if ((bits & b) != 0) { //HACK
                     components.add(new SubTermStructure(subterm, b));
                 }
             }

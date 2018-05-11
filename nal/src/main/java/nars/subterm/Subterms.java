@@ -311,7 +311,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * assume its normalized if no variables are present
      */
     default boolean isNormalized() {
-        return !hasVars() && !hasAny(Op.VAR_PATTERN);
+        return !hasVars();
     }
 
     /**
@@ -679,12 +679,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return hashCode();
     }
 
-    @Override
-    default boolean hasVarQuery() {
-        return hasAny(Op.VAR_QUERY);
-    }
-
-//    default int count(/*@NotNull*/ Predicate<Term> match) {
+    //    default int count(/*@NotNull*/ Predicate<Term> match) {
 //        int s = subs();
 //        int count = 0;
 //        for (int i = 0; i < s; i++) {
@@ -695,20 +690,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return count;
 //    }
 
-    @Override
-    default boolean hasVarDep() {
-        return hasAny(Op.VAR_DEP);
-    }
-
 
 //    default int compareTo(/*@NotNull*/ Termlike o) {
 //        return compareTo(this, o);
 //    }
-
-    @Override
-    default boolean hasVarIndep() {
-        return hasAny(Op.VAR_INDEP);
-    }
 
     default boolean isTemporal() {
         return hasAny(Op.Temporal) && OR(Term::isTemporal);

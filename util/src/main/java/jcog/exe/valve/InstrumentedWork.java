@@ -5,33 +5,35 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import static java.lang.System.nanoTime;
 
-public class InstrumentedWork implements Work {
+public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work {
 
     final Work work;
 
     //final org.HdrHistogram.Histogram startupTime = new org.HdrHistogram.Histogram();
 
-    static final int WINDOW = 16;
+    static final int WINDOW = 4;
 
     /** total accumulated start/stop tme each cycle */
-    final DescriptiveStatistics startAndStopTimeNS = new DescriptiveStatistics(WINDOW);
+    public final DescriptiveStatistics startAndStopTimeNS = new DescriptiveStatistics(WINDOW);
 
     /** total accumulated work time, each cycle */
-    final DescriptiveStatistics iterTimeNS = new DescriptiveStatistics(WINDOW);
+    public final DescriptiveStatistics iterTimeNS = new DescriptiveStatistics(WINDOW);
 
     /** total iterations, each cycle */
-    final DescriptiveStatistics iterations = new DescriptiveStatistics(WINDOW);
-
-    /** owner */
-    public final Share share;
+    public final DescriptiveStatistics iterations = new DescriptiveStatistics(WINDOW);
 
     long beforeStart, afterStart, beforeEnd, afterEnd;
     long workTimeThisCycleNS;
     int iterationsThisCycle;
 
-    public InstrumentedWork(Work work, Share s) {
+    public InstrumentedWork(AbstractWork<Who,What> work) {
+        this(work, work);
+        work.demand.need(this);
+    }
+
+    public InstrumentedWork(Work work, Share<Who,What> wrapped) {
+        super(wrapped.who, wrapped.what);
         this.work = work;
-        this.share = s;
     }
 
     @Override
@@ -74,7 +76,7 @@ public class InstrumentedWork implements Work {
     }
 
     public String summary() {
-        return share +
+        return super.toString() +
           "{ " + "startStopTimeMeanNS=" + Texts.timeStr(startAndStopTimeNS.getMean())
         + ", " + "iterTimeMeanNS=" + Texts.timeStr(iterTimeNS.getMean())
         + ", " + "itersMean=" + Texts.n2(iterations.getMean())
