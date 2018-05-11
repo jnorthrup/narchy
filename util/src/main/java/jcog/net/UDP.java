@@ -176,9 +176,8 @@ public class UDP extends Loop {
         return c.receive(byteBuffer);
     }
 
-    @Deprecated
-    public boolean out(String data, int port) {
-        return out(data.getBytes(), port);
+    public boolean out(String data, String host, int port) throws UnknownHostException {
+        return out(data.getBytes(), host, port);
     }
 
     public boolean out(byte[] data, int port) {

@@ -1,6 +1,7 @@
 package spacegraph.space2d.container.grid;
 
 import jcog.data.map.ConcurrentFastIteratingHashMap;
+import jcog.data.pool.DequePool;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.AbstractMutableContainer;
@@ -76,18 +77,19 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     protected void clear() {
         cache.values().removeIf(e -> {
             e.clear();
+            cellPool.take(e);
             return true;
         });
-        cache.invalidate();
+        invalidate();
     }
 
     protected void removeAll(Iterable<K> x) {
         final boolean[] changed = {false};
         x.forEach(xx ->{
-            changed[0] |= cache.remove(xx)!=null;
+            changed[0] |= remove(xx, false);
         });
         if (changed[0])
-            cache.invalidate();
+            invalidate();
     }
 
     @Nullable public V getValue(K x) {
@@ -97,17 +99,22 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         return null;
     }
 
+    final DequePool<CacheCell<K,V>> cellPool = new DequePool<>(32) {
+        @Override
+        public CacheCell<K,V> create() {
+            return new CacheCell<>();
+        }
+    };
 
     public CacheCell<K, V> compute(K key, Function<V,V> builder) {
-        CacheCell<K,V> entry = cache.computeIfAbsent(key, CacheCell::new);
-        return update(key, entry, entry.update(builder));
+        CacheCell<K,V> entry = cache.computeIfAbsent(key, k->cellPool.get());
+        return update(key, entry, entry.update(key, builder));
     }
 
     public CacheCell<K, V> put(K key, V nextValue, BiFunction<K,V, Surface> renderer) {
 
-        CacheCell<K,V> entry = cache.computeIfAbsent(key, CacheCell::new);
-
-        return update(key, entry, entry.update(nextValue, renderer));
+        CacheCell<K,V> entry = cache.computeIfAbsent(key, k->cellPool.get());
+        return update(key, entry, entry.update(key, nextValue, renderer));
 
     }
 
@@ -130,12 +137,24 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
 
     public boolean remove(K key) {
+        return remove(key, true);
+    }
+
+    public boolean remove(K key, boolean invalidate) {
         CacheCell<K, V> entry = cache.remove(key);
         if (entry!=null) {
             entry.clear();
+            cellPool.take(entry);
+            if (invalidate) {
+                invalidate();
+            }
             return true;
         }
         return false;
+    }
+
+    public void invalidate() {
+        cache.invalidate();
     }
 
     public void getValues(Collection<V> l) {
@@ -147,24 +166,30 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
      */
     public static class CacheCell<K, V> {
 
-        public final K key;
+        public K key;
         public transient volatile V value = null;
         public transient volatile Surface surface = null;
 
-        CacheCell(K key) {
-            this.key = key;
+        private CacheCell() {
+
         }
 
         public void clear() {
+            //V vs = this.value;
             value = null;
             Surface es = this.surface;
             surface = null;
-            if (es!=null)
+            if (es!=null) {
                 es.stop();
+                es.hide();
+            }
         }
 
         /** return true to keep or false to remove from the map */
-        public boolean update(V nextValue, BiFunction<K, V, Surface> renderer) {
+        public boolean update(K nextKey, V nextValue, BiFunction<K, V, Surface> renderer) {
+
+            this.key = nextKey;
+
             Surface existingSurface = surface;
 
             boolean create = false, delete = false;
@@ -201,7 +226,8 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         }
 
         /** return true to keep or false to remove from the map */
-        public boolean update(Function<V,V> update) {
+        public boolean update(K nextKey, Function<V,V> update) {
+            this.key = nextKey;
             V prev = value;
 
             V next = update.apply(prev);

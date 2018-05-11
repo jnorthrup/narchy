@@ -44,15 +44,15 @@ public class bAblTests extends NALTest {
 
         TestNAR t = test;
 
+        t.log();
         t.nar.freqResolution.set(0.1f);
-        t.nar.termVolumeMax.set(24);
+        t.nar.termVolumeMax.set(48);
 
-        t.believe("((pick(#Person,$Object) &&+0 inside(#Person,$Place)) ==>+0 inside($Object,$Place))")
-                .input("inside(john,playground). :|:") ////John is in the playground.
-                .input("inside(bob,office). :|:") ////Bob is in the office.
-                .input("pick(john,football). :|:") ////John picked up the football.
-                .input("inside(bob,kitchen). :|:") ////Bob went to the kitchen.
-                .input("$0.9 inside(football,?where)?") ////Where is the football?
+        t.believe("((pick(#Person,$Object) &&+1 inside(#Person,$Place)) ==>+1 inside($Object,$Place))")
+                .inputAt(1,"pick(john,football). :|:") ////John picked up the football.
+                .inputAt(2,"inside(john,playground). :|:") ////John is in the playground.
+                .input("inside(bob,office).") ////Bob is in the office.
+                .input("inside(bob,kitchen).") ////Bob went to the kitchen.
                 .input("$0.9 inside(football,?where)?") ////Where is the football?
                 .mustOutput( 1400,
                         "inside(football,playground)", BELIEF,

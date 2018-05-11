@@ -90,17 +90,17 @@ public class ScrollGrid<X> extends Bordering {
 
                         @Override
                         public float xStart() {
-                            return sx;
+                            return 0;
                         }
 
                         @Override
                         public float yStart() {
-                            return sy;
+                            return 0;
                         }
 
                         @Override
                         public void move(float tx, float ty) {
-                            view(tx, ty);
+                            view(sx - tx, sy - ty);
                         }
                     }))
                         return this;
@@ -419,6 +419,9 @@ public class ScrollGrid<X> extends Bordering {
                     boolean removed = remove(cellID); assert(removed);
                 }
             });
+
+            invalidate();
+
 
             short x1 = this.x1;
             short y1 = this.y1;

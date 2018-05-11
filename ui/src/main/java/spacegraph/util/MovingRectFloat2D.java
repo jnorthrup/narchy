@@ -9,12 +9,15 @@ import jcog.tree.rtree.rect.RectFloat2D;
  */
 public class MovingRectFloat2D {
 
-
     float x, y;
-    final float w, h;
-    final float rad;
+    float w, h;
+    float rad;
 
-    public MovingRectFloat2D(RectFloat2D r) {
+    public MovingRectFloat2D() {
+
+    }
+
+    public void set(RectFloat2D r) {
         this.x = r.x;
         this.y = r.y;
 
@@ -31,6 +34,11 @@ public class MovingRectFloat2D {
     public MovingRectFloat2D move(float dx, float dy) {
         this.x += dx;
         this.y += dy;
+        return this;
+    }
+    public MovingRectFloat2D move(float dx, float dy, float rate) {
+        this.x = Util.lerp(rate, this.x, this.x + dx);
+        this.y = Util.lerp(rate, this.y, this.y + dy);
         return this;
     }
 

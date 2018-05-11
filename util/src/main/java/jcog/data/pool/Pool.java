@@ -5,7 +5,7 @@ package jcog.data.pool;
  */
 public interface Pool<X> {
 
-    void put(X i);
+    void take(X i);
 
     X get();
 

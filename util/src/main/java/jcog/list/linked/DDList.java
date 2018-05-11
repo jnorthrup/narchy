@@ -47,7 +47,7 @@ public class DDList<E> implements Iterable<E> {
             DD current = getFirstNode();
             do {
                 DD next = current.next;
-                pool.put(detach(current));
+                pool.take(detach(current));
                 current = next;
             } while (size > 0);
         }
@@ -164,7 +164,7 @@ public class DDList<E> implements Iterable<E> {
 
     /** detaches and then returns the node to the pool; a complete removal / deletion */
     public final E remove(DD<E> i) {
-        pool.put(detach(i));
+        pool.take(detach(i));
         return i.item;
     }
 

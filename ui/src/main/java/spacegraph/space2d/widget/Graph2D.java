@@ -123,7 +123,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         forEachValue((NodeVis<X> nv) -> {
 
             List<EdgeVis<X>> edgesNext = nv.edgeOut.write();
-            edgesNext.forEach(edgePool::put);
+            edgesNext.forEach(edgePool::take);
             edgesNext.clear();
 
             layers.forEach(layer -> layer.node(this, nv, (tgt) -> {
@@ -151,10 +151,15 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
          * set an initial location (and/or size) for a newly created NodeVis
          */
         default void initialize(Graph2D<X> g, NodeVis<X> n) {
+            float gw = g.w();
+            float gh = g.h();
+            int count = g.cache.size();
+            float defaultSize = (float) (Math.min(gw, gh) / Math.sqrt(count+1));
+
             n.pos(RectFloat2D.XYWH(
-                    g.x() + (float) Math.random() * g.w(),
-                    g.y() + (float) Math.random() * g.h(),
-                    50, 50
+                    g.x() + (gw/2-gw/4) + (float) Math.random() * gw /2f,
+                    g.y() + (gh/2-gh/4) + (float) Math.random() * gh /2f,
+                    defaultSize, defaultSize
             ));
         }
     }
@@ -234,7 +239,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         @Override
         protected void paintBelow(GL2 gl) {
-            gl.glColor3f(r, g, b);
+            float alpha = 0.8f;//weight * 0.5f + 0.5f; //TODO make variable
+            gl.glColor4f(r, g, b, alpha);
             Draw.rect(gl, bounds);
         }
 
@@ -250,9 +256,15 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         public float r = 0.5f,
                 g = 0.5f,
                 b = 0.5f;
+        public float weight = 1f;
 
         public EdgeVis<X> to(NodeVis<X> n) {
             this.to = n;
+            return this;
+        }
+
+        public EdgeVis<X> weight(float w) {
+            weight = w;
             return this;
         }
 
@@ -264,10 +276,10 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         public void draw(GL2 gl, NodeVis<X> from) {
+            gl.glColor3f(r, g, b);
             float x = from.cx();
             float y = from.cy();
-            gl.glLineWidth(4f);
-            gl.glColor3f(r, g, b);
+            gl.glLineWidth(1f + weight * 4f);
             Draw.line(gl, x, y, to.cx(), to.cy());
         }
     }

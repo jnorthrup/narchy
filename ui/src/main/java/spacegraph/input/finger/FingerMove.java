@@ -33,8 +33,8 @@ public abstract class FingerMove extends FingerDragging {
         if (current!=null) {
             v2 start = startPos(finger);
             if (start != null) {
-                float tx = xStart() + (xSpeed > 0 ? (current.x - start.x) * xSpeed : 0);
-                float ty = yStart() + (ySpeed > 0 ? (current.y - start.y) * ySpeed : 0);
+                float tx = xStart() + (xSpeed != 0 ? (current.x - start.x) * xSpeed : 0);
+                float ty = yStart() + (ySpeed != 0 ? (current.y - start.y) * ySpeed : 0);
                 move(tx, ty);
                 return true;
             }

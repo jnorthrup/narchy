@@ -59,8 +59,8 @@ public class Premise {
 
     /** variable types unifiable in premise formation */
     final static int var =
-            //Op.VAR_QUERY.bit;
-            Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+            Op.VAR_QUERY.bit;
+            //Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
 
     /**
      * resolve the most relevant belief of a given term/concept
@@ -111,7 +111,7 @@ public class Premise {
                         return true; //keep going
                     }, matchTTL);
 
-                    u.varSymmetric = true;
+                    u.varSymmetric = false;
 
                     beliefConceptCanAnswerTaskConcept = u.unify(taskTerm, beliefTerm, true).matches() > 0;
 

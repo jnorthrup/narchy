@@ -1,7 +1,9 @@
 package jcog.data.pool;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
+import java.util.Iterator;
 
 /**
  * Simple object pool implemented by a Deque (ex: ArrayDeque)
@@ -20,7 +22,7 @@ public abstract class DequePool<X> implements Pool<X> {
         //data = new CircularArrayList<>(initialCapacity);
 
         for (int i = 0; i < preallocate; i++)
-            put(create());
+            take(create());
 
     }
     public DequePool(int initialCapacity) {
@@ -32,7 +34,7 @@ public abstract class DequePool<X> implements Pool<X> {
     }
 
     @Override
-    public void put(X i) {
+    public void take(X i) {
         //synchronized (data) {
 
 
@@ -69,5 +71,17 @@ public abstract class DequePool<X> implements Pool<X> {
     public void delete() {
         capacity = 0;
         data.clear();
+    }
+
+    public void take(Collection<X> c) {
+        c.forEach(this::take);
+        c.clear();
+    }
+
+    public void take(Iterator<X> c) {
+        while (c.hasNext()) {
+            take(c.next());
+            c.remove();
+        }
     }
 }

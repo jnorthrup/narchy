@@ -57,7 +57,7 @@ public class SimpleConceptGraph2D {
                 ()->n.conceptsActive().map(PLink::get).iterator(),
             false);
         }));
-        n.startFPS(80f);
+        n.startFPS(55f);
     }
 
     private static class TermlinkVis implements Graph2D.Graph2DLayer<Concept> {
@@ -80,7 +80,7 @@ public class SimpleConceptGraph2D {
                     Graph2D.EdgeVis<Concept> e = edges.apply(tgtConcept);
                     if (e != null) {
                         float p = l.priElseZero();
-                        e.color((0.9f * p) + 0.1f, 0, 0);
+                        e.weight(p).color((0.9f * p) + 0.1f, 0, 0);
                     }
                 }
             });
@@ -105,7 +105,7 @@ public class SimpleConceptGraph2D {
                     Graph2D.EdgeVis<Concept> e = edges.apply(tgtConcept);
                     if (e!=null) {
                         float p = l.priElseZero();
-                        e.color(0, (0.9f * p) + 0.1f, 0);
+                        e.weight(p).color(0, (0.9f * p) + 0.1f, 0);
                     }
                 }
             });
