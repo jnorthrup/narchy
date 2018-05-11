@@ -210,14 +210,15 @@ public class Abbreviation/*<S extends Term>*/ {
 
 //                Term abbreviatedTerm =abbreviated.term();
 
-//                AliasConcept a1 = new AliasConcept(newSerialTerm(), abbrConcept, nar);
-//
-//                nar.on(a1);
+            Term aliasTerm = Atomic.the(nextSerialTerm());
+                AliasConcept a1 = new AliasConcept(aliasTerm, abbrConcept, nar);
+                nar.on(a1);
 //                nar.concepts.set(abbreviated.term(), a1); //set the abbreviated term to resolve to the abbreviation
 //                if (!abbreviatedTerm.equals(abbreviated.term()))
 //                    nar.concepts.set(abbreviatedTerm, a1); //set the abbreviated term to resolve to the abbreviation
 
-                Compound abbreviation = newRelation(abbreviated, nextSerialTerm());
+
+            Compound abbreviation = newRelation(abbreviated, aliasTerm);
                 if (abbreviation == null)
                     return false; //maybe could happen
 
@@ -294,9 +295,9 @@ public class Abbreviation/*<S extends Term>*/ {
 //        }
 
     @Nullable
-    Compound newRelation(Term abbreviated, String id) {
+    Compound newRelation(Term abbreviated, Term id) {
         return compoundOrNull(
-                $.sim(abbreviated, Atomic.the(id))
+                $.sim(abbreviated, id)
                 //$.equi
         );
         //(Compound) $.equi(abbreviated.term(), id);

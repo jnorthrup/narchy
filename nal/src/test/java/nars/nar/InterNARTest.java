@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class InterNARTest {
 
-    static void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
+    static synchronized void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
 
         final int MAX_CONNECT_INTERVALS = 20;
         final int CONNECT_INTERVAL_MS = 200; //ms

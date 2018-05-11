@@ -11,6 +11,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
+import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -83,14 +84,14 @@ public class Premise {
         Term taskTerm = task.term();
 
 
-        final boolean[] beliefConceptCanAnswerTaskConcept = {false};
+        boolean beliefConceptCanAnswerTaskConcept = false;
         boolean unifiedBelief = false;
 
         Term beliefTerm = term();
         Op bo = beliefTerm.op();
         if (taskTerm.op() == bo) {
             if (taskTerm.concept().equals(beliefTerm.concept())) {
-                beliefConceptCanAnswerTaskConcept[0] = true;
+                beliefConceptCanAnswerTaskConcept = true;
             } else {
 
                 if ((bo.conceptualizable) && (beliefTerm.hasAny(var) || taskTerm.hasAny(var))) {
@@ -101,7 +102,6 @@ public class Premise {
                         if (y.op().conceptualizable) {
                             y = y.normalize().unneg();
 
-                            beliefConceptCanAnswerTaskConcept[0] = true;
 
                             if (!y.equals(_beliefTerm)) {
                                 unifiedBeliefTerm[0] = y;
@@ -110,8 +110,11 @@ public class Premise {
                         }
                         return true; //keep going
                     }, matchTTL);
+
                     u.varSymmetric = true;
-                    u.unify(taskTerm, beliefTerm, true);
+
+                    beliefConceptCanAnswerTaskConcept = u.unify(taskTerm, beliefTerm, true).matches() > 0;
+
                     if (unifiedBeliefTerm[0] != null) {
                         beliefTerm = unifiedBeliefTerm[0];
                         unifiedBelief = true;
@@ -122,7 +125,7 @@ public class Premise {
         }
 
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
-        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept[0], unifiedBelief);
+        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, unifiedBelief);
 
         if (belief != null) {
             beliefTerm = belief.term(); //use the belief's actual, possibly-temporalized term
@@ -145,11 +148,16 @@ public class Premise {
 
         Task belief = null;
 
-        final Concept beliefConcept = beliefTerm.op().conceptualizable ?
+        Concept beliefConcept = beliefTerm.op().conceptualizable ?
                 n.conceptualize(beliefTerm) //conceptualize in case of dynamic concepts
                 :
                 null;
+
         if (beliefConcept != null) {
+            if (beliefConcept instanceof AliasConcept) {
+                beliefConcept = ((AliasConcept)beliefConcept).abbr;
+                beliefTerm = beliefConcept.term();
+            }
 
 //            long[] focus = n.timeFocus(task.nearestPointInternal(n.time()));
 //            long focusStart = focus[0];

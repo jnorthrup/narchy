@@ -414,8 +414,9 @@ public abstract class Param {
      * dt >= 0
      */
     public static double evi(double evi, double dt, long dur) {
-        assert(Double.isFinite(dt) && dt>=0 && dur > 0);
-        return evi / (1.0 + (dt / dur)); //inverse linear
+
+//        assert(Double.isFinite(dt) && dt>=0 && dur > 0);
+//        return evi / (1.0 + (dt / dur)); //inverse linear
 
         //double ddt = dt;
         //return (float) (evi / (1.0 + ddt * ddt / dur)); //inverse square
@@ -428,7 +429,7 @@ public abstract class Param {
 //        else return evi * (1f - scale*2f);
 
 
-        //return evi / (1 + ((float) Math.log(1+dt/dur))); //inverse log
+        return evi / (1 + ((float) Math.log(1+dt/dur))); //inverse log
 
         //return evi / (1 + (((float) Math.log(1+dt)) / dur)); //inverse log
 

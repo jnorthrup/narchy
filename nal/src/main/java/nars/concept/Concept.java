@@ -216,8 +216,6 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
      * */
     TermlinkTemplates templates();
 
-
-
     Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests);
 
     default Stream<Task> tasks() {

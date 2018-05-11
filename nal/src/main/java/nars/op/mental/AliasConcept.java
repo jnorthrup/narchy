@@ -2,17 +2,15 @@ package nars.op.mental;
 
 import jcog.bag.Bag;
 import nars.NAR;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.concept.util.ConceptState;
 import nars.link.TermlinkTemplates;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
-import nars.util.TimeAware;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * the proxy concepts present a bidirectional facade between a referenced and an alias term (alias term can be just a serial # atom wrapped in a product).
@@ -24,8 +22,6 @@ import org.jetbrains.annotations.NotNull;
  * seen from a superterm containing one, it appears as a simple volume=2 concept meanwhile it could be aliasing a concept much larger than it. common "phrase" concepts with a volume >> 2 are good candidates for abbreviation. but when printed, the default toString() method is proxied so it will automatically decompress on output (or other serialization).
  */
 public final class AliasConcept extends TaskConcept {
-
-
 
     public static class AliasAtom extends Atom {
 
@@ -81,11 +77,11 @@ public final class AliasConcept extends TaskConcept {
     }
 
 
-    @NotNull
     public final Concept abbr;
 
-    AliasConcept(@NotNull String abbreviation, Concept decompressed, TimeAware timeAware) {
-        super(new AliasAtom(abbreviation, decompressed.term()),
+    AliasConcept( Term id, Concept decompressed, NAR nar) {
+        super( //new AliasAtom(id, decompressed.term()),
+                id,
                 null, null, null, null,
                 new Bag[]{decompressed.termlinks(), decompressed.tasklinks()});
 
@@ -109,30 +105,62 @@ public final class AliasConcept extends TaskConcept {
     }
 
     @Override
+    public boolean add(Task t, NAR n) {
+        if (abbr.isDeleted()) {
+            delete(n);
+            return false;
+        }
+        return ((TaskConcept)abbr).add(Task.clone(t, abbr.term()), n);
+        //return super.add(t, n);
+    }
+
+    @Override
     public TermlinkTemplates templates() {
         return abbr.templates();
     }
 
+    @Override
+    public BeliefTable beliefs() {
+        return abbr.beliefs();
+    }
+
+
+    @Override
+    public BeliefTable goals() {
+        return abbr.goals();
+    }
+
+
+    @Override
+    public QuestionTable questions() {
+        return abbr.questions();
+    }
+
+
+    @Override
+    public QuestionTable quests() {
+        return abbr.quests();
+    }
 //    @Override
 //    public boolean isDeleted() {
 //        return abbr.isDeleted() || super.isDeleted();
 //    }
 
-    @Override
-    public void delete(NAR nar) {
-        //unreference the target. this avoids creating a GC nightmare
-        //((AliasAtom)term).target = ((AliasAtom)term);
-        if (!abbr.isDeleted()) {
-            nar.concepts.set(abbr.term(), abbr); //restore abbr's entry in the index
-
-            //dont delete the bags and tables as invoking the super method would,
-            // since they may be held by the abbreviated concept if it still exists
-        }
-
-        //dont just call super.delete since it will erase the abbreviant's links too!
-        state(ConceptState.Deleted);
-        meta.clear();
-    }
+//    @Override
+//    public void delete(NAR nar) {
+//        //unreference the target. this avoids creating a GC nightmare
+//        //((AliasAtom)term).target = ((AliasAtom)term);
+//        if (!abbr.isDeleted()) {
+//            nar.concepts.set(abbr.term(), abbr); //restore abbr's entry in the index
+//
+//            //dont delete the bags and tables as invoking the super method would,
+//            // since they may be held by the abbreviated concept if it still exists
+//        }
+//
+//        //dont just call super.delete since it will erase the abbreviant's links too!
+//        state(ConceptState.Deleted);
+//        meta.clear();
+//    }
 
     @Override
     protected void beliefCapacity(int be, int bt, int ge, int gt) {
@@ -145,7 +173,7 @@ public final class AliasConcept extends TaskConcept {
 //         * (but are not equal to since tasks can not have atom content)
 //         * ...replacing it with this alias
 //         */
-//        private void rewriteLinks(@NotNull NAR nar) {
+//        private void rewriteLinks( NAR nar) {
 //            Term that = abbr.term();
 //            termlinks().compute(existingLink -> {
 //                Term x = existingLink.get();
@@ -180,32 +208,11 @@ public final class AliasConcept extends TaskConcept {
 
 
 //        @Override
-//        public final Activation process(@NotNull Task input, NAR nar) {
+//        public final Activation process( Task input, NAR nar) {
 //            return abbr.process(input, nar);
 //        }
 
 
-        @NotNull
-        @Override
-        public BeliefTable beliefs() {
-            return abbr.beliefs();
-        }
+        
 
-        @NotNull
-        @Override
-        public BeliefTable goals() {
-            return abbr.goals();
-        }
-
-        @NotNull
-        @Override
-        public QuestionTable questions() {
-            return abbr.questions();
-        }
-
-        @NotNull
-        @Override
-        public QuestionTable quests() {
-            return abbr.quests();
-        }
 }

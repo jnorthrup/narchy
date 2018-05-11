@@ -76,11 +76,11 @@ public class GoalActionConcept extends ActionConcept {
         Truth goal;
 
         long gStart =
-                pNow;
-                //pNow - dur/2;
+                //pNow;
+                pNow - dur/2;
         long gEnd =
-                pNow + dur;
-                //pNow + dur/2;
+                //pNow + dur;
+                pNow + dur/2;
 
         goal = this.goals().truth(gStart, gEnd, nar);
 

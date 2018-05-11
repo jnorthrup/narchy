@@ -69,7 +69,19 @@ public interface Variable extends Atomic {
 
     @Override
     default boolean unify(Term y, Unify u) {
-        return unifyVar(y, u, true);
+
+        y = u.resolve(y);
+
+        //TODO non-recurse write loop version
+
+        if (equals(y))
+            return true;
+
+        Term x = u.resolve(this);
+        if (x!=this)
+            return x.unify(y, u);
+        else
+            return unifyVar(y, u, true);
     }
 
     /** the direction parameter is to maintain correct provenance of variables when creating common vars.
@@ -77,57 +89,54 @@ public interface Variable extends Atomic {
      *    #1 from x  is a different instance than  #1 from y
      */
     default boolean unifyVar(Term y, Unify u, boolean forward) {
-
-        final Variable x = this;
-
-        if (u.constant(x) && x.equals(y))
-            return true;
-
-        if (y instanceof Variable) {
-            return unifyVar(x, ((Variable)y), forward, u);
+        final Term x = this;
+        if (x instanceof Variable && y instanceof Variable) {
+            return unifyVar((Variable)x, ((Variable)y), forward, u);
         } else {
             return u.putXY(x, y);
         }
     }
 
     static boolean unifyVar(Variable x, Variable y, boolean forward, Unify u) {
+
         //HACK exclude Image terms from unification
         if (x == Op.imInt || x == Op.imExt || y == Op.imInt || y == Op.imExt)
             return x==y;
 
         //var pattern will unify anything (below)
         //see: https://github.com/opennars/opennars/blob/4515f1d8e191a1f097859decc65153287d5979c5/nars_core/nars/language/Variables.java#L18
+
         Op xOp = x.op();
         Op yOp = y.op();
-        if (xOp == yOp && xOp!=VAR_PATTERN) {
+        if (xOp!=VAR_PATTERN && xOp == yOp) {
 
-            Term xBound = u.xy(x);
-            Term yBound = u.xy(y);
-//                    Termed _yBound = u.apply(y); //full resolve via apply
-//                    Term yBound  = _yBound == null ? null : _yBound.term(); //HACK
-
-            if (yBound != null) {
-                if (yBound.equals(x))
-                    return true;
-                if (xBound != null) {
-                    if (xBound.equals(y)||xBound.equals(yBound))
-                        return true;
-
-                    return xBound.unify(yBound, u);
-                }
-            }
+//            Term xBound = u.xy(x);
+//            Term yBound = u.xy(y);
+////                    Termed _yBound = u.apply(y); //full resolve via apply
+////                    Term yBound  = _yBound == null ? null : _yBound.term(); //HACK
+//
+//            if (yBound != null) {
+//                if (yBound.equals(x))
+//                    return true;
+//                if (xBound != null) {
+//                    if (xBound.equals(y)||xBound.equals(yBound))
+//                        return true;
+//
+//                    return xBound.unify(yBound, u);
+//                }
+//            }
 
             Term common = forward ? CommonVariable.common(x, y) : CommonVariable.common(y, x);
 
-            Term target;
-            if (xBound != null) target = xBound;
-            else if (yBound != null) target = yBound;
-            else target = null;
+//            Term target;
+//            if (xBound != null) target = xBound;
+//            else if (yBound != null) target = yBound;
+//            else target = null;
 
             if (u.replaceXY(x, common) && u.replaceXY(y, common)) {
-                if (target != null)
-                    return u.putXY(common, target);
-                else
+//                if (target != null)
+//                    return u.putXY(common, target);
+//                else
                     return true;
             }
 
@@ -136,7 +145,7 @@ public interface Variable extends Atomic {
             //variable subsumption order
             if (xOp.id < yOp.id) {
                 if (u.varSymmetric)
-                    return y.unifyVar(x, u, false);
+                    return u.putXY(y, x);
                 else
                     return false;
             }

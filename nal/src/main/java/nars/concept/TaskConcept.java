@@ -21,10 +21,10 @@ import static nars.Op.GOAL;
 
 public class TaskConcept extends NodeConcept implements Concept {
 
-    protected final BeliefTable beliefs;
-    protected final BeliefTable goals;
-    protected final QuestionTable quests;
-    protected final QuestionTable questions;
+    private final BeliefTable beliefs;
+    private final BeliefTable goals;
+    private final QuestionTable quests;
+    private final QuestionTable questions;
 
     public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder conceptBuilder) {
         this(term,
@@ -119,7 +119,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Directly process a new task, if belief tables agree to store it.
      * Called exactly once on each task.
      */
-    public final boolean add(Task t, NAR n) {
+    public boolean add(Task t, NAR n) {
         return table(t.punc()).add(t, this, n);
     }
 
@@ -185,10 +185,10 @@ public class TaskConcept extends NodeConcept implements Concept {
 
         Stream[] s = new Stream[c];
         int j = 0;
-        if (includeBeliefs) s[j++] = (beliefs.streamTasks());
-        if (includeGoals) s[j++] = (goals.streamTasks());
-        if (includeQuestions) s[j++] = (questions.streamTasks());
-        if (includeQuests) s[j++] = (quests.streamTasks());
+        if (includeBeliefs) s[j++] = (beliefs().streamTasks());
+        if (includeGoals) s[j++] = (goals().streamTasks());
+        if (includeQuestions) s[j++] = (questions().streamTasks());
+        if (includeQuests) s[j++] = (quests().streamTasks());
 
         //HACK
         return (j == 1 ? s[0] : Stream.of(s).flatMap(x -> x))
@@ -198,10 +198,10 @@ public class TaskConcept extends NodeConcept implements Concept {
 
     @Override
     public void delete(NAR nar) {
-        beliefs.clear();
-        goals.clear();
-        questions.clear();
-        quests.clear();
+        if (beliefs!=null) beliefs.clear();
+        if (goals!=null) goals.clear();
+        if (questions!=null) questions.clear();
+        if (quests!=null) quests.clear();
         super.delete(nar);
     }
 

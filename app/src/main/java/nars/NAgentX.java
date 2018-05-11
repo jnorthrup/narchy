@@ -56,7 +56,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -239,12 +238,12 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(1f); //nyquist alert
-        n.timeFocus.set(4);
+        n.dtDither.set(0.5f); //nyquist alert
+        n.timeFocus.set(8);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(36);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -335,7 +334,7 @@ abstract public class NAgentX extends NAgent {
         //ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 32);
 
-        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
+        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(8, n);
 
@@ -359,7 +358,7 @@ abstract public class NAgentX extends NAgent {
         Inperience inp = new Inperience(n, 32);
 //
 
-        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 3f, 32);
+        Abbreviation abb = new Abbreviation(n, "z", 4, 6, 3f, 32);
 
         //reflect.ReflectSimilarToTaskTerm refSim = new reflect.ReflectSimilarToTaskTerm(16, n);
         //reflect.ReflectClonedTask refTask = new reflect.ReflectClonedTask(16, n);

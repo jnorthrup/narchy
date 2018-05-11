@@ -211,38 +211,24 @@ public interface Compound extends Term, IPair, Subterms {
         Subterms xsubs = subterms();
         Subterms ysubs = ty.subterms();
 
-        int xs;
-        if ((xs=xsubs.subs()) != ysubs.subs())
+        int xs, ys;
+        if ((xs=xsubs.subs()) != (ys = ysubs.subs()))
             return false;
 
-
-
-
-
         if (xs>1 && isCommutative()) {
-            return xsubs.unifyCommute(ysubs, ty.isCommutative(), u);
+            //consider arity=2 XTERNAL as non-commutive at this point,
+            // since it allows repeats.
+            // although the order doesnt matter like general commutivity
+            // and we are in the commutive unification procedure already.
+            boolean yCommutive = ty.isCommutative() && (ty.dt()!=XTERNAL || ysubs.subs() != 2);
+            return xsubs.unifyCommute(ysubs, yCommutive, u);
         } else {
             if (xs == 1) {
                 return sub(0).unify(ysubs.sub(0), u);
+            } else {
+                return xsubs.unifyLinear(ysubs, u);
             }
-
-            //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
-            return xsubs.unifyLinear(ysubs, u);
         }
-
-
-//        if (op.temporal) {
-//            int sdur = subst.dur;
-//            if (sdur >= 0) {
-//                if (!matchTemporalDT(this, y, sdur))
-//                    return false;
-//            }
-//        }
-
-
-        /*if (op() == CONJ) { //non-commutive, temporal CONJ
-            return TermContainer.unifyConj(xsubs, dt(), ysubs, y.dt(), u);
-        } else */
     }
 
 

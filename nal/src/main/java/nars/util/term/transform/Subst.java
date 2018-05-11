@@ -8,10 +8,20 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Subst extends TermTransform {
 
+
+    /** completely dereferences a term (usually a variable)*/
+    default Term resolve(final Term x) {
+        Term y, z = x;
+        while ((y = xy(z))!=null) {
+            assert(y!=z && y!=x);
+            z = y;
+        }
+        return z;
+    }
+
     @Override @Nullable
     default Termed transformAtomic(Term atomic) {
-//        return xy(atomic);
-        Term y = xy(atomic);
+        Term y = resolve(atomic);
         return y != null ? y : atomic;
     }
 

@@ -13,6 +13,7 @@ import nars.Op;
 import nars.Param;
 import nars.term.Term;
 import nars.term.Termlike;
+import nars.term.Variable;
 import nars.unify.constraint.MatchConstraint;
 import nars.unify.mutate.Termutator;
 import nars.util.term.TermHashMap;
@@ -161,6 +162,8 @@ public abstract class Unify extends Versioning implements Subst {
     @Nullable
     @Override
     public final Term xy(Term x0) {
+        if (!(x0 instanceof Variable))
+            return null;
         return xy.get(x0);
 
 //        Term xy = x0, y = null;
@@ -191,7 +194,6 @@ public abstract class Unify extends Versioning implements Subst {
 //        }
     }
 
-    private Set<AbstractBytes> matches = null;
 
     /**
      * unifies the next component, which can either be at the start (true, false), middle (false, false), or end (false, true)
@@ -201,10 +203,8 @@ public abstract class Unify extends Versioning implements Subst {
      * <p>
      * NOT thread safe, use from single thread only at a time
      */
-    public boolean unify(Term x, Term y, boolean finish) {
+    public Unify unify(Term x, Term y, boolean finish) {
 
-        //assert(matches == null);
-        matches = null;
 
         //accumulate any new free variables in this next matched term
 //        Set<Term> freeX = freeVariables(x);
@@ -219,17 +219,10 @@ public abstract class Unify extends Versioning implements Subst {
         if (x.unify(y, this)) {
             if (finish) {
                 tryMatches();
-
-                boolean matched = matches != null;
-                matches = null;
-                return matched;
-
             }
-            return true;
-        }
 
-        //assert (matches == null);
-        return false;
+        }
+        return this;
     }
 
 //    /**
@@ -338,8 +331,10 @@ public abstract class Unify extends Versioning implements Subst {
      * args should be non-null. the annotations are removed for perf reasons
      */
     public final boolean putXY(final Term x, Term y) {
+        if (!(x instanceof Variable))
+            throw new UnsupportedOperationException("unification substitutions limited to variables");
 
-        if (y.containsRecursively(x)) {
+        if (x instanceof Variable && y.containsRecursively(x)) {
             //create a variation of y with a new unique unnormalized variable
 //            if (x instanceof Variable) {
 //                Op xo = x.op();
@@ -394,7 +389,7 @@ public abstract class Unify extends Versioning implements Subst {
 
             return y0Versioned.set(y) != null;
         } else {
-            return xy.tryPut(x, y);
+            return replaceXY(x, y);
         }
     }
 
@@ -442,6 +437,7 @@ public abstract class Unify extends Versioning implements Subst {
             return type.bit;
         }
     }
+
 
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {
         public ConstrainedVersionMap(Versioning versioning, Map<Term,Versioned<Term>> termMap) {

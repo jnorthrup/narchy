@@ -104,7 +104,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
             fb
         );
 
-        PredictionFeedback.feedbackSignal(fb /* in case stretched */, beliefs, nar);
+        PredictionFeedback.feedbackSignal(fb /* in case stretched */, beliefs(), nar);
     }
 
     //not working yet:

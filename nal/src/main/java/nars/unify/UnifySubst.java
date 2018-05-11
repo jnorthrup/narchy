@@ -3,11 +3,14 @@ package nars.unify;
 import nars.Op;
 import nars.Param;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.util.TimeAware;
 
 import java.util.function.Predicate;
 
-/** not thread safe, use 1 per thread (do not interrupt matchAll) */
+/**
+ * not thread safe, use 1 per thread (do not interrupt matchAll)
+ */
 public class UnifySubst extends Unify {
 
     //static final Logger logger = LoggerFactory.getLogger(UnifySubst.class);
@@ -18,7 +21,7 @@ public class UnifySubst extends Unify {
 
     final Predicate<Term> target;
     private Term a;
-
+    int matches = 0;
 
     public UnifySubst(Op varType, /*@NotNull*/ TimeAware n, Predicate<Term> target, int ttl) {
         super(varType, n.random(), Param.UnificationStackMax, ttl);
@@ -27,15 +30,15 @@ public class UnifySubst extends Unify {
     }
 
     @Override
-    public boolean unify(/*@NotNull*/ Term x, /*@NotNull*/ Term y, boolean finish) {
+    public UnifySubst unify(/*@NotNull*/ Term x, /*@NotNull*/ Term y, boolean finish) {
         this.a = y;
-        return super.unify(x, y, finish);
+        super.unify(x, y, finish);
+        return this;
     }
 
 
-
-
-    @Override public void tryMatch() {
+    @Override
+    public void tryMatch() {
 
         //TODO combine these two blocks to use the same sub-method
 
@@ -47,12 +50,16 @@ public class UnifySubst extends Unify {
         //        } catch (InvalidTermException e) {
 //            return null;
 //        }
-            Term aa = a.replace(xy);
-            if (aa!=null) {
-                if (!target.test(aa)) {
+        Termed aa = apply(a); //a.replace(xy);
+        if (aa != null) {
+            Term aaa = aa.term();
+            if (aaa.op().conceptualizable) {
+                matches++;
+                if (!target.test(aaa)) {
                     stop();
                 }
             }
+        }
 
 
 //        }
@@ -80,5 +87,8 @@ public class UnifySubst extends Unify {
         //return matches < maxMatches; //determines how many
     }
 
+    public int matches() {
+        return matches;
+    }
 
 }

@@ -2,7 +2,6 @@ package nars.derive.step;
 
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.derive.Derivation;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.term.Term;
@@ -39,37 +38,18 @@ public final class Termify extends AbstractPred<Derivation> {
 //        this.uniqueVars = pattern instanceof Compound ? ((PatternCompound)pattern).uniqueVars : Set.of();
     }
 
-    /**
-     * fast test; more exhaustive test is performed in Taskify but it may not be necessary if this is applied
-     */
-    public static boolean isParentQueDifferent(Derivation d, Term c1) {
 
-        //potentially duplicates parent as a result of unaffected functor work
-        byte punc = d.concPunc;
-        if ((punc ==QUESTION || punc == QUEST) && (punc == d.taskPunc)) {
-            if (c1.equals(d.taskTerm)) {
-                //same punctuation as parent task.
-                // the result will be of lower confidence that we can calculate by maximum bound
-                // in terms of evidence contribution from task and optionally belief that might boost
-                // higher than the input task.
-                if (d.belief == null) {
-                    d.nar.emotion.deriveFailParentDuplicate.increment();
-                    Taskify.spam(d, Param.TTL_DERIVE_TASK_SAME);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     @Override
     public final boolean test(Derivation d) {
 
-        NAR nar = d.nar;
 
+        NAR nar = d.nar;
         nar.emotion.deriveEval.increment();
 
+        d.derivedTerm = null;
         d.untransform.clear();
+
 
         Term c1 = pattern.transform(d);
         if (c1 == null || !c1.op().conceptualizable)
@@ -81,9 +61,6 @@ public final class Termify extends AbstractPred<Derivation> {
             d.nar.emotion.deriveFailVolLimit.increment();
             return false;
         }
-
-        if (!isParentQueDifferent(d, c1))
-            return false; //belief doesnt contribute anything
 
         if (!Taskify.valid(c1)) {
             Term c1e = c1;
@@ -109,12 +86,16 @@ public final class Termify extends AbstractPred<Derivation> {
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
-            if ((c1 != c2 && !Taskify.valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
-                Term c1e = c1;
-                d.nar.emotion.deriveFailTemporal.increment(() ->
-                        rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
-                );
-                return false;
+            if (!c1.equals(c2)) {
+
+                if ((!Taskify.valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
+                    Term c1e = c1;
+                    d.nar.emotion.deriveFailTemporal.increment(() ->
+                            rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
+                    );
+                    return false;
+                }
+
             }
 
 
@@ -164,7 +145,8 @@ public final class Termify extends AbstractPred<Derivation> {
             }
         }
 
-        return d.derivedTerm.set(c2) != null;
+        d.derivedTerm = c2;
+        return true;
     }
 
 

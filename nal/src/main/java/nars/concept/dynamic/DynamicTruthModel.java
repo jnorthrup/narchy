@@ -35,10 +35,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         assert(superterm.op()!=NEG);
 
-        int superDT = superterm.dt();
-
-
-
         DynTruth d = new DynTruth(4);
 
         return components(superterm, start, end, (Term concept, long subStart, long subEnd)->{

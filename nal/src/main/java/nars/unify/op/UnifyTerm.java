@@ -84,16 +84,13 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
 
         @Override
         public final boolean test(Derivation d) {
-            if (!d.use(Param.TTL_UNIFY))
-                return false;
-
             d.forEachMatch = eachMatch;
 
-            boolean result = d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);
+            d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);
 
             d.forEachMatch = null;
 
-            return result;
+            return d.use(Param.TTL_UNIFY);
         }
     }
 }

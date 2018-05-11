@@ -20,6 +20,7 @@ import nars.task.proxy.TaskWithTerm;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.Variable;
 import nars.term.anon.Anon;
 import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
@@ -95,7 +96,7 @@ public class Derivation extends PreDerivation {
     public Truth concTruth;
     public byte concPunc;
     public final long[] concOcc = new long[2];
-    public final Versioned<Term> derivedTerm;
+    public Term derivedTerm;
 
     public Task _task;
     public Task _belief;
@@ -301,9 +302,6 @@ public class Derivation extends PreDerivation {
                 VAR_PATTERN
                 , null, Param.UnificationStackMax, 0, Derivation._termMapBuilder.get());
 
-
-        derivedTerm = new Versioned(this, 3);
-
         //random generator local to this Derivation context.
         //gets seeded by NAR rng every init
         this.random =
@@ -342,6 +340,7 @@ public class Derivation extends PreDerivation {
 
     }
 
+
     private void init(NAR nar) {
 
         this.clear();
@@ -374,7 +373,7 @@ public class Derivation extends PreDerivation {
     public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
 
         reset();
-        this.derivedTerm.clear();
+        this.derivedTerm = null;
 
 
         if (this._task!=null && this._task.term().equals(_task.term())) {
@@ -589,25 +588,27 @@ public class Derivation extends PreDerivation {
     @Override
     public final Term transformAtomic(Term atomic) {
 
-        if (atomic instanceof Bool)//assert (!(x instanceof Bool));
-            return atomic;
-
-        if (atomic instanceof Functor)
-            return atomic; //pre-resolved functor
-
         if (atomic instanceof Atom) {
             Termed f = derivationFunctors.get(atomic);
             if (f != null)
                 return f.term();
         }
 
-
-        Term y = xy(atomic);
-        if (y != null) {
-            return y; //an assigned substitution, whether a variable or other type of term
-        } else {
+        if (atomic instanceof Bool)//assert (!(x instanceof Bool));
             return atomic;
+
+        if (atomic instanceof Functor)
+            return atomic; //pre-resolved functor
+
+
+        if (atomic instanceof Variable) {
+            Term y = xy(atomic);
+            if (y != null)
+                return y; //an assigned substitution, whether a variable or other type of term
+
         }
+
+        return atomic;
 
 //        else if (x.hasAny(substitutionVector)) {
 //            return super.applyTermIfPossible(x);

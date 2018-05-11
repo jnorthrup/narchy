@@ -74,10 +74,10 @@ public class TrackXY extends NAgent {
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(30);
 //        n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
-        n.activationRate.set(0.2f);
+        n.activationRate.set(0.5f);
 //        n.forgetRate.set(0.9f);
 
 

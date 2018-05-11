@@ -51,7 +51,7 @@ public class AIMATests {
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(24);
         //n.conceptActivation.set(0.5f);
 
 //        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(2));

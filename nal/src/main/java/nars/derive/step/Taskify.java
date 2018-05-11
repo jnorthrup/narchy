@@ -2,6 +2,7 @@ package nars.derive.step;
 
 import jcog.Util;
 import nars.$;
+import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
@@ -16,8 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static nars.Op.BOOL;
-import static nars.Op.VAR_PATTERN;
+import static nars.Op.*;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
 import static nars.util.time.Tense.ETERNAL;
 
@@ -62,12 +62,18 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Truth tru = d.concTruth;
 
-        Term x0 = d.derivedTerm.get();
+        Term x0 = d.derivedTerm;
         Term x = d.anon.get(x0).normalize();
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;
         assert (punc != 0) : "no punctuation assigned";
+
+        if (same(x, punc, tru, occ, d._task, d.nar) ||
+                (d._belief != null && same(x, punc, tru, occ, d._belief, d.nar))) {
+            d.nar.emotion.deriveFailParentDuplicate.increment();
+            return spam(d, Param.TTL_DERIVE_TASK_SAME);
+        }
 
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
@@ -99,10 +105,10 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
-        if (same(t, d._task, d.freqRes) || (d._belief != null && same(t, d._belief, d.freqRes))) {
-            d.nar.emotion.deriveFailParentDuplicate.increment();
-            return spam(d, Param.TTL_DERIVE_TASK_SAME);
-        }
+//        if (same(t, d._task, d.freqRes) || (d._belief != null && same(t, d._belief, d.freqRes))) {
+//            d.nar.emotion.deriveFailParentDuplicate.increment();
+//            return spam(d, Param.TTL_DERIVE_TASK_SAME);
+//        }
 
         if (d.single)
             t.setCyclic(true);
@@ -131,7 +137,36 @@ public class Taskify extends AbstractPred<Derivation> {
         return true;
     }
 
-    protected boolean same(Task derived, Task parent, float truthResolution) {
+    protected boolean same(Term derived, byte punc, Truth truth, long[] occ, Task parent, NAR n) {
+        if (parent.isDeleted())
+            return false;
+
+        if (FILTER_SIMILAR_DERIVATIONS) {
+            //test for same punc, term, start/end, freq, but lower conf
+            if (parent.punc() == punc) {
+                if (parent.term().equals(derived.term())) {
+                    if (Tense.dither(parent.start(), n) == Tense.dither(occ[0], n) &&
+                        Tense.dither(parent.end(), n) == Tense.dither(occ[1], n)) {
+
+                        if ((punc == QUESTION || punc == QUEST) || (
+                                Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
+                                    parent.conf() <= truth.conf() - n.confResolution.floatValue() / 2 /* + epsilon to avid creeping confidence increase */
+                            )) {
+
+                            if (Param.DEBUG_SIMILAR_DERIVATIONS)
+                                logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
+
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Deprecated protected boolean same(Task derived, Task parent, float truthResolution) {
         if (parent.isDeleted())
             return false;
 

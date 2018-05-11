@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 
@@ -163,6 +164,8 @@ public class UDP extends Loop {
             while ((from = c.receive(b.rewind())) != null) {
                 in((InetSocketAddress) from, b.array(), b.position());
             }
+        } catch (ClosedChannelException closed) {
+            return false;
         } catch (Throwable t) {
             logger.error("recv {}", t);
         }

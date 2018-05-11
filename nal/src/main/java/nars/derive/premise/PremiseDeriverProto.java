@@ -989,7 +989,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         @Override
         public boolean test(Derivation p) {
-            final Term x = p.derivedTerm.get();
+            final Term x = p.derivedTerm;
 
 
             @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, p.random);
@@ -1008,7 +1008,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
             Map<Term, Term> changes = xy.getTwo();
             changes.forEach(p::replaceXY);
-            p.derivedTerm.set(y);
+            p.derivedTerm = y;
 
 //            //reduce evidence by a factor proportional to the number of variables introduced
 //            p.concEviFactor *= (((float)(1+y.complexity()))/(1+x.complexity()));
