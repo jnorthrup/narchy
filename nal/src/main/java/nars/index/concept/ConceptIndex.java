@@ -4,12 +4,8 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.term.Evaluation;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Termed;
+import nars.term.*;
 import nars.term.atom.Bool;
-import nars.term.Variable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;

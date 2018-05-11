@@ -3,6 +3,7 @@ package nars;
 
 import com.google.common.collect.Iterators;
 import com.google.common.primitives.Longs;
+import jcog.Service;
 import jcog.Services;
 import jcog.Texts;
 import jcog.Util;
@@ -91,7 +92,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
     public final Topic<Task> eventTask = new ListTopic<>();
-    public final Services<NAR, Term, NARService> services;
+    public final Services<NAR, Term> services;
 
     public final Time time;
     private final AtomicBoolean busy = new AtomicBoolean(false);
@@ -1625,7 +1626,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return c;
     }
 
-    public Stream<NARService> services() {
+    public Stream<Service<NAR>> services() {
         return services.stream();
     }
 

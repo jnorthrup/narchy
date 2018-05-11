@@ -32,7 +32,6 @@ import org.roaringbitmap.RoaringBitmap;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.IntConsumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 

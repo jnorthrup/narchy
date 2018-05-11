@@ -15,16 +15,16 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-public class ServicesTable<S extends Service> extends Gridding implements GridModel, ScrollGrid.GridRenderer {
+public class ServicesTable extends Gridding implements GridModel, ScrollGrid.GridRenderer {
 
-    private final Services<?, ?, S> context;
+    private final Services context;
     private On updater;
     private ScrollGrid grid;
 
     //final List keys = new FasterList();
-    final List<S> services = new CopyOnWriteArrayList();
+    final List<Service> services = new CopyOnWriteArrayList();
 
-    public ServicesTable(Services<?,?,S> s) {
+    public ServicesTable(Services<?,?> s) {
         super();
 
         this.context = s;
@@ -83,13 +83,13 @@ public class ServicesTable<S extends Service> extends Gridding implements GridMo
     @Override
     public Object get(int x, int y) {
         try {
-            S s = services.get(y);
+            Service s = services.get(y);
             switch (x) {
                 case 0: {
                     return new PushButton(s.toString());
                 }
                 case 1: {
-                    return new AutoSurface(s);
+                    return new AutoSurface<>(s);
                 }
             }
         } catch (Exception e) {

@@ -11,31 +11,37 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** maps: What resources/services/qualities/sources to Who consumers/targets
  * realtime quantifiable service allocator
+ * multi-throttle
  **/
-public class Valve<What, Who> {
+//public enum Valve { ;
+public class Valve<What,Who> {
 
     final static int MAX_CUSTOMERS = 64;
 
 
-    /** allocation state, constraint solution */
-    final ConcurrentFastIteratingHashMap<What,Distributor<Who,What>> alloc = new ConcurrentFastIteratingHashMap<>(new Distributor[] { });
+//    /** allocation state, constraint solution */
+    final ConcurrentFastIteratingHashMap<What,Mix<Who,What>> alloc = new ConcurrentFastIteratingHashMap<>(new Mix[] { });
 
-    public Valve() {
 
-    }
+//    static class Distribution<What,Who> extends Services<Distribution<What,Who>, What, Distributor<Who,What>> {
+//
+//        public Distribution() {
+//            super();
+//        }
+//    }
 
     /** base class; does nothing (token indicator) */
-    public static class Distributor<Who, What> extends ArrayBag<Who,Share<Who,What>> {
+    public static class Mix<Who, What> extends ArrayBag<Who,Share<Who,What>> {
 
         public final What what;
 
-        protected Distributor(What what) {
+        protected Mix(What what) {
             super(PriMerge.max /* unused */, MAX_CUSTOMERS);
             this.what = what;
         }
 
         /** prepare for next cycle */
-        @Override public Distributor<Who, What> commit() {
+        @Override public Mix<Who, What> commit() {
             //TODO normalize shares according to some policy
             if (isEmpty())
                 return this;
@@ -70,14 +76,14 @@ public class Valve<What, Who> {
 
 
     /** CAN/provide/offer something */
-    public Valve<What, Who> can(Distributor<Who,What>... dd) {
-        for (Distributor<Who,What> d : dd)
+    public Valve<What, Who> can(Mix<Who,What>... dd) {
+        for (Mix<Who,What> d : dd)
             alloc.put(d.what, d);
         return this;
     }
 
     @Nullable protected Share<Who,What> need(Share<Who,What> s) {
-        Distributor<Who,What> b = alloc.get(s.what);
+        Mix<Who,What> b = alloc.get(s.what);
         if (b == null) {
             throw new UnsupportedOperationException("unsupported resource type for: " + s);
             //return null; //resource type unsupported
@@ -135,7 +141,7 @@ public class Valve<What, Who> {
         public void stop() {
             synchronized (this) {
                 values().removeIf(s -> {
-                    Distributor<Who,What> b = valve.alloc.get(s.what);
+                    Mix<Who,What> b = valve.alloc.get(s.what);
                     if (b != null)
                         b.remove(s.who);
                     return true;
@@ -150,7 +156,7 @@ public class Valve<What, Who> {
     protected void commit() {
         if (commiting.compareAndSet(false, true)) {
             try {
-                alloc.forEachValue(Distributor::commit);
+                alloc.forEachValue(Mix::commit);
             } finally {
                 commiting.set(false);
             }

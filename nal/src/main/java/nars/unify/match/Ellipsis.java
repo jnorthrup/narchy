@@ -4,9 +4,9 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
-import nars.term.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

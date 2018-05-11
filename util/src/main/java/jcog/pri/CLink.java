@@ -1,16 +1,14 @@
-package jcog.pri.mix.control;
+package jcog.pri;
 
-import jcog.pri.Priority;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 /** Priority implementatio nwhich proxies to another and attaches a bitmap feature vector */
 public class CLink<X extends Priority> extends RoaringBitmap implements Priority {
 
-    @NotNull public final X ref;
+    public final X ref;
 
-    public CLink(@NotNull X ref, int... initialBits) {
+    public CLink(X ref, int... initialBits) {
         super();
         this.ref = ref;
         for (int i : initialBits)
@@ -28,7 +26,7 @@ public class CLink<X extends Priority> extends RoaringBitmap implements Priority
     }
 
     @Override
-    public boolean equals(@NotNull Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (this.ref == o) return true;
         CLink c = (CLink)o; //assumed

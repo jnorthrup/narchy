@@ -183,7 +183,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(512, 0, 2048);
+    public final IntRange deriveTTL = new IntRange(768, 0, 2048);
 
 
     /** estimate */
@@ -429,10 +429,12 @@ public abstract class Param {
 //        else return evi * (1f - scale*2f);
 
 
-        return evi / (1 + ((float) Math.log(1+dt/dur))); //inverse log
+        //return evi / (1 + ((float) Math.log(1+dt/dur))); //inverse log
+            //return evi / (1 + (((float) Math.log(1+dt)) / dur)); //inverse log
 
-        //return evi / (1 + (((float) Math.log(1+dt)) / dur)); //inverse log
+        return evi / (1 + ((float) Math.log(1+dt))/dur); // 1 / (1 + log(1+x*x)/dt) //inverse log square
 
+        // 1 / (1 + log(1+pow(x,n))/dt) //inverse log Nth
 
         //return evi /( 1 + 2 * (dt/dur) ); //inverse linear * 2 (nyquist recovery period)
 

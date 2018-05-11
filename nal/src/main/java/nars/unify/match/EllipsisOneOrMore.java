@@ -2,8 +2,8 @@ package nars.unify.match;
 
 import nars.$;
 import nars.term.Term;
-import nars.term.var.NormalizedVariable;
 import nars.term.Variable;
+import nars.term.var.NormalizedVariable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

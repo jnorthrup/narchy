@@ -83,13 +83,13 @@ import java.util.stream.Stream;
  *
  * @author Luke Sandberg (original)
  */
-public class Services<C /* context */, K /* service key */, S extends Service>  {
+public class Services<C /* context */, K /* service key */>  {
 
     final Logger logger;
     public final C id;
     private final Executor exe;
-    public final Topic<ObjectBooleanPair<? extends S>> change = new ListTopic<>();
-    private final ConcurrentMap<K, S> services;
+    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
+    private final ConcurrentMap<K, Service<C>> services;
 
     enum ServiceState {
         Off {
@@ -110,6 +110,10 @@ public class Services<C /* context */, K /* service key */, S extends Service>  
     }
 
 
+    protected Services() {
+        this(null);
+    }
+
     public Services(C id) {
         this(id, ForkJoinPool.commonPool());
     }
@@ -129,20 +133,20 @@ public class Services<C /* context */, K /* service key */, S extends Service>  
         this.services = new ConcurrentHashMap<>(64);
     }
 
-    public Stream<S> stream() {
+    public Stream<Service<C>> stream() {
         return services.values().stream();
     }
 
-    public Set<Map.Entry<K, S>> entrySet() {
+    public Set<Map.Entry<K, Service<C>>> entrySet() {
         return services.entrySet();
     }
 
-    public void add(K key, S s) {
+    public void add(K key, Service<C> s) {
         add(key, s, true);
     }
 
-    public void add(K key, S s, boolean start) {
-        S removed = services.put(key, s);
+    public void add(K key, Service<C> s, boolean start) {
+        Service<C> removed = services.put(key, s);
 
         if (removed == s)
             return; //no change
@@ -158,7 +162,7 @@ public class Services<C /* context */, K /* service key */, S extends Service>  
     }
 
     public void remove(K serviceID) {
-        S s = services.get(serviceID);
+        Service<C> s = services.get(serviceID);
         if (s!=null) {
             s.stop(this, exe, ()-> services.remove(serviceID));
         } else {
@@ -172,8 +176,8 @@ public class Services<C /* context */, K /* service key */, S extends Service>  
      *
      * @return this
      */
-    public Services<C, K, S> stop() {
-        for (S service : services.values()) {
+    public Services<C, K> stop() {
+        for (Service<C> service : services.values()) {
             service.stop(this, exe, null);
         }
         return this;

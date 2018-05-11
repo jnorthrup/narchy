@@ -2,8 +2,6 @@ package jcog.exe.valve;
 
 import jcog.Util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ValveTest {
 
     public static void main(String[] args) {
@@ -11,10 +9,10 @@ class ValveTest {
         TimeSlicing<String, String> exe = new TimeSlicing<>("time", 2);
         v.can(
                 exe, //in fraction of the system's time cycle (whatever it currently is)
-                new Valve.Distributor<>("memory"), //in bytes
-                new Valve.Distributor<>("profiling"), //essentially boolean, on or off
-                new Valve.Distributor<>("wan_bandwidth"), //in bits per second
-                new Valve.Distributor<>("energy")  //in watts
+                new Valve.Mix<>("memory"), //in bytes
+                new Valve.Mix<>("profiling"), //essentially boolean, on or off
+                new Valve.Mix<>("wan_bandwidth"), //in bits per second
+                new Valve.Mix<>("energy")  //in watts
         );
 
         Valve.Customer<String,String> a = v.start("A");

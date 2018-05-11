@@ -32,7 +32,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
         return nameString + ':' + super.toString();
     }
 
-    public final <S extends Services<C,?,Service<C>>> void start(S x, Executor exe) {
+    public final <S extends Service<C>> void start(Services<C,?> x, Executor exe) {
         if (compareAndSet(Services.ServiceState.Off, Services.ServiceState.OffToOn)) {
             exe.execute(() -> {
                 try {
@@ -48,7 +48,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
         }
     }
 
-    public final <S extends Services<C,?,Service<C>>>  void stop(S x, Executor exe, @Nullable Runnable afterDelete) {
+    public final <S extends Service<C>> void stop(Services<C,?> x, Executor exe, @Nullable Runnable afterDelete) {
         if (compareAndSet(Services.ServiceState.On, Services.ServiceState.OnToOff)) {
             exe.execute(() -> {
                 try {

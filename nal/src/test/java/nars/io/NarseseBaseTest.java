@@ -6,8 +6,8 @@ import nars.Op;
 import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.term.Variable;
+import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

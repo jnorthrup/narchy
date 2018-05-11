@@ -22,7 +22,7 @@ import static java.lang.System.nanoTime;
  * <p>
  * TODO abstract for different execution impl's
  */
-public class TimeSlicing<Who, What> extends Valve.Distributor<Who, What> {
+public class TimeSlicing<Who, What> extends Valve.Mix<Who, What> {
 
     public final AtomicLong cycleTimeNS = new AtomicLong(/* 10hz default: = 100ms = */ 100 * 1000 * 1000);
 
@@ -76,7 +76,7 @@ public class TimeSlicing<Who, What> extends Valve.Distributor<Who, What> {
     }
 
     @Override
-    public Valve.Distributor<Who, What> commit() {
+    public Valve.Mix<Who, What> commit() {
         //TODO wake sleeping queue items by moving them to the pending queue
         return super.commit();
     }

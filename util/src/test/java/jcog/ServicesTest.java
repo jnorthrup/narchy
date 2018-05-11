@@ -7,7 +7,7 @@ public class ServicesTest {
     @Test
     public void testServices1() {
 
-        Services<?, String, DummyService> s = new Services("");
+        Services<?, String> s = new Services("");
         StringBuilder sb = new StringBuilder();
 
         s.add("x", new DummyService(sb), true);

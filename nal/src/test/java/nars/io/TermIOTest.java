@@ -5,11 +5,11 @@ import nars.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

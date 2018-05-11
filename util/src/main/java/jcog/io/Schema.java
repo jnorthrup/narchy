@@ -7,9 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static jcog.io.arff.ARFF.AttributeType.Nominal;
-import static jcog.io.arff.ARFF.AttributeType.Numeric;
-import static jcog.io.arff.ARFF.AttributeType.Text;
+import static jcog.io.arff.ARFF.AttributeType.*;
 
 /**
  * specified semantics of a data record / structure
