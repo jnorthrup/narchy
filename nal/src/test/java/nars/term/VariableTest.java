@@ -32,7 +32,7 @@ public class VariableTest {
         assertEquals(1, Narsese.term("$x").vars());
         assertEquals(1, Narsese.term("#x").vars());
         assertEquals(1, Narsese.term("?x").vars());
-        assertEquals(0, Narsese.term("%x").vars());
+        assertEquals(1, Narsese.term("%x").vars());
 
         assertEquals(2, $("<$x <-> %y>").vars());
     }

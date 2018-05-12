@@ -111,11 +111,6 @@ public class ConjClustering extends Causable {
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
         this.taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
 
-
-
-        if (bag.bag.isEmpty())
-            return 0;
-
         bag.commitGroups(1, nar, nar.forgetRate.floatValue(), this::conjoinCentroid);
 
         int gs = in.get().commit();

@@ -119,12 +119,12 @@ public enum GoalFunction implements TruthOperator {
             return deduction1(T, confDefault(m), minConf);
         }
     },
-    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
-        }
-    },
+//    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
+//            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
+//        }
+//    },
 
     @AllowOverlap
     BeliefStructuralDeduction() {

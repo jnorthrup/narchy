@@ -73,10 +73,19 @@ public class CachedUnitCompound extends UnitCompound implements The {
         return otherTermVolume > volume-1;
     }
 
+    @Override
+    public boolean isTemporal() {
+        return hasAny(Op.Temporal) && sub.isTemporal();
+    }
+
+    @Override
+    public boolean hasXternal() {
+        return hasAny(Op.Temporal) && sub.hasXternal();
+    }
 
     @Override
     public int varPattern() {
-        return sub().varPattern();
+        return hasAny(Op.VAR_PATTERN) ? sub().varPattern() : 0;
     }
 
     @Override
@@ -102,7 +111,6 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
     @Override
     public boolean hasVars() {
-        //same as Termlike.hasVars()
-        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit);
+        return hasAny(VAR_PATTERN.bit | VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit);
     }
 }

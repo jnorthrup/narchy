@@ -1,11 +1,6 @@
 package nars.unify;
 
-import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
-import jcog.data.byt.AbstractBytes;
-import jcog.data.byt.DynBytes;
-import jcog.data.byt.RawBytes;
-import jcog.list.FasterList;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
 import jcog.version.Versioning;
@@ -22,7 +17,10 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 import static nars.util.time.Tense.DTERNAL;
 import static nars.util.time.Tense.XTERNAL;
@@ -478,32 +476,32 @@ public abstract class Unify extends Versioning implements Subst {
             return new ConstrainedVersionedTerm();
         }
 
-        public AbstractBytes snapshot() {
-            List<RawBytes> pre = new FasterList<>(8);
-            DynBytes b = new DynBytes(64);
-            xy.forEach((x, y) -> {
-                x.append((ByteArrayDataOutput) b);
-                b.writeByte(0); //separator
-                y.append((ByteArrayDataOutput) b);
-                pre.add(b.rawCopy());
-                b.clear();
-            });
-
-            int s = pre.size();
-            switch (s) {
-                case 0:
-                    return AbstractBytes.EMPTY;
-                case 1:
-                    return pre.get(0);
-                default:
-                    Collections.sort(pre);
-                    for (RawBytes r : pre) {
-                        b.write(r.bytes);
-                    }
-                    //b.compact();
-                    return b;
-            }
-        }
+//        public AbstractBytes snapshot() {
+//            List<RawBytes> pre = new FasterList<>(8);
+//            DynBytes b = new DynBytes(64);
+//            xy.forEach((x, y) -> {
+//                x.append((ByteArrayDataOutput) b);
+//                b.writeByte(0); //separator
+//                y.append((ByteArrayDataOutput) b);
+//                pre.add(b.rawCopy());
+//                b.clear();
+//            });
+//
+//            int s = pre.size();
+//            switch (s) {
+//                case 0:
+//                    return AbstractBytes.EMPTY;
+//                case 1:
+//                    return pre.get(0);
+//                default:
+//                    Collections.sort(pre);
+//                    for (RawBytes r : pre) {
+//                        b.write(r.bytes);
+//                    }
+//                    //b.compact();
+//                    return b;
+//            }
+//        }
     }
 
     final class ConstrainedVersionedTerm extends Versioned<Term> {

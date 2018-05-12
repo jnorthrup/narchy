@@ -107,30 +107,35 @@ public final class Termify extends AbstractPred<Derivation> {
 //                occ[1] = x;
 //            }
 
-//            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single &&
-//                    Op.values()[d._beliefOp].temporal
-//                //d._beliefOp == IMPL.ordinal() //impl only
-//                    ) {
-//                long derivedGoalStart = occ[0];
-//
-//                if (derivedGoalStart != ETERNAL) {
-//
-//                    long taskWants =
-//                            d.task.start();
-//                    //d.task.myNearestTimeTo(d.time);
-//
-//                    if (taskWants == ETERNAL) {
-//                        taskWants = d.time; //now
+            //Imminanentize
+            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single) {
+                long derivedGoalStart = occ[0];
+
+                long taskStart = d.task.start();
+                long taskEnd = d.task.start();
+
+                if (derivedGoalStart == ETERNAL && taskStart == ETERNAL && !d.belief.isEternal()) {
+                    //inherit belief time
+                    if (!d.belief.op().temporal) { //belief is an event
+                        occ[0] = d.belief.start();
+                        occ[1] = d.belief.end();
+                    } else {
+                        //keep eternal occurrence as solved. it is probably a good conclusion
+                    }
+                } else if (derivedGoalStart != ETERNAL && taskStart!=ETERNAL) {
+//                    //stretch/shift when: (past-perfect/future-perfect tense, "would have wanted"/"will have wanted")
+//                    //  derived goal occurrs before task goal (before)
+//                    //  derived goal occurrs after task goal (future)  ??
+//                    if (occ[1] < d.task.end()) {
+//                        long dur = occ[1] - occ[0];
+//                        occ[0] = taskStart;
+//                        occ[1] = Math.max(taskEnd, taskStart+dur);
 //                    }
-//
-//                    if (derivedGoalStart < taskWants) {
-//                        //derived goal occurrs before task goal, so shift to task start
-//                        long gdur = occ[1] - derivedGoalStart;
-//                        occ[0] = taskWants;
-//                        occ[1] = taskWants + gdur;
-//                    }
-//                }
-//            }
+//                    long taskEnd = d.task.end();
+//                    occ[0] = Math.min(occ[0], taskStart);
+//                    occ[1] = Math.max(occ[1], taskEnd); //stretch to task end
+                }
+            }
 
         } else {
             if ((d.concPunc == BELIEF || d.concPunc == GOAL) && c1.hasXternal()) {

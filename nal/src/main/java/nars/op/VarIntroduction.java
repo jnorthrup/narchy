@@ -28,11 +28,11 @@ public abstract class VarIntroduction {
         Term y = x.replace(u, v);
         if (y != null && !y.equals(x)) {
             if (x.isNormalized()) {
-                @Nullable Term yy = y.normalize();
-                if (yy == null) {
+
+                Term yy = y.normalize();
+                if (yy == null)
                     throw new RuntimeException("could not normalize result of variable introduction: " + y);
-                    //return null;
-                }
+
                 y = yy;
             }
 

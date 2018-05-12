@@ -266,13 +266,13 @@
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
-    (A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) <-> (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
         //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
         //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:InductionPB)
-    ((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)) <-> ((--,conjWithoutAll(B,A)) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
+    ((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)) && ((--,conjWithoutAll(B,A)) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- (--,conjWithoutAll(A,B))), (Belief:InductionPB)
-    (X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) <-> (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:AbductionPB)
         //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:AbductionPB)
         //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:AbductionPB)
 
@@ -299,7 +299,8 @@
         //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
         //X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN)
 
-    X, C, eventOfPosOrNeg(C,X) |- (--,conjWithout(C,(--,polarize(X,task)))), (Goal:WeakDepolarizedTask)
+    X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak)
+    X, C, eventOfNeg(C,X) |- (--,conjWithout(C,--X)), (Goal:Weak)
 
     //goal contained in conjunction/impl, weakly desire the entire conj; guilt by association
     X, C, eventOf(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTask)

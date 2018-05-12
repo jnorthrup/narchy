@@ -726,6 +726,11 @@ public interface Compound extends Term, IPair, Subterms {
 //        return false;
 //    }
 
+    @Override default boolean hasXternal() {
+        return dt() == XTERNAL ||
+                subterms().hasXternal();
+    }
+
     @Override
     default Term unneg() {
         if (op() == NEG) {

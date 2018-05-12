@@ -161,10 +161,6 @@ public class BagClustering<X> {
 
         FasterList<VLink<X>> x;
 
-        int s = bag.size();
-        if (s == 0)
-            return;
-
         if (bagBusy.compareAndSet(false, true)) {
 
             //only one thread at a time can update the bag or learn clusters

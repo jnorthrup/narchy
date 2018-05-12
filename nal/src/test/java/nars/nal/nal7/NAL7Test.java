@@ -24,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
-    public int cycles = 250;
+    public int cycles = 200;
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(22);
+        test.nar.termVolumeMax.set(26);
     }
 
 //    private static final Path tmpDir;
@@ -186,11 +186,11 @@ public class NAL7Test extends NALTest {
                   $.50 (c). 5 %1.0;.90% {5: 3}
          */
         test
-                .inputAt(1, "(a). :|:") //try to ignore this
-                .inputAt(2, "(b). :|:")
-                .inputAt(5, "(c). :|:")
-                .mustBelieve(cycles, "((b) &&+3 (c))", 1.00f, 0.81f, 2)
-                .mustNotOutput(cycles, "(c)", BELIEF, (t) -> t != 5)
+                .inputAt(1, "a. :|:") //try to ignore this
+                .inputAt(5, "b. :|:")
+                .inputAt(10, "c. :|:")
+                .mustBelieve(10, "(b &&+5 c)", 1.00f, 0.81f, 5)
+                .mustNotOutput(10, "c", BELIEF, (t) -> t != 10)
         ;
     }
 

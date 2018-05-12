@@ -7,6 +7,7 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.util.term.transform.Retemporalize;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -102,6 +103,11 @@ public interface Atomic extends Term {
         return equals(from) ? to : this; //atom substitution
     }
 
+
+    @Override
+    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+        return v; //nothing to test
+    }
 
 
     /*@NotNull*/
@@ -290,9 +296,10 @@ public interface Atomic extends Term {
 
 
     static boolean equals(Atomic x, Object y) {
-        return (y instanceof Atomic) &&
+        return (x == y) ||
+               ((y instanceof Atomic) &&
                (x.hashCode() == y.hashCode()) &&
-               Arrays.equals(x.bytes(), ((Atomic)y).bytes());
+               Arrays.equals(x.bytes(), ((Atomic)y).bytes()));
     }
     
 }

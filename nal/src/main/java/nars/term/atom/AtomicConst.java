@@ -42,18 +42,6 @@ public abstract class AtomicConst implements Atomic {
         return sbytes;
     }
 
-//    public static byte[] bytes(Op op, byte c) {
-//        //if (s == null) s = toString(); //must be a constant method
-//        //int slen = str.length(); //TODO will this work for UTF-16 containing strings?
-//
-//        byte[] sbytes = new byte[4];
-//        sbytes[0] = op.id; //(op != null ? op : op()).id;
-//        sbytes[1] = 0;
-//        sbytes[2] = 1;
-//        sbytes[3] = c;
-//        return sbytes;
-//    }
-
     @Override
     public void append(ByteArrayDataOutput out) {
         out.write(bytesCached);
@@ -66,7 +54,7 @@ public abstract class AtomicConst implements Atomic {
 
     @Override
     public boolean equals(Object u) {
-        return (this == u) || Atomic.equals(this, u);
+        return Atomic.equals(this, u);
     }
 
     @Override public String toString() {

@@ -754,13 +754,67 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "(out)", GOAL, 3);
     }
 
+
+
+    @ParameterizedTest
+    @ValueSource(ints = {-4, -3, +0, +3, +4})
+    public void implDecomposeGoalPredicate1(int dt) {
+        testImplSubjPredImmanentize(dt, "a/b");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-4, -3, +0, +3, +4})
+    public void implDecomposeGoalPredicate2(int dt) {
+        testImplSubjPredImmanentize(dt, "(a &&+1 a2)/b");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { -3, +0, +3 })
+    public void implDecomposeGoalPredicate2swap(int dt) {
+        testImplSubjPredImmanentize(dt, "(a2 &&+1 a)/b");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-4, -3, +0, +3, +4})
+    public void implDecomposeGoalPredicate3(int dt) {
+        testImplSubjPredImmanentize(dt, "(a &&+1 --a)/b");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-4, -3, +0, +3, +4})
+    public void implDecomposeGoalPredicate4(int dt) {
+        testImplSubjPredImmanentize(dt, "(a &&+1 a)/b");
+    }
+
+    //TODO make reverse of this to test predicate
+    void testImplSubjPredImmanentize(int dt, String sj) {
+
+        int start = 1;
+        int when = 6;
+
+        int goalAt = Math.max(when,
+                when - dt - $.$$(sj).dtRange()); //immediate
+
+        String[] subjPred = sj.split("\\/");
+        assertEquals(2, subjPred.length);
+
+        test
+            .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
+            .inputAt(when, "b! :|:")
+            .mustGoal(when*2, subjPred[0], 1f, 0.45f,
+                    (t) -> t == goalAt) //desired NOW, not at time 10 as would happen during normal decompose
+            .mustNotOutput(when*2, subjPred[0], GOAL, t -> t != goalAt)
+        ;
+    }
+
     @Test
     public void conjDecomposeGoalAfter() {
 
         test
                 .inputAt(3, "((a) &&+3 (b)). :|:")
                 .inputAt(13, "(b)! :|:")
-                .mustGoal(cycles, "(a)", 1f, 0.81f, 13) //desired NOW, not at time 10 as would happen during normal decompose
+                .mustGoal(cycles, "(a)", 1f, 0.81f,
+                        /* 10..13 */ 10) //desired NOW, not ONLY at time 10 as would happen during normal decompose
                 .mustNotOutput(cycles, "(a)", GOAL, ETERNAL);
     }
 
@@ -773,58 +827,6 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "(a)", 0f, 0.81f, 6) //desired NOW, not at time 10 as would happen during normal decompose
                 .mustNotOutput(cycles, "(a)", GOAL, ETERNAL);
     }
-
-    @ParameterizedTest
-    @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate1(int dt) {
-        testImplSubjPred(dt, "a/b");
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate2(int dt) {
-        testImplSubjPred(dt, "(a &&+1 a2)/b");
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = { -3, +0, +3 })
-    public void implDecomposeGoalPredicate2swap(int dt) {
-        testImplSubjPred(dt, "(a2 &&+1 a)/b");
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate3(int dt) {
-        testImplSubjPred(dt, "(a &&+1 --a)/b");
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate4(int dt) {
-        testImplSubjPred(dt, "(a &&+1 a)/b");
-    }
-
-    //TODO make reverse of this to test predicate
-    void testImplSubjPred(int dt, String sj) {
-
-        int start = 1;
-        int when = 6;
-
-        int goalAt = Math.max(when,
-                when - dt - $.$$(sj).dtRange()); //immediate
-
-        String[] subjPred = sj.split("\\/");
-        assertEquals(2, subjPred.length);
-
-        test
-                .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
-                .inputAt(when, "b! :|:")
-                .mustGoal(cycles, subjPred[0], 1f, 0.45f,
-                        (t) -> t == goalAt) //desired NOW, not at time 10 as would happen during normal decompose
-                .mustNotOutput(cycles, subjPred[0], GOAL, t -> t != goalAt)
-        ;
-    }
-
     @Test
     public void implDecomposeGoalAfterPosNeg() {
 
@@ -839,10 +841,11 @@ public class NAL8Test extends NALTest {
     public void conjDecomposeGoalAfterNegNeg() {
 
         test
+                .log()
                 .inputAt(3, "((a) &&+3 --(b)). :|:")
                 .inputAt(6, "--(b)! :|:")
-                .mustGoal(cycles, "(a)", 1f, 0.81f, (t) -> t >= 6) //since b is not desired now, it should reverse predict the goal of (a)
-                .mustNotOutput(cycles, "(a)", GOAL, ETERNAL);
+                .mustGoal(16, "(a)", 1f, 0.81f, (t) -> t >= 6) //since b is not desired now, it should reverse predict the goal of (a)
+                .mustNotOutput(16, "(a)", GOAL, ETERNAL);
     }
 
     @Test
@@ -857,12 +860,18 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void implDecomposeGoalBeforeTemporalSameTerm() {
-        //predictive impl
         test
                 .inputAt(1, "(x ==>-1 x).")
                 .inputAt(2, "x! :|:")
                 .mustGoal(cycles, "x", 1f, 0.45f, 3);
+    }
 
+    @Test
+    public void implDecomposeGoalBeforeTemporalSameTermNegated() {
+        test
+                .inputAt(1, "(--x ==>-1 x).")
+                .inputAt(2, "x! :|:")
+                .mustGoal(cycles, "x", 0f, 0.45f, 3);
     }
 
     @Test

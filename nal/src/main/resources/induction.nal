@@ -14,6 +14,10 @@
 //    B, A, task("."), time(dtEvents)                       notImpl(A) |- (A ==>+- B), (Belief:Induction)
 //    B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B),       notImpl(A) |- varIntro((A ==>+- B)), (Belief:Induction)
 
+
+   //GOAL induction/propagation - (goal intentionally remains subjunctive speculation, not fact)
+   G, X, notImpl(A),notImpl(B) |- (G&|X), (Goal:Induction)
+
    B, A, notImpl(A),notImpl(B) |- (A ==>+- B), (Belief:Induction, Time:BeliefRelative)
     B, A, neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((A ==>+- B)), (Belief:Induction, Time:BeliefRelative)
         B, A, notImpl(A),notImpl(B) |- (--A ==>+- B), (Belief:InductionPN, Time:BeliefRelative)

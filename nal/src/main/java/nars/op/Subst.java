@@ -18,7 +18,7 @@ public class Subst extends Functor {
 
     //TODO use special symbol encoding to avoid collision with equivalent normal input
     final static Term STRICT = Atomic.the("strict");
-    final static Term FORCE = Atomic.the("force");
+//    final static Term FORCE = Atomic.the("force");
 
     public static final Subst replace = new Subst("replace");
 

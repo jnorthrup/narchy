@@ -2,25 +2,28 @@ package nars.nal.nal5;
 
 import nars.NAR;
 import nars.NARS;
+import nars.term.Term;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
 import static nars.util.time.Tense.ETERNAL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 700;
+    final int cycles = 300;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(18);
         return n;
     }
 
@@ -200,7 +203,9 @@ public class NAL5Test extends NALTest {
                 
                 .believe("(x && y)")
                 .believe("x", 0.80f, 0.9f)
-                .mustBelieve(cycles*10, "y", 0.80f, 0.43f);
+                .mustBelieve(cycles*10, "y",
+                        0.80f, 0.58f);
+                        //0.43f);
     }
 
     @Test
@@ -208,7 +213,9 @@ public class NAL5Test extends NALTest {
         test
                 .believe("(&&, x, y, z)")
                 .believe("x", 0.80f, 0.9f)
-                .mustBelieve(cycles, "(y && z)", 0.80f, 0.43f);
+                .mustBelieve(cycles, "(y && z)", 0.80f,
+                        0.58f);
+                        //0.43f);
     }
 
     @Test
@@ -216,7 +223,9 @@ public class NAL5Test extends NALTest {
         test
                 .believe("(&&, --x, y, z)")
                 .believe("x", 0.20f, 0.9f)
-                .mustBelieve(cycles, "(&&,y,z)", 0.80f, 0.43f /*0.43f*/);
+                .mustBelieve(cycles, "(&&,y,z)", 0.80f,
+                        0.58f);
+                        //0.43f /*0.43f*/);
     }
 
     @Test
@@ -586,7 +595,7 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<(&&,<robin --> [chirping]>,<robin --> [flying]>) ==> <robin --> bird>>"); //.en("If robin can fly and robin chirps, then robin is a bird");
         tester.believe("<<robin --> [flying]> ==> <robin --> [withBeak]>>", 0.9f, 0.9f); //.en("If robin can fly then usually robin has a beak.");
-        tester.mustBelieve(cycles, "<(&&,<robin --> [chirping]>,<robin --> [withBeak]>) ==> <robin --> bird>>",
+        tester.mustBelieve(cycles * 2, "<(&&,<robin --> [chirping]>,<robin --> [withBeak]>) ==> <robin --> bird>>",
                 1.00f, 0.45f); //.en("I guess that if robin chirps and robin has a beak, then robin is a bird.");
 
     }
@@ -658,6 +667,10 @@ public class NAL5Test extends NALTest {
 
     @Test
     public void conditional_induction0NegBoth() {
+        Term both = $$("(((x1&&x2) ==> (y1&&y2))&&((y1&&y2) ==> (x1&&x2)))");
+        assertEquals("(((x1&&x2)==>(y1&&y2))&&((y1&&y2)==>(x1&&x2)))",
+                both.toString());
+
         TestNAR tester = test;
         tester.believe("--((&&,x1,x2,a) ==> c)");
         tester.believe("--((&&,y1,y2,a) ==> c)");

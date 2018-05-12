@@ -161,60 +161,6 @@ public class Occurrify extends TimeGraph {
         return null; //save both as alternates
     }
 
-    public void reset(TaskTimeMerge join) {
-        clear();
-        expanded.clear();
-        seen.clear();
-
-        this.join = join;
-
-        this.task = d.task;
-
-        boolean single = d.single;
-        this.belief = !single ? d.belief : null;
-        Term bb = !single ? belief.term() : d.beliefTerm;
-
-//determine whether to auto-neg
-// HACK autoNeg only the specific terms which appear as both
-//        autoNeg = true;
-//        if (tt.hasAny(NEG) || (bb != null && bb.hasAny(NEG))) {
-//            ObjectByteHashMap<Term> events = new ObjectByteHashMap<>(4);
-//            eventPolarities(tt, events);
-//            if (bb != null)
-//                eventPolarities(bb, events);
-//            if (events.containsValue((byte)0)) {
-//                //mixture of positive and negative forms of the same term detected
-//                autoNeg = true;
-//            }
-//        } else {
-//            //safe to autoNeg since no negations are present anyway
-//            //no need to change default setting
-//        }
-
-        if (!single) {
-
-            if (task.isGoal() && task.isEternal() && !belief.isEternal()) {
-                //if belief is non-eternal against an eternal goal, pretend the goal occurrs now to provide an overriding time for the belief
-                know(task, d.time);
-            } else {
-                know(task, d.taskAt);
-            }
-
-            if (!d.belief.equals(d.task)) {
-                if (task.isGoal() && !task.isEternal()) {
-                    //allow non-eternal goal occurrence to override any belief occurrence
-                    know(bb);
-                } else {
-                    know(belief, d.beliefAt);
-                }
-            }
-        } else {
-            know(task, d.taskAt);
-        }
-
-
-    }
-
 
 //    /**
 //     * if current state of the derivation produced novel terms as a result of substitutions, etc
@@ -420,7 +366,61 @@ public class Occurrify extends TimeGraph {
 
     public Term solve(TaskTimeMerge mode, Term pattern) {
 
-        reset(mode);
+        clear();
+        expanded.clear();
+        seen.clear();
+
+        this.join = mode;
+
+        this.task = d.task;
+
+        boolean single = d.single;
+        this.belief = !single ? d.belief : null;
+        Term bb = !single ? belief.term() : d.beliefTerm;
+
+//determine whether to auto-neg
+// HACK autoNeg only the specific terms which appear as both
+//        autoNeg = true;
+//        if (tt.hasAny(NEG) || (bb != null && bb.hasAny(NEG))) {
+//            ObjectByteHashMap<Term> events = new ObjectByteHashMap<>(4);
+//            eventPolarities(tt, events);
+//            if (bb != null)
+//                eventPolarities(bb, events);
+//            if (events.containsValue((byte)0)) {
+//                //mixture of positive and negative forms of the same term detected
+//                autoNeg = true;
+//            }
+//        } else {
+//            //safe to autoNeg since no negations are present anyway
+//            //no need to change default setting
+//        }
+
+        //disable autoneg if no negations appear in the premise
+        if (!task.term().hasAny(NEG) && !bb.hasAny(NEG) && !pattern.hasAny(NEG))
+            autoNeg = false;
+
+        if (!single) {
+
+            if (task.isGoal() && task.isEternal() && !belief.isEternal()) {
+                //if belief is non-eternal against an eternal goal, pretend the goal occurrs now to provide an overriding time for the belief
+                know(task, d.time);
+            } else {
+                know(task, d.taskAt);
+            }
+
+            if (!d.belief.equals(d.task)) {
+                if (bb.op().temporal && task.isGoal() && !task.isEternal()) {
+                    //allow non-eternal goal occurrence to override any temporal belief occurrence
+                    //but allow event occurrence
+                    know(bb);
+                } else {
+                    know(belief, d.beliefAt);
+                }
+            }
+        } else {
+            know(task, d.taskAt);
+        }
+
 
         assert (pattern.op().conceptualizable);
 
@@ -783,51 +783,16 @@ public class Occurrify extends TimeGraph {
         ArrayHashSet<Event> solutions = new ArrayHashSet<>(Param.TEMPORAL_SOLVER_ITERATIONS * 2);
 
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
-        //final boolean[] rejectRelative = {false};
 
         Predicate<Event> each = (solution) -> {
             assert (solution != null);
             solutions.add(solution);
-//            if (!solution.id.op().conceptualizable) {
-//                //skip
-//            } else if (solution instanceof Relative && rejectRelative[0]) {
-//                //skip
-//            } else {
-//
-//                if (!rejectRelative[0] && solution instanceof Absolute) {
-//                    solutions.removeIf(x -> x instanceof Relative); //remove existing relative solutions now that an absolute exists
-//                    rejectRelative[0] = true;
-//                }
-//
-//                //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
-//
-//                Event first = solutions.first();
-//
-//                if (first == null) {
-//                    solutions.add(solution);
-//                } else {
-//                    Event merged = merge(first, solution);
-//                    if (merged == null) {
-//                        //add alternate
-//                        solutions.add(solution);
-//                    } else if (merged == solution) {
-//                        //replace all, this is the first fully valid one
-//                        solutions.clear();
-//                        solutions.add(solution);
-//                    }
-//                }
-//            }
-
             return triesRemain[0]-- > 0;
         };
 
-        seen.clear();
+
         solve(pattern, false /* take everything */, seen, each);
 
-        return solution(pattern, solutions);
-    }
-
-    protected Supplier<Term> solution(Term pattern, ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss == 0) {
             return () -> solveRaw(pattern);

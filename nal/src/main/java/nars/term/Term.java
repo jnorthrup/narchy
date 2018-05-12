@@ -219,12 +219,9 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     boolean isTemporal();
 
-    /**
-     * whether this term contains any XTERNAL relations
-     */
-    default boolean hasXternal() {
+    @Override default boolean hasXternal() {
         return (dt() == XTERNAL) ||
-                (hasAny(Op.Temporal) && OR(Term::hasXternal));
+                Termed.super.hasXternal();
     }
 
     @Nullable

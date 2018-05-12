@@ -10,6 +10,7 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Terms;
 import nars.unify.Unify;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,15 +120,21 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public boolean isNormalized() {
-        return sub().isNormalized();
+    public boolean hasXternal() {
+        return sub().hasXternal();
     }
-
 
     @Override
     public final int dt() {
         return DTERNAL;
     }
+
+    @Override
+    public boolean isNormalized() {
+        return sub().isNormalized();
+    }
+
+
 
     @Override
     public int eventCount() {
@@ -201,6 +208,11 @@ public abstract class UnitCompound implements Compound {
     @Override
     public boolean hasVars() {
         return sub().hasVars();
+    }
+
+    @Override
+    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+        return reduce.intValueOf(v, sub()); //direct to sub, skips this term
     }
 
     @Override

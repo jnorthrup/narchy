@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TemporalStabilityTests {
 
-    static final int CYCLES = 3500;
+    static final int CYCLES = 1500;
 
 //    static {
 //
@@ -33,6 +33,7 @@ public class TemporalStabilityTests {
             maxT = this.whens.max();
             this.eventer = eventer;
         }
+
         public T1(IntToObjectFunction<String> eventer, int[] whens, int minT, int maxT) {
             this.whens = new IntHashSet(whens);
             this.minT = minT;
@@ -161,6 +162,8 @@ public class TemporalStabilityTests {
         //
 
         @NotNull NAR n = NARS.tmp();
+        n.termVolumeMax.set(20);
+
         int time = CYCLES;
         T1 a = new T1(linkedimpl, 1, 2, 5, 10);
         T1 b = new T1(linkedinh, 1, 2, 5, 10);

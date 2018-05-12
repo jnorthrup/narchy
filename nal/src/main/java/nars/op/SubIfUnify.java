@@ -105,9 +105,9 @@ public class SubIfUnify extends Functor {
                 //op = VAR_INDEP;
             } else if (ai.equals(DEP_VAR)) {
                 op = VAR_DEP;
-            } else if (ai.equals(Subst.FORCE))
-                force = true;
-            else
+//            } else if (ai.equals(Subst.FORCE)) {
+//                force = true;
+            } else
                 throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
 
@@ -146,13 +146,13 @@ public class SubIfUnify extends Functor {
             }
 
             if (output == null) {
-                if (!force) {
+//                if (!force) {
                     return Null;
-                } else {
-                    output = c.replace(x, y); //force: apply substitution even if un-unifiable
-                    if (output == null)
-                        return Null;
-                }
+//                } else {
+//                    output = c.replace(x, y); //force: apply substitution even if un-unifiable
+//                    if (output == null)
+//                        return Null;
+//                }
             }
 
         }

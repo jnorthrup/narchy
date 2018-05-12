@@ -106,7 +106,7 @@ public class RTreeBeliefTableTest {
         double avgErr = errSum / (end - start + 1);
         System.out.println();
         System.out.println(n4(avgErr) + " avg freq err per point");
-        assertTrue(avgErr < 0.15f);
+        assertTrue(avgErr < 0.3f);
     }
 
     @Test
@@ -172,14 +172,14 @@ public class RTreeBeliefTableTest {
         assertEquals("%1.0;.90%", r.truth(0, 0, null, null, 1).toString());
         assertEquals("%1.0;.82%", r.truth(0, 1, null, null, 1).toString());
         assertEquals("%1.0;.90%", r.truth(1, 1, null, null, 1).toString());
-        assertEquals("%.50;.90%", r.truth(1, 2, null, null, 1).toString());
-        assertEquals("%0.0;.90%", r.truth(2, 3, null, null, 1).toString());
+        assertEquals("%.50;.82%", r.truth(1, 2, null, null, 1).toString());
+        assertEquals("%0.0;.82%", r.truth(2, 3, null, null, 1).toString());
         assertEquals("%0.0;.90%", r.truth(3, 3, null, null, 1).toString());
 
         assertEquals("%.33;.87%", r.truth(4, 4, null, null, 1).toString());
-        assertEquals("%.35;.85%", r.truth(4, 5, null, null, 1).toString());
+        assertEquals("%.35;.74%", r.truth(4, 5, null, null, 1).toString());
         assertEquals("%.38;.83%", r.truth(5, 5, null, null, 1).toString());
-        assertEquals("%.40;.91%", r.truth(5, 8, null, null, 1).toString());
+        assertEquals("%.39;.65%", r.truth(5, 8, null, null, 1).toString());
     }
 
     @Test

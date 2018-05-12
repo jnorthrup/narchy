@@ -55,6 +55,10 @@ public interface Termlike {
         return x;
     }
 
+    default boolean hasXternal() {
+        return hasAny(Op.Temporal) && OR(Term::hasXternal);
+    }
+
     /**
      * structure hash bitvector
      */
@@ -328,7 +332,7 @@ public interface Termlike {
             v = sub(i).intifyRecurse(reduce, v); //recurse
         return v;
     }
-   /** recursive, visits only 1 layer deep, and not the current superterm if compound */
+   /** recursive, visits only 1 layer deep, and not the current if compound */
     default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         int n = subs();
         for (int i = 0; i < n; i++)
