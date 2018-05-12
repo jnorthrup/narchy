@@ -19,7 +19,7 @@ public class OSMTest {
         i.load(-80.65, 28.58, -80.60, 28.63);
 
         SpaceGraphPhys3D sg = new SpaceGraphPhys3D(new OsmSpace(i.osm));
-        sg.show(800, 800);
+        sg.show(800, 800, false);
 //        sg.addWindowListener(new WindowAdapter() {
 //            @Override
 //            public void windowDestroyed(WindowEvent e) {

@@ -1,6 +1,7 @@
 package nars.experiment;
 
 import jcog.Util;
+import jcog.learn.LivePredictor;
 import jcog.math.FloatPolarNormalized;
 import nars.$;
 import nars.NAR;
@@ -9,6 +10,7 @@ import nars.NAgentX;
 import nars.concept.Concept;
 import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
+import nars.util.signal.BeliefPredict;
 import spacegraph.SpaceGraph;
 
 import javax.swing.*;
@@ -81,7 +83,7 @@ public class PoleCart extends NAgentX {
     static final double poleLength = 1f; //m
     static final double gravity = 9.8; //meters/(sec*sec)
     static final double forceMag = 100.;
-    static final double tau = 0.01;
+    static final double tau = 0.005;
     static final double fricCart = 0.00005;
     static final double fricPole =
             //0.005;
@@ -183,15 +185,14 @@ public class PoleCart extends NAgentX {
         });
 
 
-//        new BeliefPredict(
-//                new Termed[] { xVel, angVel, x},
-//                8,
-//                12,
-//                new Termed[] { angX, angY, angVel, xVel },
-//                //new LivePredictor.LSTMPredictor(0.1f, 2),
-//                new LivePredictor.MLPPredictor(0.1f),
-//                nar
-//        );
+        new BeliefPredict(
+                java.util.List.of(angX, angY, angVel, xVel ),
+                8,
+                1,
+                4,
+                new LivePredictor.LSTMPredictor(0.1f, 2),
+                nar
+        );
 
 
         Iterable<Concept> sensors = java.util.List.of(

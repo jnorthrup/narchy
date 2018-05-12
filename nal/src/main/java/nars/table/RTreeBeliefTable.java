@@ -66,10 +66,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int SAMPLE_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
 
     private static final float PRESENT_AND_FUTURE_BOOST =
-            //1f;
+            1f;
             //1.5f;
             //2f;
-            4f;
+            //4f;
             //8f;
             //10f;
 

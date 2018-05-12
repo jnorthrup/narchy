@@ -10,6 +10,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.video.JoglSpace;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
@@ -40,19 +41,19 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
     }
 
 
-    volatile boolean busy = false;
+    final AtomicBoolean busy = new AtomicBoolean(false);
 
     @Override
     protected void onClick() {
-        synchronized (this) {
+        if (!busy.compareAndSet(false, true))
+            return;
 
-            if (!busy && this.space == null) {
-
-                busy = true;
+        synchronized(this) {
+            if (this.space == null) {
 
                 set(true);
 
-                this.space = SpaceGraph.window(spacer.get(), width, height);
+                this.space = SpaceGraph.window(spacer.get(), width, height, true);
 
                 space.pre(s -> {
                     GLWindow w = s.window;
@@ -65,14 +66,16 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
                         s.setPosition(nx, ny);
                     //}
                     Loop.invokeLater(()-> {
-                        busy = false; //allow window to be destroyed by clicking again
+                        busy.set(false); //allow window to be destroyed by clicking again
                     });
                 });
 
                 //space.show(this.toString(), width,height, nx, ny);
                 //space.window.setTitle(label.value());
 
-            } else if (!busy && space != null) {
+            } else if (space != null) {
+
+                busy.set(false);
 
                 set(false);
 

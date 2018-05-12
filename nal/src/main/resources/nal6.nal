@@ -297,11 +297,16 @@
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
     X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong, Time:Task)
         //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-        X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN, Time:Task)
+        X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:Strong, Time:Task)
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 
-    X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak)
-    X, C, eventOfNeg(C,X) |- (--,conjWithout(C,--X)), (Goal:Weak)
+    X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:Task)
+    X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:Weak, Time:Task)
+
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:Task)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:Weak, Time:Task)
+        //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
+        //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
     //goal contained in conjunction/impl, weakly desire the entire conj; guilt by association
 //    X, C, eventOf(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTask)
@@ -325,10 +330,6 @@
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Induction)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
-        //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
-        //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
     //Conjunction structural decompose: C = (&&,a,b,..)
     C, X, eventOfPosOrNeg(C,X)   |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)

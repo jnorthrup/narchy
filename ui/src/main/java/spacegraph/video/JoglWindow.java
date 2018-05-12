@@ -216,6 +216,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public final void display(GLAutoDrawable drawable) {
+        if (gl==null)
+            gl = drawable.getGL().getGL2(); //HACK this is due to the async window opening stuff
+
         rendering.set(true);
         try {
             long nowMS = System.currentTimeMillis(), renderDTMS = nowMS - lastRenderMS;
@@ -228,11 +231,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
     }
 
-    public void show(int w, int h) {
-        show("", w, h);
+    public void show(int w, int h, boolean async) {
+        show("", w, h, async);
     }
 
-    public void show(String title, int w, int h, int x, int y) {
+    public void show(String title, int w, int h, int x, int y, boolean async) {
 
         Loop.timer().execute(() -> {
 
@@ -264,11 +267,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         });
 
-        Thread.yield();
+        if (!async) {
+            Thread.yield();
 
-        //HACK block until GL initialized
-        while (gl == null) {
-            Util.sleep(10);
+            //HACK block until GL initialized
+            while (gl == null) {
+                Util.sleep(10);
+            }
         }
 
     }
@@ -335,8 +340,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //}
     }
 
-    public void show(String title, int w, int h) {
-        show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
+    public void show(String title, int w, int h, boolean async) {
+        show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE, async);
     }
 
     public void addMouseListenerPost(MouseListener m) {

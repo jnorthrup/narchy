@@ -398,8 +398,7 @@ public class Occurrify extends TimeGraph {
 //        }
 
         //disable autoneg if no negations appear in the premise
-        if (!task.term().hasAny(NEG) && !bb.hasAny(NEG) && !pattern.hasAny(NEG))
-            autoNeg = false;
+        autoNeg = !(!task.term().hasAny(NEG) && !bb.hasAny(NEG) && !pattern.hasAny(NEG));
 
         if (!single) {
 
@@ -808,7 +807,7 @@ public class Occurrify extends TimeGraph {
     @NotNull
     private Supplier<Term> concDT(Term pattern, ArrayHashSet<Event> solutions) {
         Term p;
-        int ss = solutions.size();
+        int ss = filterOnlyNonXternal(solutions);
         if (ss == 0)
             p = pattern;
         else if (ss == 1) {
@@ -842,13 +841,7 @@ public class Occurrify extends TimeGraph {
 //            }
 //        }
 
-        if (ss > 1) { //prefer occurrence point
-            int occurrenceSolved = ((FasterList<Event>) solutions.list).count(t -> t instanceof Absolute);
-            if (occurrenceSolved > 0 && occurrenceSolved < ss) {
-                if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
-                    ss = solutions.size();
-            }
-        }
+        ss = filterOnlyNonXternal(solutions);
 
         switch (ss) {
             case 0:
@@ -875,6 +868,18 @@ public class Occurrify extends TimeGraph {
 //                    };
 //                }
         }
+    }
+
+    private int filterOnlyNonXternal(ArrayHashSet<Event> solutions) {
+        int ss = solutions.size();
+        if (ss > 1) { //prefer occurrence point
+            int occurrenceSolved = ((FasterList<Event>) solutions.list).count(t -> t instanceof Absolute);
+            if (occurrenceSolved > 0 && occurrenceSolved < ss) {
+                if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
+                    ss = solutions.size();
+            }
+        }
+        return ss;
     }
 
     /**

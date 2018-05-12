@@ -155,7 +155,7 @@ public class ExampleStereoTwoViewsOneCamera {
 			}
 
 
-		}).show(800, 800);
+		}).show(800, 800, false);
 
 		RayTracer r = RayTracer.raytracer();
 

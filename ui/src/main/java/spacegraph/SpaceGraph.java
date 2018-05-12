@@ -16,42 +16,37 @@ import java.util.function.Supplier;
 public enum SpaceGraph { ;
 
 
+
     /** creates window with 2d with single surface layer, maximized to the size of the window */
-    public static JoglSpace window(Surface s, int w, int h) {
+    public static JoglSpace window(Surface s, int w, int h, boolean async) {
         JoglSpace win = new SpaceGraphFlat(
                 new ZoomOrtho(s)
         );
         if (w > 0 && h > 0) {
-            win.show(w, h);
+            win.show(w, h, async);
         }
         return win;
+    }
+
+    public static JoglSpace window(Object o, int w, int h) {
+        return window(o, w, h, false);
     }
 
     /** generic window creation entry point */
-    public static JoglSpace window(Object o, int w, int h) {
+    public static JoglSpace window(Object o, int w, int h, boolean async) {
         if (o instanceof JoglSpace) {
             JoglSpace s = (JoglSpace) o;
-            s.show(w, h);
+            s.show(w, h, async);
             return s;
         } else if (o instanceof Spatial) {
-            return space(((Spatial) o), w, h);
+            SpaceGraphPhys3D win = new SpaceGraphPhys3D(((Spatial) o));
+            win.show(w, h,async);
+            return win;
         } else if (o instanceof Surface) {
-            return window(((Surface) o), w, h);
+            return window(((Surface) o), w, h, async);
         } else {
-            return window(new AutoSurface<>(o), w, h);
+            return window(new AutoSurface<>(o), w, h, async);
         }
-    }
-
-    /** new window with 3d-physics space containing the provides spatial(s) */
-    public static SpaceGraphPhys3D space(Spatial s, int w, int h) {
-        return space(w, h, s);
-    }
-
-    /** new window with 3d-physics space containing the provides spatial(s) */
-    public static SpaceGraphPhys3D space(int w, int h, Spatial... s) {
-        SpaceGraphPhys3D win = new SpaceGraphPhys3D(s);
-        win.show(w, h);
-        return win;
     }
 
 
@@ -108,7 +103,7 @@ public enum SpaceGraph { ;
                 }
                 //,hud
         );
-        g.show(width, height);
+        g.show(width, height, false);
 
 
 

@@ -107,33 +107,10 @@ public final class Termify extends AbstractPred<Derivation> {
 //                occ[1] = x;
 //            }
 
-            //Imminanentize
-            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single) {
-                long derivedGoalStart = occ[0];
-
-                long taskStart = d.task.start();
-                long taskEnd = d.task.start();
-
-                if (derivedGoalStart == ETERNAL && taskStart == ETERNAL && !d.belief.isEternal()) {
-                    //inherit belief time
-                    if (!d.belief.op().temporal) { //belief is an event
-                        occ[0] = d.belief.start();
-                        occ[1] = d.belief.end();
-                    } else {
-                        //keep eternal occurrence as solved. it is probably a good conclusion
-                    }
-                } else if (derivedGoalStart != ETERNAL && taskStart!=ETERNAL) {
-//                    //stretch/shift when: (past-perfect/future-perfect tense, "would have wanted"/"will have wanted")
-//                    //  derived goal occurrs before task goal (before)
-//                    //  derived goal occurrs after task goal (future)  ??
-//                    if (occ[1] < d.task.end()) {
-//                        long dur = occ[1] - occ[0];
-//                        occ[0] = taskStart;
-//                        occ[1] = Math.max(taskEnd, taskStart+dur);
-//                    }
-//                    long taskEnd = d.task.end();
-//                    occ[0] = Math.min(occ[0], taskStart);
-//                    occ[1] = Math.max(occ[1], taskEnd); //stretch to task end
+            if (d.concPunc == GOAL) {
+                if (occ[0] == ETERNAL && d.task.isEternal() && (d.single || !d.belief.isEternal())) {
+                    //desire in present moment
+                    System.arraycopy(nar.timeFocus(), 0, occ, 0, 2);
                 }
             }
 

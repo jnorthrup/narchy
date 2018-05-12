@@ -109,7 +109,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
         //Vis.conceptsWindow2D
 
                 //.ortho(logConsole( n, 90, 40, new FloatParam(0f)).opacity(0.25f))
-        s.camPos(0, 0, 90).show(w, h);
+        s.camPos(0, 0, 90).show(w, h, false);
 
         return s;
 

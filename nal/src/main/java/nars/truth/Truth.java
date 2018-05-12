@@ -253,7 +253,7 @@ public interface Truth extends Truthed {
         assert(f==f): "invalid freq: " + f;
         //return unitize(round(f, epsilon));
         Util.assertUnitized(f);
-        return round(f, epsilon);
+        return Util.unitize(round(f, epsilon));
     }
 
     static float conf(float c, NAR n) {

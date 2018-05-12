@@ -142,7 +142,7 @@ public class ExampleMultiviewSceneReconstruction {
     public ExampleMultiviewSceneReconstruction() {
         super();
 
-        new SpaceGraphPhys3D(new PointCloudSpace()).show(800, 800);
+        new SpaceGraphPhys3D(new PointCloudSpace()).show(800, 800, false);
 
     }
 
