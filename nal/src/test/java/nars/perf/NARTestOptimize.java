@@ -7,9 +7,14 @@ import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
 import nars.control.MetaGoal;
+import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
+import nars.nal.nal5.NAL5Test;
+import nars.nal.nal6.NAL6Test;
+import nars.nal.nal7.NAL7Test;
+import nars.nal.nal8.NAL8Test;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -21,7 +26,7 @@ import java.util.concurrent.Executors;
 public class NARTestOptimize {
 
     static final int threads =
-            3;
+            4;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
@@ -87,15 +92,15 @@ public class NARTestOptimize {
                         n.emotion.want(MetaGoal.Believe, p)
                 )
                 .optimize(2 /*32*1024*/, 1, (n) ->
-                        JUnitNAR.tests(exe, n, 0.05f,
+                        JUnitNAR.tests(exe, n, 0.25f,
                                 NAL1Test.class,
-//                                NAL1MultistepTest.class,
+                                NAL1MultistepTest.class,
                                 NAL2Test.class,
-                                NAL3Test.class
-//                                NAL5Test.class,
-//                                NAL6Test.class,
-//                                NAL7Test.class,
-//                                NAL8Test.class
+                                NAL3Test.class,
+                                NAL5Test.class,
+                                NAL6Test.class,
+                                NAL7Test.class,
+                                NAL8Test.class
                         ));
 
             //r.print();

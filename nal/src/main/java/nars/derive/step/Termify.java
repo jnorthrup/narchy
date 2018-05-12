@@ -7,6 +7,8 @@ import nars.derive.premise.PremiseDeriverProto;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.util.term.transform.Retemporalize;
+import nars.util.time.Tense;
+import org.eclipse.collections.api.tuple.Pair;
 
 import static nars.Op.*;
 import static nars.util.time.Tense.ETERNAL;
@@ -76,13 +78,17 @@ public final class Termify extends AbstractPred<Derivation> {
                 d.concTruth = d.concTruth.neg();
         }
 
-        final long[] occ = d.concOcc;
-        occ[0] = occ[1] = ETERNAL;
+        d.concOcc = Tense.ETERNAL_ETERNAL; assert(d.concOcc[0]==ETERNAL && d.concOcc[1]==ETERNAL);
 
         Term c2;
         if (d.temporal) {
 
-            c2 = d.occ.solve(time, c1);
+            Pair<Term, long[]> timing = time.solve(d, c1);
+            if (timing == null)
+                return false;
+            c2 = timing.getOne();
+            long[] occ = timing.getTwo();
+            assert (occ[1] >= occ[0]);
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
@@ -98,21 +104,15 @@ public final class Termify extends AbstractPred<Derivation> {
 
             }
 
-
-            assert (occ[1] >= occ[0]);
-//            if (occ[0] > occ[1]) {
-//                //HACK swap the reversed occ
-//                long x = occ[0];
-//                occ[0] = occ[1];
-//                occ[1] = x;
-//            }
-
             if (d.concPunc == GOAL) {
                 if (occ[0] == ETERNAL && d.task.isEternal() && (d.single || !d.belief.isEternal())) {
                     //desire in present moment
                     System.arraycopy(nar.timeFocus(), 0, occ, 0, 2);
                 }
             }
+
+
+            d.concOcc = occ;
 
         } else {
             if ((d.concPunc == BELIEF || d.concPunc == GOAL) && c1.hasXternal()) {

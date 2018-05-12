@@ -82,6 +82,7 @@ public class Derivation extends PreDerivation {
 
     /** temporary un-transform map */
     public Map<Term,Term> untransform = new UnifiedMap<>();
+    public long[] concOcc;
 
 
     private ImmutableMap<Term, Termed> derivationFunctors;
@@ -95,7 +96,6 @@ public class Derivation extends PreDerivation {
      */
     public Truth concTruth;
     public byte concPunc;
-    public final long[] concOcc = new long[2];
     public Term derivedTerm;
 
     public Task _task;
@@ -480,7 +480,7 @@ public class Derivation extends PreDerivation {
         this.truthFunction = null;
         this.single = false;
         this.evidenceDouble = evidenceSingle = null;
-        this.concOcc[0] = this.concOcc[1] = ETERNAL;
+
 
         return true; //ready
     }
@@ -801,6 +801,12 @@ public class Derivation extends PreDerivation {
     public final boolean revertLive(int before, int cost) {
         ttl -= cost;
         return revertLive(before);
+    }
+
+    public Occurrify occ(Term pattern) {
+        occ.reset();
+        occ.setPremise(this, pattern.hasAny(NEG));
+        return occ;
     }
 
 
