@@ -764,6 +764,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             }
         };
 
+
         //test for existing exact solutions to the exact term
         return //solveExact(x, each);
                 solveAll(x, each);

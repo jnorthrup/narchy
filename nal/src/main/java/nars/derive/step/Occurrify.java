@@ -14,6 +14,7 @@ import nars.term.compound.util.Image;
 import nars.util.time.Tense;
 import nars.util.time.TimeGraph;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -48,9 +49,10 @@ public class Occurrify extends TimeGraph {
 
     public static final TaskTimeMerge mergeDefault = TaskTimeMerge.Union;
 
-    public static final Map<Term, TaskTimeMerge> merge = Map.of(
-            Atomic.the("TaskRelative"), TaskTimeMerge.Task,
-            Atomic.the("BeliefRelative"), TaskTimeMerge.Belief
+    @Deprecated public static final Map<Term, TaskTimeMerge> merge = Map.of(
+            Atomic.the("Task"), TaskTimeMerge.Task,
+            Atomic.the("TaskRelative"), TaskTimeMerge.TaskRelative,
+            Atomic.the("BeliefRelative"), TaskTimeMerge.BeliefRelative
     );
 
     public static Term unprojected = $.the("Unprojected");
@@ -791,8 +793,41 @@ public class Occurrify extends TimeGraph {
         };
 
 
-        solve(pattern, false /* take everything */, seen, each);
+        if (!join.occOverride() || pattern.hasXternal())
+            solve(pattern, false /* take everything */, seen, each);
 
+        if (join.occOverride()) {
+            return concDT(pattern, solutions);
+        } else {
+            return concOccAndDT(pattern, solutions);
+        }
+
+
+    }
+
+    @NotNull
+    private Supplier<Term> concDT(Term pattern, ArrayHashSet<Event> solutions) {
+        Term p;
+        int ss = solutions.size();
+        if (ss == 0)
+            p = pattern;
+        else if (ss == 1) {
+            p = solutions.first().id;
+        } else {
+            p = solutions.get(random()).id;
+            //TODO
+            //find the most common non-XTERNAL containing solution term result
+        }
+        long[] o = join.occurrence(d.task, d.belief);
+        return ()->{
+            d.concOcc[0] = o[0];
+            d.concOcc[1] = o[1];
+            return p;
+        };
+    }
+
+    @NotNull
+    private Supplier<Term> concOccAndDT(Term pattern, ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss == 0) {
             return () -> solveRaw(pattern);
@@ -981,24 +1016,53 @@ public class Occurrify extends TimeGraph {
 
     public enum TaskTimeMerge {
 
-        /**
-         * for unprojected truth rules;
-         * result should be left-aligned (relative) to the task's start time
-         */
         Task() {
             @Override
             @Nullable long[] occurrence(Task task, Task belief) {
                 return new long[]{task.start(), task.end()};
+            }
+
+            @Override
+            public boolean occOverride() {
+                return true;
+            }
+        },
+
+        /**
+         * for unprojected truth rules;
+         * result should be left-aligned (relative) to the task's start time
+         */
+        TaskRelative() {
+            @Override
+            @Nullable long[] occurrence(Task task, Task belief) {
+                return new long[]{task.start(), task.end()};
+            }
+            @Override
+            public boolean projectBeliefToTask() {
+                return false; //disables projection for temporal induction rules
+            }
+            @Override
+            public boolean occOverride() {
+                return true;
             }
         },
         /**
          * for unprojected truth rules;
          * result should be left-aligned (relative) to the belief's start time
          */
-        Belief() {
+        BeliefRelative() {
             @Override
             @Nullable long[] occurrence(Task task, Task belief) {
                 return new long[]{belief.start(), belief.end()};
+            }
+
+            @Override
+            public boolean projectBeliefToTask() {
+                return false; //disables projection for temporal induction rules
+            }
+            @Override
+            public boolean occOverride() {
+                return true;
             }
         },
 
@@ -1038,6 +1102,13 @@ public class Occurrify extends TimeGraph {
             return term;
         }
 
+        public boolean projectBeliefToTask() {
+            return true;
+        }
+
+        public boolean occOverride() {
+            return false;
+        }
     }
 }
 //        //prefer a term which is not a repeat of the task or belief term

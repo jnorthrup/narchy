@@ -600,10 +600,10 @@ public class NAL8Test extends NALTest {
 //    @Test public void testImplBackward1() {
 //        test()
 //            
-//                //.inputAt(2, "(?x ==>+2 (b))? :|:")
-//                //.inputAt(2, "(?x &&+2 (b))? :|:")
-//                .inputAt(2, "(a). :|:")
-//                .inputAt(4, "(b). :|:")
+//                //.inputAt(2, "(?x ==>+2 b)? :|:")
+//                //.inputAt(2, "(?x &&+2 b)? :|:")
+//                .inputAt(2, "a. :|:")
+//                .inputAt(4, "b. :|:")
 //                .mustBelieve(cycles, "(UNWRITTEN)", 1f,0.81f, 0);
 //
 //    }
@@ -621,9 +621,9 @@ public class NAL8Test extends NALTest {
     public void questConjunction() {
 
         test
-                .input("((a) && (b)).")
-                .input("(a)@")
-                .mustOutput(cycles, "(b)", Op.QUEST, 0, 1f);
+                .input("(a && b).")
+                .input("a@")
+                .mustOutput(cycles, "b", Op.QUEST, 0, 1f);
 
     }
 
@@ -657,9 +657,9 @@ public class NAL8Test extends NALTest {
     public void testGoalConjunctionNegative2() {
 
         test
-                .input("(a)!")
-                .input("((a) && --(b)).")
-                .mustGoal(cycles, "(b)", 0f, 0.81f);
+                .input("a!")
+                .input("(a && --b).")
+                .mustGoal(cycles, "b", 0f, 0.81f);
     }
 
 
@@ -803,7 +803,7 @@ public class NAL8Test extends NALTest {
             .inputAt(when, "b! :|:")
             .mustGoal(when*2, subjPred[0], 1f, 0.45f,
                     (t) -> t == goalAt) //desired NOW, not at time 10 as would happen during normal decompose
-            .mustNotOutput(when*2, subjPred[0], GOAL, t -> t != goalAt)
+            //.mustNotOutput(when*2, subjPred[0], GOAL, t -> t != goalAt)
         ;
     }
 
@@ -811,30 +811,30 @@ public class NAL8Test extends NALTest {
     public void conjDecomposeGoalAfter() {
 
         test
-                .inputAt(3, "((a) &&+3 (b)). :|:")
-                .inputAt(13, "(b)! :|:")
-                .mustGoal(cycles, "(a)", 1f, 0.81f,
-                        /* 10..13 */ 10) //desired NOW, not ONLY at time 10 as would happen during normal decompose
-                .mustNotOutput(cycles, "(a)", GOAL, ETERNAL);
+                .inputAt(1, "(a &&+3 b). :|:")
+                .inputAt(5, "b! :|:")
+                //.mustGoal(cycles, "a", 1f, 0.81f, 2) //subjunctive past-perfect
+                .mustGoal(cycles, "a", 1f, 0.3f, 5) //and should want it now
+                .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
     @Test
     public void conjDecomposeGoalAfterPosNeg() {
 
         test
-                .inputAt(3, "(--(a) &&+3 (b)). :|:")
-                .inputAt(6, "(b)! :|:")
-                .mustGoal(cycles, "(a)", 0f, 0.81f, 6) //desired NOW, not at time 10 as would happen during normal decompose
-                .mustNotOutput(cycles, "(a)", GOAL, ETERNAL);
+                .inputAt(3, "(--a &&+3 b). :|:")
+                .inputAt(6, "b! :|:")
+                .mustGoal(cycles, "a", 0f, 0.81f, 6) //desired NOW, not at time 10 as would happen during normal decompose
+                .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
     @Test
     public void implDecomposeGoalAfterPosNeg() {
 
         test
-                .inputAt(3, "(--(a) ==>+2 (b)). :|:")
-                .inputAt(5, "(b)! :|:")
-                .mustGoal(cycles, "(a)", 0f, 0.81f, 5 /* desired at same time as b since it precedes it */);
-                //.mustNotOutput(cycles, "(a)", GOAL, t -> t == ETERNAL || t == 5);
+                .inputAt(3, "(--a ==>+2 b). :|:")
+                .inputAt(5, "b! :|:")
+                .mustGoal(cycles, "a", 0f, 0.81f, 5 /* desired at same time as b since it precedes it */);
+                //.mustNotOutput(cycles, "a", GOAL, t -> t == ETERNAL || t == 5);
     }
 
     @Test
@@ -842,10 +842,10 @@ public class NAL8Test extends NALTest {
 
         test
                 .log()
-                .inputAt(3, "((a) &&+3 --(b)). :|:")
-                .inputAt(6, "--(b)! :|:")
-                .mustGoal(16, "(a)", 1f, 0.81f, (t) -> t >= 6) //since b is not desired now, it should reverse predict the goal of (a)
-                .mustNotOutput(16, "(a)", GOAL, ETERNAL);
+                .inputAt(3, "(a &&+3 --b). :|:")
+                .inputAt(6, "--b! :|:")
+                .mustGoal(16, "a", 1f, 0.81f, (t) -> t >= 6) //since b is not desired now, it should reverse predict the goal of a
+                .mustNotOutput(16, "a", GOAL, ETERNAL);
     }
 
     @Test
@@ -901,11 +901,11 @@ public class NAL8Test extends NALTest {
     public void questImplDt() {
 
         test
-                .inputAt(0, "((a),(b)).") //to create termlinks
-                .inputAt(0, "(a). :|:")
-                .inputAt(4, "(b)@ :|:")
+                .inputAt(0, "(a,b).") //to create termlinks
+                .inputAt(0, "a. :|:")
+                .inputAt(4, "b@ :|:")
                 //TODO needs a 'mustAsk' condition
-                .mustOutput( cycles, "((b) ==>-4 (a))", QUESTION, 0f, 1f, 0f, 1f, 4);
+                .mustOutput( cycles, "(b ==>-4 a)", QUESTION, 0f, 1f, 0f, 1f, 4);
     }
 //
 //    @Test

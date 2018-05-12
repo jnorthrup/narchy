@@ -295,26 +295,27 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong, Time:Task)
         //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-        //X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN)
+        X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:StrongN, Time:Task)
+            //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak)
     X, C, eventOfNeg(C,X) |- (--,conjWithout(C,--X)), (Goal:Weak)
 
     //goal contained in conjunction/impl, weakly desire the entire conj; guilt by association
-    X, C, eventOf(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTask)
-        X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTask)
-          X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskPN)
-    X, C, eventOfNeg(C,X)   |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
-        X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTask)
-          X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskPN)
-    X, C, eventOf(C,X)      |- (--,polarize(C,task)), (Goal:WeakDepolarizedTaskN)
-        X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskN)
-          X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTaskNN)
-    X, C, eventOfNeg(C,X)   |- polarize(C,task), (Goal:WeakDepolarizedTaskN)
-        X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskN)
-          X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskNN)
+//    X, C, eventOf(C,X)      |- polarize(C,task), (Goal:WeakDepolarizedTask)
+//        X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTask)
+//          X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskPN)
+//    X, C, eventOfNeg(C,X)   |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
+//        X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTask)
+//          X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskPN)
+//    X, C, eventOf(C,X)      |- (--,polarize(C,task)), (Goal:WeakDepolarizedTaskN)
+//        X, (A==>C), eventOf(C,X)      |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskN)
+//          X, (A==>C), eventOf(C,X)      |- polarize(A,task), (Goal:WeakDepolarizedTaskNN)
+//    X, C, eventOfNeg(C,X)   |- polarize(C,task), (Goal:WeakDepolarizedTaskN)
+//        X, (A==>C), eventOfNeg(C,X)   |- polarize(A,task), (Goal:WeakDepolarizedTaskN)
+//          X, (A==>C), eventOfNeg(C,X)   |- (--,polarize(A,task)), (Goal:WeakDepolarizedTaskNN)
 
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
     //X, C, eventOfNeg(C,X) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)

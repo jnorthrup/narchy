@@ -633,7 +633,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : "_";
         String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : "_";
 
-        boolean projectBeliefToTask = time != Occurrify.TaskTimeMerge.Task && time !=Occurrify.TaskTimeMerge.Belief; //TODO make method in the enum
+        boolean projectBeliefToTask = time.projectBeliefToTask();
 
         FasterList<Term> args = new FasterList(4);
         args.add(intern($.the(beliefLabel), index));
