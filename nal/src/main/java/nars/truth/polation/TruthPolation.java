@@ -211,10 +211,11 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
             float diff = dtDiff(a, b);
             if (!Float.isFinite(diff))
                 return 0; //impossible
-            if (diff > 0)
-                differenceFactor = (float) Param.evi(1f, diff,
-                        Math.max(1,dur) /* cant be zero */); //proport
-            else {
+            if (diff > 0) {
+                differenceFactor = (float) Param.evi(1f,
+                        diff / 2f /* /2 since it is shared between the two */,
+                        Math.max(1, dur) /* cant be zero */); //proport
+            } else {
                 //throw new RuntimeException("terms are different but no dt differnece?");
                 //TODO why
                 differenceFactor = 1f;
@@ -222,8 +223,15 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
             Term finalFirst = first;
             Term finalSecond = second;
-            float e1 = (float) sumOfFloat(x -> x.task.term().equals(finalFirst) ? x.evi : 0);
-            float e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.evi : 0);
+            float e1, e2;
+            if(size() > 2) {
+                //HACK this may be unfair if more than 2 terms were actually interpolated this way but i dont think this happens
+                e1 = (float) sumOfFloat(x -> x.task.term().equals(finalFirst) ? x.evi : 0);
+                e2 = (float) sumOfFloat(x -> x.task.term().equals(finalSecond) ? x.evi : 0);
+            } else {
+                e1 = get(0).evi;
+                e2 = get(1).evi;
+            }
             float firstProp = e1 / (e1 + e2);
             Term term = Revision.intermpolate(first, second, firstProp, nar);
 

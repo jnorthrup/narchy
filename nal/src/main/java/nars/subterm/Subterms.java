@@ -841,6 +841,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
 
+        //TODO sort the defferals by max/avg complexity, trying the easiest first
+
         if (deferredPairs!=null) {
             //optional: sort the pairs by complexity, simplest comparisons first to pessimistically fail early
             while (dynPairs > 0) {
@@ -917,7 +919,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 }
 
                 if (u.constant(sub(0)) && u.constant(sub(1)))
-                    return false; //probably impossible
+                    return false; //probably impossible, CHECK
                 else {
                     //is this necessary? seems to be sometimes
                     u.termutes.add(new CommutivePermutations(this, y));
@@ -1015,26 +1017,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return fxs.toArrayRecycled(Term[]::new);
     }
 
-    /**
-     * extracts a certain subset of the terms according to a paired count map
-     */
-    default Term[] termsExcept(Map<Term, byte[]> except, boolean loOrHi) {
-        FasterList<Term> fxs = new FasterList<>(subs());
-        forEach(t -> {
-            byte[] u = except.get(t);
-            if (u != null) {
-                byte remain = u[loOrHi ? 0 : 1];
-                if (remain > 0) {
-                    //decrement count and skip this one
-                    u[loOrHi ? 0 : 1]--;
-                    return;
-                }
-            }
-
-            fxs.add(t);
-        });
-        return fxs.toArrayRecycled(Term[]::new);
-    }
+//    /**
+//     * extracts a certain subset of the terms according to a paired count map
+//     */
+//    default Term[] termsExcept(Map<Term, byte[]> except, boolean loOrHi) {
+//        FasterList<Term> fxs = new FasterList<>(subs());
+//        forEach(t -> {
+//            byte[] u = except.get(t);
+//            if (u != null) {
+//                byte remain = u[loOrHi ? 0 : 1];
+//                if (remain > 0) {
+//                    //decrement count and skip this one
+//                    u[loOrHi ? 0 : 1]--;
+//                    return;
+//                }
+//            }
+//
+//            fxs.add(t);
+//        });
+//        return fxs.toArrayRecycled(Term[]::new);
+//    }
 //    /** extracts a certain subset of the terms according to a paired count map */
 //    default Term[] termsExcept(ObjectShortHashMap<Term> except, boolean loOrHi) {
 //        FasterList<Term> fxs = new FasterList<>(subs());

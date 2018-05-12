@@ -5,6 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.exe.Loop;
 import jcog.net.UDPeer;
+import jcog.util.Grok;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
@@ -22,6 +23,8 @@ public class SpaceLog {
     final Logger logger;
 
     final UDPeer udp;
+
+    final Grok grok = Grok.all();
 
     public SpaceLog() throws IOException {
         this(0);
@@ -43,13 +46,19 @@ public class SpaceLog {
         try {
             Object x = Util.fromBytes(data, Object.class);
             //JsonNode x = Util.msgPackMapper.readTree(data);
-            logger.info("recv: {} {}", m.from, x);
+            logger.info("recv: {}\n\t{}", m.from, x);
         } catch (IOException e) {
-            logger.info("recv: {} {}", m.from, m);
+            //try to interpret it via UTF-8 String
+            String s = new String(data);
+            Grok.Match ms = grok.capture(s);
+            if (!ms.isNull()) {
+                logger.info("recv: {}\n{}", m.from, ms.toMap());
+            }
         }
     }
 
     protected void gui() {
+
         Timeline2D.SimpleTimelineModel dummyModel = new Timeline2D.SimpleTimelineModel();
         dummyModel.add(new Timeline2D.SimpleEvent("x", 0, 1));
         dummyModel.add(new Timeline2D.SimpleEvent("y", 1, 3));
@@ -84,6 +93,8 @@ public class SpaceLog {
 
         @Override
         public void run() {
+            //echo -n "hello" >/dev/udp/localhost/44416
+
             try {
                 out.tellSome("my time is " + new Date(), 3, false);
             } catch (JsonProcessingException e) {

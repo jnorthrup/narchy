@@ -372,7 +372,9 @@ public class UDPeer extends UDP {
 
         final byte[] inputArray = data;
 
-        //TODO verification
+
+        //TODO verification and add an overridable handler for accepting the unrecognized input (to try another decode method)
+
         Msg m = new Msg(data, len);
         if (/*m == null || */m.id() == me)
             return;

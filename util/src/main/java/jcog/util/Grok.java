@@ -502,19 +502,31 @@ public class Grok implements Serializable {
         return namedRegexCollection.get(id);
     }
 
-    /**
-     * Get the full collection of the named regex.
-     *
-     * @return named RegexCollection
-     */
-    public Map<String, String> getNamedRegexCollection() {
-        return namedRegexCollection;
-    }
+//    /**
+//     * Get the full collection of the named regex.
+//     *
+//     * @return named RegexCollection
+//     */
+//    public Map<String, String> getNamedRegexCollection() {
+//        return namedRegexCollection;
+//    }
 
-    private static Grok withThe(String... patternLibs) {
+    public static Grok withThe(String... patternLibs) {
         Grok g = new Grok();
         for (String s : patternLibs) {
             g.addPatterns(new URLReader(Grok.class.getClassLoader().getResource("patterns/" + s)));
+        }
+        return g;
+    }
+    public static Grok all() {
+        Grok g = new Grok();
+        try {
+            File f = new File(Grok.class.getClassLoader().getResource("patterns").toURI());
+            for (File e : f.listFiles()) {
+                g.addPatterns(new FileReader(e));
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
         return g;
     }
@@ -878,7 +890,7 @@ public class Grok implements Serializable {
 
     }
 
-    static class Match {
+    public static class Match {
 
         private String subject; // texte
         private final Map<String, Object> capture;
@@ -1144,7 +1156,7 @@ public class Grok implements Serializable {
          *
          * @return boolean
          */
-        boolean isNull() {
+        public boolean isNull() {
             return this.match == null;
         }
 
