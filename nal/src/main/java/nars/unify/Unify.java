@@ -330,11 +330,9 @@ public abstract class Unify extends Versioning implements Subst {
      * returns true if the assignment was allowed, false otherwise
      * args should be non-null. the annotations are removed for perf reasons
      */
-    public final boolean putXY(final Term x, Term y) {
-        if (!(x instanceof Variable))
-            throw new UnsupportedOperationException("unification substitutions limited to variables");
+    public final boolean putXY(final Variable x, Term y) {
 
-        if (x instanceof Variable && y.containsRecursively(x)) {
+        if (y.containsRecursively(x)) {
             //create a variation of y with a new unique unnormalized variable
 //            if (x instanceof Variable) {
 //                Op xo = x.op();

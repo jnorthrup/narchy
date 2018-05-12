@@ -16,7 +16,6 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.task.NALTask;
 import nars.task.Revision;
-import nars.task.Tasked;
 import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeConfRange;
@@ -653,11 +652,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private void delete(Space<TaskRegion> treeRW, Task x, NAR nar) {
         treeRW.remove(x);
-        eternalize(x,(added)->{}, nar);
-        //w.delete();
+        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS)
+            eternalize(x, nar);
+        //x.delete();
     }
 
-    private void eternalize(Task x, Consumer<Tasked> added, NAR nar) {
+    private void eternalize(Task x, NAR nar) {
         if ((x instanceof SignalTask)) {
             //ignore for now
             return;

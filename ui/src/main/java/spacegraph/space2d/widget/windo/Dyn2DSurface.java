@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -68,18 +69,15 @@ public class Dyn2DSurface extends Wall implements Animated {
      * increase for more physics precision
      */
     final int solverIterations = 8;
-
-    @Override
-    public boolean tangible() {
-        return true;
-    }
-
     /**
      * TODO use more efficient graph representation
      */
     final MapNodeGraph<Surface, Wire> links = new MapNodeGraph();
     final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
+    final AtomicBoolean busy = new AtomicBoolean(false);
     private final float linearDampening = 0.9f;
+    private On on;
+    private float scaling = 1f;
     FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
 
         final Body2D ground = W.addBody(new BodyDef(BodyType.STATIC),
@@ -180,8 +178,6 @@ public class Dyn2DSurface extends Wall implements Animated {
         }
 
     };
-    private On on;
-    private float scaling = 1f;
 
     public Dyn2DSurface() {
         super();
@@ -193,6 +189,11 @@ public class Dyn2DSurface extends Wall implements Animated {
         W.setAllowSleep(true);
         W.setContinuousPhysics(true);
         //W.setSubStepping(true);
+    }
+
+    @Override
+    public boolean tangible() {
+        return true;
     }
 
     /**
@@ -219,7 +220,12 @@ public class Dyn2DSurface extends Wall implements Animated {
     @Override
     public boolean animate(float dt) {
 
-        W.step(dt, solverIterations, solverIterations);
+        if (busy.compareAndSet(false, true))
+            try {
+                W.step(dt, solverIterations, solverIterations);
+            } finally {
+                busy.set(false);
+            }
 
         return true;
     }
@@ -233,7 +239,6 @@ public class Dyn2DSurface extends Wall implements Animated {
         long now = System.currentTimeMillis();
 
         //gl.glPushMatrix();
-
 
 
         w.joints(j -> drawJoint(j, gl, now));
@@ -280,7 +285,7 @@ public class Dyn2DSurface extends Wall implements Animated {
                 joint.getAnchorB(v2);
                 break;
         }
-        Draw.line(g, v1.x*scaling, v1.y*scaling, v2.x*scaling, v2.y*scaling);
+        Draw.line(g, v1.x * scaling, v1.y * scaling, v2.x * scaling, v2.y * scaling);
 
     }
 
@@ -325,14 +330,14 @@ public class Dyn2DSurface extends Wall implements Animated {
                         //Point p = getPoint(v);
                         //int wr = (int) (r * zoom);
                         //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
-                        Draw.circle(gl, v, true, r*scaling, 9);
+                        Draw.circle(gl, v, true, r * scaling, 9);
                         break;
                     case EDGE:
                         EdgeShape edge = (EdgeShape) shape;
                         Tuple2f p1 = edge.m_vertex1;
                         Tuple2f p2 = edge.m_vertex2;
                         gl.glLineWidth(4f);
-                        Draw.line(gl, p1.x*scaling, p1.y*scaling, p2.x*scaling, p2.y*scaling);
+                        Draw.line(gl, p1.x * scaling, p1.y * scaling, p2.x * scaling, p2.y * scaling);
                         break;
                 }
             }
@@ -648,16 +653,16 @@ public class Dyn2DSurface extends Wall implements Animated {
 
             body.updateFixtures(f -> {
 
-                float cx = bounds.cx()/scaling;
-                float cy = bounds.cy()/scaling;
-                float thick = Math.min(bounds.w, bounds.h) / 16f/scaling;
+                float cx = bounds.cx() / scaling;
+                float cy = bounds.cy() / scaling;
+                float thick = Math.min(bounds.w, bounds.h) / 16f / scaling;
 
                 float W = bounds.w / scaling;
                 float H = bounds.h / scaling;
-                ((PolygonShape)top.shape).setAsBox(W, thick, new v2(cx/2, +H), 0);
-                ((PolygonShape)right.shape).setAsBox(thick, H, new v2(+W, cy/2), 0);
-                ((PolygonShape)bottom.shape).setAsBox(W, thick, new v2(cx, 0), 0);
-                ((PolygonShape)left.shape).setAsBox(thick, H, new v2(0, cy), 0);
+                ((PolygonShape) top.shape).setAsBox(W, thick, new v2(cx / 2, +H), 0);
+                ((PolygonShape) right.shape).setAsBox(thick, H, new v2(+W, cy / 2), 0);
+                ((PolygonShape) bottom.shape).setAsBox(W, thick, new v2(cx, 0), 0);
+                ((PolygonShape) left.shape).setAsBox(thick, H, new v2(0, cy), 0);
             });
 
         }
@@ -754,35 +759,36 @@ public class Dyn2DSurface extends Wall implements Animated {
 
             PhyWindow x = spawn(target, scale, targetAspect);
 
+            W.invoke(() -> {
+                Tuple2f myWeldLocal, theirWeldLocal;
+                RayCastInput input = new RayCastInput();
+                RayCastOutput output = new RayCastOutput();
+                {
+                    input.p2.set(0, 0);
+                    float r = radius() * 2;
+                    input.p1.set(0 + normal.x * r, 0 + normal.y * r); //looking back to center
+                    input.maxFraction = 1.0f;
 
-            Tuple2f myWeldLocal, theirWeldLocal;
-            RayCastInput input = new RayCastInput();
-            RayCastOutput output = new RayCastOutput();
-            {
-                input.p2.set(0, 0);
-                float r = radius() * 2;
-                input.p1.set(0 + normal.x * r, 0 + normal.y * r); //looking back to center
-                input.maxFraction = 1.0f;
+                    boolean hit = body.fixtures.raycast(output, input, 0);
+                    assert (hit);
+                    Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
+                    myWeldLocal = hitPoint;//.sub(body.pos);
+                }
+                {
+                    input.p2.set(0, 0);
+                    float r = x.radius() * 2;
+                    input.p1.set(0 - normal.x * r, 0 - normal.y * r); //looking back to center
+                    input.maxFraction = 1.0f;
 
-                boolean hit = body.fixtures.raycast(output, input, 0);
-                assert (hit);
-                Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
-                myWeldLocal = hitPoint;//.sub(body.pos);
-            }
-            {
-                input.p2.set(0, 0);
-                float r = x.radius() * 2;
-                input.p1.set(0 - normal.x * r, 0 - normal.y * r); //looking back to center
-                input.maxFraction = 1.0f;
+                    boolean hit = x.body.fixtures.raycast(output, input, 0);
+                    assert (hit);
+                    Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
+                    theirWeldLocal = hitPoint;
+                }
 
-                boolean hit = x.body.fixtures.raycast(output, input, 0);
-                assert (hit);
-                Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
-                theirWeldLocal = hitPoint;
-            }
+                WeldJoint j = weld(x, myWeldLocal, theirWeldLocal);
 
-            WeldJoint j = weld(x, myWeldLocal, theirWeldLocal);
-
+            });
             return x;
         }
 
@@ -986,7 +992,7 @@ public class Dyn2DSurface extends Wall implements Animated {
             RectFloat2D physBounds = null;
 
             public WallBody(float cx, float cy) {
-                super(new BodyDef(BodyType.DYNAMIC, new v2(cx/scaling, cy/scaling)), Dyn2DSurface.this.W);
+                super(new BodyDef(BodyType.DYNAMIC, new v2(cx / scaling, cy / scaling)), Dyn2DSurface.this.W);
 
                 setData(this);
 
@@ -1022,7 +1028,7 @@ public class Dyn2DSurface extends Wall implements Animated {
                     }
 
 
-                    v2 target = new v2(r.cx()/ scaling, r.cy()/ scaling);
+                    v2 target = new v2(r.cx() / scaling, r.cy() / scaling);
 
                     if (setTransform(target, 0, Spatialization.EPSILONf))
                         setAwake(true);
@@ -1041,7 +1047,7 @@ public class Dyn2DSurface extends Wall implements Animated {
 
                 float w = w(), h = h(); //HACK re-use the known width/height assumes that the physics engine cant change the shape's size
 
-                RectFloat2D r = RectFloat2D.XYWH(p.x*scaling, p.y*scaling, w, h);
+                RectFloat2D r = RectFloat2D.XYWH(p.x * scaling, p.y * scaling, w, h);
                 if (!r.equals(physBounds, Spatialization.EPSILONf)) {
                     pos(physBounds = r);
                 }

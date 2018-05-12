@@ -4,6 +4,7 @@ import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.AnimatorBase;
+import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
 import jcog.event.On;
@@ -23,7 +24,9 @@ import java.util.function.Consumer;
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
-    /** JOGL default is 10ms; we dont need/want it that often */
+    /**
+     * JOGL default is 10ms; we dont need/want it that often
+     */
     private static final long EDT_POLL_PERIOD_MS = 20;
 
 
@@ -36,18 +39,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * update loop
      */
     final InstrumentedLoop updater;
+    final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
     public float renderFPS = 30f;
-    protected float updateFPS = 30f;
-
     public volatile GLWindow window;
     public GL2 gl;
     /**
      * update time since last cycle (S)
      */
     public float dtS = 0;
-
-    final ConcurrentLinkedQueue<Consumer<JoglWindow>> preRenderTasks = new ConcurrentLinkedQueue();
-
+    protected float updateFPS = 30f;
     /**
      * render loop
      */
@@ -247,54 +247,60 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             window.getScreen().getDisplay().getEDTUtil().setPollPeriod(EDT_POLL_PERIOD_MS);
 
 
+            windows.add(this);
+
+            window.addGLEventListener(this);
+            window.addWindowListener(this);
 
 
-                windows.add(this);
+            //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
+            W.setTitle(title);
+            setSize(w, h);
+            if (x != Integer.MIN_VALUE) {
+                setPosition(x, y);
+            }
 
-                window.addGLEventListener(this);
-                window.addWindowListener(this);
-
-
-                //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
-                W.setTitle(title);
-                setSize(w, h);
-                if (x != Integer.MIN_VALUE) {
-                    setPosition(x, y);
-                }
-                setVisible(true);
-
+            setVisible(true);
 
         });
+
+        Thread.yield();
+
+        //HACK block until GL initialized
+        while (gl == null) {
+            Util.sleep(10);
+        }
 
     }
 
     private void setVisible(boolean b) {
-        if (window == null || window.isVisible()!=b)
-            pre((s)->s.window.setVisible(b));
+        if (window == null || window.isVisible() != b)
+            pre((s) -> s.window.setVisible(b));
     }
 
     public void setPosition(int x, int y) {
 
         //TODO buffer subsequent setPositions only applying the final one on the EDT before frame render
-            pre((s) -> {
-                if (s.window.getX()!=x || s.window.getY()!=y) {
-                    s.window.setPosition(x, y);
-                }
-            });
+        pre((s) -> {
+            if (s.window.getX() != x || s.window.getY() != y) {
+                s.window.setPosition(x, y);
+            }
+        });
 
     }
+
     public void setSize(int w, int h) {
 
         //TODO buffer subsequent setSize only applying the final one on the EDT before frame render
-        if (window == null || window.getWidth()!=w || window.getHeight()!=h) {
+        if (window == null || window.getWidth() != w || window.getHeight() != h) {
             pre((s) -> s.window.setSize(w, h));
         }
     }
 
     @Override
     public final void init(GLAutoDrawable drawable) {
-        this.gl = window.getGL().getGL2();
 
+        GL2 gl = drawable.getGL().getGL2();
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
             //gl.setSwapInterval(0); //0=disable vsync
@@ -310,6 +316,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         Draw.init(gl);
 
         init(gl);
+
+        this.gl = window.getGL().getGL2();
 
         updater.runFPS(updateFPS);
 
@@ -413,7 +421,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                            }
 
                             //if (!window.isSurfaceLockedByOtherThread())
-                                impl.display(drawables, ignoreExceptions, printExceptions);
+                            impl.display(drawables, ignoreExceptions, printExceptions);
                         } catch (final UncaughtAnimatorException dre) {
                             //quitIssued = true;
                             dre.printStackTrace();

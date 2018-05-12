@@ -75,11 +75,9 @@ public interface Variable extends Atomic {
         Term y = u.resolve(_y);
         Term x = u.resolve(this);
 
-        if (equals(y)) return true;
-
-        if (x instanceof Variable)
-            return ((Variable)x).unifyVar(y, u, true);
-        else
+        if (x instanceof Variable) {
+            return x.equals(y) || ((Variable) x).unifyVar(y, u, true);
+        } else
             return x.unify(y, u);
     }
 
@@ -88,9 +86,9 @@ public interface Variable extends Atomic {
      *    #1 from x  is a different instance than  #1 from y
      */
     default boolean unifyVar(Term y, Unify u, boolean forward) {
-        final Term x = this;
+        final Variable x = this;
         if (y instanceof Variable) {
-            return unifyVar((Variable)x, ((Variable)y), forward, u);
+            return unifyVar(x, ((Variable)y), forward, u);
         } else {
             return u.putXY(x, y);
         }
@@ -155,8 +153,14 @@ public interface Variable extends Atomic {
 
     @Override
     default boolean unifyReverse(Term x, Unify u) {
+        if (!u.varSymmetric)
+            return false;
+
+        Term y = u.resolve(this);
+        if (y!=this)
+            return y.unify(x, u); //warning loses the symmetry being maintained by the forward/reverse parameter
+
         return
-            u.varSymmetric &&
             u.matchType(op()) &&
             unifyVar(x, u, false);
     }

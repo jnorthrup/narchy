@@ -571,6 +571,12 @@ public class Dynamics2D {
         //        });
         //
         //        invokeLater(()->{
+
+
+        Runnable next;
+        while ((next = queue.poll()) != null)
+            next.run();
+
         invoke(() -> {
 
             realtimeMS = System.currentTimeMillis();
@@ -646,13 +652,11 @@ public class Dynamics2D {
                 f.smash(smasher, dt);
             });
             smasher.fractures.clear();
+
+
         });
 
-        synchronized (queue) {
-            Runnable next;
-            while ((next = queue.poll()) != null)
-                next.run();
-        }
+
 
     }
 
@@ -978,7 +982,7 @@ public class Dynamics2D {
 
         // Size the island for the worst case.
         int bodyCount = bodies.size();
-        island.init(bodyCount, contactManager.m_contactCount, jointCount,
+        island.init(bodyCount + 1, contactManager.m_contactCount, jointCount,
                 contactManager.contactListener);
 
 

@@ -68,7 +68,9 @@ public class WidgetTest {
 
         public DummyConsole() {
             super(15, 15);
-            new Thread(this).start();
+            Thread tt = new Thread(this);
+            tt.setDaemon(true);
+            tt.start();
         }
 
         @Override
@@ -83,6 +85,7 @@ public class WidgetTest {
                 }
 
                 Util.sleep(400);
+
             }
         }
     }

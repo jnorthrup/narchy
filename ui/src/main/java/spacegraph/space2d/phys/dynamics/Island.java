@@ -566,10 +566,9 @@ public class Island {
     }
 
     void add(Body2D body) {
-        assert (m_bodyCount < m_bodyCapacity);
+        assert (m_bodyCount <= m_bodyCapacity): "island overcapacity: " + m_bodyCount + "/" + m_bodyCapacity;
         body.island = m_bodyCount;
-        bodies[m_bodyCount] = body;
-        ++m_bodyCount;
+        bodies[m_bodyCount++] = body;
     }
 
     void add(Contact contact) {

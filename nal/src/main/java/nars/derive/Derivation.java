@@ -364,6 +364,13 @@ public class Derivation extends PreDerivation {
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
+    @Override
+    public Term resolve(Term x) {
+        return x instanceof Variable ?
+                super.resolve(x) :
+                x; //only concerned about variables
+    }
+
     /**
      * setup for a new derivation.
      * returns false if the premise is invalid to derive

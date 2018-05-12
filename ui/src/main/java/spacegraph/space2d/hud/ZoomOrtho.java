@@ -26,6 +26,7 @@ public class ZoomOrtho extends Ortho {
 
     public ZoomOrtho(Surface content) {
         super();
+
         this.content = content;
         this.surface = hud;
 

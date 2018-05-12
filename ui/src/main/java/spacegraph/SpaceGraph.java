@@ -87,7 +87,7 @@ public enum SpaceGraph { ;
 ////                0.1f
 ////        ));
 
-        new SpaceGraphFlat(
+        SpaceGraphFlat g = new SpaceGraphFlat(
                 new ZoomOrtho(s) {
 
 
@@ -107,7 +107,10 @@ public enum SpaceGraph { ;
                     }
                 }
                 //,hud
-        ).show(width, height);
+        );
+        g.show(width, height);
+
+
 
         //win.setUndecorated(true);
         return s;
