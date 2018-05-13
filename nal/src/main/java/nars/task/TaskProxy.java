@@ -31,6 +31,11 @@ public class TaskProxy implements Task {
         //ignore
     }
 
+    /** produce a concrete, non-proxy clone */
+    public Task clone() {
+        return Task.clone(this);
+    }
+
     @Override
     public boolean isCyclic() {
         return task.isCyclic();

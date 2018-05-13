@@ -186,11 +186,16 @@ public class Occurrify extends TimeGraph {
         if (!autoNeg && (task.term().hasAny(NEG) || bb.hasAny(NEG))) {
             autoNeg = true;
         }
+
         this.autoNeg(autoNeg);
 
-        if (!single) {
+        if (single) {
+            know(task, d.taskAt);
+        } else {
 
-            if (task.isGoal() && task.isEternal() && !belief.isEternal()) {
+            boolean taskEte = task.isEternal();
+            boolean beliefEte = belief.isEternal();
+            if (taskEte && !beliefEte) {
                 //if belief is non-eternal against an eternal goal, pretend the goal occurrs now to provide an overriding time for the belief
                 know(task, d.beliefAt);
             } else {
@@ -198,16 +203,12 @@ public class Occurrify extends TimeGraph {
             }
 
             if (!d.belief.equals(d.task)) {
-//                if (bb.op().temporal && task.isGoal() && !task.isEternal()) {
-//                    //allow non-eternal goal occurrence to override any temporal belief occurrence
-//                    //but allow event occurrence
-//                    know(bb);
-//                } else {
+                if (beliefEte && !taskEte) {
+                    know(belief, d.taskAt);
+                } else {
                     know(belief, d.beliefAt);
-//                }
+                }
             }
-        } else {
-            know(task, d.taskAt);
         }
 
         return this;
@@ -456,6 +457,24 @@ public class Occurrify extends TimeGraph {
 
         },
 
+        /** unprojected */
+        Relative() {
+            @Override
+            public Pair<Term, long[]> solve(Derivation d, Term x) {
+                return solveOccDT(d, x, d.occ(x));
+            }
+
+            @Override
+            long[] occurrence(Task task, Task belief) {
+                return null; //if it hasnt solved it by now, dont
+            }
+
+            @Override
+            public boolean projectBeliefToTask() {
+                return false; //disables projection for temporal induction rules
+            }
+
+        },
         /**
          * result occurs in the intersecting time interval, if exists; otherwise fails
          */

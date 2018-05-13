@@ -23,7 +23,7 @@ public class NAL5Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(20);
         return n;
     }
 
@@ -674,8 +674,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("--((&&,x1,x2,a) ==> c)");
         tester.believe("--((&&,y1,y2,a) ==> c)");
-        tester.mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
-        tester.mustBelieve(cycles, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
+        tester.mustBelieve(cycles * 2, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
+        tester.mustBelieve(cycles * 2, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
     }
 
     @Test

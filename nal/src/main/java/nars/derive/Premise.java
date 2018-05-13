@@ -13,12 +13,11 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
-import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.unify.UnifySubst;
-import nars.time.Tense;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -181,7 +180,7 @@ public class Premise {
 
                         if (!answerTable.isEmpty()) {
                             //try task start/end time
-                            Task match = answerTable.match(taskStart, taskEnd, beliefTerm, beliefFilter, n);
+                            Task match = answerTable.answer(taskStart, taskEnd, beliefTerm, beliefFilter, n);
                             if (!validMatch(match)) match = null;
                             if (match == null) {
 
@@ -190,13 +189,13 @@ public class Premise {
                                     long[] focus = n.timeFocus();
                                     if (focus[0] != taskStart && focus[1] != taskEnd) {
                                         //CURRENT MOMENT (stamp filtered)
-                                        belief = answerTable.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
+                                        belief = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
                                         if (!validMatch(match)) match = null; //force single
                                     }
                                 }
 
                                 if (match == null) {
-                                    match = answerTable.match(taskStart, taskEnd, beliefTerm, null, n); //retry without stamp filter
+                                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n); //retry without stamp filter
                                     if (!validMatch(match)) match = null;
                                 }
                             }
@@ -205,7 +204,7 @@ public class Premise {
                                 assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
                                 //add the answer to the derived tasks for eventual input
-                                ((NALTask)match).causeMerge(task);
+                                //((NALTask)match).causeMerge(task);
                                 d.add(match);
 
                                 if (match.isBelief()) {

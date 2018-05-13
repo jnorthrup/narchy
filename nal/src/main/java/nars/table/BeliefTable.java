@@ -4,6 +4,7 @@ import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
+import nars.task.TaskProxy;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -157,6 +158,19 @@ public interface BeliefTable extends TaskTable {
         }
 
     };
+
+    /** matches, and projects to the specified time-range if necessary */
+    default Task answer(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
+        Task m = match(start, end, template, filter, nar);
+        if (m == null)
+            return null;
+        if (m.containedBy(start,end))
+            return m;
+        Task t = Task.project(m, start, end, nar, false);
+        if (t instanceof TaskProxy)
+            t = ((TaskProxy)t).clone();
+        return t;
+    }
 
 
 //    /** 2-element array containing running min/max range accumulator */

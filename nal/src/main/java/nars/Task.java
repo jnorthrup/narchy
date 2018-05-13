@@ -373,6 +373,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
+    @Nullable static Task clone(Task x) {
+        return clone(x, x.punc());
+    }
+
     @Nullable
     static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
         return clone(x, newContent, newTruth, newPunc, x.creation(), x.start(), x.end());
@@ -529,6 +533,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //        );
 
     }
+
+
 
     @Override
     default float freqMin() {
@@ -947,7 +953,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * ex: an entry might be a String describing a change in the story/history
      * of the Task and the reason for it.
      */
-    @NotNull
     default Task log(Object entry) {
         if (!Param.DEBUG_TASK_LOG)
             return this;

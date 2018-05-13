@@ -46,9 +46,6 @@ public abstract class Param {
     public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
 
 
-//    public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
-
-
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
 
     /**
@@ -61,11 +58,11 @@ public abstract class Param {
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 1.5f;
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 6;
 
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
@@ -186,7 +183,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(256, 0, 2048);
+    public final IntRange deriveTTL = new IntRange(128, 0, 2048);
 
 
     /** estimate */

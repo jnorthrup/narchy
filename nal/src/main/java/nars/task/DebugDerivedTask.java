@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DebugDerivedTask extends DerivedTask {
 
+    Object log = null;
 
     private final Task parentBelief;
     private final Task parentTask;
@@ -16,6 +17,17 @@ public class DebugDerivedTask extends DerivedTask {
         super(tc, punct, truth, start, end, d);
         this.parentTask = d._task;
         this.parentBelief = !d.single ? d._belief : null;
+    }
+
+    @Override
+    public Task log(Object entry) {
+        this.log = entry;
+        return this;
+    }
+
+    @Override
+    public @Nullable Object lastLogged() {
+        return log;
     }
 
     @Override
