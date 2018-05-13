@@ -19,12 +19,7 @@ import java.util.stream.Stream;
 public abstract class ConceptIndex {
 
 
-    public final Evaluation.TermContext functors = new Functor.FunctorResolver() {
-        @Override
-        public final Termed apply(Term term) {
-            return get(term, false);
-        }
-    };
+
     public NAR nar;
 
     /**

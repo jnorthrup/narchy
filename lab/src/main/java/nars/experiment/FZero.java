@@ -445,7 +445,7 @@ public class FZero extends NAgentX {
         actionUnipolar($.inh(id,"fwd"), true, (x)->0f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a > 0.5f) {
-                float thrust = /*+=*/ (a - 0.5f) * 2f * (8*fwdSpeed); //gas
+                float thrust = /*+=*/ (a - 0.5f) * 2f * (16*fwdSpeed); //gas
                 fz.vehicleMetrics[0][6] = thrust;
             } else
                 fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f))); //brake

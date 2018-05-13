@@ -52,7 +52,7 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
     @Override
     protected void doLayout(int dtMS) {
         final int[] lane = {0};
-        int lanes = cache.size();
+        int lanes = cellMap.cache.size();
         forEachKeySurface((e,s)->{
             long[] r = model.range(e);
             float x1 = x(r[0]);

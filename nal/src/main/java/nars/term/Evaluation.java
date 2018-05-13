@@ -54,7 +54,7 @@ public final class Evaluation {
 
     public static Set<Term> solveAll(Term x, NAR n) {
         Set<Term> all = new UnifiedSet<>(4);
-        solve(x, n.concepts.functors, (y) -> { all.add(y); return true; });
+        solve(x, n.functors, (y) -> { all.add(y); return true; });
         return !all.isEmpty() ? all : Set.of(x);
     }
 

@@ -1,5 +1,25 @@
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//        maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
+//    }
+//}
 dependencies {
     compile project(':util')
+
+    compile(group: 'org.ujmp', name: 'ujmp-core', version:
+            //'0.3.1-SNAPSHOT'
+            '0.3.0'
+    )
+    compile(group: 'org.ujmp', name: 'ujmp-ejml', version:
+            //'0.3.1-SNAPSHOT'
+            '0.3.0'
+    ) {
+        exclude(module:'ejml-core')
+    }
+    // https://mvnrepository.com/artifact/org.ejml/ejml-core
+    compile group: 'org.ejml', name: 'ejml-core', version: '0.34'
+
 
     compile group: 'com.googlecode.lanterna', name: 'lanterna', version: '3.0.0'
     compile group: 'com.jcraft', name: 'jsch', version: '0.1.54'

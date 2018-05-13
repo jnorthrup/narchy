@@ -603,8 +603,9 @@ public interface Term extends Termed, Comparable<Termed> {
         return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
     }
 
+
     default Term eval(NAR nar) {
-        return eval(nar.concepts.functors);
+        return eval(nar.functors);
     }
 
 //    default MutableSet<LongObjectPair<Term>> eventSet(long offset) {

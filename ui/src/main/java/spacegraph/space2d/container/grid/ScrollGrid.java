@@ -1,6 +1,7 @@
 package spacegraph.space2d.container.grid;
 
 import jcog.TODO;
+import jcog.data.map.CellMap;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
@@ -400,9 +401,9 @@ public class ScrollGrid<X> extends Bordering {
 
             //remove or hibernate cache entry surfaces which are not visible
             //and set the layout positions of those which are
-            cache.forEachValue(e -> {
+            cellMap.cache.forEachValue(e -> {
                 int cellID = e.key;
-                Surface s = e.surface;
+                Surface s = ((SurfaceCacheCell)e).surface;
 
                 boolean deleted = false;
                 if (s == null) { //remove the unused entry
@@ -416,7 +417,7 @@ public class ScrollGrid<X> extends Bordering {
                 }
 
                 if (deleted) {
-                    boolean removed = remove(cellID); assert(removed);
+                    boolean removed = cellMap.remove(cellID); assert(removed);
                 }
             });
 
@@ -430,7 +431,7 @@ public class ScrollGrid<X> extends Bordering {
 
             for (short sx = x1; sx < x2; sx++) {
                 for (short sy = y1; sy < y2; sy++) {
-                    CacheCell<Integer, X> e = set(sx, sy, value(sx, sy), true);
+                    SurfaceCacheCell e = (SurfaceCacheCell) set(sx, sy, value(sx, sy), true);
                     if (e!=null) {
                         Surface s = e.surface;
                         if (s!=null)
@@ -475,7 +476,7 @@ public class ScrollGrid<X> extends Bordering {
          * is a way to force rebuilding of a cell.)
          * returns if there was a change
          */
-        protected CacheCell<Integer, X> set(short x, short y, @Nullable X nextValue, boolean force) {
+        protected CellMap.CacheCell set(short x, short y, @Nullable X nextValue, boolean force) {
             if (!force && !cellVisible(x, y))
                 return null;
 

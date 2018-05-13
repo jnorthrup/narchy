@@ -782,7 +782,7 @@ public class Derivation extends PreDerivation {
         if (x == null)
             return Null;
 
-        Term y = $.func(_tlRandom, x).eval(nar.concepts.functors);
+        Term y = $.func(_tlRandom, x).eval(nar);
         if (y!=null && y.op().conceptualizable)
             return anon.put(y);
         return Null;

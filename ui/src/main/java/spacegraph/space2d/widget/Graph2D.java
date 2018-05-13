@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
+import jcog.data.map.CellMap;
 import jcog.data.pool.DequePool;
 import jcog.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -67,7 +68,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Override
     protected void paintBelow(GL2 gl) {
-        forEachValue(n -> {
+        cellMap.forEachValue(n -> {
             if (n.visible()) {
                 n.paintEdges(gl);
             }
@@ -76,7 +77,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Nullable
     protected EdgeVis<X> edgeBuilder(X target) {
-        @Nullable NodeVis<X> t = getValue(target);
+        @Nullable NodeVis<X> t = cellMap.getValue(target);
         if (t == null || !t.visible()) {
             return null;
         } else {
@@ -86,15 +87,31 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     }
 
-    public Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {
+
+    public Graph2D<X> add(Iterable<X> nodes) {
+        return update(nodes, true);
+    }
+
+    public Graph2D<X> set(Iterable<X> nodes) {
+        return update(nodes, false);
+    }
+
+    //TODO remove(Iterable...)
+
+    @Override
+    public void clear() {
+        set(List.of());
+    }
+
+    protected Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {
 
         if (parent == null)
             return this; //wait for ready
 
         Set<X> dontRemain;
 
-        if (!addOrReplace && !cache.isEmpty())
-            dontRemain = new LinkedHashSet<>(cache.keySet());
+        if (!addOrReplace && !cellMap.cache.isEmpty())
+            dontRemain = new LinkedHashSet<>(cellMap.cache.keySet());
         else
             dontRemain = null; //unused
 
@@ -103,7 +120,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                 return; //ignore nulls in the input
 
             //TODO computeIfAbsent and re-use existing model
-            CacheCell<X, NodeVis<X>> nv = compute(x, xx -> {
+            CellMap.CacheCell nv = cellMap.compute(x, xx -> {
                 if (xx == null) {
                     NodeVis<X> n = new NodeVis<>(x);
                     layout.initialize(this, n);
@@ -117,16 +134,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         });
 
         if (dontRemain!=null && !dontRemain.isEmpty()) {
-            removeAll(dontRemain);
+            cellMap.removeAll(dontRemain);
         }
 
-        forEachValue((NodeVis<X> nv) -> {
+        cellMap.forEachValue((NodeVis<X> nv) -> {
 
             List<EdgeVis<X>> edgesNext = nv.edgeOut.write();
             edgesNext.forEach(edgePool::take);
             edgesNext.clear();
 
-            layers.forEach(layer -> layer.node(this, nv, (tgt) -> {
+            layers.forEach(layer -> layer.node(nv, (tgt) -> {
                 @Nullable EdgeVis<X> ee = edgeBuilder(tgt);
                 if (ee != null) {
                     edgesNext.add(ee);
@@ -134,7 +151,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                 } else {
                     return null;
                 }
-            }));
+            }, this));
 
             nv.edgeOut.commit();
         });
@@ -153,7 +170,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         default void initialize(Graph2D<X> g, NodeVis<X> n) {
             float gw = g.w();
             float gh = g.h();
-            int count = g.cache.size();
+            int count = g.cellMap.cache.size();
             float defaultSize = (float) (Math.min(gw, gh) / Math.sqrt(count+1));
 
             n.pos(RectFloat2D.XYWH(
@@ -173,7 +190,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
          * called for each node being processed.  can edit the NodeVis
          * and generate new links from it to target nodes.
          */
-        void node(Graph2D<X> graph, NodeVis<X> node, Function<X, EdgeVis<X>> edgeBuilder);
+        void node(NodeVis<X> node, Function<X, EdgeVis<X>> edgeBuilder, Graph2D<X> graph);
 
     }
 

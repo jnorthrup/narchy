@@ -1020,7 +1020,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         //this might be overkill
         Set<ITask> yy = new UnifiedSet<>(4);
-        Evaluation.solve(x, n.concepts.functors,
+        Evaluation.solve(x, n.functors,
                 _y -> {
                     ITask y = preProcess(n, x, _y);
                     if (y!=null)

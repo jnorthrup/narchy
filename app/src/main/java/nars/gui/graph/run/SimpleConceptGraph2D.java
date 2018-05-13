@@ -53,9 +53,7 @@ public class SimpleConceptGraph2D {
             ,800, 800
         );
         DurService.on(n, (()->{
-            g.update(
-                ()->n.conceptsActive().map(PLink::get).iterator(),
-            false);
+            g.set(()->n.conceptsActive().map(PLink::get).iterator());
         }));
         n.startFPS(55f);
     }
@@ -70,7 +68,7 @@ public class SimpleConceptGraph2D {
         }
 
         @Override
-        public void node(Graph2D<Concept> gg, Graph2D.NodeVis<Concept> node, Function<Concept, Graph2D.EdgeVis<Concept>> edges) {
+        public void node(Graph2D.NodeVis<Concept> node, Function<Concept, Graph2D.EdgeVis<Concept>> edges, Graph2D<Concept> gg) {
             if (!termlinks.get())
                 return;
 
@@ -96,7 +94,7 @@ public class SimpleConceptGraph2D {
         }
 
         @Override
-        public void node(Graph2D<Concept> gg, Graph2D.NodeVis<Concept> node, Function<Concept, Graph2D.EdgeVis<Concept>> edges) {
+        public void node(Graph2D.NodeVis<Concept> node, Function<Concept, Graph2D.EdgeVis<Concept>> edges, Graph2D<Concept> gg) {
             if (!tasklinks.get())
                 return;
             node.id.tasklinks().forEach(l -> {

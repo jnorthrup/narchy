@@ -35,6 +35,7 @@ import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
+import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -1429,6 +1430,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Override public final boolean dtMergeOrChoose() {
         return dtMergeOrChoose.get();
     }
+
+
+    public final Evaluation.TermContext functors = new Functor.FunctorResolver() {
+        @Override
+        public final Termed apply(Term term) {
+            return concepts.get(term, false);
+        }
+    };
+
 
 //    /**
 //     * bins a range of values into N equal levels

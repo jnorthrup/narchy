@@ -74,9 +74,9 @@ subprojects {
 
     tasks.withType(JavaCompile) {
 
-        sourceCompatibility = targetCompatibility =
-                JavaVersion.VERSION_1_10
-                //JavaVersion.VERSION_11
+//        sourceCompatibility = targetCompatibility =
+//                JavaVersion.VERSION_1_10
+//                //JavaVersion.VERSION_11
 
         options.encoding = 'UTF-8'
         options.incremental = true // one flag, and things will get MUCH faster
