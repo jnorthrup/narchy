@@ -18,6 +18,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
 import org.apache.commons.math3.exception.MathArithmeticException;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.api.tuple.primitive.LongLongPair;
@@ -65,8 +66,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
     private boolean autoNeg = true;
 
-    /** re-used temporary breadth-first search queue */
-    private final ArrayDeque q = new ArrayDeque();
 
 
     /**
@@ -858,12 +857,19 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
     boolean bfsPush(Collection<Event> roots, Search<Event, TimeSpan> tv) {
         List<Event> created = new FasterList(roots.size());
+//        int linkCount = 0;
         for (Event r : roots) {
-            if (node(r) == null) {
+            Node<Event, TimeSpan> n;
+            if ((n = node(r)) == null) {
                 addNode(r);
                 created.add(r);
             }
+//            if (n!=null) {
+//                linkCount += ((MutableNode)n).edgeCount();
+//            }
         }
+
+        Queue<Pair<List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>>, Node<Event, TimeSpan>>> q = new ArrayDeque<>(roots.size() /* estimate TODO find good sizing heuristic */);
 
         boolean result = bfs(roots, tv, q);
 

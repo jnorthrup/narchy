@@ -8,10 +8,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 
 import java.io.PrintStream;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -162,6 +159,10 @@ public abstract class NodeGraph<N, E> {
         public final Collection<ImmutableDirectedEdge<N, E>> in;
         public final Collection<ImmutableDirectedEdge<N, E>> out;
 
+        public int edgeCount() {
+            return ins() + outs();
+        }
+
         protected static <N,E> MutableNode<N,E> withEdgeSets(N id) {
             return withEdgeSets(id, 0);
         }
@@ -185,7 +186,14 @@ public abstract class NodeGraph<N, E> {
         public Iterable<ImmutableDirectedEdge<N, E>> edges(boolean in, boolean out) {
             if (out && !in) return this.out;
             else if (!out && in) return this.in;
-            else return Iterables.concat(this.out, this.in);
+            else {
+                boolean ie = this.in.isEmpty();
+                boolean oe = this.out.isEmpty();
+                if (ie && oe) return List.of();
+                if (ie) return this.out;
+                if (oe) return this.in;
+                return Iterables.concat(this.out, this.in);
+            }
         }
 
         public final int ins() {
@@ -194,14 +202,15 @@ public abstract class NodeGraph<N, E> {
 
         public int ins(boolean countSelfLoops) {
             if (countSelfLoops) {
-                return (int) streamIn().count();
+                return in.size(); //(int) streamIn().count();
             } else {
                 return (int) streamIn().filter(e -> e.from != this).count();
             }
         }
 
         public int outs() {
-            return (int) streamOut().count();
+            //return (int) streamOut().count();
+            return out.size();
         }
 
 
