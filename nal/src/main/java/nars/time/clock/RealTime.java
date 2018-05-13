@@ -1,8 +1,9 @@
-package nars.time;
+package nars.time.clock;
 
 import jcog.Texts;
 import jcog.exe.Loop;
 import nars.NAR;
+import nars.time.Time;
 import org.jetbrains.annotations.NotNull;
 import tec.uom.se.quantity.time.TimeQuantities;
 

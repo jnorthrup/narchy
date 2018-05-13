@@ -17,7 +17,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.TimeAware;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.w2cSafe;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Created by me on 12/4/16.

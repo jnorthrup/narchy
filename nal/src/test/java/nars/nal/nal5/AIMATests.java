@@ -12,7 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 
 import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

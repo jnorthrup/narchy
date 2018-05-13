@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.util.TimeAware;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

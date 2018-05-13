@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /** TODO abstract edge() for different relation types:
  *      similarity

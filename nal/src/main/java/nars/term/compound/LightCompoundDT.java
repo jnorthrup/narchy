@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * flyweight Compound implementation for non-DTERNAL dt values.

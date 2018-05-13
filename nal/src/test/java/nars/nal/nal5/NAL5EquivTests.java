@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /** original nal5 tests involving the equivalence operator */
 @Disabled

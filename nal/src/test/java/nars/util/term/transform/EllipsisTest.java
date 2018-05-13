@@ -26,7 +26,7 @@ import java.util.Set;
 import static nars.$.$;
 import static nars.Op.*;
 import static nars.unify.match.Ellipsis.firstEllipsis;
-import static nars.util.time.Tense.DTERNAL;
+import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

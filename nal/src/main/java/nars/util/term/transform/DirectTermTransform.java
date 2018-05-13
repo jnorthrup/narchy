@@ -8,7 +8,7 @@ import nars.util.term.TermBuilder;
 import nars.util.term.builder.HeapTermBuilder;
 import org.eclipse.collections.api.tuple.Pair;
 
-import static nars.util.time.Tense.DTERNAL;
+import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /** bypasses interning and */

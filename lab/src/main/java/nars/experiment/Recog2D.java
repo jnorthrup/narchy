@@ -13,7 +13,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import nars.video.CameraSensorView;
 import nars.video.PixelBag;
 import nars.video.Scale;

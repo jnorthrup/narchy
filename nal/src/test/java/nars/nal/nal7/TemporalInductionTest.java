@@ -14,7 +14,7 @@ import nars.exe.UniExec;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.test.TestNAR;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;

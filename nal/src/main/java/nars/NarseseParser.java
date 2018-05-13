@@ -18,7 +18,7 @@ import nars.term.obj.QuantityTerm;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.PreciseTruth;
 import nars.unify.match.Ellipsis;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tec.uom.se.AbstractQuantity;
@@ -26,8 +26,8 @@ import tec.uom.se.AbstractQuantity;
 import java.util.List;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.ETERNAL_ETERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL_ETERNAL;
 
 public class NarseseParser extends BaseParser<Object> implements Narsese.INarseseParser {
 

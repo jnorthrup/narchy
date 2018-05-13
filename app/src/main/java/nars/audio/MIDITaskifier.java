@@ -12,7 +12,7 @@ import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.util.TimeAware;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.synth.SineWave;
@@ -24,7 +24,7 @@ import java.util.List;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 
 /**

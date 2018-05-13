@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static nars.Op.BELIEF;
 import static nars.term.Terms.compoundOrNull;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * compound<->dynamic atom abbreviation.

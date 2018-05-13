@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 
 /* recurses a pair of compound term tree's subterms

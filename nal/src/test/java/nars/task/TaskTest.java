@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static nars.Op.BELIEF;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

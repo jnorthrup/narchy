@@ -12,14 +12,14 @@ import nars.concept.util.DefaultConceptBuilder;
 import nars.term.atom.Atom;
 import nars.truth.polation.FocusingLinearTruthPolation;
 import nars.truth.polation.TruthPolation;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.ETERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * NAR Parameters
@@ -61,11 +61,11 @@ public abstract class Param {
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 1.5f;
+    public static float TEST_TIME_MULTIPLIER = 2f;
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 12;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);

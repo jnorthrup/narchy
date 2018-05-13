@@ -9,8 +9,8 @@ import nars.util.term.InternedSubterms;
 import nars.util.term.SubtermsCache;
 import nars.util.term.TermCache;
 
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /** can intern subterms, compounds, and temporal compounds.
  * the requirements for intern cache admission are configurable.

@@ -16,7 +16,7 @@ import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProNALTest {

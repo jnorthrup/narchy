@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 @Disabled
 public class NAL8EquivalenceTest extends NALTest {

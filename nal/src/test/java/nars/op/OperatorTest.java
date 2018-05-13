@@ -5,7 +5,7 @@ import nars.concept.Concept;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.util.AtomicExec;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

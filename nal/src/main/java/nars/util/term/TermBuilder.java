@@ -19,7 +19,7 @@ import java.util.Collection;
 
 import static nars.Op.Null;
 import static nars.term.Terms.sorted;
-import static nars.util.time.Tense.DTERNAL;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * interface for term and subterm builders

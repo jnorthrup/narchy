@@ -6,7 +6,7 @@ import nars.Narsese;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * Created by me on 4/17/17.

@@ -15,7 +15,7 @@ import nars.gui.Vis;
 import nars.op.AutoConceptualizer;
 import nars.term.Term;
 import nars.util.signal.Bitmap2DConcepts;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;

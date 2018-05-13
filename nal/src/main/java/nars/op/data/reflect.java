@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import static nars.Op.BELIEF;
 import static nars.Op.VAR_QUERY;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * Produces canonical "Reflective-Narsese" representation of a parameter term

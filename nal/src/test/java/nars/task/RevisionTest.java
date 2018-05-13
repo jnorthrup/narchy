@@ -10,14 +10,14 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
 import nars.truth.Truth;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 import java.util.TreeSet;
 
 import static nars.Op.BELIEF;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

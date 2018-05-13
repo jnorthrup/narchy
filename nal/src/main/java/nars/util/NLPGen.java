@@ -5,7 +5,7 @@ import nars.derive.premise.PremisePatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.unify.Unify;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

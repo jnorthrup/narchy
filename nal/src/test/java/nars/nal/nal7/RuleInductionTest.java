@@ -10,13 +10,13 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

@@ -6,7 +6,7 @@ import nars.term.Compound;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PremisePatternCompoundTest {

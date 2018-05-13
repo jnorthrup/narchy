@@ -20,7 +20,7 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 
 import static jcog.Util.lerp;
 import static nars.Op.*;
-import static nars.util.time.Tense.*;
+import static nars.time.Tense.*;
 
 /**
  * Revision / Projection / Revection Utilities

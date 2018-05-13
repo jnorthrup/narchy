@@ -29,8 +29,8 @@ import java.util.function.Function;
 import static nars.IO.TaskSerialization.TermFirst;
 import static nars.Op.*;
 import static nars.term.compound.FastCompound.ov;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Created by me on 5/29/16.

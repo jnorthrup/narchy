@@ -8,7 +8,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.util.NALTest;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {

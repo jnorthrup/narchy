@@ -7,8 +7,8 @@ import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
 public interface Retemporalize extends TermTransform.NegObliviousTermTransform {

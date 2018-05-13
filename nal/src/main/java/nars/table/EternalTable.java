@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 
 import static nars.table.BeliefTable.eternalTaskValue;
 import static nars.table.BeliefTable.eternalTaskValueWithOriginality;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 
 /**

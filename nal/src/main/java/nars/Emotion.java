@@ -30,49 +30,6 @@ import static jcog.meter.Meter.meter;
  *   manages non-logical/meta states of the system
  *   and collects/provides information about them to the system
  *   variables used to record emotional values
- *
- * high level memory control vocabulary
- *      load(fromContext[,filter]) - effectively load(from, SELF, ...)
- *      save(toContext[,filter]) - effectively save(SELF, to, ...)
- *      copy(from, to, filter) - copy from one context into another.  this is more like a mixing operation since it can be partial
- *
- *  contexts are terms and act like URI's.
- *    they define a namespace index offering access to entire sets of memories.
- *    just like URI's, certain patterns may indicate it is accessed by a particular strategy:
- *       RAM memory - side memories running parallel with the current SELF, which could theoreticaly be swapped to, or at least blended with through memory ops
- *       File system - provides user with convenient access to data files, especially for development
- *       File system /tmp - for data too large to fit in memory but not worth saving past the next reboot
- *       Network - any remote internet address and protocol URI)
- *       Spatiotemoral region - indicates its content is relevant to what is or was there. (lucene's 4D double range vector field allows r-tree indexing in 4D: 3D space 1D time)
- *       Database & Search/etc. Index
- *
- *   filters specify desired include/exclude criteria for the memory transfer process.
- *   these may apply to individual items, like their contained characters, budgets, or complexities.
- *   or they may apply in the aggregate by limiting the min/max amount of items processed.
- *   0 filters, 1 filter, or N-filters as they can be chained or parallelized like any effects processing
- *   procedure, analog or digital.
- *
- *   the particular budget state of a set of tasks forming a memory snapshot should not be considered
- *   *the* memory state but a possible one, at least the default.  for example, the meaning of a group
- *   of tasks can change drastically by shifting the priorities among them.  so the budget state,
- *   collected as one or more additional snapshots which can be applied or mixed.  these will
- *   need to be identified by names as well.  these are not like versions, although you could capture
- *   them at regular points in time to study how it evolves on its own. instead they provide access to
- *   a dimension of alternate cognitive possibilities existing within the same (non-budgeting aspects of a)
- *   collection of knowledge (tasks).
- *
- *   similar kinds of filters can shape runtime system parameters:
- *
- *      task(ctx, filter) - apply task-shaping filters to individual tasks, such as budget shaping
- *      links(ctx, filter) - link-shaping filters, link capacity heuristics / graph connectivity constraints
- *      beliefs(ctx, filter) - belief capacity heuristics
- *      questions(ctx, filter) - question capacity heuristics
- *
- *   each task uses the $pri (intensity) to decide the effort applied in the load/save process.
- *      by default $1.0 would mean full effort applied to the load and store.
- *      lesser qualities with lesser values.
- *      but the commands can be repeated as much as the user/NAR wants.
- *
  */
 public class Emotion implements Meter {
 

@@ -10,7 +10,7 @@ import nars.derive.Deriver;
 import nars.derive.deriver.MatrixDeriver;
 import nars.experiment.connect4.ConnectFour;
 import nars.op.java.Opjects;
-import nars.time.RealTime;
+import nars.time.clock.RealTime;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 

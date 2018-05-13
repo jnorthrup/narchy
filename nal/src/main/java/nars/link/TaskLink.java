@@ -9,10 +9,10 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.util.time.Tense;
+import nars.time.Tense;
 
-import static nars.util.time.Tense.ETERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public interface TaskLink extends Priority, Termed {
 

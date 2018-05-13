@@ -7,7 +7,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -25,7 +25,7 @@ import java.util.function.IntPredicate;
 
 import static nars.Op.*;
 import static nars.term.Terms.sorted;
-import static nars.util.time.Tense.*;
+import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**

@@ -18,7 +18,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.truth.Stamp;
 import nars.unify.UnifySubst;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
 

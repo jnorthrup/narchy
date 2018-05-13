@@ -41,7 +41,7 @@ import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.Subst;
 import nars.util.term.transform.TermTransform;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -64,8 +64,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 
 public interface Term extends Termed, Comparable<Termed> {

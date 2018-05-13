@@ -19,7 +19,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Util.normalize;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * decides mental activity

@@ -6,7 +6,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 
-import static nars.util.time.Tense.DTERNAL;
+import static nars.time.Tense.DTERNAL;
 
 /** use with extreme caution when op is not PROD */
 public class CompoundLight implements Compound {

@@ -48,8 +48,8 @@ import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.util.time.Tense.ETERNAL;
-import static nars.util.time.Tense.TIMELESS;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 
 /**

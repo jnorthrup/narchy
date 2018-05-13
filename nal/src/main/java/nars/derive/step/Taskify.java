@@ -12,14 +12,14 @@ import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.truth.Truth;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static nars.Op.*;
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends AbstractPred<Derivation> {
 

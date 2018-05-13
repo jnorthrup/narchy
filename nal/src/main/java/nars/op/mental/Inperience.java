@@ -16,7 +16,7 @@ import nars.term.compound.util.Image;
 import nars.truth.Truth;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import static nars.Op.*;
 import static nars.term.atom.Atomic.the;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * Internal Experience (NAL9)

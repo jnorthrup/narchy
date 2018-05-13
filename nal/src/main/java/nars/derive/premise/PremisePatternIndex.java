@@ -24,7 +24,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Index which specifically holds the term components of a deriver ruleset.

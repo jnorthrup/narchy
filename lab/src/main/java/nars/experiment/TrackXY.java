@@ -16,7 +16,7 @@ import nars.index.concept.CaffeineIndex;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
-import nars.time.CycleTime;
+import nars.time.clock.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import org.eclipse.collections.impl.block.factory.Comparators;

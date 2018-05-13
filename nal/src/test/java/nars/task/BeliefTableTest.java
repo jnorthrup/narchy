@@ -7,7 +7,7 @@ import nars.table.BeliefTable;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
 import nars.truth.Truth;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static nars.Op.BELIEF;
 import static nars.task.RevisionTest.x;
-import static nars.util.time.Tense.*;
+import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

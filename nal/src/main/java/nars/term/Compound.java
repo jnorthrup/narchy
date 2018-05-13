@@ -48,7 +48,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.*;
+import static nars.time.Tense.*;
 
 /**
  * a compound term

@@ -47,7 +47,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.DTERNAL;
+import static nars.time.Tense.DTERNAL;
 
 /***
  *     oooo       oo       .o.       ooooooooo.

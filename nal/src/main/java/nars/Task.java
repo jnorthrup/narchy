@@ -40,7 +40,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**

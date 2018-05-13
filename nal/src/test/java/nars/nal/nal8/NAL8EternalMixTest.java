@@ -5,14 +5,14 @@ import nars.Narsese;
 import nars.nal.nal7.NAL7Test;
 import nars.test.TestNAR;
 import nars.util.NALTest;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * NAL8 tests specifically involving one or more eternal input tasks

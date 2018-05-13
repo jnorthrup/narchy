@@ -1,4 +1,4 @@
-package nars.util.time;
+package nars.time;
 
 import jcog.Util;
 import jcog.math.LongInterval;

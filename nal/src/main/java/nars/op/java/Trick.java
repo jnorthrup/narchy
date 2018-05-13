@@ -3,7 +3,7 @@ package nars.op.java;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
-import nars.util.time.Tense;
+import nars.time.Tense;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;

@@ -16,8 +16,8 @@ import java.util.Set;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.util.time.Tense.ETERNAL;
-import static nars.util.time.Tense.XTERNAL;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

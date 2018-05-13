@@ -1,4 +1,4 @@
-package nars.util.time;
+package nars.time;
 
 import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.Split;

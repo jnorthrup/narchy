@@ -14,7 +14,7 @@ import nars.control.DurService;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
 import nars.exe.Causable;
-import nars.time.RealTime;
+import nars.time.clock.RealTime;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;

@@ -19,7 +19,7 @@ import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.List;
 
-import static nars.util.time.Tense.DTERNAL;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * Annotates a GenericCompound with cached data to accelerate pattern matching

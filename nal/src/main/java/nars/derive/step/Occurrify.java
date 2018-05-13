@@ -11,8 +11,8 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
-import nars.util.time.Tense;
-import nars.util.time.TimeGraph;
+import nars.time.Tense;
+import nars.time.TimeGraph;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.*;
+import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -168,7 +168,7 @@ public class Occurrify extends TimeGraph {
         clear();
         expanded.clear();
         seen.clear();
-        autoNeg = false;
+        autoNeg(false);
         return this;
     }
 
@@ -186,7 +186,7 @@ public class Occurrify extends TimeGraph {
         if (!autoNeg && (task.term().hasAny(NEG) || bb.hasAny(NEG))) {
             autoNeg = true;
         }
-        this.autoNeg = autoNeg;
+        this.autoNeg(autoNeg);
 
         if (!single) {
 

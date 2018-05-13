@@ -18,7 +18,7 @@ import nars.truth.TruthAccumulator;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.TruthOperator;
 import nars.util.graph.TermGraph;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.Nullable;
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Map;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.TIMELESS;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.TIMELESS;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 

@@ -7,7 +7,7 @@ import nars.Narsese;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

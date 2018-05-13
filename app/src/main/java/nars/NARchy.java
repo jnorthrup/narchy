@@ -8,7 +8,7 @@ import nars.exe.PoolMultiExec;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
-import nars.time.RealTime;
+import nars.time.clock.RealTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.audio.speech.NativeSpeechDispatcher;

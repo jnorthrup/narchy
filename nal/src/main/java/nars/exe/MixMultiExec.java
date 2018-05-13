@@ -9,7 +9,7 @@ import jcog.exe.valve.Sharing;
 import jcog.exe.valve.TimeSlicing;
 import jcog.math.random.SplitMix64Random;
 import nars.NAR;
-import nars.time.RealTime;
+import nars.time.clock.RealTime;
 
 import java.util.concurrent.ForkJoinPool;
 

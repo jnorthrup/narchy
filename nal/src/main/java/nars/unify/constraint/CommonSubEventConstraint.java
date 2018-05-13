@@ -10,8 +10,8 @@ import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import java.util.Set;
 
 import static nars.Op.CONJ;
-import static nars.util.time.Tense.DTERNAL;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
 
 public class CommonSubEventConstraint extends RelationConstraint {
 

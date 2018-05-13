@@ -7,12 +7,12 @@ import nars.derive.premise.PremiseDeriverProto;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.util.term.transform.Retemporalize;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.tuple.Pair;
 
 import static nars.Op.*;
-import static nars.util.time.Tense.ETERNAL;
-import static nars.util.time.Tense.TIMELESS;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * Derivation term construction step of the derivation process that produces a derived task

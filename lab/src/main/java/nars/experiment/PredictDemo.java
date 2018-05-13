@@ -8,7 +8,7 @@ import nars.NARS;
 import nars.concept.Concept;
 import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
-import nars.time.RealTime;
+import nars.time.clock.RealTime;
 import nars.truth.Truth;
 import nars.util.signal.BeliefPredict;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;

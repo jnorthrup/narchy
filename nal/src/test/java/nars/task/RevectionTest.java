@@ -6,7 +6,7 @@ import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
 import nars.truth.Truth;
 import nars.truth.polation.FocusingLinearTruthPolation;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;

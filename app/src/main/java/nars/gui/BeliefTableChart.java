@@ -22,7 +22,7 @@ import spacegraph.video.Draw;
 import java.util.function.BiFunction;
 
 import static java.lang.Math.PI;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 
 public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {

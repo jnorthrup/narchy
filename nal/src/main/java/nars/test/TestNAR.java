@@ -6,7 +6,7 @@ import nars.task.ITask;
 import nars.task.Tasked;
 import nars.test.condition.NARCondition;
 import nars.test.condition.TaskCondition;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ import java.util.function.LongPredicate;
 
 import static java.lang.Float.NaN;
 import static nars.Op.*;
-import static nars.util.time.Tense.ETERNAL;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 

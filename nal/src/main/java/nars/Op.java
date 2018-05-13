@@ -25,7 +25,7 @@ import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.TermBuilder;
 import nars.util.term.builder.InterningTermBuilder;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -44,7 +44,7 @@ import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
 import static nars.term.Terms.sorted;
-import static nars.util.time.Tense.*;
+import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**

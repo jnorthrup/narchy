@@ -17,7 +17,7 @@ import nars.term.Term;
 import nars.term.compound.util.Conj;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.util.time.Tense;
+import nars.time.Tense;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
