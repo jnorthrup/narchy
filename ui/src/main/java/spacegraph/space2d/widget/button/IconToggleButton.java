@@ -9,9 +9,5 @@ public class IconToggleButton extends ColorToggle {
         content(icon.view(1f));
     }
 
-    public static IconToggleButton awesome(String icon) {
-        return new IconToggleButton(new ImageTexture("fontawesome://" + icon ));
-    }
-
 
 }

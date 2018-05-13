@@ -18,6 +18,7 @@ import java.util.Map;
 
 public class ImageTexture extends Tex {
 
+
     static final Map<String, byte[]> fontAwesomeIcons = new HashMap();
     //private static JarFile fontawesome = null;
     private static final String fa_prefix = "fontawesome://";
@@ -82,11 +83,18 @@ public class ImageTexture extends Tex {
 
     public ImageTexture(String path) {
         this.u = path;
+        inverted = true; //??
+    }
+
+    /** http://fontawesome.com/icons?d=gallery&m=free */
+    public static ImageTexture awesome(String icon) {
+        return new ImageTexture("fontawesome://" + icon );
     }
 
     public void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
         if (texture == null) {
 
+            //TODO async load
             texture = textureCache.apply(u);
             if (texture == null)
                 throw new NullPointerException();

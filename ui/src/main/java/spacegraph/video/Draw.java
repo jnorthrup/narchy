@@ -96,6 +96,66 @@ public enum Draw {
     public static final GLU glu = new GLU();
     public final static GLSRT glsrt = new GLSRT(glu);
     public static final GLUT glut = new GLUT();
+    public final static HGlyph[] fontMono;
+    @Deprecated
+    final static BulletStack stack = new BulletStack();
+    private static final float[] glMat = new float[16];
+    private static final v3 a = new v3(), b = new v3();
+
+    static {
+
+        List<HGlyph> glyphs = new FasterList();
+        String[] lines = null;
+
+        //HACK this started happening after switching back to gradle which at the present seems to cause malfunctioned class loading on jdk9
+        for (int tries = 0; tries < 2 && lines == null; tries++) {
+            try {
+                String font =
+
+                        //"meteorology";
+                        //"rowmans";
+                        "futural";
+                //                lines = Files.readAllLines(
+                //                    Paths.get(
+                //                        Draw.class.getClassLoader().getResourceAsStream("spacegraph/font/hershey/" + font + ".jhf").toURI()
+                //                        //Draw.class.getClassLoader().getResource("spacegraph/font/hershey/" + font + ".jhf").toURI()
+                //                    )
+                //                );
+
+                lines = new String(Draw.class.getClassLoader().getResourceAsStream("spacegraph/font/hershey/" + font + ".jhf").readAllBytes()).split("\n");
+                break;
+            } catch (IOException e) {
+
+            }
+            Util.sleep(50);
+        }
+        if (lines == null) {
+            lines = ArrayUtils.EMPTY_STRING_ARRAY;
+        }
+
+        String scratch = "";
+        HGlyph nextGlyph;
+        for (int i = 0; i < lines.length; i++) {
+            String c = lines[i];
+            if (c.endsWith("\n"))
+                c = c.substring(0, c.length() - 1);
+//                if (c.length() < 5) {
+//                    continue;
+//                }
+            //    if (lines[i].charAt(0) == ' ') {
+            if (Character.isDigit(c.charAt(4))) {
+                nextGlyph = new HGlyph(c + scratch);
+                //      println("Instantiated glyph " + nextGlyph.idx);
+                glyphs.add(nextGlyph);
+                scratch = "";
+            } else {
+                scratch += c;
+            }
+        }
+
+
+        fontMono = glyphs.toArray(new HGlyph[0]);
+    }
 
     public static void drawCoordSystem(GL gl) {
         ImmModeSink vbo = ImmModeSink.createFixed(3 * 4,
@@ -120,12 +180,6 @@ public enum Draw {
         vbo.glEnd(gl);
     }
 
-    private static final float[] glMat = new float[16];
-
-    @Deprecated
-    final static BulletStack stack = new BulletStack();
-    private static final v3 a = new v3(), b = new v3();
-
     public static void translate(GL2 gl, Transform trans) {
         v3 o = trans;
         gl.glTranslatef(o.x, o.y, o.z);
@@ -134,7 +188,6 @@ public enum Draw {
     public static void transform(GL2 gl, Transform trans) {
         gl.glMultMatrixf(trans.getOpenGLMatrix(glMat), 0);
     }
-
 
     public static void draw(GL2 gl, CollisionShape shape) {
 
@@ -512,7 +565,6 @@ public enum Draw {
         gl.glEnd();
     }
 
-
     public static void rectStroke(GL2 gl, float x1, float y1, float w, float h) {
         gl.glBegin(GL2.GL_LINE_STRIP);
         gl.glVertex2f(x1, y1);
@@ -609,6 +661,7 @@ public enum Draw {
         gl.glEnd();
 
     }
+
     public static void rect(GL2 gl, int x1, int y1, int w, int h) {
 
         gl.glRecti(x1, y1, x1 + w, y1 + h);
@@ -628,61 +681,6 @@ public enum Draw {
             gl.glVertex3f(x1, y1 + h, z);
             gl.glEnd();
         }
-    }
-
-    public static void rectTex(GL2 gl, Texture tt, float x1, float y1, float w, float h, float z, float repeatScale, float alpha) {
-
-//        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-//        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-
-
-        //tt.bind(gl);
-//        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-//
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-        //gl.glPushMatrix();
-
-        tt.enable(gl);
-        tt.bind(gl);
-
-
-        //gl.glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-        gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
-
-
-        boolean repeat = repeatScale > 0;
-        if (repeat) {
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
-            gl.glGenerateMipmap(GL_TEXTURE_2D);
-        } else {
-            //sharp pixels on magnification
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            repeatScale = 1f;
-        }
-
-        gl.glBegin(GL2.GL_QUADS);
-
-//        gl.glNormal3f(0, 0, 1);
-        gl.glTexCoord2f(0.0f, repeatScale);
-        gl.glVertex3f(x1, y1, z);
-        gl.glTexCoord2f(repeatScale, repeatScale);
-        gl.glVertex3f(x1 + w, y1, z);
-        gl.glTexCoord2f(repeatScale, 0.0f);
-        gl.glVertex3f(x1 + w, y1 + h, z);
-        gl.glTexCoord2f(0.0f, 0.0f);
-        gl.glVertex3f(x1, y1 + h, z);
-        gl.glEnd();
-
-        tt.disable(gl);
-
-
     }
 
 
@@ -722,6 +720,77 @@ public enum Draw {
     //    static final Matrix4f tmpM4 = new Matrix4f();
 //    static final Matrix3f tmpM3 = new Matrix3f();
 //    static final AxisAngle4f tmpA = new AxisAngle4f();
+
+    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha) {
+        rectTex(gl, tt, x, y, z, w, h, repeatScale, alpha, false);
+    }
+
+    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha, boolean inverted) {
+
+//        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+//        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+
+
+        //tt.bind(gl);
+//        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+//
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        //gl.glPushMatrix();
+
+        tt.enable(gl);
+        tt.bind(gl);
+
+
+        //gl.glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+        gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
+
+
+        boolean repeat = repeatScale > 0;
+        if (repeat) {
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
+            gl.glGenerateMipmap(GL_TEXTURE_2D);
+        } else {
+            //sharp pixels on magnification
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            repeatScale = 1f;
+        }
+
+        gl.glBegin(GL2.GL_QUADS);
+
+        final float s = repeatScale;
+        if (!inverted) {
+            gl.glTexCoord2f(0.0f, s);
+            gl.glVertex3f(x, y, z);
+            gl.glTexCoord2f(s, s);
+            gl.glVertex3f(x + w, y, z);
+            gl.glTexCoord2f(s, 0.0f);
+            gl.glVertex3f(x + w, y + h, z);
+            gl.glTexCoord2f(0.0f, 0.0f);
+            gl.glVertex3f(x, y + h, z);
+        } else {
+            gl.glTexCoord2f(0.0f, 0.0f);
+            gl.glVertex3f(x, y, z);
+            gl.glTexCoord2f(s, 0.0f);
+            gl.glVertex3f(x + w, y, z);
+            gl.glTexCoord2f(s, s);
+            gl.glVertex3f(x + w, y + h, z);
+            gl.glTexCoord2f(0.0f, s);
+            gl.glVertex3f(x, y + h, z);
+        }
+
+        gl.glEnd();
+
+        tt.disable(gl);
+
+
+    }
 
     static public void renderHalfTriEdge(GL2 gl, SimpleSpatial src, EDraw<?> e, float width, float twist, Quat4f tmpQ) {
 
@@ -782,7 +851,6 @@ public enum Draw {
         gl.glVertex3f(t.x, t.y, t.z);
         gl.glEnd();
     }
-
 
     public static void hsb(GL2 gl, float hue, float saturation, float brightness, float a) {
         float[] f = new float[4];
@@ -874,7 +942,7 @@ public enum Draw {
 
 
         float r, g, b;
-        if (v!=v) {
+        if (v != v) {
             r = g = b = 0.5f;
         } else if (v < 0) {
             v = unitize(-v);
@@ -914,7 +982,6 @@ public enum Draw {
         hsb(c, Util.lerp(v, hueMin, hueMax), 0.7f, 0.7f, alpha);
     }
 
-
     public static void colorHash(Object x, float[] color) {
         colorHash(x.hashCode(), color, 1f);
     }
@@ -949,7 +1016,6 @@ public enum Draw {
         gl.glColor3f(x, x, x);
     }
 
-
     public static void bounds(GL2 gl, Surface s, Consumer<GL2> c) {
         bounds(gl, s.bounds, c);
     }
@@ -975,7 +1041,10 @@ public enum Draw {
     }
 
     public static void colorRGBA(float[] c, float r, float g, float b, float a) {
-        c[0] = r; c[1] = g; c[2] = b; c[3] = a;
+        c[0] = r;
+        c[1] = g;
+        c[2] = b;
+        c[3] = a;
     }
 
     public static void poly(Body2D body, GL2 gl, float preScale, PolygonShape shape) {
@@ -995,8 +1064,8 @@ public enum Draw {
 
     /**
      * utility for stencil painting
-     *    include = only draw inside the stencil
-     *    exclude = only draw outside the stencil
+     * include = only draw inside the stencil
+     * exclude = only draw outside the stencil
      * adapted from: https://gist.github.com/daltonks/4c2d1c5e6fd5017ea9f0
      */
     public static void stencilMask(GL2 gl, boolean includeOrExclude, Consumer<GL2> paintTheStencilRegion, Consumer<GL2> paintStenciled) {
@@ -1036,26 +1105,6 @@ public enum Draw {
 
         //NEXT: draw the stencil region itself
         //"Drawing" the objects only ends up writing 1's to the stencil buffer no matter what color or depth they are
-    }
-
-
-    public static void stencilEnd(GL2 gl) {
-        //Disable stencil testing, because we're done using it!
-        gl.glDisable(gl.GL_STENCIL_TEST);
-    }
-
-    public static void stencilUse(GL2 gl, boolean includeOrExclude) {
-        //Enable writing to the color and depth buffers
-        gl.glColorMask(true, true, true, true);
-        gl.glDepthMask(true);
-
-        //Disable writing to the stencil buffer
-        gl.glStencilMask(0x00);
-
-        //Test the stencil buffer: if the pixel's stencil value equals 0, draw it
-        gl.glStencilFunc(includeOrExclude ? GL2.GL_NOTEQUAL : GL2.GL_EQUAL, 0, 0xFF);
-
-        //NEXT: ready to use the stencil, and afterward call stencilEnd
     }
 
 //
@@ -1134,44 +1183,9 @@ public enum Draw {
 //        }
 //    }
 
-    private static class GlDrawcallback extends TriangleCallback {
-        private final GL gl;
-        public boolean wireframe;
-
-        public GlDrawcallback(GL gl) {
-            this.gl = gl;
-        }
-
-        @Override
-        public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-            ImmModeSink vbo = ImmModeSink.createFixed(10,
-                    3, GL.GL_FLOAT,  // vertex
-                    4, GL.GL_FLOAT,  // color
-                    0, GL.GL_FLOAT,  // normal
-                    0, GL.GL_FLOAT, GL.GL_STATIC_DRAW); // texture
-            if (wireframe) {
-                vbo.glBegin(GL.GL_LINES);
-                vbo.glColor4f(1, 0, 0, 1);
-                vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-                vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-                vbo.glColor4f(0, 1, 0, 1);
-                vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
-                vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-                vbo.glColor4f(0, 0, 1, 1);
-                vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
-                vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-                vbo.glEnd(gl);
-            } else {
-                vbo.glBegin(GL.GL_TRIANGLES);
-                vbo.glColor4f(1, 0, 0, 1);
-                vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
-                vbo.glColor4f(0, 1, 0, 1);
-                vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
-                vbo.glColor4f(0, 0, 1, 1);
-                vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
-                vbo.glEnd(gl);
-            }
-        }
+    public static void stencilEnd(GL2 gl) {
+        //Disable stencil testing, because we're done using it!
+        gl.glDisable(gl.GL_STENCIL_TEST);
     }
 
 //    private static class TriangleGlDrawcallback extends InternalTriangleIndexCallback {
@@ -1241,93 +1255,18 @@ public enum Draw {
 //        }
 //    }
 
-    public static final class HGlyph {
-        /*int idx, verts, */
-        final int leftPos;
-        final int rightPos;
-        //String spec;
-        final byte[][] segments;
+    public static void stencilUse(GL2 gl, boolean includeOrExclude) {
+        //Enable writing to the color and depth buffers
+        gl.glColorMask(true, true, true, true);
+        gl.glDepthMask(true);
 
-        // Hershey fonts use coordinates represented by characters'
-        // integer values relative to ascii 'R'
-        static final int offsetR = (int) ('R');
-        private int id;
+        //Disable writing to the stencil buffer
+        gl.glStencilMask(0x00);
 
+        //Test the stencil buffer: if the pixel's stencil value equals 0, draw it
+        gl.glStencilFunc(includeOrExclude ? GL2.GL_NOTEQUAL : GL2.GL_EQUAL, 0, 0xFF);
 
-        HGlyph(String hspec) {
-            FasterList<byte[]> segments = new FasterList();
-
-            //idx      = Integer.valueOf(hspec.substring(0, 5));
-            //verts    = Integer.valueOf(hspec.substring(5, 8));
-            String spec = (hspec.substring(10));
-
-            // TODO: is this needed?
-            leftPos = (int) (hspec.charAt(8)) - offsetR;
-            rightPos = (int) (hspec.charAt(9)) - offsetR;
-
-            int curX, curY;
-            boolean penUp = true;
-            ByteArrayList currentSeg = new ByteArrayList();
-
-            for (int i = 0; i < spec.length() - 1; i += 2) {
-                if (spec.charAt(i + 1) == 'R' && spec.charAt(i) == ' ') {
-                    penUp = true;
-                    segments.add(currentSeg.toArray());
-                    currentSeg = new ByteArrayList();
-                    continue;
-                }
-
-                curX = (int) (spec.charAt(i)) - offsetR; //0..20
-                currentSeg.add((byte) curX);
-                curY = (int) (spec.charAt(i + 1)) - offsetR; //0..20
-                currentSeg.add((byte) (10 - curY)); //half above zero half below zero
-            }
-            if (!currentSeg.isEmpty())
-                segments.add(currentSeg.toArray());
-
-            this.segments = segments.toArray(new byte[segments.size()][]);
-
-
-        }
-
-        public void draw(GL2 gl, float x) {
-            //int pLastX = 0, pLastY = 0;
-
-//            GLint firstA[4] = {0, 250, 500, 750};
-//            GLint countA[4] = {250, 250, 250, 250};
-//            glMultiDrawArrays(GL_LINE_STRIP, firstA, countA, 4);
-
-            if (x != 0)
-                gl.glTranslatef(x, 0, 0);
-
-            gl.glCallList(id);
-
-            if (x != 0)
-                gl.glTranslatef(-x, 0, 0); //HACK un-translate, cheaper than pushMatrix
-        }
-
-        public void init(GL2 gl) {
-            id = gl.glGenLists(1);
-            gl.glNewList(id, GL2.GL_COMPILE);
-
-            for (byte[] seg : segments) {
-
-                int ss = seg.length;
-
-                gl.glBegin(GL2.GL_LINE_STRIP);
-                for (int j = 0; j < ss; ) {
-                    //gl.glVertex2i(seg[j++], seg[j++]);
-                    gl.glVertex2i(seg[j++], seg[j++]);
-                }
-                gl.glEnd();
-            }
-
-            gl.glEndList();
-        }
-    }
-
-    public enum TextAlignment {
-        Left, Center, Right
+        //NEXT: ready to use the stencil, and afterward call stencilEnd
     }
 
     public static void text(GL2 gl, CharSequence s, float scale, float x, float y, float z) {
@@ -1443,66 +1382,137 @@ public enum Draw {
 
     }
 
-    public final static HGlyph[] fontMono;
-
-    static {
-
-        List<HGlyph> glyphs = new FasterList();
-        String[] lines = null;
-
-        //HACK this started happening after switching back to gradle which at the present seems to cause malfunctioned class loading on jdk9
-        for (int tries = 0; tries < 2 && lines == null; tries++) {
-            try {
-                String font =
-
-                        //"meteorology";
-                        //"rowmans";
-                        "futural";
-                //                lines = Files.readAllLines(
-                //                    Paths.get(
-                //                        Draw.class.getClassLoader().getResourceAsStream("spacegraph/font/hershey/" + font + ".jhf").toURI()
-                //                        //Draw.class.getClassLoader().getResource("spacegraph/font/hershey/" + font + ".jhf").toURI()
-                //                    )
-                //                );
-
-                lines = new String(Draw.class.getClassLoader().getResourceAsStream("spacegraph/font/hershey/" + font + ".jhf").readAllBytes()).split("\n");
-                break;
-            } catch (IOException e) {
-
-            }
-            Util.sleep(50);
-        }
-        if (lines == null) {
-            lines = ArrayUtils.EMPTY_STRING_ARRAY;
-        }
-
-        String scratch = "";
-        HGlyph nextGlyph;
-        for (int i = 0; i < lines.length; i++) {
-            String c = lines[i];
-            if (c.endsWith("\n"))
-                c = c.substring(0, c.length() - 1);
-//                if (c.length() < 5) {
-//                    continue;
-//                }
-            //    if (lines[i].charAt(0) == ' ') {
-            if (Character.isDigit(c.charAt(4))) {
-                nextGlyph = new HGlyph(c + scratch);
-                //      println("Instantiated glyph " + nextGlyph.idx);
-                glyphs.add(nextGlyph);
-                scratch = "";
-            } else {
-                scratch += c;
-            }
-        }
-
-
-        fontMono = glyphs.toArray(new HGlyph[0]);
-    }
-
     static void init(GL2 gl) {
         for (HGlyph x : fontMono) {
             x.init(gl);
+        }
+    }
+
+    public enum TextAlignment {
+        Left, Center, Right
+    }
+
+    private static class GlDrawcallback extends TriangleCallback {
+        private final GL gl;
+        public boolean wireframe;
+
+        public GlDrawcallback(GL gl) {
+            this.gl = gl;
+        }
+
+        @Override
+        public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
+            ImmModeSink vbo = ImmModeSink.createFixed(10,
+                    3, GL.GL_FLOAT,  // vertex
+                    4, GL.GL_FLOAT,  // color
+                    0, GL.GL_FLOAT,  // normal
+                    0, GL.GL_FLOAT, GL.GL_STATIC_DRAW); // texture
+            if (wireframe) {
+                vbo.glBegin(GL.GL_LINES);
+                vbo.glColor4f(1, 0, 0, 1);
+                vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
+                vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
+                vbo.glColor4f(0, 1, 0, 1);
+                vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
+                vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
+                vbo.glColor4f(0, 0, 1, 1);
+                vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
+                vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
+                vbo.glEnd(gl);
+            } else {
+                vbo.glBegin(GL.GL_TRIANGLES);
+                vbo.glColor4f(1, 0, 0, 1);
+                vbo.glVertex3f(triangle[0].x, triangle[0].y, triangle[0].z);
+                vbo.glColor4f(0, 1, 0, 1);
+                vbo.glVertex3f(triangle[1].x, triangle[1].y, triangle[1].z);
+                vbo.glColor4f(0, 0, 1, 1);
+                vbo.glVertex3f(triangle[2].x, triangle[2].y, triangle[2].z);
+                vbo.glEnd(gl);
+            }
+        }
+    }
+
+    public static final class HGlyph {
+        // Hershey fonts use coordinates represented by characters'
+        // integer values relative to ascii 'R'
+        static final int offsetR = (int) ('R');
+        /*int idx, verts, */
+        final int leftPos;
+        final int rightPos;
+        //String spec;
+        final byte[][] segments;
+        private int id;
+
+
+        HGlyph(String hspec) {
+            FasterList<byte[]> segments = new FasterList();
+
+            //idx      = Integer.valueOf(hspec.substring(0, 5));
+            //verts    = Integer.valueOf(hspec.substring(5, 8));
+            String spec = (hspec.substring(10));
+
+            // TODO: is this needed?
+            leftPos = (int) (hspec.charAt(8)) - offsetR;
+            rightPos = (int) (hspec.charAt(9)) - offsetR;
+
+            int curX, curY;
+            boolean penUp = true;
+            ByteArrayList currentSeg = new ByteArrayList();
+
+            for (int i = 0; i < spec.length() - 1; i += 2) {
+                if (spec.charAt(i + 1) == 'R' && spec.charAt(i) == ' ') {
+                    penUp = true;
+                    segments.add(currentSeg.toArray());
+                    currentSeg = new ByteArrayList();
+                    continue;
+                }
+
+                curX = (int) (spec.charAt(i)) - offsetR; //0..20
+                currentSeg.add((byte) curX);
+                curY = (int) (spec.charAt(i + 1)) - offsetR; //0..20
+                currentSeg.add((byte) (10 - curY)); //half above zero half below zero
+            }
+            if (!currentSeg.isEmpty())
+                segments.add(currentSeg.toArray());
+
+            this.segments = segments.toArray(new byte[segments.size()][]);
+
+
+        }
+
+        public void draw(GL2 gl, float x) {
+            //int pLastX = 0, pLastY = 0;
+
+//            GLint firstA[4] = {0, 250, 500, 750};
+//            GLint countA[4] = {250, 250, 250, 250};
+//            glMultiDrawArrays(GL_LINE_STRIP, firstA, countA, 4);
+
+            if (x != 0)
+                gl.glTranslatef(x, 0, 0);
+
+            gl.glCallList(id);
+
+            if (x != 0)
+                gl.glTranslatef(-x, 0, 0); //HACK un-translate, cheaper than pushMatrix
+        }
+
+        public void init(GL2 gl) {
+            id = gl.glGenLists(1);
+            gl.glNewList(id, GL2.GL_COMPILE);
+
+            for (byte[] seg : segments) {
+
+                int ss = seg.length;
+
+                gl.glBegin(GL2.GL_LINE_STRIP);
+                for (int j = 0; j < ss; ) {
+                    //gl.glVertex2i(seg[j++], seg[j++]);
+                    gl.glVertex2i(seg[j++], seg[j++]);
+                }
+                gl.glEnd();
+            }
+
+            gl.glEndList();
         }
     }
 
@@ -1596,7 +1606,6 @@ public enum Draw {
 
      */
 
-
     /**
      * https://github.com/sojamo/controlp5/blob/master/src/controlP5/BitFont.java
      * TODO render Glyphs, this currently only decodes the base64 font present in the strings
@@ -1606,6 +1615,8 @@ public enum Draw {
         static public final String standard58base64 = "AakACQBgACAEAgQGBggGAgMDBAYDBAIGBQMFBQUFBQUFBQICBAUEBQgFBQUFBQUFBQIFBQQGBQUFBQUFBAUGCAUGBQMFAwYGAwQEBAQEBAQEAgQEAgYEBAQEAwQEBAQGBAQEBAIEBQKgUgghIaUAAIiRMeiZZwwAAANgjjnvmRRKESVzzDGXoqQUvYURQCCAQCCSCAAAAAgAAABEqECleCVFkRAAiLSUWEgoJQAAiSOllEJIKVRiSymllCRFSSlCEVIAQQBBQAARAAAAEAAAACQpgeALJASiIwAQSQipE1BKRS+QSEohhRBSqES1UkopSIqSkkIiFAGwEZOwSaplZGx2VVXVSQIAgeIgSETy4RCSCEnoEONAgJCkd0I6p73QiKilk46RpCQZQoQIAFBVVVOVVFVVVUKqqiqKCACCDyKpiIoAICQJ9FAiCUE8ElUphRRCSqESUUohJSRJSUpECBEAoCrqoiqZqqqqiFRVUiIJAADKI5UQASEgSAoJpSRSCgECUlJKKYSUSiWilEJKSRKRlIgQJABAVVVEVVJVVVUhqaqqQhIACBQixEIBQFBg9AwyRhhDBEIIpGPOCyZl0kXJBJOMGMImEW9owAcbMQmrpKpKxjJiopQdFQAAAAAAAABAAAAAAAAAAIAAAOAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAQIAAAEAQAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAgAAAgCAAAAAgAA";
         static public final String standard56base64 = "AeYACQBgACAEAgQGBggHAgMDBgYDBQIFBgMGBgYGBgYGBgIDBAYEBggGBgYGBgYGBgIGBgUIBgYGBgYGBgYGCAYGBgMFAwYHAwUFBQUFAwUFAgMFAggFBQUFBAQEBQUIBQUFBAMEBQKgUgghRwoBAIAcOQ7yOZ/jAADAAXAe5/k+JwqKQlDkPM7jfFGUFEXfwghAQAAICIQUAgAAAAABAAAAQAkVqBSvJFJUEQCQaFHEBBEURQAAiDiiKIqCIIqCkjAWRVEURUQUJUURFCEFIBAAAgEBhAAAAABAAAAAAEikBIIvkFAQOQQAJBIEKU8ARVGiLyCRKAqiIAiioCJUTVEURQERRUmKgkQoAsAd40zcSambY447u5SSUnoSAYBAcRBMRNWHh4iEMAn0II4HBBAk6XuC6HmyL2gISVX0RI9DREoSQRAhAgBIKaW0lFIpKaWUIiSlpJRQhAAg+CCSFBFBACAiEdAHRUgEgfiIqIqiIAqCKAoqQlAWBVEBEZGSpBBCiAAAUgrpJaU0SkoppRBJKckkIxEAAJRHKkIEEACESEKERBERRUEAAVKiKIqCIIqKkhAURUGUREREJEVEECQAgJRSCkkplZJSSilIUkpKKUgEAAKFCHGhAIBAwdHnII5DOA4iIAiB6HGeL3CinOgFRU7gRA7hEDYR8QUJ+MEd40xcSqmkZI6LEWdsknsSAQAAAAAAAAAgAAAAAAAAAACAAACAAwAAAAAAAAAAAAAAQAAAAAAAAAADAwAAAAAABBAAAICAAAAAAIAAJQAAAAAAAAAABAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAACAAAgIAAAAAAYAAA=";
         static public final String grixelbase64 = "AnoADABgACAFAgQICAoIAgQEBgYDBQIKCQMICAgICAcICAIDBQYFBwkICAgIBwcICAYHCAcJCAgICAgICAgICggICAQKBAQHBAcHBwcHBQcHAgUHBAoHBwcHBgcGBwcKBwcHBQIFCAJAJeIjkENBAAAAQHzk4wPz5/Pz8QEAAB4ePj8+Pz6fX9AHCgoECvL58fnx+QsKiigo6C8CIAEIIAAAARwgEAoEAAAAAAAABAAAAAAAICIAAZVIUiERBQEAAIAIWlAQSkAQKCgIICCEhAQFBQUFAgFBBCgoMGwoKCgoKAghKCiioCCgEIAKQIAAAAQIgAAgEAAAAAAAABAAAAAAAICIsAUEfwlCRBCkEAAAIUhAQCQBAaCgIEAAAcoUFBQQFAgEBBGgoECpoqCgoKAAhKCgiEREQIIAAgAAAgAQIAACgEAAAAAAAABAAAAAAAAAIrIBEIgkgBBBEEEAAIIgAQGJ/ARAgoKS+AioVFBQQFAgEBBEgEICmZKCgoKCAhCCgiKioIAIBAgA4Pl4fJ7n+YRC8c7H8/F5ni8UiigU+okIAEAg4gOBA0HfhwcEguTDEwL0g/DxAwFAoFJ/PwFBv1/eHwH6CASKCgoKCvJBCAqKCAEBISAgAAAoFAqFQigUikREoVAoFISEUCgiSQgSQgAAgQgSAlEEEQQACAhSANAfUBAhCAiIj2BKBQUFBAUCQUEEKCQQKCzoJ+gHCCEoKCIKBIIAgQAAvlAg9AuhUOgREYVCoVBgEEKhiBghhIgAAAB/SITEEKQQABAgSAFAIEBBhCAgQABByBMUFBAUCAQFEaGgQKCgoICgECCEIJGIRBAEAggCAIRCgVAghEKhSEQUCoVCAUYIhSJihAgiAgAAiCQJFUMQAAgggCAFBIEEBRGCghACAkBAUFBQUCAQFESEggKBgoICkoKCEIIoIgpCCAhACAAQCoVCoRAKhUIRUSgUCgUhISSJSBISiAgAQCDiE4gTQQAgUAB89OcD4uND8PFJAAAEfkE/Pj++gF/Q5wn6BQryCfAJ8kHwQXAnCOEvACIAgM/j8XiCLxQKWUQhz8cXeDgPw52Q7yciAAAAAAIAANgAQAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAgAPg4AcAAAAAACAACAAAAAABEAAAAAAAACAAawAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4ABgAAAAABEAAAAAAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+        public static final int defaultChar = 32;
+        protected final int[] charWidth = new int[255];
         private final float[] texture;
         private final int[] ascii;
         private final int size;
@@ -1615,31 +1626,13 @@ public enum Draw {
         private final boolean lazy;
         private final Glyph[] glyphs;
         protected int characters;
-        protected final int[] charWidth = new int[255];
         protected int charHeight;
         protected int[][] chars;
         protected int lineHeight = 10;
         protected int kerning;
         protected int wh;
-        public static final int defaultChar = 32;
         private int textureHeight;
         private int textureWidth;
-
-        static class Glyph {
-
-            public int value;
-            public int index;
-            public float[] image;
-            public int height;
-            public int width;
-            public int setWidth;
-            public int topExtent;
-            public int leftExtent;
-
-            public void draw(float x, float y, float w, float h) {
-                //TODO
-            }
-        }
 
         public BitFont(byte[] theBytes) {
             super();
@@ -1713,16 +1706,6 @@ public enum Draw {
             }
         }
 
-        public Glyph getGlyph(char c) {
-            int n = (int) c;
-            /* if c is out of the BitFont-glyph bounds, return
-             * the defaultChar glyph (the space char by
-             * default). */
-            n = (n >= 128) ? defaultChar : n;
-            return glyphs[n];
-        }
-
-
         static public int byteArrayToInt(byte[] b) {
             int value = 0;
             for (int i = 0; i < 2; i++) {
@@ -1732,10 +1715,18 @@ public enum Draw {
             return value;
         }
 
-
         static public int getBit(int theByte, int theIndex) {
             int bitmask = 1 << theIndex;
             return ((theByte & bitmask) > 0) ? 1 : 0;
+        }
+
+        public Glyph getGlyph(char c) {
+            int n = (int) c;
+            /* if c is out of the BitFont-glyph bounds, return
+             * the defaultChar glyph (the space char by
+             * default). */
+            n = (n >= 128) ? defaultChar : n;
+            return glyphs[n];
         }
 
         float[] decodeBitFont(byte[] bytes) {
@@ -1812,6 +1803,22 @@ public enum Draw {
                 indent += charWidth[i];
             }
             return this;
+        }
+
+        static class Glyph {
+
+            public int value;
+            public int index;
+            public float[] image;
+            public int height;
+            public int width;
+            public int setWidth;
+            public int topExtent;
+            public int leftExtent;
+
+            public void draw(float x, float y, float w, float h) {
+                //TODO
+            }
         }
     }
 }

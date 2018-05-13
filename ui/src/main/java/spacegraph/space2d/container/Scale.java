@@ -38,5 +38,13 @@ public class Scale extends UnitContainer {
         the.pos(tx, ty, tx+vw, ty+vh);
     }
 
+//    public static Surface scaleable(Surface x) {
+//        FloatSlider scaleSlider = new FloatSlider(1f, 0.25f, 4f);
+//        Surface ctl = new Gridding(scaleSlider);
+//        spacegraph.space2d.container.Scale sx = new spacegraph.space2d.container.Scale(x, (float) scaleSlider.value());
+//        Splitting s = new Splitting(sx, ctl, 0.1f);
+//        scaleSlider.on(sx::scale);
+//        return s;
+//    }
 
 }

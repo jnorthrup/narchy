@@ -3,13 +3,15 @@ package spacegraph.space2d.widget.button;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.Surface;
+import spacegraph.video.ImageTexture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by me on 11/12/16.
  */
-public abstract class ToggleButton extends AbstractButton {
+public class ToggleButton extends AbstractButton {
 
     final AtomicBoolean on = new AtomicBoolean(false);
 
@@ -23,10 +25,19 @@ public abstract class ToggleButton extends AbstractButton {
         on.set(startingValue);
     }
 
+    public ToggleButton(Surface view) {
+        super();
+        set(view);
+    }
+
 
     protected ToggleButton(ObjectBooleanProcedure<ToggleButton> action) {
         this();
         on(action);
+    }
+
+    public static IconToggleButton awesome(String icon) {
+        return new IconToggleButton(ImageTexture.awesome(icon));
     }
 
     public ToggleButton set(boolean on) {

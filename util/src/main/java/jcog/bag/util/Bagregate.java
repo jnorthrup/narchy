@@ -1,5 +1,6 @@
 package jcog.bag.util;
 
+import com.google.common.collect.Iterators;
 import jcog.bag.Bag;
 import jcog.bag.impl.PLinkArrayBag;
 import jcog.math.FloatRange;
@@ -8,11 +9,11 @@ import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -26,13 +27,14 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     private final Iterable<X> src;
     private final MutableFloat scale;
     final AtomicBoolean busy = new AtomicBoolean();
+    private float forgetRate = 0.5f;
 
     public Bagregate(Stream<X> src, int capacity, float scale) {
         this(src::iterator, capacity, scale);
     }
 
     public Bagregate(Iterable<X> src, int capacity, float scale) {
-        this.bag = new PLinkArrayBag(/*PriMerge.plus*/ PriMerge.replace, capacity) {
+        this.bag = new PLinkArrayBag(PriMerge.plus /*PriMerge.replace*/, capacity) {
             @Override
             public void onRemove(Object value) {
                 Bagregate.this.onRemove((PriReference<X>) value);
@@ -53,7 +55,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 
         try {
 
-            bag.commit();
+            bag.commit(bag.forget(forgetRate));
 
             float scale = this.scale.floatValue();
 
@@ -79,9 +81,9 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
         return true;
     }
 
-    @NotNull
     @Override
     public Iterator<PriReference<X>> iterator() {
+        update();
         return bag.iterator();
     }
 
@@ -92,6 +94,14 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
 
     public void clear() {
         bag.clear();
+    }
+
+
+
+    public <Y> Iterable<Y> iterable(Function<X, Y> f) {
+        return ()->{
+            return Iterators.transform(this.iterator(), (b)->f.apply(b.get()));
+        };
     }
 
 

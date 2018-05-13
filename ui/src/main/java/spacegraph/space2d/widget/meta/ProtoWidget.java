@@ -16,8 +16,8 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.button.IconToggleButton;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.tab.ButtonSet;
 import spacegraph.space2d.widget.tab.TabPane;
@@ -142,7 +142,7 @@ public class ProtoWidget extends Widget {
             }
 
             if (icon!=null) {
-                return IconToggleButton.awesome(icon );
+                return ToggleButton.awesome(icon );
             } else {
                 return new CheckBox(l);
             }

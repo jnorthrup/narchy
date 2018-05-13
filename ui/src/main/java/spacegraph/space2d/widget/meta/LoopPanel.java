@@ -4,7 +4,7 @@ import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import jcog.math.MutableInteger;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.button.IconToggleButton;
+import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.IntSpinner;
 import spacegraph.space2d.widget.tab.ButtonSet;
@@ -38,7 +38,7 @@ public class LoopPanel extends Gridding {
         set(
                 new Gridding(
                         new ButtonSet(ButtonSet.Mode.One,
-                                IconToggleButton.awesome("play").on((b) -> {
+                                ToggleButton.awesome("play").on((b) -> {
                                     if (b) {
                                         if (pause) {
                                             pause = false;
@@ -46,7 +46,7 @@ public class LoopPanel extends Gridding {
                                         }
 
                                     }
-                                }), IconToggleButton.awesome("pause").on((b) -> {
+                                }), ToggleButton.awesome("pause").on((b) -> {
                             if (b) {
 
                                 if (!pause) {

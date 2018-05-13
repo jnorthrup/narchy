@@ -1,15 +1,12 @@
 package spacegraph.space2d.widget.tab;
 
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
-import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.text.Label;
 
 import java.util.Map;
@@ -90,11 +87,7 @@ public class TabPane extends Splitting {
     }
 
 
-    public static void main(String[] args) {
-        SpaceGraph.window(new TabPane(Map.of(
-                "a", () -> new Sketch2DBitmap(40, 40),
-                "b", () -> new PushButton("x"))), 800, 800);
-    }
+
 
 
 }

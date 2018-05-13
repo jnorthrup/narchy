@@ -36,6 +36,7 @@ import spacegraph.space2d.phys.particle.ParticleSystem;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
+import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ProtoWidget;
 import spacegraph.space2d.widget.meta.WizardFrame;
 import spacegraph.space2d.widget.tab.ButtonSet;
@@ -384,6 +385,10 @@ public class Dyn2DSurface extends Wall implements Animated {
     public PhyWindow put(Surface content, float w, float h) {
         Ortho view = (Ortho) root();
         return put(content, RectFloat2D.XYWH(view.x(), view.y(), w, h));
+    }
+
+    public PhyWindow frame(Surface content, float w, float h) {
+        return put(new MetaFrame(content), w, h);
     }
 
     public PhyWindow put(Surface content, RectFloat2D initialBounds) {

@@ -35,6 +35,8 @@ public class Tex {
     public GLProfile profile;
     private TextureData nextData;
 
+    /** weird rotation correction.. dunno why yet */
+    boolean inverted = false;
 
     private Object src;
 
@@ -67,7 +69,7 @@ public class Tex {
         }
 
         if (texture != null) {
-            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha);
+            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha, inverted);
         }
 
     }

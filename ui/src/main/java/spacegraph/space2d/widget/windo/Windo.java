@@ -45,6 +45,10 @@ public class Windo extends Stacking {
 //                );
     }
 
+    public Windo(Surface content) {
+        set(content);
+    }
+
     @Override
     public Surface tryTouch(Finger finger) {
 

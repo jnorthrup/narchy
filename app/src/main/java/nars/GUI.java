@@ -5,7 +5,6 @@ import nars.gui.Vis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.windo.Dyn2DSurface;
@@ -38,16 +37,14 @@ public class GUI {
         //            }, 800, 600);
 
 
-
-
         //Loop.invokeLater(()->{
-            //((ZoomOrtho) w.root()).scaleMin = 100f;
-            //((ZoomOrtho) w.root()).scaleMax = 1500;
+        //((ZoomOrtho) w.root()).scaleMin = 100f;
 
-            w.put(new ServicesTable(nar.services), 5,4);
-            w.put(new Gridding(new OmniBox()), 6, 1);
-            w.put(Vis.top(nar), 4,4);
-        //});
+
+        w.frame(new ServicesTable(nar.services), 5, 4);
+        w.frame(new OmniBox(), 6, 1);
+        w.frame(Vis.top(nar), 4, 4);
+
 
 
         //nar.inputNarsese(new FileInputStream("/home/me/d/sumo_merge.nal"));

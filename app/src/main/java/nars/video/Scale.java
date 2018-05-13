@@ -114,4 +114,5 @@ public class Scale extends BufferedImageBitmap2D implements ImageObserver {
     public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
         return true;
     }
+
 }

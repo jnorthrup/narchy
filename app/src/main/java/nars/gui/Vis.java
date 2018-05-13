@@ -2,6 +2,7 @@ package nars.gui;
 
 import jcog.pri.PriReference;
 import nars.NAR;
+import nars.gui.graph.run.ConceptGraph2D;
 import nars.term.Termed;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -308,7 +309,7 @@ public class Vis {
                                 "nar", () -> new AutoSurface<>(n),
                                 "exe", () -> ExeCharts.exePanel(n),
                                 "can", () -> ExeCharts.causePanel(n),
-
+                                "grp", () -> new ConceptGraph2D(n).widget(),
                                 "svc", () -> new ServicesTable(n.services),
 //                                "svc", () -> new AutoSurface(n.services) {
 //                                    @Override

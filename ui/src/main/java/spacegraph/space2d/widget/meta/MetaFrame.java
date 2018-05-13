@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.meta;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.windo.Widget;
+import spacegraph.space2d.widget.text.Label;
 
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
@@ -15,27 +15,27 @@ public class MetaFrame extends Bordering {
 //    private final Widget widget;
 
 
-    public MetaFrame(Widget widget) {
-        super(widget.content());
+    public MetaFrame(Surface surface) {
+        super(surface);
 //        this.widget = widget;
 
         Surface m = grid(
-                new PushButton("@"), //tag
-                new PushButton("?") //inspect
+                PushButton.awesome("tag"), //tag
+                PushButton.awesome("sitemap") //inspect
         );
 
         Runnable zoomer = () -> {
             //TODO if already significantly zoomed (ex: > 75% view consumed by the widget) then unzoom
-            widget.root().zoom(widget);
+            surface.root().zoom(surface);
         };
 
 
         Surface n =
                 //new BitmapLabel(name(widget));
-                //new Label(name(widget));
-                grid(new PushButton(name(widget), zoomer));
+                new Label(name(surface));
+                //grid(new PushButton(name(surface), zoomer));
 
-        PushButton hideButton = new PushButton("X");
+        PushButton hideButton = PushButton.awesome("times");
 
         borderWest = 0;
         set(N, n);
@@ -46,7 +46,7 @@ public class MetaFrame extends Bordering {
         //set(SW, zoomButton);
 
 
-        Surface wm = (widget instanceof Menu) ? ((Menu) widget).menu() : null;
+        Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
         if (wm != null)
             set(S, wm);
         else
