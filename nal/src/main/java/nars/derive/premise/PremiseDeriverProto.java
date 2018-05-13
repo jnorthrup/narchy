@@ -6,14 +6,9 @@ import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.step.Occurrify;
-import nars.derive.step.Taskify;
-import nars.derive.step.Termify;
-import nars.derive.step.Truthify;
-import nars.op.DepIndepVarIntroduction;
+import nars.derive.step.*;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -30,7 +25,6 @@ import nars.unify.constraint.*;
 import nars.unify.op.*;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -38,7 +32,7 @@ import static java.util.Collections.addAll;
 import static nars.$.newArrayList;
 import static nars.$.newHashSet;
 import static nars.Op.*;
-import static nars.derive.premise.PremiseDeriverProto.IntroVars.VAR_INTRO;
+import static nars.derive.step.IntroVars.VAR_INTRO;
 import static nars.subterm.util.Contains.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -976,44 +970,6 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         @Override
         public String toString() {
             return $.p(rule.term(), $.the(id)).toString();
-        }
-    }
-
-    public static final class IntroVars extends AbstractPred<Derivation> {
-
-        static final Term VAR_INTRO = $.the("varIntro");
-
-        private IntroVars() {
-            super(VAR_INTRO);
-        }
-
-        @Override
-        public boolean test(Derivation p) {
-            final Term x = p.derivedTerm;
-
-
-            @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, p.random);
-            if (xy == null)
-                return false;
-
-            final Term y = xy.getOne();
-
-            if (!y.unneg().op().conceptualizable ||
-                y.equals(x) || /* keep only if it differs */
-                //!y.hasAny(Op.ConstantAtomics) ||  //entirely variablized
-                !Task.validTaskTerm(y, p.concPunc, true)
-            )
-                return false;
-
-
-            Map<Term, Term> changes = xy.getTwo();
-            changes.forEach(p::replaceXY);
-            p.derivedTerm = y;
-
-//            //reduce evidence by a factor proportional to the number of variables introduced
-//            p.concEviFactor *= (((float)(1+y.complexity()))/(1+x.complexity()));
-
-            return true;
         }
     }
 

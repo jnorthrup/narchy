@@ -28,11 +28,15 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     private final static int DepOrIndepBits = Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_PATTERN.bit;
 
     /** sum by complexity if passes include filter */
-    private static final ToIntFunction<Term> depIndepFilter = t ->
-            t.hasAny(DepOrIndepBits
-                    //| Op.NEG.bit //??
-                    //| Op.VariableBits //dont re-introduce over variables
-            ) ? 0 : 1;
+    private static final ToIntFunction<Term> depIndepFilter = t -> {
+        if (t.op().var) return 0;
+        return t.hasAny(
+                Op.VAR_INDEP.bit
+                //DepOrIndepBits
+                //| Op.NEG.bit //??
+                //| Op.VariableBits //dont re-introduce over variables
+        ) ? 0 : 1;
+    };
 
     @Override
     public Pair<Term, Map<Term, Term>> apply(Term x, Random r) {
@@ -51,7 +55,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     @Override
     protected Term introduce(Term input, Term selected, byte order) {
 
-        if (selected.equals(Imdex))
+        if (selected==Imdex || selected==imInt || selected == imExt) //?
             return null;
 
         Op inOp = input.op();

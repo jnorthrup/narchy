@@ -65,11 +65,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
     private boolean autoNeg = true;
 
+    /** re-used temporary breadth-first search queue */
+    private final ArrayDeque q = new ArrayDeque();
+
 
     /**
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
      */
-    static long dt(Term x, Event aa, Event bb) {
+    static long dt(Event aa, Event bb) {
 
         long aWhen = aa.start();
         long bWhen;
@@ -453,7 +456,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                                 long from = abi.start();
                                 for (int j = 0; j < ab.length; j++) {
                                     if (i == j) continue;
-                                    long to = dt(x, abi, ab[j]);
+                                    long to = dt(abi, ab[j]);
                                     if (uniqueTry.add(pair(from, to))) {
                                         if (!solveDT(x, from, to,
                                                 Math.min(abi.dur(), ab[j].dur()) //dur=intersection
@@ -478,7 +481,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                             if (!ae.allSatisfy(ax ->
                                     be.allSatisfyWith((bx, axx) -> {
                                         if (uniqueTry.add(twin(axx, bx))) {
-                                            return solveDT(x, axx.start(), dt(x, axx, bx),
+                                            return solveDT(x, axx.start(), dt(axx, bx),
                                                     Math.min(axx.dur(), bx.dur()), //dur=intersection
                                                     each);
                                         } else {
@@ -862,7 +865,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             }
         }
 
-        boolean result = bfs(roots, tv);
+        boolean result = bfs(roots, tv, q);
 
         created.forEach(this::removeNode);
 

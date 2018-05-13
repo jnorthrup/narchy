@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
+import jcog.decide.Roulette;
 import jcog.list.FasterList;
 import jcog.sort.SortedList;
 import nars.IO;
@@ -442,6 +443,9 @@ public enum Terms {
      */
     public static Term nextRepeat(Term c, ToIntFunction<Term> countIf, int minCount, Random rng) {
         ObjectIntHashMap<Term> oi = Terms.subtermScore(c, countIf, minCount);
+        if (oi == null)
+            return null;
+
         LazyIterable<Term> ok = oi.keysView();
         switch (oi.size()) {
             case 0: return null;
@@ -479,20 +483,24 @@ public enum Terms {
 
         {
             //prefer least aggressive options to gradually introduce variables rather than destroy the most information first, prefer to destroy small amounts first
-            MutableIntIterator oo = oi.intIterator();
-            float ms = minScore[0];
-            while (oo.hasNext()) {
-                if (oo.next() > ms)
-                    oo.remove();
-            }
-            switch (oi.size()) {
-                case 0:
-                    throw new RuntimeException("shouldnt happen");
-                case 1:
-                    return ok.getFirst();
-                default:
-                    return ok.toList().get(rng.nextInt(oi.size()));
-            }
+            //sample preferring least complexity
+            Term[] x = oi.keysView().toArray(Op.EmptyTermArray);
+            return x[ Roulette.selectRoulette(x.length, (n)->1f/(x[n].complexity()), rng) ];
+
+//            MutableIntIterator oo = oi.intIterator();
+//            float ms = minScore[0];
+//            while (oo.hasNext()) {
+//                if (oo.next() > ms)
+//                    oo.remove();
+//            }
+//            switch (oi.size()) {
+//                case 0:
+//                    throw new RuntimeException("shouldnt happen");
+//                case 1:
+//                    return ok.getFirst();
+//                default:
+//                    return ok.toList().get(rng.nextInt(oi.size()));
+//            }
         }
     }
 
@@ -520,14 +528,19 @@ public enum Terms {
     /**
      * counts the repetition occurrence count of each subterm within a compound
      */
-    public static ObjectIntHashMap<Term> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
+    @Nullable public static ObjectIntHashMap<Term> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
         ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume());
 
         c.recurseTerms((Term subterm) -> {
+            if (subterm == c)
+                return;
             int s = score.applyAsInt(subterm);
             if (s > 0)
                 uniques.addToValue(subterm, s);
         });
+
+        int total = uniques.size();
+        if (total == 0) return null;
 
         MutableIntIterator uu = uniques.intIterator();
         while (uu.hasNext()) {
@@ -535,6 +548,7 @@ public enum Terms {
                 uu.remove();
         }
 
+        if (uniques.size() == 0) return null;
         return uniques;
         //uniques.keyValuesView().select((oi)->oi.getTwo()>=minTotalScore);
     }

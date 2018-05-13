@@ -46,23 +46,25 @@ public abstract class NodeGraph<N, E> {
     }
 
     public boolean bfs(N startingNode, Search<N, E> tv) {
-        return bfs(List.of(startingNode), tv);
+        return bfs(List.of(startingNode), tv, new ArrayDeque());
     }
 
     public boolean dfs(Iterable<N> startingNodes, Search<N, E> tv) {
         return dfsNodes(Iterables.transform(startingNodes, this::node), tv);
     }
 
-    public boolean bfs(Iterable<N> startingNodes, Search<N, E> tv) {
-        return bfsNodes(Iterables.transform(startingNodes, this::node), tv);
+    public boolean bfs(Iterable<N> startingNodes, Search<N, E> tv, Queue<Pair<List<BooleanObjectPair<ImmutableDirectedEdge<N, E>>>, Node<N, E>>> q) {
+        return bfsNodes(Iterables.transform(startingNodes, this::node), tv, q);
     }
 
-    private boolean bfsNodes(Iterable<Node<N,E>> startingNodes, Search<N, E> search) {
+    /** q is recycled between executions automatically. just pre-alloc it
+     * ArrayDeque or similar recommended.  */
+    private boolean bfsNodes(Iterable<Node<N, E>> startingNodes, Search<N, E> search, Queue<Pair<List<BooleanObjectPair<ImmutableDirectedEdge<N, E>>>, Node<N, E>>> q) {
         search.start();
         try {
 
             for (Node n : startingNodes) {
-                Queue<Pair<List<BooleanObjectPair<ImmutableDirectedEdge<N, E>>>, Node<N,E>>> q = new ArrayDeque();
+                q.clear();
                 if (!search.bfs(n, q))
                     return false;
             }
@@ -70,6 +72,7 @@ public abstract class NodeGraph<N, E> {
             return true;
         } finally {
             search.stop();
+            q.clear();
         }
     }
 
