@@ -74,18 +74,15 @@ public class GoalActionAsyncConcept extends ActionConcept {
     }
 
 
-    public void feedback(@Nullable Truth f, @Nullable Truth g, NAR nar) {
-
-        long now = nar.time();
-        int dur = nar.dur();
+    public void feedback(@Nullable Truth f, @Nullable Truth g, long lastUpdate, long now, NAR nar) {
 
 
 //        long start =
 //                now - dur/2;
 //        long end =
 //                now + dur/2;
-        long start = now;
-        long end = now + dur;
+        long start = lastUpdate;
+        long end = now;
 
         Task fg;
         if (g!=null) {
@@ -97,6 +94,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
         else
             fg = null;
 
+        int dur = nar.dur();
         SignalTask fb = ((ScalarBeliefTable)beliefs()).add(f, start, end, dur, nar);
 
         in.input(

@@ -28,7 +28,6 @@ import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.w2c;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Created by me on 9/30/16.
@@ -510,7 +509,8 @@ public interface NAct {
 
         final float g[] = new float[2];
         final float e[] = new float[2];
-        final long[] lastUpdate = {ETERNAL};
+        final long[] lastUpdate = {nar().time()};
+        final long[] lastFeedback = {nar().time()};
 
         final float[] lastX = {0};
 
@@ -521,6 +521,7 @@ public interface NAct {
 
             NAR n = nar();
             long now = n.time();
+            long prevUpdate = lastUpdate[0];
             if (now!= lastUpdate[0]) {
                 lastUpdate[0] = now;
                 CC[0] = CC[1] = null; //reset
@@ -719,9 +720,10 @@ public interface NAct {
 
                 //System.out.println(Pb + "," + Nb + " <- " + g[0] + ";" + c[0] + ", " + g[1] + ';' + c[1]);
 
-                CC[0].feedback(Pb, Pg, n);
-
-                CC[1].feedback(Nb, Ng, n);
+                long lastFb = lastFeedback[0];
+                CC[0].feedback(Pb, Pg, lastFb, now, n);
+                CC[1].feedback(Nb, Ng, lastFb, now, n);
+                lastFeedback[0] = now;
 
 
             }

@@ -39,7 +39,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 2;
     float rotSpeed = 0.09f;
-    static float fps = 25f;
+    static float fps = 20f;
 //    final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
     final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
@@ -86,7 +86,7 @@ public class FZero extends NAgentX {
 //        )/*.blur()*/).modeDiffer().resolution(0.1f);
 
 
-        new AutoConceptualizer(Lists.newArrayList(c.iter.iterator() ), true, 10, nar) {
+        new AutoConceptualizer(Lists.newArrayList(c.iter.iterator() ), true, 4, nar) {
             @Override
             protected void onFeature(Term feature) {
 //                System.out.println(feature);
@@ -141,14 +141,16 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
+        Scalar dVelX = senseNumberDifference($.inh(id,$.p("vel", "x")), () -> (float) fz.vehicleMetrics[0][7]);
+        Scalar dVelY = senseNumberDifference($.inh(id,$.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
         Scalar dAccel = senseNumberDifference($.inh(id,"accel"), () -> (float) fz.vehicleMetrics[0][6]);//.resolution(0.02f);
         Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);//.resolution(0.02f);
         DemultiplexedScalar ang = senseNumber(angle -> $.func("ang", id, $.the(angle) ) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                2,
-                DigitizedScalar.FuzzyNeedle
-                //ScalarConcepts.Needle
-                //ScalarConcepts.Fluid
+                3,
+                //DigitizedScalar.FuzzyNeedle
+                //DigitizedScalar.Needle
+                DigitizedScalar.Fluid
         ).resolution(0.01f);
 
         //new RLBooster(this, HaiQae::new, 1);
@@ -161,7 +163,8 @@ public class FZero extends NAgentX {
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        SpaceGraph.window(Vis.beliefCharts(64, concat(java.util.List.of(dAngVel, dAccel), ang), nar), 300, 300);
+        SpaceGraph.window(Vis.beliefCharts(64, concat(java.util.List.of(
+                dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
 //        new BeliefPredict(concat(
 //                //actions.keySet(),
@@ -455,14 +458,14 @@ public class FZero extends NAgentX {
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolarFrequencyDifferential($.p(id, $.the("x")), fair, true, (r0) -> {
+        actionBipolarFrequencyDifferential($.inh(id, $.the("turn")), fair, true, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 
             fz.playerAngle +=
                     //(a*a*a) *
                     r *
-                    rotSpeed * 0.25f;
+                    rotSpeed * 0.75f;
             return r0;
         });
 //        actionBipolarSteering($.the("x"), (a) -> {
