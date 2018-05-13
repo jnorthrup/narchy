@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 430;
+    public static final int cycles = 230;
 
 
     @BeforeEach
@@ -347,7 +347,8 @@ public class NAL8Test extends NALTest {
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
-                .mustGoal(cycles, "y", 1f, 0.81f, 3)
+                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t > 0)
+                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t > 3 + 0 /* earliest x goal */ )
                 .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
@@ -802,7 +803,7 @@ public class NAL8Test extends NALTest {
             .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
             .inputAt(when, "b! :|:")
             .mustGoal(when*2, subjPred[0], 1f, 0.45f,
-                    (t) -> t == goalAt) //desired NOW, not at time 10 as would happen during normal decompose
+                    (t) -> t >= goalAt) //desired NOW, not at time 10 as would happen during normal decompose
             //.mustNotOutput(when*2, subjPred[0], GOAL, t -> t != goalAt)
         ;
     }

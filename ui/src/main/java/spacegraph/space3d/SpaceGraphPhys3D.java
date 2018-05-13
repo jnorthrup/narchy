@@ -24,6 +24,7 @@
 package spacegraph.space3d;
 
 import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.opengl.GL2;
 import jcog.list.FasterList;
 import spacegraph.input.finger.FPSLook;
 import spacegraph.input.finger.OrbMouse;
@@ -130,7 +131,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace<X> {
     }
 
 
-    @Override protected void initLighting() {
+    @Override protected void initLighting(GL2 gl) {
         gl.glLightModelf(GL_LIGHT_MODEL_AMBIENT, 0.6f);
 
         final float a = 0.7f;

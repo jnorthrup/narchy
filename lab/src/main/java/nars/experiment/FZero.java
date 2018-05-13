@@ -2,7 +2,6 @@ package nars.experiment;
 
 import com.google.common.collect.Lists;
 import jcog.Util;
-import jcog.learn.LivePredictor;
 import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
@@ -15,7 +14,6 @@ import nars.concept.scalar.SwitchAction;
 import nars.gui.Vis;
 import nars.op.AutoConceptualizer;
 import nars.term.Term;
-import nars.util.signal.BeliefPredict;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.util.time.Tense;
 import nars.video.Scale;
@@ -107,11 +105,11 @@ public class FZero extends NAgentX {
 //                .resolution(0.05f);
 
 
-        initToggle();
+        //initToggle();
         //initTankContinuous();
         //actionSwitch();
         //initTankDiscrete();
-        //initBipolar(true);
+        initBipolar(true);
         //initBipolar(true);
 
         //new Implier(1, this, new float[] { 0, 1 });
@@ -147,11 +145,11 @@ public class FZero extends NAgentX {
         Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);//.resolution(0.02f);
         DemultiplexedScalar ang = senseNumber(angle -> $.func("ang", id, $.the(angle) ) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                4,
+                2,
                 DigitizedScalar.FuzzyNeedle
                 //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(0.05f);
+        ).resolution(0.01f);
 
         //new RLBooster(this, HaiQae::new, 1);
 
@@ -165,14 +163,14 @@ public class FZero extends NAgentX {
 
         SpaceGraph.window(Vis.beliefCharts(64, concat(java.util.List.of(dAngVel, dAccel), ang), nar), 300, 300);
 
-        new BeliefPredict(concat(
-                //actions.keySet(),
-                java.util.List.of(dAngVel, dAccel),
-                ang),
-                8, nar.dur()*2, 6,
-                new LivePredictor.LSTMPredictor(0.15f, 2),
-                nar
-        );
+//        new BeliefPredict(concat(
+//                //actions.keySet(),
+//                java.util.List.of(dAngVel, dAccel),
+//                ang),
+//                8, nar.dur()*2, 6,
+//                new LivePredictor.LSTMPredictor(0.15f, 2),
+//                nar
+//        );
 
 
         //nar.mix.stream("Derive").setValue(1);
@@ -447,7 +445,7 @@ public class FZero extends NAgentX {
         actionUnipolar($.inh(id,"fwd"), true, (x)->0f, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a > 0.5f) {
-                float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
+                float thrust = /*+=*/ (a - 0.5f) * 2f * (8*fwdSpeed); //gas
                 fz.vehicleMetrics[0][6] = thrust;
             } else
                 fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f))); //brake
@@ -457,14 +455,14 @@ public class FZero extends NAgentX {
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolarFrequencyDifferential(/*$.p($.the("x"), */(id), fair, true, (r0) -> {
+        actionBipolarFrequencyDifferential($.p(id, $.the("x")), fair, true, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 
             fz.playerAngle +=
                     //(a*a*a) *
                     r *
-                    rotSpeed;
+                    rotSpeed * 0.25f;
             return r0;
         });
 //        actionBipolarSteering($.the("x"), (a) -> {

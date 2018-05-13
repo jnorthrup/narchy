@@ -303,8 +303,8 @@
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:Task)
     X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:Weak, Time:Task)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:Task)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:Weak, Time:Task)
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:Belief)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:Weak, Time:Belief)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
@@ -332,7 +332,8 @@
 
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)   |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Task)
+    C, X, task("."), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction)
+    C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
     //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)

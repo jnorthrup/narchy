@@ -8,6 +8,7 @@ import nars.concept.scalar.DigitizedScalar;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
+import static nars.$.p;
 
 /**
  * Created by me on 4/30/17.
@@ -23,23 +24,23 @@ public class Gradius extends NAgentX {
 
         this.g = new Gradius4K();
 
-        g.updateMS = 20;
+        g.updateMS = 40;
 
         //senseCameraReduced($.p(id,$.the("ae")), (Supplier)()->g.image, 32,32,2,2).resolution(0.5f);
 
 
-        senseCamera($.p(id, $.the(0), $.the(0)), new Scale(() -> g.image, 25, 25)
+        senseCamera(p(id, $.the("SW")), new Scale(() -> g.image, 25, 25)
                 .window(0, 0, 0.5f, 0.5f)).resolution(0.05f);
-        senseCamera($.p(id, $.the(0), $.the(1)), new Scale(() -> g.image, 25, 25)
+        senseCamera(p(id, $.the("NW")), new Scale(() -> g.image, 25, 25)
                 .window(0.5f, 0, 1f, 0.5f)).resolution(0.05f);
-        senseCamera($.p(id, $.the(1), $.the(0)), new Scale(() -> g.image, 25, 25)
+        senseCamera(p(id, $.the("SE")), new Scale(() -> g.image, 25, 25)
                 .window(0, 0.5f, 0.5f, 1f)).resolution(0.05f);
-        senseCamera($.p(id, $.the(1), $.the(1)), new Scale(() -> g.image, 25, 25)
+        senseCamera(p(id, $.the("NE")), new Scale(() -> g.image, 25, 25)
                 .window(0.5f, 0.5f, 1f, 1f)).resolution(0.05f);
 
         //Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 50, 50)).resolution(0.05f);
 
-        senseCameraRetina(id, () -> g.image, 16, 16).resolution(0.04f);
+//        senseCameraRetina(id, () -> g.image, 16, 16).resolution(0.04f);
 
 
         //BufferedImageBitmap2D cc = new Scale(() -> g.image, 48, 48).blur();
@@ -51,11 +52,11 @@ public class Gradius extends NAgentX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        senseNumber((level)->$.inh($.p($.the("Y"), $.the(level)), id),
+        senseNumber((level)->$.inh(p($.the("Y"), $.the(level)), id),
                 ()->g.player[OBJ_Y] / height,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
-        senseNumber((level)->$.inh($.p($.the("X"), $.the(level)), id),
+        senseNumber((level)->$.inh(p($.the("X"), $.the(level)), id),
                 ()->g.player[OBJ_X] / width,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
@@ -154,7 +155,7 @@ public class Gradius extends NAgentX {
     void initBipolar() {
         //TODO use actionTriState
         float thresh = 0.1f;
-        actionBipolar($.p($.the("y"), id), (dy) -> {
+        actionBipolar(p($.the("y"), id), (dy) -> {
             if (dy < -thresh) {
                 g.keys[VK_UP] = false; g.keys[VK_DOWN] = true;
                 return -1f;
@@ -167,7 +168,7 @@ public class Gradius extends NAgentX {
             }
             //return dy;
         });
-        actionBipolar($.p($.the("x"), id), (dx) -> {
+        actionBipolar(p($.the("x"), id), (dx) -> {
            if (dx < -thresh) {
                g.keys[VK_LEFT] = false; g.keys[VK_RIGHT] = true;
                return -1f;

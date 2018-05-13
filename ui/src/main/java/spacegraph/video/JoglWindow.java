@@ -405,17 +405,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 @Override
                 public boolean next() {
 
-                    if (window == null)
-                        return true; //not ready yet
+                    if (!paused) {
+                        if (window != null) {
+                            preRenderTasks.removeIf(r -> {
+                                r.accept(JoglWindow.this);
+                                return true;
+                            });
+                        }
 
-                    preRenderTasks.removeIf(r -> {
-                        r.accept(JoglWindow.this);
-                        return true;
-                    });
+                        if (!drawablesEmpty) { // RUN
 
-                    if (!drawablesEmpty && !paused) { // RUN
-
-                        try {
+                            try {
 //                            //for debug
 //                            if (window.isSurfaceLockedByOtherThread()) {
 //                                Thread surfaceLockOwner = window.getSurfaceLockOwner();
@@ -425,13 +425,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                                );
 //                            }
 
-                            //if (!window.isSurfaceLockedByOtherThread())
-                            impl.display(drawables, ignoreExceptions, printExceptions);
-                        } catch (final UncaughtAnimatorException dre) {
-                            //quitIssued = true;
-                            dre.printStackTrace();
+                                //if (!window.isSurfaceLockedByOtherThread())
+                                impl.display(drawables, ignoreExceptions, printExceptions);
+                            } catch (final UncaughtAnimatorException dre) {
+                                //quitIssued = true;
+                                dre.printStackTrace();
+                            }
                         }
-                    }
                     /*else if (pauseIssued && !quitIssued) { // PAUSE
 //                        if (DEBUG) {
 //                            System.err.println("FPSAnimator pausing: " + alreadyPaused + ", " + Thread.currentThread() + ": " + toString());
@@ -460,6 +460,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                            }
 //                        }
                     }*/
+                    }
                     return true;
 
                 }

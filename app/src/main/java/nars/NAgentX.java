@@ -55,6 +55,7 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -90,8 +91,8 @@ abstract public class NAgentX extends NAgent {
 
     public static TimeAware runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                //fps * 2, //NYQUIST
-                fps * 1, //1:1
+                fps * 2, //NYQUIST
+                //fps * 1, //1:1
                 fps);
     }
 
@@ -335,7 +336,7 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 32);
 
-        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(8, n);
 
@@ -359,7 +360,7 @@ abstract public class NAgentX extends NAgent {
         Inperience inp = new Inperience(n, 32);
 //
 
-        Abbreviation abb = new Abbreviation(n, "z", 4, 6, 3f, 32);
+        Abbreviation abb = new Abbreviation(n, "z", 4, 6, 0.5f, 8);
 
         //reflect.ReflectSimilarToTaskTerm refSim = new reflect.ReflectSimilarToTaskTerm(16, n);
         //reflect.ReflectClonedTask refTask = new reflect.ReflectClonedTask(16, n);

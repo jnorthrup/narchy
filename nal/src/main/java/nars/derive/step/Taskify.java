@@ -40,10 +40,15 @@ public class Taskify extends AbstractPred<Derivation> {
         this.channel = channel;
     }
 
-    public static boolean valid(Term x) {
+    public static boolean valid(Term x, byte punc) {
         if ((x != null) && x.unneg().op().conceptualizable) {
 
-            return !x.hasAny(PatternsOrBool);
+            if (!x.hasAny(PatternsOrBool)) {
+                if ((punc == BELIEF || punc == GOAL) && x.hasXternal())
+                    return false;
+
+                return true;
+            }
         }
 
         return false;

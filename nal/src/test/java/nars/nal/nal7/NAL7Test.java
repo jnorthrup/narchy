@@ -24,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
-    public int cycles = 200;
+    public int cycles = 100;
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(26);
+        test.nar.termVolumeMax.set(22);
     }
 
 //    private static final Path tmpDir;

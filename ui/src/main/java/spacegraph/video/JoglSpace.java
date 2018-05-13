@@ -162,7 +162,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 //        gl.glEnable(gl.GL_CULL_FACE);
 //        gl.glCullFace(gl.GL_BACK);
 
-        initLighting();
+        initLighting(gl);
 
         updateWindowInfo();
         initInput();
@@ -191,7 +191,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     }
 
-    protected void initLighting() {
+    protected void initLighting(GL2 gl) {
 
 
         // Quick And Dirty Lighting (Assumes Light0 Is Set Up)
