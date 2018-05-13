@@ -231,7 +231,9 @@ public interface TemporalBeliefTable extends TaskTable {
 
     void whileEach(Predicate<? super Task> each);
 
-    /** finds all temporally intersectnig tasks.  minT and maxT inclusive.  while the predicate remains true, it will continue scanning */
+    /** finds all temporally intersectnig tasks.  minT and maxT inclusive.  while the predicate remains true, it will continue scanning
+     * TODO contains/intersects parameter
+     * */
     default void whileEach(long minT, long maxT, Predicate<? super Task> each) {
         whileEach(x -> {
             if (!x.isDeleted() && x.intersects(minT, maxT))
@@ -240,4 +242,6 @@ public interface TemporalBeliefTable extends TaskTable {
                 return true; //continue
         });
     }
+
+
 }

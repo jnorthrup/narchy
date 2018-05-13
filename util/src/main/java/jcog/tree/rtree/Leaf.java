@@ -136,18 +136,24 @@ public class Leaf<T> extends AbstractNode<T, T> {
     @Override
     public boolean AND(Predicate<T> p) {
         T[] data = this.data;
-        for (int i = 0; i < size; i++)
-            if (!p.test(data[i]))
+        int s = size;
+        for (int i = 0; i < s; i++) {
+            T d = data[i];
+            if (d!=null && !p.test(d))
                 return false;
+        }
         return true;
     }
 
     @Override
     public boolean OR(Predicate<T> p) {
         T[] data = this.data;
-        for (int i = 0; i < size; i++)
-            if (p.test(data[i]))
+        short s = this.size;
+        for (int i = 0; i < s; i++) {
+            T d = data[i];
+            if (d!=null && p.test(d))
                 return true;
+        }
         return false;
     }
 
@@ -162,7 +168,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
             T[] data = this.data;
             for (int i = 0; i < s; i++) {
                 T d = data[i];
-                if (d!=null && t == d || t.equals(d))
+                if (d!=null && (t == d || t.equals(d)))
                     return true; //instance already contained
             }
         }
@@ -213,7 +219,8 @@ public class Leaf<T> extends AbstractNode<T, T> {
         T[] data = this.data;
         HyperRegion r = null;
         for (int i = 0; i < s; i++) {
-            if (data[i].equals(told)) {
+            T d = data[i];
+            if (d!=null && d.equals(told)) {
                 data[i] = tnew;
             }
 

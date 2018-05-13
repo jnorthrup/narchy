@@ -364,9 +364,11 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     public boolean containing(final HyperRegion rect, final Predicate<T> t, Spatialization<T> model) {
         HyperRegion b = this.bounds;
         if (b != null) {
-            for (Node d : data) {
+            int s = size;
+            for (int i = 0; i < s; i++) {
+                Node d = data[i];
                 if (d == null)
-                    break; //end of array
+                    continue; //null in optimistic read case
                 else if (!d.containing(rect, t, model))
                     return false;
             }
@@ -378,9 +380,11 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         HyperRegion b = this.bounds;
         if (b != null) {
-            for (Node d : data) {
+            int s = size;
+            for (int i = 0; i < s; i++) {
+                Node d = data[i];
                 if (d == null)
-                    break; //end of array
+                    continue; //null in optimistic read case
                 else if (!d.intersecting(rect, t, model)) //np check for use under readOptimistic
                     return false;
             }

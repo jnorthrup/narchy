@@ -124,14 +124,20 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         long s = m.start();
         long e = m.end();
         FloatFunction<Task> value = m.value();
+
         Top2<Task> ss = new Top2<>(value);
-        //TODO include eternal
+
         sampleDynamic(s, e, ss::add, nar);
-        eternal.match(m, nar, ss::add);
+
+        boolean dynOnly = dynamicOverrides();
+        if (!dynOnly)
+            eternal.match(m, nar, ss::add);
+
         if (ss.isEmpty()) {
             temporal.match(m, nar, target);
         } else {
-            temporal.match(m, nar, ss::add);
+            if (!dynOnly)
+                temporal.match(m, nar, ss::add);
 
             //combine results from sensor series and from the temporal table
             if (ss.size()==1) {
@@ -145,15 +151,26 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
 
+    /** an implementation can allow this to return true to cause
+     * a dynamic match, if exist, to totally override any possible
+     * otherwise stored temporal or eternal tasks.
+     */
+    protected boolean dynamicOverrides() {
+        return false;
+    }
+
     @Override
     public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
         if (template.op().atomic)
             template = null; //HACK when accessed via AliasConcept
 
-        Task x = super.match(start, end, template, filter, nar);
-
         Task y = taskDynamic(start, end, template, nar);
+
+        if (y!=null &&dynamicOverrides())
+            return y;
+
+        Task x = super.match(start, end, template, filter, nar);
 
         return Revision.mergeOrChoose(x, y, start, end, filter, nar);
     }

@@ -19,10 +19,7 @@ import nars.truth.Truthed;
 import nars.util.TimeAware;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NavigableMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -406,12 +403,16 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         if (!series.isEmpty()) {
             long sstart = series.start();
             long send = series.end();
+
+
+            List<Task> deleteAfter = new FasterList(4);
             temporal.whileEach(sstart, send, t -> {
-               if (t.intersects(sstart, send)) {
-                   PredictionFeedback.feedbackNonSignal(t, this, nar);
+               if (t.end() < send) { //dont delete if future predictive component
+                   deleteAfter.add(t);
                }
                return true;
             });
+            deleteAfter.forEach(temporal::removeTask);
         }
     }
 
@@ -424,8 +425,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 !x.isInput()) {
 
                 if (!series.isEmpty()) {
-                    PredictionFeedback.feedbackNonSignal(x, this, nar);
-                    if (x.isDeleted())
+                    if (PredictionFeedback.absorbNonSignal(x, series.start(), series.end(), nar))
                         return false;
                 }
 
@@ -473,5 +473,10 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             return new TaskLinkTask(this, pri);
         }
 
+    }
+
+    @Override
+    protected boolean dynamicOverrides() {
+        return true;
     }
 }

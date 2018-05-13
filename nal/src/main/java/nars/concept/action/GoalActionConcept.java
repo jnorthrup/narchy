@@ -170,6 +170,8 @@ public class GoalActionConcept extends ActionConcept {
                     term, gStart, gEnd, nar.time.nextStamp());
         }
 
+        this.feedback.clean(nar);
+
         return Stream.of(feedbackBelief, (ITask)curiosityGoal).filter(Objects::nonNull);
         //return Stream.of(fb, fg).filter(Objects::nonNull);
         //return Stream.of(fb).filter(Objects::nonNull);

@@ -1,11 +1,9 @@
 package nars.task.util;
 
+import jcog.math.Longerval;
 import nars.NAR;
 import nars.Task;
-import nars.concept.dynamic.ScalarBeliefTable;
 import nars.task.signal.SignalTask;
-
-import java.util.function.Predicate;
 
 public class PredictionFeedback {
 
@@ -58,32 +56,29 @@ public class PredictionFeedback {
     /**
      * TODO handle stretched tasks
      */
-    public static void feedbackNonSignal(Task y, ScalarBeliefTable table, NAR nar) {
-
-        if (table.isEmpty())
-            return; //nothing to contradict
-
-        long now = nar.time();
-        int dur = nar.dur();
+    public static boolean absorbNonSignal(Task y, long seriesStart, long seriesEnd, NAR nar) {
 
         long end = y.end();
-        long predictionLimit = now - dur / 2;
-        if (end >= predictionLimit)
-            return; //dont absorb if at least part of the task predicts the future
+        if (end >= seriesEnd)
+            return false; //dont absorb if at least part of the task predicts the future
 
-        long start = y.start();
+        if (Longerval.intersectLength(y.start(), end, seriesStart, seriesEnd)!=-1) {
+            //intersects with data, and does not predict past its future
+            y.delete();
+            return true;
+        }
 
+        return false;
+//        long start = y.start();
 
-        Predicate<Task> each = existing -> {
-            //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
-            if (existing instanceof SignalTask) {
-                if (absorb((SignalTask)existing, y))
-                    return false; //eliminated; done
-            }
-            return true; //continue
-        };
-
-        table.series.whileEach(start, end, true, each);
+//        return !table.series.whileEach(start, end, true, existing -> {
+//            //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
+//            if (existing instanceof SignalTask) {
+//                if (absorb((SignalTask)existing, y))
+//                    return false; //eliminated; done
+//            }
+//            return true; //continue
+//        });
 
     }
 
