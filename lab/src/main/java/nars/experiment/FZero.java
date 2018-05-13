@@ -458,7 +458,7 @@ public class FZero extends NAgentX {
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolarFrequencyDifferential($.inh(id, $.the("turn")), fair, true, (r0) -> {
+        actionBipolarFrequencyDifferential($.p(id, $.the("turn")), fair, true, (r0) -> {
 
             float r = _r[0] = (float) rotFilter.out(_r[0], r0);
 

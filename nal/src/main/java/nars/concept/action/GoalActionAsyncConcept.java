@@ -7,7 +7,6 @@ import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
-import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
@@ -95,14 +94,15 @@ public class GoalActionAsyncConcept extends ActionConcept {
             fg = null;
 
         int dur = nar.dur();
-        SignalTask fb = ((ScalarBeliefTable)beliefs()).add(f, start, end, dur, nar);
+        ScalarBeliefTable beliefs = (ScalarBeliefTable) beliefs();
+        SignalTask fb = beliefs.add(f, start, end, dur, nar);
 
         in.input(
             fg,
             fb
         );
 
-        PredictionFeedback.feedbackSignal(fb /* in case stretched */, beliefs(), nar);
+        beliefs.clean(nar);
     }
 
     //not working yet:

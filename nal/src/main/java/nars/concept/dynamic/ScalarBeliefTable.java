@@ -20,11 +20,13 @@ import nars.util.TimeAware;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -54,7 +56,12 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         int size();
 
-        void forEach(long minT, long maxT, boolean exactRange, Consumer<? super Task> x);
+        default void forEach(long minT, long maxT, boolean exactRange, Consumer<? super Task> x) {
+            whileEach(minT, maxT, exactRange, (t) -> { x.accept(t); return true; } );
+        }
+
+        /** returns false if the predicate ever returns false; otherwise returns true even if empty.  this allows it to be chained recursively to other such iterators */
+        boolean whileEach(long minT, long maxT, boolean exactRange, Predicate<? super Task> x);
 
         void clear();
 
@@ -74,6 +81,13 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         void forEach(Consumer<? super Task> action);
+
+        long start();
+        long end();
+
+        default boolean isEmpty() {
+            return size()==0;
+        }
 
     }
 
@@ -96,6 +110,16 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         }
 
         @Override
+        public long start() {
+            return at.firstKey();
+        }
+
+        @Override
+        public long end() {
+            return at.lastKey();
+        }
+
+        @Override
         public int size() {
             return at.size();
         }
@@ -110,15 +134,17 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             at.values().forEach(action);
         }
 
+
         @Override
         public void clear() {
             at.clear();
         }
 
         @Override
-        public void forEach(final long minT, final long maxT, boolean exactRange, Consumer<? super Task> x) {
+        public boolean whileEach(final long minT, final long maxT, boolean exactRange, Predicate<? super Task> x) {
             if (at.isEmpty())
-                return;
+                return true;
+
             Long low, high;
             low = at.lowerKey(minT);
             if (low == null)
@@ -132,10 +158,16 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             if (high == null)
                 high = maxT;
 
-            at.subMap(low, high).values().forEach(exactRange ? xx -> {
-                if (xx.intersects(minT, maxT))
-                    x.accept(xx);
-            } : x);
+            Iterator<Task> ii = at.subMap(low, high).values().iterator();
+            while (ii.hasNext()) {
+                Task xx = ii.next();
+                if (exactRange && !xx.intersects(minT, maxT))
+                    continue;
+                if (!x.test(xx))
+                    return false;
+            }
+
+            return true;
         }
 
         @Override
@@ -279,7 +311,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public ScalarBeliefTable(Term c, boolean beliefOrGoal, TemporalBeliefTable t) {
         this(c, beliefOrGoal,
                 new DefaultTimeSeries(new ConcurrentSkipListMap<>()
-                        , /*@Deprecated*/ 512),
+                        , /*@Deprecated*/ 256),
                 t);
     }
 
@@ -363,9 +395,24 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         if (x!=null)
             x.pri(pri.asFloat());
 
-        PredictionFeedback.feedbackSignal(x, this, nar);
+        clean(nar);
 
         return x;
+    }
+
+    public void clean(NAR nar) {
+
+        //finds any tasks which have completely entered the past and contradict the sensor table
+        if (!series.isEmpty()) {
+            long sstart = series.start();
+            long send = series.end();
+            temporal.whileEach(sstart, send, t -> {
+               if (t.intersects(sstart, send)) {
+                   PredictionFeedback.feedbackNonSignal(t, this, nar);
+               }
+               return true;
+            });
+        }
     }
 
     @Override
@@ -374,17 +421,21 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         if (Param.FILTER_DYNAMIC_MATCHES) {
             if (!(x instanceof SignalTask) &&
                 !x.isEternal() &&
-                //input.punc() == punc() &&
                 !x.isInput()) {
 
-                PredictionFeedback.feedbackNonSignal(x, this, nar);
-                if (x.isDeleted())
-                    return false;
+                if (!series.isEmpty()) {
+                    PredictionFeedback.feedbackNonSignal(x, this, nar);
+                    if (x.isDeleted())
+                        return false;
+                }
 
             }
         }
 
-        return super.add(x, concept, nar);
+        if (super.add(x, concept, nar)) {
+            return true;
+        }
+        return false;
     }
 
     static class ScalarSignalTask extends SignalTask {
