@@ -42,6 +42,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
         });
     }
 
+
     public void forEachVisible(Consumer<Surface> each) {
         forEach(x -> {
             if (x.visible())

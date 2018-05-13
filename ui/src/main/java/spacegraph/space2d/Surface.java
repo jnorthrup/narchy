@@ -236,4 +236,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
 
+    public void size(float w, float h) {
+        pos(bounds.size(w, h));
+    }
 }

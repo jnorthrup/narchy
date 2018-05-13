@@ -1,6 +1,8 @@
 package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
+import jcog.data.graph.ImmutableDirectedEdge;
+import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
 import jcog.data.pool.DequePool;
 import jcog.list.FasterList;
@@ -41,7 +43,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     }
 
-    public <Y> Graph2D<X> layer(Graph2DLayer<X> layout) {
+    public Graph2D<X> layer(Graph2DLayer<X> layout) {
         layers.add(layout);
         return this;
     }
@@ -78,7 +80,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     @Nullable
     protected EdgeVis<X> edgeBuilder(X target) {
         @Nullable NodeVis<X> t = cellMap.getValue(target);
-        if (t == null || !t.visible()) {
+        if (t == null) { // || !t.visible()) {
             return null;
         } else {
             EdgeVis<X> e = edgePool.get();
@@ -104,9 +106,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     protected Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {
-
-        if (parent == null)
-            return this; //wait for ready
 
         Set<X> dontRemain;
 
@@ -238,7 +237,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         public final X id;
         public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(() -> new FasterList<>());
-        private float r, g, b;
+        private float r = 0.5f, g = 0.5f, b = 0.5f;
 
         NodeVis(X id) {
             this.id = id;
@@ -275,10 +274,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                 b = 0.5f;
         public float weight = 1f;
 
-        public EdgeVis<X> to(NodeVis<X> n) {
-            this.to = n;
-            return this;
-        }
 
         public EdgeVis<X> weight(float w) {
             weight = w;
@@ -301,5 +296,22 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     }
 
+    /** layer which renders NodeGraph nodes and edges */
+    public static class NodeGraphLayer<N,E> implements Graph2D.Graph2DLayer<N> {
+        @Override
+        public void node(Graph2D.NodeVis<N> node, Function<N, Graph2D.EdgeVis<N>> edges, Graph2D<N> graph) {
+            if (node.id instanceof NodeGraph.Node) {
+                NodeGraph.Node<N, E> nn = (NodeGraph.Node<N, E>) node.id;
+                nn.edges(false, true).forEach((ImmutableDirectedEdge<N,E> e) -> {
+                    Graph2D.EdgeVis<N> ee = edges.apply((N) e.other(nn));//.color(0.5f, 0.5f, 0.5f);
+                    //ee.color(0.8f, 0.8f, 0.8f);
+
+                });
+                node.color(0.5f, 0.5f, 0.5f);
+                node.move((float) Math.random() * 100, (float) Math.random() * 100);
+                node.size(20f, 10f);
+            }
+        }
+    }
 
 }
