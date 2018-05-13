@@ -1,12 +1,14 @@
 package spacegraph.input.finger;
 
 import com.jogamp.nativewindow.util.Point;
+import com.jogamp.opengl.GL2;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.math.v2;
+import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -106,6 +108,24 @@ public class Finger {
         y.sub(b.x, b.y);
         y.scaled(1f / b.w, 1f / b.h);
         return y;
+    }
+
+    /** call when finger exits the window / screen, the window becomes unfingerable, etc..*/
+    public void exit() {
+//        synchronized(this) {
+//            @Nullable Widget t = touching;
+//            this.touching = null;
+//            if (t != null) {
+//                t.onFinger(null); //bye
+//            }
+//        }
+    }
+
+    /** call when finger enters the window */
+    public void enter() {
+//        synchronized(this) {
+//            assert (touching == null): "phantom touching: " + touching;
+//        }
     }
 
     /**
@@ -208,22 +228,26 @@ public class Finger {
         return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
 
-    private boolean on(@Nullable Widget touched) {
+    private void on(@Nullable Widget touched) {
 
-        if (touched != touching && touching != null) {
-            touching.onFinger(null);
-        }
+        if (touched == this.touching)
+            return;
 
-        if ((touching = touched) != null) {
-            touching.onFinger(this);
-            return true;
-        } else {
-            return false;
+        synchronized (this) {
+            if (touched != touching && touching != null) {
+                touching.onFinger(null);
+            }
+
+            if ((touching = touched) != null) {
+                touching.onFinger(this);
+            }
         }
     }
 
-    public boolean off() {
-        if (touching != null) {
+    /** allows a fingered object to push the finger off it */
+    public boolean off(Object fingered) {
+        Widget t = this.touching;
+        if (t != null && t == fingered) {
             on(null);
             return true;
         }
@@ -307,4 +331,23 @@ public class Finger {
     }
 
 
+    /** TODO make very configurable */
+    public void drawCrossHair(Surface window, GL2 gl) {
+
+        gl.glLineWidth(4f);
+
+        float ch = 175f; //TODO proportional to ortho height (pixels)
+        float cw = 175f; //TODO proportional to ortho width (pixels)
+
+        float smx = posGlobal.x;
+        float smy = posGlobal.y;
+
+        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.25f);
+        Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
+
+        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+        Draw.line(gl, smx, smy - ch, smx, smy + ch);
+        Draw.line(gl, smx - cw, smy, smx + cw, smy);
+
+    }
 }

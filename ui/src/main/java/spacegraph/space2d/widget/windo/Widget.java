@@ -117,13 +117,6 @@ public class Widget extends Bordering {
             //Draw.rect(gl, 0, 0, 1, 1);
         }
 
-        @Override
-        public Surface tryTouch(Finger finger) {
-            Surface x = super.tryTouch(finger);
-            if (x == this)
-                return this;
-            return x;
-        }
 
         @Override
         protected final void paintIt(GL2 gl) {

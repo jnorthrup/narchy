@@ -207,8 +207,8 @@ public class Windo extends Stacking {
 
     protected void postpaint(GL2 gl) {
 
-        DragEdit p;
-        if ((p = potentialDragMode) != null) {
+        DragEdit p = potentialDragMode;
+        if (p != null && p!=DragEdit.MOVE) {
 
             float W, H;
 

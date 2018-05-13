@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.event.On;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRoot;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -50,10 +52,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
 
 
-    private final Animated fingerUpdate;
+    private final Runnable fingerUpdate;
 
 
-    private volatile boolean focused = false;
+    public final AtomicBoolean focused = new AtomicBoolean(false);
 
     final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
 
@@ -92,7 +94,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         this.surface = content;
 
-        this.fingerUpdate = this::finger;
+        this.fingerUpdate = ()->{
+            if (focused.get())
+                finger();
+        };
     }
 
 
@@ -112,8 +117,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         return false;
     }
 
-    public boolean hasFocus() {
-        return focused;
+    public boolean focused() {
+        return focused.get();
     }
 
     @Override
@@ -151,6 +156,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public On animate(Animated c) {
         return window.onUpdate(c);
     }
+    public On animate(Runnable c) {
+        return window.onUpdate(c);
+    }
 
 
     @Override
@@ -186,7 +194,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         synchronized (this) {
             this.window = s;
             s.addWindowListener(this);
-            this.focused = window.window.hasFocus();
+            if (window.window.hasFocus())
+                mouseEntered(null);
+
             s.addMouseListenerPre(this);
 
             s.addKeyListener(this);
@@ -322,17 +332,18 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void windowGainedFocus(WindowEvent e) {
-        focused = true;
-        update(false, null);
-//        fingerMoved.set(true);
-        
+        if (focused.compareAndSet(false, true)) {
+            finger.enter();
+            update(false, null);
+        }
     }
 
     @Override
     public void windowLostFocus(WindowEvent e) {
-        update(false, null);
-//        fingerMoved.set(true);
-        focused = false;
+        if (focused.compareAndSet(true, false)) {
+            update(false, null);
+            finger.exit();
+        }
     }
 
     @Override
@@ -369,16 +380,20 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) {
-        focused = true;
-        update(true, e);
-//        fingerMoved.set(true);
+    public void mouseEntered(@Nullable MouseEvent e) {
+        if (focused.compareAndSet(false,true)) {
+            finger.enter();
+            if (e!=null)
+                update(true, e);
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        update(false, null);
-        focused = false;
+        if (focused.compareAndSet(true,false)) {
+            update(false, null);
+            finger.exit();
+        }
     }
 
     @Override
@@ -404,7 +419,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         update(false, e, bd);
 
-        if (finger.touching!=null) e.setConsumed(true);
+        if (finger.touching!=null)
+            e.setConsumed(true);
 
     }
 
@@ -472,23 +488,22 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * the picked surface even in-between pick updates which are invoked
      * during the update loop.
      * */
-    protected boolean finger(float dt) {
+    protected void finger() {
 
         /*if (e == null) {
             off();
         } else {*/
 
+        assert(focused());
 
         finger.update();
 
-        Surface touching = finger.touching;
-        Surface touchedNext = finger.on(surface);
+        Surface touchPrev = finger.touching;
+        Surface touchNext = finger.on(surface);
 
-
-        if (touchedNext!=null && touchedNext!=touching) {
-            debug(this, 1f, ()->"touch(" + touchedNext + ')');
+        if (touchNext!=null && touchNext!=touchPrev) {
+            debug(this, 1f, ()->"touch(" + touchNext + ')');
         }
-        return true;
     }
 
 

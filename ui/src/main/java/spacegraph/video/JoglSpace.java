@@ -43,8 +43,8 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
     final List<Surface> layers = new FastCoWList(Surface[]::new);
     final Queue<Runnable> pending = new ConcurrentLinkedQueue();
-    private final float cameraSpeed = 5f;
-    private final float cameraRotateSpeed = 5f;
+    private final float cameraSpeed = 100f;
+    private final float cameraRotateSpeed = cameraSpeed;
     public float top;
     public float bottom;
     public float zNear = 0.5f;

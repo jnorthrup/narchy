@@ -287,8 +287,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         //TODO buffer subsequent setPositions only applying the final one on the EDT before frame render
         pre((s) -> {
-            if (s.window.getX() != x || s.window.getY() != y) {
-                s.window.setPosition(x, y);
+            GLWindow w = s.window;
+            if (w!=null) {
+                if (w.getX() != x || w.getY() != y) {
+                    w.setPosition(x, y);
+                }
             }
         });
 
@@ -377,6 +380,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         });
     }
 
+    public On onUpdate(Runnable c) {
+        return onUpdate.on((JoglWindow s) -> c.run());
+    }
 
     /* from: Jake2's */
     class GameAnimatorControl extends AnimatorBase {

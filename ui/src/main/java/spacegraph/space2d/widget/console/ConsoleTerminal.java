@@ -282,7 +282,12 @@ public class ConsoleTerminal extends Widget {
     public class MyBitmapConsoleSurface extends BitmapConsoleSurface {
         @Override
         public Surface tryTouch(Finger finger) {
-            return ConsoleTerminal.this;
+            return null;
+        }
+
+        @Override
+        public boolean tangible() {
+            return false;
         }
 
         @Override

@@ -266,7 +266,9 @@ public class Port extends Widget implements Wiring.Wireable {
     protected final void out(Port sender, Object x) {
         //TODO optional transfer function
         if (enabled) {
-            node.edges(true, true).forEach(t -> t.id.in(sender, x));
+            NodeGraph.Node<Surface, Wire> n = this.node;
+            if (n!=null)
+                n.edges(true, true).forEach(t -> t.id.in(sender, x));
         }
     }
 

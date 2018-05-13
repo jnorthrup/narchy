@@ -8,7 +8,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
-import spacegraph.video.Draw;
 import spacegraph.video.JoglSpace;
 
 /**
@@ -123,9 +122,9 @@ public class ZoomOrtho extends Ortho {
 //    };
 
     @Override
-    protected boolean finger(float dt) {
+    protected void finger() {
 
-        super.finger(dt);
+        super.finger();
 
         if (!finger.isFingering() && finger.touching==null) {
 //            if (!finger.tryFingering(fingerWindowResize))
@@ -134,17 +133,14 @@ public class ZoomOrtho extends Ortho {
 
             }
         }
-
-        return true;
     }
-
 
 
 
     @Override
     public void mouseExited(MouseEvent e) {
-        super.mouseExited(e);
         hud.potentialDragMode = null;
+        super.mouseExited(e);
     }
 
     @Override
@@ -237,25 +233,21 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         protected void postpaint(GL2 gl) {
-            gl.glPushMatrix();
-            gl.glLoadIdentity();
 
-            super.postpaint(gl);
 
-            gl.glLineWidth(8f);
+            if (ZoomOrtho.this.focused()) {
+                gl.glPushMatrix();
+                gl.glLoadIdentity();
 
-            float ch = 175f; //TODO proportional to ortho height (pixels)
-            float cw = 175f; //TODO proportional to ortho width (pixels)
+                super.postpaint(gl);
 
-            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.25f);
-            Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);
+                finger.drawCrossHair(this, gl);
 
-            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
-            Draw.line(gl, smx, smy - ch, smx, smy + ch);
-            Draw.line(gl, smx - cw, smy, smx + cw, smy);
+                gl.glPopMatrix();
+            }
 
-            gl.glPopMatrix();
         }
+
 
 
 //        String str(@Nullable Object x) {

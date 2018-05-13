@@ -141,7 +141,7 @@ public class TextEdit extends DefaultVirtualTerminal {
                 Finger.clicked(2, () -> {
                     paste();
                 });
-                return text.tryTouch(finger);
+                return super.tryTouch(finger);
             }
 
 
