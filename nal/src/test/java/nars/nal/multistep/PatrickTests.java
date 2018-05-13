@@ -182,7 +182,7 @@ public class PatrickTests extends NALTest {
 
         //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
         tt.nar.time.dur(10);
-        tt.nar.termVolumeMax.set(30);
+        tt.nar.termVolumeMax.set(17);
         //tt.nar.deep.set(0.75f);
         //tt.log();
 //        tt.nar.emotion.deriveFailTemporal.why.on((x)->System.out.println(x));

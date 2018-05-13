@@ -7,7 +7,7 @@ import spacegraph.video.JoglSpace;
  * Created by me on 11/20/16.
  */
 public class KeyXY extends SpaceKeys {
-    protected float speed = 16f;
+    protected float speed = 64f;
 
     public KeyXY(JoglSpace g) {
         super(g);

@@ -79,7 +79,7 @@ public class ZoomOrtho extends Ortho {
     final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
 
         private v3 camStart;
-        float speed = 2f;
+        float speed = 1f;
 
         @Override
         protected JoglSpace window() {
@@ -95,7 +95,7 @@ public class ZoomOrtho extends Ortho {
         @Override
         public void move(float dx, float dy) {
             cam.set(camStart.x - dx / scale.x * speed,
-                    camStart.y + dy / scale.x * speed);
+                    camStart.y + dy / scale.y * speed);
         }
 
     };
@@ -200,6 +200,11 @@ public class ZoomOrtho extends Ortho {
 
         @Override protected FingerResize fingeringResize(Windo.DragEdit mode) {
             return new FingerResizeWindow(window, 0, mode);
+        }
+
+        @Override
+        protected Fingering fingeringMove() {
+            return null;
         }
 
         @Override

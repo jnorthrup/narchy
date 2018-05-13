@@ -47,7 +47,7 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
                 recenterY = + oy + g.bounds.h/2;
 
         g.forEachValue(v -> {
-            if (v.visible()) {
+            if (v.visible() && !v.pinned()) {
                 nodes.add(v);
                 MovingRectFloat2D m = boundsPool.get();
                 m.set(v.bounds);

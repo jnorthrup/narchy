@@ -62,7 +62,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 6;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
@@ -183,7 +183,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(128, 0, 2048);
+    public final IntRange deriveTTL = new IntRange(256, 0, 2048);
 
 
     /** estimate */

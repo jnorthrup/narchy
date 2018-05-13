@@ -845,10 +845,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         if (deferredPairs!=null) {
             //optional: sort the pairs by complexity, simplest comparisons first to pessimistically fail early
-            while (dynPairs > 0) {
+            do {
                 if (!deferredPairs[--dynPairs].unify(deferredPairs[--dynPairs], u))
                     return false;
-            }
+            } while (dynPairs > 0);
         }
 
         return true;

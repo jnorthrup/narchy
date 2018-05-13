@@ -15,6 +15,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.MutableMapContainer;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
 import java.util.LinkedHashSet;
@@ -232,7 +233,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 //                ));
 //    }
 
-    public static class NodeVis<X> extends Gridding {
+    public static class NodeVis<X> extends Windo {
 
 
         public final X id;
@@ -264,6 +265,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             this.r = r;
             this.g = g;
             this.b = b;
+        }
+
+        public boolean pinned() {
+            //TODO
+            return false;
         }
     }
 

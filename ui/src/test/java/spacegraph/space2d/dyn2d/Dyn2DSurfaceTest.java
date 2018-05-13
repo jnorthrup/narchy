@@ -61,7 +61,7 @@ public class Dyn2DSurfaceTest {
         }
     }
 
-    public static class Box2DTest1_Boxes {
+    public static class Box2DTest1_Demo {
 
         public static void main(String[] args) {
             Dyn2DSurface s = SpaceGraph.wall(1000, 800);

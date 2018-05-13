@@ -67,23 +67,26 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         super();
         this.finger = new Finger();
 
-        this.scale = new AnimVector2f(1, 1, 5f) {
+        //TODO use AnimVector3f to represent scale via bounds
+        this.scale = new AnimVector2f(1, 1, 4f) {
           //TODO add animation ifChanged -> fingerUpdated
         };
 
-        this.cam = new AnimVector3f(12f) {
+        this.cam = new AnimVector3f(1) {
+
+            float CAM_RATE = 2f;
+
             @Override
-            protected float interp(float dt) {
-                float W = window.getWidth();
-                float H = window.getHeight();
+            public boolean animate(float dt) {
+                if (super.animate(dt)) {
+                    float W = bounds.w / scale.x;
+                    float H = bounds.h / scale.y;
 
-                dt *= scale.x / Math.max(W,H);
 
-                float dist = super.interp(dt);
-//                if (dist > 0.001f) {
-//                    fingerUpdated.set(true);
-//                }
-                return dist;
+                    speed.set(Math.max(W, H) * CAM_RATE);
+                    return true;
+                }
+                return false;
             }
         };
 

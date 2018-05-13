@@ -62,20 +62,8 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         super();
 
         onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
-        onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed) {
-            @Override
-            protected float interp(float dt) {
-                interpLERP(dt);
-                return 0;
-            }
-        })); //new AnimVector3f(0,0,1,dyn, 10f);
-        onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed) {
-            @Override
-            protected float interp(float dt) {
-                interpLERP(dt);
-                return 0;
-            }
-        })); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
+        onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed))); //new AnimVector3f(0,0,1,dyn, 10f);
+        onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed))); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
 
     }
 
