@@ -286,7 +286,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                 V p = map.get(i); //probed value 'p'
 
-                if (p != null && k.equals(key(p))) { //existing, should only occurr at most ONCE in this loop
+                if (p != null && keyEquals(k, p)) { //existing, should only occurr at most ONCE in this loop
                     switch (mode) {
 
                         case GET:
@@ -422,6 +422,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
 
         return toReturn;
+    }
+
+    protected boolean keyEquals(Object k, V p) {
+        return k.equals(key(p)); //this might be the reverse of Map.get() key equality semantics, TODO verify
     }
 
 

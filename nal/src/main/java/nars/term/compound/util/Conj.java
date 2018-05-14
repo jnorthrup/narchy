@@ -871,9 +871,9 @@ public class Conj {
                         Term x0 = x.sub(0);
                         if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
                             Term disj = x.unneg();
-                            SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
+                            SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
                             //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
-                            if (disjSubs.removeAll(t)) {
+                            if (!disjSubs.isEmpty()) {
                                 //reconstruct disj if changed
                                 oo.remove();
 

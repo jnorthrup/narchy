@@ -412,10 +412,10 @@ public enum Util {
     }
 
     /**
-     * == hashCombine(1, b)
+     * hashCombine(1, b)
      */
     public static int hashCombine1(Object bb) {
-        return 1 ^ (bb.hashCode() + 0x9e3779b9 + (1 << 6) + (1 >> 2));
+        return 1 ^ (bb.hashCode() + 0x9e3779b9 + (1 << 6));
     }
 
     public static int hashCombine(int a, int b, int c) {
@@ -435,11 +435,11 @@ public enum Util {
 //        return c;
     }
 
-    public static int hashNonZeroELF(byte[] str, int seed) {
-        int i = (int) hashELF(str, seed);
-        if (i == 0) i = 1;
-        return i;
-    }
+//    public static int hashNonZeroELF(byte[] str, int seed) {
+//        int i = (int) hashELF(str, seed);
+//        if (i == 0) i = 1;
+//        return i;
+//    }
 
     public static long hashELF(byte[] str, long seed) {
 

@@ -3,10 +3,15 @@ package nars.util.term;
 import jcog.memoize.HijackMemoize;
 import nars.term.Term;
 
-public class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound, Term> {
+public class HijackTermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound, Term> {
 
-    public TermCache(int capacity, int reprobes, boolean soft) {
+    public HijackTermCache(int capacity, int reprobes, boolean soft) {
         super(InternedCompound::compute, capacity, reprobes, soft);
+    }
+
+    @Override
+    protected boolean keyEquals(Object k, Computation<InternedCompound, Term> p) {
+        return p.equals(k);
     }
 
     @Override

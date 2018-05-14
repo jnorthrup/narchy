@@ -335,10 +335,14 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     @Override
-    public final X key(Computation<X, Y> value) {
+    public X key(Computation<X, Y> value) {
         return value.x();
     }
 
+    @Override
+    protected boolean keyEquals(Object k, Computation<X, Y> p) {
+        return p.x().equals(k);
+    }
 
     @Override
     public Consumer<Computation<X, Y>> forget(float rate) {

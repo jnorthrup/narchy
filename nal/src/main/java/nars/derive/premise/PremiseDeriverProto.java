@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import jcog.TODO;
 import jcog.list.FasterList;
@@ -949,7 +950,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             suff[k++] = p;
         }
 
-        return pair(precon, (PrediTerm<Derivation>) AndCondition.the(suff));
+        return pair(ImmutableSet.copyOf(precon),
+                (PrediTerm<Derivation>) AndCondition.the(suff));
     }
 
     /**

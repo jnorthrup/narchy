@@ -190,4 +190,16 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
         return map.put(key, value);
     }
 
+    public boolean removeIf(Predicate<? super Y> filter) {
+        FasterList toRemove = new FasterList(1);
+        map.forEach((k,v)->{
+            if (filter.test(v))
+                toRemove.add(k);
+        });
+        if (toRemove.isEmpty())
+            return false;
+        toRemove.forEach(map::remove /* direct, not the .remove() which automatically invalidates */);
+        invalidate();
+        return true;
+    }
 }

@@ -146,12 +146,11 @@ public class CellMap<K, V> {
     }
 
     public void clear() {
-        cells().removeIf(e -> {
+        cache.removeIf(e -> {
             e.clear();
             cellPool.take(e);
             return true;
         });
-        invalidated();
     }
 
     @Nullable public V get(Object from) {

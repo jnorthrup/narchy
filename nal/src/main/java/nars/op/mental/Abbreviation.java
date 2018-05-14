@@ -222,6 +222,7 @@ public class Abbreviation/*<S extends Term>*/ {
                 if (abbreviation == null)
                     return false; //maybe could happen
 
+                float pri = t.priElseZero();
                 Task abbreviationTask = Task.tryTask(abbreviation, BELIEF,
                         $.t(1f, abbreviationConfidence.floatValue()),
                         (te, tr) -> {
@@ -235,7 +236,7 @@ public class Abbreviation/*<S extends Term>*/ {
 //
                             //ta.meta(Abbreviation.class, new Term[]{abbreviatedTerm, aliasTerm.term()});
                             ta.log("Abbreviate"); //, abbreviatedTerm, aliasTerm
-                            ta.pri(t.priElseZero()); //same as input task
+                            ta.pri(pri); //same as input task
 //
                             return ta;
                         });

@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 /**
  * Built-in set of default Functors and Operators, registered into a NAR on initialization
  * Provides the standard core function library
- *
+ * <p>
  * see:
  * https://en.wikibooks.org/wiki/Prolog/Built-in_predicates
  */
@@ -64,13 +64,21 @@ public class Builtin {
             Image.imageExt,
 
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
-            Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) ->
-                    Conj.without(conj, event, false)
+            Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
+                        Term x = Conj.without(conj, event, false);
+                        if (conj.equals(x))
+                            return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+                        return x;
+                    }
             ),
 
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
-            Functor.f2((Atom) $.the("conjWithoutAll"), (Term include, Term exclude) ->
-                    Conj.withoutAll(include, exclude)
+            Functor.f2((Atom) $.the("conjWithoutAll"), (Term include, Term exclude) -> {
+                        Term x = Conj.withoutAll(include, exclude);
+                        if (include.equals(x))
+                            return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+                        return x;
+                    }
             ),
 
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
@@ -179,9 +187,9 @@ public class Builtin {
 
             flat.flatProduct,
 
-            Functor.f2("similaritree", (a,b)->
-                ((a instanceof Variable) || (b instanceof Variable)) ? null :
-                    $.the(Texts.levenshteinDistance(a.toString(), b.toString()))
+            Functor.f2("similaritree", (a, b) ->
+                    ((a instanceof Variable) || (b instanceof Variable)) ? null :
+                            $.the(Texts.levenshteinDistance(a.toString(), b.toString()))
             ),
 
             new Functor.CommutiveBinaryBidiFunctor("equal") {
@@ -199,7 +207,7 @@ public class Builtin {
 
                 @Override
                 protected Term computeXfromYandXY(Term x, Term y, Term xy) {
-                    return xy==True ? y : null;
+                    return xy == True ? y : null;
                 }
 
             },
@@ -270,7 +278,7 @@ public class Builtin {
         nar.on(SetFunc.sort(nar));
 
         /** dynamic term builder - useful for NAR specific contexts like clock etc.. */
-        nar.on(Functor.f("term", (Subterms s)->{
+        nar.on(Functor.f("term", (Subterms s) -> {
             Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
             Term[] args = s.sub(1).subterms().arrayClone();
             if (s.subs() > 2) {
@@ -281,12 +289,12 @@ public class Builtin {
                         dtTerm = QuantityTerm.the(dtTerm);
                     }
 
-                        long dt = nar.time.toCycles(((QuantityTerm) dtTerm).quant);
-                        if (Math.abs(dt) < Integer.MAX_VALUE-2) {
-                            return o.compound((int)dt, args);
-                        } else {
-                            throw new UnsupportedOperationException("time unit too large for 32-bit DT interval");
-                        }
+                    long dt = nar.time.toCycles(((QuantityTerm) dtTerm).quant);
+                    if (Math.abs(dt) < Integer.MAX_VALUE - 2) {
+                        return o.compound((int) dt, args);
+                    } else {
+                        throw new UnsupportedOperationException("time unit too large for 32-bit DT interval");
+                    }
 
                 }
 
@@ -484,19 +492,27 @@ public class Builtin {
         }));
 
 
-
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
-        nar.on(Functor.f2((Atom) $.the("conjWithoutPosOrNeg"), (Term conj, Term event) ->
-            Conj.without(conj, event, true)
-        ));
+        nar.on(Functor.f2((Atom) $.the("conjWithoutPosOrNeg"), (Term conj, Term event) -> {
+            Term x = Conj.without(conj, event, true);
+            if (conj.equals(x))
+                return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+            return x;
+        }));
 
         /** extracts only the events preceding the specified events */
-        nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) ->
-                Conj.conjDrop(conj, event, false)
-        ));
-        nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) ->
-                Conj.conjDrop(conj, event, true)
-        ));
+        nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) -> {
+            Term x = Conj.conjDrop(conj, event, false);
+            if (conj.equals(x))
+                return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+            return x;
+        }));
+        nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) -> {
+            Term x = Conj.conjDrop(conj, event, true);
+            if (conj.equals(x))
+                return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+            return x;
+        } ));
 
 
         nar.on(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));

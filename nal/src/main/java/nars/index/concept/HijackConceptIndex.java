@@ -3,7 +3,6 @@ package nars.index.concept;
 import jcog.Util;
 import jcog.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.PLink;
-import jcog.pri.PriReference;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -12,7 +11,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.util.TimeAware;
 import org.HdrHistogram.IntCountsHistogram;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -58,10 +56,10 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
                 resize(capacity); //immediately expand to full capacity
             }
 
-            @NotNull
+
             @Override
-            public Termed key(PriReference<Termed> value) {
-                return value.get().term();
+            public Termed key(PLink<Termed> value) {
+                return value.id.term();
             }
 
             @Override
@@ -70,9 +68,14 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
             }
 
             @Override
-            protected boolean replace(float incoming, PriReference<Termed> existing) {
+            protected boolean keyEquals(Object k, PLink<Termed> p) {
+                return p.id.equals(k);
+            }
 
-                boolean existingPermanent = existing.get() instanceof PermanentConcept;
+            @Override
+            protected boolean replace(float incoming, PLink<Termed> existing) {
+
+                boolean existingPermanent = existing.id instanceof PermanentConcept;
 
                 if (existingPermanent) {
 //                    if (incomingPermanent) {
@@ -88,7 +91,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
             }
 //
 //            @Override
-//            public void onRemoved( @NotNull PLink<Termed> value) {
+//            public void onRemoved(  PLink<Termed> value) {
 //                assert(!(value.get() instanceof PermanentConcept));
 //            }
         };
@@ -112,10 +115,10 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 //    }
 
     @Override
-    public @Nullable Termed get(@NotNull Term key, boolean createIfMissing) {
-        @Nullable PriReference<Termed> x = table.get(key);
+    public @Nullable Termed get( Term key, boolean createIfMissing) {
+        @Nullable PLink<Termed> x = table.get(key);
         if (x != null) {
-            Termed y = x.get();
+            Termed y = x.id;
             if (y != null) {
                 x.priAdd(getBoost);
                 return y; //cache hit
@@ -125,7 +128,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         if (createIfMissing) {
             Termed kc = nar.conceptBuilder.apply(key, null);
             if (kc != null) {
-                PriReference<Termed> inserted = table.put(new PLink<>(kc, initial));
+                PLink<Termed> inserted = table.put(new PLink<>(kc, initial));
                 if (inserted != null) {
                     return kc;
 //                        Termed ig = inserted.get();
@@ -142,9 +145,9 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
 
     @Override
-    public void set(@NotNull Term src, Termed target) {
+    public void set( Term src, Termed target) {
         remove(src);
-        PriReference<Termed> inserted = table.put(new PLink<>(target, 1f));
+        PLink<Termed> inserted = table.put(new PLink<>(target, 1f));
         if (inserted == null && target instanceof PermanentConcept) {
             throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + target);
         }
@@ -156,7 +159,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public void forEach(@NotNull Consumer<? super Termed> c) {
+    public void forEach( Consumer<? super Termed> c) {
         //TODO make sure this doesnt visit a term twice appearing in both tables but its ok for now
         table.forEachKey(c);
         //permanent.values().forEach(c);
@@ -168,12 +171,12 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public @NotNull String summary() {
+    public  String summary() {
         return table.size() + " concepts"; // (" + permanent.size() + " permanent)";
     }
 
     @Override
-    public void remove(@NotNull Term entry) {
+    public void remove( Term entry) {
         table.remove(entry);
         //permanent.remove(entry);
     }
@@ -184,7 +187,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 //     */
 //    private void update(NAR nar) {
 //
-//        AtomicReferenceArray<PriReference<Termed>> tt = table.map;
+//        AtomicReferenceArray<PLink<Termed>> tt = table.map;
 //
 //        int c = tt.length();
 //
@@ -199,7 +202,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 //
 //                if (visit >= c) visit = 0;
 //
-//                PriReference<Termed> x = tt.get(visit);
+//                PLink<Termed> x = tt.get(visit);
 //                if (x != null)
 //                    update(x);
 //            }
@@ -213,7 +216,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 //
 //    }
 //
-//    protected void update(PriReference<Termed> x) {
+//    protected void update(PLink<Termed> x) {
 //
 //        //TODO better update function based on Concept features
 //        Termed tc = x.get();
@@ -247,7 +250,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
                 (1 + ((c.complexity() + c.volume()) / 2f) / nar.termVolumeMax.intValue());
     }
 
-    protected void forget(PriReference<Termed> x, Concept c, float amount) {
+    protected void forget(PLink<Termed> x, Concept c, float amount) {
         //shrink link bag capacity in proportion to the forget amount
         c.tasklinks().setCapacity(Math.round(c.tasklinks().capacity() * (1f - amount)));
         c.termlinks().setCapacity(Math.round(c.termlinks().capacity() * (1f - amount)));

@@ -2213,5 +2213,8 @@ public enum Op {
 //            return y;
 //        }
 
+    /** does this help?  Op.values() bytecode = INVOKESTATIC
+     * but accessing this is GETSTATIC*/
+    public static final Op[] ops = Op.values();
 
 }

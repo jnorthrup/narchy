@@ -1,39 +1,38 @@
 package jcog.bag.impl.hijack;
 
 import jcog.bag.impl.HijackBag;
-import jcog.pri.PriReference;
+import jcog.pri.PLink;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 /**
  * Created by me on 2/17/17.
  */
-public class PLinkHijackBag<X> extends HijackBag<X, PriReference<X>> {
+public class PLinkHijackBag<X> extends HijackBag<X, PLink<X>> {
 
     public PLinkHijackBag(int initialCapacity, int reprobes) {
         super(initialCapacity, reprobes);
     }
 
     @Override
-    public final float pri( PriReference<X> key) {
+    public final float pri( PLink<X> key) {
         return key.pri();
     }
 
-    @NotNull
+    
     @Override
-    public X key(PriReference<X> value) {
+    public X key(PLink<X> value) {
         return value.get();
     }
 
     /** optimized for PLink */
     @Override
-    public void forEachKey(@NotNull Consumer<? super X> each) {
+    public void forEachKey( Consumer<? super X> each) {
         forEach(x -> each.accept(x.get()));
     }
 
-//    @NotNull
+//    
 //    @Override
 //    public HijackBag<X, PLink<X>> commit() {
 //        flatForget(this);
@@ -67,7 +66,7 @@ public class PLinkHijackBag<X> extends HijackBag<X, PriReference<X>> {
 
 
     @Override
-    protected PriReference<X> merge(PriReference<X> existing, PriReference<X> incoming, MutableFloat overflowing) {
+    protected PLink<X> merge(PLink<X> existing, PLink<X> incoming, MutableFloat overflowing) {
         float overflow = existing.priAddOverflow(incoming.priElseZero() );
         if (overflow > 0) {
             //pressurize(-overflow);

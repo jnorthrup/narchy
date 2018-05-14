@@ -76,7 +76,7 @@ public enum PremiseDeriverCompiler {
 
                 Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> c = rule.build(p);
 
-                c.getOne().forEach((k) -> preconditionCount.addToValue(k, 1));
+                c.getOne().forEach(k -> preconditionCount.addToValue(k, 1));
 
                 conclusions.add(c.getTwo());
 

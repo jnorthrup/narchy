@@ -17,8 +17,7 @@ import java.util.function.Predicate;
  */
 abstract public class Container extends Surface {
 
-    //final AtomicBoolean mustLayout = new AtomicBoolean(true);
-    boolean mustLayout = true;
+    volatile boolean mustLayout = true;
 
     protected boolean clipTouchBounds = true;
 
@@ -191,30 +190,5 @@ abstract public class Container extends Surface {
 
     abstract public boolean whileEachReverse(Predicate<Surface> o);
 
-//    /**
-//     * identity compare
-//     */
-//    static boolean equals(List x, Object[] y) {
-//        int s = x.size();
-//        if (s != y.length) return false;
-//        for (int i = 0; i < s; i++) {
-//            if (x.get(i) != y[i])
-//                return false;
-//        }
-//        return true;
-//    }
-
-//    /**
-//     * identity compare
-//     */
-//    static boolean equals(List x, List y) {
-//        int s = x.size();
-//        if (s != y.size()) return false;
-//        for (int i = 0; i < s; i++) {
-//            if (x.get(i) != y.get(i))
-//                return false;
-//        }
-//        return true;
-//    }
 
 }

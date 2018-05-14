@@ -29,12 +29,13 @@
 package jcog.data.map;
 
 
-import jcog.util.ArrayIterator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractSet;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * TODO this is untested
@@ -46,116 +47,72 @@ import java.util.function.Consumer;
  */
 public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
 
-    final T[] emptyArray;
-    volatile T[] list = null;
-    final Map<T,T> set =
-            //new ConcurrentHashMap<>() {
-            new ConcurrentOpenHashMap<>() {
+    final ConcurrentFastIteratingHashMap<T,T> map;
 
-        @Override
-        public T put(T key, T value) {
-            return super.put(key, value);
-        }
-
-        /** without synchronizing this entire method, the best this can do is
-         * a near atomic invalidation of the list after the hashmap method returns */
-        @Override
-        public T putIfAbsent(T key, T value) {
-            T r;
-            if ((r = super.putIfAbsent(key, value)) == null) {
-                list = null;
-                return null;
-            }
-            return r;
-        }
-
-        /** without synchronizing this entire method, the best this can do is
-         * a near atomic invalidation of the list after the hashmap method returns */
-        @Override
-        public T remove(Object key) {
-            T r = super.remove(key);
-            if (r != null) {
-                list = null;
-            }
-            return r;
-        }
-
-        @Override
-        public boolean remove(Object key, Object value) {
-            if (super.remove(key, value)) {
-                list = null;
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            list = null;
-        }
-    };
 
     public ConcurrentFastIteratingHashSet(T[] emptyArray) {
-        this.emptyArray = emptyArray;
-    }
-
-    @Override
-    public int size() {
-        return set.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return set.isEmpty();
+         map = new ConcurrentFastIteratingHashMap<>(emptyArray);
     }
 
     @Override
     public boolean contains(Object o) {
-        return set.containsKey(o);
-    }
-
-    @Override
-    public void forEach(Consumer<? super T> action) {
-        T[] x = toArray();
-        for (T t : x)
-            action.accept(t);
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return ArrayIterator.get(toArray());
-    }
-
-    @Override
-    public T[] toArray() {
-        T[] x = list;
-        if (x == null) {
-            return this.list = set.keySet().toArray(emptyArray);
-        } else {
-            return x;
-        }
-    }
-
-    @Override
-    public <T1> T1[] toArray(T1[] a) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean add(T t) {
-        return set.putIfAbsent(t,t)==null;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        return set.remove(o)!=null;
+        return map.containsKey(o);
     }
 
     @Override
     public void clear() {
-        set.clear();
+        map.clear();
     }
 
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        map.forEachValue(action);
+    }
 
+    @Override
+    public Iterator<T> iterator() {
+        return map.valueIterator();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    @Override
+    public int size() {
+        return map.size();
+    }
+
+    @Override
+    public boolean add(T t) {
+        return map.putIfAbsent(t, t)==null;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return map.remove(o)!=null;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) {
+        c.forEach(this::add);
+        return true; //TODO correct removeAll semantics
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        c.forEach(this::remove);
+        return true; //TODO correct removeAll semantics
+    }
+
+    @Override
+    public boolean removeIf(Predicate<? super T> filter) {
+        return map.removeIf(filter);
+    }
+
+    @Override
+    public <T1> T1[] toArray(@NotNull T1[] a) {
+        return super.toArray(a);
+    }
 }

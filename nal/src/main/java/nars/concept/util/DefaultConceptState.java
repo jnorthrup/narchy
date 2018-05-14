@@ -54,7 +54,7 @@ public final class DefaultConceptState extends ConceptState {
                 (vol) -> { //vol to tasklinks
 
                     //HACK
-                    int maxLinks = 48;
+                    int maxLinks = 24;
                     return Math.round((maxLinks) / (1f+((float)Math.sqrt(vol))/2f));
 
 

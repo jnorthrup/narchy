@@ -241,6 +241,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return u;
     }
 
+    default /*@NotNull*/ SortedSet<Term> toSetSortedExcept(Predicate<Term> t) {
+        TreeSet u = new TreeSet();
+        forEach(x -> { if (!t.test(x)) u.add(x); } );
+        return u;
+    }
+
     default /*@NotNull*/ FasterList<Term> toList() {
         FasterList<Term> u = new FasterList(subs());
         forEach(u::add);

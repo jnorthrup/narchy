@@ -10,7 +10,7 @@ import static nars.Op.*;
 /** 1-element Compound impl */
 public class CachedUnitCompound extends UnitCompound implements The {
 
-    private final Op op;
+    private final byte op;
 
     private final Term sub;
 
@@ -26,7 +26,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
         assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
 
         this.sub = sub;
-        this.op = op;
+        this.op = op.id;
         this.chash = super.hashCode();
         this.cstruct = super.structure();
 
@@ -65,7 +65,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
     @Override
     public final /*@NotNull*/ Op op() {
-        return op;
+        return Op.ops[op];
     }
 
     @Override

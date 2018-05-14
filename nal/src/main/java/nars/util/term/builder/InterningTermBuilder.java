@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.util.term.InternedCompound;
 import nars.util.term.InternedSubterms;
 import nars.util.term.SubtermsCache;
-import nars.util.term.TermCache;
+import nars.util.term.HijackTermCache;
 
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -19,8 +19,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     //TODO Atom Cache
 
-    public final TermCache termTemporalCache = new TermCache(128 * 1024, 3, false);
-    public final TermCache termCache = new TermCache(128 * 1024, 3, false);
+    public final HijackTermCache termTemporalCache = new HijackTermCache(128 * 1024, 3, false);
+    public final HijackTermCache termCache = new HijackTermCache(128 * 1024, 3, false);
     public final SubtermsCache subtermCache = new SubtermsCache(128 * 1024, 3, false);
 
     @Override public final Term newCompound(Op op, int dt, Term[] u) {

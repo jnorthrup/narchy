@@ -312,10 +312,12 @@ public class Dynamics2D {
     public Body2D addBody(Body2D b, FixtureDef... fd) {
 
         if (bodies.add(b)) {
-            invoke(() -> {
-                for (FixtureDef f : fd)
-                    b.addFixture(f);
-            });
+            if (fd.length > 0) {
+                invoke(() -> {
+                    for (FixtureDef f : fd)
+                        b.addFixture(f);
+                });
+            }
         }
 
         return b;
@@ -977,8 +979,10 @@ public class Dynamics2D {
             }
         });
 
-        preRemove.forEach(this::removeBody);
-        preRemove.clear();
+        if (!preRemove.isEmpty()) {
+            preRemove.forEach(this::removeBody);
+            preRemove.clear();
+        }
 
         // Size the island for the worst case.
         int bodyCount = bodies.size();

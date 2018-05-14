@@ -28,7 +28,7 @@ abstract public class CachedCompound implements Compound, The {
      */
     private final int hash;
 
-    protected final Op op;
+    protected final byte op;
 
     private final short _volume;
     private final int _structure;
@@ -131,7 +131,7 @@ abstract public class CachedCompound implements Compound, The {
 
         assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
 
-        this.op = op;
+        this.op = op.id;
 
         int h = (this.subterms = subterms).hashWith(op);
         this.hash = (dt == DTERNAL) ? h : Util.hashCombine(h, dt);
@@ -179,7 +179,8 @@ abstract public class CachedCompound implements Compound, The {
 
     @Override
     public final Op op() {
-        return op;
+        //return Op.values()[op];
+        return Op.ops[op];
     }
 
 

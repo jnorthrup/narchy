@@ -216,7 +216,7 @@ public interface Bag<K, V> extends Table<K, V> {
         forEach(p::println);
     }
 
-    /** reducer arg 0 = accumulated value, arg 1 = priority WARNING may be NaN if an item is deleted */
+    /** scalar pri reducer arg 0 = accumulated value, arg 1 = priority WARNING may be NaN if an item is deleted */
     default float priIfy(float initial, FloatFloatToFloatFunction reduce) {
         float[] x = new float[] { initial };
         forEach(v -> {
@@ -224,6 +224,7 @@ public interface Bag<K, V> extends Table<K, V> {
         });
         return x[0];
     }
+
     /** priIfy only non-deleted items */
     default float priIfyNonDeleted(float initial, FloatFloatToFloatFunction reduce) {
         float[] x = new float[] { initial };

@@ -89,10 +89,11 @@ public class TarInputStream extends FilterInputStream {
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
 		if (currentEntry != null) {
-			if (currentFileSize == currentEntry.getSize()) {
+			long currentEntrySize = currentEntry.getSize();
+			if (currentFileSize == currentEntrySize) {
 				return -1;
-			} else if ((currentEntry.getSize() - currentFileSize) < len) {
-				len = (int) (currentEntry.getSize() - currentFileSize);
+			} else if ((currentEntrySize - currentFileSize) < len) {
+				len = (int) (currentEntrySize - currentFileSize);
 			}
 		}
 
@@ -130,8 +131,9 @@ public class TarInputStream extends FilterInputStream {
 	public TarEntry getNextEntry() throws IOException {
 		closeCurrentEntry();
 
-		byte[] header = new byte[TarConstants.HEADER_BLOCK];
-		byte[] theader = new byte[TarConstants.HEADER_BLOCK];
+		byte[] header, theader;
+		header = new byte[TarConstants.HEADER_BLOCK];
+		theader = new byte[TarConstants.HEADER_BLOCK];
 		int tr = 0;
 
 		// Read full header
@@ -175,15 +177,17 @@ public class TarInputStream extends FilterInputStream {
 	 * 
 	 * @throws IOException
 	 */
-	private void closeCurrentEntry() throws IOException {
+	private TarEntry closeCurrentEntry() throws IOException {
+		TarEntry currentEntry = this.currentEntry;
 		if (currentEntry != null) {
-			if (currentEntry.getSize() > currentFileSize) {
+			long currentEntrySize = currentEntry.getSize();
+			if (currentEntrySize > currentFileSize) {
 				// Not fully read, skip rest of the bytes
 				long bs = 0;
-				while (bs < currentEntry.getSize() - currentFileSize) {
-					long res = skip(currentEntry.getSize() - currentFileSize - bs);
+				while (bs < currentEntrySize - currentFileSize) {
+					long res = skip(currentEntrySize - currentFileSize - bs);
 
-					if (res == 0 && currentEntry.getSize() - currentFileSize > 0) {
+					if (res == 0 && currentEntrySize - currentFileSize > 0) {
 						// I suspect file corruption
 						throw new IOException("Possible tar file corruption");
 					}
@@ -192,10 +196,13 @@ public class TarInputStream extends FilterInputStream {
 				}
 			}
 
-			currentEntry = null;
+
+			this.currentEntry = null;
 			currentFileSize = 0L;
 			skipPad();
+			return currentEntry;
 		}
+		return currentEntry;
 	}
 
 	/**
