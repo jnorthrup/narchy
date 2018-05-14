@@ -1,5 +1,6 @@
 package nars.table;
 
+import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.map.MRUCache;
 import nars.NAR;
 import nars.Task;
@@ -197,6 +198,49 @@ public interface QuestionTable extends TaskTable {
         }
 
     }
+
+    public static class HijackQuestionTable extends PriorityHijackBag<Task,Task> implements QuestionTable {
+
+        public HijackQuestionTable(int cap, int reprobes) {
+            super(cap, reprobes);
+        }
+
+        @Override
+        public Task key(Task value) {
+            return value;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return super.isEmpty();
+        }
+
+        @Override
+        public void capacity(int newCapacity) {
+            setCapacity(newCapacity);
+        }
+
+        @Override
+        public boolean add(Task t, TaskConcept c, NAR n) {
+            return put(t, null)==t;
+        }
+
+        @Override
+        public void forEachTask(Consumer<? super Task> x) {
+            forEachKey(x);
+        }
+
+        @Override
+        public boolean removeTask(Task x) {
+            return remove(x)!=null;
+        }
+
+        @Override
+        public Stream<Task> streamTasks() {
+            return stream();
+        }
+    }
+
 
 //    /** untested */
 //    class EmptyQuestionTable extends QuestionTable.NullQuestionTable {

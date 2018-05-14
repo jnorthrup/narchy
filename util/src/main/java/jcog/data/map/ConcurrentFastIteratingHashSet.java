@@ -30,12 +30,10 @@ package jcog.data.map;
 
 
 import jcog.util.ArrayIterator;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -50,10 +48,12 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
 
     final T[] emptyArray;
     volatile T[] list = null;
-    final Map<T,T> set = new ConcurrentHashMap<>() {
+    final Map<T,T> set =
+            //new ConcurrentHashMap<>() {
+            new ConcurrentOpenHashMap<>() {
 
         @Override
-        public T put(@NotNull T key, @NotNull T value) {
+        public T put(T key, T value) {
             return super.put(key, value);
         }
 

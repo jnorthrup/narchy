@@ -19,9 +19,13 @@
 package jcog.data.map;
 
 import com.google.common.collect.Lists;
+import jcog.TODO;
+import jcog.list.FasterList;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -39,15 +43,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * from: https://github.com/apache/incubator-pulsar/blob/master/pulsar-common/src/main/java/org/apache/pulsar/common/util/collections/ConcurrentOpenHashMap.java
  */
 @SuppressWarnings("unchecked")
-public class ConcurrentOpenHashMap<K, V> {
+public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     private static final Object EmptyKey = null;
     private static final Object DeletedKey = new Object();
 
-    private static final float MapFillFactor = 0.66f;
+    private static final float MapFillFactor = 0.9f;
 
-    private static final int DefaultExpectedItems = 256;
-    private static final int DefaultConcurrencyLevel = 16;
+    private static final int DefaultExpectedItems = 1024;
+    private static final int DefaultConcurrencyLevel = 4;
 
     private final Section<K, V>[] sections;
 
@@ -74,12 +78,14 @@ public class ConcurrentOpenHashMap<K, V> {
         }
     }
 
-    public long size() {
+    public int size() {
         long size = 0;
         for (Section<K, V> s : sections) {
             size += s.size;
         }
-        return size;
+        if (size >= Integer.MAX_VALUE)
+            return Integer.MAX_VALUE-1; //HACK
+        return (int) size;
     }
 
     public long capacity() {
@@ -100,13 +106,13 @@ public class ConcurrentOpenHashMap<K, V> {
         return true;
     }
 
-    public V get(K key) {
+    public V get(Object key) {
         checkNotNull(key);
         long h = hash(key);
-        return getSection(h).get(key, (int) h);
+        return getSection(h).get((K)key, (int) h);
     }
 
-    public boolean containsKey(K key) {
+    public boolean containsKey(Object key) {
         return get(key) != null;
     }
 
@@ -124,24 +130,24 @@ public class ConcurrentOpenHashMap<K, V> {
         return getSection(h).put(key, value, (int) h, true, null);
     }
 
-    public V computeIfAbsent(K key, Function<K, V> provider) {
+    public V computeIfAbsent(K key, Function<? super K, ? extends V> provider) {
         checkNotNull(key);
         checkNotNull(provider);
         long h = hash(key);
-        return getSection(h).put(key, null, (int) h, true, provider);
+        return getSection(h).put((K)key, null, (int) h, true, provider);
     }
 
-    public V remove(K key) {
+    public V remove(Object key) {
         checkNotNull(key);
         long h = hash(key);
-        return getSection(h).remove(key, null, (int) h);
+        return getSection(h).remove((K)key, null, (int) h);
     }
 
-    public boolean remove(K key, Object value) {
+    @Override public boolean remove(Object key, Object value) {
         checkNotNull(key);
         checkNotNull(value);
         long h = hash(key);
-        return getSection(h).remove(key, value, (int) h) != null;
+        return getSection(h).remove((K)key, value, (int) h) != null;
     }
 
     private Section<K, V> getSection(long hash) {
@@ -171,10 +177,26 @@ public class ConcurrentOpenHashMap<K, V> {
         return keys;
     }
 
-    public List<V> values() {
-        List<V> values = Lists.newArrayList();
+    public List<V> values(V[] emptyArray) {
+        List<V> values = new FasterList<>(size()) {
+            @Override
+            protected V[] newArray(int newCapacity) {
+                return Arrays.copyOf(emptyArray, newCapacity);
+            }
+        };
         forEach((key, value) -> values.add(value));
         return values;
+    }
+
+    public List<V> values() {
+        List<V> values = new FasterList(size());
+        forEach((key, value) -> values.add(value));
+        return values;
+    }
+
+    @Override
+    public Set<Entry<K, V>> entrySet() {
+        throw new TODO();
     }
 
     // A section is a portion of the hash map that is covered by a single
@@ -197,13 +219,14 @@ public class ConcurrentOpenHashMap<K, V> {
         }
 
         V get(K key, int keyHash) {
-            long stamp = tryOptimisticRead();
             boolean acquiredLock = false;
             int bucket = signSafeMod(keyHash, capacity);
+            long stamp = tryOptimisticRead();
 
             try {
                 while (true) {
                     // First try optimistic locking
+                    Object[] table = this.table;
                     K storedKey = (K) table[bucket];
                     V storedValue = (V) table[bucket + 1];
 
@@ -216,6 +239,8 @@ public class ConcurrentOpenHashMap<K, V> {
                             return null;
                         }
                     } else {
+                        table = this.table; //refresh
+
                         // Fallback to acquiring read lock
                         if (!acquiredLock) {
                             stamp = readLock();
@@ -243,7 +268,7 @@ public class ConcurrentOpenHashMap<K, V> {
             }
         }
 
-        V put(K key, V value, int keyHash, boolean onlyIfAbsent, Function<K, V> valueProvider) {
+        V put(K key, V value, int keyHash, boolean onlyIfAbsent, Function<? super K, ? extends V> valueProvider) {
             long stamp = writeLock();
             int bucket = signSafeMod(keyHash, capacity);
 

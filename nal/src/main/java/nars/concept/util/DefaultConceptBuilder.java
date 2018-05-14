@@ -90,7 +90,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 //        } else {
 
         float loadFactor = 0.99f;
-        if (volume < 10) {
+        if (volume < 8) {
             return new HashMap(2, loadFactor);
         } else {
             return new UnifiedMap(2, loadFactor);
@@ -147,8 +147,8 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     public QuestionTable questionTable(Term term, boolean questionOrQuest) {
         Op o = term.op();
         if (questionOrQuest ? o.beliefable : o.goalable) {
-            //return new HijackQuestionTable(0, 4);
-            return new QuestionTable.DefaultQuestionTable();
+            return new QuestionTable.HijackQuestionTable(4, 2);
+            //return new QuestionTable.DefaultQuestionTable();
         } else {
             return QuestionTable.Empty;
         }

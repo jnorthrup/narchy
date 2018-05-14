@@ -7,9 +7,9 @@ import java.util.Map;
 
 public class TaskLinkCurveBag extends CurveBag<TaskLink> {
 
-    static final float TEMPORAL_COMPRESSION_THRESHOLD =
-            1.1f; //off
-            //0.75f;
+//    static final float TEMPORAL_COMPRESSION_THRESHOLD =
+//            1.1f; //off
+//            //0.75f;
 
     public TaskLinkCurveBag(Map sharedMap) {
         super(Param.tasklinkMerge, sharedMap, 0);

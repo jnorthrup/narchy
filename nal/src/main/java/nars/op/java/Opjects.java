@@ -5,7 +5,7 @@ import com.google.common.primitives.Primitives;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
-import jcog.data.map.ConcurrentFastIteratingHashSet;
+import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
@@ -113,8 +113,12 @@ public class Opjects extends DefaultTermizer {
     /** cached; updated at most each duration */
     private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0, invokeEvi, uninvokeEvi, invokePri;
 
-    /** set of operators in probing mode which are kept here for batched execution */
-    final ConcurrentFastIteratingHashSet<MethodExec> probing = new ConcurrentFastIteratingHashSet<>(new MethodExec[0]);
+    /** set of operators in probing mode which are kept here for batched execution
+     *  should be a set.   using ConcurrentFastIteratingHashMap instead of the Set because it has newer code updates
+     * */
+    final ConcurrentFastIteratingHashMap<MethodExec,MethodExec> probing =
+            new ConcurrentFastIteratingHashMap<MethodExec,MethodExec>(new MethodExec[0]);
+
 
 
 
@@ -225,7 +229,7 @@ public class Opjects extends DefaultTermizer {
         uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
         invokePri = beliefPri = nar.priDefault(BELIEF);
                 // * in.amp();
-        probing.forEach(p -> p.update(nar));
+        probing.forEachValue(p -> p.update(nar));
     }
 
     @Override
@@ -679,7 +683,7 @@ public class Opjects extends DefaultTermizer {
 
         @Override
         protected void enable(NAR n) {
-            probing.add(this);
+            probing.put(this, this);
         }
 
         @Override

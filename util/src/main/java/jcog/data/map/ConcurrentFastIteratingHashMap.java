@@ -1,10 +1,10 @@
 package jcog.data.map;
 
 import jcog.TODO;
+import jcog.list.FasterList;
 import jcog.util.ArrayIterator;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -13,7 +13,11 @@ import java.util.function.Predicate;
 public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
 
     final Y[] emptyArray;
-    final Map<X, Y> map = new ConcurrentHashMap<>();
+
+    final Map<X, Y> map =
+            //new ConcurrentHashMap<>();
+            new ConcurrentOpenHashMap<>();
+
     volatile Y[] list = null;
 
 
@@ -126,6 +130,11 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     @Override
+    public Y get(Object key) {
+        return map.get(key);
+    }
+
+    @Override
     public Set<Entry<X, Y>> entrySet() {
         return map.entrySet();
     }
@@ -137,7 +146,8 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
 
     @Override
     public Collection<Y> values() {
-        return map.values();
+        //return map.values();
+        return new FasterList(list);
     }
 
     @Override
@@ -159,10 +169,19 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
     public Y[] valueArray() {
         Y[] x = list;
         if (x == null) {
-            return this.list = values().toArray(emptyArray);
+            return this.list = updateValues();
         } else {
             return x;
         }
+    }
+
+    public Y[] updateValues() {
+        //return map.values().toArray(emptyArray);
+
+        //for CncurrentOpenHashMap:
+        return ((FasterList<Y>)(((ConcurrentOpenHashMap<?,Y>)map)
+                .values(this.emptyArray)))
+                .toArrayRecycled(i -> Arrays.copyOf(emptyArray, i));
     }
 
 

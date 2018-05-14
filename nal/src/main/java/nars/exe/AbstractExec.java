@@ -114,7 +114,8 @@ abstract public class AbstractExec extends Exec {
                             :
 
                             new CurveBag<>(
-                                    Param.activateMerge, new HashMap<>(CAPACITY*2),
+                                    Param.activateMerge,
+                                    new HashMap<>(CAPACITY*2),
                                     CAPACITY) {
 
 //                                @Override

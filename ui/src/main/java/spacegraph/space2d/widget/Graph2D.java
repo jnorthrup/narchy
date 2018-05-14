@@ -17,10 +17,7 @@ import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
@@ -41,7 +38,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     protected int nodesMax = 512;
     volatile Graph2DLayout<X> layout = (c, d) -> {
     };
-    private transient Set<X> dontRemain = new LinkedHashSet();
+    private transient Set<CellMap.CacheCell<X, Graph2D.NodeVis<X>>> dontRemain = new LinkedHashSet();
 
     public Graph2D() {
 
@@ -144,7 +141,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     private void updateNodes(Iterator<X> nodes, boolean addOrReplace) {
         dontRemain.clear();
         if (!addOrReplace && !cellMap.cache.isEmpty()) {
-            dontRemain.addAll(cellMap.cache.keySet());
+            Collections.addAll(dontRemain, cellMap.cache.valueArray());
         }
 
         int nCount = 0;
@@ -164,14 +161,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             });
 
             if (dontRemain != null)
-                dontRemain.remove(x);
+                dontRemain.remove(nv);
 
             if (nCount++ == nodesMax)
                 break; //reached node limit
         }
 
-        if (!dontRemain.isEmpty())
-            cellMap.removeAll(dontRemain);
+        if (!dontRemain.isEmpty()) {
+            dontRemain.forEach(d -> cellMap.remove(d.key, false));
+            cellMap.cache.invalidate();
+        }
     }
 
     private void updateEdges() {
