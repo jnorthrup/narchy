@@ -306,7 +306,7 @@ public class Narsese {
 
     private static long[] occurrence(NAR nar, Object O) {
         if (O == null)
-            return ETERNAL_ETERNAL;
+            return new long[] { ETERNAL, ETERNAL };
         else if (O instanceof Tense) {
             long o = Tense.getRelativeOccurrence((Tense) O, nar);
             return new long[] { o, o };

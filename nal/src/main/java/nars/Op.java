@@ -1183,12 +1183,13 @@ public enum Op {
                     return Null;
 
                 //false tautology - the difference of something with itself will always be nothing, ie. freq=0, ie. False
-                if (et0.equals(et1))
+                //if (et0.equals(et1))
+                if (et0.equalsRoot(et1))
                     return False;
 
 
                 //the difference of something with its negation; depends if the first argument is positive or not
-                if (et1.neg().equals(et0)) {
+                if (et1.equalsNegRoot(et0)) {
                     if (et0.op() == NEG || et0 == False)
                         return False;
                     else
@@ -1203,8 +1204,8 @@ public enum Op {
                     return Null;
 
 
-                if (et0.containsRecursively(et1, false, recursiveCommonalityDelimeterWeak)
-                        || et1.containsRecursively(et0, false, recursiveCommonalityDelimeterWeak))
+                if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
+                        || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
                     return Null; //TODO handle this better, there may be detectable or iteratively simplified reductions
 
                 if (op == DIFFe && et0 instanceof Int.IntRange && et1.op() == INT) {

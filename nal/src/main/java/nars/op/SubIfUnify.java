@@ -122,7 +122,7 @@ public class SubIfUnify extends Functor {
         Term y = Image.imageNormalize( a.sub(2) );
         //if (y == Null) return Null;
 
-        if (x.equalsRoot(y)) {
+        if (x.equals(y)) {
             return strict ? Null : c; //unification would occurr but no changes would result
         }
 

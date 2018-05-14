@@ -15,7 +15,7 @@ public enum Contains implements BiPredicate<Term, Term> {
     Subterm() {
         @Override
         public boolean test(Term container, Term x) {
-            return container.containsRoot(x);
+            return container.contains(x);
         }
 
         public float cost() {
@@ -26,7 +26,7 @@ public enum Contains implements BiPredicate<Term, Term> {
     Recursive() {
         @Override
         public boolean test(Term container, Term x) {
-            return container.containsRecursively(x, true, t -> true);
+            return container.containsRecursively(x, false, t -> true);
         }
 
         public float cost() {
@@ -41,16 +41,16 @@ public enum Contains implements BiPredicate<Term, Term> {
                 return false;
             //throw new RuntimeException("this possibility should have been filtered");
 
-            Term xr = x.root();
+
 
             //simple subterm test, which catches compound sub-sequences that the event iteration is too granular for
-            if (container.containsRoot(xr))
+            if (container.contains(x))
                 return true;
 
             final boolean[] found = {false};
 
             container.eventsWhile((when, what) -> {
-                if (xr.equals(what.root())) {
+                if (x.equals(what.root())) {
                     found[0] = true;
                     return false;
                 }

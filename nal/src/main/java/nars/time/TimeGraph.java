@@ -458,7 +458,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                                     long to = dt(abi, ab[j]);
                                     if (uniqueTry.add(pair(from, to))) {
                                         if (!solveDT(x, from, to,
-                                                Math.min(abi.dur(), ab[j].dur()) //dur=intersection
+                                                //dur=intersection
+                                                Math.min(abi.dur(), ab[j].dur())
                                                 , each))
                                             return false;
                                     }
@@ -683,7 +684,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             return true;
 
 
-        if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0 && y.op() == CONJ) {
+        if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0) {
             start += dt; //shift to left align
         }
 
@@ -717,14 +718,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         if (xo == IMPL) {
             return x.dt(dt - x.sub(0).dtRange());
         } else if (xo == CONJ) {
-//            int early = Op.conjEarlyLate(x, true);
-//            if (early == 1)
-//                dt = -dt;
-//
-//            Term xEarly = x.sub(early);
-//            Term xLate = x.sub(1 - early);
-            Term xEarly = x.sub(0);
-            Term xLate = x.sub(1);
+            int early = Op.conjEarlyLate(x, true);
+            if (early == 1)
+                dt = -dt;
+
+            Term xEarly = x.sub(early);
+            Term xLate = x.sub(1 - early);
 
             return Conj.conjMerge(
                     xEarly, 0,
@@ -923,7 +922,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 }
 
                 long endTime;
-                if (startTime != ETERNAL && startTime != XTERNAL) {
+                if (startTime != ETERNAL && startTime != XTERNAL && x.id.op()!=CONJ) {
                     long startDur = pathStart(path).dur();
                     long endDur = pathEnd(path).dur();
                     long dur = Math.min(startDur, endDur); //dur=intersection
@@ -1219,7 +1218,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
         protected AbsoluteRange(Term t, long start, long end) {
             super(t, start, Util.hashCombine(t.hashCode(), Long.hashCode(start), Long.hashCode(end)));
-            if ((end <= start || start == ETERNAL || end == ETERNAL || start == XTERNAL || end == XTERNAL))
+            if (end <= start || start == ETERNAL || start == XTERNAL || end == XTERNAL)
                 throw new RuntimeException("invalid AbsoluteRange start/end times: " + start + ".." + end);
             this.end = end;
         }

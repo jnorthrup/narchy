@@ -749,7 +749,6 @@ public interface Term extends Termed, Comparable<Termed> {
      * different
      */
     default Term concept() {
-        //throw new UnsupportedOperationException();
         return this;
     }
 
@@ -841,6 +840,18 @@ public interface Term extends Termed, Comparable<Termed> {
             return equals(t.unneg());
         } else if (op() == NEG) {
             return unneg().equals(t);
+        } else {
+            return false;
+        }
+    }
+
+    default boolean equalsNegRoot(Term t) {
+        if (this == t) {
+            return false;
+        } else if (t.op() == NEG) {
+            return equalsRoot(t.unneg());
+        } else if (op() == NEG) {
+            return unneg().equalsRoot(t);
         } else {
             return false;
         }

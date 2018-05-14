@@ -51,7 +51,7 @@ public class AIMATests {
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
-        n.termVolumeMax.set(16);
+        n.termVolumeMax.set(22);
         //n.conceptActivation.set(0.5f);
 
 //        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(2));
@@ -59,7 +59,7 @@ public class AIMATests {
         //new PrologCore(n);
         //n.run(1);
 
-        n.log();
+        //n.log();
         n.believe(
             //"((&&, American($x),Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
             "((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",

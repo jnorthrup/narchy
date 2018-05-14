@@ -43,6 +43,7 @@ public final class Neg extends UnitCompound implements The {
         this.sub = negated;
     }
 
+
     @Override
     public Op op() {
         return NEG;

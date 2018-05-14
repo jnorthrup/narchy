@@ -167,7 +167,7 @@ public abstract class Param {
 
     public final long[] timeFocus(long when, float dur) {
         if (when == ETERNAL)
-            return Tense.ETERNAL_ETERNAL;
+            return new long[] { ETERNAL, ETERNAL };
 
         if (when == XTERNAL) {
             throw new RuntimeException();

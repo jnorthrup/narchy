@@ -7,7 +7,6 @@ import nars.derive.premise.PremiseDeriverProto;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.util.term.transform.Retemporalize;
-import nars.time.Tense;
 import org.eclipse.collections.api.tuple.Pair;
 
 import static nars.Op.*;
@@ -79,7 +78,7 @@ public final class Termify extends AbstractPred<Derivation> {
                 d.concTruth = d.concTruth.neg();
         }
 
-        d.concOcc = Tense.ETERNAL_ETERNAL; assert(d.concOcc[0]==ETERNAL && d.concOcc[1]==ETERNAL);
+        d.concOcc = new long[] { ETERNAL, ETERNAL };
 
         Term c2;
         if (d.temporal) {

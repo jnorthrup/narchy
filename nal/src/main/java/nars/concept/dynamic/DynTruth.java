@@ -97,9 +97,9 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     /** TODO make Task truth dithering optional */
-    public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR timeAware) {
+    public Truthed eval(Term superterm, @Deprecated BiFunction<DynTruth, NAR, Truth> truthModel, boolean taskOrJustTruth, boolean beliefOrGoal, float freqRes, float confRes, float eviMin, NAR nar) {
 
-        Truth t = truthModel.apply(this, timeAware);
+        Truth t = truthModel.apply(this, nar);
         if (t == null)
             return null;
 
@@ -203,7 +203,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         NALTask dyn = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
                 Truth.theDithered(r.getTwo() ? (1-f) : f, freqRes, evi, confRes, w2cSafe(eviMin)),
-                timeAware, start, end,
+                nar, start, end,
                 this.evi.toArray());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 

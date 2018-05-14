@@ -47,10 +47,10 @@ public class SubOfConstraint extends RelationConstraint {
 
         if (canEqual) {
             if (polarityCompare != 0) {
-                if (container.equalsRoot(contentP))
+                if (container.equals(contentP))
                     return false;
             } else {
-                if (container.unneg().equalsRoot(contentP.unneg()))
+                if (container.unneg().equals(contentP.unneg()))
                     return false;
             }
         }

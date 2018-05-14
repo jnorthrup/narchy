@@ -41,7 +41,12 @@ abstract public class CachedCompound implements Compound, The {
 
         @Override
         public boolean equalsRoot(Term x) {
-            return equals(x);
+            return x instanceof SimpleCachedCompound ? equals(x) : equals(x.root());
+        }
+
+        @Override
+        public boolean equalsNegRoot(Term x) {
+            return x instanceof SimpleCachedCompound ? equalsNeg(x) : equalsNeg(x.root());
         }
 
         @Override
@@ -86,6 +91,13 @@ abstract public class CachedCompound implements Compound, The {
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
             this.dt = dt;
+//            try {
+//                if (!root().equals(concept())) {
+//                    System.err.println(this + "\troot()=" + root() + " concept()=" + concept());
+//                }
+//            } catch (Throwable t) {
+//                System.err.println(this + "\t root concept err: " + t.getMessage());
+//            }
         }
 
         @Override

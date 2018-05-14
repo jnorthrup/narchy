@@ -1,6 +1,7 @@
 package nars.util.term.transform;
 
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -18,7 +19,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
     @Nullable
     @Override
     default Term transformCompound(final Compound x) {
-        if (x.op().temporal || x.hasAny(Temporal)) {
+        if (x.isTemporal()) {
             return transformTemporal(x, dt(x));
         } else {
             return x;
@@ -183,12 +184,19 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
 
     default Term transformTemporal(Compound x, int dtNext) {
-        if (x.dt() == dtNext && !x.subterms().hasAny(Temporal))
+        if (x.dt() == dtNext && !x.subterms().isTemporal())
             return x; //no change
         else
             return TermTransform.NegObliviousTermTransform.super.transformCompound(x, x.op(), dtNext);
     }
 
+    @Override
+    default Subterms transformSubterms(Subterms x) {
+        if (!x.isTemporal())
+            return x;
+        else
+            return TermTransform.NegObliviousTermTransform.super.transformSubterms(x);
+    }
 
     @Deprecated
     final class RetemporalizeAll implements Retemporalize {

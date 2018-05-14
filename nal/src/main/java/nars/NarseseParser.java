@@ -16,9 +16,9 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.obj.QuantityTerm;
 import nars.term.var.UnnormalizedVariable;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.unify.match.Ellipsis;
-import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tec.uom.se.AbstractQuantity;
@@ -27,7 +27,7 @@ import java.util.List;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL_ETERNAL;
+import static nars.time.Tense.ETERNAL;
 
 public class NarseseParser extends BaseParser<Object> implements Narsese.INarseseParser {
 
@@ -70,7 +70,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 Term(),
                 s(),
                 eof(),
-                push(newTask(1f,';', the(pop()), null, ETERNAL_ETERNAL))
+                push(newTask(1f,';', the(pop()), null, new long[] { ETERNAL, ETERNAL }))
         );
     }
 
@@ -79,7 +79,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         Var<Float> budget = new Var();
         Var<Character> punc = new Var(Op.COMMAND);
         Var<Object> truth = new Var();
-        Var<Object> occurr = new Var(ETERNAL_ETERNAL);
+        Var<Object> occurr = new Var(new long[] { ETERNAL, ETERNAL });
 
         return sequence(
 

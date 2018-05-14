@@ -123,20 +123,16 @@ public abstract class TermBuilder {
     }
 
 
-    public Compound theCompound(/*@NotNull*/ Op op, Subterms subterms) {
+    public Compound theCompound(Op op, Subterms subterms) {
         return theCompound(op, DTERNAL, subterms);
     }
 
-    public Compound theCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
+    public Compound theCompound(Op op, int dt, Subterms subterms) {
         //HACK predict if compound will differ from its root
-        boolean dTernal = dt == DTERNAL;
-        if (dTernal && !op.temporal && !subterms.hasAny(Op.Temporal)) { //TODO there are more cases
+        if (!op.temporal && !subterms.isTemporal()) { //TODO there are more cases
+            assert(dt == DTERNAL);
             return new CachedCompound.SimpleCachedCompound(op, subterms);
         } else {
-
-            if (!dTernal && !op.temporal)
-                throw new RuntimeException(op + " is non-temporal and can not accept dt=" + dt);
-
             return new CachedCompound.TemporalCachedCompound(op, dt, subterms);
         }
     }

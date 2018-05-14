@@ -137,7 +137,7 @@ public class TimeGraphTest {
         cc1.know($.$("(b &&+5 c)"), 6);
         
         assertSolved("((b &&+5 c) &&+- (a &&+5 b))", cc1,
-                "((a &&+5 b) &&+5 c)@1");
+                "((a &&+5 b) &&+5 c)", "((a &&+5 b) &&+5 c)@1");
     }
 
     @Test
@@ -168,7 +168,7 @@ public class TimeGraphTest {
     public void testImplWithConjPredicate2() {
         assertSolved("(one ==>+- (two &&+- three))", A, //using one@1
 
-                "(one ==>+- (two &&+1 three))", "(one ==>+1 (two &&+1 three))", "(one ==>+1 (two &&+1 three))@1", "(one ==>+1 (two &&+1 three))@19", "(one ==>+19 (two &&+1 three))@1", "(one ==>-17 (two &&+1 three))@19"
+                "(one ==>+- (two &&+1 three))", "(one ==>+1 (two &&+1 three))", "(one ==>+1 (two &&+1 three))@1"
                 //using two@20
                 //"(one ==>+1 (two &&+1 three))@19"
         );
@@ -184,7 +184,7 @@ public class TimeGraphTest {
         C.know($.$("(a &&+5 b)"), 1);
         C.know($.$("(b &&+5 c)"), 3);
         assertSolved("((a &&+5 b) ==>+- (b &&+5 c))", C,
-                "((a &&+5 b) ==>-3 (b &&+5 c))@1","((a &&+5 b) ==>+5 c)@1");
+                "((a &&+5 b) ==>-3 (b &&+5 c))","((a &&+5 b) ==>+5 c)");
     }
     @Test
     public void testImplWithConjSubjDecomposeProperly() throws Narsese.NarseseException {

@@ -104,6 +104,10 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         onDur = DurService.on(nar, this::commit);
     }
 
+    /** measures accesses for eviction, so do not elide */
+    @Override protected final boolean elideConceptGets() {
+        return false;
+    }
 
     public void commit(TimeAware n) {
         table.commit();

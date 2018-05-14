@@ -22,7 +22,6 @@ public enum Tense {
      * means "always" in Judgment/Question, but "current" in Goal/Quest
      */
     public static final long ETERNAL = LongInterval.ETERNAL;
-    public static final long[] ETERNAL_ETERNAL = {ETERNAL, ETERNAL};
     public static final long TIMELESS = LongInterval.TIMELESS;
 
     /**
@@ -34,7 +33,6 @@ public enum Tense {
      * a dt placeholder value for preventing premature flattening during derivation term construction
      */
     public static final int XTERNAL = Integer.MAX_VALUE;
-    public static final long[] ETERNAL_FOCUS = new long[]{ETERNAL, ETERNAL};
 
 
     public final String symbol;

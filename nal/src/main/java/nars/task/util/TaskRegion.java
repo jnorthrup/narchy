@@ -6,10 +6,7 @@ import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
 import nars.truth.TruthFunctions;
-import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.List;
 
 /** 3d cuboid region:
  *      time            start..end              64-bit signed long
@@ -74,23 +71,23 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 //        }
 //    }
 
-    static long[] range(List<? extends LongInterval> ie) {
-        long start = Long.MAX_VALUE, end = Long.MIN_VALUE;
-        int n = ie.size();
-        for (int i = 0; i < n; i++) {
-            LongInterval x = ie.get(i);
-            long s = x.start();
-            if (s != ETERNAL) {
-                if (s < start) start = s;
-                long e = x.end();
-                if (e > end) end = e;
-            }
-        }
-        if (start == Long.MAX_VALUE) //nothing or all eternal
-            return Tense.ETERNAL_ETERNAL;
-        else
-            return new long[]{start, end};
-    }
+//    static long[] range(List<? extends LongInterval> ie) {
+//        long start = Long.MAX_VALUE, end = Long.MIN_VALUE;
+//        int n = ie.size();
+//        for (int i = 0; i < n; i++) {
+//            LongInterval x = ie.get(i);
+//            long s = x.start();
+//            if (s != ETERNAL) {
+//                if (s < start) start = s;
+//                long e = x.end();
+//                if (e > end) end = e;
+//            }
+//        }
+//        if (start == Long.MAX_VALUE) //nothing or all eternal
+//            return Tense.ETERNAL_ETERNAL;
+//        else
+//            return new long[]{start, end};
+//    }
 
 //    /** untested */
 //    default long medianTimeTo(long a,long b) {

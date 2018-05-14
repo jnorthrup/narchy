@@ -13,6 +13,8 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import static nars.$.*;
+import static nars.Op.False;
+import static nars.Op.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -861,11 +863,11 @@ public class TemporalTermTest {
 
         Compound x = $("(&&,(#1-->I),(#1-->{i141}),(#2-->{i141}))");
         assertNotNull(x);
-        assertEquals(Op.Null, x.dt(-1));
-        assertEquals(Op.Null, x.dt(+1));
-        assertNotEquals(Op.Null, x.dt(0));
-        assertNotEquals(Op.Null, x.dt(DTERNAL));
-        assertNotEquals(Op.Null, x.dt(XTERNAL));
+        assertEquals(Null, x.dt(-1));
+        assertEquals(Null, x.dt(+1));
+        assertNotEquals(Null, x.dt(0));
+        assertNotEquals(Null, x.dt(DTERNAL));
+        assertNotEquals(Null, x.dt(XTERNAL));
     }
 
     @Test
@@ -1160,5 +1162,17 @@ public class TemporalTermTest {
 
         //(({(0,0)}-->shape)&|cam(0,0))
         //cam(0,0)
+    }
+
+    @Test public void testDiffOfTemporalConj() {
+        Term x = $$("((x&|y)~(y &&+1 x))");
+        assertEquals(False, x); //disallowed for now
+        Term xNeg = $$("(--(x&|y)~(y &&+1 x))");
+        assertEquals(False, xNeg); //disallowed for now
+
+//        assertEquals("", x.root());
+//        assertEquals("", x.concept());
+
+        //(((left &&+676 (tetris-->happy)) &&+234 (happy(tetris,chronic) &&+806 happy(tetris,acute)))~(&|,happy(tetris,acute),happy(tetris,chronic),(tetris-->happy),left))
     }
 }

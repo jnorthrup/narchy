@@ -4,7 +4,9 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.term.*;
+import nars.term.Term;
+import nars.term.Termed;
+import nars.term.Variable;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,8 +98,14 @@ public abstract class ConceptIndex {
             return ((Concept)x);
 
         Term xx = x.concept();
-        if (!(xx.op().conceptualizable))
+        if (!(xx.op().conceptualizable)) {
+//            //for DEBUGGING temporary
+//            Term yy = $$(x.toString());
+//            assert(yy.equals(x));
+//            yy.concept(); //<- breakpoint here
+
             return null; //this could mean a bad .concept() case
+        }
 
         return (Concept) get(xx, createIfMissing);
     }

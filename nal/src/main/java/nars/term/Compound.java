@@ -966,13 +966,11 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default Term concept() {
 
-        Op op;
-        if ((op = op()) == NEG)
-            return unneg().concept();
+        Term term = unneg().root(); //unneg just in case
 
-        Term term = root().unneg(); //unneg just in case
-
-        if (!term.op().conceptualizable)
+        Op op = term.op();
+        assert(op!=NEG);
+        if (!op.conceptualizable)
             return Null;
 
 

@@ -106,6 +106,11 @@ public class AnonVector extends TermVector {
     }
 
     @Override
+    public boolean isTemporal() {
+        return false; //this is limited to atomics so there is no temporal possibility
+    }
+
+    @Override
     public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return !impossibleSubTerm(t) && ( anyNeg() ?
                 super.containsRecursively(t, root, inSubtermsOf) //negation's must be handled as compounds TODO write a faster impl of this
