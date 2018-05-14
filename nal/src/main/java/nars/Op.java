@@ -219,14 +219,20 @@ public enum Op {
                     if (u.length == 2) {
                         //fast n=2 cases
 
-                        if (u[0].equals(u[1]))
-                            return u[0];
 
-                        if (!u[0].hasAny(Op.CONJ.bit | Op.NEG.bit) && !u[1].hasAny(Op.CONJ.bit | Op.NEG.bit)) {
+                        Term a = u[0];
+                        Term b = u[1];
+                        if ((a.structure() & b.structure()) != 0) {
+                            if (a.equals(b))
+                                return u[0];
+                            if (a.equalsNeg(b))
+                                return False;
+                        }
+
+                        if (!a.hasAny(Op.CONJ.bit | Op.NEG.bit) && !b.hasAny(Op.CONJ.bit | Op.NEG.bit)) {
                             //fast case: no inner conjunction or negations
                             return compound(CONJ, dt, sorted(u[0], u[1]));
-                        } else if (u[0].equalsNeg(u[1]))
-                            return False;
+                        }
 
                     }
 
@@ -300,7 +306,8 @@ public enum Op {
                                     //if left remains heavier by donating its smallest
                                     if ((va - vamin) > (vb + vamin)) {
                                         int min = va0 <= va1 ? 0 : 1;
-                                        return CONJ.compound(XTERNAL, new Term[]{CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]});
+                                        //return CONJ.compound(XTERNAL, new Term[]{CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]});
+                                        return compound(CONJ, XTERNAL, new Term[]{CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]});
                                     }
                                 }
 

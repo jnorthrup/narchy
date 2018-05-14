@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static java.lang.Integer.MIN_VALUE;
+import static nars.Op.NEG;
 
 
 /**
@@ -90,7 +91,10 @@ public interface Atomic extends Term {
         return 0;
     }
 
-
+    @Override
+    default boolean equalsNeg(Term t) {
+        return t.op()==NEG ? equals(t.unneg()) : false;
+    }
 
     @Override
     default Term replace(Map<Term, Term> m) {
