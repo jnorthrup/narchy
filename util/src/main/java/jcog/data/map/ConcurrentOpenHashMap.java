@@ -26,6 +26,7 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -81,7 +82,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public int size() {
         long size = 0;
         for (Section<K, V> s : sections) {
-            size += s.size;
+            size += s.size.get();
         }
         if (size >= Integer.MAX_VALUE)
             return Integer.MAX_VALUE-1; //HACK
@@ -98,7 +99,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
     public boolean isEmpty() {
         for (Section<K, V> s : sections) {
-            if (s.size != 0) {
+            if (s.size.get() != 0) {
                 return false;
             }
         }
@@ -134,7 +135,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         checkNotNull(key);
         checkNotNull(provider);
         long h = hash(key);
-        return getSection(h).put((K)key, null, (int) h, true, provider);
+        return getSection(h).put(key, null, (int) h, true, provider);
     }
 
     public V remove(Object key) {
@@ -178,12 +179,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     public List<V> values(V[] emptyArray) {
-        List<V> values = new FasterList<>(size()) {
-            @Override
-            protected V[] newArray(int newCapacity) {
-                return Arrays.copyOf(emptyArray, newCapacity);
-            }
-        };
+        List<V> values = new MyFasterList<V>(size(), emptyArray);
         forEach((key, value) -> values.add(value));
         return values;
     }
@@ -206,22 +202,22 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         private Object[] table;
 
         private int capacity;
-        private volatile int size;
+        private final AtomicInteger size = new AtomicInteger();
         private int usedBuckets;
         private int resizeThreshold;
 
         Section(int capacity) {
             this.capacity = alignToPowerOfTwo(capacity);
             this.table = new Object[2 * this.capacity];
-            this.size = 0;
+            this.size.set(0);
             this.usedBuckets = 0;
             this.resizeThreshold = (int) (this.capacity * MapFillFactor);
         }
 
         V get(K key, int keyHash) {
+            long stamp = tryOptimisticRead();
             boolean acquiredLock = false;
             int bucket = signSafeMod(keyHash, capacity);
-            long stamp = tryOptimisticRead();
 
             try {
                 while (true) {
@@ -239,12 +235,12 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             return null;
                         }
                     } else {
-                        table = this.table; //refresh
 
                         // Fallback to acquiring read lock
                         if (!acquiredLock) {
                             stamp = readLock();
                             acquiredLock = true;
+                            table = this.table; //refresh
 
                             bucket = signSafeMod(keyHash, capacity);
                             storedKey = (K) table[bucket];
@@ -277,6 +273,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
                 while (true) {
+                    Object[] table = this.table;
                     K storedKey = (K) table[bucket];
                     V storedValue = (V) table[bucket + 1];
 
@@ -301,9 +298,9 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             value = valueProvider.apply(key);
                         }
 
+                        size.incrementAndGet();
                         table[bucket] = key;
                         table[bucket + 1] = value;
-                        ++size;
                         return valueProvider != null ? value : null;
                     } else if (storedKey == DeletedKey) {
                         // The bucket contained a different deleted key
@@ -333,11 +330,12 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
                 while (true) {
+                    Object[] table = this.table;
                     K storedKey = (K) table[bucket];
                     V storedValue = (V) table[bucket + 1];
                     if (key.equals(storedKey)) {
                         if (value == null || value.equals(storedValue)) {
-                            --size;
+                            size.decrementAndGet();
 
                             int nextInArray = (bucket + 2) & (table.length - 1);
                             if (table[nextInArray] == EmptyKey) {
@@ -371,7 +369,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
                 Arrays.fill(table, EmptyKey);
-                this.size = 0;
+                this.size.set(0);
                 this.usedBuckets = 0;
             } finally {
                 unlockWrite(stamp);
@@ -425,6 +423,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             Object[] newTable = new Object[2 * newCapacity];
 
             // Re-hash table
+            Object[] table = this.table;
             for (int i = 0; i < table.length; i += 2) {
                 K storedKey = (K) table[i];
                 V storedValue = (V) table[i + 1];
@@ -433,9 +432,9 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 }
             }
 
-            table = newTable;
+            this.table = newTable;
             capacity = newCapacity;
-            usedBuckets = size;
+            usedBuckets = size.get();
             resizeThreshold = (int) (capacity * MapFillFactor);
         }
 
@@ -457,21 +456,35 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
     }
 
-    private static final long HashMixer = 0xc6a4a7935bd1e995l;
+    private static final long HashMixer = 0xc6a4a7935bd1e995L;
     private static final int R = 47;
 
-    final static <K> long hash(K key) {
+    static <K> long hash(K key) {
         long hash = key.hashCode() * HashMixer;
         hash ^= hash >>> R;
         hash *= HashMixer;
         return hash;
     }
 
-    static final int signSafeMod(long n, int Max) {
+    static int signSafeMod(long n, int Max) {
         return (int) (n & (Max - 1)) << 1;
     }
 
-    private static final int alignToPowerOfTwo(int n) {
+    private static int alignToPowerOfTwo(int n) {
         return (int) Math.pow(2, 32 - Integer.numberOfLeadingZeros(n - 1));
+    }
+
+    private static class MyFasterList<V> extends FasterList<V> {
+        private final V[] emptyArray;
+
+        public MyFasterList(int size, V[] emptyArray) {
+            super(emptyArray);
+            this.emptyArray = emptyArray;
+        }
+
+        @Override
+        protected V[] newArray(int newCapacity) {
+            return Arrays.copyOf(emptyArray, newCapacity);
+        }
     }
 }

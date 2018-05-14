@@ -27,7 +27,7 @@ public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X
     private final Iterable<X> src;
     private final MutableFloat scale;
     final AtomicBoolean busy = new AtomicBoolean();
-    private float forgetRate = 0.5f;
+    private float forgetRate = 1f;
 
     public Bagregate(Stream<X> src, int capacity, float scale) {
         this(src::iterator, capacity, scale);

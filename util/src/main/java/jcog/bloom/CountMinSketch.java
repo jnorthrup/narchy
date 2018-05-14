@@ -122,7 +122,7 @@ public class CountMinSketch {
         return ((w * d) + 2) * (Integer.SIZE / 8);
     }
 
-    public void add(byte[] key) {
+    public void add(byte... key) {
         // We use the trick mentioned in "Less Hashing, Same Performance: Building a Better Bloom Filter"
         // by Kirsch et.al. From abstract 'only two hash functions are necessary to effectively
         // implement a Bloom filter without any loss in the asymptotic false positive probability'
@@ -150,7 +150,7 @@ public class CountMinSketch {
     }
 
     public void add(byte val) {
-        add(new byte[]{val});
+        add(val);
     }
 
     public void add(short val) {
@@ -253,11 +253,9 @@ public class CountMinSketch {
                     "this.depth: " + this.depth() + " that.depth: " + that.depth());
         }
 
-        int[][] x = this.multiset;
-        int[][] y = that.multiset;
         for (int i = 0; i < d; i++) {
-            int[] xi = x[i];
-            int[] yi = y[i];
+            int[] xi = this.multiset[i];
+            int[] yi = that.multiset[i];
             for (int j = 0; j < w; j++) {
                 xi[j] += yi[j];
             }

@@ -12,15 +12,16 @@ import nars.gui.EmotionPlot;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.time.clock.RealTime;
 import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DSensor;
-import nars.time.Tense;
 import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
@@ -28,9 +29,11 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 import org.HdrHistogram.DoubleHistogram;
+import org.apache.commons.math3.primes.Primes;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -169,60 +172,15 @@ abstract public class NAgentX extends NAgent {
 
                 .time(clock)
                 .index(
-                        new CaffeineIndex(
-                                //800 * 1024,
-                                1500 * 1024,
-                                //1200 * 1024,
-                                //50 * 1024
-                                //20 * 1024,
-                                //4096
-                                //Integer.MAX_VALUE,
-                                c -> {
 
-//                            int HISTORY = 1000;
-//                            AtomicHistogram a = c.meta("%");
-//                            int score;
-//                            if (a == null)
-//                                score = 0; //new
-//                            else {
-//
-//                                long now = clock.now();
-//                                long count = a.getCountBetweenValues(Math.max(0, now - HISTORY), now);
-//                                if (count >= Integer.MAX_VALUE)
-//                                    return 0;
-//                                score = (int)count;
-//                            }
-//                            return (Integer.MAX_VALUE - score) / (Integer.MAX_VALUE / (16*1024));
-
-                                    return (int) Math.ceil(c.voluplexity());
-//                            return Math.round(
-//                                    ((float)c.voluplexity())
-//                                        / (1 + 100 * (c.termlinks().priSum() + c.tasklinks().priSum()))
-//                                            //(c.beliefs().size() + c.goals().size()))
-//                            );
-                                }
-                        ) /*{
-                            @Override
-                            public Termed get(Term x, boolean createIfMissing) {
-
-                                Termed t = super.get(x, createIfMissing);
-
-                                if (createIfMissing) {
-                                    AtomicHistogram a = ((Concept)t).meta("%", (z)->new AtomicHistogram(Long.MAX_VALUE, 0));
-//                                    int a1 = a.getEstimatedFootprintInBytes();
-//                                    int a2 = a.getNeededByteBufferCapacity();
-                                    a.recordValueWithCount(clock.now(), 1);
-                                }
-
-                                return t;
-                            }
-                        }*/
+                        //newCaffeineIndex()
 
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
-                        //new HijackConceptIndex(Primes.nextPrime( 64 * 1024 + 1),  3)
-                        //new MapTermIndex(new CustomConcurrentHashMap<>(STRONG, EQUALS, SOFT, EQUALS, 128*1024))
+                        new HijackConceptIndex(Primes.nextPrime( 8 /*64*/ * 1024 + 1),  3)
+                        //new MapConceptIndex(new ConcurrentOpenHashMap<>())
+                        //new MapConceptIndex(new CustomConcurrentHashMap<>(STRONG, EQUALS, SOFT, EQUALS, 128*1024))
                 )
                 .get();
 
@@ -434,6 +392,43 @@ abstract public class NAgentX extends NAgent {
         });
 
         return n;
+    }
+
+    @NotNull
+    public static CaffeineIndex newCaffeineIndex() {
+        return new CaffeineIndex(
+                //800 * 1024,
+                1500 * 1024,
+                //1200 * 1024,
+                //50 * 1024
+                //20 * 1024,
+                //4096
+                //Integer.MAX_VALUE,
+                c -> {
+
+//                            int HISTORY = 1000;
+//                            AtomicHistogram a = c.meta("%");
+//                            int score;
+//                            if (a == null)
+//                                score = 0; //new
+//                            else {
+//
+//                                long now = clock.now();
+//                                long count = a.getCountBetweenValues(Math.max(0, now - HISTORY), now);
+//                                if (count >= Integer.MAX_VALUE)
+//                                    return 0;
+//                                score = (int)count;
+//                            }
+//                            return (Integer.MAX_VALUE - score) / (Integer.MAX_VALUE / (16*1024));
+
+                    return (int) Math.ceil(c.voluplexity());
+//                            return Math.round(
+//                                    ((float)c.voluplexity())
+//                                        / (1 + 100 * (c.termlinks().priSum() + c.tasklinks().priSum()))
+//                                            //(c.beliefs().size() + c.goals().size()))
+//                            );
+                }
+        );
     }
 
     public static void chart(NAgent a) {
