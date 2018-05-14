@@ -123,7 +123,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         ) {
             @Override
             protected void paintBelow(GL2 gl) {
-                
+
                 //black background
                 gl.glColor4f(0,0,0, 0.9f);
                 Draw.rect(gl, bounds);

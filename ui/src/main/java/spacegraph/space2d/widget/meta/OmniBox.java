@@ -1,19 +1,17 @@
 package spacegraph.space2d.widget.meta;
 
-import jcog.User;
-import jcog.list.FasterList;
-import org.apache.lucene.document.Document;
+import jdk.jshell.JShell;
+import jdk.jshell.SourceCodeAnalysis;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
 
 /**
  * super repl
@@ -22,48 +20,30 @@ public class OmniBox extends Widget {
 
     final TextEdit edit;
 
-    private final User user;
+
     private final Gridding results;
     private final Splitting divider;
 
-    private final AtomicReference<Querying> query = new AtomicReference<>(null);
+    private final Model model;
 
-    public OmniBox() {
-        this(User.the());
+    abstract public static class Model {
+        abstract public void onTextChange(String text, MutableContainer target);
+
+        public void onTextChangeControlEnter(String t, MutableContainer target) {
+            /** default nothing */
+        }
     }
 
-    public OmniBox(User u) {
+
+    @Deprecated public OmniBox() {
+        this(new JShellModel());
+    }
+
+    public OmniBox(Model m) {
         super();
 
-        this.user = u;
-        edit = new TextEdit() {
+        this.model = m;
 
-            @Override
-            protected void onKeyCtrlEnter() {
-                String t = text();
-                in(t);
-                clear();
-            }
-
-            @Override
-            protected void textChange(String next) {
-                Querying prev = null;
-                if (next.isEmpty()) {
-                    prev = query.getAndSet(null);
-                } else {
-
-                    Querying q = query.get();
-                    if (q == null || !q.q.equals(next)) {
-                        Querying qq = new Querying(next);
-                        prev = query.getAndSet(qq);
-                        qq.start();
-                    }
-                }
-                if (prev!=null)
-                    prev.clear();
-            }
-
-        };
         divider = new Splitting();
         results = new Gridding() {
             @Override
@@ -77,99 +57,64 @@ public class OmniBox extends Widget {
                 super.doLayout(dtMS);
             }
         };
+        edit = new TextEdit() {
 
+            @Override
+            protected void onKeyCtrlEnter() {
+                String t = text();
+                model.onTextChangeControlEnter(t, results);
+                clear();
+            }
+
+            @Override
+            protected void textChange(String next) {
+                model.onTextChange(next, results);
+            }
+
+        };
         content(divider.split(edit.surface().scale(2), results, 0));
     }
 
-    class Result {
-        public final String id;
-        public final String type;
-        final Document doc;
-        //icon
+    private static class JShellModel extends Model {
 
-        Result(Document doc) {
-            this.doc = doc;
-            this.id = doc.get("i");
-            switch (this.type = doc.get("c")) {
-                case "blob":
-                    //
-                    break;
-            }
-//            System.out.println(id);
-//            d.forEach(f -> {
-//                System.out.println(f.name() + " " + f.fieldType());
-//            });
-        }
+        private final JShell js;
 
-        Object get() {
-            return user.undocument(doc);
-        }
-
-    }
-
-    final class Querying implements Predicate<User.DocObj>, Runnable {
-
-
-        public final String q;
-        final List<Result> results = new FasterList();
-
-        Querying(String text) {
-            this.q = text;
-        }
-
-        public Querying start() {
-            if (query.get() == this) {
-                //System.out.println("query start: " + q);
-                user.run(this);
-            }
-            return this;
+        public JShellModel() {
+            js = JShell.create();
         }
 
         @Override
-        public boolean test(User.DocObj docObj) {
-            //System.out.println(q + ": " + docObj);
-            if (query.get()!=this)
-                return false;
-            else {
-                Document d = docObj.doc();
-                Result r = new Result(d);
-                Surface s = result(r);
-                if (query.get()==this) {
-                    results.add(r);
-                    OmniBox.this.results.add(s);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
+        public void onTextChange(String text, MutableContainer target) {
+            if (text.isEmpty())
+                return; //though it works , temporary to avoid it clearing after ctrl-enter
+
+            List<SourceCodeAnalysis.Suggestion> sugg = js.sourceCodeAnalysis().completionSuggestions(text,
+                    text.length() /* TODO take actual cursor pos */,
+                    new int[1]);
+
+
+            target.clear();
+            sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(x -> new PushButton(x)).forEach(target::add);
         }
 
         @Override
-        public void run() {
-            if (query.get() != this)
-                return;
-
-            OmniBox.this.results.clear();
-            user.get(q, 16, this);
-        }
-
-
-
-        private Surface result(Result r) {
-            return new PushButton(r.id);
-        }
-
-        void clear() {
-            results.clear();
+        public void onTextChangeControlEnter(String t, MutableContainer target) {
+            target.clear();
+            js.eval(t).forEach(e -> {
+                String msg = e + " "+ e.causeSnippet() + " " + e.value() + " " + e.exception();
+                target.add(new Label(msg));
+            });
         }
     }
 
 
-    protected void in(String s) {
+
+
+    /*protected void in(String s) {
         user.notice.emit("omnibox: " + s);
-    }
+    }*/
 
     public static void main(String[] args) {
-        SpaceGraph.window(new OmniBox(), 800, 250);
+        SpaceGraph.window(new OmniBox(new JShellModel()), 800, 250);
     }
 }
