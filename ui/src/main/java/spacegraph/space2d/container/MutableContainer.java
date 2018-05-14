@@ -5,6 +5,7 @@ import jcog.list.BufferedCoWList;
 import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceBase;
 
 import java.util.List;
 import java.util.Set;
@@ -69,27 +70,27 @@ public class MutableContainer extends AbstractMutableContainer {
      * returns the existing value that was replaced
      */
     public Surface set(int index, Surface next) {
-        Surface existing;
         synchronized (this) {
-            if (parent == null) {
+            SurfaceBase p = this.parent;
+            if (p == null) {
                 return children.set(index, next);
             } else {
                 if (children.size() - 1 < index)
                     throw new RuntimeException("index out of bounds");
 
-                existing = get(index);
+                Surface existing = children.set(index, next);
                 if (existing != next) {
-                    existing.stop();
+                    if (existing!=null)
+                        existing.stop();
 
-                    children.set(index, next);
-
-                    if (this.parent != null)
+                    if (p!=null)
                         next.start(this);
+
+                    layout();
                 }
+                return existing;
             }
         }
-        layout();
-        return existing;
     }
 
     //TODO: addIfNotPresent(x) that tests for existence first
@@ -113,7 +114,8 @@ public class MutableContainer extends AbstractMutableContainer {
 
     private void _add(Surface s) {
         synchronized (this) {
-            if (parent == null) {
+            SurfaceBase p = this.parent;
+            if (p == null) {
                 children.add(s);
             } else {
                 if (s.start(this)) {

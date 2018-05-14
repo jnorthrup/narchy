@@ -64,7 +64,7 @@ public abstract class UnitCompound implements Compound {
         if (this == that) return true;
         if (that instanceof Term) {
             Term x = (Term) that;
-            return x.subs() == 1 && hashCode() == that.hashCode() && opX() == x.opX() && sub().equals(x.sub(0));
+            return hashCode() == that.hashCode() && opX() == x.opX() && x.subs() == 1 && sub().equals(x.sub(0));
         }
         return false;
     }

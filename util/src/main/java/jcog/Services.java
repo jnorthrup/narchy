@@ -163,12 +163,14 @@ public class Services<C /* context */, K /* service key */>  {
         }
     }
 
-    public void remove(K serviceID) {
+    public boolean remove(K serviceID) {
         Service<C> s = services.get(serviceID);
         if (s!=null) {
             s.stop(this, exe, ()-> services.remove(serviceID));
+            return true;
         } else {
             logger.error("can not remove unknown service: {}", serviceID);
+            return false;
         }
     }
 

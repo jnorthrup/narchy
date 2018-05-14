@@ -74,9 +74,10 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof ProxyTerm) {
+        if (o instanceof ProxyTerm)
             o = ((ProxyTerm)o).ref;
-        }
+        if (o instanceof Termed)
+            o = ((Termed)o).term(); //dereference, ex: for concept/term equality
         return ref.equals(o);
     }
 

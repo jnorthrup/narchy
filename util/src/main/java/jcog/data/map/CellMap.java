@@ -98,7 +98,7 @@ public class CellMap<K, V> {
     }
 
     @Nullable
-    public V getValue(K x) {
+    public V getValue(Object x) {
         CacheCell<K, V> y = cache.get(x);
         if (y != null)
             return y.value;
@@ -152,6 +152,14 @@ public class CellMap<K, V> {
             return true;
         });
         invalidated();
+    }
+
+    @Nullable public V get(Object from) {
+        CacheCell<K, V> v = cache.get(from);
+        if (v!=null)
+            return v.value;
+        else
+            return null;
     }
 
     /**

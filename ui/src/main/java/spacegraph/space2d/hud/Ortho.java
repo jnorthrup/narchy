@@ -4,6 +4,7 @@ import com.jogamp.newt.event.*;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.On;
+import jcog.exe.Loop;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -207,7 +208,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             windowResized(null);
 
-            surface.start(this);
+            assert(surface.parent==null);
+            Loop.invokeLater(()->surface.start(this));
         }
 
     }
@@ -301,8 +303,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void windowDestroyNotify(WindowEvent e) {
-        visible = false;
-        stop();
+        Loop.invokeLater(this::stop);
     }
 
     @Override
@@ -312,7 +313,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public boolean stop() {
-        return surface.stop();
+        synchronized (this) {
+            assert(surface.parent == this);
+            return surface.stop();
+        }
     }
 
     @Override

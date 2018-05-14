@@ -24,15 +24,6 @@ public class UnitContainer extends Container {
         return false;
     }
 
-    @Override
-    public boolean stop() {
-        if (super.stop()) {
-            the.stop();
-            return true;
-        }
-        return false;
-    }
-
     /** default behavior: inherit bounds directly */
     @Override
     protected void doLayout(int dtMS) {

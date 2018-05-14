@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static jcog.Services.ServiceState.Deleted;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public abstract class Service<C> extends AtomicReference<Services.ServiceState> {
@@ -14,7 +15,8 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
     }
 
     public boolean isOff() {
-        return get() == Services.ServiceState.Off;
+        Services.ServiceState s = get();
+        return s == Services.ServiceState.Off || s == Deleted;
     }
 
     protected Service() {
@@ -41,7 +43,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
                     assert toggledOn;
                     x.change.emit(pair(Service.this, true));
                 } catch (Throwable e) {
-                    set(Services.ServiceState.Deleted);
+                    set(Deleted);
                     x.logger.error("{} {}", this, e);
                 }
             });
@@ -56,13 +58,13 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
                     boolean toggledOff = compareAndSet(Services.ServiceState.OnToOff, Services.ServiceState.Off);
                     assert toggledOff;
                     if (afterDelete!=null) {
-                        set(Services.ServiceState.Deleted);
+                        set(Deleted);
                         afterDelete.run();
                     }
                     x.change.emit(pair(this, false));
 
                 } catch (Throwable e) {
-                    set(Services.ServiceState.Deleted);
+                    set(Deleted);
                     x.logger.error("{} {}", this, e);
                 }
             });

@@ -22,10 +22,7 @@ import com.google.common.collect.Lists;
 import jcog.TODO;
 import jcog.list.FasterList;
 
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
@@ -46,7 +43,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @SuppressWarnings("unchecked")
 public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
-    private static final Object EmptyKey = null;
     private static final Object DeletedKey = new Object();
 
     private static final float MapFillFactor = 0.9f;
@@ -230,7 +226,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         // The values we have read are consistent
                         if (key.equals(storedKey)) {
                             return storedValue;
-                        } else if (storedKey == EmptyKey) {
+                        } else if (storedKey == null) {
                             // Not found
                             return null;
                         }
@@ -249,10 +245,10 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
                         if (key.equals(storedKey)) {
                             return storedValue;
-                        } else if (storedKey == EmptyKey) {
+                        } else if (storedKey == null) {
                             // Not found
                             return null;
-                        }
+                    }
                     }
 
                     bucket = (bucket + 2) & (table.length - 1);
@@ -285,7 +281,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         } else {
                             return storedValue;
                         }
-                    } else if (storedKey == EmptyKey) {
+                    } else if (storedKey == null) {
                         // Found an empty bucket. This means the key is not in the map. If we've already seen a deleted
                         // key, we should write at that position
                         if (firstDeletedKey != -1) {
@@ -338,8 +334,8 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             size.decrementAndGet();
 
                             int nextInArray = (bucket + 2) & (table.length - 1);
-                            if (table[nextInArray] == EmptyKey) {
-                                table[bucket] = EmptyKey;
+                            if (table[nextInArray] == null) {
+                                table[bucket] = null;
                                 table[bucket + 1] = null;
                                 --usedBuckets;
                             } else {
@@ -351,7 +347,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         } else {
                             return null;
                         }
-                    } else if (storedKey == EmptyKey) {
+                    } else if (storedKey == null) {
                         // Key wasn't found
                         return null;
                     }
@@ -368,7 +364,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             long stamp = writeLock();
 
             try {
-                Arrays.fill(table, EmptyKey);
+                Arrays.fill(table, null);
                 this.size.set(0);
                 this.usedBuckets = 0;
             } finally {
@@ -406,7 +402,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         storedValue = (V) table[bucket + 1];
                     }
 
-                    if (storedKey != DeletedKey && storedKey != EmptyKey) {
+                    if (storedKey != DeletedKey && storedKey != null) {
                         processor.accept(storedKey, storedValue);
                     }
                 }
@@ -427,7 +423,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             for (int i = 0; i < table.length; i += 2) {
                 K storedKey = (K) table[i];
                 V storedValue = (V) table[i + 1];
-                if (storedKey != EmptyKey && storedKey != DeletedKey) {
+                if (storedKey != null && storedKey != DeletedKey) {
                     insertKeyValueNoLock(newTable, newCapacity, storedKey, storedValue);
                 }
             }
@@ -444,7 +440,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             while (true) {
                 K storedKey = (K) table[bucket];
 
-                if (storedKey == EmptyKey) {
+                if (storedKey == null) {
                     // The bucket is empty, so we can use it
                     table[bucket] = key;
                     table[bucket + 1] = value;

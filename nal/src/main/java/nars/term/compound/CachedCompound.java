@@ -30,7 +30,7 @@ abstract public class CachedCompound implements Compound, The {
 
     protected final Op op;
 
-    private final int _volume;
+    private final short _volume;
     private final int _structure;
 
     public static class SimpleCachedCompound extends CachedCompound {
@@ -138,19 +138,16 @@ abstract public class CachedCompound implements Compound, The {
 
 
         this._structure = subterms.structure() | op.bit;
-        this._volume = subterms.volume();
+
+        int _volume = subterms.volume();
+        assert(_volume < Short.MAX_VALUE-1);
+        this._volume = (short)_volume;
     }
 
     /** since Neg compounds are disallowed for this impl */
     @Override public final Term unneg() {
         return this;
     }
-
-//    @Override
-//    abstract public Term root();
-//
-//    @Override
-//    abstract public Term concept();
 
     @Override
     public final int volume() {
@@ -190,6 +187,7 @@ abstract public class CachedCompound implements Compound, The {
     public String toString() {
         return Compound.toString(this);
     }
+
 
     @Override
     public final boolean equals(@Nullable Object that) {

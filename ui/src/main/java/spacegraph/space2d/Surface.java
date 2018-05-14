@@ -140,11 +140,10 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public boolean start(SurfaceBase parent) {
+        assert(parent!=null);
         if (_parent.getAndSet(this, parent)==null) { //if this atomic update changed from non-null to null, the callee has got it
             return true;
         }
-        if (this.parent!=parent)
-            throw new RuntimeException("parent mismatch");
         return false;
     }
 

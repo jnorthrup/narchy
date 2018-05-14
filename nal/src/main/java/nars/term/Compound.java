@@ -110,7 +110,6 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int opX() {
-        //return Term.opX(op(), (short)subs());
         return Term.opX(op(), (short)volume());
     }
 

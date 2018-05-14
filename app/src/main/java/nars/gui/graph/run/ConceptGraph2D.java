@@ -10,6 +10,8 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.exe.AbstractExec;
+import nars.term.ProxyTerm;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Clipped;
@@ -21,7 +23,6 @@ import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 
 public class ConceptGraph2D extends Graph2D<Concept> {
 
@@ -76,7 +77,8 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             }
         })
                 .layer(new TermlinkVis(n))
-                .layer(new TasklinkVis(n));
+                .layer(new TasklinkVis(n))
+                .layer(new StatementVis(n));
     }
 
     /** updates the source */
@@ -133,6 +135,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }, cfg, 0.1f);
     }
 
+
     private static class TermlinkVis implements Graph2D.Graph2DLayer<Concept> {
         public final AtomicBoolean termlinks = new AtomicBoolean(true);
         final NAR n;
@@ -142,18 +145,15 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(Graph2D.NodeVis<Concept> node, Function<Concept, Graph2D.EdgeVis<Concept>> edges, Graph2D<Concept> gg) {
+        public void node(NodeVis<Concept> node, GraphBuilder<Concept> graph) {
             if (!termlinks.get())
                 return;
 
             node.id.termlinks().forEach(l -> {
-                Concept tgtConcept = n.concept(l.get());
-                if (tgtConcept != null) {
-                    Graph2D.EdgeVis<Concept> e = edges.apply(tgtConcept);
-                    if (e != null) {
-                        float p = l.priElseZero();
-                        e.weight(p).color((0.9f * p) + 0.1f, 0, 0);
-                    }
+                Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.get()));
+                if (e != null) {
+                    float p = l.priElseZero();
+                    e.weight(p).color((0.9f * p) + 0.1f, 0, 0);
                 }
             });
         }
@@ -168,23 +168,49 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
 
         @Override
-        public void node(Graph2D.NodeVis<Concept> node, Function<Concept, Graph2D.EdgeVis<Concept>> edges, Graph2D<Concept> gg) {
+        public void node(NodeVis<Concept> node, GraphBuilder<Concept> graph) {
             if (!tasklinks.get())
                 return;
             node.id.tasklinks().forEach(l -> {
-                Concept tgtConcept = n.concept(l.term());
-                if (tgtConcept != null) {
-                    Graph2D.EdgeVis<Concept> e = edges.apply(tgtConcept);
-                    if (e != null) {
-                        float p = l.priElseZero();
-                        e.weight(p).color(0, (0.9f * p) + 0.1f, 0);
-                    }
+
+                Graph2D.EdgeVis<Concept> e = graph.edge(node, new ProxyTerm(l.term()));
+                if (e != null) {
+                    float p = l.priElseZero();
+                    e.weight(p).color(0, (0.9f * p) + 0.1f, 0);
                 }
+
             });
 
         }
     }
 
+    //TODO ConjVis - creates a loop of edges for all subterms of a conjunction concept
 
+    private static class StatementVis implements Graph2D.Graph2DLayer<Concept> {
+        public final AtomicBoolean statements = new AtomicBoolean(true);
+        final NAR n;
+
+        private StatementVis(NAR n) {
+            this.n = n;
+        }
+
+        @Override
+        public void node(NodeVis<Concept> node, Graph2D.GraphBuilder<Concept> graph) {
+            if (!statements.get())
+                return;
+
+            Concept t = node.id;
+            if (t.op().statement) {
+
+                @Nullable EdgeVis<Concept> e = graph.edge(new ProxyTerm(t.sub(0)), new ProxyTerm(t.sub(1)));
+                if (e != null) {
+                    float p = 1;
+                    e.weight(p).color(0, 0, (0.9f * p) + 0.1f);
+                }
+
+            }
+
+        }
+    }
 
 }

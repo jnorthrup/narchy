@@ -68,8 +68,9 @@ public class NARService extends Service<NAR> implements Termed {
 
     public final void off() {
         NAR n = nar;
-        if (n!=null)
+        if (n!=null) {
             n.services.remove(id);
+        }
         //else: already off
     }
 
