@@ -629,21 +629,21 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : "_";
         String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : "_";
 
-        boolean projectBeliefToTask = time.projectBeliefToTask();
+
 
         FasterList<Term> args = new FasterList(4);
         args.add(intern($.the(beliefLabel), index));
         args.add(intern($.the(goalLabel), index));
         if (puncOverride != 0)
             args.add($.quote(((char) puncOverride)));
-        if (!projectBeliefToTask)
-            args.add(Occurrify.unprojected);
 
+        Occurrify.BeliefProjection projection = time.projection();
+        args.add($.func("BeliefProjection", Atomic.the(projection.name())));
 
         Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
         Truthify truthify = (puncOverride == 0) ?
-                new Truthify.TruthifyPuncFromTask(ii, beliefTruthOp, goalTruthOp, projectBeliefToTask) :
-                new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruthOp, goalTruthOp, projectBeliefToTask);
+                new Truthify.TruthifyPuncFromTask(ii, beliefTruthOp, goalTruthOp, projection) :
+                new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruthOp, goalTruthOp, projection);
 
 
 

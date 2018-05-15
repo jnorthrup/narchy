@@ -3,7 +3,6 @@ package nars.derive.step;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
-import nars.$;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
@@ -62,7 +61,7 @@ public class Occurrify extends TimeGraph {
         merge = tm.toImmutable();
     }
 
-    public static Term unprojected = $.the("Unprojected");
+
 
     /**
      * temporary set for filtering duplicates
@@ -418,6 +417,7 @@ public class Occurrify extends TimeGraph {
         /**
          * for unprojected truth rules;
          * result should be left-aligned (relative) to the task's start time
+         * used by temporal induction rules
          */
         TaskRelative() {
 
@@ -431,11 +431,9 @@ public class Occurrify extends TimeGraph {
                 return new long[]{task.start(), task.end()};
             }
 
-            @Override
-            public boolean projectBeliefToTask() {
-                return false; //disables projection for temporal induction rules
+            @Override public BeliefProjection projection() {
+                return BeliefProjection.Raw;
             }
-
             
         },
         /**
@@ -453,9 +451,8 @@ public class Occurrify extends TimeGraph {
                 return new long[]{belief.start(), belief.end()};
             }
 
-            @Override
-            public boolean projectBeliefToTask() {
-                return false; //disables projection for temporal induction rules
+            @Override public BeliefProjection projection() {
+                return BeliefProjection.Raw;
             }
 
         },
@@ -472,9 +469,8 @@ public class Occurrify extends TimeGraph {
                 return null; //if it hasnt solved it by now, dont
             }
 
-            @Override
-            public boolean projectBeliefToTask() {
-                return false; //disables projection for temporal induction rules
+            @Override public BeliefProjection projection() {
+                return BeliefProjection.Raw;
             }
 
         },
@@ -574,9 +570,7 @@ public class Occurrify extends TimeGraph {
             return term;
         }
 
-        public boolean projectBeliefToTask() {
-            return true;
-        }
+
 
         abstract public Pair<Term, long[]> solve(Derivation d, Term x);
 
@@ -732,6 +726,24 @@ public class Occurrify extends TimeGraph {
             return pair(x, new long[]{s, e});
 
         }
+
+        public BeliefProjection projection() {
+            return BeliefProjection.Task;
+        }
+    }
+
+
+    public enum BeliefProjection {
+
+        /** belief's truth at the time it occurred */
+        Raw {
+
+        },
+
+        /** belief projected to task's occurrence time */
+        Task {
+
+        },
 
     }
 }

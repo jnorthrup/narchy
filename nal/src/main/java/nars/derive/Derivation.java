@@ -443,8 +443,8 @@ public class Derivation extends PreDerivation {
 
 
         if (_belief!=null) {
-            if ((this.beliefTruthDuringTask = _belief.truth(_task.start(), _task.end(), dur)) != null)
-                this.beliefTruth = _belief.truth();
+            this.beliefTruthDuringTask = _belief.truth(_task.start(), _task.end(), dur);
+            this.beliefTruth = _belief.truth();
 
             if (beliefTruth != null || beliefTruthDuringTask != null) {
                 this._belief = _belief;

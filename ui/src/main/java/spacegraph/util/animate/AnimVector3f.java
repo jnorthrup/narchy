@@ -32,7 +32,7 @@ public class AnimVector3f extends v3 implements Animated {
         LERP {
             @Override
             public void interp(float dt, AnimVector3f v) {
-                float rate = v.speed.floatValue() * dt;
+                float rate = 0.5f; //v.speed.floatValue() * dt;
                 v3 w = v.target;
                 if (rate >= 1) {
                     v.setDirect(w);
@@ -95,7 +95,7 @@ public class AnimVector3f extends v3 implements Animated {
     }
 
 
-    InterpolationCurve curve = InterpolationCurve.Exponential;
+    InterpolationCurve curve = InterpolationCurve.LERP;
 
     public AnimVector3f(float speed) {
         this(0, 0, 0, speed);

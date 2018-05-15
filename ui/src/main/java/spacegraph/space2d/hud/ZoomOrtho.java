@@ -16,8 +16,8 @@ public class ZoomOrtho extends Ortho {
 
     private final Surface content;
     float zoomRate =
-            200;
-            //0.2f;
+            0.5f;
+
 
     public final static short PAN_BUTTON = 0;
     final static short MOVE_WINDOW_BUTTON = 1;
@@ -153,7 +153,7 @@ public class ZoomOrtho extends Ortho {
         //System.out.println(Arrays.toString(e.getRotation()) + " " + e.getRotationScale());
         float dWheel = e.getRotation()[1];
 
-        cam.add(0, 0, dWheel * zoomRate);
+        cam.set(cam.x, cam.y, cam.z * (1f + (dWheel * zoomRate)));
 
 //        float zoomMult = Util.clamp(1f + -dWheel * zoomRate, 0.5f, 1.5f);
 //

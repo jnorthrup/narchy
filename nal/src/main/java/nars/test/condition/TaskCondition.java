@@ -4,7 +4,6 @@ package nars.test.condition;
 import jcog.Texts;
 import jcog.Util;
 import nars.*;
-import nars.control.MetaGoal;
 import nars.task.Tasked;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -294,8 +293,8 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
             matched.add(t);
             succeeded = true;
 
-            if (feedback)
-                MetaGoal.Accurate.learn(t.cause(), (float) 1, nar.causes);
+//            if (feedback)
+//                MetaGoal.Accurate.learn(t.cause(), (float) 1, nar.causes);
 
             return true;
         } else {

@@ -316,9 +316,20 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         return targetDepth;
     }
 
+    public void zoom(float diameter) {
+        zoom(cam.x, cam.y, diameter);
+    }
+//    public void zoomRelative(float diameterChange) {
+//        zoom(cam.x, cam.y, diameterChange * );
+//    }
+
     public void zoom(float x, float y, float sx, float sy, float margin) {
+        zoom(x, y, Math.max(sx,sy)*(1+margin));
+    }
+
+    public void zoom(float x, float y, float viewDiameter) {
         //float s0 = (1 + margin);
-        cam.set(x, y, targetDepth(Math.max(sx,sy)*(1+margin)));
+        cam.set(x, y, targetDepth(viewDiameter));
         //cam.setLerp(x, y, 0, speed);
         //scale(w() / (sx * s0), h() / (sy * s0));
     }

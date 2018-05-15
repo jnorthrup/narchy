@@ -1,6 +1,7 @@
 package nars.derive.step;
 
 import nars.derive.Derivation;
+import nars.derive.step.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.truth.Truth;
@@ -17,13 +18,13 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
 
     private final TruthOperator belief;
     private final TruthOperator goal;
-    private final boolean projectBeliefToTask;
+    private final BeliefProjection beliefProjection;
 
-    Truthify(Term id, TruthOperator belief, TruthOperator goal, boolean projectBeliefToTask) {
+    Truthify(Term id, TruthOperator belief, TruthOperator goal, BeliefProjection beliefProjection) {
         super(id);
         this.belief = belief;
         this.goal = goal;
-        this.projectBeliefToTask = projectBeliefToTask;
+        this.beliefProjection = beliefProjection;
     }
 
     @Override
@@ -55,7 +56,12 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
                 if (single) {
                     beliefTruth = null;
                 } else {
-                    beliefTruth = projectBeliefToTask ? d.beliefTruthDuringTask : d.beliefTruth;
+                    switch (beliefProjection) {
+                        case Raw: beliefTruth = d.beliefTruth; break;
+                        case Task: beliefTruth = d.beliefTruthDuringTask; break;
+                        default:
+                            throw new UnsupportedOperationException(beliefProjection + " unimplemented");
+                    }
                     if (beliefTruth == null)
                         return false; //double premise requiring a belief, but belief is null
                 }
@@ -109,7 +115,7 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
         private final byte puncOverride;
 
 
-        public TruthifyPuncOverride(Term id, byte puncOverride, TruthOperator belief, TruthOperator desire, boolean projectBeliefToTask) {
+        public TruthifyPuncOverride(Term id, byte puncOverride, TruthOperator belief, TruthOperator desire, BeliefProjection projectBeliefToTask) {
             super(id, belief, desire, projectBeliefToTask);
             this.puncOverride = puncOverride;
         }
@@ -127,7 +133,7 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
      */
     public static final class TruthifyPuncFromTask extends Truthify {
 
-        public TruthifyPuncFromTask(Term i, TruthOperator belief, TruthOperator desire, boolean projectBeliefToTask) {
+        public TruthifyPuncFromTask(Term i, TruthOperator belief, TruthOperator desire, BeliefProjection projectBeliefToTask) {
             super(i, belief, desire, projectBeliefToTask);
         }
 

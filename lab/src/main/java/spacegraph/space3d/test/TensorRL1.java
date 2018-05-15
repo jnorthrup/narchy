@@ -20,7 +20,6 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.hud.ZoomOrtho;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
@@ -40,8 +39,8 @@ public class TensorRL1 {
 
 
         Dyn2DSurface p = SpaceGraph.wall(1200, 1000);
-        ((ZoomOrtho) p.root()).scaleMin = 100f;
-        ((ZoomOrtho) p.root()).scaleMax = 1500;
+        //((ZoomOrtho) p.root()).scaleMin = 100f;
+        //((ZoomOrtho) p.root()).scaleMax = 1500;
 
         {
             p.put(new EnvChip(
