@@ -1,25 +1,31 @@
 package nars.op.kif;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
+import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
 
 class KIFInputTest {
 
     @Test
     public void testSUMOViaMemory() throws Narsese.NarseseException {
-        String sumo = "People";
+        String sumo =
+                //"People";
+                //"Merge";
+                "Law";
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.shell();
         n.memory.on(KIFInput.intoNAL);
-        Set<Supplier<Stream<Task>>> readers = n.memory.readers($.quote(inURL)).collect(toSet());
-        System.out.println(readers);
+
+
+        Term I = $.quote(inURL);
+        Term O = Atomic.the("stdout");
+        Runnable r = n.memory.copy(I, O);
+        r.run();
 
         //n.input("copy(\" + inURL + "\", \"file:///tmp/" + sumo + ".nal\")");
     }

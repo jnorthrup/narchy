@@ -300,8 +300,6 @@ public class KIFInput {
     }
 
     public Term formulaToTerm(final Formula x, int level) {
-//        if (x.theFormula.contains("@ROW"))
-//            return null; //HACK ignore @ROW stuff
 
         String xCar = x.car();
         String root = xCar; //root operate
@@ -309,6 +307,9 @@ public class KIFInput {
         int l = x.listLength();
         if (l == -1)
             return atomic(x.theFormula);
+        else if (l == 1) {
+            return $.p(x.theFormula);
+        }
 
         List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
         List<Term> args = sargs != null ? sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList()) : Collections.emptyList();
@@ -317,7 +318,9 @@ public class KIFInput {
             throw new NullPointerException("in: " + args);
         }
 
-        assert (!args.isEmpty()); //should have been handled first
+        if (args.isEmpty())
+            return null;
+        //assert (!args.isEmpty()); //should have been handled first
 
         /**
          *

@@ -2,9 +2,11 @@ package nars;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import jcog.TODO;
 import jcog.list.FasterList;
 import jdk.internal.jline.internal.Nullable;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -24,6 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toSet;
 import static nars.Op.ATOM;
 
 /**
@@ -95,7 +99,9 @@ public class Memory {
 
     public Memory() {
         resolvers.add(URIResolver);
+        resolvers.add(StdIOResolver);
     }
+
     public Memory(NAR nar) {
         this();
         add(nar);
@@ -105,6 +111,32 @@ public class Memory {
         resolvers.add(new NARResolver(n));
         return this;
     }
+
+    final static Atomic stdin = Atomic.the("stdin");
+    final static Atomic stdout = Atomic.the("stdout");
+
+    final MemoryResolver StdIOResolver = new MemoryResolver() {
+
+        @Override
+        public Stream<Supplier<Stream<Task>>> readers(Term x, Memory m) {
+            if (x.equals(stdin)) {
+                throw new TODO();
+            }
+            return null;
+        }
+
+        @Override
+        public Stream<Consumer<Stream<Task>>> writers(Term x) {
+            if (x.equals(stdout)) {
+                return Stream.of((t) -> {
+                   t.forEach(tt ->
+                       System.out.println(tt) //TODO improve output
+                   );
+                });
+            }
+            return null;
+        }
+    };
 
     final MemoryResolver URIResolver = new MemoryResolver() {
 
@@ -192,6 +224,32 @@ public class Memory {
 
     public Stream<Supplier<Stream<Task>>> readers(Term x) {
         return resolvers.stream().flatMap(r -> r.readers(x, Memory.this)).filter(Objects::nonNull);
+    }
+
+    public Stream<Consumer<Stream<Task>>> writers(Term x) {
+        return resolvers.stream().flatMap(r -> r.writers(x)).filter(Objects::nonNull);
+    }
+
+    @Nullable public Runnable copy(Term i, Term o) {
+        return copy(i, o, null);
+    }
+
+    @Nullable public Runnable copy(Term i, Term o, @Nullable Function<Stream<Task>,Stream<Task>> filter) {
+        Set<Supplier<Stream<Task>>> readers = readers(i).collect(toSet());
+        Set<Consumer<Stream<Task>>> writers = writers(o).collect(toSet());
+        if (!readers.isEmpty() && !writers.isEmpty()) {
+            return ()->{
+                Stream<Task> in = readers.stream().flatMap(Supplier::get);
+                Stream<Task> out = filter != null ? filter.apply(in) : in;
+
+                //HACK find a way that doesnt involve fully buffering the input
+                Set<Task> outs = out.collect(toSet());
+
+                writers.forEach(w -> w.accept(outs.stream()));
+            };
+        } else {
+            return null;
+        }
     }
 
     public interface MemoryResolver {

@@ -60,16 +60,16 @@ public class FormulaPreprocessor {
     public static String findType(int numarg, String pred, KB kb) {
 
         ArrayList<String> sig = null;
-        if (kb.kbCache == null)
-            System.out.println("Error in FormulaPreprocessor.findType(): null cache");
-        else if (kb.kbCache.signatures == null)
-            System.out.println("Error in FormulaPreprocessor.findType(): null cache signatures");
+//        if (kb.kbCache == null)
+//            System.out.println("Error in FormulaPreprocessor.findType(): null cache");
+//        else if (kb.kbCache.signatures == null)
+//            System.out.println("Error in FormulaPreprocessor.findType(): null cache signatures");
         if (kb.kbCache != null && kb.kbCache.signatures != null)
             sig = kb.kbCache.signatures.get(pred);
         if (sig == null) {
-            if (!kb.isInstanceOf(pred, "VariableArityRelation"))
-                System.out.println("Error in FormulaPreprocessor.findType(): " +
-                        "no type information for predicate " + pred);
+//            if (!kb.isInstanceOf(pred, "VariableArityRelation"))
+//                System.out.println("Error in FormulaPreprocessor.findType(): " +
+//                        "no type information for predicate " + pred);
             return null;
         }
         if (numarg >= sig.size())
