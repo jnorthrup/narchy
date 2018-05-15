@@ -24,7 +24,6 @@ import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.polation.TruthPolation;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.api.set.primitive.LongSet;
@@ -36,10 +35,10 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.table.TemporalBeliefTable.value;
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
+import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -595,14 +594,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
         }
 
-        byte[] vi = new byte[] { 0, 1, 2, 3 };
-        ArrayUtils.sort(vi, 0, 3, i -> -value[i]);
 
-        byte best = vi[0];
+        int best = Util.maxIndex(value);
 
         if (value[best] == Float.NEGATIVE_INFINITY) {
-            //no options
-            return false;
+            return false; //no options
         }
 
         switch (best) {
@@ -651,7 +647,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     }
 
     private void delete(Space<TaskRegion> treeRW, Task x, NAR nar) {
-        treeRW.remove(x);
+        boolean removed = treeRW.remove(x);
+        assert(removed);
         if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS)
             eternalize(x, nar);
         //x.delete();

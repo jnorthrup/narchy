@@ -63,6 +63,10 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     }
 
 
+    public static <X> Stream<X> stream(X[] list) {
+        return stream(list, list.length);
+    }
+
     public static <X> Stream<X> stream(X[] list, int size) {
         switch (size) {
             case 0: return Stream.empty();

@@ -99,10 +99,12 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
 //    }
 
     @Override public final void enable(Consumer<V> o) {
+        assert(o!=null);
         add(o);
     }
 
     @Override public final void disable(Consumer<V> o) {
+        assert(o!=null);
         remove(o);
     }
 

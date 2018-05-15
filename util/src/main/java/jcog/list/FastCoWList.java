@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /** be careful about synchronizing to instances of this class
  * because the class synchronizes on itself and not a separate lock object
@@ -43,11 +44,9 @@ public class FastCoWList<X> extends FasterList<X> {
                 toArrayRecycled(arrayBuilder);
     }
 
-
     @Override
     public Iterator<X> iterator() {
-        X[] copy = this.copy;
-        return ArrayIterator.get(copy);
+        return ArrayIterator.get(this.copy);
     }
 
     @Override
@@ -113,6 +112,11 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     @Override
+    public Stream<X> stream() {
+        return ArrayIterator.stream(copy);
+    }
+
+    @Override
     public void reverseForEach(Procedure c) {
         X[] copy = this.copy;
         if (copy != null) {
@@ -125,7 +129,7 @@ public class FastCoWList<X> extends FasterList<X> {
     @Override
     public boolean remove(Object o) {
         synchronized (this) {
-            if (super.remove(o)) {
+            if (removeDirect(o)) {
                 commit();
                 return true;
             }
@@ -143,7 +147,7 @@ public class FastCoWList<X> extends FasterList<X> {
     @Override
     public boolean add(X o) {
         synchronized (this) {
-            if (super.add(o)) {
+            if (addDirect(o)) {
                 commit();
                 return true;
             }
@@ -152,14 +156,24 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     @Override
+    public boolean contains(Object object) {
+        return ArrayUtils.indexOf(copy, object)!=-1;
+    }
+
+    @Override
     public boolean addAll(Collection<? extends X> source) {
-        synchronized (this) {
-            if (super.addAll(source)) {
-                commit();
-                return true;
-            }
+        if (source.isEmpty())
             return false;
+        synchronized (this) {
+            source.forEach(this::addDirect);
+            commit();
+            return true;
         }
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> collection) {
+        throw new TODO();
     }
 
     @Override

@@ -1374,6 +1374,19 @@ public enum Util {
         return y;
     }
 
+    public static int maxIndex(float... xx) {
+        float y = Float.NEGATIVE_INFINITY;
+        int best = -1;
+        for (int i = 0; i < xx.length; i++) {
+            float x = xx[i];
+            if (x > y) {
+                y = x;
+                best = i;
+            }
+        }
+        return best;
+    }
+
     public static <X> float max(FloatFunction<X> value, X... xx) {
         float y = Float.NEGATIVE_INFINITY;
         for (X x : xx)

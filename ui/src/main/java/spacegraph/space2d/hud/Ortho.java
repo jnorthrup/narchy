@@ -85,8 +85,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         this.cam = new AnimVector3f(1) {
 
             float CAM_RATE = 2f;
-            float camZmin = 100;
-            float camZmax = 4000;
+            float camZmin = 20;
+            float camZmax = 8000;
 
             {
                 setDirect(0,0, (camZmin + camZmax)/2);

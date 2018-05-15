@@ -50,12 +50,12 @@ abstract public class On<V> {
         }
     }
 
-    public static final On Dummy = new On((Consumer)null) {
-        @Override
-        public void off() {
-
-        }
-    };
+//    public static final On Dummy = new On((Consumer)null) {
+//        @Override
+//        public void off() {
+//
+//        }
+//    };
 
     public static class Weak<V> extends On<V> implements Consumer<V> {
 

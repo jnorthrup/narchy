@@ -20,6 +20,8 @@ import java.util.function.Predicate;
  */
 abstract public class Surface implements SurfaceBase {
 
+    public static final Surface[] EmptySurfaceArray = new Surface[0];
+
     private final static AtomicInteger serial = new AtomicInteger();
 
     /**

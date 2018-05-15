@@ -115,36 +115,23 @@ public class MutableContainer extends AbstractMutableContainer {
     private void _add(Surface s) {
         synchronized (this) {
             SurfaceBase p = this.parent;
-            if (p == null) {
-                children.add(s);
-            } else {
-                if (s.start(this)) {
-                    children.add(s); //assume it was added to the list
-                }
+            if (p != null) {
+                s.start(this);
             }
         }
+        children.add(s); //assume it was added to the list
     }
 
     public boolean remove(Surface s) {
-        synchronized (this) {
-            if (parent == null) {
-                return children.remove(s);
-            } else {
-                if (children.remove(s)) {
-                    assert (s.parent == this);
-
-                    if (!s.stop())
-                        throw new RuntimeException("error stopping: " + s);
-
-                    if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
-                        layout();
-
-                    return true;
-                } else {
-                    return false;
-                }
+        boolean removed = children.remove(s);
+        if (removed) {
+            if (s.stop()) {
+                if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+                    layout();
+                return true;
             }
         }
+        return false;
     }
 
     public final Container set(Surface... next) {
@@ -194,7 +181,7 @@ public class MutableContainer extends AbstractMutableContainer {
     }
 
     public final Container set(List<? extends Surface> next) {
-        set(next.toArray(new Surface[0]));
+        set(next.toArray(Surface.EmptySurfaceArray));
         return this;
     }
 
@@ -239,12 +226,10 @@ public class MutableContainer extends AbstractMutableContainer {
      * this can be accelerated by storing children as a Map
      */
     public void replace(Surface child, Surface replacement) {
-        synchronized (this) {
-            if (!remove(child))
-                throw new RuntimeException("could not replace missing " + child + " with " + replacement);
+        if (!remove(child))
+            throw new RuntimeException("could not replace missing " + child + " with " + replacement);
 
-            add(replacement);
-        }
+        add(replacement);
     }
 
 //    private class Children extends FastCoWList<Surface> {
