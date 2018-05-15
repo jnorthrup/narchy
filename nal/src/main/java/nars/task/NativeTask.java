@@ -3,7 +3,6 @@ package nars.task;
 import com.google.common.primitives.Longs;
 import jcog.pri.Priority;
 import nars.NAR;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -39,11 +38,6 @@ public abstract class NativeTask implements ITask, Priority {
     @Override
     public float priSet(float p) {
         return 1f; //does nothing
-    }
-
-    @Override
-    public @Nullable Priority clonePri() {
-        throw new UnsupportedOperationException();
     }
 
     public abstract ITask next(NAR n);

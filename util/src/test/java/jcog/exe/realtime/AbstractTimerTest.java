@@ -34,7 +34,7 @@ public abstract class AbstractTimerTest {
     @AfterEach
     public void after() throws InterruptedException {
         timer.shutdownNow();
-        assertTrue(timer.awaitTermination(10, TimeUnit.SECONDS));
+        assertTrue(timer.awaitTermination(3, TimeUnit.SECONDS));
     }
 
     @Test
@@ -55,7 +55,7 @@ public abstract class AbstractTimerTest {
         assertNull(timer.schedule((Runnable) i::decrementAndGet,
                 100,
                 TimeUnit.MILLISECONDS)
-                .get(10, TimeUnit.SECONDS));
+                .get(1, TimeUnit.SECONDS));
         long end = System.currentTimeMillis();
         assertTrue(end - start >= 100);
     }
@@ -84,7 +84,7 @@ public abstract class AbstractTimerTest {
                 },
                 100,
                 TimeUnit.MILLISECONDS)
-                .get(10, TimeUnit.SECONDS));
+                .get(1, TimeUnit.SECONDS));
         long end = System.currentTimeMillis();
         assertTrue(end - start >= 100);
     }
@@ -97,7 +97,7 @@ public abstract class AbstractTimerTest {
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(1, TimeUnit.SECONDS));
         long end = System.currentTimeMillis();
         assertTrue(end - start >= 100);
     }
@@ -126,7 +126,7 @@ public abstract class AbstractTimerTest {
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(latch.await(1, TimeUnit.SECONDS));
         // time difference between the beginning of second tick and end of first one
         assertTrue(r.get(2) - r.get(1) <= (50 * 100)); // allow it to wiggle
     }
@@ -155,7 +155,7 @@ public abstract class AbstractTimerTest {
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
-        assertTrue(latch.await(10, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
+        assertTrue(latch.await(1, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
         // time difference between the beginning of second tick and end of first one
         assertTrue(r.get(2) - r.get(1) >= 100);
     }
@@ -233,9 +233,9 @@ public abstract class AbstractTimerTest {
                 100,
                 100,
                 TimeUnit.MILLISECONDS);
-        assertTrue(latch.await(10, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
+        assertTrue(latch.await(3, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
         long end = System.currentTimeMillis();
-        assertTrue(end - start >= 1000, ()->end-start + "(ms) start to end");
+        assertTrue(end - start >= 900, ()->end-start + "(ms) start to end");
     }
 
     // TODO: precision test
@@ -250,8 +250,9 @@ public abstract class AbstractTimerTest {
         final Future timeout = timer.schedule(() -> {
             fail("This should not have run");
             barrier.countDown();
-        }, 10, TimeUnit.SECONDS);
-        assertFalse(barrier.await(3, TimeUnit.SECONDS));
+            fail();
+        }, 2, TimeUnit.SECONDS);
+        assertFalse(barrier.await(1, TimeUnit.SECONDS));
         assertFalse(timeout.isDone(), "timer should not expire");
         // timeout.cancel(true);
     }
@@ -259,8 +260,8 @@ public abstract class AbstractTimerTest {
     @Test
     public void testScheduleTimeoutShouldRunAfterDelay() throws InterruptedException {
         final CountDownLatch barrier = new CountDownLatch(1);
-        final Future timeout = timer.schedule(barrier::countDown, 2, TimeUnit.SECONDS);
-        assertTrue(barrier.await(3, TimeUnit.SECONDS));
+        final Future timeout = timer.schedule(barrier::countDown, 1, TimeUnit.SECONDS);
+        assertTrue(barrier.await(2, TimeUnit.SECONDS));
         assertTrue(timeout.isDone(), "should expire");
     }
 

@@ -66,7 +66,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
             }
 
             @Override
-            protected boolean replace(float incoming, PLinkHashCached<Termed> existing) {
+            protected float replace(float incomingPower, PLinkHashCached<Termed> existing) {
 
                 boolean existingPermanent = existing.id instanceof PermanentConcept;
 
@@ -75,12 +75,12 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 //                        //throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + incoming.get() + " , " + existing.get());
 //                        return false;
 //                    }
-                    return false; //automatic lose
+                    return incomingPower; //automatic lose but no damage
                 }
 //                boolean incomingPermanent = incoming.get() instanceof PermanentConcept;
 //                if (incomingPermanent)
 //                    return true;
-                return super.replace(incoming, existing);
+                return super.replace(incomingPower, existing);
             }
 //
 //            @Override

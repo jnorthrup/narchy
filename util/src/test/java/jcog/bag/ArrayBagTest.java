@@ -5,8 +5,8 @@ import jcog.bag.impl.ArrayBag;
 import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.PLinkArrayBag;
 import jcog.pri.PLink;
-import jcog.pri.Pri;
 import jcog.pri.PriReference;
+import jcog.pri.UnitPri;
 import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -48,7 +48,7 @@ public class ArrayBagTest {
 
 
         PriReference<String> agx = a.get("x");
-        Pri expect = new Pri(0.2f);
+        UnitPri expect = new UnitPri(0.2f);
         assertTrue(Util.equals(expect.priElseNeg1(), agx.priElseNeg1(), 0.01f), agx + "==?==" + expect);
 
     }

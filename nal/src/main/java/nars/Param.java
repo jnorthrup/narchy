@@ -247,7 +247,9 @@ public abstract class Param {
 
     //public final FloatRange taskLinkMomentum = new FloatRange(0.25f, 0, 1f);
 
-    public final FloatRange activationRate = new FloatRange(1f, 0, 1f);
+    public final FloatRange activateConceptRate = new FloatRange(1f, 0, 1f);
+
+//    public final FloatRange activateLinkRate = new FloatRange(1f, 0, 1f);
 
 
     /**

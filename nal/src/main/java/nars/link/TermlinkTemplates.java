@@ -6,6 +6,7 @@ import jcog.list.FasterList;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
+import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -283,8 +284,8 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         float balance = nar.termlinkBalance.floatValue();
         float budgetedForward = concepts == 0 ? 0 :
-                Math.max(Pri.EPSILON, budgeted * (1f - balance) / concepts); //concept targets (subset of all targets)
-        float budgetedReverse = Math.max(Pri.EPSILON, budgeted * balance / n); //all targets
+                Math.max(Prioritized.EPSILON, budgeted * (1f - balance) / concepts); //concept targets (subset of all targets)
+        float budgetedReverse = Math.max(Prioritized.EPSILON, budgeted * balance / n); //all targets
 
         for (int i = 0; i < n; i++) {
             Term tgtTerm = get(i);

@@ -170,6 +170,11 @@ public class UDPeer extends UDP {
             }
 
             @Override
+            public void priAdd(UDProfile entry, float amount) {
+                //nothing
+            }
+
+            @Override
             protected boolean replace(float incoming, float existing) {
                 return super.replace(incoming, existing);
                 //return hijackGreedy(incoming, existing);
@@ -787,7 +792,7 @@ public class UDPeer extends UDP {
 
             return Longs.fromBytes(
                     b[offset++], b[offset++], b[offset++], b[offset++],
-                    b[offset++], b[offset++], b[offset++], b[offset++]
+                    b[offset++], b[offset++], b[offset++], b[offset]
             );
         }
 
@@ -854,11 +859,6 @@ public class UDPeer extends UDP {
         @Override
         public float priSet(float p) {
             return this.pri = Util.unitize(p);
-        }
-
-        @Override
-        public @Nullable Priority clonePri() {
-            throw new UnsupportedOperationException();
         }
 
         @Override

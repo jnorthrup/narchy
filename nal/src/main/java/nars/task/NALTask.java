@@ -3,6 +3,7 @@ package nars.task;
 import jcog.data.map.CompactArrayMap;
 import jcog.list.FasterList;
 import jcog.pri.Pri;
+import jcog.pri.UnitPri;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
@@ -22,7 +23,7 @@ import static nars.Op.GOAL;
 
 /** generic immutable Task implementation,
  *  with mutable cause[] and initially empty meta table */
-public class NALTask extends Pri implements Task {
+public class NALTask extends UnitPri implements Task {
 
     public final Term term;
     public final Truth truth;

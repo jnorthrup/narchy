@@ -31,4 +31,9 @@ abstract public class PriorityHijackBag<K,V extends Priority> extends HijackBag<
         return key.pri();
     }
 
+    @Override
+    public void priAdd(V entry, float amount) {
+        entry.priAdd(amount);
+    }
+
 }

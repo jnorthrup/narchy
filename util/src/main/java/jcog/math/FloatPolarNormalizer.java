@@ -1,11 +1,11 @@
 package jcog.math;
 
-import jcog.pri.Pri;
+import jcog.pri.Prioritized;
 
 public class FloatPolarNormalizer extends FloatNormalizer {
 
     public FloatPolarNormalizer() {
-        this(Pri.EPSILON);
+        this(Prioritized.EPSILON);
     }
 
     public FloatPolarNormalizer(float radius) {

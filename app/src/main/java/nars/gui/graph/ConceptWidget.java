@@ -1,7 +1,7 @@
 package nars.gui.graph;
 
 import jcog.pri.PLink;
-import jcog.pri.Pri;
+import jcog.pri.Prioritized;
 import jcog.util.Flip;
 import nars.concept.Concept;
 import org.eclipse.collections.api.tuple.Twin;
@@ -164,7 +164,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         float termlinkPri, tasklinkPri;
         boolean inactive;
-        final static float priTHRESH = Pri.EPSILON;
+        final static float priTHRESH = Prioritized.EPSILON;
 
         public ConceptEdge(ConceptWidget src, ConceptWidget target, float pri) {
             super(src, target, pri);

@@ -13,7 +13,6 @@ import jcog.event.Topic;
 import jcog.exe.Cycled;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
-import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jcog.util.ArrayIterator;
 import jcog.util.TriConsumer;
@@ -41,11 +40,11 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.TimeAware;
-import nars.time.Tense;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -70,8 +69,8 @@ import java.util.zip.GZIPOutputStream;
 import static nars.$.$;
 import static nars.Op.*;
 import static nars.term.Functor.f;
-import static nars.truth.TruthFunctions.c2w;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2w;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
@@ -1405,7 +1404,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * +Infinity -> amp=2
      */
     public float amp(short[] effect) {
-        return Math.max(Pri.EPSILON, 1f + Util.tanhFast(value(effect)));
+        return Math.max(Prioritized.EPSILON, 1f + Util.tanhFast(value(effect)));
     }
 
     public final float amp(Task task) {
@@ -1632,7 +1631,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public Concept activate(Termed t, float activationApplied) {
         Concept c = concept(t, true /*false */ /* true */);
         if (c != null)
-            exe.activate(c, activationApplied * activationRate.floatValue());
+            exe.activate(c, activationApplied);
         return c;
     }
 

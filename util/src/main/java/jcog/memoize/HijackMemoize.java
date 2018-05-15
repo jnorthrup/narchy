@@ -104,12 +104,6 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             return this.pri = Util.clamp(p, 0, 1);
         }
 
-
-        @Override
-        public @Nullable Priority clonePri() {
-            throw new UnsupportedOperationException();
-        }
-
         @Override
         public String toString() {
             return '$' + n4(pri) + ' ' + get();
@@ -154,7 +148,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     float CACHE_HIT_BOOST;
-    float CACHE_DENY_DAMAGE; //damage taken by a cell in rejecting an attempted hijack
+    //float CACHE_DENY_DAMAGE; //damage taken by a cell in rejecting an attempted hijack
 
     final Function<X, Y> func;
 
@@ -230,18 +224,13 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
         assert (cut > Prioritized.EPSILON);
 
-        set(boost, cut);
+        this.CACHE_HIT_BOOST = boost;
 
         //reprobes / (float)Math.sqrt(i) : 0;
 
         //return true;
 
         //return false;
-    }
-
-    public void set(float boost, float cut) {
-        this.CACHE_HIT_BOOST = boost;
-        this.CACHE_DENY_DAMAGE = cut;
     }
 
     @Override
@@ -325,14 +314,14 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
                 new StrongPair<>(x, y, vx);
     }
 
-    @Override
-    protected boolean replace(float incoming, Computation<X, Y> existing) {
-        if (!super.replace(incoming, existing)) {
-            existing.priSub(CACHE_DENY_DAMAGE);
-            return false;
-        }
-        return true;
-    }
+//    @Override
+//    protected boolean replace(float incomingPower, Computation<X, Y> existing) {
+//        if (!super.replace(incomingPower, existing)) {
+//            existing.priSub(CACHE_DENY_DAMAGE);
+//            return false;
+//        }
+//        return true;
+//    }
 
     @Override
     public X key(Computation<X, Y> value) {

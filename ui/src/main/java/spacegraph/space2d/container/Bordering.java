@@ -74,7 +74,7 @@ public class Bordering extends MutableContainer {
         for (int i = 0, childrenLength = children.length; i < childrenLength; i++) {
             Surface c = children[i];
 
-            if (c instanceof EmptySurface)
+            if (c == null || c instanceof EmptySurface)
                 continue;
 
             float x1, y1, x2, y2;

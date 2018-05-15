@@ -1,7 +1,7 @@
 package nars.link;
 
 import jcog.bag.Bag;
-import jcog.pri.Pri;
+import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -32,39 +32,37 @@ public class Tasklinks {
     }
 
 
-    public static TaskLink.GeneralTaskLink linkTask(Task t,  /*Task*/Concept src, @Nullable NAR nar) {
-        return linkTask(t, t.priElseZero(), src, nar);
-    }
+//    public static TaskLink.GeneralTaskLink linkTask(Task t,  /*Task*/Concept src, @Nullable NAR nar) {
+//        return linkTask(t, t.priElseZero(), src, nar);
+//    }
 
     /** create source tasklink */
     public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
 
         /** non-zero for safety */
-        final float priCause = Math.max(_pri, Pri.EPSILON);
+        final float pri = Math.max(_pri, Prioritized.EPSILON);
 
 
-        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, priCause);
+        float taskLinkPri = pri;
+        float conceptPri = pri * nar.activateConceptRate.floatValue();
+
+        TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, taskLinkPri);
 
         linkTask(link, src.tasklinks(), null);
 
-        float priEffect =
-                priCause;
-                //t.isInput() ? priCause : priCause - overflow.floatValue();
-
-        assert(priEffect >= 0);
 
         //activate the task's concept
-        nar.activate(src,  priEffect);
+        nar.activate(src, conceptPri);
 
         //activate the task concept termlink templates
-        src.templates().linkAndActivate(src, priEffect, nar);
+        src.templates().linkAndActivate(src, taskLinkPri, nar);
 
         {
             //adjust the cause values according to the input's actual demand
-            ((TaskConcept) src).value(t, priCause, nar);
+            ((TaskConcept) src).value(t, taskLinkPri, nar);
 
             //adjust the experienced emotion according to the actual effect
-            nar.emotion.onActivate(t, priEffect);
+            nar.emotion.onActivate(t, pri);
         }
 
 
@@ -89,7 +87,7 @@ public class Tasklinks {
         if (nTargets <= 0)
             return;
 
-        float pEach = Math.max(Pri.EPSILON,
+        float pEach = Math.max(Prioritized.EPSILON,
                 priTransferred / nTargets  //divided
                 //priTransferred //keep original priority
         );

@@ -1,8 +1,6 @@
 package jcog.pri.op;
 
-import jcog.pri.Pri;
-import jcog.pri.Prioritized;
-import jcog.pri.Priority;
+import jcog.pri.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -11,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class PriMergeTest {
     final static float tol = 0.01f;
 
-    static final Pri a = new Pri(1);
-    static final Pri b = new Pri(0.5f);
-    static final Pri c = new Pri(0.25f);
+    static final PriRO a = new PriRO(1);
+    static final PriRO b = new PriRO(0.5f);
+    static final PriRO c = new PriRO(0.25f);
 
     @Test
     public void testPlusDQBlend() {
@@ -54,9 +52,8 @@ public class PriMergeTest {
 
     }
 
-    @NotNull
-    private Pri z() {
-        return new Pri(0);
+    static UnitPri z() {
+        return new UnitPri(0);
     }
 
 //    @NotNull
@@ -77,14 +74,14 @@ public class PriMergeTest {
     private static Prioritized testMerge(Priority x, Prioritized y, @NotNull PriMerge m, float ouPri) {
         return testMerge(x, y, m, ouPri, -1f);
     }
-    private static Prioritized testMerge(Priority x, Prioritized y, @NotNull PriMerge m, float ouPri, float expectedOverflow) {
-        x = x.clonePri();
+    private static Prioritized testMerge(Priority _x, Prioritized y, @NotNull PriMerge m, float ouPri, float expectedOverflow) {
+        UnitPri x = new UnitPri(_x);
 
-        Prioritized x0 = x.clonePri();
+        UnitPri x0 = new UnitPri(x);
 
         float overflow = m.merge(x, y);
 
-        System.out.println(x0 + " <-merge<- " + y + " x "  + "\t\texpect:" + new Pri(ouPri) + " ?? actual:" + x);
+        System.out.println(x0 + " <-merge<- " + y + " x "  + "\t\texpect:" + new UnitPri(ouPri) + " ?? actual:" + x);
         assertEquals(ouPri, x.pri(), tol);
 
         if (expectedOverflow > 0)

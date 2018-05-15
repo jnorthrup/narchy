@@ -365,12 +365,15 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                         } else {
                             //attempt HIJACK (tm)
 
-                            if (replace(power, existing)) {
+                            float resultPower = replace(power, existing);
+                            if (resultPower!=resultPower) {
                                 if (map.compareAndSet(i, existing, incoming)) { //inserted
                                     toRemove = existing;
                                     toReturn = toAdd = incoming;
                                     break combative_insert; //hijacked replaceable slot, done
                                 }
+                            } else {
+                                power = resultPower; //lost, apply the damage
                             }
                         }
 
@@ -468,11 +471,25 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      * can override in subclasses for custom replacement policy.
      *
      * a potential eviction can be intercepted here
+     *
+     * returns incomingPower, possibly reduced by the fight with the existing.
+     * or NaN if the incoming wins
      */
-    protected boolean replace(float i, V existing) {
+    protected float replace(float incomingPower, V existing) {
         float e = pri(existing);
-        return e != e || replace(i, e);
+        if (e != e) {
+            return Float.NaN; //win, opponent already dead
+        } else {
+            if (replace(incomingPower, e)) {
+                priAdd(existing, -incomingPower/reprobes);
+                return Float.NaN; //win
+            } else {
+                return Util.max(0, incomingPower - e/reprobes);
+            }
+        }
     }
+
+    abstract public void priAdd(V entry, float amount);
 
     protected boolean replace(float incoming, float existing) {
         return hijackFair(incoming, existing);

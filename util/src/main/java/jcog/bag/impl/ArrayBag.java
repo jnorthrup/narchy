@@ -5,7 +5,6 @@ import jcog.bag.Bag;
 import jcog.list.FasterList;
 import jcog.list.table.SortedListTable;
 import jcog.pri.PLinkUntilDeleted;
-import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.op.PriMerge;
@@ -620,7 +619,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         }
 
 
-        if (Math.abs(delta) >= Pri.EPSILON) {
+        if (Math.abs(delta) >= Prioritized.EPSILON) {
             items.adjust(posBefore, this);
 
             mass.add(this, delta);

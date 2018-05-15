@@ -1,12 +1,12 @@
 package jcog.exe.valve;
 
 import jcog.Util;
-import jcog.pri.Pri;
+import jcog.pri.UnitPri;
 
 import static jcog.Texts.n4;
 
 /** an allocated share of some resource */
-public class Share<Who,What> extends Pri {
+public class Share<Who,What> extends UnitPri {
     public final What what;
     public final Who who;
 

@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.pri.Priority;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -69,11 +68,6 @@ public class TaskProxy implements Task {
     }
 
     @Override
-    public @Nullable Priority clonePri() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean delete() {
         //ignore
         //throw new UnsupportedOperationException();
@@ -115,76 +109,9 @@ public class TaskProxy implements Task {
         return task.truth();
     }
 
-//    @Override
-//    public float freq() {
-//        return task.freq();
-//    }
-//
-//    @Override
-//    public float freqMean() {
-//        return task.freqMean();
-//    }
-//
-//    @Override
-//    public float freqMax() {
-//        return task.freqMax();
-//    }
-//
-//    @Override
-//    public float freqMin() {
-//        return task.freqMin();
-//    }
-//
-//    @Override
-//    public float conf() {
-//        return task.conf();
-//    }
-//
-//    @Override
-//    public float evi() {
-//        return task.evi();
-//    }
-//
-//    @Override
-//    public float evi(long when, long dur) {
-//        return task.evi(when, dur);
-//    }
-//
-//    @Override
-//    public float eviInteg() {
-//        return task.eviInteg();
-//    }
-
     @Override
     public byte punc() {
         return task.punc();
     }
-
-
-    //    /**
-//     * adds a Truth cache
-//     */
-//    public static class WithTermCachedTruth extends WithTerm {
-//
-//        private final int dur;
-//
-//        final LongObjectHashMap<Truth> truthCached = new LongObjectHashMap<>(0);
-//
-//        public WithTermCachedTruth(Term term, Task task, int dur) {
-//            super(term, task);
-//            this.dur = dur;
-//        }
-//
-//        @Override
-//        public @Nullable Truth truth(long when, long dur) {
-//            if (dur == this.dur) {
-//                return truthCached.getIfAbsentPutWithKey(when, w -> super.truth(w, dur));
-//            } else {
-//                return super.truth(when, dur);
-//            }
-//        }
-//
-//
-//    }
 
 }

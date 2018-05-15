@@ -101,7 +101,7 @@ public interface Prioritized extends Deleteable {
         assert (l > 0);
 
         float ss = sum(xx);
-        if (ss <= Pri.EPSILON)
+        if (ss <= Prioritized.EPSILON)
             return;
 
         float factor = target / ss;

@@ -13,7 +13,7 @@ import jcog.meter.FastCounter;
 import jcog.meter.Meter;
 import jcog.meter.MetricsMapper;
 import jcog.meter.event.AtomicMeanFloat;
-import jcog.pri.Pri;
+import jcog.pri.Prioritized;
 import nars.control.MetaGoal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,6 +51,7 @@ public class Emotion implements Meter {
     public final Counter premiseUnderivable = new FastCounter("premise underivable");
 
     public final Counter deriveTask = new FastCounter("derive task");
+    public final Counter deriveTermify = new FastCounter("derive termify");
     public final Counter deriveEval = new FastCounter("derive eval");
     public final ExplainedCounter deriveFailTemporal = new ExplainedCounter("derive fail temporal");
     public final ExplainedCounter deriveFailEval = new ExplainedCounter("derive fail eval");
@@ -386,7 +387,7 @@ public class Emotion implements Meter {
         float ansConf = answer.conf();
 
         float qPriBefore = questionTask.priElseZero();
-        if (qPriBefore > Pri.EPSILON) {
+        if (qPriBefore > Prioritized.EPSILON) {
             float costFraction = ansConf * (1 - qOrig);
             answer.take(questionTask, costFraction, false, false);
 //            questionLink.priMult(1f - costFraction);

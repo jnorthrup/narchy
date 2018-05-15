@@ -802,7 +802,7 @@ public class NAL8Test extends NALTest {
         test
             .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
             .inputAt(when, "b! :|:")
-            .mustGoal(when*2, subjPred[0], 1f, 0.45f,
+            .mustGoal(when*8, subjPred[0], 1f, 0.45f,
                     (t) -> t >= goalAt) //desired NOW, not at time 10 as would happen during normal decompose
             //.mustNotOutput(when*2, subjPred[0], GOAL, t -> t != goalAt)
         ;

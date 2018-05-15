@@ -3,7 +3,6 @@ package jcog.pri;
 import com.google.common.base.Function;
 import jcog.Texts;
 import jcog.Util;
-import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;
 
@@ -17,7 +16,7 @@ public interface Priority extends Prioritized {
     }
 
     /** X[] may contain nulls */
-    static <X> Prioritized fund(float maxPri, boolean copyOrTransfer, Function<X,Priority> getPri, X... src) {
+    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X,Priority> getPri, X... src) {
 
         assert(src.length > 0);
 
@@ -29,16 +28,16 @@ public interface Priority extends Prioritized {
 
         float priTarget = Math.min(maxPri, priSum);
 
-        Priority u = new Pri();
+        UnitPri u = new UnitPri();
 
-        if (priTarget > Pri.EPSILON) {
+        if (priTarget > Prioritized.EPSILON) {
             float perSrc = priTarget / src.length;
             for (X t : src) {
                 if (t!=null)
                     u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
             }
         }
-        assert(u.priElseZero() <= maxPri + Pri.EPSILON);
+        assert(u.priElseZero() <= maxPri + Prioritized.EPSILON);
         return u;
     }
 
@@ -102,17 +101,6 @@ public interface Priority extends Prioritized {
         priSet(p.pri());
     }
 
-    /**
-     * returns null if already deleted
-     */
-    @Nullable @Deprecated default Priority clonePri() {
-        //throw new UnsupportedOperationException();
-        float p = pri();
-        return p != p /* deleted? */ ? null : new Pri(p);
-    }
-
-
-
     default void priMax(float max) {
         priSet(Math.max(priElseZero(), max));
     }
@@ -163,9 +151,9 @@ public interface Priority extends Prioritized {
     default float take(Priority source, float p, boolean amountOrFraction, boolean copyOrMove) {
         float amount;
         if (!amountOrFraction) {
-            if (p < Pri.EPSILON) return 0;
+            if (p < Prioritized.EPSILON) return 0;
             amount = source.priElseZero() * p;
-            if (amount < Pri.EPSILON) return 0;
+            if (amount < Prioritized.EPSILON) return 0;
         } else {
             amount = p;
         }
@@ -180,7 +168,7 @@ public interface Priority extends Prioritized {
             //TRANSFER
 
             //cap at 1, and only transfer what is necessary to reach it
-            if (taken > Pri.EPSILON) {
+            if (taken > Prioritized.EPSILON) {
                 //subtract first to ensure the funds are available
                 source.priSub(taken);
             }

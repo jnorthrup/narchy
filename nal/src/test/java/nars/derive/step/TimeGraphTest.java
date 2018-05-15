@@ -168,7 +168,8 @@ public class TimeGraphTest {
     public void testImplWithConjPredicate2() {
         assertSolved("(one ==>+- (two &&+- three))", A, //using one@1
 
-                "(one ==>+- (two &&+1 three))", "(one ==>+1 (two &&+1 three))", "(one ==>+1 (two &&+1 three))@1"
+                "(one ==>+- (two &&+1 three))", "(one ==>+1 (two &&+1 three))",
+                "(one ==>+19 (two &&+1 three))", "(one ==>-17 (two &&+1 three))"
                 //using two@20
                 //"(one ==>+1 (two &&+1 three))@19"
         );

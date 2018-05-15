@@ -30,14 +30,6 @@ public final class PriRO implements Priority {
         throw new UnsupportedOperationException();
     }
 
-
-    @NotNull
-    @Override
-    public Priority clonePri() {
-        return new Pri(this);
-    }
-
-
     @Override
     public final float pri() {
         return pri;

@@ -270,7 +270,7 @@ public class IRCNLP extends IRC {
         float durFPS = 20f;
         NAR n = NARS.realtime(durFPS).get();
 
-        n.activationRate.set(0.2f);
+        n.activateConceptRate.set(0.2f);
         n.forgetRate.set(1f);
 
         n.freqResolution.set(0.2f);

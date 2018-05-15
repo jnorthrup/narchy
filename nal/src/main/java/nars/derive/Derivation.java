@@ -3,7 +3,7 @@ package nars.derive;
 import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
-import jcog.pri.Pri;
+import jcog.pri.Prioritized;
 import jcog.version.Versioned;
 import nars.$;
 import nars.NAR;
@@ -47,7 +47,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
-import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -59,8 +58,6 @@ public class Derivation extends PreDerivation {
 
 
 
-    /** initial capacity, it will grow as needed */
-    private final static int ANON_CAPACITY = 16;
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
@@ -76,9 +73,10 @@ public class Derivation extends PreDerivation {
 
     public NAR nar;
 
+
     public final Anon anon =
             //new Anon(ANON_CAPACITY);
-            new CachedAnon(ANON_CAPACITY, 16*1024);
+            new CachedAnon(16, 16*1024);
 
     /** temporary un-transform map */
     public Map<Term,Term> untransform = new UnifiedMap<>();
@@ -87,8 +85,6 @@ public class Derivation extends PreDerivation {
 
     private ImmutableMap<Term, Termed> derivationFunctors;
 
-    public float freqRes;
-    private float confRes;
 
 
     /**
@@ -107,7 +103,6 @@ public class Derivation extends PreDerivation {
      */
     public int termVolMax;
     public float confMin;
-    private float eviMin;
 
 
     public Task task;
@@ -173,121 +168,6 @@ public class Derivation extends PreDerivation {
     private int taskUniques;
 
     private ImmutableLongSet taskStamp;
-
-
-////    public final TopNUniquePremises premises = new TopNUniquePremises();
-//
-//    protected class TopNUniquePremises extends TopNUnique<Premise> {
-//        private int premisesRemain;
-//
-//        final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
-//
-//        TopNUniquePremises() {
-//            super(Prioritized::pri);
-//        }
-//
-//        @Override
-//        protected void mergeInto(Premise existing, Premise next) {
-//            float np = next.pri();
-//            if (np > existing.pri()) {
-//                existing.priMax(np);
-//                sort();
-//            }
-//        }
-//
-//        /**
-//         * call before generating a concept's premises
-//         */
-//        public void setTTL(int hypotheticalPremisePerConcept) {
-//            this.premisesRemain = hypotheticalPremisePerConcept;
-//        }
-//
-//        /**
-//         * returns whether to continue
-//         */
-//        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
-//            float pri = tasklink.pri();
-//            if (pri == pri) {
-//
-//                Task t = tasklink.get();
-//                if (t != null) {
-//
-//                    float p = merge.apply(pri,
-//                            termlink.priElseZero())
-//                            * nar.amp(t);
-//                    if (p > minAdmission()) {
-//                        add(new Premise(t, termlink.get(), p));
-//                    } else {
-//                        //System.out.println("rejected early");
-//                    }
-//                }
-//
-//            }
-//            return --premisesRemain > 0;
-//        }
-//    }
-
-//    protected class TopNUniquePremises extends TopNUnique<Premise> {
-//        private int premisesRemain;
-//
-//        final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
-//
-//        TopNUniquePremises() {
-//            super(Prioritized::pri);
-//        }
-//
-//        @Override
-//        protected void mergeInto(Premise existing, Premise next) {
-//            float np = next.pri();
-//            if (np > existing.pri()) {
-//                existing.priMax(np);
-//                sort();
-//            }
-//        }
-//
-//        /**
-//         * call before generating a concept's premises
-//         */
-//        public void setTTL(int hypotheticalPremisePerConcept) {
-//            this.premisesRemain = hypotheticalPremisePerConcept;
-//        }
-//
-//        /**
-//         * returns whether to continue
-//         */
-//        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
-//            float pri = tasklink.pri();
-//            if (pri == pri) {
-//
-//                Task t = tasklink.get();
-//                if (t != null) {
-//
-//                    float p = merge.apply(pri,
-//                            termlink.priElseZero())
-//                            * nar.amp(t);
-//                    if (p > minAdmission()) {
-//                        add(new Premise(t, termlink.get(), p));
-//                    } else {
-//                        //System.out.println("rejected early");
-//                    }
-//                }
-//
-//            }
-//            return --premisesRemain > 0;
-//        }
-//    }
-//
-
-    //public Map<Term, Term> xyDyn = new HashMap();
-
-
-//    private transient Term[][] currentMatch;
-
-//    public /*static*/ final Cache<Transformation, Term> transformsCache; //works in static mode too
-//    /*static*/ {
-//    }
-
-//    final MRUCache<Transformation, Term> transformsCache = new MRUCache<>(Param.DERIVATION_THREAD_TRANSFORM_CACHE_SIZE);
 
     static Supplier<Map<Term,Versioned<Term>>> _termMapBuilder = ()->{
         return new TermHashMap();
@@ -635,10 +515,7 @@ public class Derivation extends PreDerivation {
             this.time = now;
             this.dur = nar.dur();
             this.ditherTime = nar.dtDitherCycles();
-            this.freqRes = nar.freqResolution.floatValue();
-            this.confRes = nar.confResolution.floatValue();
             this.confMin = nar.confMin.floatValue();
-            this.eviMin = c2wSafe(confMin);
             this.termVolMax = nar.termVolumeMax.intValue();
             this.random.setSeed(nar.random().nextLong());
             //transformsCache.cleanUp();
@@ -672,7 +549,7 @@ public class Derivation extends PreDerivation {
                 te = task.priElseZero();
                 be = belief.priElseZero();
                 tb = te + be;
-                tb = tb < Pri.EPSILON ? 0.5f : te / tb;
+                tb = tb < Prioritized.EPSILON ? 0.5f : te / tb;
             }
             return evidenceDouble = Stamp.zip(task.stamp(), belief.stamp(), tb);
         } else {
@@ -691,7 +568,10 @@ public class Derivation extends PreDerivation {
      */
     @Override
     public void clear() {
+        anon.clear();
+        premiseBuffer.clear();
         derivedTasks.clear();
+        untransform.clear();
         termutes.clear();
         time = ETERNAL;
         super.clear();

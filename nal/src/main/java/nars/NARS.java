@@ -254,7 +254,7 @@ public class NARS {
         @Override
         protected void init(NAR nar) {
 
-            nar.activationRate.set(
+            nar.activateConceptRate.set(
                 Util.unitize(5f/Math.sqrt(((AbstractExec)nar.exe).active.capacity()))
             );
 

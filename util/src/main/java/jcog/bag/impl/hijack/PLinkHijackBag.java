@@ -20,6 +20,10 @@ public class PLinkHijackBag<X> extends HijackBag<X, PLinkHashCached<X>> {
         return key.pri();
     }
 
+    @Override
+    public void priAdd(PLinkHashCached<X> entry, float amount) {
+        entry.priAdd(amount);
+    }
 
     @Override
     public X key(PLinkHashCached<X> value) {

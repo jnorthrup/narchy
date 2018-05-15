@@ -2,12 +2,10 @@ package jcog.sort;
 
 import com.google.common.collect.Iterators;
 import jcog.pri.NLink;
-import jcog.pri.Pri;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Iterator;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
@@ -25,7 +23,7 @@ public class CachedTopN<X> extends UnifiedSet<X> implements Iterable<X> {
 
     public CachedTopN(NLink<X>[] target, FloatFunction<X> rank) {
         super(0);
-        top = new TopN<>(target, Pri::pri);
+        top = new TopN<>(target, NLink::pri);
         this.rank = rank;
     }
 

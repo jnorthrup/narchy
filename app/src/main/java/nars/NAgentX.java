@@ -29,7 +29,6 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 import org.HdrHistogram.DoubleHistogram;
-import org.apache.commons.math3.primes.Primes;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
@@ -178,7 +177,7 @@ abstract public class NAgentX extends NAgent {
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
-                        new HijackConceptIndex(Primes.nextPrime( 32 /*64*/ * 1024 + 1),  4)
+                        new HijackConceptIndex(64 * 1024 ,  4)
                         //new MapConceptIndex(new ConcurrentOpenHashMap<>())
                         //new MapConceptIndex(new CustomConcurrentHashMap<>(STRONG, EQUALS, SOFT, EQUALS, 128*1024))
                 )
@@ -215,7 +214,8 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.5f * priFactor);
         n.questPriDefault.set(0.5f * priFactor);
 
-        n.activationRate.set(0.5f);
+        n.activateConceptRate.set(0.25f);
+        n.activateLinkRate.set(0.25f);
 
 //        new RLBooster(a, HaiQAgent::new, 1);
 

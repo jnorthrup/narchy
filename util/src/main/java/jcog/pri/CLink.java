@@ -1,6 +1,5 @@
 package jcog.pri;
 
-import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 /** Priority implementatio nwhich proxies to another and attaches a bitmap feature vector */
@@ -38,10 +37,6 @@ public class CLink<X extends Priority> extends RoaringBitmap implements Priority
         return ref.priSet(p);
     }
 
-    @Override
-    public @Nullable Priority clonePri() {
-        return ref.clonePri();
-    }
 
     @Override
     public float pri() {

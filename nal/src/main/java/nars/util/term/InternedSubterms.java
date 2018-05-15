@@ -3,14 +3,14 @@ package nars.util.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.HashCachedBytes;
 import jcog.memoize.HijackMemoize;
-import jcog.pri.Pri;
+import jcog.pri.UnitPri;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 
 import java.util.Arrays;
 
-public final class InternedSubterms extends Pri implements HijackMemoize.Computation<InternedSubterms, Subterms> {
+public final class InternedSubterms extends UnitPri implements HijackMemoize.Computation<InternedSubterms, Subterms> {
     private final int hash;
 
     public final byte[] subs;

@@ -206,6 +206,11 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
+        public void priAdd(Task entry, float amount) {
+            //dont affect it
+        }
+
+        @Override
         public Task key(Task value) {
             return value;
         }

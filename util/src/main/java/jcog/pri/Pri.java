@@ -5,7 +5,7 @@ package jcog.pri;
  * default mutable prioritized implementation
  * float 32 bit
  *
- * TODO make completely atomic
+ * range is not bounded; for 0..1.0 limit use UnitPri
  */
 public class Pri implements Priority {
 

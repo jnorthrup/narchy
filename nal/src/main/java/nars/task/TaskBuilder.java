@@ -1,8 +1,8 @@
 package nars.task;
 
 import jcog.data.array.LongArrays;
-import jcog.pri.Pri;
 import jcog.pri.Prioritized;
+import jcog.pri.UnitPri;
 import nars.*;
 import nars.concept.Concept;
 import nars.task.util.InvalidTaskException;
@@ -37,7 +37,7 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * once input, input tasks will have unique serial numbers anyway
  */
-@Deprecated public class TaskBuilder extends Pri implements Termed, Truthed, Function<NAR, Task> {
+@Deprecated public class TaskBuilder extends UnitPri implements Termed, Truthed, Function<NAR, Task> {
 
     @NotNull
     private Term term;
