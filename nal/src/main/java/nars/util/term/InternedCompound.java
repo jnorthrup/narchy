@@ -3,13 +3,13 @@ package nars.util.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.HashCachedBytes;
 import jcog.memoize.HijackMemoize;
-import jcog.pri.AbstractPLink;
+import jcog.pri.Pri;
 import nars.Op;
 import nars.term.Term;
 
 import java.util.Arrays;
 
-public final class InternedCompound extends AbstractPLink<Term> implements HijackMemoize.Computation<InternedCompound, Term> {
+public final class InternedCompound extends Pri implements HijackMemoize.Computation<InternedCompound, Term> {
     //X
     public final Op op;
     public final int dt;
@@ -24,7 +24,6 @@ public final class InternedCompound extends AbstractPLink<Term> implements Hijac
     public Term y = null;
 
     public InternedCompound(Op o, int dt, Term... subs) {
-        super();
         this.op = o;
         this.dt = dt;
         this.rawSubs = subs;

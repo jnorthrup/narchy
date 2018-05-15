@@ -339,9 +339,8 @@ public class BagTest {
         //insert biggest items first
         for (int i = c-1; i >= 0; i--) {
             PLink inserted = bag.put(new PLink(i + "x", rng.nextFloat()));
-            if (inserted==null) {
-                fail("");
-            }
+            assertTrue(inserted!=null);
+            assertSorted(bag);
         }
         bag.commit(null);
         assertEquals(c, bag.size());

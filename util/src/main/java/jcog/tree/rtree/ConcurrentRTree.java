@@ -184,8 +184,11 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
-
         read(() -> tree.forEach(consumer));
+    }
+
+    public void forEachOptimistic(Consumer<? super T> consumer) {
+        readOptimistic(()->tree.forEach(consumer));
     }
 
     @Override
@@ -233,6 +236,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     public boolean contains(T t) {
         return read(() -> tree.contains(t));
     }
+
 
 
 }

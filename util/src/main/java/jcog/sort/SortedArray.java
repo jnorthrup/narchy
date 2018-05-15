@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.util.SubArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -61,12 +60,12 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
     public SortedArray() {
     }
 
-    protected static int grow(int oldSize) {
+    private static int grow(int oldSize) {
         return 1 + (int) Math.ceil(oldSize * GROWTH_RATE);
         //return oldSize == 0 ? 4 : oldSize * 2;
     }
 
-    static void swap(Object[] l, int a, int b) {
+    private static void swap(Object[] l, int a, int b) {
         assert (a != b);
         Object x = l[b];
         l[b] = l[a];
@@ -76,17 +75,9 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
     /**
      * direct array access; use with caution ;)
      */
-    public Object[] array() {
+    public E[] array() {
         return list;
     }
-
-
-//    /**
-//     * set the size as a quick way to remove null entries from the end
-//     */
-//    public void _setSize(int s) {
-//        this.size = s;
-//    }
 
     @Override
     public int size() {
@@ -176,9 +167,9 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         return add(element, cmp, elementRank);
     }
 
-    public final int add(E element, FloatFunction<E> cmp, float elementRank) {
+    private int add(E element, FloatFunction<E> cmp, float elementRank) {
         //NaN cancels
-        return elementRank != elementRank ? -1 : add(element, elementRank, cmp);
+        return (elementRank == elementRank) ? add(element, elementRank, cmp) : -1;
     }
 
     public int add(E element, float elementRank, FloatFunction<E> cmp) {
@@ -189,7 +180,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
             return addBinary(element, elementRank, cmp, s);
     }
 
-    public int addBinary(E element, float elementRank, FloatFunction<E> cmp, int size) {
+    private int addBinary(E element, float elementRank, FloatFunction<E> cmp, int size) {
         // use the binary search
         final int index = this.findInsertionIndex(elementRank, 0, size - 1, new int[1], cmp);
 
@@ -206,7 +197,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         }
     }
 
-    public int addLinear(E element, float elementRank, FloatFunction<E> cmp, int size) {
+    private int addLinear(E element, float elementRank, FloatFunction<E> cmp, int size) {
         E[] l = this.list;
         if (size > 0 && l.length > 0) {
             for (int i = 0; i < size; i++) {
@@ -228,13 +219,12 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         return true;
     }
 
-    int addEnd(E e) {
+    private int addEnd(E e) {
         int s = this.size;
         Object[] l = this.list;
         if (l.length == s) {
             if (grows()) {
-                int newLen = Math.max(l.length, s);
-                l = resize(grow(newLen));
+                l = resize(grow(s));
             } else {
                 return -1;
             }
@@ -246,11 +236,10 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
     protected Object[] resize(int newLen) {
         E[] newList = newArray(newLen);
         System.arraycopy(list, 0, newList, 0, size);
-        this.list = newList;
-        return list;
+        return this.list = newList;
     }
 
-    protected int addInternal(int index, E e) {
+    private int addInternal(int index, E e) {
         int s = this.size;
         if (index > -1 && index < s) {
             this.addAtIndex(index, e);
@@ -288,12 +277,10 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         }
         list[index] = element;
     }
-//    {
-//        throw new UnsupportedOperationException("impl in subclasses");
-//    }
+
 
     /** called when the lowest value has been kicked out of the list by a higher ranking insertion */
-    protected void rejectExisting(E e) {
+    private void rejectExisting(E e) {
 
     }
 
@@ -316,7 +303,6 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         //return null;
     }
 
-    @NotNull
     @Override
     public Iterator<E> iterator() {
         //throw new UnsupportedOperationException();
@@ -415,6 +401,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
             //return -1;
             //worst case, not found because not sorted:
         }
+
         return indexOfInternal(element);
 
     }
@@ -560,7 +547,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
 //		return list.set(index, element);
 //	}
 
-    private final int indexOfInternal(E e) {
+    private int indexOfInternal(E e) {
         Object[] l = this.list;
         int s = this.size;
         for (int i = 0; i < s; i++) {

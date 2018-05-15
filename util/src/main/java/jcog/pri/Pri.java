@@ -1,8 +1,6 @@
 package jcog.pri;
 
 
-import jcog.Util;
-
 /**
  * default mutable prioritized implementation
  * float 32 bit
@@ -58,8 +56,9 @@ public class Pri implements Priority {
     }
 
     @Override
-    public final float priSet(float p) {
-        return this.pri = Util.unitize(p);
+    public float priSet(float p) {
+        return this.pri = p;
     }
+
 
 }

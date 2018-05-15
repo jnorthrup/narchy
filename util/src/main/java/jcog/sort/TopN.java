@@ -11,38 +11,20 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
     private final FloatFunction<E> rank;
 
-    E min = null;
-    float admitThresh = Float.POSITIVE_INFINITY;
-
     public TopN(E[] target, FloatFunction<E> rank) {
         this.list = target;
         this.rank = rank; //(x) -> -rank.floatValueOf(x); //descending
     }
 
-    public float rank(E x) {
+    public final float rank(E x) {
+        return rank.floatValueOf(x); //negative for descending
+    }
+
+    public final float rankNeg(E x) {
         return -rank.floatValueOf(x); //negative for descending
     }
 
-
-    //    /**
-//     * resets the best values, effectively setting a the minimum entry requirement
-//     * untested
-//     */
-    public TopN min(float min) {
-        this.admitThresh = min;
-        return this;
-    }
-
-    @Override
-    public void clear() {
-        this.admitThresh = Float.POSITIVE_INFINITY;
-        this.min = null;
-        super.clear();
-    }
-
     public void clear(int newCapacity, IntFunction<E[]> newArray) {
-        this.admitThresh = Float.POSITIVE_INFINITY;
-        this.min = null;
         if (list == null || list.length != newCapacity) {
             list = newArray.apply(newCapacity);
             size = 0;
@@ -54,25 +36,14 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     @Override
     public int add(E element, float elementRank, FloatFunction<E> cmp) {
 
-        int s = this.size;
-
-        if (s == list.length) {
-//            assert (last() == min):
-//                    last() + "=last but min=" + min;
-
-            if (elementRank >= admitThresh) {
+        if (this.size == list.length) {
+            if (elementRank >= minValueIfFull()) {
                 rejectOnEntry(element);
                 return -1; //insufficient
             }
         }
 
-
-
-        int r = super.add(element, elementRank, cmp);
-        if (r >= 0) {
-            update();
-        }
-        return r;
+        return super.add(element, elementRank, cmp);
     }
 
     protected void rejectOnEntry(E e) {
@@ -81,12 +52,12 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
     @Override
     public boolean add(E e) {
-        int r = add(e, this::rank);
+        int r = add(e, this::rankNeg);
         return r >= 0;
     }
     
     protected boolean add(E e, float elementRank) {
-        return add(e, elementRank, this::rank)!=-1;
+        return add(e, elementRank, this::rankNeg)!=-1;
     }
 
     @Override
@@ -111,23 +82,6 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     }
 
     @Override
-    public E remove(int index) {
-        E e = super.remove(index);
-        update();
-        return e;
-    }
-
-
-    private void update() {
-        E nextMin = last();
-        if (min != nextMin) {
-            this.min = nextMin;
-            admitThresh = ((size < capacity()) || nextMin == null) ? Float.POSITIVE_INFINITY :
-                    rank(last());
-        }
-    }
-
-    @Override
     public void removeFast(int index) {
         throw new UnsupportedOperationException();
     }
@@ -146,32 +100,27 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         E[] current = this.list;
 
         this.list = next;
-        this.admitThresh = Float.POSITIVE_INFINITY;
         this.size = 0;
 
         return current;
     }
 
-    public float minAdmission() {
-        if (size == capacity())
-            return -admitThresh;
-        else
-            return Float.NEGATIVE_INFINITY;
-    }
 
     public float maxValue() {
         E f = first();
         if (f != null)
-            return rank(f);
+            return rankNeg(f);
         else
             return Float.NaN;
     }
 
     public float minValue() {
         E f = last();
-        if (f != null)
-            return rank(f);
-        else
-            return Float.NaN;
+        return f != null ? rank(f) : Float.NaN;
     }
+
+    public float minValueIfFull() {
+        return size() == capacity() ? minValue() : Float.NEGATIVE_INFINITY;
+    }
+
 }

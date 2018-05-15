@@ -3,7 +3,6 @@ package nars.table;
 import jcog.sort.CachedTopN;
 import jcog.sort.Top;
 import jcog.sort.Top2;
-import jcog.sort.TopN;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
@@ -76,8 +75,8 @@ public interface TaskTable {
                 if (the != null)
                     target.accept(the);
             } else {
-                TopN<Task> q = new CachedTopN<>(new Task[limit], m.value());
-                forEachTask(q::accept);
+                CachedTopN<Task> q = new CachedTopN<>(limit, m.value());
+                forEachTask(q::add);
                 q.forEach(target);
             }
         } else {

@@ -159,7 +159,7 @@ public class ArrayBagTest {
 
     }
 
-    static public void assertSorted(@NotNull ArrayBag x) {
+    static void assertSorted(ArrayBag x) {
         assert(x.items.isSorted(x));
     }
 

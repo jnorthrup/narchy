@@ -147,6 +147,7 @@ public interface Priority extends Prioritized {
 
 
 
+    /** assumes 1 max value (Plink not NLink) */
     default float priAddOverflow(float toAdd) {
         if (Math.abs(toAdd) <= EPSILON) {
             return 0; //no change
