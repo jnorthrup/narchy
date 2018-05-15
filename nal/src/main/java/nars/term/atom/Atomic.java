@@ -67,6 +67,11 @@ public interface Atomic extends Term {
     }
 
     @Override
+    default boolean equalsRoot(Term x) {
+        return equals(x);
+    }
+
+    @Override
     default int vars() {
         return 0;
     }
@@ -94,6 +99,11 @@ public interface Atomic extends Term {
     @Override
     default boolean equalsNeg(Term t) {
         return t.op()==NEG ? equals(t.unneg()) : false;
+    }
+
+    @Override
+    default boolean equalsNegRoot(Term t) {
+        return equalsNeg(t.root());
     }
 
     @Override

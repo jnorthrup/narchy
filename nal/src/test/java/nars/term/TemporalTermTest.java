@@ -234,12 +234,23 @@ public class TemporalTermTest {
     }
 
     @Test
-    public void testAtemporalization3() throws Narsese.NarseseException {
+    public void testAtemporalization3a() throws Narsese.NarseseException {
 
         assertEquals(
-                //"(--,(((x &&+- $1) &&+- (--,y)) ==>+- $1))",
                 "(--,((x &&+- $1) ==>+- ((--,y) &&+- $1)))",
                 $.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))").temporalize(Retemporalize.retemporalizeAllToXTERNAL).toString());
+        assertEquals(
+                "(--,((x&&$1) ==>+- ((--,y)&&$1)))",
+                $.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))").root().toString());
+    }
+
+    @Test
+    public void testAtemporalization3b() throws Narsese.NarseseException {
+
+        Compound x = $("((--,(($1&&x) ==>+1 ((--,y) &&+2 $1))) &&+3 (--,y))");
+        Term y = x.temporalize(Retemporalize.retemporalizeAllToXTERNAL);
+        assertEquals("((--,((x &&+- $1) ==>+- ((--,y) &&+- $1))) &&+- (--,y))", y.toString());
+
     }
 
     @Test
@@ -300,10 +311,7 @@ public class TemporalTermTest {
     public void testAtemporalization6() throws Narsese.NarseseException {
         Compound x0 = $("(($1&&x) ==>+1 ((--,y) &&+2 $1)))");
         assertEquals("((x&&$1) ==>+1 ((--,y) &&+2 $1))", x0.toString());
-        Compound x = $("((--,(($1&&x) ==>+1 ((--,y) &&+2 $1))) &&+3 (--,y))");
 
-        Term y = x.temporalize(Retemporalize.retemporalizeAllToXTERNAL);
-        assertEquals("((--,((x &&+- $1) ==>+- ((--,y) &&+- $1))) &&+- (--,y))", y.toString());
     }
 
     @Test

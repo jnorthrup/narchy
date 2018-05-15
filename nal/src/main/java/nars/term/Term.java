@@ -760,7 +760,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default boolean equalsRoot(Term x) {
-        return equals(x);
+        return root().equals(x.root());
     }
 
 
@@ -800,7 +800,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    Term temporalize(Retemporalize r);
+    @Deprecated Term temporalize(Retemporalize r);
 
 
     default Term anon() {

@@ -352,6 +352,7 @@ public abstract class HijackBag2<K, V> implements Bag<K, V> {
 
                 if (toReturn == null) {
 
+                    //TODO sort
                     ArrayUtils.sort(rank, r -> -rpri[r]);
 
                     float power = incomingPri;

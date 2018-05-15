@@ -160,6 +160,6 @@ public class AnimVector3f extends v3 implements Animated {
         super.set(x, y, z);
     }
     public void addDirect(float x, float y, float z) {
-        super.set(this.x + x, this.y + y, this.z + z);
+        setDirect(this.x + x, this.y + y, this.z + z);
     }
 }

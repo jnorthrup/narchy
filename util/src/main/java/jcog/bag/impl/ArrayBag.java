@@ -212,18 +212,12 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         for (int i = 0; i < s; i++) {
             Y x = (Y) l[i];
             assert(x!=null);
-            float p;
-            if (((p = (commit ? priUpdate(x) : pri(x))) != p /* deleted */) && trash.add(x)) {
-                items2.removeFast(i);
-
-                trash.add(x);
-                s--;
-
-            } else {
-                if (update != null) {
-                    update.accept(x);
-                    p = x.priElseZero(); //update pri because it may have changed during update
-                }
+            float p = (commit ? priUpdate(x) : pri(x));
+            if (update != null && p == p) {
+                update.accept(x);
+                p = pri(x);
+            }
+            if (p == p) {
                 min = Util.min(min, p);
                 max = Util.max(max, p);
                 mass += p;
@@ -231,6 +225,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     mustSort = i;
 
                 above = p;
+            } else {
+                trash.add(x);
+                items2.removeFast(i);
+                s--;
             }
         }
 
@@ -723,9 +721,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 trash = new FasterList<>(s);
 
                 //map is possibly shared with another bag. only remove the items from it which are present in items
-                items.forEach(x -> {
-                    trash.add(mapRemove(x));
-                });
+                items.forEach(x -> trash.add(mapRemove(x)));
                 items.clear();
             } else {
                 trash = null;

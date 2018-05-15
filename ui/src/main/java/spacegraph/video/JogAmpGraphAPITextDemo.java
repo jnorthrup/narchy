@@ -12,7 +12,7 @@ import jogamp.graph.font.typecast.TypecastFontConstructor;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.hud.Ortho;
-import spacegraph.util.animate.AnimVector2f;
+import spacegraph.util.math.v2;
 
 import java.io.File;
 import java.io.IOException;
@@ -230,7 +230,7 @@ public class JogAmpGraphAPITextDemo {
             //Pmv.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
             //Pmv.glLoadIdentity();
 
-            AnimVector2f scale = ((Ortho) root()).scale; //HACK
+            v2 scale = ((Ortho) root()).scale; //HACK
             float sx = scale.x * (pixelGranularity);
             float sy = scale.y * (pixelGranularity);
             Pmv.glTranslatef(cx(), cy(), -0.2f);

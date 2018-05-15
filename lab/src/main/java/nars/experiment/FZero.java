@@ -147,10 +147,10 @@ public class FZero extends NAgentX {
         Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);//.resolution(0.02f);
         DemultiplexedScalar ang = senseNumber(angle -> $.func("ang", id, $.the(angle) ) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                3,
+                4, //4 cardinal directions
                 //DigitizedScalar.FuzzyNeedle
                 //DigitizedScalar.Needle
-                DigitizedScalar.Fluid
+                DigitizedScalar.FuzzyBinary
         ).resolution(0.01f);
 
         //new RLBooster(this, HaiQae::new, 1);

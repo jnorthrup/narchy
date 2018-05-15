@@ -11,6 +11,8 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
+import nars.term.control.AbstractPred;
+import nars.term.control.PrediTerm;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -18,6 +20,7 @@ import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.Set;
@@ -479,14 +482,30 @@ public class Occurrify extends TimeGraph {
          * result occurs in the intersecting time interval, if exists; otherwise fails
          */
         Intersect() {
+
+            final PrediTerm<Derivation> filter = new AbstractPred<>(Atomic.the("TimeIntersects")) {
+                @Override
+                public boolean test(Derivation derivation) {
+                    nars.Task b = derivation._belief;
+                    return b!=null && derivation._task.intersectsTime(b);
+                }
+            };
+
             @Override public Pair<Term, long[]> solve(Derivation d, Term x) {
                 return solveOccDT(d, x, d.occ(x));
             }
 
             @Override
+            public PrediTerm<Derivation> filter() {
+                return filter;
+            }
+
+            @Override
             long[] occurrence(Task a, Task b) {
                 Longerval i = Longerval.intersect(a.start(), a.end(), b.start(), b.end());
-                return i != null ? new long[]{i.a, i.b} : null;
+                if (i == null)
+                    throw new RuntimeException("should have been filtered");
+                return new long[]{i.a, i.b};
             }
         },
 
@@ -570,6 +589,12 @@ public class Occurrify extends TimeGraph {
                 p = null;
             }
             return p == null ? solveAuto(d, x) : p;
+        }
+
+        /** gets the optional premise pre-filter for this consequence.  */
+        @Nullable
+        public PrediTerm<Derivation> filter() {
+            return null;
         }
 
         protected Pair<Term, long[]> solveDT(Derivation d, Term x, Occurrify o) {

@@ -326,27 +326,26 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                 //sort - this is only an approximation since values may change while this occurrs
 
+
                 byte j=0;
-                for (int i = start, probe = reprobes; probe > 0; probe--) {
+                for (int i = start; j < reprobes; ) {
                     V mi = map.get(i);
+                    rank[j] = j;
                     float mp;
-                    if (mi == null) {
-                        if (map.compareAndSet(i, null, incoming)) {
+                    if (mi == null || ((mp = pri(mi))!=mp)) {
+                        if (map.compareAndSet(i, mi, incoming)) {
                             //take empty slot
                             toReturn = toAdd = incoming;
                             break;
+                        } else {
+                            mp = 0; //value has changed, assume 0
                         }
-                        mp = 0; //value has changed, assume 0
-                    } else {
-                        mp = priElse(mi, Float.NEGATIVE_INFINITY);
                     }
-
-                    rank[j] = j;
                     rpri[j++] = mp;
                     if (++i == c) i = 0; //continue to next probed location
                 }
 
-                if (toReturn == null) {
+                if (toReturn == null) { //if still havent gotten a slot
 
                     ArrayUtils.sort(rank, r -> -rpri[r]);
 
@@ -761,11 +760,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 continue;
 
             float p = priUpdate(f);
+
+            if (update != null && p == p) {
+                update.accept(f);
+                p = pri(f);
+            }
+
             if (p == p) {
-                if (update != null) {
-                    update.accept(f);
-                    p = priElse(f, 0); //HACK in case it changed TODO make update.accept return the float pri
-                }
                 mass += p;
                 if (p > max) max = p;
                 if (p < min) min = p;

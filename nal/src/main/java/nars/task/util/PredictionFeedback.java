@@ -3,7 +3,6 @@ package nars.task.util;
 import jcog.math.Longerval;
 import nars.NAR;
 import nars.Task;
-import nars.task.signal.SignalTask;
 
 public class PredictionFeedback {
 
@@ -117,44 +116,44 @@ public class PredictionFeedback {
 
 
 
-    /**
-     * rewards/punishes the causes of this task,
-     * then removes it in favor of a stronger sensor signal
-     * returns whether the 'y' task was absorbed into 'x'
-     */
-    static boolean absorb(SignalTask x, Task y) {
-        if (x.intersects(y)) {
-            if (delete) {
-                y.delete(/*fwd: x*/); //forward to the actual sensor reading
-            }
-            //MetaGoal.Accurate.learn(y.cause(), value, nar.causes);
-            return true;
-        }
-        return false;
-
-//        //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
-//        float yEvi = Revision.eviInteg(y, start, end, dur); //TODO cache either if possible
-//        float xEvi = Revision.eviInteg(x, start, end, dur); //TODO cache either if possible
-//
-//        float error = Math.abs(x.freq() - y.freq());
-//        float coherence;
-//        if (error <= fThresh) {
-//            coherence = +1;
-//        } else {
-//            coherence = -error;
-//        }
-//        float value = coherence * yEvi/(yEvi + xEvi);
-//        if (Math.abs(value) > Float.MIN_NORMAL) {
-//            MetaGoal.Accurate.learn(y.cause(), value, nar.causes);
-//        }
-//
-//        if (delete) {
-//            y.delete(/*fwd: x*/); //forward to the actual sensor reading
+//    /**
+//     * rewards/punishes the causes of this task,
+//     * then removes it in favor of a stronger sensor signal
+//     * returns whether the 'y' task was absorbed into 'x'
+//     */
+//    static boolean absorb(SignalTask x, Task y) {
+//        if (x.intersectsTime(y)) {
+//            if (delete) {
+//                y.delete(/*fwd: x*/); //forward to the actual sensor reading
+//            }
+//            //MetaGoal.Accurate.learn(y.cause(), value, nar.causes);
 //            return true;
-//        } else {
-//            return false; //keep if correct and stronger
 //        }
-    }
+//        return false;
+//
+////        //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
+////        float yEvi = Revision.eviInteg(y, start, end, dur); //TODO cache either if possible
+////        float xEvi = Revision.eviInteg(x, start, end, dur); //TODO cache either if possible
+////
+////        float error = Math.abs(x.freq() - y.freq());
+////        float coherence;
+////        if (error <= fThresh) {
+////            coherence = +1;
+////        } else {
+////            coherence = -error;
+////        }
+////        float value = coherence * yEvi/(yEvi + xEvi);
+////        if (Math.abs(value) > Float.MIN_NORMAL) {
+////            MetaGoal.Accurate.learn(y.cause(), value, nar.causes);
+////        }
+////
+////        if (delete) {
+////            y.delete(/*fwd: x*/); //forward to the actual sensor reading
+////            return true;
+////        } else {
+////            return false; //keep if correct and stronger
+////        }
+//    }
 
 //    private static float error(Task x, Task y, long start, long end, int dur) {
 //        //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap

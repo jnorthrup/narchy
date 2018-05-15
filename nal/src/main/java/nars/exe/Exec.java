@@ -1,12 +1,10 @@
 package nars.exe;
 
 import jcog.event.On;
-import jcog.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
 import nars.control.Activate;
-import nars.control.Cause;
 import nars.task.ITask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,15 +116,15 @@ abstract public class Exec implements Executor {
 
     abstract public void activate(Concept c, float activationApplied);
 
+    /** TODO refactor into an independent DurService that updates causes with wants */
     public interface Revaluator {
         /**
          * goal and goalSummary instances correspond to the possible MetaGoal's enum
          */
-        void update(long time, int dur, FasterList<Cause> causes, float[] goal);
+        //void update(long time, int dur, FasterList<Cause> causes, float[] goal);
 
-        default void update(NAR nar) {
-            update(nar.time(), nar.dur(), nar.causes, nar.emotion.want);
-        }
+        void update(NAR nar);
+
     }
 
 }

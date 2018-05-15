@@ -367,8 +367,7 @@ public interface Termlike {
     }
 
 
-
-
+    boolean isTemporal();
 
 }
 

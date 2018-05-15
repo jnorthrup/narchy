@@ -66,13 +66,14 @@ abstract public class Container extends Surface {
     @Override
     protected final void paint(GL2 gl, int dtMS) {
 
+        prePaint(dtMS);
+
         //TODO maybe in a separate update thread
         if (mustLayout) {
             mustLayout = false;
             doLayout(dtMS);
         }
 
-        prePaint(dtMS);
 
         paintBelow(gl);
 

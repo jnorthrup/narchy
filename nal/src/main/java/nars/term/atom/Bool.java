@@ -5,7 +5,6 @@ import nars.The;
 import nars.term.Evaluation;
 import nars.term.Term;
 import nars.unify.Unify;
-import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.BOOL;
 import static nars.Op.Null;
@@ -29,6 +28,14 @@ abstract public class Bool extends AtomicConst implements The {
     }
 
     @Override
+    abstract public boolean equalsNegRoot(Term t);
+
+    @Override
+    public final boolean equalsRoot(Term x) {
+        return equals(x);
+    }
+
+    @Override
     public final Term conceptualizableOrNull() {
         return Null;
     }
@@ -43,7 +50,6 @@ abstract public class Bool extends AtomicConst implements The {
         return id;
     }
 
-    @NotNull
     @Override
     abstract public Term unneg();
 

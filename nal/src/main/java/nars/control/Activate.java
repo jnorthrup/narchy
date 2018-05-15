@@ -1,6 +1,6 @@
 package nars.control;
 
-import jcog.pri.PLink;
+import jcog.pri.PLinkHashCached;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
@@ -9,7 +9,7 @@ import nars.term.Termed;
 /**
  * represents the current activation level of a concept
  */
-public class Activate extends PLink<Concept> implements Termed {
+public class Activate extends PLinkHashCached<Concept> implements Termed {
 
     public Activate(Concept c, float pri) {
         super(c, pri);

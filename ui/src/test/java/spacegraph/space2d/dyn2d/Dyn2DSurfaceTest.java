@@ -8,7 +8,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.WidgetTest;
 import spacegraph.space2d.container.Clipped;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.hud.Ortho;
 import spacegraph.space2d.phys.collision.shapes.PolygonShape;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
@@ -187,8 +186,8 @@ public class Dyn2DSurfaceTest {
 
         public static void main(String[] args) {
             Dyn2DSurface s = SpaceGraph.wall(800, 800);
-            ((Ortho) s.root()).scaleMin = 100f;
-            ((Ortho) s.root()).scaleMax = 500;
+//            ((Ortho) s.root()).scaleMin = 100f;
+//            ((Ortho) s.root()).scaleMax = 500;
 
             Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
                     new Port(),

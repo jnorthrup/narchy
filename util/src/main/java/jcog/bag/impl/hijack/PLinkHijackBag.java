@@ -1,7 +1,7 @@
 package jcog.bag.impl.hijack;
 
 import jcog.bag.impl.HijackBag;
-import jcog.pri.PLink;
+import jcog.pri.PLinkHashCached;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 import java.util.function.Consumer;
@@ -9,20 +9,20 @@ import java.util.function.Consumer;
 /**
  * Created by me on 2/17/17.
  */
-public class PLinkHijackBag<X> extends HijackBag<X, PLink<X>> {
+public class PLinkHijackBag<X> extends HijackBag<X, PLinkHashCached<X>> {
 
     public PLinkHijackBag(int initialCapacity, int reprobes) {
         super(initialCapacity, reprobes);
     }
 
     @Override
-    public final float pri( PLink<X> key) {
+    public final float pri( PLinkHashCached<X> key) {
         return key.pri();
     }
 
-    
+
     @Override
-    public X key(PLink<X> value) {
+    public X key(PLinkHashCached<X> value) {
         return value.get();
     }
 
@@ -66,7 +66,7 @@ public class PLinkHijackBag<X> extends HijackBag<X, PLink<X>> {
 
 
     @Override
-    protected PLink<X> merge(PLink<X> existing, PLink<X> incoming, MutableFloat overflowing) {
+    protected PLinkHashCached<X> merge(PLinkHashCached<X> existing, PLinkHashCached<X> incoming, MutableFloat overflowing) {
         float overflow = existing.priAddOverflow(incoming.priElseZero() );
         if (overflow > 0) {
             //pressurize(-overflow);

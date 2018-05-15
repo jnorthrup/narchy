@@ -60,7 +60,7 @@ public class Finger {
     /**
      * widget above which this finger currently hovers
      */
-    public @Nullable Widget touching;
+    public final AtomicReference<@Nullable Widget> touching = new AtomicReference<Widget>();
 
 
     public Finger() {
@@ -81,7 +81,7 @@ public class Finger {
         return (finger) -> {
 
             Surface what;
-            if (finger != null && (what = finger.touching) != null) {
+            if (finger != null && (what = finger.touching()) != null) {
                 if ((clicked != null) && finger.clickedNow(button, what)) {
                     clicked.run();
                     return true;
@@ -100,6 +100,10 @@ public class Finger {
             }
             return false;
         };
+    }
+
+    public Surface touching() {
+        return touching.get();
     }
 
     public static v2 relative(v2 x, Surface c) {
@@ -134,7 +138,7 @@ public class Finger {
      */
     public void update() {
 
-        Widget t = this.touching;
+        Widget t = this.touching.get();
         if (t != null) {
             t.onFinger(this);
         }
@@ -193,11 +197,9 @@ public class Finger {
             //START DESCENT:
 
             if (ff == null || ff.escapes()) {
-
                 touchedNext = root.tryTouch(this);
-
             } else {
-                touchedNext = touching;
+                touchedNext = touching.get(); //keep existing
             }
 
             //System.out.println(pos + " " + posGlobal + " " + ff + " " + touchedNext);
@@ -228,25 +230,25 @@ public class Finger {
         return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
 
-    private void on(@Nullable Widget touched) {
+    private void on(@Nullable Widget touchNext) {
 
-        if (touched == this.touching)
+        @Nullable Widget touchPrev = touching.getAndSet(touchNext);
+
+        if (touchPrev == touchNext)
             return;
 
-        synchronized (this) {
-            if (touched != touching && touching != null) {
-                touching.onFinger(null);
-            }
+        if (touchPrev != null) {
+            touchPrev.onFinger(null);
+        }
 
-            if ((touching = touched) != null) {
-                touching.onFinger(this);
-            }
+        if (touchNext!=null) {
+            touchNext.onFinger(this);
         }
     }
 
     /** allows a fingered object to push the finger off it */
     public boolean off(Object fingered) {
-        Widget t = this.touching;
+        Widget t = this.touching.get();
         if (t != null && t == fingered) {
             on(null);
             return true;

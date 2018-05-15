@@ -95,6 +95,10 @@ public interface Termed extends Termlike {
         return term().ANDrecurse(v);
     }
 
+    @Override
+    default boolean isTemporal() {
+        return term().isTemporal();
+    }
 
     @Override
     default void recurseTerms(Consumer<Term> v) {

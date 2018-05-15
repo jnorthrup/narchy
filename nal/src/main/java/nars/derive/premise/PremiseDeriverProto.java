@@ -26,6 +26,7 @@ import nars.unify.constraint.*;
 import nars.unify.op.*;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -58,7 +59,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
     final Set<PrediTerm<PreDerivation>> pre = new HashSet(8);
     final List<PrediTerm<Derivation>> post = new FasterList(8);
-    private final Truthify truthify;
+    private final PrediTerm<Derivation> truthify;
 
 
     public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
@@ -640,9 +641,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
-        this.truthify = (puncOverride == 0) ?
+        Truthify truthify = (puncOverride == 0) ?
                 new Truthify.TruthifyPuncFromTask(ii, beliefTruthOp, goalTruthOp, projectBeliefToTask) :
                 new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruthOp, goalTruthOp, projectBeliefToTask);
+
+
 
         NAR nar1 = index.nar;
         Taskify taskify = new Taskify(nar1.newCause((s) -> new RuleCause(this, s)));
@@ -662,6 +665,16 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                         :
                         taskify
         );
+
+        //add optional time filter
+        @Nullable PrediTerm<Derivation> timeFilter = time.filter();
+        if (timeFilter!=null) {
+            this.truthify = AndCondition.the(timeFilter, truthify);
+        } else {
+            this.truthify = truthify;
+        }
+
+
         if (taskPattern1.equals(beliefPattern1)) {
             post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern1, conc));
         }
@@ -939,6 +952,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         //SUFFIX (order already determined for matching)
         int n = 1 + this.constraints.size() + this.post.size();
+
+
 
         PrediTerm[] suff = new PrediTerm[n];
         int k = 0;

@@ -337,9 +337,10 @@ public class Focus extends AtomicRoulette<Causable> {
         }
 
         @Override
-        public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
-            super.update(time, dur, causes, goal);
+        public void update(NAR nar) {
+            super.update(nar);
 
+            FasterList<Cause> causes = nar.causes;
             int numCauses = causes.size();
             if (numCauses < 2)
                 return;
@@ -431,7 +432,8 @@ public class Focus extends AtomicRoulette<Causable> {
 
     public static class DefaultRevaluator implements Exec.Revaluator {
 
-        final static double minUpdateDurs = 1f;
+        final static double minUpdateDurs = 8f;
+
 //        final RecycledSummaryStatistics[] causeSummary = new RecycledSummaryStatistics[MetaGoal.values().length];
         float momentum =
                 //0f;
@@ -452,13 +454,19 @@ public class Focus extends AtomicRoulette<Causable> {
 //        }
 
         @Override
-        public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
-
+        public void update(NAR nar) {
+            //    update(nar.time(), nar.dur(), nar.causes, nar.emotion.want);
+            long time = nar.time();
             if (lastUpdate == ETERNAL)
                 lastUpdate = time;
+            int dur = nar.dur();
             double dt = (time - lastUpdate) / ((double) dur);
             if (dt < minUpdateDurs)
                 return;
+
+            FasterList<Cause> causes = nar.causes;
+            float[] goal = nar.emotion.want;
+
             lastUpdate = time;
 
 //            for (RecycledSummaryStatistics r : causeSummary) {

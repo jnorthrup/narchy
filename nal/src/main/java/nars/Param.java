@@ -143,8 +143,8 @@ public abstract class Param {
      * NAgent happiness automatic gain control time parameter
      * TODO verify this is applied based on time, not iterations
      */
-    public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.0001f;
-    public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0002f;
+    public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.001f;
+    public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.002f;
 
 
 

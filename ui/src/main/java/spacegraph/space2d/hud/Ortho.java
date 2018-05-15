@@ -14,9 +14,9 @@ import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.widget.windo.Widget;
-import spacegraph.util.animate.AnimVector2f;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
+import spacegraph.util.math.v2;
 import spacegraph.util.math.v3;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static java.lang.Math.sin;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -38,9 +39,9 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Ortho extends Container implements SurfaceRoot, WindowListener, MouseListener, KeyListener {
 
-    public final AnimVector2f scale;
-    public float scaleMin = 0.25f;
-    public float scaleMax = 10000f;
+//    public final AnimVector2f scale;
+//    public float scaleMin = 0.25f;
+//    public float scaleMax = 10000f;
 
     public final Finger finger;
 
@@ -50,6 +51,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public Surface surface;
     public JoglSpace window;
     protected final v3 cam;
+
+    /** current view area, in absolute world coords */
+    public final v2 scale = new v2();
 
 
 
@@ -62,6 +66,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
 
+    private float pixelRes;
+    final static float focusAngle = (float) Math.toRadians(45);
+
     public Ortho() {
         this(new EmptySurface());
     }
@@ -70,28 +77,45 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         super();
         this.finger = new Finger();
 
-        //TODO use AnimVector3f to represent scale via bounds
-        this.scale = new AnimVector2f(1, 1, 4f) {
-          //TODO add animation ifChanged -> fingerUpdated
-        };
+//        //TODO use AnimVector3f to represent scale via bounds
+//        this.scale = new AnimVector2f(1, 1, 4f) {
+//          //TODO add animation ifChanged -> fingerUpdated
+//        };
 
         this.cam = new AnimVector3f(1) {
 
             float CAM_RATE = 2f;
+            float camZmin = 100;
+            float camZmax = 4000;
+
+            {
+                setDirect(0,0, (camZmin + camZmax)/2);
+            }
 
             @Override
             public boolean animate(float dt) {
                 if (super.animate(dt)) {
-                    float W = bounds.w / scale.x;
-                    float H = bounds.h / scale.y;
-
-
+                    float W = bounds.w;
+                    float H = bounds.h;
                     speed.set(Math.max(W, H) * CAM_RATE);
                     return true;
                 }
                 return false;
             }
+
+
+            @Override
+            public void set(float x, float y, float z) {
+                super.set(x, y, Util.clamp(z, camZmin, camZmax));
+            }
+
+            @Override
+            public void setDirect(float x, float y, float z) {
+                super.setDirect(x, y, Util.clamp(z, camZmin, camZmax));
+            }
         };
+
+
 
         this.surface = content;
 
@@ -100,6 +124,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
                 finger();
         };
     }
+
 
 
     @Override
@@ -123,11 +148,32 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
-    protected void doLayout(int dtMS) {
-        cam.set(bounds.w / 2f, bounds.h / 2f);
+    public void prePaint(int dtMS) {
 
+        float W = window.getWidth();
+        float H = window.getHeight();
+
+        pixelRes = Math.max(W, H);
+
+        //scale(camZ) = pixelRes * sin(pi/2 - focus) / (camZ * sin(focus))
+        //        float scale =  (float) (pixelRes / ((sin(focusAngle / 2) * cam.z) / sin(Math.PI / 2 - focusAngle / 2)));
+        float scale =  (float) (pixelRes * sin(Math.PI/2 - focusAngle/2) / (cam.z * sin(focusAngle/2)));
+
+        this.scale.set(scale,scale); //TODO use right aspect ratio
+        //System.out.println(cam + " "  + this.scale + " "  + scale);
+
+        super.prePaint(dtMS);
+    }
+
+    @Override
+    protected void doLayout(int dtMS) {
         if (autoresize())
             surface.pos(bounds);
+
+        cam.set(bounds.w / 2f, bounds.h / 2f, targetDepth(Math.max(bounds.w, bounds.h)));
+
+
+
 
         //fingerMoved.set(true);
     }
@@ -202,7 +248,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             s.addKeyListener(this);
 
-            animate(scale);
             animate((Animated) cam);
             animate(fingerUpdate);
 
@@ -262,36 +307,38 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     public void zoom(RectFloat2D b) {
-        zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin, 1);
+        zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
 
-    public void zoom(RectFloat2D b, float speed) {
-        zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin, speed);
+    float targetDepth(float viewDiameter) {
+        float targetDepth = (float) ((viewDiameter * sin(Math.PI / 2 - focusAngle / 2)) / sin(focusAngle / 2));
+        //System.out.println("viewdiameter " + viewDiameter + " targetDepth=" + targetDepth);
+        return targetDepth;
     }
 
-    public void zoom(float x, float y, float sx, float sy, float margin, float speed) {
-        float s0 = (1 + margin);
-        cam.set(x, y);
+    public void zoom(float x, float y, float sx, float sy, float margin) {
+        //float s0 = (1 + margin);
+        cam.set(x, y, targetDepth(Math.max(sx,sy)*(1+margin)));
         //cam.setLerp(x, y, 0, speed);
-        scale(w() / (sx * s0), h() / (sy * s0));
+        //scale(w() / (sx * s0), h() / (sy * s0));
     }
 
-    @Override
-    public void unzoom() {
-        synchronized (zoomStack) {
-            if (!zoomStack.isEmpty()) {
-                RectFloat2D z = zoomStack.removeLast().get();
-                scale(z.w, z.h);
-                cam.set(z.cx(), z.cy());
-            }
-        }
-    }
-
-    public Ortho scale(float sx, float sy) {
-        float s = Util.clamp(Math.min(sx, sy), scaleMin, scaleMax);
-        scale.set(s, s);
-        return this;
-    }
+//    @Override
+//    public void unzoom() {
+//        synchronized (zoomStack) {
+//            if (!zoomStack.isEmpty()) {
+//                RectFloat2D z = zoomStack.removeLast().get();
+//                scale(z.w, z.h);
+//                cam.set(z.cx(), z.cy());
+//            }
+//        }
+//    }
+//
+//    public Ortho scale(float sx, float sy) {
+//        float s = Util.clamp(Math.min(sx, sy), scaleMin, scaleMax);
+//        scale.set(s, s);
+//        return this;
+//    }
 
 
 
@@ -370,7 +417,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         if (e.isConsumed())
             return;
 
-        Widget t = finger.touching;
+        Widget t = finger.touching.get();
         if (t !=null) {
             if (!t.tryKey(e, pressOrRelease))
                 e.setConsumed(true);
@@ -405,7 +452,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 //        if (e.isConsumed())
 //            return;
         if (update(false, e, e.getButtonsDown())) {
-            if (finger.touching!=null)
+            if (finger.touching.get() !=null)
                 e.setConsumed(true);
         }
     }
@@ -423,7 +470,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         update(false, e, bd);
 
-        if (finger.touching!=null)
+        if (finger.touching.get() !=null)
             e.setConsumed(true);
 
     }
@@ -434,7 +481,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 //        if (e.isConsumed())
 //            return;
         if (update(true, e))
-            if (finger.touching!=null)
+            if (finger.touching.get() !=null)
                 e.setConsumed(true);
     }
 
@@ -458,15 +505,16 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             int pmx = e.getX();
             int pmy = windowHeight - e.getY();
 
-            //screen coordinates
-            float sx = e.getX();
 
             float W = w();
             float H = h();
-            float sy = window.getHeight() - e.getY();
 
-            float wmx = +cam.x + (-0.5f * W + sx) / scale.x;
-            float wmy = +cam.y + (-0.5f * H + sy) / scale.x;
+            //screen coordinates
+            float msx = e.getX();
+            float msy = window.getHeight() - e.getY();
+
+            float wmx = +cam.x + (-0.5f * W + msx) / scale.x;
+            float wmy = +cam.y + (-0.5f * H + msy) / scale.y;
 
             finger.pos.set(wmx, wmy);
             finger.posGlobal.set(pmx, pmy);
@@ -502,7 +550,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         finger.update();
 
-        Surface touchPrev = finger.touching;
+        Surface touchPrev = finger.touching.get();
         Surface touchNext = finger.on(surface);
 
         if (touchNext!=null && touchNext!=touchPrev) {
@@ -517,6 +565,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
 
         gl.glLoadIdentity();
+
 
         float sx = scale.x;
         //float sy = scale.y;

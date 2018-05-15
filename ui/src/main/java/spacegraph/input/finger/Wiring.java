@@ -93,7 +93,7 @@ public class Wiring extends FingerDragging {
     }
 
     private void updateEnd(Finger finger) {
-        Surface nextEnd = finger.touching;
+        Surface nextEnd = finger.touching.get();
         if (nextEnd!=end) {
 
             if (nextEnd == start) {

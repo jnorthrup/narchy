@@ -307,7 +307,9 @@ public enum Op {
                                     if ((va - vamin) > (vb + vamin)) {
                                         int min = va0 <= va1 ? 0 : 1;
                                         //return CONJ.compound(XTERNAL, new Term[]{CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]});
-                                        return compound(CONJ, XTERNAL, new Term[]{CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]});
+                                        Term[] xu = {CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
+                                        Arrays.sort(xu);
+                                        return compound(CONJ, XTERNAL, xu);
                                     }
                                 }
 
@@ -524,6 +526,11 @@ public enum Op {
         }
 
         @Override
+        public boolean equalsNegRoot(Term t) {
+            return false;
+        }
+
+        @Override
         public Term unneg() {
             return this;
         }
@@ -542,6 +549,11 @@ public enum Op {
 
         @Override
         public boolean equalsNeg(Term t) {
+            return t == True;
+        }
+
+        @Override
+        public boolean equalsNegRoot(Term t) {
             return t == True;
         }
 
@@ -577,6 +589,10 @@ public enum Op {
             return t == False;
         }
 
+        @Override
+        public boolean equalsNegRoot(Term t) {
+            return t == False;
+        }
         @Override
         public Term unneg() {
             return True; //doesnt change

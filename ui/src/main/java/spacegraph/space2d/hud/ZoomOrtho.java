@@ -2,7 +2,6 @@ package spacegraph.space2d.hud;
 
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
@@ -16,7 +15,9 @@ import spacegraph.video.JoglSpace;
 public class ZoomOrtho extends Ortho {
 
     private final Surface content;
-    float zoomRate = 0.2f;
+    float zoomRate =
+            200;
+            //0.2f;
 
     public final static short PAN_BUTTON = 0;
     final static short MOVE_WINDOW_BUTTON = 1;
@@ -126,7 +127,7 @@ public class ZoomOrtho extends Ortho {
 
         super.finger();
 
-        if (!finger.isFingering() && finger.touching==null) {
+        if (!finger.isFingering() && finger.touching.get() ==null) {
 //            if (!finger.tryFingering(fingerWindowResize))
                 if (!finger.tryFingering(fingerWindowMove))
                     if (!finger.tryFingering(fingerContentPan)) {
@@ -152,11 +153,12 @@ public class ZoomOrtho extends Ortho {
         //System.out.println(Arrays.toString(e.getRotation()) + " " + e.getRotationScale());
         float dWheel = e.getRotation()[1];
 
+        cam.add(0, 0, dWheel * zoomRate);
 
-        float zoomMult = Util.clamp(1f + -dWheel * zoomRate, 0.5f, 1.5f);
-
-        float sx = this.scale.targetX() * zoomMult;
-        scale(sx, sx);
+//        float zoomMult = Util.clamp(1f + -dWheel * zoomRate, 0.5f, 1.5f);
+//
+//        float sx = this.scale.targetX() * zoomMult;
+//        scale(sx, sx);
 
     }
 
