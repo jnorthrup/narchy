@@ -23,7 +23,10 @@ class KIFInputTest {
 
 
         Term I = $.quote(inURL);
-        Term O = Atomic.the("stdout");
+        Term O =
+            //Atomic.the("stdout");
+            Atomic.the("file:///tmp/x.nal");
+
         Runnable r = n.memory.copy(I, O);
         r.run();
 

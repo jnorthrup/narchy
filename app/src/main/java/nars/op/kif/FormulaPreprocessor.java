@@ -194,8 +194,8 @@ public class FormulaPreprocessor {
             sb.append(")\n");
         if (debug) System.out.println("addTypeRestrictions: sb: " + sb);
         // recursively add sortals for existentially quantified variables
-        if ((form.theFormula.indexOf(Formula.EQUANT) > -1) ||
-                (form.theFormula.indexOf(Formula.UQUANT) > -1))
+        if ((form.theFormula.contains(Formula.EQUANT)) ||
+                (form.theFormula.contains(Formula.UQUANT)))
             addTypeRestrictionsRecurse(kb, form, sb);
 
         if (!begin)
@@ -411,7 +411,7 @@ public class FormulaPreprocessor {
      */
     private static Formula findAntecedent(Formula f) {
 
-        if (f.theFormula.indexOf(Formula.IF) == -1 && f.theFormula.indexOf(Formula.IFF) == -1)
+        if (!f.theFormula.contains(Formula.IF) && !f.theFormula.contains(Formula.IFF))
             return f;
         String carstr = f.car();
         if (Formula.atom(carstr) && Formula.isLogicalOperator(carstr)) {
@@ -610,18 +610,18 @@ public class FormulaPreprocessor {
         }
         else if (f.isSimpleClause(kb)) { // simple clauses include functions
             String pred = carstr;
-            if (f.theFormula.indexOf("?") > -1 && !Formula.isVariable(pred)) {
+            if (f.theFormula.contains("?") && !Formula.isVariable(pred)) {
                 Formula newf = f.cdrAsFormula();
                 int argnum = 1;
                 while (!newf.empty()) {
                     String arg = newf.car();
                     if (Formula.isVariable(arg)) {
                         String cl = findType(argnum,pred,kb);
-                        if (debug) System.out.println("arg,pred,argnum,type: " + arg + ", " + pred + ", " + argnum + ", " + cl);
+//                        if (debug) System.out.println("arg,pred,argnum,type: " + arg + ", " + pred + ", " + argnum + ", " + cl);
                         if (StringUtil.emptyString(cl)) {
-                            if (kb.kbCache == null || !kb.kbCache.transInstOf(pred,"VariableArityRelation"))
-                                System.out.println("Error in FormulaPreprocessor.computeVariableTypesRecurse(): " +
-                                        "no type information for arg " + argnum + " of relation " + pred + " in formula: \n" + f);
+//                            if (kb.kbCache == null || !kb.kbCache.transInstOf(pred,"VariableArityRelation"))
+//                                System.out.println("Error in FormulaPreprocessor.computeVariableTypesRecurse(): " +
+//                                        "no type information for arg " + argnum + " of relation " + pred + " in formula: \n" + f);
                         }
                         else
                             addToMap(result,arg,cl);

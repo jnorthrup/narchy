@@ -79,7 +79,7 @@ abstract public class Container extends Surface {
 
         paintIt(gl);
 
-        forEach(c -> { if (c!=null) c.render(gl, dtMS); } ); //render children, if any
+        forEach(c -> c.render(gl, dtMS)); //render children, if any
 
         paintAbove(gl, dtMS);
     }

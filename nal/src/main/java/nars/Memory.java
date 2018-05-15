@@ -10,18 +10,18 @@ import nars.term.atom.Atomic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -100,6 +100,18 @@ public class Memory {
     public Memory() {
         resolvers.add(URIResolver);
         resolvers.add(StdIOResolver);
+        on(new TasksToBytes("nal") {
+            @Override
+            public void accept(Stream<Task> tt, OutputStream out) {
+               tt.forEach(t -> {
+                   try {
+                       out.write(IO.taskToBytes(t));
+                   } catch (IOException e) {
+                       e.printStackTrace();
+                   }
+               });
+            }
+        });
     }
 
     public Memory(NAR nar) {
@@ -126,7 +138,7 @@ public class Memory {
         }
 
         @Override
-        public Stream<Consumer<Stream<Task>>> writers(Term x) {
+        public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
             if (x.equals(stdout)) {
                 return Stream.of((t) -> {
                    t.forEach(tt ->
@@ -169,8 +181,31 @@ public class Memory {
         }
 
         @Override
-        public Stream<Consumer<Stream<Task>>> writers(Term x) {
-            return null;
+        public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
+            Stream<URI> uri = termToURIs(x);
+            if (uri != null) {
+                return uri.map((u -> {
+
+                    String extension = extension(u);
+                    if (extension != null) {
+                        Collection<TasksToBytes> formats = m.writeFormats.get(extension);
+                        if (!formats.isEmpty()) {
+                            if (writeFormats.size() > 1)
+                                logger.warn("multiple output formats, choosing first: {}", formats);
+
+                            return (Stream<Task> tt)-> {
+                                try(OutputStream out = Files.newOutputStream(Paths.get(u))) {
+                                    formats.iterator().next().accept(tt, out);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            };
+                        }
+                    }
+                    return null;
+                }));
+            } else
+                return null;
         }
     };
 
@@ -212,6 +247,7 @@ public class Memory {
         }
     }
 
+
     public void on(BytesToTasks f) {
         for (String e : f.extensions)
             readFormats.put(e, f);
@@ -227,7 +263,7 @@ public class Memory {
     }
 
     public Stream<Consumer<Stream<Task>>> writers(Term x) {
-        return resolvers.stream().flatMap(r -> r.writers(x)).filter(Objects::nonNull);
+        return resolvers.stream().flatMap(r -> r.writers(x, Memory.this)).filter(Objects::nonNull);
     }
 
     @Nullable public Runnable copy(Term i, Term o) {
@@ -239,13 +275,22 @@ public class Memory {
         Set<Consumer<Stream<Task>>> writers = writers(o).collect(toSet());
         if (!readers.isEmpty() && !writers.isEmpty()) {
             return ()->{
-                Stream<Task> in = readers.stream().flatMap(Supplier::get);
-                Stream<Task> out = filter != null ? filter.apply(in) : in;
 
-                //HACK find a way that doesnt involve fully buffering the input
-                Set<Task> outs = out.collect(toSet());
+                /** read input */
+                Stream<Task> fromIn = readers.stream().flatMap(Supplier::get);
 
-                writers.forEach(w -> w.accept(outs.stream()));
+                /** filter (intermediate) */
+                Stream<Task> toOut = filter != null ? filter.apply(fromIn) : fromIn;
+
+                /** write output */
+                if (writers.size() == 1) {
+                    writers.iterator().next().accept(toOut);
+                } else {
+                    //HACK find a way that doesnt involve fully buffering the input
+                    Set<Task> outs = toOut.collect(toSet());
+
+                    writers.forEach(w -> w.accept(outs.stream()));
+                }
             };
         } else {
             return null;
@@ -257,7 +302,7 @@ public class Memory {
         Stream<Supplier<Stream<Task>>> readers(Term x, Memory m);
 
         @Nullable
-        Stream<Consumer<Stream<Task>>> writers(Term x);
+        Stream<Consumer<Stream<Task>>> writers(Term x, Memory m);
     }
 
 
@@ -278,7 +323,7 @@ public class Memory {
         }
 
         @Override
-        public Stream<Consumer<Stream<Task>>> writers(Term x) {
+        public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
             if (nar.self().equals(x)) {
                 return Stream.of(nar::input);
             }
@@ -298,7 +343,7 @@ public class Memory {
         }
     }
 
-    abstract public static class TasksToBytes implements Function<Stream<Task>, ByteArrayOutputStream> {
+    abstract public static class TasksToBytes implements BiConsumer<Stream<Task>, OutputStream> {
         private final String[] extensions;
 
         public TasksToBytes(String... extension) {
