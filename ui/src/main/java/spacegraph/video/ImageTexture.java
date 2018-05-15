@@ -10,7 +10,10 @@ import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import jcog.tree.rtree.rect.RectFloat2D;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;

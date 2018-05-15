@@ -14,9 +14,6 @@ August 9, Acapulco, Mexico.  See also http://sigmakee.sourceforge.net
 
 package nars.op.kif;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.*;
 
 /** **************************************************************
@@ -1858,71 +1855,71 @@ public class Clausifier  {
         System.out.println("INFO in Clausifier.test1(): output formula: " + clausalForm);
     }
 
-    /** ***************************************************************
-     * A test method.
-     */
-    public static void testClausifier(String[] args) {
-
-        BufferedWriter bw = null;
-        try {
-            long t1 = System.currentTimeMillis();
-            int count = 0;
-            String inpath = args[0];
-            String outpath = args[1];
-            if (!StringUtil.emptyString(inpath) && !StringUtil.emptyString(outpath)) {
-                File infile = new File(inpath);
-                if (infile.exists()) {
-                    KIF kif = new KIF();
-                    kif.setParseMode(KIF.RELAXED_PARSE_MODE);
-                    kif.readFile(infile.getCanonicalPath());
-                    if (! kif.formulas.isEmpty()) {
-                        File outfile = new File(outpath);
-                        if (outfile.exists()) { outfile.delete(); }
-                        bw = new BufferedWriter(new FileWriter(outfile, true));
-                        Iterator it = kif.formulas.values().iterator();
-                        Iterator it2 = null;
-                        Formula f = null;
-                        Formula clausalForm = null;
-                        while (it.hasNext()) {
-                            it2 = ((List) it.next()).iterator();
-                            while (it2.hasNext()) {
-                                f = (Formula) it2.next();
-                                clausalForm = Clausifier.clausify(f);
-                                if (clausalForm != null) {
-                                    bw.write(clausalForm.theFormula);
-                                    bw.newLine();
-                                    count++;
-                                }
-                            }
-                        }
-                        try {
-                            bw.flush();
-                            bw.close();
-                            bw = null;
-                        }
-                        catch (Exception bwe) {
-                            bwe.printStackTrace();
-                        }
-                    }
-                }
-            }
-            long dur = (System.currentTimeMillis() - t1);
-            System.out.println(count + " clausal forms written in " + (dur / 1000.0) + " seconds");
-        }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                }
-                catch (Exception e2) {
-                    e2.printStackTrace();
-                }
-            }
-        }
-    }
+//    /** ***************************************************************
+//     * A test method.
+//     */
+//    public static void testClausifier(String[] args) {
+//
+//        BufferedWriter bw = null;
+//        try {
+//            long t1 = System.currentTimeMillis();
+//            int count = 0;
+//            String inpath = args[0];
+//            String outpath = args[1];
+//            if (!StringUtil.emptyString(inpath) && !StringUtil.emptyString(outpath)) {
+//                File infile = new File(inpath);
+//                if (infile.exists()) {
+//                    KIF kif = new KIF();
+//                    kif.setParseMode(KIF.RELAXED_PARSE_MODE);
+//                    kif.read(infile.getCanonicalPath());
+//                    if (! kif.formulas.isEmpty()) {
+//                        File outfile = new File(outpath);
+//                        if (outfile.exists()) { outfile.delete(); }
+//                        bw = new BufferedWriter(new FileWriter(outfile, true));
+//                        Iterator it = kif.formulas.values().iterator();
+//                        Iterator it2 = null;
+//                        Formula f = null;
+//                        Formula clausalForm = null;
+//                        while (it.hasNext()) {
+//                            it2 = ((List) it.next()).iterator();
+//                            while (it2.hasNext()) {
+//                                f = (Formula) it2.next();
+//                                clausalForm = Clausifier.clausify(f);
+//                                if (clausalForm != null) {
+//                                    bw.write(clausalForm.theFormula);
+//                                    bw.newLine();
+//                                    count++;
+//                                }
+//                            }
+//                        }
+//                        try {
+//                            bw.flush();
+//                            bw.close();
+//                            bw = null;
+//                        }
+//                        catch (Exception bwe) {
+//                            bwe.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
+//            long dur = (System.currentTimeMillis() - t1);
+//            System.out.println(count + " clausal forms written in " + (dur / 1000.0) + " seconds");
+//        }
+//        catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//        finally {
+//            if (bw != null) {
+//                try {
+//                    bw.close();
+//                }
+//                catch (Exception e2) {
+//                    e2.printStackTrace();
+//                }
+//            }
+//        }
+//    }
 
     
     /** ***************************************************************

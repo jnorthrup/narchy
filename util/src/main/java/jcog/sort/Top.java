@@ -1,7 +1,6 @@
 package jcog.sort;
 
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,7 +32,6 @@ public class Top<T> implements Consumer<T> {
         }
     }
 
-    @NotNull
     public List<T> toList() {
         if (the == null) return Collections.emptyList();
         else return Collections.singletonList(the);

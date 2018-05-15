@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.windo;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
-import spacegraph.space2d.container.grid.Gridding;
 
 /**
  * a wall (virtual surface) contains zero or more windows;

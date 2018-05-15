@@ -21,9 +21,7 @@ import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TimeGraphTest {

@@ -4,7 +4,6 @@ import jcog.bag.Bag;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
-import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;

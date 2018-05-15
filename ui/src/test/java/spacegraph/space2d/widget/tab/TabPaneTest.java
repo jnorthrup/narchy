@@ -6,8 +6,6 @@ import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class TabPaneTest {
     public static void main(String[] args) {
         SpaceGraph.window(new TabPane(Map.of(

@@ -215,7 +215,6 @@ abstract public class NAgentX extends NAgent {
         n.questPriDefault.set(0.5f * priFactor);
 
         n.activateConceptRate.set(0.25f);
-        n.activateLinkRate.set(0.25f);
 
 //        new RLBooster(a, HaiQAgent::new, 1);
 

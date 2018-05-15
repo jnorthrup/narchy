@@ -18,6 +18,7 @@ package nars.op.kif;
 
 import jcog.Util;
 import nars.*;
+import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
@@ -30,16 +31,17 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static nars.Op.*;
 import static nars.op.rdfowl.NQuadsRDF.equi;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * https://github.com/ontologyportal/sigmakee/blob/master/suo-kif.pdf
@@ -58,9 +60,26 @@ public class KIFInput {
     private final boolean includeDoc = false;
     private transient final Map<Term, FnDef> fn = new HashMap();
 
-    public KIFInput(String kifPath) throws Exception {
+
+    public static Memory.BytesToTasks intoNAL = new Memory.BytesToTasks("kif") {
+
+        @Override
+        public Stream<Task> apply(InputStream i) {
+            try {
+                AtomicLong counter = new AtomicLong();
+                return new KIFInput(i).beliefs.stream().map(b ->
+                        new NALTask(b, BELIEF, $.t(1f, 0.9f), TIMELESS, ETERNAL, ETERNAL,
+                                new long[] { counter.getAndIncrement() } ) );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    };
+
+    public KIFInput(InputStream is) throws Exception {
         this.kif = new KIF();
-        kif.readFile(kifPath);
+        kif.read(is);
 
         KB kb = KBmanager.getMgr().addKB("preprocess");
 
@@ -167,7 +186,7 @@ public class KIFInput {
                 ;
 
         String O = "/home/me/d/sumo_merge.nal";
-        KIFInput k = new KIFInput(I);
+        KIFInput k = new KIFInput(new FileInputStream(I));
 
         k.output(O);
 

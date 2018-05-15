@@ -4,8 +4,8 @@ import nars.*;
 import nars.derive.premise.PremisePatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.unify.Unify;
 import nars.time.Tense;
+import nars.unify.Unify;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

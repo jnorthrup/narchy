@@ -14,7 +14,10 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.Unify;
-import nars.unify.match.*;
+import nars.unify.match.Ellipsis;
+import nars.unify.match.EllipsisMatch;
+import nars.unify.match.EllipsisOneOrMore;
+import nars.unify.match.EllipsisZeroOrMore;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -25,8 +28,8 @@ import java.util.Set;
 
 import static nars.$.$;
 import static nars.Op.*;
-import static nars.unify.match.Ellipsis.firstEllipsis;
 import static nars.time.Tense.DTERNAL;
+import static nars.unify.match.Ellipsis.firstEllipsis;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

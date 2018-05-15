@@ -8,7 +8,7 @@ import nars.term.Termlike;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
+import static nars.Op.IMPL;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 

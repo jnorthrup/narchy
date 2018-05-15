@@ -5,8 +5,8 @@ import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.truth.Truth;
 import nars.time.Tense;
+import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

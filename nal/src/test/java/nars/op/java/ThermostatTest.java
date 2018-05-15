@@ -7,8 +7,8 @@ import nars.Task;
 import nars.control.DurService;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
-import nars.truth.Truth;
 import nars.time.Tense;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;

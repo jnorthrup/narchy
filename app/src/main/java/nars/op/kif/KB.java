@@ -2446,8 +2446,8 @@ public class KB implements Serializable {
             canonicalPath = constituent.getCanonicalPath();
             if (constituents.contains(canonicalPath))
                 errors.add("Error. " + canonicalPath + " already loaded.");
-            file.readFile(canonicalPath);
-            warnings.addAll(file.warningSet);
+            //file.read(canonicalPath);
+            //warnings.addAll(file.warningSet);
         }
         catch (Exception ex1) {
             StringBuilder error = new StringBuilder();

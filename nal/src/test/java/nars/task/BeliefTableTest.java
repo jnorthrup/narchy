@@ -6,8 +6,8 @@ import nars.concept.dynamic.DynamicTruthBeliefTable;
 import nars.table.BeliefTable;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
-import nars.truth.Truth;
 import nars.time.Tense;
+import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

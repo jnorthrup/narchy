@@ -9,8 +9,8 @@ import nars.derive.deriver.MatrixDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
-import nars.truth.Truth;
 import nars.time.Tense;
+import nars.truth.Truth;
 import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.Test;
 

@@ -45,6 +45,7 @@ public class KIF {
      */
     public static final int RELAXED_PARSE_MODE = 2;
 
+
     private int parseMode = NORMAL_PARSE_MODE;
 
     /** The set of all terms in the knowledge base. This is a set of Strings. */
@@ -70,8 +71,8 @@ public class KIF {
      */
     public HashMap<String, Formula> formulaMap = new HashMap<String, Formula>();
 
-    private String filename;
-    private File file;
+    private String filename = "";
+
     private int totalLinesForComments = 0;
 
     /** warnings generated during parsing */
@@ -250,8 +251,9 @@ public class KIF {
                             duplicateCount++;
                         }
                         if (mode == NORMAL_PARSE_MODE) { // Check arg validity ONLY in NORMAL_PARSE_MODE
-                            String validArgs = f.validArgs((file != null ? file.getName() : null),
-                                    (file != null ? Integer.valueOf(f.startLine) : null));
+                            String validArgs = "";
+//                                f.validArgs((file != null ? file.getName() : null),
+//                                    (file != null ? Integer.valueOf(f.startLine) : null));
                             if (StringUtil.emptyString(validArgs))
                                 validArgs = f.badQuantification();
                             if (StringUtil.isNonEmptyString(validArgs)) {
@@ -452,42 +454,19 @@ public class KIF {
      *
      * @param fname - the full pathname of the file.
      */
-    public void readFile(String fname) throws Exception {
+    public void read(InputStream stream) throws Exception {
 
-        FileReader fr = null;
         Exception exThr = null;
-        try {
-            this.file = new File(fname);
-            if (!this.file.exists()) {
-                String errString =  " error file " + fname + "does not exist";
-                KBmanager.getMgr()
-                        .setError(KBmanager.getMgr().getError() + "\n<br/>" + errString + "\n<br/>");
-                System.out.println("Error in KIF.readFile(): " + errString);
-                return;
-            }
-            this.filename = file.getCanonicalPath();
-            fr = new FileReader(file);
+        try(Reader fr = new InputStreamReader(stream)) {
             parse(fr);
-        }
-        catch (Exception ex) {
-            exThr = ex;
-            String er = ex.getMessage()
-                    + ((ex instanceof ParseException) ? " at line " + ((ParseException) ex).getErrorOffset() : "");
-            KBmanager.getMgr()
-                    .setError(KBmanager.getMgr().getError() + "\n<br/>" + er + " in file " + fname + "\n<br/>");
-        }
-        finally {
-            if (fr != null) {
-                try {
-                    fr.close();
-                }
-                catch (Exception ex2) {
-                }
-            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+//            exThr = ex;
+//            KBmanager.getMgr()
+//                .setError(KBmanager.getMgr().getError() + "\n<br/>" + ex.getMessage() + " in file " + fname + "\n<br/>");
         }
         if (exThr != null)
             throw exThr;
-        return;
     }
 
     /****************************************************************
@@ -520,7 +499,6 @@ public class KIF {
             catch (Exception ex2) {
             }
         }
-        return;
     }
 
     /*****************************************************************
@@ -617,4 +595,6 @@ public class KIF {
         System.out.println(f);
         System.out.println(f.car());
     }
+
+
 }

@@ -4,10 +4,10 @@ import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 import nars.util.term.InternedSubterms;
 import nars.util.term.SubtermsCache;
-import nars.util.term.HijackTermCache;
 
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;

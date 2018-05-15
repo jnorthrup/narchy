@@ -14,9 +14,9 @@ import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.obj.QuantityTerm;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.SoftException;
-import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -27,7 +27,8 @@ import java.util.function.Consumer;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.term.Term.nullIfNull;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * NARese, syntax and language for interacting with a NAR in NARS.

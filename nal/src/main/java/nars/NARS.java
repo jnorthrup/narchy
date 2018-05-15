@@ -21,9 +21,9 @@ import nars.index.concept.MapConceptIndex;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
-import nars.time.Time;
 import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 

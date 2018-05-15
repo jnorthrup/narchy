@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
+import static nars.time.Tense.*;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
-import static nars.time.Tense.*;
 
 /**
  * Created by me on 12/4/16.
