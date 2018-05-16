@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.button;
 
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 public class ColorToggle extends ToggleButton {
@@ -20,8 +21,8 @@ public class ColorToggle extends ToggleButton {
 
 
     @Override
-    protected void paintAbove(GL2 gl, int dtMS) {
-        super.paintAbove(gl, dtMS);
+    protected void paintAbove(GL2 gl, SurfaceRender r) {
+        super.paintAbove(gl, r);
 
         if (on.get()) {
             //selection indicator

@@ -11,6 +11,7 @@ import com.jogamp.opengl.util.PMVMatrix;
 import jogamp.graph.font.typecast.TypecastFontConstructor;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.util.math.v2;
 
@@ -176,7 +177,7 @@ public class JogAmpGraphAPITextDemo {
         }
 
         @Override
-        protected void paint(GL2 gl, int dtMS) {
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
             gl.glColor3f(0.25f, 0.25f, 0.25f); //background
             Draw.rect(gl, bounds);

@@ -2,6 +2,7 @@ package spacegraph.video;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 
 /**
  * from: http://www.howtobuildsoftware.com/index.php/how-do/bQ9/opengl-glsl-how-can-i-render-an-infinite-2d-grid-in-glsl
@@ -29,7 +30,7 @@ public class GridTex extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
         if (tex.texture == null) {
             tex.update(rr128, 128, 128);

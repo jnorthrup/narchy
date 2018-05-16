@@ -10,6 +10,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Stacking;
@@ -144,10 +145,10 @@ public class FloatSlider extends Widget {
         public abstract float max();
 
         @Override
-        protected void paint(GL2 gl, int dtMS) {
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
 
-            super.paint(gl, dtMS);
+            super.paint(gl, surfaceRender);
         }
 
         @Override

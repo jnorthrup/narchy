@@ -8,6 +8,7 @@ import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.AspectAlign;
 
 import java.awt.image.BufferedImage;
@@ -168,7 +169,7 @@ public class Tex {
     private class TexSurface extends Surface {
 
         @Override
-        protected void paint(GL2 gl, int dtMS) {
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             try {
                 Tex.this.paint(gl, bounds);
             } catch (NullPointerException e) {

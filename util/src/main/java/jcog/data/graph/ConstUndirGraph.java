@@ -28,9 +28,9 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
  * However, at construction time the incoming edges are stored
  * for each node, so if the graph
  * passed to the constructor changes over time then
- * methods {@link #neighbors(int)} and {@link #degree(int)}
+ * methods {@link #neighborsOut(int)} and {@link #degree(int)}
  * become inconsistent (but only those).
- * The upside of this inconvenience is that {@link #neighbors} will have
+ * The upside of this inconvenience is that {@link #neighborsOut} will have
  * constant time complexity.
  *
  * @see UndirectedGraph
@@ -74,7 +74,7 @@ public class ConstUndirGraph implements Graph {
         for (int i = 0; i < max; ++i) in[i] = new IntArrayList();
         for (int i = 0; i < max; ++i) {
             int ii = i;
-            g.neighbors(i).forEach(j -> {
+            g.neighborsOut(i).forEach(j -> {
                 if (!g.isEdge(j, ii)) in[j].add(ii);
             });
         }
@@ -98,10 +98,10 @@ public class ConstUndirGraph implements Graph {
      * the underlying directed graph does.
      */
     @Override
-    public IntHashSet neighbors(int i) {
+    public IntHashSet neighborsOut(int i) {
 
         IntHashSet result = new IntHashSet();
-        result.addAll(g.neighbors(i));
+        result.addAll(g.neighborsOut(i));
         if (in != null) result.addAll(in[i]);
         return result;
     }

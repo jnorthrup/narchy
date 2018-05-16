@@ -44,7 +44,7 @@ public class GraphIO {
 
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighbors(i).forEach(o -> {
+            g.neighborsOut(i).forEach(o -> {
                 out.println(ii + " " + o);
             });
         }
@@ -62,7 +62,7 @@ public class GraphIO {
 
         for (int i = 0; i < g.size(); ++i) {
             out.print(i + " ");
-            g.neighbors(i).forEach(o -> {
+            g.neighborsOut(i).forEach(o -> {
                 out.print(o + " ");
             });
             out.println();
@@ -81,7 +81,7 @@ public class GraphIO {
 
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighbors(i).forEach(j -> {
+            g.neighborsOut(i).forEach(j -> {
                 if (g.directed())
                     out.println(ii + " -> " + j + ';');
                 else if (ii <= j)
@@ -107,7 +107,7 @@ public class GraphIO {
 
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighbors(i).forEach(o -> {
+            g.neighborsOut(i).forEach(o -> {
                 out.println(
                         "edge [ source " + ii + " target " + o + " ]");
             });
@@ -131,7 +131,7 @@ public class GraphIO {
         out.println("*Arcs");
         for (int i = 0; i < g.size(); ++i) {
             int ii = i;
-            g.neighbors(i).forEach(o -> {
+            g.neighborsOut(i).forEach(o -> {
                 out.println((ii + 1) + " " +
                         (o + 1) + " 1");
             });
@@ -151,7 +151,7 @@ public class GraphIO {
 
         for (int i = 0; i < g.size(); ++i) {
             out.print(" " + (i + 1));
-            g.neighbors(i).forEach(o -> {
+            g.neighborsOut(i).forEach(o -> {
                 out.print(" " + (o + 1));
             });
             out.println();
@@ -171,7 +171,7 @@ public class GraphIO {
 
         for (int i = 0; i < g.size(); ++i) {
             BitSet bs = new BitSet(g.size());
-            g.neighbors(i).forEach(bs::set);
+            g.neighborsOut(i).forEach(bs::set);
             for (int j = 0; j < g.size(); ++j) {
                 out.print(bs.get(j) ? " 1" : " 0");
             }
@@ -194,12 +194,12 @@ public class GraphIO {
                 "warning: you're saving a directed graph in Chaco format");
 
         long edges = 0;
-        for (int i = 0; i < g.size(); ++i) edges += g.neighbors(i).size();
+        for (int i = 0; i < g.size(); ++i) edges += g.neighborsOut(i).size();
 
         out.println(g.size() + " " + edges / 2);
 
         for (int i = 0; i < g.size(); ++i) {
-            g.neighbors(i).forEach(o -> {
+            g.neighborsOut(i).forEach(o -> {
                 out.print((o + 1) + " ");
             });
             out.println();

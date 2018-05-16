@@ -4,6 +4,7 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.v2;
 
 public final class EmptySurface extends Surface {
@@ -33,7 +34,7 @@ public final class EmptySurface extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
     }
 

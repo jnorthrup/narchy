@@ -3,6 +3,7 @@ package spacegraph.space2d.container;
 import com.jogamp.opengl.GL2;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 /** https://gist.github.com/daltonks/4c2d1c5e6fd5017ea9f0 */
@@ -14,7 +15,7 @@ public class StencilTest extends Surface {
 
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
         gl.glColor4f(1,1,1, 0.75f);
         Draw.rect(gl, bounds);

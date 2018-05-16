@@ -29,6 +29,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -51,12 +52,19 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public boolean addIfNew(V s) {
-        if (this.nodes.getIfAbsent(s, -1)==-1) {
-            addNode(s);
+        if (this.node(s)==-1) {
+            _addNode(s);
             return true;
         }
-
         return false;
+    }
+
+    public Set<Node<V>> nodeSet() {
+        return nodes.keySet();
+    }
+
+    public int node(V node) {
+        return nodes.getIfAbsent(node, -1);
     }
 
     /**
@@ -149,16 +157,20 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     public int addNode(V o) {
 
 
-        int index = nodes.getIfAbsent(o, -1);
+        int index = node(o);
         if (index == -1) {
-            int id = serial++;
-            Node n = new Node(o, id);
-            nodes.put(n, id);
-            antinodes.put(id, n);
-            return id;
+            return _addNode(o);
         }
 
         return index;
+    }
+
+    protected int _addNode(V o) {
+        int id = serial++;
+        Node n = new Node(o, id);
+        nodes.put(n, id);
+        antinodes.put(id, n);
+        return id;
     }
 
 
@@ -172,9 +184,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public boolean setEdge(V i, V j, E value) {
-        int ii = nodes.getIfAbsent(i, -1);
+        int ii = node(i);
         if (ii != -1) {
-            int jj = nodes.getIfAbsent(j, -1);
+            int jj = node(j);
             if (jj != -1) {
                 return setEdge(ii, jj, value);
             }
@@ -201,9 +213,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     @Nullable
     public E edge(V i, V j) {
-        int ii = nodes.getIfAbsent(i, -1);
+        int ii = node(i);
         if (ii != -1) {
-            int jj = nodes.getIfAbsent(j, -1);
+            int jj = node(j);
             if (jj != -1) {
                 return edge(ii, jj);
             }
@@ -259,7 +271,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 // ---------------------------------------------------------------
 
     @Override
-    public IntHashSet neighbors(int i) {
+    public IntHashSet neighborsOut(int i) {
         return antinodes.get(i).e;
     }
 
@@ -270,7 +282,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 //        return antinodes.get(i).e.collect((int k)->antinodes.get(k).v);
 //    }
     public void neighborEdges(V v, BiConsumer<V,E> each) {
-        int i = nodes.getIfAbsent(v,-1);
+        int i = node(v);
         if (i < 0)
             return;
         antinodes.get(i).e.forEach(ee -> {
@@ -280,7 +292,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         });
     }
    public void neighborEdges(V v, BiFunction<V,E,E> each) {
-        int i = nodes.getIfAbsent(v,-1);
+        int i = node(v);
         if (i < 0)
             return;
         antinodes.get(i).e.forEach(ee -> {
@@ -339,6 +351,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         return existing != null ? existing : ifMissing;
     }
 
+    public E edge(int s, int p, E ifMissing) {
+        return edge(s, p, ()->ifMissing);
+    }
 
     public E edge(int s, int p, Supplier<E> ifMissing) {
         @Nullable E existing = edge(s, p);
@@ -352,9 +367,9 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
     public boolean removeEdge(V i, V j) {
-        int ii = nodes.getIfAbsent(i, -1);
+        int ii = node(i);
         if (ii != -1) {
-            int jj = nodes.getIfAbsent(j, -1);
+            int jj = node(j);
             if (jj != -1) {
                 return removeEdge(ii, jj);
             }

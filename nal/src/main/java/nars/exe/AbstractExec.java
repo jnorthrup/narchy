@@ -136,7 +136,7 @@ abstract public class AbstractExec extends Exec {
         }
     }
 
-    protected void update() {
+    protected void update(NAR nar) {
         active.commit(active.forget(nar.forgetRate.floatValue()));
     }
 

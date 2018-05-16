@@ -74,12 +74,12 @@ public class PrefixSubGraph implements Graph {
 // ---------------------------------------------------------------
 
     @Override
-    public IntHashSet neighbors(int i) {
+    public IntHashSet neighborsOut(int i) {
 
         if (i < 0 || i >= prefSize) throw new IndexOutOfBoundsException();
 
         IntHashSet result = new IntHashSet();
-        g.neighbors(i).forEach(j -> {
+        g.neighborsOut(i).forEach(j -> {
             if (j < prefSize) result.add(j);
         });
 

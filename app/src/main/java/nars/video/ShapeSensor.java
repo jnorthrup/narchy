@@ -28,6 +28,7 @@ import nars.term.atom.Int;
 import nars.truth.Truth;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.Draw;
 import spacegraph.video.Tex;
@@ -92,7 +93,7 @@ public class ShapeSensor extends NARService {
     class ShapeSensorSurface extends Surface {
 
         @Override
-        protected void paint(GL2 gl, int dtMS) {
+        protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
             if (grid!=null) {
                 final int[] i = {0};

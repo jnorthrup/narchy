@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.util.math.Color4f;
@@ -73,6 +74,15 @@ public class Label extends AspectAlign {
     @Override
     protected void paintIt(GL2 gl) {
         Draw.bounds(gl, innerBounds, this::paintUnit);
+    }
+
+    @Override
+    protected boolean prePaint(SurfaceRender r) {
+//        System.out.println(r.visP());
+//        if (r.visP() < 25)
+//            return false;
+
+        return super.prePaint(r);
     }
 
     void paintUnit(GL2 gl) {

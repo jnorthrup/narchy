@@ -12,6 +12,7 @@ import jcog.list.FastCoWList;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.hud.Ortho;
 import spacegraph.space3d.Spatial;
 import spacegraph.util.animate.AnimVector3f;
@@ -264,12 +265,22 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
             gl.glDisable(GL2.GL_DEPTH_TEST);
 
-            for (int i = 0; i < facialsSize; i++)
-                layers.get(i).render(gl, dtMS);
+            SurfaceRender r = new SurfaceRender(window.getWidth(), window.getHeight(), dtMS);
+            for (int i = 0; i < facialsSize; i++) {
+                Surface l = layers.get(i);
+                if (l.visible()) {
+                    if (l instanceof Ortho)
+                        r.reset(((Ortho) l));
+
+
+                    l.render(gl, r);
+                }
+            }
 
             gl.glEnable(GL2.GL_DEPTH_TEST);
         }
     }
+
 
     protected void clear() {
         clearMotionBlur(0.5f);

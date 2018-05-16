@@ -2,6 +2,7 @@ package spacegraph.space2d.container;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 /** renders contents only within the bounds of the container */
@@ -19,7 +20,7 @@ public class Clipped extends UnitContainer {
     }
 
     @Override
-    protected void paintAbove(GL2 gl, int dtMS) {
+    protected void paintAbove(GL2 gl, SurfaceRender r) {
 
         Draw.stencilEnd(gl);
     }

@@ -6,6 +6,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerDragging;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
@@ -104,7 +105,7 @@ public class XYSlider extends Surface {
 
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         gl.glColor4f(0f, 0f, 0f, 0.8f); //background
         Draw.rect(gl, bounds);
 

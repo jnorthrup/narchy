@@ -181,7 +181,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             //float tw = t.x;
             //float th = t.y;
             //gl.glDepthMask(false);
-            front.render(gl, dtMS);
+            front.render(gl, 1, 1, dtMS);
             //gl.glDepthMask(true);
 
             //gl.glPopMatrix();

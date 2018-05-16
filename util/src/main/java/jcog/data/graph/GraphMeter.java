@@ -65,13 +65,22 @@ public class GraphMeter {
 // =================== private methods ================================
 // ====================================================================
 
+    public static <X> double clustering(AdjGraph<X,?> g, X node) {
+        int n = g.node(node);
+        return clustering(new UndirectedGraph(g), n);
+    }
     /**
      * Calculates the clustering coefficient for the given node in the given
-     * graph. The clustering coefficient is the number of edges between
-     * the neighbours of i divided by the number of possible edges.
+     * graph.
+     *
+     * The clustering coefficient is the number of edges between
+     * the neighbours of i divided by the number of possible edges
+     *      * HACK plus the number of neighbors.
+     *
      * If the graph is directed, an exception is thrown.
-     * If the number of neighbours is 1, returns 1. For zero neighbours
-     * returns NAN.
+     * If the number of neighbours is 1, returns 1.
+     * For zero neighbours returns 0.
+     *
      *
      * @throws IllegalArgumentException if g is directed
      */
@@ -80,17 +89,19 @@ public class GraphMeter {
         if (g.directed()) throw new IllegalArgumentException(
                 "graph is directed");
 
-        int[] n = g.neighbors(i).toArray();
+        int[] n = g.neighborsOut(i).toArray();
 
-        if (n.length == 1) return 1.0;
+        if (n.length == 0) return 0;
+        if (n.length == 1) return 1;
 
         int edges = 0;
 
         for (int j = 0; j < n.length; ++j)
             for (int k = j + 1; k < n.length; ++k)
-                if (g.isEdge(n[j], n[k])) ++edges;
+                if (g.isEdge(n[j], n[k]))
+                    ++edges;
 
-        return ((edges * 2.0) / n.length) / (n.length - 1);
+        return n.length + (((float)edges) * 2.0) / (n.length * (n.length - 1));
     }
 
 // --------------------------------------------------------------------
@@ -115,7 +126,7 @@ public class GraphMeter {
         int k = 0;
         for (int black = 1; k < b.length || black < g.size(); ++k) {
             for (int i = 0; i < c2.length; ++i) {
-                MutableIntCollection neighbours = g.neighbors(i);
+                MutableIntCollection neighbours = g.neighborsOut(i);
                 IntIterator it = neighbours.intIterator();
                 for (int j = r.nextInt(neighbours.size()); j > 0; --j)
                     it.next();
@@ -158,7 +169,7 @@ public class GraphMeter {
 
         color[from] = GREY;
 
-        g.neighbors(from).forEach(j->{
+        g.neighborsOut(from).forEach(j->{
             if (color[j] == WHITE) {
                 dfs(j);
             } else {
@@ -196,7 +207,7 @@ public class GraphMeter {
             int u = q.removeAtIndex(0);
             int du = q.removeAtIndex(0);
 
-            g.neighbors(u).forEach(j->{
+            g.neighborsOut(u).forEach(j->{
                 int cj = color[j];
                 if (cj == WHITE) {
                     color[j] = GREY;
@@ -224,7 +235,7 @@ public class GraphMeter {
         root[i] = i;
         stack.add(i);
 
-        g.neighbors(i).forEach(j->{
+        g.neighborsOut(i).forEach(j->{
             if (color[j] == WHITE) {
                 tarjanVisit(j);
             }

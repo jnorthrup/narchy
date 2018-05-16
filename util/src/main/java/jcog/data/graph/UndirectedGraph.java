@@ -25,7 +25,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
  * by making its edges bidirectional. The graph to be made undirected
  * is passed to the constructor. Only the reference is stored so
  * if the directed graph changes later, the undirected version will
- * follow that change. However, {@link #neighbors} has O(n) time complexity
+ * follow that change. However, {@link #neighborsOut} has O(n) time complexity
  * (in other words, too slow for large graphs).
  *
  * @see ConstUndirGraph
@@ -67,12 +67,13 @@ public class UndirectedGraph implements Graph {
      * the underlying directed graph does.
      */
     @Override
-    public IntHashSet neighbors(int i) {
+    public IntHashSet neighborsOut(int i) {
 
-        IntHashSet result = new IntHashSet(g.neighbors(i));
+        IntHashSet result = new IntHashSet(g.neighborsOut(i));
         final int max = g.size();
         for (int j = 0; j < max; ++j) {
-            if (g.isEdge(j, i)) result.add(j);
+            if (i!=j && g.isEdge(j, i))
+                result.add(j);
         }
 
         return result;
@@ -140,7 +141,7 @@ public class UndirectedGraph implements Graph {
     @Override
     public int degree(int i) {
 
-        return neighbors(i).size();
+        return neighborsOut(i).size();
     }
 
 // --------------------------------------------------------------------

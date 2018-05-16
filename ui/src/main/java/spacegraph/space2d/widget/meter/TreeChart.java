@@ -9,6 +9,7 @@ import jcog.tree.rtree.Spatialization;
 import jcog.util.Flip;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 import java.util.Collection;
@@ -49,7 +50,7 @@ public class TreeChart<X> extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         Draw.bounds(gl, bounds, this::paint);
     }
 

@@ -83,7 +83,7 @@ public class BitMatrixGraph implements Graph {
 // ---------------------------------------------------------------
 
     @Override
-    public IntHashSet neighbors(int i) {
+    public IntHashSet neighborsOut(int i) {
 
         IntHashSet result = new IntHashSet();
         BitSet neighb = sets.get(i);

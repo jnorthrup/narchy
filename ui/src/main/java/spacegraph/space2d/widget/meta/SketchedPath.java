@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.Path2D;
 
 public class SketchedPath extends Surface {
@@ -14,7 +15,7 @@ public class SketchedPath extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         if (path.points() > 1) {
             gl.glLineWidth(8);
             gl.glColor4f(0.5f, 0.5f, 1f, 0.8f);

@@ -44,7 +44,7 @@ public interface Graph<V,E> {
      * In any case, modifying the returned collection is not safe and
      * may result in unspecified behavior.
      */
-    IntHashSet neighbors(int i);
+    IntHashSet neighborsOut(int i);
 
     /**
      * Returns the node object associated with the index. Optional

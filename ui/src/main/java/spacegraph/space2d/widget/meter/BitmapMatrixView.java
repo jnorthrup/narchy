@@ -7,6 +7,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.Point2i;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
@@ -60,7 +61,7 @@ public class BitmapMatrixView extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         bmp.paint(gl, bounds);
         if (touchPixel !=null) {
             float w = w()/this.w;

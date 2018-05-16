@@ -6,6 +6,7 @@ import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.v2;
 
 import java.io.PrintStream;
@@ -47,7 +48,7 @@ abstract public class Container extends Surface {
         return this;
     }
 
-    protected void paintAbove(GL2 gl, int dtMS) {
+    protected void paintAbove(GL2 gl, SurfaceRender r) {
 
     }
 
@@ -64,9 +65,11 @@ abstract public class Container extends Surface {
 
 
     @Override
-    protected final void paint(GL2 gl, int dtMS) {
+    protected final void paint(GL2 gl, SurfaceRender r) {
 
-        prePaint(dtMS);
+        int dtMS = r.dtMS;
+        if (!prePaint(r))
+            return;
 
         //TODO maybe in a separate update thread
         if (mustLayout) {
@@ -79,12 +82,26 @@ abstract public class Container extends Surface {
 
         paintIt(gl);
 
-        forEach(c -> c.render(gl, dtMS)); //render children, if any
+        r.prePush(this);
 
-        paintAbove(gl, dtMS);
+        forEach(c -> {
+            if (c.visible() && r.push(c)) {
+                c.render(gl, r);
+                r.pop();
+            }
+        }); //render children, if any
+
+        r.prePop();
+
+        paintAbove(gl, r);
     }
 
-    public void prePaint(int dtMS) {
+    protected boolean prePaint(SurfaceRender r) {
+        prePaint(r.dtMS);
+        return true;
+    }
+
+    @Deprecated public void prePaint(int dtMS) {
 
     }
 

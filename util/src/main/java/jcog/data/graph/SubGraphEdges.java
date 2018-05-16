@@ -72,11 +72,11 @@ public class SubGraphEdges implements Graph {
 // ---------------------------------------------------------------
 
     @Override
-    public IntHashSet neighbors(int i) {
+    public IntHashSet neighborsOut(int i) {
 
         IntHashSet result = new IntHashSet();
         if (nodes.get(i)) {
-            g.neighbors(i).forEach(j -> {
+            g.neighborsOut(i).forEach(j -> {
                 if (nodes.get(j)) result.add(j);
             });
         }
@@ -147,7 +147,7 @@ public class SubGraphEdges implements Graph {
 
         final int[] degree = {0};
         if (nodes.get(i)) {
-            g.neighbors(i).forEach(j -> {
+            g.neighborsOut(i).forEach(j -> {
                 if (nodes.get(j)) degree[0]++;
             });
         }

@@ -21,10 +21,10 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
     @Override
     public final void emit(V x) {
         final Consumer[] cc = this.copy;
-        if (cc!=null) {
+        //if (cc!=null) {
             for (Consumer c : cc)
                 c.accept(x);
-        }
+        //}
     }
 
     @Override

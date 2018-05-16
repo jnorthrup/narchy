@@ -13,6 +13,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -212,7 +213,7 @@ public class ProtoWidget extends Widget {
             display = new Surface() {
 
                 @Override
-                protected void paint(GL2 gl, int dtMS) {
+                protected void paint(GL2 gl, SurfaceRender surfaceRender) {
                     Draw.bounds(gl, bounds, this::paint);
                 }
 

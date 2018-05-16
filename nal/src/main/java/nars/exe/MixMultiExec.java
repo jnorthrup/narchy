@@ -96,9 +96,9 @@ public class MixMultiExec extends AbstractExec {
     }
 
     @Override
-    protected void update() {
+    protected void update(NAR nar) {
         cpu.cycleTimeNS.set( Math.round(((RealTime)nar.time).durSeconds() * 1.0E9) );
-        super.update();
+        super.update(nar);
         revaluator.update(nar);
         sharing.commit();
     }

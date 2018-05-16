@@ -10,7 +10,6 @@ import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.video.Draw;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 
@@ -376,54 +375,54 @@ public class Plot2D extends Widget {
         }
     }
 
-    public static class BitmapWave implements PlotVis {
-
-        public GL2 gl;
-        BitmapMatrixView view;
-        Series series;
-        int width;
-        int yRes = 32;
-        float[] yHeights;
-        AtomicBoolean ready = new AtomicBoolean(false);
-
-        @Override
-        public void update() {
-
-            if (series == null)
-                return;
-
-            if (view == null) {
-
-                width = series.size();
-                yHeights = new float[width];
-                view = new BitmapMatrixView(width, yRes, (int x, int y)->{
-                    return (y * yRes) < yHeights[x] ? Draw.rgbInt(255, 255, 255) : 0;
-                });
-            }
-
-            float[] array = series.array();
-            float min = series.minValue;
-            float max = series.maxValue;
-            float range = max-min;
-            final int width = this.width;
-            final float[] yHeights = this.yHeights;
-            for (int i = 0; i < width; i++) {
-                yHeights[i] = (array[i] - min)/range * yRes;
-            }
-            view.update();
-
-            ready.set(true);
-        }
-
-        @Override
-        public void draw(List<Series> series, GL2 g, float minValue, float maxValue) {
-            if (ready.get()) {
-                view.render(g, 0);
-            } else {
-                BitmapWave.this.series = series.get(0);
-                this.gl = g;
-            }
-        }
-    }
+//    public static class BitmapWave implements PlotVis {
+//
+//        public GL2 gl;
+//        BitmapMatrixView view;
+//        Series series;
+//        int width;
+//        int yRes = 32;
+//        float[] yHeights;
+//        AtomicBoolean ready = new AtomicBoolean(false);
+//
+//        @Override
+//        public void update() {
+//
+//            if (series == null)
+//                return;
+//
+//            if (view == null) {
+//
+//                width = series.size();
+//                yHeights = new float[width];
+//                view = new BitmapMatrixView(width, yRes, (int x, int y)->{
+//                    return (y * yRes) < yHeights[x] ? Draw.rgbInt(255, 255, 255) : 0;
+//                });
+//            }
+//
+//            float[] array = series.array();
+//            float min = series.minValue;
+//            float max = series.maxValue;
+//            float range = max-min;
+//            final int width = this.width;
+//            final float[] yHeights = this.yHeights;
+//            for (int i = 0; i < width; i++) {
+//                yHeights[i] = (array[i] - min)/range * yRes;
+//            }
+//            view.update();
+//
+//            ready.set(true);
+//        }
+//
+//        @Override
+//        public void draw(List<Series> series, GL2 g, float minValue, float maxValue) {
+//            if (ready.get()) {
+//                view.render(g, window.getWidth(), window.getHeight(), 0);
+//            } else {
+//                BitmapWave.this.series = series.get(0);
+//                this.gl = g;
+//            }
+//        }
+//    }
 }
 

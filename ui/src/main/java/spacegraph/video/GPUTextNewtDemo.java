@@ -46,6 +46,7 @@ import com.jogamp.opengl.util.PMVMatrix;
 import jogamp.graph.font.typecast.TypecastFontConstructor;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.hud.Ortho;
 
 import java.io.File;
@@ -140,7 +141,7 @@ public class GPUTextNewtDemo {
 
         JoglSpace s = SpaceGraph.window(new Surface() {
             @Override
-            protected void paint(GL2 gl, int dtMS) {
+            protected void paint(GL2 gl, SurfaceRender surfaceRender) {
 
                 float sx =
                         //1;

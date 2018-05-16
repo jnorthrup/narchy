@@ -88,7 +88,7 @@ abstract public class Surface implements SurfaceBase {
         return bounds.y + 0.5f * bounds.h;
     }
 
-    abstract protected void paint(GL2 gl, int dtMS);
+    abstract protected void paint(GL2 gl, SurfaceRender surfaceRender);
 
     public Surface pos(RectFloat2D r) {
         posChanged(r);
@@ -180,17 +180,14 @@ abstract public class Surface implements SurfaceBase {
         out.println(this);
     }
 
-    public final void render(GL2 gl, int dtMS) {
+    @Deprecated public final void render(GL2 gl, int pw, int ph, int dtMS) {
+        if (!visible) return;
+        paint(gl, new SurfaceRender(pw, ph, dtMS));
+    }
 
-        if (!visible)
-            return;
+    @Deprecated public final void render(GL2 gl, SurfaceRender r) {
 
-//        //DEBUG
-//        if ((parent == null) && !(this instanceof Ortho)) {
-//            throw new RuntimeException(this + " being rendered with null parent");
-//        }
-
-        paint(gl, dtMS);
+        paint(gl, r);
 
     }
 

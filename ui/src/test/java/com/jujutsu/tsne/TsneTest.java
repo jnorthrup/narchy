@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.video.Draw;
 
 public class TsneTest {
@@ -54,7 +55,7 @@ public class TsneTest {
             Surface plot = new Surface() {
 
                 @Override
-                protected void paint(GL2 gl, int dtMS) {
+                protected void paint(GL2 gl, SurfaceRender surfaceRender) {
                     Draw.bounds(gl, bounds, this::paint);
                 }
 

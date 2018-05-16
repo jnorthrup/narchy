@@ -5,6 +5,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.EmptySurface;
@@ -124,7 +125,7 @@ public class Widget extends Bordering {
         }
 
         @Override
-        protected void paintAbove(GL2 gl, int dtMS) {
+        protected void paintAbove(GL2 gl, SurfaceRender r) {
             if (touchedBy != null) {
                 Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
                 //gl.glColor3f(1f, 1f, 0f);

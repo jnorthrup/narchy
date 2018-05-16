@@ -21,6 +21,7 @@ import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.video.Draw;
@@ -187,8 +188,8 @@ public class TrackXY extends NAgent {
             NAgentX.chart(t);
             window(new CameraSensorView(t.cam, n) {
                 @Override
-                protected void paint(GL2 gl, int dtMS) {
-                    super.paint(gl, dtMS);
+                protected void paint(GL2 gl, SurfaceRender surfaceRender) {
+                    super.paint(gl, surfaceRender);
                     RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
                     gl.glColor4f(1, 0, 0, 0.9f);
                     Draw.rect(gl, at.move(x(), y(), 0.01f));

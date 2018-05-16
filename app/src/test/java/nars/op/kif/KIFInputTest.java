@@ -1,9 +1,8 @@
 package nars.op.kif;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import jcog.data.graph.AdjGraph;
+import jcog.data.graph.GraphMeter;
+import nars.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Test;
@@ -13,9 +12,9 @@ class KIFInputTest {
     @Test
     public void testSUMOViaMemory() throws Narsese.NarseseException {
         String sumo =
-                //"People";
+                "People";
                 //"Merge";
-                "Law";
+                //"Law";
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.shell();
@@ -36,12 +35,16 @@ class KIFInputTest {
     @Test
     public void testSUMOViaMemory2() {
         String sumo =
+                "Transportation";
                 //"People";
                 //"Merge";
-                "Law";
+                //"Law";
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
-        NAR n = NARS.shell();
+        NAR n = NARS.
+                tmp();
+                //shell();
+
         n.memory.on(KIFInput.load);
 
 
@@ -51,12 +54,34 @@ class KIFInputTest {
                 //Atomic.the("file:///tmp/x.nal");
                 n.self();
 
-        n.log();
 
         Runnable r = n.memory.copy(I, O);
         r.run();
 
-        n.run(1);
+        n.log();
+
+        n.run(10000);
+
+        AdjGraph<Term, Task> structure = new AdjGraph<>(true);
+        n.tasks().forEach(t -> {
+            switch (t.op()) {
+                case INH: {
+                    int s = structure.addNode(t.sub(0));
+                    int p = structure.addNode(t.sub(1));
+                    structure.edge(s, p, t);
+                    break;
+                }
+                //TODO: sim, impl, etc
+            }
+        });
+
+        //System.out.println(structure);
+        structure.nodeSet().forEach((t) -> {
+            System.out.println(t + " " +
+                    GraphMeter.clustering((AdjGraph)structure, t)
+            );
+        });
+
 
         //n.input("copy(\" + inURL + "\", \"file:///tmp/" + sumo + ".nal\")");
     }

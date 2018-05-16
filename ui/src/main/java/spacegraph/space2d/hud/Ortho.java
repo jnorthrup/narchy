@@ -10,6 +10,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.SurfaceRoot;
 import spacegraph.space2d.container.Container;
 import spacegraph.space2d.container.EmptySurface;
@@ -50,10 +51,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     public Surface surface;
     public JoglSpace window;
-    protected final v3 cam;
+    public final v3 cam;
 
     /** current view area, in absolute world coords */
-    public final v2 scale = new v2();
+    public final v2 scale = new v2(1,1);
 
 
 
@@ -86,7 +87,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             float CAM_RATE = 2f;
             float camZmin = 20;
-            float camZmax = 8000;
+            float camZmax = 64000;
 
             {
                 setDirect(0,0, (camZmin + camZmax)/2);
@@ -589,15 +590,21 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     @Override
-    protected void paintAbove(GL2 gl, int dtMS) {
+    protected void paintAbove(GL2 gl, SurfaceRender r) {
 
         gl.glPopMatrix();
 
         if (!overlays.isEmpty()) {
-
-            overlays.forEach(s -> s.render(gl, dtMS));
-
+            overlays.forEach(s -> {
+                if (s.visible())
+                    s.render(gl, r);
+            });
         }
+    }
+
+    @Override
+    public boolean visible() {
+        return visible;
     }
 
     @Override

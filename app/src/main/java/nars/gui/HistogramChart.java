@@ -3,6 +3,7 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.Color3f;
 import spacegraph.video.Draw;
 
@@ -54,7 +55,7 @@ public class HistogramChart extends Surface {
 //    }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         Draw.bounds(gl, this, this::paintUnit);
     }
 
