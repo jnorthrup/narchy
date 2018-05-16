@@ -83,8 +83,7 @@ public class MutableContainer extends AbstractMutableContainer {
                     if (existing!=null)
                         existing.stop();
 
-                    if (p!=null)
-                        next.start(this);
+                    next.start(this);
 
                     layout();
                 }
@@ -187,7 +186,7 @@ public class MutableContainer extends AbstractMutableContainer {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        children.forEach(o);
+        children.forEach((z) -> { if (z!=null) o.accept(z); } );
     }
 
     @Override

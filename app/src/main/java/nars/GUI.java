@@ -14,6 +14,7 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.OmniBox;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.windo.Dyn2DSurface;
+import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,13 +30,10 @@ public class GUI {
 
     public static void main(String[] args) {
 
-        Dyn2DSurface w = SpaceGraph.wall(800, 600);
-
         NAR nar = NARchy.ui();
 
         Loop loop = nar.startFPS(10f); //10hz alpha
         //((NARLoop) loop).throttle.set(0.1f);
-
 
         //1. try to open a Spacegraph openGL window
         logger.info("start SpaceGraph UI");
@@ -47,15 +45,9 @@ public class GUI {
         //            }, 800, 600);
 
 
-        //Loop.invokeLater(()->{
-        //((ZoomOrtho) w.root()).scaleMin = 100f;
+        SpaceGraph.window(new Widget(Vis.top(nar)), 1024, 800);
 
-
-        w.frame(new ServicesTable(nar.services), 5, 4);
-        w.frame(new OmniBox(new LuceneQueryModel()), 6, 1);
-        w.frame(Vis.top(nar), 4, 4);
-
-
+        //wall(nar);
 
         //nar.inputNarsese(new FileInputStream("/home/me/d/sumo_merge.nal"));
 
@@ -64,6 +56,13 @@ public class GUI {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    static void wall(NAR nar) {
+        Dyn2DSurface w = SpaceGraph.wall(800, 600);
+        w.frame(new ServicesTable(nar.services), 5, 4);
+        w.frame(new OmniBox(new LuceneQueryModel()), 6, 1);
+        w.frame(Vis.top(nar), 4, 4);
     }
 
     /** TODO further abstract this as the prototype for other async models */
@@ -167,7 +166,7 @@ public class GUI {
         }
 
         @Override
-        public void onTextChange(String next, MutableContainer target) {
+        public void onTextChange(String next, int cursorPos, MutableContainer target) {
             Querying prev = null;
             if (next.isEmpty()) {
                 prev = query.getAndSet(null);

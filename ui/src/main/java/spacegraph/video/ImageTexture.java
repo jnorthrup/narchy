@@ -11,12 +11,15 @@ import jcog.memoize.SoftMemoize;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ImageTexture extends Tex {
 
@@ -44,9 +47,10 @@ public class ImageTexture extends Tex {
         }
     }
 
-    static final Memoize<String, Texture> textureCache = new SoftMemoize<>((u) -> {
+    /** pair(gl context, texture name) */
+    static final Memoize<LongObjectPair<String>, Texture> textureCache = new SoftMemoize<>((cu) -> {
         try {
-
+            String u = cu.getTwo();
             if (u.startsWith(fa_prefix)) {
                 String icon = u.substring(fa_prefix.length());
                 byte[] b = fontAwesomeIcons.get("x128/" + icon + "-fs8.png");
@@ -63,7 +67,7 @@ public class ImageTexture extends Tex {
         } catch (IOException e) {
             return null;
         }
-    }, 512, false);
+    }, 4096, true /* weak */);
 
 
 
@@ -91,7 +95,8 @@ public class ImageTexture extends Tex {
         if (texture == null) {
 
             //TODO async load
-            texture = textureCache.apply(u);
+
+            texture = textureCache.apply(pair(gl.getContext().getHandle(), u));
             if (texture == null) {
                 //TODO missing texture
                 throw new NullPointerException();

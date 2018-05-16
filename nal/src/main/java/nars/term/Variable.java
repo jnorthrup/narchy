@@ -77,8 +77,11 @@ public interface Variable extends Atomic {
 
         if (x instanceof Variable) {
             return x.equals(y) || ((Variable) x).unifyVar(y, u, true);
-        } else
+        } else if (y instanceof Variable) {
+            return ((Variable) y).unifyVar(x, u, false);
+        } else {
             return x.unify(y, u);
+        }
     }
 
     /** the direction parameter is to maintain correct provenance of variables when creating common vars.

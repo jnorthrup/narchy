@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.console;
 
 import com.google.common.base.Joiner;
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.TextBox;
@@ -73,12 +74,34 @@ public class TextEdit extends DefaultVirtualTerminal {
                     return Result.HANDLED;
 
                 String before = getText();
+
+                TerminalPosition beforePos;
+                switch (keyStroke.getKeyType()) {
+                    case ArrowLeft:
+                    case ArrowRight:
+                    case ArrowUp:
+                    case ArrowDown:
+                        beforePos = getCaretPosition();
+                        break;
+                    default:
+                        beforePos = null;
+                        break;
+                }
+
                 Result r = super.handleKeyStroke(keyStroke);
+
                 if (r == Result.HANDLED) {
                     //HACK
                     String after = getText();
                     if (!before.equals(after))
                         textChange(after);
+                    else {
+                        if (beforePos != null) {
+                            TerminalPosition afterPos = getCaretPosition();
+                            if (!beforePos.equals(afterPos))
+                                cursorChange(after, afterPos);
+                        }
+                    }
                 }
 
                 return r;
@@ -100,6 +123,11 @@ public class TextEdit extends DefaultVirtualTerminal {
 
         if (c != -1)
             textBox.setSize(new TerminalSize(c, r));
+
+    }
+
+    /** signals text didnt change but cursor position did */
+    protected void cursorChange(String text, TerminalPosition afterPos) {
 
     }
 

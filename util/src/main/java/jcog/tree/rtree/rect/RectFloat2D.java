@@ -86,7 +86,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     public RectFloat2D size(float ww, float hh, float epsilon) {
         float w = this.w;
         float h = this.h;
-        return Util.equals(w, ww, epsilon) && Util.equals(h, hh, epsilon) ? this : XYWH(x, y, ww, hh);
+        return Util.equals(w, ww, epsilon) && Util.equals(h, hh, epsilon) ? this : XYWH(cx(), cy(), ww, hh);
     }
 
     @Override

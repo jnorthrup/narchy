@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.button;
 
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.video.ImageTexture;
@@ -51,7 +50,7 @@ public class PushButton extends AbstractButton {
     }
 
     public static PushButton awesome(String icon) {
-        return new PushButton(new AspectAlign(ImageTexture.awesome(icon).view()));
+        return new PushButton(ImageTexture.awesome(icon).view(1));
     }
 
     public PushButton click(@Nullable Runnable onClick) {

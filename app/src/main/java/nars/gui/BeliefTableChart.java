@@ -40,6 +40,10 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     private final boolean showEternal = false;
     private TaskConcept cc; //cached concept
 //    private float cp; //cached priority
+
+    /** not finished yet */
+    float timeZoom = 1f;
+
     private float beliefTheta, goalTheta;
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
@@ -162,27 +166,39 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     @Override
     public void update() {
 
-        long now = this.now = nar.time();
-        int dur = /*this.dur = */nar.dur();
 
-        Concept ccd = nar.concept(term/* lookup by term, not the termed which could be a dead instance */);
-        if (!(ccd instanceof TaskConcept))
+        Concept ccd = nar.conceptualize(term/* lookup by term, not the termed which could be a dead instance */);
+
+        if (!(ccd instanceof TaskConcept)) {
+            //TODO indicate this in the gui
             return;
+        }
 
         cc = (TaskConcept) ccd;
 
-        long minT, maxT;
-        if (range != null) {
-            minT = range[0];
-            maxT = range[1];
-            if (minT >= maxT)
-                return;
-        } else {
-            minT = Long.MIN_VALUE;
-            maxT = Long.MAX_VALUE;
-        }
+        {
 
-        if (cc != null) {
+            long minT, maxT;
+            if (range != null) {
+                if (range[0] >= range[1])
+                    return;
+
+
+                minT = range[0];
+                maxT = range[1];
+                if (timeZoom != 1) {
+                    double mid = range[0] + range[1];
+                    double rh = (range[1] - range[0])/2.0 * timeZoom;
+                    minT = Math.round(mid - rh);
+                    maxT = Math.round(mid + rh);
+                }
+            } else {
+                minT = Long.MIN_VALUE;
+                maxT = Long.MAX_VALUE;
+            }
+
+            long now = this.now = nar.time();
+            int dur = /*this.dur = */nar.dur();
 //            cp = 1f; /*nar.pri(cc);*/
 
             long nowEnd = now + dur / 2;
@@ -199,15 +215,16 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 goalProj.project(cc, false, minT, maxT, dur, projections, nar);
             }
 
-        } else {
-//            cp = 0;
-            beliefs.clear();
-            beliefs.current = null;
-            goals.clear();
-            goals.current = null;
-            beliefProj.clear();
-            goalProj.clear();
         }
+//        else {
+////            cp = 0;
+//            beliefs.clear();
+//            beliefs.current = null;
+//            goals.clear();
+//            goals.current = null;
+//            beliefProj.clear();
+//            goalProj.clear();
+//        }
 
 
     }
@@ -217,7 +234,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         return "BeliefTableChart[" + term + "]";
     }
 
-    protected void draw(Termed tt, Concept cc, GL2 gl, long minT, long maxT) {
+    protected void draw(Concept cc, GL2 gl, long minT, long maxT) {
 
         TruthWave beliefs = this.beliefs;
         //if (!beliefs.isEmpty()) {
@@ -322,7 +339,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
             //String currentTermString = termString;
             if (cc != null) {
-                draw(term, cc, gl, minT, maxT);
+                draw(cc, gl, minT, maxT);
                 if (termString!=null)
                     termString = cc.toString();
             } else {
@@ -475,7 +492,10 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     @Override
     public Surface menu() {
         return new Gridding(
-                new PushButton("Expand", () -> Vis.conceptWindow(term, nar))
+                PushButton.awesome("search-plus").click(() -> Vis.conceptWindow(term, nar))
+//                new FloatSlider("Time Zoom", 1f, 0.1f, 2f).on(z -> {
+//                    timeZoom = z;
+//                })
                 //...
         );
     }

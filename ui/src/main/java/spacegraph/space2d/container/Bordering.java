@@ -18,12 +18,16 @@ public class Bordering extends MutableContainer {
     public final static int SW = 7;
     public final static int SE = 8;
 
-    /** in percent of the half total size of the corresponding dimension */
+    /**
+     * in percent of the half total size of the corresponding dimension
+     */
     protected float borderWest = 0.25f;
     protected float borderEast = 0.25f;
     protected float borderSouth = 0.25f;
     protected float borderNorth = 0.25f;
 
+    boolean autocollapse = true;
+    
     public Bordering() {
         super();
     }
@@ -33,20 +37,32 @@ public class Bordering extends MutableContainer {
         set(center);
     }
 
-    /** sets all edge sizes to a value */
+    /**
+     * sets all edge sizes to a value
+     */
     public Bordering edge(float size) {
         borderNorth = borderSouth = borderEast = borderWest = size;
         layout(); //TODO elide if unchanged
         return this;
     }
 
-    /** sets a specific edge size */
+    /**
+     * sets a specific edge size
+     */
     public Bordering edge(int direction, float size) {
         switch (direction) {
-            case N: borderNorth = size; break;
-            case S: borderSouth = size; break;
-            case E: borderEast = size; break;
-            case W: borderWest = size; break;
+            case N:
+                borderNorth = size;
+                break;
+            case S:
+                borderSouth = size;
+                break;
+            case E:
+                borderEast = size;
+                break;
+            case W:
+                borderWest = size;
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -65,13 +81,33 @@ public class Bordering extends MutableContainer {
 
         boolean aspectEqual = true;
         if (aspectEqual) {
-            w2 = h2 = Math.min(W,H)/2;
+            w2 = h2 = Math.min(W, H) / 2;
         } else {
             w2 = W / 2;
             h2 = H / 2;
         }
+
         Surface[] children = children();
-        for (int i = 0, childrenLength = children.length; i < childrenLength; i++) {
+
+
+        float borderWest, borderEast, borderNorth, borderSouth;
+        int l = children.length;
+        if (autocollapse && (!(l > Bordering.W && children[Bordering.W] != null) &&
+                !(l > Bordering.E && children[Bordering.E] != null))) {
+            borderWest = borderEast = 0; //collapse
+        } else {
+            borderWest = this.borderWest;
+            borderEast = this.borderEast;
+        }
+        if (autocollapse && (!(l > Bordering.N && children[Bordering.N] != null) &&
+                !(l > Bordering.S && children[Bordering.S] != null))) {
+            borderNorth = borderSouth = 0; //collapse
+        } else {
+            borderNorth = this.borderNorth;
+            borderSouth = this.borderSouth;
+        }
+
+        for (int i = 0, childrenLength = l; i < childrenLength; i++) {
             Surface c = children[i];
 
             if (c == null || c instanceof EmptySurface)
@@ -132,23 +168,58 @@ public class Bordering extends MutableContainer {
         super.doLayout(dtMS);
     }
 
-    /** replace center content */
+    /**
+     * replace center content
+     */
     public Bordering content(Surface next) {
         set(C, next);
         return this;
     }
 
     @Override
-    public Surface set(int index, Surface next) {
+    public Bordering set(int index, Surface next) {
         if (index >= 9)
             throw new ArrayIndexOutOfBoundsException();
 
         synchronized (this) {
-            int empties = index - (childrenCount()-1);
+            int empties = index - (childrenCount() - 1);
             for (int i = 0; i < empties; i++)
                 add(new EmptySurface()); //placeholders
 
-            return super.set(index, next);
+            super.set(index, next);
+            return this;
         }
+    }
+
+    public Bordering north(Surface x) {
+        return set(Bordering.N, x);
+    }
+
+    public Bordering south(Surface x) {
+        return set(Bordering.S, x);
+    }
+
+    public Bordering east(Surface x) {
+        return set(Bordering.E, x);
+    }
+
+    public Bordering west(Surface x) {
+        return set(Bordering.W, x);
+    }
+
+    public Bordering northwest(Surface x) {
+        return set(Bordering.NW, x);
+    }
+
+    public Bordering northeast(Surface x) {
+        return set(Bordering.NE, x);
+    }
+
+    public Bordering southwest(Surface x) {
+        return set(Bordering.SW, x);
+    }
+
+    public Bordering southeast(Surface x) {
+        return set(Bordering.SE, x);
     }
 }

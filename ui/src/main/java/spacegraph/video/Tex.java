@@ -127,11 +127,11 @@ public class Tex {
     }
 
     public Surface view() {
-        return new TexSurface();
+        return new TexSurface(this);
     }
 
     public Surface view(float aspect) {
-        return new AspectAlign(new TexSurface(), aspect);
+        return new AspectAlign(view(), aspect);
     }
 
     /** less efficient than: b = update(x, b) */
@@ -166,12 +166,17 @@ public class Tex {
 
     }
 
-    private class TexSurface extends Surface {
+    static class TexSurface extends Surface {
 
+        private final Tex tex;
+
+        public TexSurface(Tex tex) {
+           this.tex = tex;
+        }
         @Override
         protected void paint(GL2 gl, SurfaceRender surfaceRender) {
             try {
-                Tex.this.paint(gl, bounds);
+                tex.paint(gl, bounds);
             } catch (NullPointerException e) {
 //                SurfaceBase p = this.parent;
 //                if (p instanceof MutableContainer) {

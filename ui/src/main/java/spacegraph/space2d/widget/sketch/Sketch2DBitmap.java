@@ -8,6 +8,7 @@ import org.apache.commons.math3.random.MersenneTwister;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.widget.button.ColorToggle;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.slider.XYSlider;
@@ -23,7 +24,7 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /** see: http://perfectionkills.com/exploring-canvas-drawing-techniques/ */
-public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
+public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
 
     final Tex bmp = new Tex();
     public final int[] pix;
@@ -57,9 +58,9 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
     @Override
     public Surface tryTouch(Finger finger) {
 
-        Surface content;
-        if ((finger!=null && (content=content())!=null)) {
-            v2 hitPoint = finger.relativePos(content);
+
+        if (finger!=null) {
+            v2 hitPoint = finger.relativePos(this);
             if (hitPoint.inUnit() && finger.pressing(0)) {
 
 //            if (fb == null)
@@ -114,7 +115,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
     }
 
     @Override
-    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         if (gl == null) {
 //            this.gl = gl;
             bmp.profile = gl.getGLProfile();
