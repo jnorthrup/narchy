@@ -10,10 +10,14 @@ import nars.term.atom.Atomic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
@@ -96,6 +100,25 @@ public class Memory {
     final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
+
+    public Stream<Term> contents(Term address) {
+        return resolvers.stream().flatMap(r -> r.contents(address, Memory.this)).filter(Objects::nonNull);
+    }
+
+
+    public interface MemoryResolver {
+        @Nullable
+        Stream<Supplier<Stream<Task>>> readers(Term x, Memory m);
+
+        @Nullable
+        Stream<Consumer<Stream<Task>>> writers(Term x, Memory m);
+
+        /** lists the contents, ie. if it is a directory / container.  items
+         * returned may be resolvable by this or another resolver.  */
+        default Stream<Term> contents(Term x, Memory m) {
+            return Stream.empty();
+        }
+    }
 
     public Memory() {
         resolvers.add(URIResolver);
@@ -197,7 +220,7 @@ public class Memory {
                                 try(OutputStream out = Files.newOutputStream(Paths.get(u))) {
                                     formats.iterator().next().accept(tt, out);
                                 } catch (IOException e) {
-                                    e.printStackTrace();
+                                    logger.warn("{} {}", u, e);
                                 }
                             };
                         }
@@ -206,6 +229,26 @@ public class Memory {
                 }));
             } else
                 return null;
+        }
+
+        @Override
+        public Stream<Term> contents(Term x, Memory m) {
+            Stream<URI> uri = termToURIs(x);
+            if (uri != null) {
+                return uri.flatMap(u -> {
+                    Path p = Path.of(u);
+                    if (Files.isDirectory(p)) {
+                        try {
+                            return Files.list(p).map(pp->uriToTerm(pp.toUri()));
+                        } catch (IOException e) {
+                            logger.warn("{} {}", u, e);
+                        }
+                    }
+
+                    return Stream.empty();
+                });
+            }
+            return null;
         }
     };
 
@@ -219,6 +262,10 @@ public class Memory {
             return null;
 
         return path.substring(afterPeriod+1);
+    }
+
+    static Term uriToTerm(URI x) {
+        return $.quote(x.toString());
     }
 
     @Nullable
@@ -297,13 +344,6 @@ public class Memory {
         }
     }
 
-    public interface MemoryResolver {
-        @Nullable
-        Stream<Supplier<Stream<Task>>> readers(Term x, Memory m);
-
-        @Nullable
-        Stream<Consumer<Stream<Task>>> writers(Term x, Memory m);
-    }
 
 
     /** resolves memory by NAR's current Self term */

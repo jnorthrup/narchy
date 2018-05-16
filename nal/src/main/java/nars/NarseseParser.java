@@ -262,6 +262,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 firstOf(
 
                         QuotedAtom(),
+                        URIAtom(),
 
                         seq(oper, ColonReverseInheritance()),
 
@@ -336,6 +337,14 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 ),
 
                 s()
+        );
+    }
+
+    public Rule URIAtom() {
+        return seq(
+            //https://stackoverflow.com/questions/163360/regular-expression-to-match-urls-in-java#163398
+            regex("^[a-z]+://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]"),
+            push($.quote(match()))
         );
     }
 
