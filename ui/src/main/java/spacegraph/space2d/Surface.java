@@ -35,7 +35,7 @@ abstract public class Surface implements SurfaceBase {
 //    public v2 scale = new v2(1, 1); //v2.ONE;
     public volatile RectFloat2D bounds;
     public volatile SurfaceBase parent;
-    protected volatile boolean visible = true, shown = false;
+    protected volatile boolean visible = true, showing = false;
 
     public Surface() {
         bounds = RectFloat2D.Unit;
@@ -155,7 +155,7 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean stop() {
         if (_parent.getAndSet(this, null) != null) {
-            visible = shown = false;
+            showing = false;
             return true;
         }
         return false;
@@ -191,11 +191,11 @@ abstract public class Surface implements SurfaceBase {
     public final void render(GL2 gl, SurfaceRender r) {
 
         if (!visible()) {
-            shown = false;
+            showing = false;
             return;
         }
 
-        if (!(shown = r.visible(bounds))) {
+        if (!(showing = r.visible(bounds))) {
             //System.out.println("invisible: " + this);
             return;
         }
@@ -252,6 +252,6 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public boolean showing() {
-        return shown;
+        return showing;
     }
 }

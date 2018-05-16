@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
+import jcog.WTF;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
@@ -9,6 +10,7 @@ import jcog.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.MutableMapContainer;
@@ -19,17 +21,25 @@ import spacegraph.video.Draw;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * 2D directed/undirected graph widget
  */
 public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
+
     //int edgesMax = 1024;
     protected final AtomicBoolean busy = new AtomicBoolean(false);
     final List<Graph2DLayer<X>> layers = new FasterList<>();
 
-    private final DequePool<EdgeVis<X>> edgePool = new DequePool<>(8 * 1024) {
+    private final DequePool<NodeVis<X>> nodePool = new DequePool<>(1 * 256) {
+        @Override
+        public NodeVis<X> create() {
+            return new NodeVis<>();
+        }
+    };
+    private final DequePool<EdgeVis<X>> edgePool = new DequePool<>(1 * 256) {
         @Override
         public EdgeVis<X> create() {
             return new EdgeVis<>();
@@ -42,7 +52,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     volatile Graph2DLayout<X> layout = (c, d) -> {
     };
 
-    private transient Set<CellMap.CacheCell<X, Graph2D.NodeVis<X>>> dontRemain = new LinkedHashSet();
+    private final transient Set<CellMap.CacheCell<X, Graph2D.NodeVis<X>>> dontRemain = new LinkedHashSet();
+
+    final Consumer<NodeVis<X>> DEFAULT_NODE_BUILDER = x -> {
+        x.set(
+                new Scale(new PushButton(x.id.toString()), 0.75f)
+        );
+    };
+    private transient Consumer<NodeVis<X>> nodeBuilder = DEFAULT_NODE_BUILDER;
 
     public Graph2D() {
 
@@ -50,6 +67,11 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public Graph2D<X> layer(Graph2DLayer<X> layout) {
         layers.add(layout);
+        return this;
+    }
+
+    public Graph2D<X> nodeBuilder(Consumer<NodeVis<X>> nodeBuilder) {
+        this.nodeBuilder = nodeBuilder;
         return this;
     }
 
@@ -68,10 +90,16 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     @Override
-    public void prePaint(int dtMS) {
-        layout.layout(this, dtMS);
-        super.prePaint(dtMS);
+    protected boolean prePaint(SurfaceRender r) {
+        if (super.prePaint(r)) {
+            if (!showing())
+                throw new WTF();
+            layout.layout(this, r.dtMS);
+            return true;
+        }
+        return false;
     }
+
 
     @Override
     protected void paintBelow(GL2 gl) {
@@ -145,22 +173,30 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             //TODO computeIfAbsent and re-use existing model
             CellMap.CacheCell nv = cellMap.compute(x, xx -> {
                 if (xx == null) {
-                    NodeVis<X> n = new NodeVis<>(x);
-                    layout.initialize(this, n);
-                    return n;
+                    xx = nodePool.get();
+                    xx.reset(x);
+                    nodeBuilder.accept(xx);
+                    layout.initialize(this, xx);
+                    return xx;
                 } else
                     return xx; //re-use existing
             });
 
-            if (dontRemain != null)
-                dontRemain.remove(nv);
+            dontRemain.remove(nv);
 
             if (nCount++ == nodesMax)
                 break; //reached node limit
         }
 
         if (!dontRemain.isEmpty()) {
-            dontRemain.forEach(d -> cellMap.remove(d.key, false));
+            dontRemain.forEach(d -> {
+                NodeVis<X> dv = d.value;
+                cellMap.remove(d.key, false);
+                if (dv!=null) {
+                    dv.hide();
+                    nodePool.take(dv);
+                }
+            });
             cellMap.cache.invalidate();
         }
     }
@@ -293,20 +329,28 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     public static class NodeVis<X> extends Windo {
 
+        public X id;
+        public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(FasterList::new);
+        private float r, g, b;
 
-        public final X id;
-        public final Flip<List<EdgeVis<X>>> edgeOut = new Flip<>(() -> new FasterList<>());
-        private float r = 0.5f, g = 0.5f, b = 0.5f;
-
-        NodeVis(X id) {
+        protected void reset(X id) {
             this.id = id;
-
-            set(
-                    new Scale(new PushButton(id.toString()), 0.5f)
-            );
-
+            show();
+            r = g = b = 0.5f;
         }
 
+        @Override
+        public boolean stop() {
+            if (super.stop()) {
+                this.id = null;
+                clear();
+                edgeOut.write().clear();
+                edgeOut.commit();
+                edgeOut.write().clear();
+                return true;
+            }
+            return false;
+        }
 
         protected void paintEdges(GL2 gl) {
             edgeOut.read().forEach(x -> x.draw(gl, this));
@@ -369,7 +413,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             if (node.id instanceof NodeGraph.Node) {
                 NodeGraph.Node<N, E> nn = (NodeGraph.Node<N, E>) node.id;
                 nn.edges(false, true).forEach((ImmutableDirectedEdge<N, E> e) -> {
-                    Graph2D.EdgeVis<N> ee = graph.edge(node, (N) e.other(nn));//.color(0.5f, 0.5f, 0.5f);
+                    Graph2D.EdgeVis<N> ee = graph.edge(node, e.other(nn));//.color(0.5f, 0.5f, 0.5f);
                     //ee.color(0.8f, 0.8f, 0.8f);
 
                 });

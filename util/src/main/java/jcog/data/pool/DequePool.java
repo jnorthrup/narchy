@@ -25,6 +25,7 @@ public abstract class DequePool<X> implements Pool<X> {
             take(create());
 
     }
+
     public DequePool(int initialCapacity) {
         this(initialCapacity, initialCapacity);
     }
@@ -35,14 +36,8 @@ public abstract class DequePool<X> implements Pool<X> {
 
     @Override
     public void take(X i) {
-        //synchronized (data) {
-
-
-        //if (data.size() < capacity)
-            data.offer(i);
-
-        //else: it is forgotten
-
+        assert (i != null);
+        data.offer(i);
     }
 
     @Override
@@ -57,10 +52,6 @@ public abstract class DequePool<X> implements Pool<X> {
         }
         return d.poll();
         //}
-    }
-
-    protected void print() {
-        System.out.println(data.size());
     }
 
     public boolean isEnabled() {

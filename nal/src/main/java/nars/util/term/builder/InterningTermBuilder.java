@@ -10,7 +10,6 @@ import nars.util.term.InternedSubterms;
 import nars.util.term.SubtermsCache;
 
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /** can intern subterms, compounds, and temporal compounds.
  * the requirements for intern cache admission are configurable.
@@ -19,9 +18,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     //TODO Atom Cache
 
-    public final HijackTermCache termTemporalCache = new HijackTermCache(128 * 1024, 3, false);
-    public final HijackTermCache termCache = new HijackTermCache(128 * 1024, 3, false);
-    public final SubtermsCache subtermCache = new SubtermsCache(128 * 1024, 3, false);
+    public final HijackTermCache termCache = new HijackTermCache(128 * 1024, 3);
+    public final HijackTermCache termTemporalCache = new HijackTermCache(64 * 1024, 3);
+    public final SubtermsCache subtermCache = new SubtermsCache(128 * 1024, 3);
 
     @Override public final Term newCompound(Op op, int dt, Term[] u) {
         return internable(op, dt, u) ?
@@ -52,14 +51,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 //HACK caching these interferes with unification.  instead fix unification then allow caching of these
                 return false;
             }
-            switch (x.dt()) {
-                case DTERNAL:
-                case 0:
-                case XTERNAL:
-                    break; //OK
-                default:
-                    return false; //specific dt: exclude temporal terms polluting the cache
-            }
+            if (x.hasAny(Op.Temporal))
+                return false;
+//            switch (x.dt()) {
+//                case DTERNAL:
+//                case 0:
+//                case XTERNAL:
+//                    break; //OK
+//                default:
+//                    return false; //specific dt: exclude temporal terms polluting the cache
+//            }
         }
         return true;
     }

@@ -12,6 +12,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.AutoSurface;
+import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ServicesTable;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.Label;
@@ -327,7 +328,7 @@ public class Vis {
     }
 
     public static void conceptWindow(Termed t, NAR n) {
-        SpaceGraph.window(new ConceptSurface(t, n), 500, 500);
+        SpaceGraph.window(new ConceptSurface(t, n), 500, 500, true);
     }
 
 
@@ -345,7 +346,7 @@ public class Vis {
 
             List<Surface> s = StreamSupport.stream(ii.spliterator(), false)
                     .map(x -> x instanceof Termed ? (Termed) x : null).filter(Objects::nonNull)
-                    .map(c -> new BeliefTableChart(nar, c, btRange)).collect(toList());
+                    .map(c -> new MetaFrame(new BeliefTableChart(nar, c, btRange))).collect(toList());
 
             if (!s.isEmpty()) {
                 set(s);

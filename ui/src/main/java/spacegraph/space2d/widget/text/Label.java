@@ -19,7 +19,8 @@ public class Label extends AspectAlign {
 
     public float textScaleX = 1f, textScaleY = 1f;
     public final Color4f textColor = new Color4f(1f, 1f, 1f, 1f);
-    public float textThickness = 3f;
+
+    private transient float textThickness;
 
 
     /**
@@ -78,8 +79,12 @@ public class Label extends AspectAlign {
 
     @Override
     protected boolean prePaint(SurfaceRender r) {
-        if (r.visP(bounds).minDimension() < 10)
+        float p = r.visP(bounds).minDimension();
+        if (p < 10) {
             return false;
+        }
+
+        textThickness = 1 + (p/70f);
 
         return super.prePaint(r);
     }

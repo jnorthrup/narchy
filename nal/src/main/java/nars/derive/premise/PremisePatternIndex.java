@@ -437,7 +437,7 @@ public class PremisePatternIndex extends MapConceptIndex {
                 SortedSet<Term> xFixed = new TreeSet();//$.newHashSet(0); //Global.newHashSet(0);
 
 
-                final Ellipsis ellipsis = this.ellipsis;
+                Ellipsis ellipsis = this.ellipsis;
 
                 SortedSet<Term> yFree = y.toSetSorted();
 
@@ -453,7 +453,9 @@ public class PremisePatternIndex extends MapConceptIndex {
                         Term v = u.xy(x);
                         if (v != null) {
                             if (v instanceof EllipsisMatch) {
-                                return ((EllipsisMatch) v).rematch(y, yFree);
+                                if (!((EllipsisMatch) v).rematch(y, yFree))
+                                    return false;
+                                ellipsis = null;
                             } else {
                                 //single-term matched for the ellipsis, so wont be EllipsisMatch instance
                                 if (u.constant(v) && !yFree.remove(v))
@@ -540,6 +542,9 @@ public class PremisePatternIndex extends MapConceptIndex {
 
 
                 }
+
+                if (ellipsis == null)
+                    return yFree.isEmpty(); //if unmatched terms in y, then fail; otherwise done
 
                 final int xs = xFixed.size();
                 int ys = yFree.size();

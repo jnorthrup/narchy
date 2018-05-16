@@ -10,15 +10,18 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.exe.AbstractExec;
+import nars.gui.Vis;
 import nars.term.ProxyTerm;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.container.Clipped;
 import spacegraph.space2d.container.ForceDirected2D;
+import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Graph2D;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.video.Draw;
 
@@ -30,6 +33,8 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     private DurService on;
 
     Iterable<Concept> source;
+
+    private float AUTOSCALE = 0f;
 
     public class Controls {
         public final FloatRange nodeScale = new FloatRange(0.2f, 0.04f, 0.5f);
@@ -57,21 +62,28 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         this.nar = n;
         this.source = source;
 
+        nodeBuilder((nn)->{
+           nn.set(
+               new Scale(
+                   new PushButton(nn.id.toString())
+                       .click(()-> Vis.conceptWindow(nn.id, nar)),
+                0.8f
+               )
+           );
+           updateNode(nn);
+        });
         this.layout(new ForceDirected2D<>() {
             @Override
             public void layout(Graph2D<Concept> g, int dtMS) {
 
-                float AUTOSCALE =
+                AUTOSCALE =
                         controls.nodeScale.floatValue() *
                         (float) (Math.min(bounds.w, bounds.h)
                         / Math.sqrt(1f + nodes()));
 
                 g.forEachValue(nn -> {
-                    float pri = ((AbstractExec) n.exe).active.pri(nn.id, 0f);
-                    nn.color(pri, pri / 2f, 0f);
-
-                    float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
-                    nn.pos(RectFloat2D.XYWH(nn.cx(), nn.cy(), p, p));
+                    if (nn.showing())
+                        updateNode(nn);
                 });
                 super.layout(g, dtMS);
             }
@@ -79,6 +91,14 @@ public class ConceptGraph2D extends Graph2D<Concept> {
                 .layer(new TermlinkVis(n))
                 .layer(new TasklinkVis(n))
                 .layer(new StatementVis(n));
+    }
+
+    void updateNode(NodeVis<Concept> nn) {
+        float pri = ((AbstractExec) nar.exe).active.pri(nn.id, 0f);
+        nn.color(pri, pri / 2f, 0f);
+
+        float p = (float) (1f + Math.sqrt(pri)) * AUTOSCALE;
+        nn.pos(RectFloat2D.XYWH(nn.cx(), nn.cy(), p, p));
     }
 
     /** updates the source */

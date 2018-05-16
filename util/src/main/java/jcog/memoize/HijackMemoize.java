@@ -4,7 +4,6 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
-import jcog.data.LongCounter;
 import jcog.pri.PLink;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
@@ -13,6 +12,7 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.SoftReference;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -26,7 +26,8 @@ import static jcog.Texts.n4;
 public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Computation<X, Y>> implements Memoize<X, Y> {
 
     protected float DEFAULT_VALUE;
-    final boolean soft;
+    private final boolean soft;
+
     //private final Random rng = new XoRoShiRo128PlusRandom(1);
 
     public interface Computation<X, Y> extends Priority, Supplier<Y> {
@@ -152,11 +153,11 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
     final Function<X, Y> func;
 
-    final LongCounter
-            hit = new LongCounter(),  //existing item retrieved
-            miss = new LongCounter(),  //a new item inserted that has not existed
-            reject = new LongCounter(), //item prevented from insertion by existing items
-            evict = new LongCounter(); //removal of existing item on insertion of new item
+    final AtomicLong
+            hit = new AtomicLong(),  //existing item retrieved
+            miss = new AtomicLong(),  //a new item inserted that has not existed
+            reject = new AtomicLong(), //item prevented from insertion by existing items
+            evict = new AtomicLong(); //removal of existing item on insertion of new item
 
 
     //hit + miss + reject = total insertions
@@ -168,14 +169,14 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes, boolean soft) {
         super(initialCapacity, reprobes);
         resize(initialCapacity);
-        this.func = f;
         this.soft = soft;
+        this.func = f;
         this.DEFAULT_VALUE = 0.5f/reprobes;
     }
 
     @Override
     protected Computation<X, Y> merge(Computation<X, Y> existing, Computation<X, Y> incoming, @Nullable MutableFloat overflowing) {
-        if (soft && existing.isDeleted())
+        if (existing.isDeleted())
             return incoming; //check if the existing has been collected
         return super.merge(existing, incoming, overflowing);
     }
@@ -191,10 +192,10 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     public float statReset(ObjectLongProcedure<String> eachStat) {
         //eachStat.accept("S" /* size */, size() );
         long H, M, R, E;
-        eachStat.accept("H" /* hit */, H = hit.getThenZero());
-        eachStat.accept("M" /* miss */, M = miss.getThenZero());
-        eachStat.accept("R" /* reject */, R = reject.getThenZero());
-        eachStat.accept("E" /* evict */, E = evict.getThenZero());
+        eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
+        eachStat.accept("M" /* miss */, M = miss.getAndSet(0));
+        eachStat.accept("R" /* reject */, R = reject.getAndSet(0));
+        eachStat.accept("E" /* evict */, E = evict.getAndSet(0));
         return (H / ((float) (H + M + R /* + E */)));
     }
 
@@ -265,7 +266,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             Y e = exists.get();
             if (e != null) {
                 exists.priAdd(CACHE_HIT_BOOST);
-                hit.inc();
+                hit.incrementAndGet();
                 return e;
             }
         }
@@ -290,7 +291,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             Computation<X, Y> input = computation(x, y);
             Computation<X, Y> output = put(input);
             boolean interned = output==input;
-            (interned ? miss : reject).inc();
+            (interned ? miss : reject).incrementAndGet();
             if (interned) {
                 onIntern(x);
             }
@@ -341,7 +342,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     @Override
     public void onRemove(HijackMemoize.Computation<X, Y> value) {
         value.delete();
-        evict.inc();
+        evict.incrementAndGet();
     }
 
 

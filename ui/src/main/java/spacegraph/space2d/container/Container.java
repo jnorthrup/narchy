@@ -68,8 +68,12 @@ abstract public class Container extends Surface {
     protected final void paint(GL2 gl, SurfaceRender r) {
 
         int dtMS = r.dtMS;
-        if (!prePaint(r))
+        if (!prePaint(r)) {
+            showing = false;
             return;
+        } else {
+            showing = true;
+        }
 
         //TODO maybe in a separate update thread
         if (mustLayout) {

@@ -5,8 +5,8 @@ import nars.subterm.Subterms;
 
 public class SubtermsCache extends HijackMemoize<InternedSubterms, Subterms> {
 
-    public SubtermsCache(int capacity, int reprobes, boolean soft) {
-        super(InternedSubterms::compute, capacity, reprobes, soft);
+    public SubtermsCache(int capacity, int reprobes) {
+        super(InternedSubterms::compute, capacity, reprobes, false);
     }
 
     @Override

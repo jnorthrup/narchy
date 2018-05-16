@@ -72,14 +72,14 @@ public class RuleInductionTest {
         Term aImpB = $$("(a ==>+" + dutyPeriod + " b)");
 
         PairedStatsAccumulator aConjB_exp = new PairedStatsAccumulator();
-        Histogram aConjB_start = new Histogram(4);
+//        Histogram aConjB_start = new Histogram(4);
         Histogram aConjB_dt = new Histogram(4);
 
         n.onTask(t -> {
            if (!t.isInput() && t.term().root().equals(aConjB_root)) {
                long start = t.start();
                int dt = Math.abs(t.dt()); //histogram wont record negatives
-               aConjB_start.recordValue(start);
+//               aConjB_start.recordValue(start);
                aConjB_dt.recordValue(dt);
 
                assertEquals(start, t.end());
@@ -115,8 +115,8 @@ public class RuleInductionTest {
             System.out.println("expectation vs. time: \t" + aConjB_exp.yStats());
             System.out.println("\tslope=" + aConjB_exp.leastSquaresFit().slope());
 
-            System.out.println("start time:");
-            Texts.histogramPrint(aConjB_start, System.out);
+//            System.out.println("start time:");
+//            Texts.histogramPrint(aConjB_start, System.out);
 
             System.out.println("dt:");
             Texts.histogramPrint(aConjB_dt, System.out);

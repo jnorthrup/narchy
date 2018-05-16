@@ -5,8 +5,8 @@ import nars.term.Term;
 
 public class HijackTermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound, Term> {
 
-    public HijackTermCache(int capacity, int reprobes, boolean soft) {
-        super(InternedCompound::compute, capacity, reprobes, soft);
+    public HijackTermCache(int capacity, int reprobes) {
+        super(InternedCompound::compute, capacity, reprobes, false);
     }
 
     @Override

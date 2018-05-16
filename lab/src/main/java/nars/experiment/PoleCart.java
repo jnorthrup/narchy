@@ -60,7 +60,7 @@ public class PoleCart extends NAgentX {
                 e.printStackTrace();
                 return null;
             }
-        }, 30, 30f);
+        }, 60, 30f);
     }
 
     private final JPanel panel;
