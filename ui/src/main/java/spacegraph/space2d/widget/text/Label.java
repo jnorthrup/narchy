@@ -78,9 +78,8 @@ public class Label extends AspectAlign {
 
     @Override
     protected boolean prePaint(SurfaceRender r) {
-//        System.out.println(r.visP());
-//        if (r.visP() < 25)
-//            return false;
+        if (r.visP(bounds).minDimension() < 10)
+            return false;
 
         return super.prePaint(r);
     }

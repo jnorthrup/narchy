@@ -77,21 +77,13 @@ abstract public class Container extends Surface {
             doLayout(dtMS);
         }
 
-
         paintBelow(gl);
 
         paintIt(gl);
 
-        r.prePush(this);
-
         forEach(c -> {
-            if (c.visible() && r.push(c)) {
-                c.render(gl, r);
-                r.pop();
-            }
+            c.render(gl, r);
         }); //render children, if any
-
-        r.prePop();
 
         paintAbove(gl, r);
     }
@@ -109,7 +101,7 @@ abstract public class Container extends Surface {
     @Override
     public Surface tryTouch(Finger finger) {
 
-        if (!visible())
+        if (!showing())
             return null;
 
         if (childrenCount() > 0) { //isEmpty? accurate count may not be readily computable
@@ -143,7 +135,7 @@ abstract public class Container extends Surface {
 
                     //                float hx = relativeHit.x, hy = relativeHit.y;
 
-                    if (!c.visible())
+                    if (!c.showing())
                         return true; //continue
 
                     if ((c instanceof Container && !((Container)c).clipTouchBounds) || (

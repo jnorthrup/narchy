@@ -160,7 +160,9 @@ public class v2 extends Tuple2f {
         return x >= 0 && x <= 1f && y >= 0 && y <= 1f;
     }
 
-
+    public float minDimension() {
+        return Math.min(x, y);
+    }
 
 
 //    /**

@@ -111,7 +111,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
     }
 
     protected void commit() {
-        if (controls.update.get()) {
+        if (showing() && controls.update.get()) {
             set(source);
         }
     }

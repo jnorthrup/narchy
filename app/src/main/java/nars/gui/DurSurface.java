@@ -25,11 +25,17 @@ abstract public class DurSurface extends UnitContainer {
 
     abstract protected void update();
 
+    protected final void updateIfShowing() {
+        if (showing()) {
+            update();
+        }
+    }
+
     @Override
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
             assert(on == null);
-            on = DurService.on(nar, this::update);
+            on = DurService.on(nar, this::updateIfShowing);
             return true;
         }
         return false;

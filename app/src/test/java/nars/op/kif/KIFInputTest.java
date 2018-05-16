@@ -5,8 +5,10 @@ import jcog.data.graph.GraphMeter;
 import nars.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 class KIFInputTest {
 
     @Test
@@ -54,11 +56,11 @@ class KIFInputTest {
                 //Atomic.the("file:///tmp/x.nal");
                 n.self();
 
+        n.log();
 
         Runnable r = n.memory.copy(I, O);
         r.run();
 
-        n.log();
 
         n.run(10000);
 

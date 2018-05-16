@@ -269,8 +269,10 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
             for (int i = 0; i < facialsSize; i++) {
                 Surface l = layers.get(i);
                 if (l.visible()) {
-                    if (l instanceof Ortho)
-                        r.reset(((Ortho) l));
+                    if (l instanceof Ortho) {
+                        Ortho o = (Ortho) l;
+                        r.setScale(o.cam, o.scale);
+                    }
 
 
                     l.render(gl, r);

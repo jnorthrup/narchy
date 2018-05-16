@@ -35,7 +35,7 @@ abstract public class Surface implements SurfaceBase {
 //    public v2 scale = new v2(1, 1); //v2.ONE;
     public volatile RectFloat2D bounds;
     public volatile SurfaceBase parent;
-    protected volatile boolean visible = true;
+    protected volatile boolean visible = true, shown = false;
 
     public Surface() {
         bounds = RectFloat2D.Unit;
@@ -154,8 +154,11 @@ abstract public class Surface implements SurfaceBase {
             AtomicReferenceFieldUpdater.newUpdater(Surface.class, SurfaceBase.class, "parent");
 
     public boolean stop() {
-        return _parent.getAndSet(this, null) != null;
-        //already stopped. ok
+        if (_parent.getAndSet(this, null) != null) {
+            visible = shown = false;
+            return true;
+        }
+        return false;
     }
 
     public void layout() {
@@ -185,7 +188,17 @@ abstract public class Surface implements SurfaceBase {
         paint(gl, new SurfaceRender(pw, ph, dtMS));
     }
 
-    @Deprecated public final void render(GL2 gl, SurfaceRender r) {
+    public final void render(GL2 gl, SurfaceRender r) {
+
+        if (!visible()) {
+            shown = false;
+            return;
+        }
+
+        if (!(shown = r.visible(bounds))) {
+            //System.out.println("invisible: " + this);
+            return;
+        }
 
         paint(gl, r);
 
@@ -236,5 +249,9 @@ abstract public class Surface implements SurfaceBase {
 
     public void size(float w, float h) {
         pos(bounds.size(w, h));
+    }
+
+    public boolean showing() {
+        return shown;
     }
 }
