@@ -47,7 +47,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     public final Finger finger;
 
 
-
+    float camZmin = 20;
+    float camZmax = 64000;
 
     public Surface surface;
     public JoglSpace window;
@@ -86,8 +87,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         this.cam = new AnimVector3f(1) {
 
             float CAM_RATE = 2f;
-            float camZmin = 20;
-            float camZmax = 64000;
 
             {
                 setDirect(0,0, (camZmin + camZmax)/2);
@@ -130,7 +129,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void windowResized(WindowEvent e) {
-        if (maximize()) {
+        if (autoresize()) {
             //re-maximize
             int ww = window.getWidth();
             int hh = window.getHeight();
@@ -140,9 +139,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         }
     }
 
-    protected boolean maximize() {
-        return false;
-    }
 
     public boolean focused() {
         return focused.get();
@@ -180,7 +176,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     }
 
     public boolean autoresize() {
-        return true;
+        return false;
     }
 
     public GL2 gl() {
@@ -552,7 +548,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
      * the picked surface even in-between pick updates which are invoked
      * during the update loop.
      * */
-    protected void finger() {
+    protected Surface finger() {
 
         /*if (e == null) {
             off();
@@ -562,12 +558,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
         finger.update();
 
-        Surface touchPrev = finger.touching.get();
-        Surface touchNext = finger.on(surface);
-
-        if (touchNext!=null && touchNext!=touchPrev) {
-            debug(this, 1f, ()->"touch(" + touchNext + ')');
-        }
+        return finger.on(surface);
     }
 
 
@@ -579,12 +570,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         gl.glLoadIdentity();
 
 
-        float sx = scale.x;
-        //float sy = scale.y;
         gl.glTranslatef(w() / 2f, h() / 2f, 0);
-        gl.glScalef(sx, sx, 1);
+        gl.glScalef(scale.x, scale.y, 1);
         gl.glTranslatef(-cam.x, -cam.y, 0);
-        //gl.glTranslatef((sx) * -cam.x, sy * -cam.y, 0);
 
         gl.glPushMatrix();
     }
@@ -595,10 +583,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
         gl.glPopMatrix();
 
         if (!overlays.isEmpty()) {
-            overlays.forEach(s -> {
-                if (s.visible())
-                    s.render(gl, r);
-            });
+            overlays.forEach(s -> s.render(gl, r));
         }
     }
 

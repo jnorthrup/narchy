@@ -20,7 +20,7 @@ abstract public class Container extends Surface {
 
     volatile boolean mustLayout = true;
 
-    protected boolean clipTouchBounds = true;
+
 
 
     @Override
@@ -142,7 +142,7 @@ abstract public class Container extends Surface {
                     if (!c.showing())
                         return true; //continue
 
-                    if ((c instanceof Container && !((Container)c).clipTouchBounds) || (
+                    if ((c instanceof Container && !((Container)c).clipBounds) || (
                             fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
 
 

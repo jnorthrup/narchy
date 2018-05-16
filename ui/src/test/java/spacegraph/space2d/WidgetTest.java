@@ -8,6 +8,7 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.TextEdit;
+import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
@@ -46,10 +47,10 @@ public class WidgetTest {
                                 row(
                                         col(new CheckBox("checkbox"), new CheckBox("checkbox")),
                                         grid(
-                                                new PushButton().icon("fontawesome://code"),
-                                                new PushButton().icon("fontawesome://trash"),
-                                                new PushButton().icon("fontawesome://fighter-jet"),
-                                                new PushButton().icon("fontawesome://wrench")
+                                                PushButton.awesome("code"),
+                                                PushButton.awesome("trash"),
+                                                PushButton.awesome("fighter-jet"),
+                                                PushButton.awesome("wrench")
                                         )
                                 ), 0.8f
                         ),
@@ -60,7 +61,7 @@ public class WidgetTest {
                         ),
                         new XYSlider(),//.state(Widget.META),
                         new DummyConsole().surface(),
-                        new Sketch2DBitmap(256, 256)//.state(Widget.META)
+                        new MetaFrame(new Sketch2DBitmap(256, 256)) //.state(Widget.META)
                 );
     }
 

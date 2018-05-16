@@ -10,23 +10,27 @@ public class SurfaceRender {
 
 
     /** viewable pixel resolution */
-    public final int pw, ph;
+    public final float pw;
+    public final float ph;
 
     /** ms since last update */
     public final int dtMS;
     private float scaleX, scaleY;
     private float x1, x2, y1, y2;
 
-    public SurfaceRender(int pw, int ph, int dtMS) {
+    public SurfaceRender(float pw, float ph, int dtMS) {
         this.pw = pw;
         this.ph = ph;
         this.dtMS = dtMS;
     }
 
-    public void setScale(v3 cam, v2 scale) {
-        this.scaleX = scale.x;
-        this.scaleY = scale.y;
-        float cx = cam.x, cy = cam.y;
+    public SurfaceRender setScale(v3 cam, v2 scale) {
+        return setScale(scale.x, scale.y, cam.x, cam.y);
+    }
+
+    public SurfaceRender setScale(float scalex, float scaley, float cx, float cy) {
+        this.scaleX = scalex;
+        this.scaleY = scaley;
         float sxh = 0.5f * pw / scaleX;
         float syh = 0.5f * ph / scaleY;
         this.x1 = cx - sxh;
@@ -34,6 +38,7 @@ public class SurfaceRender {
         this.y1 = cy - syh;
         this.y2 = cy + syh;
         //System.out.println(x1 + ".." + x2 + ": " + scaleX + " " + scaleY);
+        return this;
     }
 
     public boolean visible(RectFloat2D r) {

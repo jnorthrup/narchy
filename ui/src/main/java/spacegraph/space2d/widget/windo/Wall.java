@@ -16,7 +16,7 @@ public class Wall extends Stacking  {
 
     public Wall() {
 
-        clipTouchBounds = false;
+        clipBounds = false;
     }
 
 

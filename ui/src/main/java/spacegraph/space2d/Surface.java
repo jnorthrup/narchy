@@ -23,7 +23,7 @@ abstract public class Surface implements SurfaceBase {
     public static final Surface[] EmptySurfaceArray = new Surface[0];
 
     private final static AtomicInteger serial = new AtomicInteger();
-
+    protected boolean clipBounds = true;
     /**
      * serial id unique to each instanced surface
      */
@@ -183,24 +183,15 @@ abstract public class Surface implements SurfaceBase {
         out.println(this);
     }
 
-    @Deprecated public final void render(GL2 gl, int pw, int ph, int dtMS) {
-        if (!visible) return;
-        paint(gl, new SurfaceRender(pw, ph, dtMS));
+    @Deprecated public final void render(GL2 gl, float pw, float ph, int dtMS) {
+        render(gl, new SurfaceRender(1, 1, dtMS).setScale(pw, ph, pw/2, ph/2));
     }
 
     public final void render(GL2 gl, SurfaceRender r) {
 
-        if (!visible()) {
-            showing = false;
-            return;
+        if (showing = (visible() && (!clipBounds || r.visible(bounds)))) {
+            paint(gl, r);
         }
-
-        if (!(showing = r.visible(bounds))) {
-            //System.out.println("invisible: " + this);
-            return;
-        }
-
-        paint(gl, r);
 
     }
 

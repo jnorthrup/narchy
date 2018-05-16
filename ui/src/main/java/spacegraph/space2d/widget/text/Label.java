@@ -80,11 +80,11 @@ public class Label extends AspectAlign {
     @Override
     protected boolean prePaint(SurfaceRender r) {
         float p = r.visP(bounds).minDimension();
-        if (p < 10) {
+        if (p < 7) {
             return false;
         }
 
-        textThickness = 1 + (p/70f);
+        textThickness = Math.min(5, 0.5f + (p/70f));
 
         return super.prePaint(r);
     }

@@ -9,38 +9,52 @@ import jcog.io.tar.TarInputStream;
 import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import jcog.tree.rtree.rect.RectFloat2D;
+import org.eclipse.collections.api.map.ImmutableMap;
+import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ImageTexture extends Tex {
 
-
-    static final Map<String, byte[]> fontAwesomeIcons = new HashMap();
-    //private static JarFile fontawesome = null;
     private static final String fa_prefix = "fontawesome://";
+
+    static ImmutableMap<String, byte[]> fontAwesomeIcons;
+    static  {
+        synchronized (fa_prefix) {
+            MutableMap<String, byte[]> fontAwesomeIcons = new UnifiedMap(1024);
+            try {
+                ClassLoader classLoader = ImageTexture.class.getClassLoader();
+                InputStream cin =
+                        classLoader.getResourceAsStream("fontawesome_128.bzip2");
+                TarInputStream fa = new TarInputStream(new BZip2InputStream(true, cin));
+                TarEntry e;
+                while ((e = fa.getNextEntry()) != null) {
+                    if (e.isDirectory()) continue;
+                    fontAwesomeIcons.put(e.getName(), fa.readAllBytes());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            ImageTexture.fontAwesomeIcons = fontAwesomeIcons.toImmutable();
+        }
+    }
+
     static final Memoize<String, Texture> textureCache = new SoftMemoize<>((u) -> {
         try {
-
 
             if (u.startsWith(fa_prefix)) {
                 String icon = u.substring(fa_prefix.length());
                 byte[] b = fontAwesomeIcons.get("x128/" + icon + "-fs8.png");
                 if (b != null) {
-                    try (InputStream in = new ByteArrayInputStream(b)) {
-                        Texture t = TextureIO.newTexture(in, true, "png");
-                        return t;
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    InputStream in = new ByteArrayInputStream(b);
+                    return TextureIO.newTexture(in, true, "png");
                 } else{
-                    throw new RuntimeException("unreocgnized FontAwesome icon: " + u);
+                    throw new RuntimeException("unrecognized FontAwesome icon: " + u);
                 }
             } else {
                 return TextureIO.newTexture(new URL(u), true, null);
@@ -49,34 +63,15 @@ public class ImageTexture extends Tex {
         } catch (IOException e) {
             return null;
         }
-    }, 512, true);
-
-    static {
-        try {
-            ClassLoader classLoader = ImageTexture.class.getClassLoader();
-//            File file = new File(classLoader.getResource("fontawesome_128.jar").getFile());
-//            fontawesome = new JarFile(file);
+    }, 512, false);
 
 
-            InputStream cin =
-                    classLoader.getResourceAsStream("fontawesome_128.bzip2");
-            TarInputStream fa = new TarInputStream(new BZip2InputStream(true, cin));
-            TarEntry e;
-            while ((e = fa.getNextEntry()) != null) {
-                if (e.isDirectory()) continue;
-                fontAwesomeIcons.put(e.getName(), fa.readAllBytes());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     final String u;
 
-    public ImageTexture(File f) throws MalformedURLException {
-        this(f.toURL());
-    }
+//    public ImageTexture(File f) throws MalformedURLException {
+//        this(f.toURL());
+//    }
 
     public ImageTexture(URL path) {
         this(path.toString());
@@ -97,8 +92,10 @@ public class ImageTexture extends Tex {
 
             //TODO async load
             texture = textureCache.apply(u);
-            if (texture == null)
+            if (texture == null) {
+                //TODO missing texture
                 throw new NullPointerException();
+            }
 
         }
         super.paint(gl, bounds, repeatScale, alpha);

@@ -92,7 +92,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             //rotate to match camera's orientation (billboarding)
             Object d = body.data();
             if (d instanceof SimpleSpatial) {
-                SimpleSpatial sd = (SimpleSpatial)d;
+                //SimpleSpatial sd = (SimpleSpatial)d;
                 //Quat4f target = Quat4f.angle(-space.camFwd.x, -space.camFwd.y, -space.camFwd.z, 0);
                 //Quat4f target = new Quat4f();
 
@@ -181,7 +181,8 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
             //float tw = t.x;
             //float th = t.y;
             //gl.glDepthMask(false);
-            front.render(gl, 1, 1, dtMS);
+            float pixelScale = 1;
+            front.render(gl, pixelScale, pixelScale, dtMS);
             //gl.glDepthMask(true);
 
             //gl.glPopMatrix();

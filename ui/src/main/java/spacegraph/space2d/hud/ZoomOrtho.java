@@ -1,6 +1,7 @@
 package spacegraph.space2d.hud;
 
 import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.Surface;
@@ -62,12 +63,9 @@ public class ZoomOrtho extends Ortho {
         hud.add(content);
     }
 
-    @Override
-    protected boolean maximize() {
-        return true;
+    @Override public boolean autoresize() {
+        return true; //TODO parameter
     }
-
-
 
     @Override
     public void mouseReleased(MouseEvent e) {
@@ -114,29 +112,32 @@ public class ZoomOrtho extends Ortho {
     };
 
 
-//    final Fingering fingerWindowResize = new FingerResizeWindow(MOVE_WINDOW_BUTTON) {
-//
-//        @Override
-//        protected boolean drag(Finger f) {
-//            return false;
-//        }
-//    };
-
     @Override
-    protected void finger() {
+    protected Surface finger() {
 
-        super.finger();
+        Surface touchPrev = finger.touching();
+        Surface touchNext = super.finger();
+        if (touchNext!=null && touchNext!=touchPrev) {
+            debug(this, 1f, ()->"touch(" + touchNext + ')');
+        }
 
-        if (!finger.isFingering() && finger.touching.get() ==null) {
+        if (touchNext == null) {
 //            if (!finger.tryFingering(fingerWindowResize))
-                if (!finger.tryFingering(fingerWindowMove))
-                    if (!finger.tryFingering(fingerContentPan)) {
-
+            if (!finger.tryFingering(fingerWindowMove)) {
+                if (!finger.tryFingering(fingerContentPan)) {
+                }
             }
         }
+
+        return touchNext;
     }
 
 
+    @Override
+    public void windowLostFocus(WindowEvent e) {
+        hud.potentialDragMode = null;
+        super.windowLostFocus(e);
+    }
 
     @Override
     public void mouseExited(MouseEvent e) {
@@ -165,14 +166,13 @@ public class ZoomOrtho extends Ortho {
 
 
     public class HUD extends Windo {
-
-        float smx, smy;
+        
 //        final CurveBag<PLink> notifications = new CurveBag(PriMerge.plus, new ConcurrentHashMap(), new XorShift128PlusRandom(1));
 
         {
 //            notifications.setCapacity(8);
 //            notifications.putAsync(new PLink("ready", 0.5f));
-            clipTouchBounds = false;
+            clipBounds = false;
         }
 
 
@@ -272,13 +272,10 @@ public class ZoomOrtho extends Ortho {
 //                float lmy = finger.hit.y; //hitPoint.y;
 
 
-                smx = finger.posGlobal.x;
-                smy = finger.posGlobal.y;
 
             }
 
-            Surface x = super.tryTouch(finger);
-            return x;
+            return super.tryTouch(finger);
         }
 
 //        @Override

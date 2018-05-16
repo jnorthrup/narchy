@@ -1,7 +1,5 @@
 package jcog.util;
 
-import net.bytebuddy.jar.asm.ClassReader;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +10,6 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import static jdk.nashorn.internal.objects.Global.print;
 
 /**
  * experiments for dynamic lambda mutation
@@ -69,8 +66,8 @@ public class LambdaEdit {
             byte[] bc2 = classByteCode(sl.getImplClass());
 
             byte[] bytecode = classByteCode(MY_LAMBDA.getClass()); //this is the method that we need to create.
-            ClassReader reader = new ClassReader(bytecode);
-            print(reader);
+            //ClassReader reader = new ClassReader(bytecode);
+            //System.out.println(reader);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -182,13 +182,14 @@ public class TextUI {
                     white, darkblue,
                     TextColor.ANSI.BLACK
             );
+
             st.setWindowPostRenderer(null);
 
             tui.setTheme(st);
 
 
             final BasicWindow window = new BasicWindow();
-            window.setHints(List.of(Window.Hint.FULL_SCREEN, NO_POST_RENDERING));
+            window.setHints(List.of(Window.Hint.FULL_SCREEN, NO_POST_RENDERING, Window.Hint.NO_DECORATIONS));
             window.setEnableDirectionBasedMovements(true);
 
 
