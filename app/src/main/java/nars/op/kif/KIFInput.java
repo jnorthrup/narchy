@@ -61,7 +61,7 @@ public class KIFInput {
     private transient final Map<Term, FnDef> fn = new HashMap();
 
 
-    public static Memory.BytesToTasks intoNAL = new Memory.BytesToTasks("kif") {
+    public static Memory.BytesToTasks load = new Memory.BytesToTasks("kif") {
 
         @Override
         public Stream<Task> apply(InputStream i) {

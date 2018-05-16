@@ -75,7 +75,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
     /**
      * direct array access; use with caution ;)
      */
-    public E[] array() {
+    public Object[] array() {
         return list;
     }
 

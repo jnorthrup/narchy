@@ -101,7 +101,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final NARLoop loop = new NARLoop(this);
 
     public final Emotion emotion;
-    public final Memory memory = new Memory();
+    public final Memory memory = new Memory(this);
 
     protected volatile Logger logger;
 
