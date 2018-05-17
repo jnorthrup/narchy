@@ -11,8 +11,8 @@ import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.compound.util.Conj;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import nars.truth.func.BeliefFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,8 +21,6 @@ import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Created by me on 12/4/16.
@@ -127,61 +125,44 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 order[i] = i;
             }
 
-            //sort by lowest expectation
-            //ArrayUtils.sort(order, (i) -> l.get(i) != null ? (1f - f(l.get(i).expectation())) : Float.NEGATIVE_INFINITY);
 
-            float confMin =
-                    //nar.confMin.floatValue();
-                    //Param.TRUTH_EPSILON; //use epsilon here because we only want to check nar.confMin of the result which this may contribute to
-                    w2cSafe(Float.MIN_NORMAL);
-
-            float freqRes = nar.freqResolution.floatValue();
-
-            float f = 1f, c = 1f;
+            Truth y = null;
             int considered = 0;
             for (int i = 0; i < n; i++) {
                 TaskRegion ii = l.get(order[i]);
                 if (ii == null)
                     continue;
 
-                Truth tt = ((Task)ii).truth(); //either the default truth, or the cached proxied/projected truth
-
-                float cx = tt.conf();
-                c *= cx;
-                if (c < confMin)
-                    return null;
-                float fx = tt.freq();
-                f *= f(fx);
+                Truth x = ((Task)ii).truth(); //either the default truth, or the cached proxied/projected truth
                 considered++;
-//                if (f < freqRes) {
-//                    f = 0;
-//                    //short-circuit
-//                    if (i < n - 1) {
-//                        //delete the tasks (evidence) from the dyntruth which are not involved
-//                        for (int j = i + 1; j < n; j++) {
-//                            int oj = order[j];
-//                            l.set(oj, null);
-//                        }
-//                    }
-//                    break;
-//                }
-            }
-            if (considered == 0)
-                return null;
 
-            if (considered != n) {
-                if (f >= freqRes)
-                    return null; //missing components without having reached blackhole asymptote f=0
-                else {
-                    l.removeNulls(); //remove nulls and continue with only the components necessary
+                if (negateFreq())
+                    x = x.neg();
+
+                if (y == null) {
+                    y = x;
+                } else {
+                    y = BeliefFunction.Intersection.apply(y, x, nar, Float.MIN_NORMAL);
+                    if (y == null)
+                        return null;
                 }
             }
 
-            return new PreciseTruth(f(f), c);
+
+            if (considered != n) {
+                return null;
+//                if (f >= freqRes)
+//                    return null; //missing components without having reached blackhole asymptote f=0
+//                else {
+//                    l.removeNulls(); //remove nulls and continue with only the components necessary
+//                }
+            }
+
+            return y.negIf(negateFreq());
         }
 
-        protected float f(float freq) {
-            return freq;
+        protected boolean negateFreq() {
+            return false;
         }
 
     }
@@ -231,8 +212,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         }
 
         @Override
-        protected float f(float freq) {
-            return 1f - freq;
+        protected boolean negateFreq() {
+            return true;
         }
 
     }
@@ -341,13 +322,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             if (b == null)
                 return null;
 
-            float conf = a.conf() * b.conf();
-            float evi = c2wSafe(conf);
-            if (evi < Float.MIN_NORMAL)
-                return null;
-
-            float freq = a.freq() * (1f - b.freq());
-            return new PreciseTruth(freq, evi, false);
+            return BeliefFunction.Difference.apply(a, b, n, Float.MIN_NORMAL);
         }
     }
 

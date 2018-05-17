@@ -81,18 +81,9 @@ public final class TruthFunctions {
     }
     /* ----- double argument functions, called in SyllogisticRules ----- */
 
-    /**
-     * assumes belief freq=1f
-     */
-    @Nullable
-    public static Truth deduction1(/*@NotNull*/ Truth a, float bC, float minConf) {
-        return deductionB(a, 1f, bC, minConf);
-    }
-
-
 
     @Nullable
-    public static Truth deductionB(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
+    public static Truth deduction(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
 
         float f = and(a.freq(), bF);
         float c = and(f, a.conf(), bC);
@@ -115,14 +106,8 @@ public final class TruthFunctions {
     }
 
     @Nullable
-    public static Truth analogyNew(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
-        float c = and(a.conf(), bc, bf);
-        return c >= minConf ? t(a.freq(), c) : null;
-    }
-
-    @Nullable
     public static Truth analogy(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        return analogyNew(a, b.freq(), b.conf(), minConf);
+        return TruthFunctions2.analogyNew(a, b.freq(), b.conf(), minConf);
     }
 
 //    /**
@@ -265,47 +250,6 @@ public final class TruthFunctions {
 
 
     /**
-     * frequency determined entirely by the desire component.
-     */
-    @Nullable public static Truth desireNew(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean weak) {
-
-        float c = and(goal.conf(), belief.conf(), belief.freq());
-        //float c = and(goal.conf(), belief.conf());
-        if (weak)
-            c *= w2c(1.0f);
-
-        if (c >= minConf) {
-
-            //instead of the original's f = and(aFreq,bFreq),
-            //this does not discriminate against negative goals but instead
-            //pulls the frequency toward 0.5 in proportion to (1- bFreq)
-            //float f = Util.lerp(b.freq(), 0.5f, a.freq());
-
-            float f = goal.freq();
-
-            return $.t(f, c);
-
-        } else {
-            return null;
-        }
-        //return c < minConf ? null : $.t(Util.lerp(b.freq(), 0.5f, a.freq()), c);
-
-
-//        float c = a.conf() * b.freq();
-//        return c < minConf ? null : $.t(a.freq(), c);
-
-        //float c = and(a.conf(), b.conf(), b.freq());
-//        return c < minConf ? null : $.t(a.freq(), c);
-        //return $.t(a.expectation(b.freq()), b.conf());
-        //return c < minConf ? null : $.t(a.expectation(b.freq()), c);
-        //return c < minConf ? null : $.t(TruthFunctions.expectation(a.freq(), b.freq()) /* b.freq used in conf param */, c);
-
-
-        //return c < minConf ? null : $.t(a.freq(), c);
-
-    }
-
-    /**
      * A function specially designed for desire value [To be refined]
      */
     public static Truth desireWeakOriginal(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
@@ -388,19 +332,19 @@ public final class TruthFunctions {
         }
     }
 
-    /**
-     * {<M --> S>, <M <-> P>} |- <M --> (S|P)>
-     *
-     * @param a Truth value of the first premise
-     * @param b Truth value of the second premise
-     * @return Truth value of the conclusion
-     */
-    @Nullable
-    public static Truth union(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
-        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
-        float c = compConf(f1, c1, true, f2, c2, true);
-        return (c < minConf) ? null : $.t(or(f1, f2), c);
-    }
+//    /**
+//     * {<M --> S>, <M <-> P>} |- <M --> (S|P)>
+//     *
+//     * @param a Truth value of the first premise
+//     * @param b Truth value of the second premise
+//     * @return Truth value of the conclusion
+//     */
+//    @Nullable
+//    public static Truth union(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
+//        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
+//        float c = compConf(f1, c1, true, f2, c2, true);
+//        return (c < minConf) ? null : $.t(or(f1, f2), c);
+//    }
 
     /**
      * {<M --> S>, <M <-> P>} |- <M --> (S&P)>
@@ -487,7 +431,7 @@ public final class TruthFunctions {
     public static Truth anonymousAnalogy(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float v0c = w2c(a.conf());
         //since in analogy it will be and() with it, if it's already below then stop
-        return v0c < minConf ? null : analogyNew(b, a.freq(), v0c, minConf);
+        return v0c < minConf ? null : TruthFunctions2.analogyNew(b, a.freq(), v0c, minConf);
     }
 
     /**

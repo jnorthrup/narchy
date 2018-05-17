@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import static nars.$.t;
 import static nars.Op.BELIEF;
 
 /**
@@ -35,22 +34,23 @@ public enum BeliefFunction implements TruthOperator {
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            return TruthFunctions.deductionB(T, B.freq(), B.conf(), minConf);
+            return TruthFunctions.deduction(T, B.freq(), B.conf(), minConf);
+            //return TruthFunctions2.deduction(T, B.freq(), B.conf(), minConf);
         }
     },
 
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-            return T != null ? TruthFunctions.deduction1(T, confDefault(m), minConf) : null;
+            return T != null ? Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
         }
     },
-    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
-        }
-    },
+//    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
+//            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
+//        }
+//    },
 
     /**
      * keeps the same input frequency but reduces confidence
@@ -236,42 +236,44 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.intersection(T, B, minConf);
-        }
-    },
-
-    IntersectionSym() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (T.isPositive() && B.isPositive()) {
-                return TruthFunctions.intersection(T, B, minConf);
-            } else if (T.isNegative() && B.isNegative()) {
-                Truth C = TruthFunctions.intersection(T.neg(), B.neg(), minConf);
-                return C!=null ? C.neg() : null;
-            } else {
-                return null;
-            }
+            //return TruthFunctions2.intersectionX(T, B, minConf);
         }
     },
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.union(T, B, minConf);
+            @Nullable Truth z = TruthFunctions.intersection(T.neg(), B.neg(), minConf);
+            return z != null ? z.neg() : null;
         }
     },
+//    IntersectionSym() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            if (T.isPositive() && B.isPositive()) {
+//                return TruthFunctions.intersection(T, B, minConf);
+//            } else if (T.isNegative() && B.isNegative()) {
+//                Truth C = TruthFunctions.intersection(T.neg(), B.neg(), minConf);
+//                return C!=null ? C.neg() : null;
+//            } else {
+//                return null;
+//            }
+//        }
+//    },
 
-    UnionSym() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (T.isPositive() && B.isPositive()) {
-                return TruthFunctions.union(T, B, minConf);
-            } else if (T.isNegative() && B.isNegative()) {
-                Truth C = TruthFunctions.union(T.neg(), B.neg(), minConf);
-                return C!=null ? C.neg() : null;
-            } else {
-                return null;
-            }
-        }
-    },
+//
+//    UnionSym() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            if (T.isPositive() && B.isPositive()) {
+//                return TruthFunctions.union(T, B, minConf);
+//            } else if (T.isNegative() && B.isNegative()) {
+//                Truth C = TruthFunctions.union(T.neg(), B.neg(), minConf);
+//                return C!=null ? C.neg() : null;
+//            } else {
+//                return null;
+//            }
+//        }
+//    },
 
     Difference() {
         @Override
@@ -398,7 +400,7 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
             if (B == null) return null;
-            return TruthFunctions.deduction1(B, confDefault(m), minConf);
+            return StructuralDeduction.apply(B, null, m, minConf);
         }
     },
 
@@ -432,8 +434,8 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
             if (B == null) return null;
-            Truth res = TruthFunctions.deduction1(B, confDefault(m), minConf);
-            return (res != null) ? t(1.0f - res.freq(), res.conf()) : null;
+            Truth res = BeliefStructuralDeduction.apply(T,B, m, minConf);
+            return (res != null) ? res.neg() : null;
         }
     },
 

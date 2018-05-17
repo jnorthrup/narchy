@@ -5,13 +5,12 @@ import nars.NAR;
 import nars.Op;
 import nars.term.Term;
 import nars.truth.Truth;
+import nars.truth.TruthFunctions2;
 import nars.truth.func.annotation.AllowOverlap;
 import nars.truth.func.annotation.SinglePremise;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-
-import static nars.truth.TruthFunctions.*;
 
 public enum GoalFunction implements TruthOperator {
 
@@ -19,7 +18,7 @@ public enum GoalFunction implements TruthOperator {
     Strong() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return desireNew(T, B, minConf, true);
+            return TruthFunctions2.desireNew(T, B, minConf, true);
             //return desireStrongOriginal(T, B, minConf);
         }
     },
@@ -28,7 +27,7 @@ public enum GoalFunction implements TruthOperator {
     Weak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return desireNew(T, B, minConf, false);
+            return TruthFunctions2.desireNew(T, B, minConf, false);
             //return desireWeakOriginal(T, B, minConf);
         }
     },
@@ -115,7 +114,7 @@ public enum GoalFunction implements TruthOperator {
     StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return deduction1(T, confDefault(m), minConf);
+            return BeliefFunction.StructuralDeduction.apply(T, B, m, minConf);
         }
     },
 //    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
@@ -129,7 +128,7 @@ public enum GoalFunction implements TruthOperator {
     BeliefStructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return deduction1(B, confDefault(m), minConf);
+            return BeliefFunction.BeliefStructuralDeduction.apply(T, B, m, minConf);
         }
     },
 
@@ -145,7 +144,7 @@ public enum GoalFunction implements TruthOperator {
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return union(T, B, minConf);
+            return BeliefFunction.Union.apply(T, B, m, minConf);
         }
     },
 
@@ -153,7 +152,7 @@ public enum GoalFunction implements TruthOperator {
     Intersection() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return intersection(T, B, minConf);
+            return BeliefFunction.Intersection.apply(T, B, m, minConf);
         }
     },
 
@@ -161,13 +160,14 @@ public enum GoalFunction implements TruthOperator {
     Difference() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return difference(T, B, minConf);
+            return BeliefFunction.Difference.apply(T, B, m, minConf);
         }
     },
+
     DifferenceReverse() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return difference(B, T, minConf);
+            return BeliefFunction.Difference.apply(B, T, m, minConf);
         }
     },
 

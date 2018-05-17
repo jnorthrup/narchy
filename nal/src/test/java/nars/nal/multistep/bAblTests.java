@@ -44,9 +44,9 @@ public class bAblTests extends NALTest {
 
         TestNAR t = test;
 
-        t.log();
+        //t.log();
         t.nar.freqResolution.set(0.1f);
-        t.nar.termVolumeMax.set(48);
+        t.nar.termVolumeMax.set(40);
 
         t.believe("((pick(#Person,$Object) &&+1 inside(#Person,$Place)) ==>+1 inside($Object,$Place))")
                 .inputAt(1,"pick(john,football). :|:") ////John picked up the football.
