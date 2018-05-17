@@ -66,11 +66,11 @@ public enum TruthFunctions2 { ;
     /**
      * frequency determined entirely by the desire component.
      */
-    @Nullable public static Truth desireNew(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean weak) {
+    @Nullable public static Truth desireNew(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
         float c = and(goal.conf(), belief.conf(), belief.freq());
         //float c = and(goal.conf(), belief.conf());
-        if (weak)
+        if (!strong)
             c *= TruthFunctions.w2c(1.0f);
 
         if (c >= minConf) {

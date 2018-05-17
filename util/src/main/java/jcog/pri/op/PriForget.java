@@ -2,6 +2,7 @@ package jcog.pri.op;
 
 import jcog.Util;
 import jcog.bag.Bag;
+import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -53,7 +54,7 @@ public class PriForget<P extends Priority> implements Consumer<P> {
 //                    / (pressure + mass)
 //                    * (((float)s) / c);
 
-            if (eachMustForgetPct > (1f/(c*c))) {
+            if (eachMustForgetPct > Prioritized.EPSILON) {
                 return f.valueOf(eachMustForgetPct);
             }
 

@@ -4,12 +4,14 @@ import jcog.Texts;
 import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
+import nars.derive.deriver.SimpleDeriver;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
+import java.util.List;
 
 import static nars.$.$$;
 
@@ -115,15 +117,44 @@ class KIFInputTest {
     }
 
     @Test public void testLoad() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        Param.DEBUG = true;
+
+        NAR n =
+                //NARS.tmp();
+                NARchy.core();
 
         n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/Merge.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/Economy.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/Mid-level-ontology.kif.nalz\");");
         n.run(1);
+        System.err.println(n.concepts.size() + " concepts");
         n.clear();
-        n.log();
-        n.input("$1.0 possesses(I,#everything)!");
-        n.input("$1.0 (--(I <-> #everyoneElse) && --possesses(#everyoneElse, #something))! %1.0;0.75%");
-        n.run(1000);
+
+        //n.log();
+        n.onTask(x->{
+            if (x.isGoal() && x.conf() > 0.1f) {
+                System.out.println(x.proof());
+            }
+        });
+
+
+        SimpleDeriver.forTasks(n,
+            List.of(
+                n.inputTask("$1.0 possesses(I,#everything)!"),
+                n.inputTask("$1.0 Getting(I,#everything)!"),
+                n.inputTask("$1.0 uses(I,#anything)!"),
+                n.inputTask("$1.0 ChangeOfPossession(#everything,I)!"),
+                n.inputTask("(I-->economy).") //i am an economy
+            ));
+
+        //n.input("$1.0 (--(I <-> #everyoneElse) && --possesses(#everyoneElse, #something))!");
+
+        n.input("$1.0 --Giving(I,#anything)!");
+
+        n.input("$1.0 --ChemicalDecomposition(I,#1)!"); //chemical decomposition==>combustion lol
+        n.input("$1.0 exploits(I,#anything)!");
+        n.run(15000);
         n.stats().forEach((s,v)->System.out.println(s + "\t" + v));
     }
 
@@ -151,7 +182,7 @@ class KIFInputTest {
 
             k.output(O);
 
-            nar.log();
+            //nar.log();
 
             nar.inputNarsese(new FileInputStream(O));
 

@@ -8,8 +8,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.Activate;
-import nars.derive.Derivers;
 import nars.derive.deriver.SimpleDeriver;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -56,10 +54,7 @@ public class NALSchema {
             }
         }
 
-        return new SimpleDeriver(x -> {
-            while (x.test(new Activate(concepts.get(n.random().nextInt(concepts.size())),1f))) ;
-        }, n::input, Derivers.nal(1, 8, n),
-                SimpleDeriver.GlobalTermLinker);
+        return SimpleDeriver.forConcepts(n, concepts);
 
     }
 

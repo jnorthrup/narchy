@@ -11,6 +11,7 @@ import nars.concept.Concept;
 import nars.control.Activate;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
+import nars.derive.Derivers;
 import nars.derive.Premise;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.link.TaskLink;
@@ -52,6 +53,31 @@ public class SimpleDeriver extends Deriver {
     public SimpleDeriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriverRuleSet rules, BiFunction<Concept, Derivation, LinkModel> linking) {
         super(source, target, rules);
         this.linking = linking;
+    }
+
+    /** randomly samples from list of concepts */
+    public static SimpleDeriver forConcepts(NAR n, List<Concept> concepts) {
+        int cc = concepts.size();
+        assert(cc>0);
+        Random rng = n.random();
+        Consumer<Predicate<Activate>> forEach = x -> {
+            while (x.test(new Activate(concepts.get(rng.nextInt(cc)), 1f))) ;
+        };
+        PremiseDeriverRuleSet rules = Derivers.nal(1, 8, n);
+
+        return new SimpleDeriver(forEach, n::input, rules, GlobalTermLinker);
+    }
+
+    public static SimpleDeriver forTasks(NAR n, List<Task> tasks) {
+        int tt = tasks.size();
+        assert(tt>0);
+        Random rng = n.random();
+        Consumer<Predicate<Activate>> forEach = x -> {
+            while (x.test(new Activate(tasks.get(rng.nextInt(tt)).concept(n, true), 1f))) ;
+        };
+        PremiseDeriverRuleSet rules = Derivers.nal(1, 8, n);
+
+        return new SimpleDeriver(forEach, n::input, rules, GlobalTermLinker);
     }
 
     @Override

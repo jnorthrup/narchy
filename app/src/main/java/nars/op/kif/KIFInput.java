@@ -128,15 +128,15 @@ public class KIFInput {
             }
             final int[] k = {1};
             Term[] typeConds = Util.map(0, ds, i ->
-                    $.inh($.varDep(1 + i),
+                    INH.the($.varDep(1 + i),
                             s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))), Term[]::new);
             if (s.range != null) {
-                typeConds = ArrayUtils.add(typeConds, $.inh(v, s.range));
+                typeConds = ArrayUtils.add(typeConds, INH.the(v, s.range));
             }
             Term types = CONJ.the(
                     typeConds
             );
-            Term fxy = impl($.inh($.p(vt), f), types, true);
+            Term fxy = impl(INH.the($.p(vt), f), types, true);
             if (fxy != null) {
                 if (fxy instanceof Bool) {
                     logger.error("bad function {} {} {}", f, s.domain, s.range);
@@ -175,12 +175,12 @@ public class KIFInput {
         }
     }
 
-    static final Function<Term, Term> domainRangeMerger(Term type) {
+    static Function<Term, Term> domainRangeMerger(Term type) {
         return (existing) -> {
             if (existing.equals(type))
                 return existing;
             else
-                return $.seti(List.of(existing, type));
+                return SETi.the(List.of(existing, type));
         };
     }
 
@@ -210,7 +210,7 @@ public class KIFInput {
         }
 
         List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
-        List<Term> args = sargs != null ? sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList()) : Collections.emptyList();
+        List<Term> args = sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList());
 
         if (args.contains(null)) {
             throw new NullPointerException("in: " + args);
@@ -244,7 +244,8 @@ public class KIFInput {
         Term y = null;
         switch (root) {
             case "ListFn":
-                return $.p(args);
+                y = $.p(args);
+                break;
 
             case "attribute":
             case "subrelation":
@@ -253,6 +254,7 @@ public class KIFInput {
                 if (includeSubclass) {
                     if (args.size() != 2) {
                         System.err.println("subclass expects 2 arguments");
+                        return null;
                     } else {
                         y = INH.the(args.get(0), args.get(1));
                     }
@@ -261,7 +263,8 @@ public class KIFInput {
 
             case "exhaustiveAttribute": {
                 //ex: (exhaustiveAttribute RiskAttribute HighRisk LowRisk)
-                return INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
+                y = INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
+                break;
             }
 
             case "instance":
@@ -270,7 +273,7 @@ public class KIFInput {
                         System.err.println("instance expects 2 arguments");
                     } else {
                         y = //$.inst
-                                $.inh
+                                INH.the
                                         (args.get(0), args.get(1));
                     }
                 }
@@ -287,7 +290,7 @@ public class KIFInput {
                 break;
 
             case "equal":
-                y = $.func("equal", args.get(0), args.get(1));
+                y = $.func("isEqual", args.get(0), args.get(1)); //"equal" is NARchy built-in
                 //y = $.sim(args.get(0), args.get(1));
                 break;
 
@@ -331,7 +334,7 @@ public class KIFInput {
 
                 Term term = args.get(1);
                 Term string = args.get(2);
-                y = $.inh($.p($.the(language), string), term);
+                y = INH.the($.p($.the(language), string), term);
                 break;
 
             case "domain":
@@ -373,7 +376,7 @@ public class KIFInput {
                 Variable v0 = $.varDep(1);
                 y = Op.INH.the(
                         v0,
-                        Op.SECTe.the(args.toArray(new Term[0]))
+                        Op.SECTe.the(args.toArray(Op.EmptyTermArray))
                 ).neg();
 
                 break;
@@ -381,12 +384,12 @@ public class KIFInput {
             case "comment":
             case "documentation":
                 if (includeDoc) {
-                    if (args.size() == 2) {
+                    if (args.size() == 3) {
                         Term subj = args.get(0);
                         Term lang = args.get(1);
                         Term desc = $.quote(args.get(2));
                         try {
-                            y = $.inh($.p(subj, desc), lang);
+                            y = INH.the($.p(subj, desc), lang);
                         } catch (Exception e) {
                             //e.printStackTrace();
                             y = null;
@@ -394,6 +397,8 @@ public class KIFInput {
                     } else {
                         throw new UnsupportedOperationException();
                     }
+                } else {
+                    return null;
                 }
                 break;
             default:
@@ -403,26 +408,24 @@ public class KIFInput {
 
         if (y == null) {
 
-            if (!includeDoc && (xCar.equals("documentation") || xCar.equals("comment")))
-                return null;
+
 
             Term z = formulaToTerm(xCar, level + 1);
 
             if (z != null) {
                 switch (z.toString()) {
                     case "and":
-                        Term[] a = args.toArray(new Term[args.size()]);
-                        y = CONJ.the(a);
+                        y = CONJ.the(args);
                         break;
                     case "or":
-                        y = $.disj(args.toArray(new Term[args.size()]));
+                        y = $.disj(args.toArray(new Term[0]));
                         break;
                     case "not":
                         y = args.get(0).neg();
                         break;
                     default:
                         if (!z.op().var)
-                            y = $.inh($.p(args), z); //HACK
+                            y = INH.the($.p(args), z); //HACK
                         else {
                             args.add(0, z); //re-attach
                             y = $.p(args);
@@ -455,7 +458,7 @@ public class KIFInput {
 
     //public final Set<Twin<Term>> impl = new HashSet();
 
-    public Term impl(Term a, Term b, boolean implOrEquiv) {
+    public static Term impl(Term a, Term b, boolean implOrEquiv) {
 
         //reduce as implication first
         Term tmp = IMPL.the(a, b);

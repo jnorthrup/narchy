@@ -20,7 +20,7 @@ public class NARchy extends NARS {
 
     static final Logger logger = LoggerFactory.getLogger(NARchy.class);
 
-    public static NAR ui() {
+    public static NAR core() {
 
         //u.forEach(System.out::println);
 //        u.put("boot", new Date().toString());
@@ -32,7 +32,7 @@ public class NARchy extends NARS {
 
         NAR nar = new DefaultNAR(8, true)
 
-                .index(new CaffeineIndex(10 * 128 * 1024))
+                .index(new CaffeineIndex(1000 * 128 * 1024))
 
                 //.exe(new WorkerMultiExec(512, 2, 64))
                 .exe(new PoolMultiExec /*WorkerMultiExec*/(
@@ -56,9 +56,15 @@ public class NARchy extends NARS {
         nar.questionPriDefault.set(0.35f);
         nar.questPriDefault.set(0.35f);
 
-        ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (Task::isInput), 16, 64);
+        ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (t -> true), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
+        return nar;
+    }
+
+    public static NAR ui() {
+        /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
+        NAR nar = ui();
         //auxiliary modules, load in background thread
         nar.runLater(()->{
 
@@ -87,11 +93,6 @@ public class NARchy extends NARS {
         });
 
         return nar;
-    }
-
-    public static NAR core() {
-        /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
-        return ui();
     }
 
 
