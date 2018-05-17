@@ -9,7 +9,7 @@ import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Focus;
 import nars.exe.WorkerMultiExec;
 import nars.gui.EmotionPlot;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.concept.CaffeineIndex;
 import nars.index.concept.HijackConceptIndex;
@@ -382,7 +382,7 @@ abstract public class NAgentX extends NAgent {
 
             chart(a);
 
-            SpaceGraph.window(Vis.top(n), 800, 800);
+            SpaceGraph.window(NARui.top(n), 800, 800);
 
 
             //START AGENT
@@ -437,7 +437,7 @@ abstract public class NAgentX extends NAgent {
                     grid(
                             new AutoSurface(a),
 
-                            Vis.beliefCharts(nar.dur() * 64, a.actions.keySet(), a.nar()),
+                            NARui.beliefCharts(nar.dur() * 64, a.actions.keySet(), a.nar()),
 
                             new EmotionPlot(64, a),
                             grid(
@@ -452,7 +452,7 @@ abstract public class NAgentX extends NAgent {
                                             } catch (Narsese.NarseseException e) {
                                                 e.printStackTrace();
                                             }
-                                            Vis.conceptWindow(s, nar);
+                                            NARui.conceptWindow(s, nar);
                                         }
                                     }.surface(),
 

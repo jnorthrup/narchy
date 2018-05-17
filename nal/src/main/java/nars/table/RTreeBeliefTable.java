@@ -898,6 +898,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
 
         @Override
+        public boolean add(TaskRegion taskRegion) {
+            //skip adding/ranking task region (branches)
+            return (!(taskRegion instanceof Task)) || super.add(taskRegion);
+        }
+
+        @Override
         public boolean test(TaskRegion x) {
             add(x);
             return --attemptsRemain > 0;

@@ -11,7 +11,7 @@ import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.concept.scalar.SwitchAction;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.op.AutoConceptualizer;
 import nars.term.Term;
 import nars.time.Tense;
@@ -163,7 +163,7 @@ public class FZero extends NAgentX {
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        SpaceGraph.window(Vis.beliefCharts(64, concat(java.util.List.of(
+        SpaceGraph.window(NARui.beliefCharts(64, concat(java.util.List.of(
                 dAngVel, dAccel, dVelX, dVelY), ang), nar), 300, 300);
 
 //        new BeliefPredict(concat(
@@ -363,7 +363,7 @@ public class FZero extends NAgentX {
                 //,INH.the($.the("none"), id)
         );
         onFrame(s);
-        SpaceGraph.window(Vis.beliefCharts(64, s.sensors, nar), 300, 300);
+        SpaceGraph.window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 
     private void initToggle() {

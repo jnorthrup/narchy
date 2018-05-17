@@ -6,8 +6,8 @@ package nars;
 //import ch.qos.logback.core.ConsoleAppender;
 
 import com.google.common.base.Strings;
-import com.google.common.escape.Escapers;
 import jcog.TODO;
+import jcog.Texts;
 import jcog.Util;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
@@ -158,28 +158,13 @@ public enum $ {
 
     static final Atom emptyQuote = (Atom) Atomic.the("\"\"");
 
-    static final Escapers.Builder quoteEscaper = Escapers.builder().addEscape('\"', "\\\"");
-
-
     public static Atomic quote(Object text) {
         String s = text.toString();
 
-        int length = s.length();
-
-        if (length == 0)
+        if (s.isEmpty())
             return emptyQuote;
-
-        if (s.charAt(0) == '\"' && s.charAt(length - 1) == '\"') {
-            if (length == 1) {
-                s = "\"\\\"\"";
-            } else {
-                //already quoted the empty string
-            }
-        } else {
-            s = ("\"" + quoteEscaper.build().escape(s) + '"');
-        }
-
-        return Atomic.the(s);
+        else
+            return Atomic.the(Texts.quote(s));
     }
 
 
@@ -820,19 +805,7 @@ public enum $ {
 
     @NotNull
     public static String unquote(Term s) {
-        return unquote(s.toString());
-    }
-
-    @NotNull
-    public static String unquote(String x) {
-        while (true) {
-            int len = x.length();
-            if (len > 0 && x.charAt(0) == '\"' && x.charAt(len - 1) == '\"') {
-                x = x.substring(1, len - 1);
-            } else {
-                return x;
-            }
-        }
+        return Texts.unquote(s.toString());
     }
 
 

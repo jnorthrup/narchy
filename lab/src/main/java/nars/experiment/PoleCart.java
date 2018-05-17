@@ -9,7 +9,7 @@ import nars.NAgent;
 import nars.NAgentX;
 import nars.concept.Concept;
 import nars.concept.scalar.Scalar;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.util.signal.BeliefPredict;
 import spacegraph.SpaceGraph;
 
@@ -216,7 +216,7 @@ public class PoleCart extends NAgentX {
 //        SpaceGraph.window(bmp,400,400);
 
 
-        SpaceGraph.window(Vis.beliefCharts(512,
+        SpaceGraph.window(NARui.beliefCharts(512,
                 sensors,
                 nar), 900, 900);
 

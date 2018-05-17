@@ -1,7 +1,9 @@
 package jcog;
 
+import com.google.common.escape.Escapers;
 import org.HdrHistogram.AbstractHistogram;
 import org.HdrHistogram.DoubleHistogram;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintStream;
 import java.nio.CharBuffer;
@@ -779,6 +781,39 @@ public enum Texts {
         histogramDecode(h, "", (label, value) -> {
             out.println(label + " " + value);
         });
+    }
+
+    static final Escapers.Builder quoteEscaper = Escapers.builder().addEscape('\"', "\\\"");
+
+    public static String quote(String s) {
+        int length = s.length();
+
+        if (length == 0)
+            return "\"\"";
+
+        if (s.charAt(0) == '\"' && s.charAt(length - 1) == '\"') {
+            if (length == 1) {
+                s = "\"\\\"\"";
+            } else {
+                //already quoted the empty string
+            }
+        } else {
+            s = ("\"" + quoteEscaper.build().escape(s) + '"');
+        }
+
+        return s;
+    }
+
+
+    public static String unquote(String x) {
+        while (true) {
+            int len = x.length();
+            if (len > 0 && x.charAt(0) == '\"' && x.charAt(len - 1) == '\"') {
+                x = x.substring(1, len - 1);
+            } else {
+                return x;
+            }
+        }
     }
 }
 

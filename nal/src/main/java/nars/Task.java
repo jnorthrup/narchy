@@ -49,6 +49,11 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priority {
 
 
+    static boolean equal(Task thiz, Object that) {
+        return (thiz == that) ||
+                ((that instanceof Task && thiz.hashCode() == that.hashCode() && Task.equal(thiz, (Task)that)));
+    }
+
     /**
      * assumes identity and hash have been tested already.
      * <p>
@@ -1036,7 +1041,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         switch (yy.size()) {
             case 0:
-                return preProcess(n, x, x);
+                //return preProcess(n, x, x);
+                return null;
             case 1:
                 return yy.iterator().next();
             default:

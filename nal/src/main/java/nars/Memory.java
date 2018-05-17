@@ -102,6 +102,8 @@ public class Memory {
     final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
+
+
     final MemoryResolver StdIOResolver = new MemoryResolver() {
 
         @Override
@@ -126,6 +128,14 @@ public class Memory {
     };
     final MemoryResolver URIResolver = new MemoryResolver() {
 
+        final List<Term> ROOTS = List.of(
+                Atomic.the("file:///"),
+                Atomic.the("http://github.com/automenta/narchy"));
+
+        @Override
+        public Stream<Term> roots(Memory m) {
+            return ROOTS.stream();
+        }
 
         @Override
         public Stream<Supplier<Stream<Task>>> readers(Term x, Memory m) {
@@ -259,8 +269,16 @@ public class Memory {
         }
     }
 
+    public Stream<Term> contents(String address) {
+        return contents(Atomic.the(address));
+    }
+
     public Stream<Term> contents(Term address) {
-        return resolvers.stream().flatMap(r -> r.contents(address, Memory.this)).filter(Objects::nonNull);
+        return resolvers.stream().flatMap(r -> r.contents(address, Memory.this)).filter(Objects::nonNull).distinct();
+    }
+
+    public Stream<Term> roots() {
+        return resolvers.stream().flatMap(r -> r.roots(Memory.this)).filter(Objects::nonNull).distinct();
     }
 
     public Memory add(NAR n) {
@@ -334,6 +352,12 @@ public class Memory {
          * returned may be resolvable by this or another resolver.
          */
         default Stream<Term> contents(Term x, Memory m) {
+            return Stream.empty();
+        }
+
+
+        /** entry points into memory.  none by default */
+        default Stream<Term> roots(Memory m) {
             return Stream.empty();
         }
     }
@@ -424,33 +448,53 @@ public class Memory {
      * bzip2 compressed
      * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
      */
-    static final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
+    final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
+
+
         @Override
         public Stream<Task> apply(InputStream ii) {
             return Streams.stream(()->new Iterator<Task>() {
 
                 final DataInputStream i = new DataInputStream(new BZip2InputStream(ii));
-                boolean done = false;
+                Task next = null;
+
 
                 @Override
                 public boolean hasNext() {
-                    return done;
+                    try {
+                        next = IO.readTask(i);
+                        return true;
+                    } catch (EOFException f) {
+                        next = null;
+                        return false;
+                    } catch (IOException e) {
+                        next = null;
+                        logger.warn("{} {}", ii, e);
+                        return false;
+                    }
                 }
 
                 @Override
                 public Task next() {
-                    try {
-                        Task t = IO.readTask(i);
-                        if (i.available()==0)
-                            done = true;
-                        return t;
-                    } catch (IOException e) {
-                        done = true;
-                    }
-                    return null;
+                    return next;
                 }
             });
         }
     };
 
+    /*
+    TODO lucene user resolver:
+
+                nar.runLater(() -> {
+                User.the().get(id.toString(), (byte[] x) -> {
+                    try {
+                        nn.inputBinary(new ByteArrayInputStream(x));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    nn.logger.info("loaded {}", id);
+                });
+            });
+
+     */
 }

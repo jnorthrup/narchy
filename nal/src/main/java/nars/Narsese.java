@@ -9,6 +9,7 @@ import com.github.fge.grappa.stack.ValueStack;
 import com.github.fge.grappa.transform.ParserTransformer;
 import com.github.fge.grappa.transform.base.ParserClassNode;
 import jcog.Util;
+import nars.task.CommandTask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
@@ -24,8 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
+import static nars.Op.*;
 import static nars.term.Term.nullIfNull;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -266,6 +266,11 @@ public class Narsese {
                         (Byte) x[2]
                         :
                         (byte) (((Character) x[2]).charValue());
+
+        if (punct == COMMAND) {
+            //TODO warn about the other details which, if present, are being ignored
+            return new CommandTask(content);
+        }
 
         Object _t = x[3];
         Truth t;

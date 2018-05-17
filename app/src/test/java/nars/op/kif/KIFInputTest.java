@@ -1,5 +1,6 @@
 package nars.op.kif;
 
+import jcog.Texts;
 import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
@@ -7,6 +8,8 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import java.io.FileInputStream;
 
 import static nars.$.$$;
 
@@ -89,5 +92,155 @@ class KIFInputTest {
 
 
         //n.input("copy(\" + inURL + "\", \"file:///tmp/" + sumo + ".nal\")");
+    }
+
+    @Test public void testGenerate() {
+        String sumoDir = "file:///home/me/sumo/";
+
+        NAR n = NARS.shell();
+
+        n.memory.on(KIFInput.load);
+
+        n.memory.contents(sumoDir).parallel().forEach(I -> {
+            String ii = Texts.unquote(I.toString());
+            if (!ii.endsWith(".kif"))
+                return;
+
+            String name = ii.substring(ii.lastIndexOf('/')+1, ii.lastIndexOf('.'));
+            Term O = Atomic.the("file:///tmp/sumo/" + name + ".kif.nalz");
+            Runnable r = n.memory.copy(I, O);
+            r.run();
+        });
+
+    }
+
+    @Test public void testLoad() throws Narsese.NarseseException {
+        NAR n = NARS.tmp();
+        n.log();
+        n.input("load(\"file:///tmp/sumo/CCTrep.kif.nalz\");");
+        n.run(1);
+    }
+
+    @Test public void test1() throws Exception {
+
+
+            NAR nar = NARS.tmp();
+            //MetaGoal.Perceive.set(e.emotion.want, -0.1f);
+            //e.emotion.want(MetaGoal.Perceive, -0.1f);
+
+            //new PrologCore(e);
+
+            String I =
+                    //"/home/me/sumo/Biography.kif"
+                    //"/home/me/sumo/Military.kif"
+                    //"/home/me/sumo/ComputerInput.kif"
+                    //"/home/me/sumo/FinancialOntology.kif"
+                    "/home/me/sumo/Merge.kif"
+                    //"/home/me/sumo/emotion.kif"
+                    //"/home/me/sumo/Weather.kif"
+                    ;
+
+            String O = "/home/me/d/sumo_merge.nal";
+            KIFInput k = new KIFInput(new FileInputStream(I));
+
+            k.output(O);
+
+            nar.log();
+
+            nar.inputNarsese(new FileInputStream(O));
+
+//        final PrintStream output = System.out;
+//        for (Term x : k.beliefs) {
+//            output.println(x + ".");
+//            try {
+//                nar.believe(x);
+//            } catch (Exception e) {
+//                logger.error("{} {}", e.getMessage(), x);
+//            }
+//            try {
+//                nar.input("$0.01$ " + x + ".");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+
+//https://github.com/ontologyportal/sumo/blob/master/tests/TQG1.kif.tq
+//(time 240)
+//(instance Org1-1 Organization)
+//(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
+//(answer yes)
+            //e.clear();
+//        nar.believe("Organization:org1");
+//        e.question("member(?1, org1)?", ETERNAL, (q,a)->{
+//            System.out.println(a);
+//        });
+//        nar.ask($.$$("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
+//           System.out.println(t);
+//        });
+            //e.believe("accountHolder(xyz,1)");
+//        e.ask($.$safe("(EmotionalState<->?1)"), ETERNAL, QUESTION, (t)->{
+//           System.out.println(t);
+//        });
+            //e.believe("attribute(xyz,Philosopher)");
+            //e.input("(xyz<->?1)?");
+
+            nar.run(10000);
+//        Thread.sleep(1000);
+//        e.run(1000);
+            //e.conceptsActive().forEach(s -> System.out.println(s));
+
+            //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
+            //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";
+
+
+//        TrieDeriver miniDeriver =
+//                //new TrieDeriver(PremiseRuleSet.rules(false, "nal6.nal"));
+//                TrieDeriver.get(new PremiseRuleSet(
+//                        k.impl.parallelStream().map(tt -> {
+//                            try {
+//                                return PremiseRuleSet.parse(tt.getOne() + ", () |- " + tt.getTwo() + ", (Belief:Identity)\n");
+//                            } catch (Exception e1) {
+//                                //e1.printStackTrace();
+//                                return null;
+//                            }
+//                        }).filter(Objects::nonNull).toArray(PremiseRule[]::new)
+//                ) );
+
+
+//        miniDeriver.print(System.out);
+
+            //d.clear();
+
+
+//        e.onTask(t -> {
+//           if (t.isInput()) {
+//               //d.forEachTask(b -> {
+//                   miniDeriver.test(new Derivation(
+//                           e,
+//                           budgeting,
+//                           Param.UnificationStackMax
+//                   ) {
+//                       @Override
+//                       public void derive(Task x) {
+//                           e.input(x);
+//                       }
+//                   }.restartC(new Premise( t, Terms.ZeroProduct, null, 1f), Param.UnificationTTLMax));
+//               //});
+//           }
+//        });
+//        e.input("[Physical]:X.");
+//        e.input("[Atom]:Y.");
+//        e.input("[Electron]:E.");
+//        e.input("[Proton]:P.");
+//        e.input("contains(X,Y).");
+//        e.input("([Integer]:1 && [Integer]:3).");
+//        e.input("starts(A,B).");
+//        e.input("[GovernmentFn]:A.");
+//        e.input("[WealthFn]:B.");
+            nar.run(2500);
+//        d.conceptsActive().forEach(System.out::println);
+            //d.concept("[Phrase]").print();
+
+
     }
 }

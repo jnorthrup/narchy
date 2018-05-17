@@ -6,7 +6,6 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.GridModel;
 import spacegraph.space2d.container.grid.KeyValueModel;
-import spacegraph.space2d.container.grid.ListModel;
 import spacegraph.space2d.container.grid.ScrollGrid;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -66,13 +65,13 @@ class ScrollGridTest {
     }
     static class ListTest1 {
         public static void main(String[] args) {
+            String[] list = {"a", "b", "c", "d", "e", "f"};
+            ScrollGrid.GridRenderer<String> builder = (x, y, n) -> new CheckBox(n);
             SpaceGraph.window(
-                new ScrollGrid<>(
-                    ListModel.of("a", "b", "c", "d", "e", "f"),
-                        (x, y, n)->
-                            new CheckBox(n))
+                    ScrollGrid.list(builder, list)
                     , 800, 800);
         }
+
     }
 
     static class MapTest1 {

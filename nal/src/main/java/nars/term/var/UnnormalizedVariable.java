@@ -1,6 +1,7 @@
 package nars.term.var;
 
 import nars.$;
+import nars.IO;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
@@ -17,7 +18,9 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
     @Override public int opX() { return Term.opX(op(), 10);    }
 
     public UnnormalizedVariable(/*@NotNull*/ Op type, String label) {
-        super(type, label);
+        //super(type, label);
+        //super(ArrayUtils.add(bytes(type, label), 0, IO.SPECIAL_OP));
+        super(bytes(IO.SPECIAL_OP, label));
         this.type = type;
     }
 

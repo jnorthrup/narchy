@@ -11,7 +11,7 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.UniExec;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
@@ -184,7 +184,7 @@ public class TrackXY extends NAgent {
 
 
         n.runLater(() -> {
-            window(Vis.top(n), 800, 250);
+            window(NARui.top(n), 800, 250);
             NAgentX.chart(t);
             window(new CameraSensorView(t.cam, n) {
                 @Override
@@ -280,7 +280,7 @@ public class TrackXY extends NAgent {
            INH.the($.the("stay"), id)
         );
         onFrame(s);
-        SpaceGraph.window(Vis.beliefCharts(64, s.sensors, nar), 300, 300);
+        SpaceGraph.window(NARui.beliefCharts(64, s.sensors, nar), 300, 300);
     }
 
     private void actionTriState() {

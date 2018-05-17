@@ -10,7 +10,7 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.exe.AbstractExec;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.term.ProxyTerm;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
@@ -66,7 +66,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
            nn.set(
                new Scale(
                    new PushButton(nn.id.toString())
-                       .click(()-> Vis.conceptWindow(nn.id, nar)),
+                       .click(()-> NARui.conceptWindow(nn.id, nar)),
                 0.8f
                )
            );

@@ -15,6 +15,8 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 
+import java.util.List;
+
 import static jcog.Util.short2Int;
 import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
 
@@ -492,6 +494,14 @@ public class ScrollGrid<X> extends Bordering {
         abstract protected Surface surface(short x, short y, X nextValue);
 
     }
+
+    public static <X> ScrollGrid<X> list(GridRenderer<X> builder, X... list) {
+        return new ScrollGrid<>( ListModel.of(list), builder);
+    }
+    public static <X> ScrollGrid<X> list(GridRenderer<X> builder, List<X> list) {
+        return new ScrollGrid<>( ListModel.of(list), builder);
+    }
+
 }
 
 //package automenta.spacenet.space.object.data;

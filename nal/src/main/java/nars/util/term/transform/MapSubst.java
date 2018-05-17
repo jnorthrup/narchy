@@ -16,6 +16,7 @@ public class MapSubst implements Subst {
                 return null;
             case 1:
                 return new MapSubst1(m.entrySet().iterator().next());
+            //case 2: apply first item then second, elides map lookup on each term?
             default:
                 return new MapSubst(m);
         }

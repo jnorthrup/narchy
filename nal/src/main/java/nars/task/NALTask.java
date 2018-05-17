@@ -111,20 +111,7 @@ public class NALTask extends UnitPri implements Task {
 
     @Override
     public final boolean equals(Object that) {
-        if (this == that) return true;
-        if (hash != that.hashCode()) return false;
-        Task t;
-        if (that instanceof Task) {
-            t = (Task) that;
-//        } else if (that instanceof Tasked) {
-//
-//            t = ((Tasked) that).task();
-//            if (this == that) return true;
-//            if (hash != that.hashCode()) return false;
-        } else {
-            return false;
-        }
-        return Task.equal(this, t);
+        return Task.equal(this, that);
     }
 
     @Override

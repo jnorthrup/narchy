@@ -52,7 +52,7 @@ public class TermIOTest {
             Task torig = (Task) orig;
             if (torig.isDeleted())
                 throw new RuntimeException("task is deleted already");
-            barray = IO.asBytes(torig);
+            barray = IO.taskToBytes(torig);
         } else if (orig instanceof Term)
             barray = IO.termToBytes((Term) orig);
         else
@@ -103,7 +103,7 @@ public class TermIOTest {
         assertEqualSerialize("<aa-->b>" /* term, not the concept */);
         assertEqualSerialize("<aa--><b<->c>>" /* term, not the concept */);
         //assertEqualSerialize(("(/, x, _, y)") /* term, not the concept */);
-        assertEqualSerialize(("exe(a,b)") /* term, not the concept */);
+        assertEqualSerialize("exe(a,b)" /* term, not the concept */);
     }
 
     @Test
@@ -119,27 +119,34 @@ public class TermIOTest {
     @Test
     public void testTemporalSerialization() throws Narsese.NarseseException {
 
-        assertEqualSerialize(("(a &&+1 b)") /* term, not the concept */);
+        assertEqualSerialize("(a &&+1 b)" /* term, not the concept */);
         assertEqualSerialize("(a &&+1 (a &&+1 a))" /* term, not the concept */);
         assertEqualSerialize("(a ==>+1 b)" /* term, not the concept */);
-        assertEqualSerialize(("(b ==>+1 b)") /* term, not the concept */);
+        assertEqualSerialize("(b ==>+1 b)" /* term, not the concept */);
 
-        assertEqualSerialize(("(a ==>+- b)"));
-        assertEqualSerialize(("(a ==>+- a)"));
-        assertEqualSerialize(("(a ==> b)"));
+        assertEqualSerialize("(a ==>+- b)");
+        assertEqualSerialize("(a ==>+- a)");
+        assertEqualSerialize("(a ==> b)");
 
     }
 
     @Test
     public void testImageSerialization() throws Narsese.NarseseException {
-        assertEqualSerialize(("/"));
-        assertEqualSerialize(("\\"));
-        assertEqualSerialize(("(a,/,1)"));
-        assertEqualSerialize(("(a,/,1,/,x)"));
-        assertEqualSerialize(("(x --> (a,/,1))"));
-        assertEqualSerialize(("(a,\\,1)"));
-        assertEqualSerialize(("(a,\\,1,\\,2)"));
-        assertEqualSerialize(("((a,\\,1)--> y)"));
+        assertEqualSerialize("/");
+        assertEqualSerialize("\\");
+        assertEqualSerialize("(a,/,1)");
+        assertEqualSerialize("(a,/,1,/,x)");
+        assertEqualSerialize("(x --> (a,/,1))");
+        assertEqualSerialize("(a,\\,1)");
+        assertEqualSerialize("(a,\\,1,\\,2)");
+        assertEqualSerialize("((a,\\,1)--> y)");
+    }
+
+    @Test public void testUnnormalizedVariableSerialization() throws Narsese.NarseseException {
+        assertEqualSerialize("#abc");
+        assertEqualSerialize("$abc");
+        assertEqualSerialize("?abc");
+        assertEqualSerialize("%abc");
     }
 
     @Test
@@ -214,22 +221,29 @@ public class TermIOTest {
 
     @Test
     public void testTaskSerialization() throws Narsese.NarseseException {
-        assertEqualTask(("<a-->b>."));
-        assertEqualTask(("<a-->(b,c)>!"));
-        assertEqualTask(("<a-->(b==>c)>?"));
-        assertEqualTask(("$0.1 (b-->c)! %1.0;0.8%"));
-        assertEqualTask(("$0.1 (b-->c)! :|: %1.0;0.8%"));
-        assertEqualTask(("$0.1 (a ==>+4 (b-->c)). :|: %1.0;0.8%"));
-        assertEqualTask(("$0.1 (1 ==>+4 (2-->3)). :|: %1.0;0.8%"));
+        assertEqualTask("(a-->b).");
+        assertEqualTask("(a-->(b,c))!");
+        assertEqualTask("(a-->(b==>c))?");
+        assertEqualTask("$0.1 (b-->c)! %1.0;0.8%");
+        assertEqualTask("$0.1 (b-->c)! :|: %1.0;0.8%");
+        assertEqualTask("$0.1 (a ==>+4 (b-->c)). :|: %1.0;0.8%");
+        assertEqualTask("$0.1 (1 ==>+4 (2-->3)). :|: %1.0;0.8%");
 
-        assertEqualTask(("(x ==>+- y)?"));
-        assertEqualTask(("(x ==>+- y)? :|:"));
-        assertEqualTask(("(x ==>+- x)?"));
-        assertEqualTask(("(x ==>+- x)? :|:"));
-        assertEqualTask(("(x &&+- y)?"));
-        assertEqualTask(("(x &&+- y)? :|:"));
-        assertEqualTask(("(x &&+- x)?"));
-        assertEqualTask(("(x &&+- x)? :|:"));
+        assertEqualTask("(x ==>+- y)?");
+        assertEqualTask("(x ==>+- y)? :|:");
+        assertEqualTask("(x ==>+- x)?");
+        assertEqualTask("(x ==>+- x)? :|:");
+        assertEqualTask("(x &&+- y)?");
+        assertEqualTask("(x &&+- y)? :|:");
+        assertEqualTask("(x &&+- x)?");
+        assertEqualTask("(x &&+- x)? :|:");
+
+        assertEqualTask("(x &&+- x)@");
+        assertEqualTask("(x &&+- x)@ :|:");
+
+        assertEqualTask("cmd(x,y,z);");
+        assertEqualTask("(x &&+- x);");
+
     }
 
     @Test

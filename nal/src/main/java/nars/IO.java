@@ -9,6 +9,7 @@ import jcog.data.byt.DynBytes;
 import jcog.data.string.Utf8Writer;
 import jcog.pri.Prioritized;
 import nars.subterm.Subterms;
+import nars.task.CommandTask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -26,7 +27,6 @@ import java.io.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static nars.IO.TaskSerialization.TermFirst;
 import static nars.Op.*;
 import static nars.term.compound.FastCompound.ov;
 import static nars.time.Tense.DTERNAL;
@@ -107,6 +107,7 @@ public class IO {
 
     public static Task readTask(DataInput in) throws IOException {
 
+        byte punc = in.readByte();
 
         Term preterm = readTerm(in);
 
@@ -114,22 +115,22 @@ public class IO {
         if (term == null)
             throw new IOException("un-normalizable task term");
 
-        byte punc = in.readByte();
+        if (punc!=COMMAND) {
+            Truth truth = hasTruth(punc) ? readTruth(in) : null;
 
-        Truth truth = hasTruth(punc) ? readTruth(in) : null;
+            long start = in.readLong();
+            long end = in.readLong();
 
-        long start = in.readLong();
-        long end = in.readLong();
+            long[] evi = readEvidence(in);
 
-        long[] evi = readEvidence(in);
+            float pri = in.readFloat();
 
-        float pri = in.readFloat();
+            long cre = in.readLong();
 
-        long cre = in.readLong();
-
-        Task mm = new NALTask(term, punc, truth, cre, start, end, evi);
-        mm.priSet(pri);
-        return mm;
+            return new NALTask(term, punc, truth, cre, start, end, evi).pri(pri);
+        } else {
+            return new CommandTask(term);
+        }
     }
 
     public static long[] readEvidence(DataInput in) throws IOException {
@@ -152,55 +153,57 @@ public class IO {
      */
     public static void writeTask(DataOutput out, Task t) throws IOException {
 
-        Term tt = t.term();
-
-        if (out instanceof ByteArrayDataOutput) {
-            tt.append((ByteArrayDataOutput) out);
-        } else {
-            out.write(IO.termToBytes(tt)); //buffer to bytes
-        }
 
         byte p = t.punc();
         out.writeByte(p);
 
-        if (hasTruth(p))
-            Truth.write(t.truth(), out);
+        //        if (out instanceof ByteArrayDataOutput) {
+        t.term().append((ByteArrayDataOutput) out);
+//        } else {
+//            out.write(IO.termToBytes(tt)); //buffer to bytes
+//        }
 
-        out.writeLong(t.start());
-        out.writeLong(t.end());
 
-        writeEvidence(out, t.stamp());
+        if (p!=COMMAND) {
+            if (hasTruth(p))
+                Truth.write(t.truth(), out);
 
-        writeBudget(out, t);
+            out.writeLong(t.start());
+            out.writeLong(t.end());
 
-        out.writeLong(t.creation()); //put this last because it is the least useful really
+            writeEvidence(out, t.stamp());
 
-    }
+            writeBudget(out, t);
 
-    /**
-     * with Term last
-     */
-    public static void writeTask2(DataOutput out, Task t) throws IOException {
-
-        byte p = t.punc();
-        out.writeByte(p);
-
-        writeBudget(out, t);
-
-        out.writeLong(t.start());
-        out.writeLong(t.end());
-
-        if (hasTruth(p)) {
-            out.writeFloat(t.freq());
-            out.writeFloat(t.conf());
+            out.writeLong(t.creation()); //put this last because it is the least useful really
         }
 
-        //writeEvidence(out, t.evidence());
-
-        //out.writeLong(t.creation()); //put this last because it is the least useful really
-
-        IO.writeUTF8WithPreLen(t.term().toString(), out);
     }
+
+//    /**
+//     * with Term last
+//     */
+//    public static void writeTask2(DataOutput out, Task t) throws IOException {
+//
+//        byte p = t.punc();
+//        out.writeByte(p);
+//
+//        writeBudget(out, t);
+//
+//        out.writeLong(t.start());
+//        out.writeLong(t.end());
+//
+//        if (hasTruth(p)) {
+//            out.writeFloat(t.freq());
+//            out.writeFloat(t.conf());
+//        }
+//
+//        //writeEvidence(out, t.evidence());
+//
+//        //out.writeLong(t.creation()); //put this last because it is the least useful really
+//
+//        IO.writeUTF8WithPreLen(t.term().toString(), out);
+//    }
 
     //    public static void writeStringUTF(DataOutput out, String s) throws IOException {
 //
@@ -324,7 +327,7 @@ public class IO {
         else {
             //base op contained in lower 5-bits (0..31)
             byte op = (byte) (opByte & 0b00011111);
-            Op o = Op.values()[op];
+            Op o = Op.ops[op];
             if (o.var)
                 return readVariable(in, o);
             else if (o.atomic)
@@ -412,10 +415,6 @@ public class IO {
         return y;
     }
 
-    public static byte[] asBytes(Task t) {
-        return IO.taskToBytes(t, TermFirst);
-    }
-
     public static byte[] termToBytes(Term t) {
         if (t instanceof Atomic) {
             return ((Atomic) t).bytes();
@@ -459,20 +458,20 @@ public class IO {
 
     @Nullable
     public static byte[] taskToBytes(Task x) {
-        return taskToBytes(x, TermFirst);
-    }
-
-    public static byte[] taskToBytes(Task x, TaskSerialization mode) {
+//        return taskToBytes(x, TermFirst);
+//    }
+//
+//    public static byte[] taskToBytes(Task x, TaskSerialization mode) {
         try {
             DynBytes dos = new DynBytes(x.volume() * 16);
-            switch (mode) {
-                case TermFirst:
+//            switch (mode) {
+//                case TermFirst:
                     IO.writeTask(dos, x);
-                    break;
-                case TermLast:
-                    IO.writeTask2(dos, x);
-                    break;
-            }
+//                    break;
+//                case TermLast:
+//                    IO.writeTask2(dos, x);
+//                    break;
+//            }
             return dos.array();
         } catch (IOException e) {
             e.printStackTrace();
@@ -508,14 +507,14 @@ public class IO {
     }
 
     public static ByteArrayDataInput input(byte[] b) {
-
+        return input(b, 0);
         //return ByteStreams.newDataInput(b);
-        return ByteStreams.newDataInput(b);
         //return new DataInputStream(new ByteArrayInputStream(b));
     }
 
-    public static DataInputStream input(byte[] b, int offset) {
-        return new DataInputStream(new ByteArrayInputStream(b, offset, b.length - offset));
+    public static ByteArrayDataInput input(byte[] b, int offset) {
+        return ByteStreams.newDataInput(b, offset);
+        //return new DataInputStream(new ByteArrayInputStream(b, offset, b.length - offset));
     }
 
     public static void writeUTF8WithPreLen(String s, DataOutput o) throws IOException {

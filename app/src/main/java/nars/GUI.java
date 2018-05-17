@@ -3,7 +3,7 @@ package nars;
 import jcog.User;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class GUI {
         //            }, 800, 600);
 
 
-        SpaceGraph.window(new Widget(Vis.top(nar)), 1024, 800);
+        SpaceGraph.window(new Widget(NARui.top(nar)), 1024, 800);
 
         //wall(nar);
 
@@ -62,7 +62,7 @@ public class GUI {
         Dyn2DSurface w = SpaceGraph.wall(800, 600);
         w.frame(new ServicesTable(nar.services), 5, 4);
         w.frame(new OmniBox(new LuceneQueryModel()), 6, 1);
-        w.frame(Vis.top(nar), 4, 4);
+        w.frame(NARui.top(nar), 4, 4);
     }
 
     /** TODO further abstract this as the prototype for other async models */

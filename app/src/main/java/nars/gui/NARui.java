@@ -1,6 +1,7 @@
 package nars.gui;
 
 import jcog.pri.PriReference;
+import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Narsese;
 import nars.gui.graph.run.ConceptGraph2D;
@@ -11,6 +12,8 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.grid.ScrollGrid;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.console.TextEdit;
 import spacegraph.space2d.widget.meta.AutoSurface;
@@ -32,9 +35,9 @@ import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 
 /**
- * SpaceGraph-based visualization utilities for NAR analysis
+ * SpaceGraph-based visualization utilities for NARchy
  */
-public class Vis {
+public class NARui {
 
 
     public static Surface inputEditor() {
@@ -84,7 +87,7 @@ public class Vis {
 //        }
 //    }
 
-    public static Surface bagHistogram(Iterable<? extends PriReference> bag, int bins, NAR n) {
+    public static Surface bagHistogram(Iterable<? extends Prioritized> bag, int bins, NAR n) {
         //new SpaceGraph().add(new Facial(
 
 
@@ -314,14 +317,15 @@ public class Vis {
                                 "can", () -> ExeCharts.causePanel(n),
                                 "grp", () -> new ConceptGraph2D(n).widget(),
                                 "svc", () -> new ServicesTable(n.services),
-//                                "svc", () -> new AutoSurface(n.services) {
-//                                    @Override
-//                                    protected boolean addService(Service x) {
-//                                        return !(x instanceof DurService) && super.addService(x);
-//                                    }
-//                                },
-
-                                "cpt", () -> bagHistogram((Iterable)()->n.conceptsActive().iterator(), 8, n)
+                                "cpt", () -> bagHistogram((Iterable)()->n.conceptsActive().iterator(), 8, n),
+                                "mem", () -> ScrollGrid.list(
+                                                (x,y,m)->new PushButton(m.toString()).click((mm)->
+                                                    //temporary
+                                                    SpaceGraph.window(
+                                                            ScrollGrid.list((xx,yy,zm)->new PushButton(zm.toString()), n.memory.contents(m).collect(toList())), 800, 800, true)
+                                                ),
+                                                n.memory.roots().collect(toList())
+                                            )
                         ))
                 )
                 .north(ExeCharts.runPanel(n))

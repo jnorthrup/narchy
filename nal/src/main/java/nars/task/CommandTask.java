@@ -26,8 +26,28 @@ public class CommandTask implements Task {
     }
 
     @Override
+    public int hashCode() {
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+        return Task.equal(this, that);
+    }
+
+    @Override
+    public @Nullable Appendable toString(boolean showStamp) {
+        return new StringBuilder(32).append(term).append(';');
+    }
+
+    @Override
+    public String toString() {
+        return term + ";";
+    }
+
+    @Override
     public short[] cause() {
-        return null;
+        return ArrayUtils.EMPTY_SHORT_ARRAY;
     }
 
     @Override

@@ -12,6 +12,7 @@ import nars.op.data.flat;
 import nars.op.data.reflect;
 import nars.op.java.Opjects;
 import nars.subterm.Subterms;
+import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
@@ -33,6 +34,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -594,19 +596,23 @@ public class Builtin {
     static void registerOperators(NAR nar) {
 
         //new System(nar);
-        
-        nar.onOp1(Op.BELIEF_TERM, (x, nn) -> {
-            nar.believe(x);
-        });
-        nar.onOp1(Op.GOAL_TERM, (x, nn) -> {
-            nar.goal(x);
-        });
-        nar.onOp1(Op.QUESTION_TERM, (x, nn) -> {
-            nar.question(x);
-        });
-        nar.onOp1(Op.QUEST_TERM, (x, nn) -> {
-            nar.quest(x);
-        });
+
+        nar.onOp(Op.BELIEF_TERM, (x, nn) -> {
+            return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term,truth)->{
+                    return new NALTask(term, BELIEF, truth,
+                            nn.time(), ETERNAL, ETERNAL, nn.evidence()).pri(nn.priDefault(BELIEF));
+            });
+        }
+        );
+//        nar.onOp(Op.GOAL_TERM, (x, nn) -> {
+//            nar.goal(x);
+//        });
+//        nar.onOp(Op.QUESTION_TERM, (x, nn) -> {
+//            nar.question(x);
+//        });
+//        nar.onOp(Op.QUEST_TERM, (x, nn) -> {
+//            nar.quest(x);
+//        });
 
         nar.onOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)
@@ -636,21 +642,14 @@ public class Builtin {
 
     static void initMemoryOps(NAR nar) {
         nar.onOp1("load", (id, nn) -> {
-            nar.runLater(() -> {
-                User.the().get(id.toString(), (byte[] x) -> {
-                    try {
-                        nn.inputBinary(new ByteArrayInputStream(x));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    nn.logger.info("loaded {}", id);
-                });
-            });
+            Runnable r = nn.memory.copy(id, nn.self());
+            if (r!=null)
+                r.run();
         });
 
         /** eternal tasks only */
         nar.onOp1("remember", (id, nn) -> {
-            nar.runLater(() -> {
+            nn.runLater(() -> {
                 save(nn, id, Task::isEternal);
                 nn.logger.info("remembered {}", id);
             });
@@ -658,14 +657,14 @@ public class Builtin {
 
         /** all tasks */
         nar.onOp1("save", (id, nn) -> {
-            nar.runLater(() -> {
+            nn.runLater(() -> {
                 save(nn, id, (t) -> true);
                 nn.logger.info("saved {}", id);
             });
         });
 
         nar.onOp2("memory2txtfile", (id, filePath, nn) -> {
-            nar.runLater(() -> {
+            nn.runLater(() -> {
                 try {
                     PrintStream p = new PrintStream(new FileOutputStream($.unquote(filePath)));
                     User.the().get(id.toString(), (byte[] x) -> {

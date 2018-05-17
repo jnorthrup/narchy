@@ -583,8 +583,6 @@ public class Occurrify extends TimeGraph {
             return term;
         }
 
-
-
         abstract public Pair<Term, long[]> solve(Derivation d, Term x);
 
         protected Pair<Term, long[]> solveOccDT(Derivation d, Term x, Occurrify o) {

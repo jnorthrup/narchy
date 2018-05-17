@@ -61,7 +61,7 @@ public class ConceptSurface extends TabPane {
                         }
                     });
                 },
-                "beliefs", () -> Vis.beliefCharts(64, n, n.concept(id)),
+                "beliefs", () -> NARui.beliefCharts(64, n, n.concept(id)),
                 "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
                 "tasklinks", () -> new BagView("TaskLinks", n.concept(id).tasklinks(), n),
                 "goal", () -> {

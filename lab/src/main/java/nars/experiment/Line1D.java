@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.gui.EmotionPlot;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
@@ -150,7 +150,7 @@ public class Line1D {
                                         col(
                                                 new EmotionPlot(history, a),
                                                 new AutoSurface<>(a),
-                                                Vis.beliefCharts(history,
+                                                NARui.beliefCharts(history,
                                                         Iterables.concat(a.sensors.keySet(), a.actions.keySet()), a.nar())
                                         )
                                 )

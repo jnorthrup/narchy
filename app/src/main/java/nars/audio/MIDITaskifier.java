@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.concept.Concept;
 import nars.concept.action.GoalActionConcept;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -140,7 +140,7 @@ public class MIDITaskifier {
 //        });
 
 
-        SpaceGraph.window(Vis.beliefCharts(64, keys, nar), 900, 900);
+        SpaceGraph.window(NARui.beliefCharts(64, keys, nar), 900, 900);
 
 
         nar.startFPS(60f);

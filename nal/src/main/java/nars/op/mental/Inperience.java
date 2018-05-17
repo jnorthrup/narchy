@@ -141,7 +141,7 @@ public class Inperience extends LeakBack {
             Task goal = ((BeliefTable)c.table(GOAL))
                     .answer(t.start(), t.end(), bb, null, nar);
 
-            Term want = goal!=null ? $.func(Inperience.want, self, goal.term().negIf(goal.isNegative())) : null;
+            Term want = goal!=null ? $.func(Inperience.want, self, goal.term().negIf(goal.isNegative())) : Null;
 
             if (belief == null)
                 return want;

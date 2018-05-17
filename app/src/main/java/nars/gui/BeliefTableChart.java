@@ -492,7 +492,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     @Override
     public Surface menu() {
         return new Gridding(
-                PushButton.awesome("search-plus").click(() -> Vis.conceptWindow(term, nar))
+                PushButton.awesome("search-plus").click(() -> NARui.conceptWindow(term, nar))
 //                new FloatSlider("Time Zoom", 1f, 0.1f, 2f).on(z -> {
 //                    timeZoom = z;
 //                })

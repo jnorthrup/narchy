@@ -6,7 +6,7 @@ import nars.NAgent;
 import nars.concept.TaskConcept;
 import nars.concept.scalar.Scalar;
 import nars.control.DurService;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.TimeAware;
@@ -79,7 +79,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         if (finger.clickedNow(OPEN_CONCEPT_BUTTON, this)) {
             Scalar c = this.touchConcept;
             if (c != null)
-                Vis.conceptWindow(c, nar);
+                NARui.conceptWindow(c, nar);
         }
 
         finger.tryFingering(new FingerDragging(0) {

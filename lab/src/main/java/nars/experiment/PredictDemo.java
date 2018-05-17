@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.concept.Concept;
 import nars.concept.scalar.Scalar;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.time.clock.RealTime;
 import nars.truth.Truth;
 import nars.util.signal.BeliefPredict;
@@ -63,10 +63,10 @@ public class PredictDemo {
 
         SpaceGraph.window(new Gridding(Gridding.VERTICAL,
 
-                Vis.beliefCharts(64, List.of(X), n),
+                NARui.beliefCharts(64, List.of(X), n),
                 //Vis.beliefCharts(128, List.of(x), n),
-                Vis.beliefCharts(256, List.of(X), n),
-                Vis.beliefCharts(2048, List.of(X), n)
+                NARui.beliefCharts(256, List.of(X), n),
+                NARui.beliefCharts(2048, List.of(X), n)
 
         ), 800, 800);
 

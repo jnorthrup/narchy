@@ -1,5 +1,6 @@
 package nars.util;
 
+import jcog.Texts;
 import jcog.io.arff.ARFF;
 import jcog.list.FasterList;
 import nars.$;
@@ -118,7 +119,7 @@ public class NALSchema {
     }
 
     static Term attrTerm(String ai) {
-        return $.$$($.unquote(ai));
+        return $.$$(Texts.unquote(ai));
     }
 
     public static Stream<Task> data(NAR n, ARFF a, Function<Term[], Term> pointGenerator) {

@@ -27,7 +27,11 @@ public abstract class AtomicConst implements Atomic {
         this(bytes(op, s));
     }
 
-    static byte[] bytes(Op op, String str) {
+    protected static byte[] bytes(Op op, String str) {
+        return bytes(op.id, str);
+    }
+
+    protected static byte[] bytes(byte opID, String str) {
         //if (s == null) s = toString(); //must be a constant method
         //int slen = str.length(); //TODO will this work for UTF-16 containing strings?
 
@@ -35,7 +39,7 @@ public abstract class AtomicConst implements Atomic {
         int slen = stringbytes.length;
 
         byte[] sbytes = new byte[slen + 3];
-        sbytes[0] = op.id; //(op != null ? op : op()).id;
+        sbytes[0] = opID; //(op != null ? op : op()).id;
         sbytes[1] = (byte) (slen >> 8 & 0xff);
         sbytes[2] = (byte) (slen & 0xff);
         arraycopy(stringbytes, 0, sbytes, 3, slen);

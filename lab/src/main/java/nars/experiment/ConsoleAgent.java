@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
 import nars.control.channel.CauseChannel;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Compound;
@@ -41,7 +41,7 @@ public abstract class ConsoleAgent extends NAgentX {
 
     final static int WIDTH = 4;
     final static int HEIGHT = 1;
-    final Surface Rlabel = Vis.inputEditor();
+    final Surface Rlabel = NARui.inputEditor();
 
     final TestConsole R = new TestConsole(
             Atomic.the("it"),

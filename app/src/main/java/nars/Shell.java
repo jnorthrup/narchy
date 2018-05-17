@@ -15,7 +15,7 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.Texts;
 import jdk.jshell.JShell;
-import nars.gui.Vis;
+import nars.gui.NARui;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
@@ -72,7 +72,7 @@ public class Shell {
                     ui.startFPS(INITIAL_FPS);
                     ui.runLater(() -> {
                         SpaceGraph.window(
-                                Vis.top(ui)
+                                NARui.top(ui)
                                 //((Grid)Vis.reflect(ui.services)).aspect(0.25f)
                                 , 1024, 800);
                     });

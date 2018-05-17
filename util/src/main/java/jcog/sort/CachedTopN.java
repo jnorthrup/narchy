@@ -14,7 +14,7 @@ import java.util.function.IntFunction;
  */
 public class CachedTopN<X> implements Iterable<X> {
 
-    final UnifiedSet<X> seen = new UnifiedSet(0);
+    private UnifiedSet<X> seen = null;
     protected final TopN<NLink<X>> top;
     private final FloatFunction<X> rank;
 
@@ -33,6 +33,9 @@ public class CachedTopN<X> implements Iterable<X> {
     }
 
     public boolean add(X x) {
+        if (seen == null)
+            seen = new UnifiedSet<>(1);
+
         if (seen.add(x) && valid(x)) {
             float r = rank.floatValueOf(x);
             if (r > top.minValueIfFull())
@@ -75,25 +78,5 @@ public class CachedTopN<X> implements Iterable<X> {
         }
         return x;
     }
-
-//    @Override
-//    public boolean add(NLink<X> x) {
-//        final boolean[] adding = {false};
-//        float rank = seen.getIfAbsentPutWithKey(x, (xx)->{
-//            float r = rank(xx);
-//            adding[0] = (r == r); //add if valid
-//            return r;
-//        });
-//        if (!adding[0]/* || rank!=rank*/)
-//            return false; //may already be in the top list, but this is signaling here that nothing was added during this call
-//
-//        return add(x, rank, seen::get)>=0;
-//    }
-
-
-//    //forces a sort
-//    protected void sort() {
-//        Arrays.sort(list, 0, size, (a, b) -> Float.compare(rank(a), rank(b))));
-//    }
 
 }

@@ -25,13 +25,17 @@ import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,6 +53,33 @@ import static nars.op.rdfowl.NQuadsRDF.equi;
 public class KIFInput {
 
     static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
+    public static Memory.BytesToTasks load = new Memory.BytesToTasks("kif") {
+
+        @Override
+        public Stream<Task> apply(InputStream i) {
+            try {
+                return new KIFInput(i).beliefs.stream().map(b ->
+                {
+
+                    Task t = new CommandTask($.func(Op.BELIEF_TERM, b));
+
+//                    if (b.hasAny(Op.VAR_DEP)) {
+//                        try {
+//                            byte[] tb = IO.taskToBytes(t);
+//                            Task u = IO.taskFromBytes(tb);
+//                        } catch (Throwable e) {
+//                            System.out.println("fail: " + b);
+//                        }
+//                    }
+
+                    return t;
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    };
     final Set<Term> beliefs = new TreeSet();
     private final KIF kif;
     private final boolean includeSubclass = true;
@@ -56,21 +87,6 @@ public class KIFInput {
     private final boolean includeRelatedInternalConcept = true;
     private final boolean includeDoc = false;
     private transient final Map<Term, FnDef> fn = new HashMap();
-
-
-    public static Memory.BytesToTasks load = new Memory.BytesToTasks("kif") {
-
-        @Override
-        public Stream<Task> apply(InputStream i) {
-            try {
-                return new KIFInput(i).beliefs.stream().map(b ->
-                        new CommandTask($.func(Op.BELIEF_TERM, b)));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    };
 
     public KIFInput(InputStream is) throws Exception {
         this.kif = new KIF();
@@ -113,9 +129,7 @@ public class KIFInput {
             final int[] k = {1};
             Term[] typeConds = Util.map(0, ds, i ->
                     $.inh($.varDep(1 + i),
-                            s.domain.getIfAbsent(1 + i, () -> {
-                                return $.varDep(k[0]++);
-                            })), Term[]::new);
+                            s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))), Term[]::new);
             if (s.range != null) {
                 typeConds = ArrayUtils.add(typeConds, $.inh(v, s.range));
             }
@@ -161,127 +175,16 @@ public class KIFInput {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-
-
-        NAR nar = NARS.tmp();
-        //MetaGoal.Perceive.set(e.emotion.want, -0.1f);
-        //e.emotion.want(MetaGoal.Perceive, -0.1f);
-
-        //new PrologCore(e);
-
-        String I =
-                //"/home/me/sumo/Biography.kif"
-                //"/home/me/sumo/Military.kif"
-                //"/home/me/sumo/ComputerInput.kif"
-                //"/home/me/sumo/FinancialOntology.kif"
-                "/home/me/sumo/Merge.kif"
-                //"/home/me/sumo/emotion.kif"
-                //"/home/me/sumo/Weather.kif"
-                ;
-
-        String O = "/home/me/d/sumo_merge.nal";
-        KIFInput k = new KIFInput(new FileInputStream(I));
-
-        k.output(O);
-
-        nar.log();
-
-        nar.inputNarsese(new FileInputStream(O));
-
-//        final PrintStream output = System.out;
-//        for (Term x : k.beliefs) {
-//            output.println(x + ".");
-//            try {
-//                nar.believe(x);
-//            } catch (Exception e) {
-//                logger.error("{} {}", e.getMessage(), x);
-//            }
-//            try {
-//                nar.input("$0.01$ " + x + ".");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-//https://github.com/ontologyportal/sumo/blob/master/tests/TQG1.kif.tq
-//(time 240)
-//(instance Org1-1 Organization)
-//(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
-//(answer yes)
-        //e.clear();
-//        nar.believe("Organization:org1");
-//        e.question("member(?1, org1)?", ETERNAL, (q,a)->{
-//            System.out.println(a);
-//        });
-//        nar.ask($.$$("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
-//           System.out.println(t);
-//        });
-        //e.believe("accountHolder(xyz,1)");
-//        e.ask($.$safe("(EmotionalState<->?1)"), ETERNAL, QUESTION, (t)->{
-//           System.out.println(t);
-//        });
-        //e.believe("attribute(xyz,Philosopher)");
-        //e.input("(xyz<->?1)?");
-
-        nar.run(10000);
-//        Thread.sleep(1000);
-//        e.run(1000);
-        //e.conceptsActive().forEach(s -> System.out.println(s));
-
-        //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
-        //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";
-
-
-//        TrieDeriver miniDeriver =
-//                //new TrieDeriver(PremiseRuleSet.rules(false, "nal6.nal"));
-//                TrieDeriver.get(new PremiseRuleSet(
-//                        k.impl.parallelStream().map(tt -> {
-//                            try {
-//                                return PremiseRuleSet.parse(tt.getOne() + ", () |- " + tt.getTwo() + ", (Belief:Identity)\n");
-//                            } catch (Exception e1) {
-//                                //e1.printStackTrace();
-//                                return null;
-//                            }
-//                        }).filter(Objects::nonNull).toArray(PremiseRule[]::new)
-//                ) );
-
-
-//        miniDeriver.print(System.out);
-
-        //d.clear();
-
-
-//        e.onTask(t -> {
-//           if (t.isInput()) {
-//               //d.forEachTask(b -> {
-//                   miniDeriver.test(new Derivation(
-//                           e,
-//                           budgeting,
-//                           Param.UnificationStackMax
-//                   ) {
-//                       @Override
-//                       public void derive(Task x) {
-//                           e.input(x);
-//                       }
-//                   }.restartC(new Premise( t, Terms.ZeroProduct, null, 1f), Param.UnificationTTLMax));
-//               //});
-//           }
-//        });
-//        e.input("[Physical]:X.");
-//        e.input("[Atom]:Y.");
-//        e.input("[Electron]:E.");
-//        e.input("[Proton]:P.");
-//        e.input("contains(X,Y).");
-//        e.input("([Integer]:1 && [Integer]:3).");
-//        e.input("starts(A,B).");
-//        e.input("[GovernmentFn]:A.");
-//        e.input("[WealthFn]:B.");
-        nar.run(2500);
-//        d.conceptsActive().forEach(System.out::println);
-        //d.concept("[Phrase]").print();
-
+    static final Function<Term, Term> domainRangeMerger(Term type) {
+        return (existing) -> {
+            if (existing.equals(type))
+                return existing;
+            else
+                return $.seti(List.of(existing, type));
+        };
     }
+
+
 
     public Term formulaToTerm(String sx, int level) {
         sx = sx.replace("?", "#"); //query var to depvar HACK
@@ -433,8 +336,9 @@ public class KIFInput {
                         Term arg = (args.get(1));
                         Term type = (args.get(2));
                         FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
-                        Term existing = d.domain.put(((Int) arg).id, type);
-                        assert (existing == null || existing.equals(type));
+
+                        d.domain.updateValue(((Int) arg).id, () -> type, domainRangeMerger(type));
+                        //assert (existing == null || existing.equals(type)): x + ": " + type + "!=" + existing;
                     } else {
                         throw new UnsupportedOperationException("unrecognized domain spec");
                     }
@@ -525,8 +429,10 @@ public class KIFInput {
 
         }
 
-        if (y instanceof Bool)
-            throw new UnsupportedOperationException("Bool singularity: args=" + args);
+        if (y instanceof Bool) {
+            logger.warn("{} Bool singularity: args={}",x, args);
+            return null;
+        }
 
         return y;
     }
@@ -576,14 +482,20 @@ public class KIFInput {
                         //Op.VAR_QUERY,
                         //Op.VAR_PATTERN,
                         t.toString().substring(1));
-                if (!t.equals(u))
+                if (!t.equals(u) && !remap.containsKey(u))
                     remap.put(t, u);
             });
         }
         for (MutableSet<Term> ab : new MutableSet[]{aVars, bVars}) {
             ab.forEach(aa -> {
                 if (aa.op() == VAR_INDEP && !common.contains(aa)) {
-                    remap.put(aa, $.v(Op.VAR_DEP, aa.toString().substring(1)));
+                    String str = aa.toString().substring(1);
+//                    if (str.equals("0"))//HACK avoid writing: #0
+//                        str = "#0_";
+
+                    Variable bb = $.v(Op.VAR_DEP, str);
+                    if (!remap.containsKey(bb))
+                        remap.put(aa, bb);
                 }
             });
         }

@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.meta;
 
 import com.googlecode.lanterna.TerminalPosition;
+import jcog.Texts;
 import jcog.exe.Loop;
 import jdk.jshell.JShell;
 import jdk.jshell.SourceCodeAnalysis;
@@ -155,8 +156,11 @@ public class OmniBox extends Widget {
                 return; //though it works , temporary to avoid it clearing after ctrl-enter
 
             Loop.invokeLater(() -> {
+                if (cursorPos!=currentPos || !text.equals(currentText))
+                    return; //text or position changed while this was processing; discard these results
+
                 List<SourceCodeAnalysis.Suggestion> sugg = jsAnalyze.completionSuggestions(text,
-                        cursorPos + 1 /* TODO take actual cursor pos */,
+                        cursorPos /* TODO take actual cursor pos */,
                         new int[1]);
 
                 if (cursorPos!=currentPos || !text.equals(currentText))
@@ -179,7 +183,7 @@ public class OmniBox extends Widget {
             //String nextVar = "next";
             //"Object " + nextVar + " = " + t + ";"
             String cmd = OmniBox.class.getName() +
-                    ".popup(\"" + text + "\"," + text + ");";
+                    ".popup(" + Texts.quote(text) + "," + text + ");";
 
             js.eval(cmd).forEach(e -> {
                 logger.info("{}:\n\t{}", text, e);

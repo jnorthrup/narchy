@@ -113,7 +113,7 @@ public class PoolMultiExec extends AbstractExec {
 
             ForkJoinTask<?> next;
             while ((next = peekNextLocalTask()) != null) {
-                if (!(next instanceof Next)) {
+                if (!(next instanceof Next) && (next instanceof Runnable)) {
                     pollNextLocalTask();
 //                        try {
                     ((Runnable)next).run();

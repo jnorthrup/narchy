@@ -1,4 +1,4 @@
-package jcog.data;
+package jcog.io.lz;
 
 // QuickLZ data compression library
 // Copyright (C) 2006-2011 Lasse Mikkel Reinhold
@@ -23,9 +23,9 @@ public final class QuickLZ {
     // Bounds checking not supported. Use try...catch instead
 //    public final static int QLZ_MEMORY_SAFE = 0;
 
-    public final static int QLZ_VERSION_MAJOR = 1;
-    public final static int QLZ_VERSION_MINOR = 5;
-    public final static int QLZ_VERSION_REVISION = 0;
+//    public final static int QLZ_VERSION_MAJOR = 1;
+//    public final static int QLZ_VERSION_MINOR = 5;
+//    public final static int QLZ_VERSION_REVISION = 0;
 
     // Decrease QLZ_POINTERS_3 to increase compression speed of level 3. Do not
     // edit any other constants!

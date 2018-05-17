@@ -3,7 +3,6 @@ package nars.term;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.decide.Roulette;
-import jcog.list.FasterList;
 import jcog.sort.SortedList;
 import nars.IO;
 import nars.Op;
@@ -16,7 +15,9 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.Random;
+import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
@@ -456,29 +457,29 @@ public enum Terms {
 
         //keep only the unique subterms which are not contained by other terms in the list
         //terms which are contained by other terms in the list
-        final int[] minScore = {Integer.MAX_VALUE};
-        {
-            //Iterator<ObjectIntPair<Term>> oo = oi.keyValuesView().iterator();
-            List<Term> keysToRemove = new FasterList(4);
-            Iterator<Term> oo = ok.iterator();
-            while (oo.hasNext()) {
-                Term bb = oo.next();
-                if (ok.anySatisfyWith((a, b) -> (a != b) && a.containsRecursively(b), bb)) {
-                    keysToRemove.add(bb);
-                } else {
-                    int bs = oi.get(bb);
-                    if (bs < minScore[0])
-                        minScore[0] = bs;
-                }
-            }
-            if (!keysToRemove.isEmpty()) {
-                keysToRemove.forEach(oi::removeKey);
-                switch (oi.size()) {
-                    case 0: throw new RuntimeException("shouldnt happen");
-                    case 1: return ok.getFirst();
-                }
-            }
-        }
+//        final int[] minScore = {Integer.MAX_VALUE};
+//        {
+//            //Iterator<ObjectIntPair<Term>> oo = oi.keyValuesView().iterator();
+//            List<Term> keysToRemove = new FasterList(4);
+//            Iterator<Term> oo = ok.iterator();
+//            while (oo.hasNext()) {
+//                Term bb = oo.next();
+//                if (ok.anySatisfyWith((a, b) -> (a != b) && a.containsRecursively(b), bb)) {
+//                    keysToRemove.add(bb);
+//                } else {
+//                    int bs = oi.get(bb);
+//                    if (bs < minScore[0])
+//                        minScore[0] = bs;
+//                }
+//            }
+//            if (!keysToRemove.isEmpty()) {
+//                keysToRemove.forEach(oi::removeKey);
+//                switch (oi.size()) {
+//                    case 0: throw new RuntimeException("shouldnt happen");
+//                    case 1: return ok.getFirst();
+//                }
+//            }
+//        }
 
 
         {

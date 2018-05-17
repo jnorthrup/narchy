@@ -30,7 +30,7 @@ public class DepIndepVarIntroductionTest {
 
     @Test
     public void testIntroduceIndepVar2() throws Narsese.NarseseException {
-        assertEquals("[((a-->($1,#2))=|>(b-->($1,#2)))]",
+        assertEquals("[((a-->($1,#2))=|>(b-->($1,#2))), ((a-->$1)=|>(b-->$1))]",
                 introduce("((a-->(x,#1))=|>(b-->(x,#1)))", 16).toString());
     }
 

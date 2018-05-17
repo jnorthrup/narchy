@@ -1,6 +1,7 @@
 package jcog.data;
 
 import jcog.Texts;
+import jcog.io.lz.QuickLZ;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 

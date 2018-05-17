@@ -26,7 +26,7 @@ public class BagView extends TabPane {
                     );
                 },
                 "histo", () -> {
-                    return Vis.bagHistogram(bag::iterator, 10, nar);
+                    return NARui.bagHistogram(bag::iterator, 10, nar);
                 },
                 "treechart", () -> {
                     BagChart b = new BagChart(bag) {

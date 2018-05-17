@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
+import nars.index.concept.CaffeineIndex;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
@@ -30,6 +31,9 @@ public class NARchy extends NARS {
 
 
         NAR nar = new DefaultNAR(8, true)
+
+                .index(new CaffeineIndex(10 * 128 * 1024))
+
                 //.exe(new WorkerMultiExec(512, 2, 64))
                 .exe(new PoolMultiExec /*WorkerMultiExec*/(
                         Util.concurrencyDefault(2), 512,
@@ -46,6 +50,11 @@ public class NARchy extends NARS {
                 //.memory("/tmp/nal")
                 .get();
 
+
+        nar.beliefPriDefault.set(0.5f);
+        nar.goalPriDefault.set(0.75f);
+        nar.questionPriDefault.set(0.35f);
+        nar.questPriDefault.set(0.35f);
 
         ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (Task::isInput), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
