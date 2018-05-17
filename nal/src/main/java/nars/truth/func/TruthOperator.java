@@ -12,8 +12,6 @@ import java.util.Map;
 
 public interface TruthOperator {
 
-    Atomic NONE = Atomic.the("None");
-
     static void permuteTruth(@NotNull TruthOperator[] values, @NotNull Map<Term, TruthOperator> table) {
         for (TruthOperator tm : values) {
             table.put(Atomic.the(tm.toString()), tm);

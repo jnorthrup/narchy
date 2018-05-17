@@ -725,7 +725,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             } else {
                 trash = null;
             }
-            pressure.set(this, 0);
+            depressurize();
         }
 
         if (trash!=null)

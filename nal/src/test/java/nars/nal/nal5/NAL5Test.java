@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 300;
+    final int cycles = 200;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(17);
         return n;
     }
 
@@ -184,9 +184,9 @@ public class NAL5Test extends NALTest {
 //    public void comparisonNegNeg(){
 //        TestNAR tester = test();
 //        tester.log();
-//        tester.believe("<(x) ==> (z)>", 0.0f, 0.9f);
-//        tester.believe("<(y) ==> (z)>", 0.0f, 0.9f);
-//        tester.mustBelieve(cycles,"<(x) <=> (y)>", ????
+//        tester.believe("<x ==> z>", 0.0f, 0.9f);
+//        tester.believe("<y ==> z>", 0.0f, 0.9f);
+//        tester.mustBelieve(cycles,"<x <=> y>", ????
 //    }
 
     @Test
@@ -244,13 +244,19 @@ public class NAL5Test extends NALTest {
 
     @Test
     public void compound_composition_Subj() {
-
         TestNAR tester = test;
-        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); //.en("If robin is a type of bird then robin is a type of animal.");
-        tester.believe("<<robin --> [flying]> ==> <robin --> animal>>", 0.9f, 0.81f); //.en("If robin can fly then robin is a type of animal.");
-        tester.mustBelieve(cycles, " <(&&,<robin --> bird>, <robin --> [flying]>) ==> <robin --> animal>>", 0.9f, 0.73f); //.en("If robin can fly and is a type of bird then robin is a type of animal.");
-        //tester.mustBelieve(cycles," <(||,<robin --> bird>, <robin --> [flying]>) ==> <robin --> animal>>",0.9f /*1f ? */,0.73f); //.en("If robin can fly or is a type of bird then robin is a type of animal.");
-
+        tester.believe("(bird:robin ==> animal:robin)"); //.en("If robin is a type of bird then robin is a type of animal.");
+        tester.believe("([flying]:robin ==> animal:robin)", 0.9f, 0.81f); //.en("If robin can fly then robin is a type of animal.");
+        tester.mustBelieve(cycles, " ((bird:robin && [flying]:robin) ==> animal:robin)", 0.9f, 0.73f); //.en("If robin can fly and is a type of bird then robin is a type of animal.");
+        tester.mustBelieve(cycles," ((bird:robin || [flying]:robin) ==> animal:robin)",1f,0.73f); //.en("If robin can fly or is a type of bird then robin is a type of animal.");
+    }
+    @Test
+    public void compound_composition_SubjNeg() {
+        TestNAR tester = test;
+        tester.believe("--(bird:robin ==> animal:nonRobin)"); //.en("If robin is a type of bird then robin is a type of animal.");
+        tester.believe("--([flying]:robin ==> animal:nonRobin)", 0.9f, 0.81f); //.en("If robin can fly then robin is a type of animal.");
+        tester.mustBelieve(cycles, " ((bird:robin && [flying]:robin) ==> animal:nonRobin)", 0.1f, 0.73f); //.en("If robin can fly and is a type of bird then robin is a type of animal.");
+        tester.mustBelieve(cycles," ((bird:robin || [flying]:robin) ==> animal:nonRobin)",0f,0.73f); //.en("If robin can fly or is a type of bird then robin is a type of animal.");
     }
 
 //    @Test
@@ -721,19 +727,19 @@ public class NAL5Test extends NALTest {
         // ((%1,(%2==>%3),belief(positive),notImpl(%1),time(urgent)),(subIfUnifiesAny(%3,%2,%1),((DeductionRecursive-->Belief),(InductionRecursive-->Goal))))
         test
                 
-                .input("(x). %1.0;0.90%")
-                .input("((x) ==> (y)).")
-                .mustBelieve(cycles, "(y)", 1.0f, 0.81f)
-                .mustNotOutput(cycles, "(y)", BELIEF, 0f, 0.5f, 0, 1, ETERNAL);
+                .input("x. %1.0;0.90%")
+                .input("(x ==> y).")
+                .mustBelieve(cycles, "y", 1.0f, 0.81f)
+                .mustNotOutput(cycles, "y", BELIEF, 0f, 0.5f, 0, 1, ETERNAL);
 
     }
 
 //    @Test public void testPosNegImplicationConc() {
 //        test()
-//                .input("(x). %1.0;0.90%")
-//                .input("((x) ==> (--,(y))).")
-//                .mustBelieve(cycles, "(y)", 0.0f, 0.81f)
-//                .mustNotOutput(cycles, "(y)", BELIEF, 0.5f, 1f, 0, 1, ETERNAL);
+//                .input("x. %1.0;0.90%")
+//                .input("(x ==> (--,y)).")
+//                .mustBelieve(cycles, "y", 0.0f, 0.81f)
+//                .mustNotOutput(cycles, "y", BELIEF, 0.5f, 1f, 0, 1, ETERNAL);
 //    }
 
     //    static {
@@ -743,11 +749,11 @@ public class NAL5Test extends NALTest {
     public void testImplNegPos() {
 
         test
-                .input("--(x).")
-                .input("(--(x) ==> (y)).")
-                .mustBelieve(cycles, "(y)", 1.0f, 0.81f)
-                .mustNotOutput(cycles, "((--,#1)==>(y))", BELIEF, 0f, 0.5f, 0, 1, ETERNAL) //not negative
-                .mustNotOutput(cycles, "(y)", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
+                .input("--x.")
+                .input("(--x ==> y).")
+                .mustBelieve(cycles, "y", 1.0f, 0.81f)
+                .mustNotOutput(cycles, "((--,#1)==>y)", BELIEF, 0f, 0.5f, 0, 1, ETERNAL) //not negative
+                .mustNotOutput(cycles, "y", BELIEF, 0f, 0.5f, 0, 1, ETERNAL)
         ;
     }
 
@@ -769,10 +775,10 @@ public class NAL5Test extends NALTest {
 //
 //        //nothing hsould be derived
 //        test
-//                .input("(y). %1.0;0.90%")
-//                .input("((--,(y)) ==> (x)).")
-////                .mustBelieve(cycles, "(x)", 0.0f, 0.81f)
-//                .mustNotOutput(cycles, "(x)", BELIEF, 0f, 1f, 0, 1, ETERNAL)
+//                .input("y. %1.0;0.90%")
+//                .input("((--,y) ==> x).")
+////                .mustBelieve(cycles, "x", 0.0f, 0.81f)
+//                .mustNotOutput(cycles, "x", BELIEF, 0f, 1f, 0, 1, ETERNAL)
 //        ;
 //    }
 
@@ -824,28 +830,28 @@ public class NAL5Test extends NALTest {
     public void testDeductionPosNegImplicationPred() {
 
         test
-                .believe("(y)")
-                .believe("((y) ==> --(x))")
-                .mustBelieve(cycles, "(x)", 0.0f, 0.81f)
-                .mustNotOutput(cycles, "(x)", BELIEF, 0.5f, 1f, 0, 1, ETERNAL)
+                .believe("y")
+                .believe("(y ==> --x)")
+                .mustBelieve(cycles, "x", 0.0f, 0.81f)
+                .mustNotOutput(cycles, "x", BELIEF, 0.5f, 1f, 0, 1, ETERNAL)
         ;
     }
 
 //    @Test public void testNegNegImplicationPred() {
 //        test()
-//                .input("(--,(y)).")
-//                .input("((--,(x)) ==> (--,(y))).")
-//                .mustBelieve(cycles, "(x)", 0.0f, 0.45f)
-//                .mustNotOutput(cycles, "(x)", BELIEF, 0.5f, 1f, 0, 1, ETERNAL)
+//                .input("(--,y).")
+//                .input("((--,x) ==> (--,y)).")
+//                .mustBelieve(cycles, "x", 0.0f, 0.45f)
+//                .mustNotOutput(cycles, "x", BELIEF, 0.5f, 1f, 0, 1, ETERNAL)
 //        ;
 //    }
 
     //    @Test public void testNegNegImplicationConc() {
 //        test()
-//                .input("(x). %0.0;0.90%")
-//                .input("((--,(x)) ==> (--,(y))).")
-//                .mustBelieve(cycles, "(y)", 0.0f, 0.81f)
-//                .mustNotOutput(cycles, "(y)", BELIEF, 0.5f, 1f, 0, 1, ETERNAL)
+//                .input("x. %0.0;0.90%")
+//                .input("((--,x) ==> (--,y)).")
+//                .mustBelieve(cycles, "y", 0.0f, 0.81f)
+//                .mustNotOutput(cycles, "y", BELIEF, 0.5f, 1f, 0, 1, ETERNAL)
 //        ;
 //    }
 
@@ -864,9 +870,9 @@ public class NAL5Test extends NALTest {
 
         test
                 
-                .input("((x)==>(y))?")
-                .input("((y)==>(x)).")
-                .mustBelieve(cycles, "((x)==>(y)).", 1.0f, 0.47f)
+                .input("(x==>y)?")
+                .input("(y==>x).")
+                .mustBelieve(cycles, "(x==>y).", 1.0f, 0.47f)
         ;
     }
 
@@ -874,18 +880,18 @@ public class NAL5Test extends NALTest {
     public void testConversionNeg() {
 
         test
-                .input("((x) ==> (y))?")
-                .input("(--(y) ==> (x)).")
-                .mustBelieve(cycles, "((x)==>(y)).", 0.0f, 0.47f)
+                .input("(x ==> y)?")
+                .input("(--y ==> x).")
+                .mustBelieve(cycles, "(x==>y).", 0.0f, 0.47f)
         ;
     }
 
 //    @Test
 //    public void testConversionNeg2() {
 //        test
-//                .input("((x) ==> (y))?")
-//                .input("((y) ==> --(x)).")
-//                .mustBelieve(cycles, "(--(x)==>(y)).", 1.0f, 0.47f)
+//                .input("(x ==> y)?")
+//                .input("(y ==> --x).")
+//                .mustBelieve(cycles, "(--x==>y).", 1.0f, 0.47f)
 //        ;
 //    }
 

@@ -94,7 +94,7 @@ public class GoalActionConcept extends ActionConcept {
             float curiConf =
                     //nar.confDefault(GOAL); //<- to max out expectation-driven action
                     //nar.confDefault(GOAL)/4; //<- to max out expectation-driven action
-                    Math.min(Param.TRUTH_MAX_CONF, nar.confMin.floatValue() * 16);
+                    Math.min(Param.TRUTH_MAX_CONF, nar.confMin.floatValue() * 2);
 //                    Math.max(goal != null ? goal.conf() : 0, //match goal conf
 //                            //nar.confMin.floatValue() * 2
 //                            nar.confDefault(GOAL)

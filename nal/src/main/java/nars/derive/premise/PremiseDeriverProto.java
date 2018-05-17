@@ -619,13 +619,13 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         TruthOperator beliefTruthOp = BeliefFunction.get(beliefTruth);
-//        if ((beliefTruth != null) && !beliefTruth.equals(TruthOperator.NONE) && (beliefTruth == null)) {
-//            throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
-//        }
+        if ((beliefTruth != null) && (beliefTruthOp == null)) {
+            throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
+        }
         TruthOperator goalTruthOp = GoalFunction.get(goalTruth);
-//        if ((goalTruth != null) && !goalTruth.equals(TruthOperator.NONE) && (goalTruth == null)) {
-//            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
-//        }
+        if ((goalTruth != null) && (goalTruthOp == null)) {
+            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
+        }
         String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : "_";
         String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : "_";
 

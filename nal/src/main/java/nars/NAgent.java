@@ -323,7 +323,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));
 
-            alwaysWant((Iterable)happy, nar.confDefault(GOAL));
+            alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
+            alwaysWant(happy.filter[1].term, nar.confDefault(GOAL)/2);
+            alwaysWant(happy.filter[2].term, nar.confDefault(GOAL)/2);
 
             actions.keySet().forEach(a -> {
                 alwaysQuest(a);

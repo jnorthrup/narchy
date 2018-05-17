@@ -232,7 +232,6 @@ public class KIFInput {
          'or':types.OrLink,
          'not':types.NotLink,
          'instance':types.MemberLink,
-         # This might break some of the formal precision of SUMO, but who cares
          'attribute':types.InheritanceLink,
          'member':types.MemberLink,
          'subclass':types.InheritanceLink,
@@ -247,6 +246,7 @@ public class KIFInput {
             case "ListFn":
                 return $.p(args);
 
+            case "attribute":
             case "subrelation":
             case "subclass":
             case "subAttribute":
@@ -258,6 +258,12 @@ public class KIFInput {
                     }
                 }
                 break;
+
+            case "exhaustiveAttribute": {
+                //ex: (exhaustiveAttribute RiskAttribute HighRisk LowRisk)
+                return INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
+            }
+
             case "instance":
                 if (includeInstance) {
                     if (args.size() != 2) {

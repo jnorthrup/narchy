@@ -246,34 +246,34 @@ public enum BeliefFunction implements TruthOperator {
             return z != null ? z.neg() : null;
         }
     },
-//    IntersectionSym() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            if (T.isPositive() && B.isPositive()) {
-//                return TruthFunctions.intersection(T, B, minConf);
-//            } else if (T.isNegative() && B.isNegative()) {
-//                Truth C = TruthFunctions.intersection(T.neg(), B.neg(), minConf);
-//                return C!=null ? C.neg() : null;
-//            } else {
-//                return null;
-//            }
-//        }
-//    },
 
-//
-//    UnionSym() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            if (T.isPositive() && B.isPositive()) {
-//                return TruthFunctions.union(T, B, minConf);
-//            } else if (T.isNegative() && B.isNegative()) {
-//                Truth C = TruthFunctions.union(T.neg(), B.neg(), minConf);
-//                return C!=null ? C.neg() : null;
-//            } else {
-//                return null;
-//            }
-//        }
-//    },
+    IntersectionSym() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            if (T.isPositive() && B.isPositive()) {
+                return Intersection.apply(T, B, m, minConf);
+            } else if (T.isNegative() && B.isNegative()) {
+                Truth C = Intersection.apply(T.neg(), B.neg(), m, minConf);
+                return C!=null ? C.neg() : null;
+            } else {
+                return null;
+            }
+        }
+    },
+
+    UnionSym() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            if (T.isPositive() && B.isPositive()) {
+                return Union.apply(T, B, m, minConf);
+            } else if (T.isNegative() && B.isNegative()) {
+                Truth C = Union.apply(T.neg(), B.neg(), m, minConf);
+                return C!=null ? C.neg() : null;
+            } else {
+                return null;
+            }
+        }
+    },
 
     Difference() {
         @Override

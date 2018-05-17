@@ -116,9 +116,14 @@ class KIFInputTest {
 
     @Test public void testLoad() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        n.log();
-        n.input("load(\"file:///tmp/sumo/CCTrep.kif.nalz\");");
+
+        n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
         n.run(1);
+        n.clear();
+        n.log();
+        n.input("$1.0 possesses(I,#everything)!");
+        n.input("$1.0 (--(I <-> #everyoneElse) && --possesses(#everyoneElse, #something))!");
+        n.run(1000);
     }
 
     @Test public void test1() throws Exception {
