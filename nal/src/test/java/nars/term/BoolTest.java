@@ -3,7 +3,7 @@ package nars.term;
 import nars.$;
 import nars.Op;
 import nars.truth.Truth;
-import nars.truth.TruthFunctions;
+import nars.truth.func.BeliefFunction;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -94,13 +94,13 @@ public class BoolTest {
     @Test
     public void testDiffTautologies() {
 
-        @Nullable Truth selfDiff = TruthFunctions.difference($.t(1, 0.9f), $.t(1f, 0.9f), 0);
+        @Nullable Truth selfDiff = BeliefFunction.Difference.apply($.t(1, 0.9f), $.t(1f, 0.9f), null, 0);
         assertEquals($.t(0, 0.81f), selfDiff);
 
-        @Nullable Truth negDiff = TruthFunctions.difference($.t(0, 0.9f), $.t(1f, 0.9f), 0);
+        @Nullable Truth negDiff = BeliefFunction.Difference.apply($.t(0, 0.9f), $.t(1f, 0.9f), null, 0);
         assertEquals($.t(0, 0.81f), negDiff);
 
-        @Nullable Truth posDiff = TruthFunctions.difference($.t(1, 0.9f), $.t(0f, 0.9f), 0);
+        @Nullable Truth posDiff = BeliefFunction.Difference.apply($.t(1, 0.9f), $.t(0f, 0.9f), null, 0);
         assertEquals($.t(1, 0.81f), posDiff);
 
         //@Nullable Truth semiDiff = TruthFunctions.difference($.t(0.75f, 0.9f), $.t(0.25f, 0.9f), 0);

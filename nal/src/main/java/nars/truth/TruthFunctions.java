@@ -360,14 +360,7 @@ public final class TruthFunctions {
         return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
 
-    @Nullable
-    public static Truth difference(Truth v1, /*@NotNull*/ Truth v2, float minConf) {
-        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
-        float c = compConf(f1, c1, false, f2, c2, true);
-        return (c < minConf) ? null : $.t(and(f1, 1-f2), c);
-    }
-
-//    /**
+    //    /**
 //     * {(||, A, B), (--, B)} |- A
 //     * @param a Truth value of the first premise
 //     * @param b Truth value of the second premise
@@ -472,7 +465,7 @@ public final class TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     private static float c2w(float c, float horizon) {
-        if (!((Float.isFinite(c) && (c <= Param.TRUTH_MAX_CONF))))
+        if (!((Float.isFinite(c) && (c <= Param.TRUTH_MAX_CONF) && (c >= 0))))
             throw new RuntimeException("invalid confidence: " + c);
         return c2wSafe(c, horizon);
     }

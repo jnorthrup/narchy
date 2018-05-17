@@ -149,8 +149,8 @@ public class FZero extends NAgentX {
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 4, //4 cardinal directions
                 //DigitizedScalar.FuzzyNeedle
-                //DigitizedScalar.Needle
-                DigitizedScalar.FuzzyBinary
+                DigitizedScalar.Needle
+                //DigitizedScalar.FuzzyBinary
         ).resolution(0.01f);
 
         //new RLBooster(this, HaiQae::new, 1);

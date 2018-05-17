@@ -161,18 +161,8 @@ public class ConjClustering extends Causable {
 
     private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
-        //NAR nar = narAndTarget.getOne();
-        //get only the maximum confidence task for each term at its given starting time
-
-        //in.input(
-        //chunk(group.filter(Objects::nonNull).takeWhile(kontinue)
-        //.map(x -> x.id), maxConjSize, volMax).takeWhile(kontinue).map(tasks -> {
-
-
         Iterator<VLink<Task>> gg =
                 group.filter(x -> x != null && !x.isDeleted()).iterator();
-        //Iterators.peekingIterator();
-
 
         Map<LongObjectPair<Term>, Task> vv = new HashMap<>(16);
         FasterList<Task> actualTasks = new FasterList(8);
@@ -194,8 +184,6 @@ public class ConjClustering extends Causable {
             long end = Long.MIN_VALUE;
             long start = Long.MAX_VALUE;
 
-
-            int dur = nar.dur();
             float freq = 1f;
             float conf = 1f;
             float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;

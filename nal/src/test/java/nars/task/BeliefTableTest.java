@@ -189,18 +189,13 @@ public class BeliefTableTest {
         t.confTolerance(0.1f);
         t.inputAt(1, "x. :|:");
         t.inputAt(2, "y. :|:");
-        t.mustBelieve(5, "(x&|y)", 1f, 0.81f, 1);
-        t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, 1);
+        t.mustBelieve(5, "(x&|y)", 1f, 0.81f, s->true  /* TODO test occ = 0..3 */);
+        t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, s->true  /* TODO test occ = 0..3 */);
+        n.onTask(tt -> {
+            if (!tt.isInput() && tt.start()%3!=0 && tt.end()%3!=0 || tt.isBefore(0) || tt.isAfter(3))
+                fail();
+        });
         t.test(true);
-
-
-//        assertEquals( $.$("((x) &| (y))"), n.term("((x) &&+1 (y))"));
-//        assertEquals( $.$("((x) &| (y))"), n.term("((x) &&-1 (y))"));
-//        assertEquals( "(&|,(x),(y),(z))", n.term("(((x) &&+1 (y)) &&+1 (z))").toString());
-//        assertEquals( $.$("((x) &&+6 (y))"), n.term("((x) &&+6 (y))"));
-//        assertEquals( $.$("((x) =|> (y))"), n.term("((x) ==>+1 (y))"));
-////        assertEquals( $.$("((x) <|> (y))"), n.term("((x) <=>+1 (y))"));
-
     }
 
     @Test
