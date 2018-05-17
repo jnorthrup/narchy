@@ -48,7 +48,6 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
 //                //cache this generated belief, allowing it to revise with others in the future
 //                add(generated, nar);
 //            }
-
             return generated;
         } else {
             return null;

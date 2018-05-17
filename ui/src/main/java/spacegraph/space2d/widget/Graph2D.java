@@ -176,6 +176,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     xx = nodePool.get();
                     xx.reset(x);
                     nodeBuilder.accept(xx);
+                    xx.show();
                     layout.initialize(this, xx);
                     return xx;
                 } else
@@ -335,7 +336,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         protected void reset(X id) {
             this.id = id;
-            show();
+            edgeOut.write().clear();
+            edgeOut.commit();
+            edgeOut.write().clear();
             r = g = b = 0.5f;
         }
 
@@ -343,10 +346,6 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         public boolean stop() {
             if (super.stop()) {
                 this.id = null;
-                clear();
-                edgeOut.write().clear();
-                edgeOut.commit();
-                edgeOut.write().clear();
                 return true;
             }
             return false;

@@ -12,8 +12,9 @@ import java.util.function.IntFunction;
 /**
  * with set of entries to merge (filter) duplicates
  */
-public class CachedTopN<X> extends UnifiedSet<X> implements Iterable<X> {
+public class CachedTopN<X> implements Iterable<X> {
 
+    final UnifiedSet<X> seen = new UnifiedSet(0);
     protected final TopN<NLink<X>> top;
     private final FloatFunction<X> rank;
 
@@ -22,7 +23,6 @@ public class CachedTopN<X> extends UnifiedSet<X> implements Iterable<X> {
     }
 
     public CachedTopN(NLink<X>[] target, FloatFunction<X> rank) {
-        super(0);
         top = new TopN<>(target, NLink::pri);
         this.rank = rank;
     }
@@ -33,7 +33,7 @@ public class CachedTopN<X> extends UnifiedSet<X> implements Iterable<X> {
     }
 
     public boolean add(X x) {
-        if (super.add(x) && valid(x)) {
+        if (seen.add(x) && valid(x)) {
             float r = rank.floatValueOf(x);
             if (r > top.minValueIfFull())
                 top.add(new NLink<>(x, r));
@@ -67,8 +67,8 @@ public class CachedTopN<X> extends UnifiedSet<X> implements Iterable<X> {
     }
 
     public X[] array(IntFunction<X[]> arrayBuilder) {
-        X[] x = arrayBuilder.apply(top.size());
         int s = top.size();
+        X[] x = arrayBuilder.apply(s);
         NLink<X>[] l = top.list;
         for (int i = 0; i < s; i++) {
             x[i] = l[i].id;

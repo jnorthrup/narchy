@@ -2,7 +2,10 @@ package nars;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.google.common.collect.Streams;
 import jcog.TODO;
+import jcog.io.bzip2.BZip2InputStream;
+import jcog.io.bzip2.BZip2OutputStream;
 import jcog.list.FasterList;
 import jdk.internal.jline.internal.Nullable;
 import nars.term.Term;
@@ -10,19 +13,13 @@ import nars.term.atom.Atomic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
@@ -31,6 +28,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static nars.Op.ATOM;
 
@@ -44,7 +42,7 @@ import static nars.Op.ATOM;
  * copy(from, to[, filter]) - copy from one context into another.  this is more like a mixing operation since it can be partial
  * <p>
  * contexts are terms and act like URI's.
- * they define a namespace index offering access to entire sets of 
+ * they define a namespace index offering access to entire sets of
  * just like URI's, certain patterns may indicate it is accessed by a particular strategy:
  * RAM memory - side memories running parallel with the current SELF, which could theoreticaly be swapped to, or at least blended with through memory ops
  * File system - provides user with convenient access to data files, especially for development
@@ -95,61 +93,15 @@ import static nars.Op.ATOM;
  */
 public class Memory {
 
-    final Logger logger = LoggerFactory.getLogger(Memory.class);
-
-    final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
-    final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
-    final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
-
-    public Stream<Term> contents(Term address) {
-        return resolvers.stream().flatMap(r -> r.contents(address, Memory.this)).filter(Objects::nonNull);
-    }
-
-
-    public interface MemoryResolver {
-        @Nullable
-        Stream<Supplier<Stream<Task>>> readers(Term x, Memory m);
-
-        @Nullable
-        Stream<Consumer<Stream<Task>>> writers(Term x, Memory m);
-
-        /** lists the contents, ie. if it is a directory / container.  items
-         * returned may be resolvable by this or another resolver.  */
-        default Stream<Term> contents(Term x, Memory m) {
-            return Stream.empty();
-        }
-    }
-
-    public Memory() {
-        resolvers.add(URIResolver);
-        resolvers.add(StdIOResolver);
-        on(new TasksToBytes("nal") {
-            @Override
-            public void accept(Stream<Task> tt, OutputStream out) {
-               tt.forEach(t -> {
-                   try {
-                       out.write(IO.taskToBytes(t));
-                   } catch (IOException e) {
-                       e.printStackTrace();
-                   }
-               });
-            }
-        });
-    }
-
-    public Memory(NAR nar) {
-        this();
-        add(nar);
-    }
-
-    public Memory add(NAR n) {
-        resolvers.add(new NARResolver(n));
-        return this;
-    }
 
     final static Atomic stdin = Atomic.the("stdin");
     final static Atomic stdout = Atomic.the("stdout");
 
+
+    final Logger logger = LoggerFactory.getLogger(Memory.class);
+    final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
+    final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
+    final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
     final MemoryResolver StdIOResolver = new MemoryResolver() {
 
         @Override
@@ -164,15 +116,14 @@ public class Memory {
         public Stream<Consumer<Stream<Task>>> writers(Term x, Memory m) {
             if (x.equals(stdout)) {
                 return Stream.of((t) -> {
-                   t.forEach(tt ->
-                       System.out.println(tt) //TODO improve output
-                   );
+                    t.forEach(tt ->
+                            System.out.println(tt) //TODO improve output
+                    );
                 });
             }
             return null;
         }
     };
-
     final MemoryResolver URIResolver = new MemoryResolver() {
 
 
@@ -186,7 +137,7 @@ public class Memory {
                     if (extension != null) {
                         Collection<BytesToTasks> formats = m.readFormats.get(extension);
                         if (!formats.isEmpty()) {
-                            return (Supplier<Stream<Task>>)()-> {
+                            return (Supplier<Stream<Task>>) () -> {
                                 try {
                                     URL url = u.toURL();
                                     return read(url.openStream(), formats);
@@ -213,11 +164,11 @@ public class Memory {
                     if (extension != null) {
                         Collection<TasksToBytes> formats = m.writeFormats.get(extension);
                         if (!formats.isEmpty()) {
-                            if (writeFormats.size() > 1)
+                            if (formats.size() > 1)
                                 logger.warn("multiple output formats, choosing first: {}", formats);
 
-                            return (Stream<Task> tt)-> {
-                                try(OutputStream out = Files.newOutputStream(Paths.get(u))) {
+                            return (Stream<Task> tt) -> {
+                                try (OutputStream out = Files.newOutputStream(Paths.get(u))) {
                                     formats.iterator().next().accept(tt, out);
                                 } catch (IOException e) {
                                     logger.warn("{} {}", u, e);
@@ -239,7 +190,7 @@ public class Memory {
                     Path p = Path.of(u);
                     if (Files.isDirectory(p)) {
                         try {
-                            return Files.list(p).map(pp->uriToTerm(pp.toUri()));
+                            return Files.list(p).map(pp -> uriToTerm(pp.toUri()));
                         } catch (IOException e) {
                             logger.warn("{} {}", u, e);
                         }
@@ -251,17 +202,31 @@ public class Memory {
             return null;
         }
     };
+    public Memory() {
+        resolvers.add(URIResolver);
+        resolvers.add(StdIOResolver);
+        on(Tasks_To_Binary);
+        //on(Binary_To_Tasks); //TODO
+        on(Tasks_To_BinaryZipped);
+        on(BinaryZipped_To_Tasks);
+    }
 
-    @Nullable static String extension(URI u) {
+    public Memory(NAR nar) {
+        this();
+        add(nar);
+    }
+
+    @Nullable
+    static String extension(URI u) {
         //TODO real MIME Content-Type resolver
         ////Files.probeContentType()
 
         String path = u.getPath();
         int afterPeriod = path.lastIndexOf('.');
-        if (afterPeriod==-1)
+        if (afterPeriod == -1)
             return null;
 
-        return path.substring(afterPeriod+1);
+        return path.substring(afterPeriod + 1);
     }
 
     static Term uriToTerm(URI x) {
@@ -294,6 +259,14 @@ public class Memory {
         }
     }
 
+    public Stream<Term> contents(Term address) {
+        return resolvers.stream().flatMap(r -> r.contents(address, Memory.this)).filter(Objects::nonNull);
+    }
+
+    public Memory add(NAR n) {
+        resolvers.add(new NARResolver(n));
+        return this;
+    }
 
     public void on(BytesToTasks f) {
         for (String e : f.extensions)
@@ -313,40 +286,61 @@ public class Memory {
         return resolvers.stream().flatMap(r -> r.writers(x, Memory.this)).filter(Objects::nonNull);
     }
 
-    @Nullable public Runnable copy(Term i, Term o) {
+    @Nullable
+    public Runnable copy(Term i, Term o) {
         return copy(i, o, null);
     }
 
-    @Nullable public Runnable copy(Term i, Term o, @Nullable Function<Stream<Task>,Stream<Task>> filter) {
+    @Nullable
+    public Runnable copy(Term i, Term o, @Nullable Function<Stream<Task>, Stream<Task>> filter) {
         Set<Supplier<Stream<Task>>> readers = readers(i).collect(toSet());
-        Set<Consumer<Stream<Task>>> writers = writers(o).collect(toSet());
-        if (!readers.isEmpty() && !writers.isEmpty()) {
-            return ()->{
+        if (!readers.isEmpty()) {
+            Set<Consumer<Stream<Task>>> writers = writers(o).collect(toSet());
+            if (!writers.isEmpty()) {
+                return () -> {
 
-                /** read input */
-                Stream<Task> fromIn = readers.stream().flatMap(Supplier::get);
+                    /** read input */
+                    Stream<Task> fromIn = readers.stream().flatMap(Supplier::get);
 
-                /** filter (intermediate) */
-                Stream<Task> toOut = filter != null ? filter.apply(fromIn) : fromIn;
+                    /** filter (intermediate) */
+                    Stream<Task> toOut = (filter != null ? filter.apply(fromIn) : fromIn).distinct();
 
-                /** write output */
-                if (writers.size() == 1) {
-                    writers.iterator().next().accept(toOut);
-                } else {
-                    //HACK find a way that doesnt involve fully buffering the input
-                    Set<Task> outs = toOut.collect(toSet());
+                    /** write output */
+                    if (writers.size() == 1) {
+                        writers.iterator().next().accept(toOut);
+                    } else {
+                        //HACK find a way that doesnt involve fully buffering the input
+                        List<Task> outs = toOut.collect(toList());
 
-                    writers.forEach(w -> w.accept(outs.stream()));
-                }
-            };
-        } else {
-            return null;
+                        writers.forEach(w -> w.accept(outs.stream()));
+                    }
+                };
+            }
         }
+
+        return null;
     }
 
 
+    public interface MemoryResolver {
+        @Nullable
+        Stream<Supplier<Stream<Task>>> readers(Term x, Memory m);
 
-    /** resolves memory by NAR's current Self term */
+        @Nullable
+        Stream<Consumer<Stream<Task>>> writers(Term x, Memory m);
+
+        /**
+         * lists the contents, ie. if it is a directory / container.  items
+         * returned may be resolvable by this or another resolver.
+         */
+        default Stream<Term> contents(Term x, Memory m) {
+            return Stream.empty();
+        }
+    }
+
+    /**
+     * resolves memory by NAR's current Self term
+     */
     private static class NARResolver implements MemoryResolver {
         private final NAR nar;
 
@@ -371,7 +365,6 @@ public class Memory {
         }
     }
 
-
     /**
      * registers the ability to translate a file format into NAL
      */
@@ -390,5 +383,74 @@ public class Memory {
             this.extensions = extension;
         }
     }
+
+    static final TasksToBytes Tasks_To_Binary = new TasksToBytes("nal") {
+        @Override
+        public void accept(Stream<Task> tt, OutputStream out) {
+            tt.forEach(t -> {
+                try {
+                    out.write(IO.taskToBytes(t));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    };
+
+    /**
+     * bzip2 compressed
+     * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
+     */
+    static final TasksToBytes Tasks_To_BinaryZipped = new TasksToBytes("nalz") {
+        @Override
+        public void accept(Stream<Task> tt, OutputStream out) {
+            try {
+                BZip2OutputStream o = new BZip2OutputStream(out);
+                tt.forEach(t -> {
+                    try {
+                        o.write(IO.taskToBytes(t));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+                o.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    /**
+     * bzip2 compressed
+     * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
+     */
+    static final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
+        @Override
+        public Stream<Task> apply(InputStream ii) {
+            return Streams.stream(()->new Iterator<Task>() {
+
+                final DataInputStream i = new DataInputStream(new BZip2InputStream(ii));
+                boolean done = false;
+
+                @Override
+                public boolean hasNext() {
+                    return done;
+                }
+
+                @Override
+                public Task next() {
+                    try {
+                        Task t = IO.readTask(i);
+                        if (i.available()==0)
+                            done = true;
+                        return t;
+                    } catch (IOException e) {
+                        done = true;
+                    }
+                    return null;
+                }
+            });
+        }
+    };
 
 }

@@ -580,7 +580,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                         vs + "ValueNodeFactory";
         try {
             this.factory = (NodeFactory)
-                    (Class.forName(factoryName).newInstance());
+                    (Class.forName(factoryName).getConstructor().newInstance());
         } catch (Exception ex) {
             throw new Error("Cannot instantiate " + factoryName);
         }
@@ -1994,6 +1994,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
 
+        public StrongKeySelfValueNodeFactory() { }
+
         @Override
         public final Node newNode(int locator,
                                   Object key, Object value,
@@ -2070,7 +2072,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeyStrongValueNodeFactory
             implements NodeFactory {
-        //private static final long serialVersionUID = 7249069346764182397L;
+
+        public StrongKeyStrongValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,
@@ -2239,6 +2242,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class StrongKeyWeakValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
+        public StrongKeyWeakValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,
@@ -2326,6 +2330,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class StrongKeySoftValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
+
+        public StrongKeySoftValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,
@@ -2423,6 +2429,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
 
+        public WeakKeySelfValueNodeFactory() { }
+
         @Override
         public final Node newNode(int locator,
                                   Object key, Object value,
@@ -2500,6 +2508,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class WeakKeyStrongValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
+        public WeakKeyStrongValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,
@@ -2656,6 +2665,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class WeakKeyWeakValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
+        public WeakKeyWeakValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,
@@ -2736,7 +2746,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class WeakKeySoftValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
-
+        public WeakKeySoftValueNodeFactory() { }
         @Override
         public final Node newNode(int locator,
                                   Object key, Object value,
@@ -2833,6 +2843,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
 
+        public SoftKeySelfValueNodeFactory() { }
+
         @Override
         public final Node newNode(int locator,
                                   Object key, Object value,
@@ -2910,6 +2922,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class SoftKeyStrongValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
+
+        public SoftKeyStrongValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,
@@ -3067,6 +3081,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
 
+        public SoftKeyWeakValueNodeFactory() { }
+
         @Override
         public final Node newNode(int locator,
                                   Object key, Object value,
@@ -3146,6 +3162,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class SoftKeySoftValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
+
+        public SoftKeySoftValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,
@@ -3237,6 +3255,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final class IntKeySelfValueNodeFactory
             implements NodeFactory {
         //private static final long serialVersionUID = 7249069346764182397L;
+
+        public IntKeySelfValueNodeFactory() { }
 
         @Override
         public final Node newNode(int locator,

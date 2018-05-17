@@ -673,8 +673,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-    public final void onOp1(@NotNull String atom, @NotNull BiConsumer<Term, NAR> exe) {
-        onOp(atom, (task, nar) -> {
+    public final Operator onOp1(@NotNull String atom, @NotNull BiConsumer<Term, NAR> exe) {
+        return onOp1((Atom)Atomic.the(atom), exe);
+    }
+
+    public final Operator onOp1(@NotNull Atom atom, @NotNull BiConsumer<Term, NAR> exe) {
+        return onOp(atom, (task, nar) -> {
             Subterms ss = task.term().sub(0).subterms();
             if (ss.subs() == 1)
                 exe.accept(ss.sub(0), nar);

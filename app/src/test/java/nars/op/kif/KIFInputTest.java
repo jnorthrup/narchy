@@ -8,13 +8,16 @@ import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
+
 @Disabled
 class KIFInputTest {
 
     @Test
-    public void testSUMOViaMemory() throws Narsese.NarseseException {
+    public void testSUMOViaMemory() {
         String sumo =
-                "People";
+                "Transportation";
+                //"People";
                 //"Merge";
                 //"Law";
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
@@ -23,11 +26,11 @@ class KIFInputTest {
         n.memory.on(KIFInput.load);
 
 
-        Term I = $.quote(inURL);
+        Term I = $$(inURL);
         Term O =
             //n.self();
             //Atomic.the("stdout");
-            Atomic.the("file:///tmp/x.nal");
+            Atomic.the("file:///tmp/x.nalz");
 
         Runnable r = n.memory.copy(I, O);
         r.run();

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import static java.lang.Long.MAX_VALUE;
 import static jcog.Util.lerp;
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -340,6 +341,23 @@ public class Revision {
 
         tasks = ArrayUtils.removeNulls(tasks, Task[]::new); //HACK
 
+        if (start == ETERNAL) {
+            long minStart = MAX_VALUE;
+            long maxStart = Long.MIN_VALUE;
+            for (TaskRegion z : tasks) {
+                long zs = z.start();
+                if (zs!=ETERNAL) {
+                    minStart = Math.min(minStart, zs);
+                    maxStart = Math.max(maxStart, z.end());
+                }
+            }
+            if (minStart!=MAX_VALUE) {
+                //shrink the eternal range to the temporal range covered by the tasks
+                start = minStart;
+                end = maxStart;
+            }
+        }
+
         /*Truth.EVI_MIN*/
         //c2wSafe(nar.confMin.floatValue()),
         float range = (start != ETERNAL) ? (end - start + 1) : 1;
@@ -374,10 +392,12 @@ public class Revision {
 
         byte punc = T.punc();
 
+        long finalStart = start;
+        long finalEnd = end;
         Task t = Task.tryTask(T.term, punc, cTruth, (c, tr) ->
                 new NALTask(c, punc,
                         tr,
-                        nar.time(), start, end,
+                        nar.time(), finalStart, finalEnd,
                         Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
                 )
         );

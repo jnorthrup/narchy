@@ -18,7 +18,7 @@ package nars.op.kif;
 
 import jcog.Util;
 import nars.*;
-import nars.task.NALTask;
+import nars.task.CommandTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
@@ -33,15 +33,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
 import static nars.op.rdfowl.NQuadsRDF.equi;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 
 /**
  * https://github.com/ontologyportal/sigmakee/blob/master/suo-kif.pdf
@@ -66,10 +63,8 @@ public class KIFInput {
         @Override
         public Stream<Task> apply(InputStream i) {
             try {
-                AtomicLong counter = new AtomicLong();
                 return new KIFInput(i).beliefs.stream().map(b ->
-                        new NALTask(b, BELIEF, $.t(1f, 0.9f), TIMELESS, ETERNAL, ETERNAL,
-                                new long[] { counter.getAndIncrement() } ) );
+                        new CommandTask($.func(Op.BELIEF_TERM, b)));
             } catch (Exception e) {
                 e.printStackTrace();
             }

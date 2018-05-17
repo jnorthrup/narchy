@@ -594,6 +594,19 @@ public class Builtin {
     static void registerOperators(NAR nar) {
 
         //new System(nar);
+        
+        nar.onOp1(Op.BELIEF_TERM, (x, nn) -> {
+            nar.believe(x);
+        });
+        nar.onOp1(Op.GOAL_TERM, (x, nn) -> {
+            nar.goal(x);
+        });
+        nar.onOp1(Op.QUESTION_TERM, (x, nn) -> {
+            nar.question(x);
+        });
+        nar.onOp1(Op.QUEST_TERM, (x, nn) -> {
+            nar.quest(x);
+        });
 
         nar.onOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)

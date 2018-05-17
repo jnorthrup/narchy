@@ -70,6 +70,31 @@ public class DynamicTruthBeliefTableTest {
     }
 
     @Test
+    public void testDynamicConjunctionEternalTemporalMix() throws Narsese.NarseseException {
+        NAR n = NARS.shell()
+                .believe($$("x"), 0)
+                .believe($$("y"), 0)
+                .believe($$("e"), ETERNAL)
+                ;
+
+        Task atZero = n.belief($("(&&,x,y,e)"), 0);
+        Task atOne = n.belief($("(&&,x,y,e)"), 1); //projected
+        Task atEte = n.belief($("(&&,x,y,e)"), ETERNAL);
+
+        assertEquals("((x&|y)&&e)", atZero.term().toString());
+        assertEquals("((x&|y)&&e)", atOne.term().toString());
+        assertEquals("((x&|y)&&e)", atEte.term().toString());
+
+        assertEquals(0, atZero.start());
+        assertEquals(1, atOne.start());
+        assertEquals(0, atEte.start()); //because it includes temporal components, it can not be eternally determined
+
+        assertEquals(0.73f, atZero.conf(), 0.01f);
+        assertEquals(0.73f, atEte.conf(), 0.01f);
+        assertEquals(0.60f, atOne.conf(), 0.05f); //slightly less
+    }
+
+    @Test
     public void testDynamicConjunctionTemporalOverride() throws Narsese.NarseseException {
         NAR n = NARS.shell()
                 .believe("a:x", 1f, 0.9f)

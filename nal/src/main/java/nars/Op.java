@@ -605,6 +605,11 @@ public enum Op {
     public static final int SetBits = or(Op.SETe, Op.SETi);
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
 
+    public static final Atom BELIEF_TERM = (Atom) Atomic.the(String.valueOf((char)BELIEF));
+    public static final Atom GOAL_TERM = (Atom) Atomic.the(String.valueOf((char)GOAL));
+    public static final Atom QUESTION_TERM = (Atom) Atomic.the(String.valueOf((char)QUESTION));
+    public static final Atom QUEST_TERM = (Atom) Atomic.the(String.valueOf((char)QUEST));
+
     public static TermBuilder terms =
             new InterningTermBuilder();
             //new TermBuilder.HeapTermBuilder();

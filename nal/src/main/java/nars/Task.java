@@ -481,6 +481,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * creates lazily computing proxy task which facades the task to the target time range
      */
     static Task project(@Nullable Task t, long subStart, long subEnd, TimeAware n, boolean negated) {
+
         if (t.isEternal() || t.containedBy(subStart, subEnd)) {
             //no need to project, but apply negation if negate
             return negated ? Task.negated(t) : t;

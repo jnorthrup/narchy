@@ -73,10 +73,10 @@ abstract public class NAgentX extends NAgent {
 
 //            nar.onTask(x -> {
 //                if (x.isBeliefOrGoal() && x.isEternal() && !x.isInput()) {
-//                    if (!always.contains(x)) {
-//                        System.err.println(x.proof());
-//                        System.err.println();
-//                    }
+//
+//                    System.err.println(x.proof());
+//                    System.err.println();
+//
 //                }
 //            });
 

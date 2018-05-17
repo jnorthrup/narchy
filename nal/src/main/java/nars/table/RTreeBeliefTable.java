@@ -256,6 +256,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     @Override
     public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
 
+
+
+
         assert (end >= start);
 
         int s = size();
@@ -327,8 +330,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         if (isEmpty())
             return;
 
-        FloatFunction<Task> value = m.value();
-
         ExpandingScan tt = new ExpandingScan(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
                 task(m.value()),
                 (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
@@ -342,7 +343,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             } else {
 
                 final int[] limit = {m.limit()};
-                float[] ww = Util.map(y -> tt.pri(y), new float[tts]);
+                float[] ww = Util.map(tt::pri, new float[tts]);
                 MutableRoulette.run(ww, m.random(), t -> 0, y -> {
                     target.accept((Task) tt.get(y));
                     return --limit[0] > 0;

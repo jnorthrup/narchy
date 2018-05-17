@@ -14,7 +14,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
 import nars.time.Tense;
-import nars.truth.Truth;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -128,28 +127,27 @@ public class Inperience extends LeakBack {
         if (c == null)
             return Null;
 
-        Term xx = t.term();
+        Task belief = ((BeliefTable) c.table(BELIEF))
+                .answer(t.start(), t.end(), t.term(), null, nar);
 
-        Truth belief = ((BeliefTable) c.table(BELIEF))
-                .truth(t.start(), t.end(), xx, nar);
+        Term bb = belief!=null ? belief.term() : t.term();
 
         Term self = nar.self();
         if (t.punc() == BELIEF) {
             if (belief == null)
                 return Null;
-            return $.func(believe, self, xx.negIf(belief.isNegative()));
+            return $.func(believe, self, bb.negIf(belief.isNegative()));
         } else {
-            Truth goal = ((BeliefTable) c.table(GOAL))
-                    .truth(t.start(), t.end(), xx, nar);
-            if (goal == null)
-                return Null;
+            Task goal = ((BeliefTable)c.table(GOAL))
+                    .answer(t.start(), t.end(), bb, null, nar);
 
-            Term want = $.func(Inperience.want, self, xx.negIf(goal.isNegative()));
+            Term want = goal!=null ? $.func(Inperience.want, self, goal.term().negIf(goal.isNegative())) : null;
+
             if (belief == null)
                 return want;
             else {
                 //conjoin with belief truth
-                return CONJ.the(want, $.func(believe, self, xx.negIf(belief.isNegative())));
+                return CONJ.the(want, $.func(believe, self, bb.negIf(belief.isNegative())));
             }
         }
 //                case GOAL: {

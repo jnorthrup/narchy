@@ -343,7 +343,7 @@ public class Occurrify extends TimeGraph {
     /**
      * eternal check: conditions under which an eternal result might be valid
      */
-    protected boolean validEternal() {
+    boolean validEternal() {
         return d.task.isEternal() || (d.belief != null && d.belief.isEternal());
     }
 
@@ -363,8 +363,8 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task task, Task belief) {
-                return new long[]{task.start(), task.end()};
+            long[] occurrence(Derivation d) {
+                return new long[]{d.task.start(), d.task.end()};
             }
 
         },
@@ -381,8 +381,8 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task task, Task belief) {
-                return new long[]{belief.start(), belief.end()};
+            long[] occurrence(Derivation d) {
+                return new long[]{d.belief.start(), d.belief.end()};
             }
 
         },
@@ -395,8 +395,8 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task task, Task belief) {
-                return new long[]{task.start(), task.end()};
+            long[] occurrence(Derivation d) {
+                return taskOccurrenceIfNotEternalElseNow(d);
             }
 
         },
@@ -407,11 +407,11 @@ public class Occurrify extends TimeGraph {
                 return solveShiftBeliefDT(d, solveDT(d, x, d.occ(x)), -1);
             }
 
-            @Override
-            long[] occurrence(Task task, Task belief) {
-                return new long[]{task.start(), task.end()};
-            }
 
+            @Override
+            long[] occurrence(Derivation d) {
+                return taskOccurrenceIfNotEternalElseNow(d);
+            }
         },
 
         /**
@@ -427,7 +427,8 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task task, Task belief) {
+            long[] occurrence(Derivation d) {
+                Task task = d.task;
                 return new long[]{task.start(), task.end()};
             }
 
@@ -447,7 +448,8 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task task, Task belief) {
+            long[] occurrence(Derivation d) {
+                Task belief = d.belief;
                 return new long[]{belief.start(), belief.end()};
             }
 
@@ -465,8 +467,8 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task task, Task belief) {
-                return null; //if it hasnt solved it by now, dont
+            long[] occurrence(Derivation d) {
+                return null;
             }
 
             @Override public BeliefProjection projection() {
@@ -497,8 +499,8 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task a, Task b) {
-                Longerval i = Longerval.intersect(a.start(), a.end(), b.start(), b.end());
+            long[] occurrence(Derivation d) {
+                Longerval i = Longerval.intersect(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
                 if (i == null)
                     throw new RuntimeException("should have been filtered");
                 return new long[]{i.a, i.b};
@@ -513,7 +515,7 @@ public class Occurrify extends TimeGraph {
         Union() {
             @Override public Pair<Term, long[]> solve(Derivation d, Term x) {
 
-                //override for goal and single premise
+                //override for goal
                 if (d.concPunc == GOAL) { //HACK
                     return Task.solve(d, x);
                 }
@@ -522,11 +524,21 @@ public class Occurrify extends TimeGraph {
             }
 
             @Override
-            long[] occurrence(Task a, Task b) {
-                Longerval i = Longerval.union(a.start(), a.end(), b.start(), b.end());
+            long[] occurrence(Derivation d) {
+                Longerval i = Longerval.union(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
                 return i != null ? new long[]{i.a, i.b} : null;
             }
         };
+
+        private static long[] taskOccurrenceIfNotEternalElseNow(Derivation d) {
+            long start = d.task.start();
+            if (start!=ETERNAL || (start == ETERNAL && d.belief==null || d.belief.isEternal()))
+                return new long[]{start, d.task.end()};
+            else {
+                //task is eternal and belief is non-eternal. so to prevent deriving eternal belief, use now as the focus point.
+                return d.nar.timeFocus();
+            }
+        }
 
         static Pair<Term, long[]> solveShiftBeliefDT(Derivation d, Pair<Term, long[]> p, int sign) {
             if (p == null)
@@ -564,7 +576,8 @@ public class Occurrify extends TimeGraph {
             this.term = Atomic.the(name());
         }
 
-        abstract long[] occurrence(Task a, Task b);
+        /** fallback */
+        abstract long[] occurrence(Derivation d);
 
         public Term term() {
             return term;
@@ -597,7 +610,7 @@ public class Occurrify extends TimeGraph {
             if (p == null)
                 p = x;
 
-            return pair(p, occurrence(d.task, d.belief));
+            return pair(p, occurrence(d));
         }
 
         /** failsafe mode */
@@ -662,7 +675,7 @@ public class Occurrify extends TimeGraph {
                         boolean taskEvi = !task.isQuestionOrQuest();
                         boolean beliefEvi = !belief.isQuestionOrQuest();
                         if (taskEvi && beliefEvi) {
-                            long[] u = occurrence(task, belief);
+                            long[] u = occurrence(d);
                             if (u != null) {
                                 s = u[0];
                                 e = u[1];
