@@ -1,10 +1,7 @@
 package nars.nal.nal2;
 
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
@@ -15,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 450;
+    static final int cycles = 250;
 
 
     @Override
