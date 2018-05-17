@@ -1,7 +1,7 @@
 description = ''
 dependencies {
     
-    compile group: 'org.jetbrains', name: 'annotations', version: '16.0.1'
+    compile group: 'org.jetbrains', name: 'annotations', version: '16.0.2'
 
     compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.2.0.M1'
 
@@ -43,7 +43,7 @@ dependencies {
     }
     compile group: 'org.iq80.snappy', name: 'snappy', version: '0.4'
 
-    compile(group: 'com.netflix.servo', name: 'servo-core', version: '0.12.21') {
+    compile(group: 'com.netflix.servo', name: 'servo-core', version: '0.12.22') {
         exclude(module: 'slf4j-api')
     }
 

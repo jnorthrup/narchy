@@ -163,36 +163,42 @@ public class MatrixDeriver extends Deriver {
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
+        /** conceptualize templates first, even if no tasklinks or termlinks */
+        Concept[] templates = templates(concept, nar);
+
         if (!commit(nar, tasklinks, termlinks))
             return;
 
-        Concept[] templates = templates(concept, nar);
 
-        int[] conceptTTL = { _tasklinks *  _termlinksPerTasklink };
+        int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };
 
         //((TaskLinkCurveBag)tasklinks).compress(nar);
 
-        tasklinks.sample(rng, _tasklinks, tasklink -> {
+        int nTermLinks = termlinks.size();
+        int nTaskLinks = tasklinks.size();
+        tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
             Task task = tasklink.get(nar);
             if (task != null) {
 
-                activate(tasklink, templates, nar.random());
+                //active even if there are no termlinks yet, it may create them
+                activate(tasklink, templates, rng);
 
-                termlinks.sample(rng, _termlinksPerTasklink, termlink -> {
-                    if (!continueHypothesizing.test(task, termlink)) {
-                        conceptTTL[0] = 0;
-                        return false;
-                    } else {
-                        return (--conceptTTL[0] > 0);
-                    }
-                });
+                if (!termlinks.isEmpty()) {
+                    termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
+                        if (!continueHypothesizing.test(task, termlink)) {
+                            conceptTTL[0] = 0;
+                            return false;
+                        } else {
+                            return (--conceptTTL[0] > 0);
+                        }
+                    });
+                }
             } else {
-                tasklink.delete();
-                --conceptTTL[0]; //safety misfire decrement
+                //tasklink.delete();
             }
 
-            return (conceptTTL[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
+            return (--conceptTTL[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
         });
 
     }

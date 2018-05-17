@@ -127,7 +127,8 @@ public class SimpleDeriver extends Deriver {
         @Override
         public Iterable<TaskLink> tasklinks(int max) {
             List<TaskLink> t = new FasterList<>(max);
-            c.tasklinks().sample(rng, max, x -> {
+            Bag<?, TaskLink> tl = c.tasklinks();
+            tl.sample(rng, Math.min(max, tl.size()), x -> {
                 if (x!=null) t.add(x);
             });
             return t;

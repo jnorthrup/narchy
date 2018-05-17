@@ -372,8 +372,10 @@ abstract public class NAgentX extends NAgent {
         n.on(a);
         n.synch();
 
-        new SimpleDeriver(a.fire(), n::input, Derivers.nal(1, 8, n,
-        "motivation.nal","goal_analogy.nal"
+
+        new SimpleDeriver(a.fire(), n::input, Derivers.nal(6, 8, n,
+            //"motivation.nal",
+            "goal_analogy.nal"
         ), SimpleDeriver.GlobalTermLinker);
 
         Loop loop = n.startFPS(narFPS);

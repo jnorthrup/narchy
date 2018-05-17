@@ -117,13 +117,11 @@ abstract public class Deriver extends Causable {
             return false;
 
 
-        if (termlinks!=null) {
+        if (termlinks!=null)
             termlinks.commit(termlinks.forget(linkForgetting));
-            int ntermlinks = termlinks.size();
-            return ntermlinks != 0;
-        } else {
-            return true;
-        }
+
+        return true;
+
     }
 
     protected Concept[] templates(Concept concept, NAR nar) {

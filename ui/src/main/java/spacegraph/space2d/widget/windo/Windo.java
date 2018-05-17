@@ -214,19 +214,24 @@ public class Windo extends Stacking {
         DragEdit p = potentialDragMode;
         if (p != null && p!=DragEdit.MOVE) {
 
+            Ortho root = (Ortho) root();
+            if (root==null)
+                return;
+
             float W, H;
 
 
             gl.glPushMatrix();
 
             v2 mousePos;
+
             if (this instanceof ZoomOrtho.HUD) {
                 W = w();
                 H = h();
-                mousePos = ((Ortho)root()).finger.posGlobal;
+                mousePos = root.finger.posGlobal;
             } else {
                 W = H = 0.5f;
-                mousePos = ((Ortho)root()).finger.pos.clone();
+                mousePos = root.finger.pos.clone();
                 //mousePos.scaled(W, H);
                 //mousePos.add(+W/2, +H/2); //???
                 //gl.glTranslatef(-W/2, -H/2, 0); //???

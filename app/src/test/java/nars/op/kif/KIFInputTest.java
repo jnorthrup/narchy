@@ -122,8 +122,9 @@ class KIFInputTest {
         n.clear();
         n.log();
         n.input("$1.0 possesses(I,#everything)!");
-        n.input("$1.0 (--(I <-> #everyoneElse) && --possesses(#everyoneElse, #something))!");
+        n.input("$1.0 (--(I <-> #everyoneElse) && --possesses(#everyoneElse, #something))! %1.0;0.75%");
         n.run(1000);
+        n.stats().forEach((s,v)->System.out.println(s + "\t" + v));
     }
 
     @Test public void test1() throws Exception {

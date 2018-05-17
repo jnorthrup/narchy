@@ -49,7 +49,7 @@ public class Premise {
 //            System.out.println(task + " "+ termLink);
         this.task = task;
         this.termLink = termLink;
-        this.hash = Util.hashCombine(task, term());
+        this.hash = Util.hashCombine(task, termLink /* should have same hash as: term()*/);
     }
 
     public Term term() {
