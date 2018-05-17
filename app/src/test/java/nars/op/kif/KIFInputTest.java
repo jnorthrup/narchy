@@ -142,18 +142,16 @@ class KIFInputTest {
         SimpleDeriver.forTasks(n,
             List.of(
                 n.inputTask("$1.0 possesses(I,#everything)!"),
-                n.inputTask("$1.0 Getting(I,#everything)!"),
-                n.inputTask("$1.0 uses(I,#anything)!"),
-                n.inputTask("$1.0 ChangeOfPossession(#everything,I)!"),
-                n.inputTask("(I-->economy).") //i am an economy
+                n.inputTask("$1.0 uses(#anything, I)!"),
+                n.inputTask("$1.0 --Dead:I!")
+                //n.inputTask("$1.0 Getting(#everything, I)!"),
+                //n.inputTask("$1.0 ChangeOfPossession(#everything,I)!"),
             ));
 
-        //n.input("$1.0 (--(I <-> #everyoneElse) && --possesses(#everyoneElse, #something))!");
+//        n.input("$1.0 --Giving(#anything, I)!");
+//
+//        n.input("$1.0 --ChemicalDecomposition(I,#1)!"); //chemical decomposition==>combustion lol
 
-        n.input("$1.0 --Giving(I,#anything)!");
-
-        n.input("$1.0 --ChemicalDecomposition(I,#1)!"); //chemical decomposition==>combustion lol
-        n.input("$1.0 exploits(I,#anything)!");
         n.run(15000);
         n.stats().forEach((s,v)->System.out.println(s + "\t" + v));
     }

@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.Streams;
 import jcog.TODO;
+import jcog.data.byt.DynBytes;
 import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.bzip2.BZip2OutputStream;
 import jcog.list.FasterList;
@@ -180,9 +181,11 @@ public class Memory {
                             return (Stream<Task> tt) -> {
                                 try (OutputStream out = Files.newOutputStream(Paths.get(u))) {
                                     formats.iterator().next().accept(tt, out);
+                                    out.close();
                                 } catch (IOException e) {
                                     logger.warn("{} {}", u, e);
                                 }
+
                             };
                         }
                     }
@@ -428,16 +431,17 @@ public class Memory {
     static final TasksToBytes Tasks_To_BinaryZipped = new TasksToBytes("nalz") {
         @Override
         public void accept(Stream<Task> tt, OutputStream out) {
-            try {
-                BZip2OutputStream o = new BZip2OutputStream(out);
+            try(OutputStream o = new BZip2OutputStream(out)) {
+                DynBytes d = new DynBytes(256);
                 tt.forEach(t -> {
                     try {
-                        o.write(IO.taskToBytes(t));
+                        IO.bytes(t, d).appendTo(o);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 });
-                o.close();
+            } catch (ArithmeticException f) {
+                return; //TODO check, but probably was empty (no tasks)
             } catch (IOException e) {
                 e.printStackTrace();
             }

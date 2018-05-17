@@ -198,8 +198,13 @@ public class Builtin {
 
                 @Override
                 protected Term compute(Term x, Term y) {
-                    if (x.hasVars() || y.hasVars()) return null; //unknown
-                    return x.equals(y) ? True : False;
+                    if (x.equals(y))
+                        return True; //equal
+
+                    if (x.hasVars() || y.hasVars())
+                        return null; //unknown
+
+                    return False; //inequal
                 }
 
                 @Override

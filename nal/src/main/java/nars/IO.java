@@ -151,7 +151,7 @@ public class IO {
     /**
      * with Term first
      */
-    public static void writeTask(DataOutput out, Task t) throws IOException {
+    public static void bytes(DataOutput out, Task t) throws IOException {
 
 
         byte p = t.punc();
@@ -462,21 +462,27 @@ public class IO {
 //    }
 //
 //    public static byte[] taskToBytes(Task x, TaskSerialization mode) {
+        DynBytes dos = new DynBytes(x.volume() * 8);
+
+        return bytes(x, dos).array();
+    }
+
+    @Nullable public static DynBytes bytes(Task x, DynBytes dos) {
         try {
-            DynBytes dos = new DynBytes(x.volume() * 16);
 //            switch (mode) {
 //                case TermFirst:
-                    IO.writeTask(dos, x);
+            dos.clear();
+            IO.bytes(dos, x);
 //                    break;
 //                case TermLast:
 //                    IO.writeTask2(dos, x);
 //                    break;
 //            }
-            return dos.array();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+        return dos;
     }
 
     /**

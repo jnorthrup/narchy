@@ -17,6 +17,7 @@
 package nars.op.kif;
 
 import jcog.Util;
+import jcog.WTF;
 import nars.*;
 import nars.task.CommandTask;
 import nars.term.Compound;
@@ -59,21 +60,7 @@ public class KIFInput {
         public Stream<Task> apply(InputStream i) {
             try {
                 return new KIFInput(i).beliefs.stream().map(b ->
-                {
-
-                    Task t = new CommandTask($.func(Op.BELIEF_TERM, b));
-
-//                    if (b.hasAny(Op.VAR_DEP)) {
-//                        try {
-//                            byte[] tb = IO.taskToBytes(t);
-//                            Task u = IO.taskFromBytes(tb);
-//                        } catch (Throwable e) {
-//                            System.out.println("fail: " + b);
-//                        }
-//                    }
-
-                    return t;
-                });
+                        new CommandTask($.func(Op.BELIEF_TERM, b)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -186,12 +173,14 @@ public class KIFInput {
 
 
 
-    public Term formulaToTerm(String sx, int level) {
+    Term formulaToTerm(String sx, int level) {
         sx = sx.replace("?", "#"); //query var to depvar HACK
 
         Formula f = new Formula(sx);
-//        if (f != null)
-        return formulaToTerm(f, level);
+
+        Term g = formulaToTerm(f, level);
+
+        return g;
 //        else {
 //            return atomic(sx);
 //        }
@@ -206,18 +195,21 @@ public class KIFInput {
         if (l == -1)
             return atomic(x.theFormula);
         else if (l == 1) {
-            return $.p(x.theFormula);
+            return $.p(formulaToTerm(x.getArgument(0), level+1));
+        } else if (l == 0) {
+            throw new WTF();
         }
 
         List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
         List<Term> args = sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList());
 
         if (args.contains(null)) {
-            throw new NullPointerException("in: " + args);
+            //throw new NullPointerException("in: " + args);
+            return Null;
         }
 
         if (args.isEmpty())
-            return null;
+            return Null;
         //assert (!args.isEmpty()); //should have been handled first
 
         /**
@@ -253,8 +245,7 @@ public class KIFInput {
             case "subAttribute":
                 if (includeSubclass) {
                     if (args.size() != 2) {
-                        System.err.println("subclass expects 2 arguments");
-                        return null;
+                        throw new RuntimeException("subclass expects 2 arguments");
                     } else {
                         y = INH.the(args.get(0), args.get(1));
                     }
@@ -270,11 +261,13 @@ public class KIFInput {
             case "instance":
                 if (includeInstance) {
                     if (args.size() != 2) {
-                        System.err.println("instance expects 2 arguments");
+                        throw new RuntimeException("instance expects 2 arguments");
                     } else {
                         y = //$.inst
                                 INH.the
                                         (args.get(0), args.get(1));
+                        if (y instanceof Bool)
+                            return y;
                     }
                 }
                 break;
@@ -284,7 +277,7 @@ public class KIFInput {
                     if (args.size() != 2) {
                         throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
                     } else {
-                        y = $.sim(args.get(0), args.get(1));
+                        y = SIM.the(args.get(0), args.get(1));
                     }
                 }
                 break;
@@ -319,23 +312,11 @@ public class KIFInput {
                 break;
             case "=>":
                 y = impl(args.get(0), args.get(1), true);
-                if (y == null)
-                    return null;
                 break;
             case "<=>":
                 y = impl(args.get(0), args.get(1), false);
-                if (y == null)
-                    return null;
                 break;
 
-            case "termFormat":
-                String language = args.get(0).toString();
-                language = language.replace("Language", "");
-
-                Term term = args.get(1);
-                Term string = args.get(2);
-                y = INH.the($.p($.the(language), string), term);
-                break;
 
             case "domain":
                 //TODO use the same format as Range, converting quantity > 1 to repeats in an argument list
@@ -383,6 +364,7 @@ public class KIFInput {
 
             case "comment":
             case "documentation":
+            case "externalImage":
                 if (includeDoc) {
                     if (args.size() == 3) {
                         Term subj = args.get(0);
@@ -401,6 +383,22 @@ public class KIFInput {
                     return null;
                 }
                 break;
+
+            case "termFormat": {
+                if (includeDoc) {
+                    String language = args.get(0).toString();
+                    language = language.replace("Language", "");
+
+                    Term term = args.get(1);
+                    Term string = args.get(2);
+                    y = INH.the($.p($.the(language), string), term);
+                } else {
+                    return null;
+                }
+                break;
+            }
+
+
             default:
                 //System.out.println("unknown: " + x);
                 break;
@@ -440,7 +438,7 @@ public class KIFInput {
 
         if (y instanceof Bool) {
             logger.warn("{} Bool singularity: args={}",x, args);
-            return null;
+            return Null;
         }
 
         return y;
@@ -464,8 +462,10 @@ public class KIFInput {
         Term tmp = IMPL.the(a, b);
         if (tmp.unneg().op() != IMPL) {
             logger.warn("un-impl: {} ==> {} ", a, b);
-            return null;
+            return Null;
         }
+        boolean negated = tmp.op()==NEG;
+
         tmp = tmp.unneg();
         a = tmp.sub(0);
         b = tmp.sub(1);
@@ -526,9 +526,9 @@ public class KIFInput {
 //            }
 
             return
-                    implOrEquiv ?
+                    (implOrEquiv ?
                             IMPL.the(a, b) :
-                            equi(a, b)
+                            equi(a, b)).negIf(negated)
                     ;
         } catch (Exception ignore) {
             ignore.printStackTrace();
