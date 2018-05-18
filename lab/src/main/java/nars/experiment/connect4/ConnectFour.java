@@ -4,9 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 //import aima.core.environment.connectfour.ConnectFourAIPlayer;
@@ -38,7 +36,6 @@ public class ConnectFour {
     }
 
 
-
     /**
      * A state of the Connect Four game is characterized by a board containing a
      * grid of spaces for disks, the next player to move, and some utility
@@ -47,34 +44,32 @@ public class ConnectFour {
      *
      * @author Ruediger Lunde
      */
-    public static class ConnectFourState implements Cloneable {
+    public static class ConnectFourState {
 
         private static final String[] players = new String[]{"red", "yellow"};
 
         public final int cols;
-        public final int rows;
+        final int rows;
         /**
          * Uses special bit coding. First bit: disk of player 1, second bit: disk of
          * player 2, third bit: win position for player 1, fourth bit: win position
          * for player 2.
          */
-        private byte[] board;
-
+        private final byte[] board;
+        int winPositions1;
+        int winPositions2;
         private int moveCount, invalidCount;
-
         /**
          * Indicates the utility of the state. 1: win for player 1, 0: win for
          * player 2, 0.5: draw, -1 for all non-terminal states.
          */
         private double utility;
-        public int winPositions1;
-        public int winPositions2;
 
         public ConnectFourState() {
             this(6, 7);
         }
 
-        public ConnectFourState(int rows, int cols) {
+        ConnectFourState(int rows, int cols) {
             this.cols = cols;
             this.rows = rows;
             board = new byte[rows * cols];
@@ -91,7 +86,7 @@ public class ConnectFour {
             return utility;
         }
 
-        public int get(int row, int col) {
+        int get(int row, int col) {
             return board[row * cols + col] & 3;
         }
 
@@ -107,11 +102,11 @@ public class ConnectFour {
             return invalidCount;
         }
 
-        public synchronized void drop(int col, int whoamI) {
+        public synchronized boolean drop(int col, int whoamI) {
             int playerNum = moving();
             if (playerNum != whoamI) {
                 invalidMove();
-                return;
+                return false;
             }
             int row = freeRow(col);
             if (row != -1) {
@@ -131,16 +126,18 @@ public class ConnectFour {
                 set(row, col, playerNum);
                 if (utility == -1)
                     analyzeWinPositions(row, col);
+                return true;
             } else {
                 invalidMove();
+                return false;
             }
         }
 
-        public void invalidMove() {
+        void invalidMove() {
             invalidCount++;
         }
 
-        public void set(int row, int col, int playerNum) {
+        void set(int row, int col, int playerNum) {
             board[row * cols + col] = (byte) playerNum;
         }
 
@@ -159,7 +156,7 @@ public class ConnectFour {
             return isWinPositionFor(freeRow(col), col, playerNum);
         }
 
-        public boolean isWinPositionFor(int row, int col, int playerNum) {
+        boolean isWinPositionFor(int row, int col, int playerNum) {
             return (board[row * cols + col] & playerNum * 4) > 0;
         }
 
@@ -231,53 +228,53 @@ public class ConnectFour {
             }
         }
 
-        public int analyzePotentialWinPositions(Integer action) {
-            final int[] rowIncr = new int[]{1, 0, 1, 1};
-            final int[] colIncr = new int[]{0, 1, -1, 1};
-            int moveCol = action;
-            int moveRow = freeRow(moveCol);
+//        public int analyzePotentialWinPositions(Integer action) {
+//            final int[] rowIncr = new int[]{1, 0, 1, 1};
+//            final int[] colIncr = new int[]{0, 1, -1, 1};
+//            int moveCol = action;
+//            int moveRow = freeRow(moveCol);
+//
+//            int playerNum = moving();
+//            int result = 0;
+//            for (int i = 0; i < 4; i++) {
+//                int rIncr = rowIncr[i];
+//                int cIncr = colIncr[i];
+//                int posCountSum = 0;
+//
+//                for (int j = 0; j < 2; j++) {
+//                    int rBound = rIncr > 0 ? rows : -1;
+//                    int cBound = cIncr > 0 ? cols : -1;
+//                    int posCount = 0;
+//
+//                    int row = moveRow + rIncr;
+//                    int col = moveCol + cIncr;
+//                    while (row != rBound && col != cBound && posCount < 3) {
+//                        int plNum = get(row, col);
+//                        if (plNum == 3 - playerNum)
+//                            break;
+//                        posCount++;
+//                        row += rIncr;
+//                        col += cIncr;
+//                    }
+//                    posCountSum += posCount;
+//                    rIncr = -rIncr;
+//                    cIncr = -cIncr;
+//                }
+//                if (posCountSum >= 3)
+//                    result += posCountSum;
+//            }
+//            return result;
+//        }
 
-            int playerNum = moving();
-            int result = 0;
-            for (int i = 0; i < 4; i++) {
-                int rIncr = rowIncr[i];
-                int cIncr = colIncr[i];
-                int posCountSum = 0;
 
-                for (int j = 0; j < 2; j++) {
-                    int rBound = rIncr > 0 ? rows : -1;
-                    int cBound = cIncr > 0 ? cols : -1;
-                    int posCount = 0;
-
-                    int row = moveRow + rIncr;
-                    int col = moveCol + cIncr;
-                    while (row != rBound && col != cBound && posCount < 3) {
-                        int plNum = get(row, col);
-                        if (plNum == 3 - playerNum)
-                            break;
-                        posCount++;
-                        row += rIncr;
-                        col += cIncr;
-                    }
-                    posCountSum += posCount;
-                    rIncr = -rIncr;
-                    cIncr = -cIncr;
-                }
-                if (posCountSum >= 3)
-                    result += posCountSum;
-            }
-            return result;
-        }
-
-
-        public List<Integer> getActions() {
-            ConnectFourState state = this;
-            List<Integer> result = new ArrayList<>();
-            for (int i = 0; i < state.cols; i++)
-                if (state.get(0, i) == 0)
-                    result.add(i);
-            return result;
-        }
+//        public List<Integer> getActions() {
+//            ConnectFourState state = this;
+//            List<Integer> result = new ArrayList<>();
+//            for (int i = 0; i < state.cols; i++)
+//                if (state.get(0, i) == 0)
+//                    result.add(i);
+//            return result;
+//        }
 
         public boolean isTerminal() {
             return utility() != -1;
@@ -296,35 +293,35 @@ public class ConnectFour {
             return result;
         }
 
-        public ConnectFourState clone() {
-            ConnectFourState result = null;
-            try {
-                result = (ConnectFourState) super.clone();
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-            result.board = board.clone();
-            return result;
-        }
+//        public ConnectFourState clone() {
+//            ConnectFourState result = null;
+//            try {
+//                result = (ConnectFourState) super.clone();
+//            } catch (CloneNotSupportedException e) {
+//                e.printStackTrace();
+//            }
+//            result.board = board.clone();
+//            return result;
+//        }
 
-        @Override
-        public int hashCode() {
-            int result = 0;
-            for (byte aBoard : board) result = result * 7 + aBoard + 1;
-            return result;
-        }
+//        @Override
+//        public int hashCode() {
+//            int result = 0;
+//            for (byte aBoard : board) result = result * 7 + aBoard + 1;
+//            return result;
+//        }
 
-        @Override
-        public boolean equals(Object obj) {
-            if (obj != null && getClass() == obj.getClass()) {
-                ConnectFourState s = (ConnectFourState) obj;
-                for (int i = 0; i < board.length; i++)
-                    if (board[i] != s.board[i])
-                        return false;
-                return true;
-            }
-            return false;
-        }
+//        @Override
+//        public boolean equals(Object obj) {
+//            if (obj != null && getClass() == obj.getClass()) {
+//                ConnectFourState s = (ConnectFourState) obj;
+//                for (int i = 0; i < board.length; i++)
+//                    if (board[i] != s.board[i])
+//                        return false;
+//                return true;
+//            }
+//            return false;
+//        }
 
         // ////////////////////////////////////////////////////////////////////
         // nested classes
@@ -342,6 +339,83 @@ public class ConnectFour {
 
             boolean hasData() {
                 return row != -1;
+            }
+        }
+
+        public static class Play {
+
+            protected int player;
+            private ConnectFourState game;
+            private int moving;
+
+            /**
+             * TODO not public
+             */
+            protected void init(ConnectFourState game, int player) {
+                this.player = player;
+                this.game = game;
+            }
+
+            public void moving(int whosMove) {
+                synchronized (game) {
+                    this.moving = whosMove;
+                }
+            }
+
+            public boolean drop(int which) {
+                synchronized (game) {
+                    if (this.moving != player) {
+                        notMoving(player);
+                        return false;
+                    } else {
+                        if (game.drop(which, player)) {
+                            moving(this.moving == 1 ? 2 : 1);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            /**
+             * signal attempted move out of turn
+             */
+            public void notMoving(int player) {
+
+            }
+
+            public int winner() {
+                synchronized (game) {
+
+                    if (game.isTerminal()) {
+                        if (game.getUtility(ConnectFourState.players[0]) == 1) {
+                            return 1;
+                        } else if (game.getUtility(ConnectFourState.players[1]) == 1) {
+                            return 2;
+                        }
+                    }
+
+                    return 0;
+                }
+            }
+
+            public void see() {
+                synchronized (game) {
+                    //scan through board by calling its methods providing sight of the board state
+                    for (int r = 0; r < game.rows; r++)
+                        for (int c = 0; c < game.cols; c++)
+                            game.get(r, c);
+                }
+
+            }
+
+            public boolean isTerminal() {
+                return game.isTerminal();
+            }
+
+            public void clear() {
+                game.clear();
             }
         }
     }
@@ -406,9 +480,9 @@ public class ConnectFour {
      * Simple panel to control the game.
      */
     private static class ConnectFourPanel extends JPanel implements ActionListener {
-        JButton clearButton;
+        final JButton clearButton;
         //JButton proposeButton;
-        JLabel statusBar;
+        final JLabel statusBar;
 
         final ConnectFourState game;
         //Metrics searchMetrics;
@@ -456,19 +530,19 @@ public class ConnectFour {
          */
         @Override
         public void actionPerformed(ActionEvent e) {
-            //searchMetrics = null;
-            if (e == null || e.getSource() == clearButton) {
-                game.clear();
-            } else if (!game.isTerminal()) {
-//                if (e.getSource() == proposeButton) {
-//                    proposeMove();
-                /*} else */
-//                if (e.getSource() instanceof GridElement) {
-//                    GridElement el = (GridElement) e.getSource();
-//                    game.drop(el.col, ..);
-//                    // turn
-//                }
-            }
+//            //searchMetrics = null;
+//            if (e == null || e.getSource() == clearButton) {
+//                game.clear();
+//            } else if (!game.isTerminal()) {
+////                if (e.getSource() == proposeButton) {
+////                    proposeMove();
+//                /*} else */
+////                if (e.getSource() instanceof GridElement) {
+////                    GridElement el = (GridElement) e.getSource();
+////                    game.drop(el.col, ..);
+////                    // turn
+////                }
+//            }
             repaint(); // paint all disks!
 
 
@@ -500,15 +574,16 @@ public class ConnectFour {
 //                        ((ConnectFourAIPlayer) search).setLogEnabled(true);
 //                }
 //                action = search.makeDecision(currState);
-            //searchMetrics = search.getMetrics();
+        //searchMetrics = search.getMetrics();
 
-            //currState = game.getResult(currState, action);
+        //currState = game.getResult(currState, action);
 //        }
 
         /**
          * Updates the status bar.
          */
-        private void updateStatus() {
+        protected int updateStatus() {
+            int won = 0;
             String statusText;
             if (!game.isTerminal()) {
                 String toMove = ConnectFourState.players[game.moving()];
@@ -518,8 +593,10 @@ public class ConnectFour {
             } else {
                 String winner = null;
                 for (int i = 0; i < 2; i++)
-                    if (game.getUtility(ConnectFourState.players[i]) == 1)
+                    if (game.getUtility(ConnectFourState.players[i]) == 1) {
                         winner = ConnectFourState.players[i];
+                        won = i;
+                    }
                 if (winner != null)
                     statusText = "Color " + winner
                             + " has won. Congratulations!";
@@ -530,6 +607,7 @@ public class ConnectFour {
 //                if (searchMetrics != null)
 //                    statusText += "    " + searchMetrics;
             statusBar.setText(statusText);
+            return won;
         }
 
         /**
@@ -537,8 +615,8 @@ public class ConnectFour {
          */
         @SuppressWarnings("serial")
         private class GridElement extends JButton {
-            int row;
-            int col;
+            final int row;
+            final int col;
 
             GridElement(int row, int col) {
                 this.row = row;
