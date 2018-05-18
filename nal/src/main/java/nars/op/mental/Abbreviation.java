@@ -71,7 +71,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
             @Override
             protected float leak(Task b) {
-                return input(b, nar) && abbreviate(b, nar) ? 1f : 0f;
+                return input(b, super.nar) && abbreviate(b, super.nar) ? 1f : 0f;
             }
 
             //            @Override
@@ -131,7 +131,7 @@ public class Abbreviation/*<S extends Term>*/ {
             return false;
 
         if (vol <= volume.hi()) {
-            if (t.concept(nar,true).equals(t) /* identical to its conceptualize */) {
+            if (t.concept(nar,true).term().equals(t.term()) /* identical to its conceptualize */) {
                 Concept abbreviable = nar.concept(t);
                 if ((abbreviable != null) &&
                         !(abbreviable instanceof PermanentConcept) &&

@@ -180,7 +180,7 @@ public class TestNAR {
 
         this.score = success ?
                 //(+1/(+1f+runtime))
-                (float) (+1f / (1f + ((1f+runtime)/(1f+finalCycle-startTime))))
+                (+1f / (1f + ((1f+runtime)/(1f+finalCycle-startTime))))
                 :
                 0;
 

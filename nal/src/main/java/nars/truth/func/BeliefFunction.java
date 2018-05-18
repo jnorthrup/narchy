@@ -83,7 +83,7 @@ public enum BeliefFunction implements TruthOperator {
         public Truth apply(Truth T, Truth B, NAR n, float minConf) {
             if (B.isNegative()) {
                 Truth d = Deduction.apply(T.neg(), B.neg(), n, minConf);
-                return d!=null ? d.neg() : d;
+                return d!=null ? d.neg() : null;
             } else {
                 return Deduction.apply(T, B, n, minConf);
             }

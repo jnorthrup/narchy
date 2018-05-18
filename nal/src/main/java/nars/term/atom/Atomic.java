@@ -98,7 +98,7 @@ public interface Atomic extends Term {
 
     @Override
     default boolean equalsNeg(Term t) {
-        return t.op()==NEG ? equals(t.unneg()) : false;
+        return t.op() == NEG && equals(t.unneg());
     }
 
     @Override

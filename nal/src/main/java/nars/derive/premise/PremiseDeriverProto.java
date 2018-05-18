@@ -25,8 +25,6 @@ import nars.truth.func.TruthOperator;
 import nars.unify.constraint.*;
 import nars.unify.op.*;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -43,8 +41,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class PremiseDeriverProto extends PremiseDeriverSource {
 
+    static final IntroVars introVars = new IntroVars();
 
-    public static final IntroVars introVars = new IntroVars();
     /**
      * conditions which can be tested before unification
      */
@@ -56,9 +54,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     public PostCondition[] POST;
 
 
-    final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
-    final Set<PrediTerm<PreDerivation>> pre = new HashSet(8);
-    final List<PrediTerm<Derivation>> post = new FasterList(8);
+    final SortedSet<MatchConstraint> constraints = new TreeSet<>(PrediTerm.sortByCost);
+    final Set<PrediTerm<PreDerivation>> pre = new HashSet<>(8);
+    final List<PrediTerm<Derivation>> post = new FasterList<>(8);
     private final PrediTerm<Derivation> truthify;
 
 
@@ -77,8 +75,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         //1. construct precondition term array
         //Term[] terms = terms();
 
-        Term[] precon = ((Subterms) term().sub(0)).arrayShared();
-        Term[] postcons = ((Subterms) term().sub(1)).arrayShared();
+        Term[] precon = ((Subterms) term.sub(0)).arrayShared();
+        Term[] postcons = ((Subterms) term.sub(1)).arrayShared();
 
 
 
@@ -167,26 +165,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     //X subOf Y : X is subterm of Y
                     if ((Y==Op.imExt) || (Y==Op.imInt)) {
                         //TODO move to top-level class
-                        pre.add(new AbstractPred<>($.func("subOf", $.quote(Y.toString()))) {
-                            boolean task = taskPattern.containsRecursively(X);
-                            boolean belief = beliefPattern.containsRecursively(Y);
-
-                            {
-                                assert(task || belief);
-                            }
-
-                            @Override
-                            public boolean test(PreDerivation preDerivation) {
-                                if (task && !preDerivation.taskTerm.containsRecursively(Y))
-                                    return false;
-                                return !belief || preDerivation.beliefTerm.containsRecursively(Y);
-                            }
-
-                            @Override
-                            public float cost() {
-                                return 0.5f;
-                            }
-                        });
+                        pre.add(new SubOf(Y, taskPattern, X, beliefPattern));
                         //TODO match constraints
                     } else {
                         neq(constraints, X, Y);
@@ -658,7 +637,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         } else {
             introVars1 = false;
         }
-        PrediTerm<Derivation> conc = AndCondition.the(
+        PrediTerm<Derivation> conc = AndCondition.<Derivation>the(
                 new Termify(pattern, this, truthify, time),
                 introVars1 ?
                         AndCondition.the(introVars, taskify)
@@ -667,9 +646,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         );
 
         //add optional time filter
-        @Nullable PrediTerm<Derivation> timeFilter = time.filter();
+        PrediTerm<Derivation> timeFilter = time.filter();
         if (timeFilter!=null) {
-            this.truthify = AndCondition.the(timeFilter, truthify);
+            this.truthify = AndCondition.<Derivation>the(timeFilter, truthify);
         } else {
             this.truthify = truthify;
         }
@@ -838,11 +817,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     }
 
     public Compound build() {
-        return (Compound) term().sub(0);
+        return (Compound) term.sub(0);
     }
 
     public Compound conclusion() {
-        return (Compound) term().sub(1);
+        return (Compound) term.sub(1);
     }
 
     /**
@@ -881,7 +860,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     }
 
 
-    private static void termIsNot(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
+    private static void termIsNot(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
         constraints.add(new OpIsNot(x, struct));
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
@@ -892,13 +871,13 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             pres.add(new TaskBeliefOp(struct, isTask, isBelief, false));
     }
 
-//    private static void termHasAny(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, Op o) {
+//    private static void termHasAny(Term task, Term belief, Set<PrediTerm> pres, SortedSet<MatchConstraint> constraints, Term x, Op o) {
 //        constraints.add(new StructureHasAny(x, o.bit));
 //
 //        includesOp(pres, task, belief, x, o);
 //    }
 //
-    private static void termHasNot(Term task, Term belief, @NotNull Set<PrediTerm<PreDerivation>> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term t, int structure) {
+    private static void termHasNot(Term task, Term belief, Set<PrediTerm<PreDerivation>> pres, SortedSet<MatchConstraint> constraints, Term t, int structure) {
         boolean inTask = (task.equals(t) || task.containsRecursively(t));
         boolean inBelief = (belief.equals(t) || belief.containsRecursively(t));
         if (inTask || inBelief) {
@@ -966,7 +945,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
 
         return pair(ImmutableSet.copyOf(precon),
-                (PrediTerm<Derivation>) AndCondition.the(suff));
+                AndCondition.<PrediTerm<PreDerivation>>the(suff));
     }
 
     /**
@@ -986,7 +965,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         @Override
         public String toString() {
-            return $.p(rule.term(), $.the(id)).toString();
+            return $.p(rule.term, $.the(id)).toString();
         }
     }
 
@@ -1000,7 +979,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         final static Atomic key = (Atomic) $.the("DoublePremise");
         private final byte punc;
 
-        public DoublePremise(byte taskPunc) {
+        DoublePremise(byte taskPunc) {
             super($.func(key, $.quote(Character.valueOf((char)taskPunc))));
             this.punc = taskPunc;
         }
@@ -1031,6 +1010,34 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
     };
 
+    private static final class SubOf extends AbstractPred<PreDerivation> {
+        private final Term y;
+
+        boolean task;
+        boolean belief;
+
+        SubOf(Term y, Term taskPattern, Term x, Term beliefPattern) {
+            super($.func("subOf", $.quote(y.toString())));
+            this.y = y;
+
+            task = taskPattern.containsRecursively(x);
+            belief = beliefPattern.containsRecursively(y);
+            assert (task || belief);
+        }
+
+        @Override
+        public boolean test(PreDerivation preDerivation) {
+            if (task && !preDerivation.taskTerm.containsRecursively(y))
+                return false;
+            return !belief || preDerivation.beliefTerm.containsRecursively(y);
+        }
+
+        @Override
+        public float cost() {
+            return 0.5f;
+        }
+    }
+
 
 //    /**
 //     * for each calculable "question reverse" rule,
@@ -1044,7 +1051,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 //     * so each premise gets exchanged with the conclusion in order to form a own rule,
 //     * additionally task("?") is added to ensure that the derived rule is only used in backward inference.
 //     */
-//    public final void backwardPermutation(@NotNull PatternIndex index, @NotNull BiConsumer<PremiseRule, String> w) {
+//    public final void backwardPermutation(PatternIndex index, BiConsumer<PremiseRule, String> w) {
 //
 //        Term T = getTask(); //Task
 //        Term B = getBelief(); //Belief
@@ -1080,7 +1087,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 //     * after generating, these are then backward permuted
 //     */
 //    @Nullable
-//    public final PremiseRule swapPermutation(@NotNull PatternIndex index) {
+//    public final PremiseRule swapPermutation(PatternIndex index) {
 //
 //        // T, B, [pre] |- C, [post] ||--
 //        Term T = getTask();
@@ -1097,7 +1104,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
 //    @NotNull
-//    private PremiseRule clonePermutation(Term newT, Term newB, Term newR, boolean question, @NotNull PatternIndex index, NAR nar) {
+//    private PremiseRule clonePermutation(Term newT, Term newB, Term newR, boolean question, PatternIndex index, NAR nar) {
 //
 //
 //        Map<Term, Term> m = new HashMap(3);

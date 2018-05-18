@@ -532,7 +532,7 @@ public class Occurrify extends TimeGraph {
 
         private static long[] taskOccurrenceIfNotEternalElseNow(Derivation d) {
             long start = d.task.start();
-            if (start!=ETERNAL || (start == ETERNAL && d.belief==null || d.belief.isEternal()))
+            if (start != ETERNAL || d.belief == null || d.belief.isEternal())
                 return new long[]{start, d.task.end()};
             else {
                 //task is eternal and belief is non-eternal. so to prevent deriving eternal belief, use now as the focus point.

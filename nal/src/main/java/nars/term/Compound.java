@@ -533,43 +533,41 @@ public interface Compound extends Term, IPair, Subterms {
 //            }
 
         /*} else */
-        if (op == CONJ) {
 
-            /* HACK apply to other cases too */
-            if (after >= dt) {
-                Term yy1 = yy.sub(1);
-                if (yy.sub(0).equals(yy1)) {
-                    //repeat
-                    //return yy.sub(1).subTimeSafe(x, after - dt) + dt;
-                    if (x.equals(yy1))
-                        return dt;
-                }
-             }
+        /* HACK apply to other cases too */
+        if (after >= dt) {
+            Term yy1 = yy.sub(1);
+            if (yy.sub(0).equals(yy1)) {
+                //repeat
+                //return yy.sub(1).subTimeSafe(x, after - dt) + dt;
+                if (x.equals(yy1))
+                    return dt;
+            }
+         }
 
-            boolean reverse;
-            int idt;
-            if (dt == DTERNAL || dt == 0) {
-                idt = 0; //parallel or eternal, no dt increment
-                reverse = false;
+        boolean reverse;
+        int idt;
+        if (dt == DTERNAL || dt == 0) {
+            idt = 0; //parallel or eternal, no dt increment
+            reverse = false;
+        } else {
+            idt = dt;
+            if (idt < 0) {
+                idt = -idt;
+                reverse = true;
             } else {
-                idt = dt;
-                if (idt < 0) {
-                    idt = -idt;
-                    reverse = true;
-                } else {
-                    reverse = false;
-                }
+                reverse = false;
             }
+        }
 
-            int ys = yy.subs();
-            int offset = 0;
-            for (int yi = 0; yi < ys; yi++) {
-                Term yyy = yy.sub(reverse ? ((ys - 1) - yi) : yi);
-                int sdt = yyy.subTimeSafe(x, after - offset);
-                if (sdt != DTERNAL)
-                    return sdt + offset;
-                offset += idt + yyy.dtRange();
-            }
+        int ys = yy.subs();
+        int offset = 0;
+        for (int yi = 0; yi < ys; yi++) {
+            Term yyy = yy.sub(reverse ? ((ys - 1) - yi) : yi);
+            int sdt = yyy.subTimeSafe(x, after - offset);
+            if (sdt != DTERNAL)
+                return sdt + offset;
+            offset += idt + yyy.dtRange();
         }
 
         return DTERNAL;
@@ -831,13 +829,15 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
 
-        if (ellipsisAdds > 0) {
-            //flatten ellipsis
-            xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
-        }
+
 
         Term u;
-        if (/*changed*/ xy!=null) {
+        if (xy!=null) {
+            if (ellipsisAdds > 0) {
+                //flatten ellipsis
+                xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
+            }
+
             u = o.compound(dt(), xy);
             o = u.op(); //refresh root operator in case it has changed
             uu = u.subterms(); //refresh subterms

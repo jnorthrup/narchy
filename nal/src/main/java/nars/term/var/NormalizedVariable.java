@@ -198,7 +198,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         if (id < Param.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(type)][id];
         } else {
-            assert(id <= 127);
+            //assert(id <= 127);
             return vNew(type, id);
         }
     }

@@ -238,7 +238,7 @@ public enum $ {
 
 
     public static Term p(Collection<Term> t) {
-        return $.p(t.toArray(new Term[t.size()]));
+        return $.p(t.toArray(Op.EmptyTermArray));
     }
 
 
@@ -405,8 +405,8 @@ public enum $ {
 //        );
 //    }
 
-    private static Term[] array(@NotNull Collection<? extends Term> t) {
-        return t.toArray(new Term[t.size()]);
+    private static Term[] array(Collection<? extends Term> t) {
+        return t.toArray(Op.EmptyTermArray);
     }
 
     private static Term[] array(String... s) throws Narsese.NarseseException {

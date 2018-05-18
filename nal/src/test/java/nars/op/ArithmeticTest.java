@@ -73,14 +73,14 @@ public class ArithmeticTest {
                 //"(($1,add($1,1))==>($1<->2))",
                 //"((#1,#2) && add(#1,1,#2))",
                 //"(2,#1)&&add(#1,",
-                ArithmeticIntroduction.apply($.$("(2,3)"), rng).toString());
+                ArithmeticIntroduction.apply($.$("(2,3)")).toString());
     }
 
     @Test public void test2() throws Narsese.NarseseException {
         assertEquals(
                 "(x(#1,add(#1,1))&&(#1<->2))",
                 //"(x($1,add($1,1))==>($1<->2))",
-                ArithmeticIntroduction.apply($.$("x(2,3)"), rng).toString());
+                ArithmeticIntroduction.apply($.$("x(2,3)")).toString());
     }
 
     @Test

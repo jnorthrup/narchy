@@ -312,7 +312,7 @@ abstract public class TruthPolation extends FasterList<TruthPolation.TaskCompone
 
         @Override
         public String toString() {
-            return evi + "," + freq + "=" + task;
+            return evi + "," + freq + '=' + task;
         }
 
         public boolean isComputed() {

@@ -834,10 +834,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
     }
 
-    protected boolean solveOccurrence(Term x, Set<Event> filter, Predicate<Event> each) {
-        Event ex = event(x, TIMELESS, false);
-        return filter.add(ex) ? solveOccurrence(ex, each) : true;
-    }
+//    protected boolean solveOccurrence(Term x, Set<Event> filter, Predicate<Event> each) {
+//        Event ex = event(x, TIMELESS, false);
+//        return !filter.add(ex) || solveOccurrence(ex, each);
+//    }
 
     /**
      * solves the start time for the given Unsolved event.  returns whether callee should continue iterating

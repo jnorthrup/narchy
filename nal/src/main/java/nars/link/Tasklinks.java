@@ -37,7 +37,7 @@ public class Tasklinks {
 //    }
 
     /** create source tasklink */
-    public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, @Nullable NAR nar) {
+    public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, NAR nar) {
 
         /** non-zero for safety */
         final float pri = Math.max(_pri, Prioritized.EPSILON);

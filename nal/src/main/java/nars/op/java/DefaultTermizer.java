@@ -319,7 +319,7 @@ public class DefaultTermizer implements Termizer {
     @NotNull
     public static Term termPackage(@NotNull Package p) {
         //TODO cache?
-        if (p == null) return Atomic.the("package");
+        //if (p == null) return Atomic.the("package");
         String n = p.getName();
         //if (n == null) return $.the(p.toString());
         String[] path = n.split("\\.");

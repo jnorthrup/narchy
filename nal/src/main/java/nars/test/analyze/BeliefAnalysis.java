@@ -67,14 +67,14 @@ public class BeliefAnalysis implements Termed {
 	@Nullable
 	public BeliefTable beliefs() {
 		Concept c = concept();
-		if (!(c instanceof TaskConcept))
+		if (c == null)
 			return BeliefTable.Empty;
 		return c.beliefs();
 	}
 	@Nullable
 	public BeliefTable goals() {
 		Concept c = concept();
-		if (!(c instanceof TaskConcept))
+		if (c == null)
 			return BeliefTable.Empty;
 		return c.goals();
 	}

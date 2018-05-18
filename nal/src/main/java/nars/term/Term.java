@@ -564,14 +564,14 @@ public interface Term extends Termed, Comparable<Termed> {
                 return 0; //hashcode was all that needed compared
             } else if (this instanceof Int.IntRange) {
                 return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) y).hash64());
-            } else if (this instanceof Atomic) {
+            } else /*if (this instanceof Atomic)*/ {
                 return Util.compare(
                         ((Atomic) this).bytes(),
                         ((Atomic) y).bytes()
                 );
-            } else {
+            }/* else {
                 throw new UnsupportedOperationException("unimplemented comparison: " + this + ' ' + y);
-            }
+            }*/
 
 
         } else {

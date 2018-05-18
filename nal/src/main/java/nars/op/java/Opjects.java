@@ -96,6 +96,7 @@ public class Opjects extends DefaultTermizer {
     final ByteBuddy bb = new ByteBuddy();
 
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
+    private final DurService on;
 
     /** determines evidence weighting for reporting specific feedback values */
     float beliefEviFactor = 1f;
@@ -216,7 +217,7 @@ public class Opjects extends DefaultTermizer {
     public Opjects(NAR n) {
         nar = n;
         in = n.newChannel(this);
-        DurService.on(n, this::update);
+        this.on = DurService.on(n, this::update);
     }
 
     /** called every duration to update all the operators in one batch, so they dont register events individually */
@@ -900,10 +901,8 @@ public class Opjects extends DefaultTermizer {
 
         @RuntimeType
         public Object intercept(@AllArguments Object[] args, @SuperMethod  Method method, @This Object obj) {
-            Object result = null;
             try {
-                result = method.invoke(obj, args);
-                return tryInvoked(obj, method, args, result);
+                return tryInvoked(obj, method, args, method.invoke(obj, args));
             } catch (InvocationTargetException | IllegalAccessException e) {
                 logger.error("{} args={}", obj, args);
                 return null;

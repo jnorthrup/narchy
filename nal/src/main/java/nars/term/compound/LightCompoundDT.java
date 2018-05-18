@@ -46,12 +46,10 @@ public class LightCompoundDT implements Compound {
 
             assert (getClass() != LightCompoundDT.class /* a subclass */ || dt != DTERNAL);
 
-
-            Subterms subterms = s;
-            int size = subterms.subs();
+            int size = s.subs();
 
             if (op.temporal && (op != CONJ && size != 2))
-                throw new InvalidTermException(op, dt, "Invalid dt value for operator", subterms.arrayShared());
+                throw new InvalidTermException(op, dt, "Invalid dt value for operator", s.arrayShared());
 
             if (dt != XTERNAL && op.commutative && size == 2) {
                 if (sub(0).compareTo(sub(1)) > 0)

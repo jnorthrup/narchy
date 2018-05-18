@@ -621,7 +621,7 @@ public class Builtin {
 
         nar.onOp1("assertTrue", (x, nn) -> {
             if (!x.op().var)
-                assertSame(x, True);
+                assertSame(True, x);
         });
 
         nar.onOp2("assertEquals", (x, y, nn) -> {

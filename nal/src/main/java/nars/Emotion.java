@@ -16,7 +16,6 @@ import jcog.meter.event.AtomicMeanFloat;
 import jcog.pri.Prioritized;
 import nars.control.MetaGoal;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -376,7 +375,7 @@ public class Emotion implements Meter {
         taskActivation_x100.increment(Math.round(activation*100));
     }
 
-    public void onAnswer(Task questionTask, @Nullable Task answer) {
+    public void onAnswer(Task questionTask, Task answer) {
         //transfer budget from question to answer
         //transfer more of the budget from an unoriginal question to an answer than an original question
         //Task questionTask = questionLink.get();

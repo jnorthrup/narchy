@@ -741,11 +741,8 @@ public class Conj {
                 ci = CONJ.compound(DTERNAL, sorted(temporal, eternal));
             } else if (eternal == null) {
                 ci = temporal;
-            } else if (temporal == null) {
+            } else /*if (temporal == null)*/ {
                 ci = eternal;
-            } else { //if (eternal == null || temporal == null) {
-                //ci = True; //shouldnt happen
-                throw new RuntimeException("shouldnt get here");
             }
         }
 

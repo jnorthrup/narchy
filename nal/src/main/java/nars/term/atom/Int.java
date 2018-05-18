@@ -483,7 +483,7 @@ public class Int implements Intlike, The {
 
             //if a subterm is not an integer, check for equality of atoms (structure already compared abovec)
             final boolean[] valid = {true};
-            subs[0].pathsTo(x -> x, d -> true, (p, x) -> {
+            subs[0].pathsTo(x -> x, d -> true, (ByteList p, Term x) -> {
                 //            if (p.isEmpty())
                 //                return true; //continue past root, of course the root term will be unique
 

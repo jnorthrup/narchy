@@ -283,7 +283,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
                 conclusion = new PreciseTruth(0.5f * (x.freq() + y.freq()), xconf);
 
-            } else if (Stamp.overlapsAny(y, x)) {
+            } /*else if (Stamp.overlapsAny(y, x)) {
                 boolean FILTER_WEAKER_BUT_EQUAL = false;
                 if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && xconf >= y.conf() &&
                         Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
@@ -294,7 +294,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
                 continue; //unrevisable
 
-            } else {
+            } */ else {
 
 
                 //

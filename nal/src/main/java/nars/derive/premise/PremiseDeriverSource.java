@@ -21,26 +21,27 @@ import java.util.stream.Stream;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseDeriverSource extends ProxyTerm {
+public class PremiseDeriverSource {
 
     public final String source;
+    protected final Term term;
 
     public PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
-        super(
+        this.term =
             $.pFast(parseRuleComponents(ruleSrc))
-                .transform(new UppercaseAtomsToPatternVariables())
-        );
+                .transform(new UppercaseAtomsToPatternVariables());
+
         this.source = ruleSrc;
     }
 
     protected PremiseDeriverSource(PremiseDeriverSource raw, PremisePatternIndex index)  {
-        super(index.pattern(raw.term()));
+        this.term = (index.pattern(raw.term));
         this.source = raw.source;
     }
 
     static class UppercaseAtomsToPatternVariables implements TermTransform {
 
-        final Map<String,Term> patternVars = new UnifiedMap(8);
+        final Map<String,Term> patternVars = new UnifiedMap<>(8);
 
         @Override
         public Termed transformAtomic(Term atomic) {
@@ -67,22 +68,20 @@ public class PremiseDeriverSource extends ProxyTerm {
     }
 
     public static Stream<PremiseDeriverSource> parse(Stream<String> rawRules) {
-
-        return rawRules.map(src -> lines.computeIfAbsent(src, s -> {
+        return rawRules.map(src -> { //src -> lines.computeIfAbsent(src, s -> {
             try {
-                return parse(s);
+                return parse(src);
             } catch (Narsese.NarseseException e) {
                 throw new RuntimeException("rule parse: " + e + "\n\t" + src);
             }
-        }));
+        });
         //.filter(Objects::nonNull);
-
     }
 
-    /** line parse cache */
-    private final static Map<String, PremiseDeriverSource> lines = new ConcurrentHashMap<>(1024);
+//    /** line parse cache */
+//    private final static Map<String, PremiseDeriverSource> lines = new ConcurrentHashMap<>(1024);
 
-    public static final Pattern ruleImpl = Pattern.compile("\\|\\-");
+    static final Pattern ruleImpl = Pattern.compile("\\|\\-");
 
     static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
 

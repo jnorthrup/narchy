@@ -176,7 +176,7 @@ public class Premise {
                                         beliefConcept.goals() :
                                         bb;
 
-                        if (beliefFilter==null) beliefFilter = stampFilter(d); //lazy compute
+                        beliefFilter = stampFilter(d); //lazy compute
 
                         if (!answerTable.isEmpty()) {
                             //try task start/end time
@@ -185,13 +185,11 @@ public class Premise {
                             if (match == null) {
 
                                 //try current moment
-                                if (match == null) {
-                                    long[] focus = n.timeFocus();
-                                    if (focus[0] != taskStart && focus[1] != taskEnd) {
-                                        //CURRENT MOMENT (stamp filtered)
-                                        belief = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
-                                        if (!validMatch(match)) match = null; //force single
-                                    }
+                                long[] focus = n.timeFocus();
+                                if (focus[0] != taskStart && focus[1] != taskEnd) {
+                                    //CURRENT MOMENT (stamp filtered)
+                                    match = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
+                                    if (!validMatch(match)) match = null; //force single
                                 }
 
                                 if (match == null) {

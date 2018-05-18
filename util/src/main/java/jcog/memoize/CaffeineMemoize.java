@@ -20,7 +20,7 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
     }
 
     public static <K, V> CaffeineMemoize<K, V> build(Function<K, V> compute, int capacity, boolean stats) {
-        Caffeine<Object, Object> b = Caffeine.newBuilder();
+        Caffeine b = Caffeine.newBuilder();
 
         if (capacity < 1)
             b.softValues();
@@ -31,7 +31,7 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
 
         if (stats)
             b.recordStats();
-        return new CaffeineMemoize(b.build(), compute);
+        return new CaffeineMemoize<K,V>(b.build(), compute);
     }
 
     @Override

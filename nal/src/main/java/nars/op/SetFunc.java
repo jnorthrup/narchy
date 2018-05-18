@@ -132,8 +132,8 @@ public class SetFunc {
                 if (x.hasAny(Op.varBits))
                     return null; //incomputable
 
-                List<Term> l = new FasterList<>(n);
-                ((FasterList<Term>) l).addingAll(x.subterms().arrayShared());
+                FasterList<Term> l = new FasterList<>(n);
+                l.addingAll(x.subterms().arrayShared());
                 Comparator<Term> cmp;
                 if (param instanceof Atomic && !param.hasVars()) {
                     //TODO cache intermediate results if n >> 2

@@ -549,7 +549,7 @@ public enum Terms {
                 uu.remove();
         }
 
-        if (uniques.size() == 0) return null;
+        if (uniques.isEmpty()) return null;
         return uniques;
         //uniques.keyValuesView().select((oi)->oi.getTwo()>=minTotalScore);
     }
@@ -559,7 +559,7 @@ public enum Terms {
      */
     public static Term[] sorted(Collection<Term> s) {
 
-        Term[] x = s.toArray(new Term[s.size()]);
+        Term[] x = s.toArray(Op.EmptyTermArray);
 
         //2. sorted
         if ((x.length >= 2) && (!(s instanceof SortedSet)))

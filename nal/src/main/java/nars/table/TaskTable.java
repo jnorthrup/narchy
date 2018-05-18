@@ -70,7 +70,7 @@ public interface TaskTable {
             assert (limit > 0);
             if (limit == 1) {
                 Top<Task> q = new Top<>(m.value());
-                forEachTask(q::accept);
+                forEachTask(q);
                 Task the = q.the;
                 if (the != null)
                     target.accept(the);

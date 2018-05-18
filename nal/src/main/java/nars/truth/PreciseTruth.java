@@ -40,7 +40,7 @@ public class PreciseTruth extends DiscreteTruth {
         this.f = Util.clamp(freq, 0, 1f);
     }
 
-    public PreciseTruth(@Nullable Truth truth) {
+    public PreciseTruth(Truth truth) {
         this(truth.freq(), truth.evi(), false);
         assert(!(truth instanceof PreciseTruth)): "pointless";
     }

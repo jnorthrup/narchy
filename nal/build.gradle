@@ -16,6 +16,10 @@ buildscript {
 }
 apply plugin: "info.solidsoft.pitest"
 
+//compileJava {
+//    options.compilerArgs = ['-verbose']
+//}
+
 //plugins {
 ////https://github.com/melix/jmh-gradle-plugin
 //    id "me.champeau.gradle.jmh" version "0.4.5"

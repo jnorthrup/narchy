@@ -6,7 +6,7 @@ import nars.term.Term;
 import nars.unify.Unify;
 
 
-public class OpIs extends MatchConstraint {
+public final class OpIs extends MatchConstraint {
 
     private final Op op;
 

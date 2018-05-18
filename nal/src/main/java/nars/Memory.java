@@ -8,9 +8,9 @@ import jcog.data.byt.DynBytes;
 import jcog.io.bzip2.BZip2InputStream;
 import jcog.io.bzip2.BZip2OutputStream;
 import jcog.list.FasterList;
-import jdk.internal.jline.internal.Nullable;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,10 +200,10 @@ public class Memory {
             Stream<URI> uri = termToURIs(x);
             if (uri != null) {
                 return uri.flatMap(u -> {
-                    Path p = Path.of(u);
+                    Path p = Paths.get(u); // Path.of(u);
                     if (Files.isDirectory(p)) {
-                        try {
-                            return Files.list(p).map(pp -> uriToTerm(pp.toUri()));
+                        try(Stream<Path> ff = Files.list(p)) {
+                            return ff.map(pp -> uriToTerm(pp.toUri()));
                         } catch (IOException e) {
                             logger.warn("{} {}", u, e);
                         }
@@ -457,7 +457,7 @@ public class Memory {
 
         @Override
         public Stream<Task> apply(InputStream ii) {
-            return Streams.stream(()->new Iterator<Task>() {
+            return Streams.stream(()-> new Iterator<Task>() {
 
                 final DataInputStream i = new DataInputStream(new BZip2InputStream(ii));
                 Task next = null;

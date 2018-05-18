@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 
 
-public class MapSubst implements Subst {
+public final class MapSubst implements Subst {
 
     @Nullable public static Subst the(Map<Term, Term> m) {
         switch (m.size()) {

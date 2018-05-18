@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
@@ -35,11 +34,11 @@ import static nars.Op.*;
  */
 public class ArithmeticIntroduction extends LeakBack {
 
-    public static Term apply(Term x, Random rng) {
-        return apply(x, null, rng);
+    public static Term apply(Term x) {
+        return apply(x, null);
     }
 
-    public static Term apply(Term x, @Nullable Anon anon, Random rng) {
+    public static Term apply(Term x, @Nullable Anon anon) {
         if ((anon == null && !x.hasAny(INT)) || x.complexity() < 3)
             return x;
 
@@ -169,7 +168,7 @@ public class ArithmeticIntroduction extends LeakBack {
     @Override
     protected float leak(Task xx) {
         Term x = xx.term();
-        Term y = apply(x, nar.random());
+        Term y = apply(x);
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
             if (yy!=null) {

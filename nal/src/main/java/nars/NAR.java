@@ -1206,7 +1206,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * the each function allows transforming each task to an optional output form.
      * if this function returns null it will not output that task (use as a filter).
      */
-    public TimeAware outputBinary(OutputStream o, Function<Task, Task> each) {
+    public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
 
         //runLater(() -> {
             DataOutputStream oo = new DataOutputStream(o);
@@ -1247,8 +1247,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    @NotNull
-    public TimeAware outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
+    public NAR outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
 
         //runLater(() -> {
             //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
@@ -1274,17 +1273,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @NotNull
-    public TimeAware output(@NotNull File o, boolean binary) throws FileNotFoundException {
+    public NAR output(@NotNull File o, boolean binary) throws FileNotFoundException {
         return output(new FileOutputStream(o), binary);
     }
 
     @NotNull
-    public TimeAware output(@NotNull File o, Function<Task, Task> f) throws FileNotFoundException {
+    public NAR output(@NotNull File o, Function<Task, Task> f) throws FileNotFoundException {
         return outputBinary(new FileOutputStream(o), f);
     }
 
 
-    public TimeAware output(OutputStream o, boolean binary) {
+    public NAR output(OutputStream o, boolean binary) {
         if (binary) {
             return outputBinary(o, (Task x) -> x.isDeleted() ? null : x);
         } else {

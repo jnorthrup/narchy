@@ -53,7 +53,7 @@ public enum PremiseDeriverCompiler {
 
     private static final float[] ONE_CHOICE = new float[]{Float.NaN};
 
-    public static PremiseDeriver the(@NotNull Set<PremiseDeriverProto> r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+    public static PremiseDeriver the(Set<PremiseDeriverProto> r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
         assert (!r.isEmpty());
 
 
@@ -192,7 +192,7 @@ public enum PremiseDeriverCompiler {
                 branch;
     }
 
-    public static void print(Object p, @NotNull PrintStream out, int indent) {
+    public static void print(Object p, PrintStream out, int indent) {
 
         TermTrie.indent(indent);
 
@@ -261,7 +261,7 @@ public enum PremiseDeriverCompiler {
 
     }
 
-//    static void forEach(Object p, @NotNull Consumer out) {
+//    static void forEach(Object p, Consumer out) {
 //        out.accept(p);
 //
 //        /*if (p instanceof IfThen) {
@@ -329,7 +329,7 @@ public enum PremiseDeriverCompiler {
 //
 //    }
 //
-//    static void forEach(@Nullable PrediTerm in, PrediTerm x, @NotNull BiConsumer<PrediTerm, PrediTerm> out) {
+//    static void forEach(@Nullable PrediTerm in, PrediTerm x, BiConsumer<PrediTerm, PrediTerm> out) {
 //        out.accept(in, x);
 //
 //        /*if (p instanceof IfThen) {
@@ -416,10 +416,10 @@ public enum PremiseDeriverCompiler {
 //        return compile(path, each);
 //    }
 
-    static <D extends PreDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, @Nullable PrediTerm<D>> each) {
-        SortedSet<PrediTerm<D>> bb = compile(trie.root);
+    static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
+        SortedSet<PrediTerm<Derivation>> bb = compile(trie.root);
 
-        PrediTerm tf = Fork.fork(bb.toArray(PrediTerm.EmptyPrediTermArray), Fork::new);
+        PrediTerm<Derivation> tf = Fork.fork(bb.toArray(PrediTerm.EmptyPrediTermArray), Fork::new);
         if (each != null)
             tf = tf.transform(each);
 
@@ -428,20 +428,20 @@ public enum PremiseDeriverCompiler {
 
 
     @Nullable
-    static <D extends PreDerivation> SortedSet<PrediTerm<D>> compile(TrieNode<List<PrediTerm<D>>, PrediTerm<D>> node) {
+    static SortedSet<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, PrediTerm<Derivation>> node) {
 
 
-        SortedSet<PrediTerm<D>> bb = new TreeSet();
+        SortedSet<PrediTerm<Derivation>> bb = new TreeSet();
 //        assert(node.getKey()!=null);
 //        assert(node.getValue()!=null);
 
         node.forEach(n -> {
 
-            SortedSet<PrediTerm<D>> branches = compile(n);
+            SortedSet<PrediTerm<Derivation>> branches = compile(n);
 
             int nStart = n.start();
             int nEnd = n.end();
-            PrediTerm<D> branch = PrediTerm.compileAnd(
+            PrediTerm<Derivation> branch = PrediTerm.compileAnd(
                     n.seq().stream().skip(nStart).limit(nEnd - nStart),
                     branches != null /* && !branches.isEmpty() */ ?
                             factorFork(branches, Fork::new)
@@ -516,7 +516,7 @@ public enum PremiseDeriverCompiler {
         return Fork.fork(x.toSortedSet().toArray(PrediTerm.EmptyPrediTermArray), builder);
     }
 
-    protected static <D extends PreDerivation> SortedSet<PrediTerm<D>> compileSwitch(SortedSet<PrediTerm<D>> branches) {
+    protected static SortedSet<PrediTerm<Derivation>> compileSwitch(SortedSet<PrediTerm<Derivation>> branches) {
 
 
         branches = factorSubOpToSwitch(branches, true, 2);
@@ -655,7 +655,7 @@ public enum PremiseDeriverCompiler {
 //
 //    /* one-method interpreter, doesnt recursive call but maintains its own stack */
 //    @Override
-//    public boolean test(@NotNull Derivation m) {
+//    public boolean test(Derivation m) {
 //
 //        FasterList<StackFrame> stack = new FasterList(16);
 //
@@ -695,7 +695,7 @@ public enum PremiseDeriverCompiler {
 //    }
 
 
-//    public void recurse(@NotNull CauseEffect each) {
+//    public void recurse(CauseEffect each) {
 //        for (BoolCondition p : roots) {
 //            recurse(null, p, each);
 //        }
@@ -705,7 +705,7 @@ public enum PremiseDeriverCompiler {
 //
 //        }
 
-//    public static Term recurse(Term pred, Term curr, @NotNull CauseEffect each) {
+//    public static Term recurse(Term pred, Term curr, CauseEffect each) {
 //
 //        each.accept(pred, curr);
 //
@@ -749,7 +749,7 @@ public enum PremiseDeriverCompiler {
 //    }
 
 //    @NotNull
-//    static Stream<PrediTerm<ProtoDerivation>> conditions(@NotNull Stream<PrediTerm<ProtoDerivation>> t) {
+//    static Stream<PrediTerm<ProtoDerivation>> conditions(Stream<PrediTerm<ProtoDerivation>> t) {
 //
 ////
 ////            final AtomicReference<UnificationPrototype> unificationParent = new AtomicReference<>(null);
@@ -779,7 +779,7 @@ public enum PremiseDeriverCompiler {
 
 
 //    @NotNull
-//    private static ProcTerm compileActions(@NotNull List<ProcTerm> t) {
+//    private static ProcTerm compileActions(List<ProcTerm> t) {
 //
 //        switch (t.size()) {
 //            case 0: return null;
@@ -793,7 +793,7 @@ public enum PremiseDeriverCompiler {
 //    }
 
 //    //TODO not complete
-//    protected void compile(@NotNull ProcTerm p) throws IOException, CannotCompileException, NotFoundException {
+//    protected void compile(ProcTerm p) throws IOException, CannotCompileException, NotFoundException {
 //        StringBuilder s = new StringBuilder();
 //
 //        final String header = "public final static String wtf=" +
@@ -877,7 +877,7 @@ public enum PremiseDeriverCompiler {
 //
 //
 //        @Override
-//        public void appendJavaProcedure(@NotNull StringBuilder s) {
+//        public void appendJavaProcedure(StringBuilder s) {
 //            s.append("return;");
 //        }
 //
@@ -893,10 +893,10 @@ public enum PremiseDeriverCompiler {
 //    static final class If extends GenericCompound implements ProcTerm {
 //
 //
-//        public final transient @NotNull BoolCondition cond;
+//        public final transient BoolCondition cond;
 //
 //
-//        public If(@NotNull BoolCondition cond) {
+//        public If(BoolCondition cond) {
 //            super(Op.IMPLICATION,
 //                    TermVector.the( cond, Return.the)
 //            );
@@ -904,7 +904,7 @@ public enum PremiseDeriverCompiler {
 //            this.cond = cond;
 //        }
 //
-//        @Override public void accept(@NotNull PremiseEval m) {
+//        @Override public void accept(PremiseEval m) {
 //            final int stack = m.now();
 //            cond.booleanValueOf(m);
 //            m.revert(stack);

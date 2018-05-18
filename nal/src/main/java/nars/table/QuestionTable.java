@@ -199,7 +199,7 @@ public interface QuestionTable extends TaskTable {
 
     }
 
-    public static class HijackQuestionTable extends PriorityHijackBag<Task,Task> implements QuestionTable {
+    class HijackQuestionTable extends PriorityHijackBag<Task,Task> implements QuestionTable {
 
         public HijackQuestionTable(int cap, int reprobes) {
             super(cap, reprobes);

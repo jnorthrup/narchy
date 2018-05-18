@@ -46,7 +46,7 @@ public interface TemporalBeliefTable extends TaskTable {
 
         //the ownEvi * 0.5 might be somewhat of an analog of the HORIZON parameter, reducing the strength of old evidence in relation to newer
 //        return (1 + focusedEvi) * (1 + ownEvi * 0.5f) / (1 + absDistance);
-        return  ( ownEvi / (1 + (/*Math.log(1+*/absDistance/((float)dur))));
+        return  ( ownEvi / (1 + (/*Math.log(1+*/absDistance/ dur)));
 //        return focusedEvi;
 
 //        if (t.isDeleted())

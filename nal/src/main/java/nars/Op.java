@@ -836,7 +836,7 @@ public enum Op {
         this.id = (byte) (ordinal());
         this.str = string;
         this.ch = string.length() == 1 ? string.charAt(0) : 0;
-        this.strAtom = ch != '.' ? (Atom) Atomic.the("\"" + str + "\"") : null /* dont compute for ATOM, infinite loops */;
+        this.strAtom = ch != '.' ? (Atom) Atomic.the('"' + str + '"') : null /* dont compute for ATOM, infinite loops */;
 
         this.commutative = commutative;
         this.minLevel = minLevel;
@@ -1723,7 +1723,7 @@ public enum Op {
 
         if ((dtConcurrent || op != IMPL) && (!subject.hasAny(Op.VAR_PATTERN) && !predicate.hasAny(Op.VAR_PATTERN))) {
 
-            Predicate<Term> delim = (op == IMPL && dtConcurrent) ?
+            Predicate<Term> delim = (op == IMPL) ?
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
 
             //apply to: inh, sim, and concurrent impl

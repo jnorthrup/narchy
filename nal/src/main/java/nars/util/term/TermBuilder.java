@@ -44,7 +44,7 @@ public abstract class TermBuilder {
     abstract public Subterms newSubterms(Term... s);
 
 
-    public Subterms subterms(Collection<? extends Term> s) {
+    public Subterms subterms(Collection<Term> s) {
         return newSubterms(s.toArray(Op.EmptyTermArray));
     }
 

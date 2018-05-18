@@ -6,14 +6,12 @@ import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
 import nars.NAR;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,11 +23,12 @@ import java.util.stream.Stream;
 public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
 
 
-    public final static Memoize<String, List<PremiseDeriverSource>> ruleCache = CaffeineMemoize.build((String n) -> {
-        InputStream nn = null;
+    final static Memoize<String, List<PremiseDeriverSource>> ruleCache = CaffeineMemoize.build((String n) -> {
+
 //        try {
-            nn = //ClassLoader.getSystemResource(n).openStream();
-                    NAR.class.getClassLoader().getResourceAsStream(n);
+        byte[] bb;
+        try (InputStream nn = //ClassLoader.getSystemResource(n).openStream();
+                    NAR.class.getClassLoader().getResourceAsStream(n)) {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -37,15 +36,15 @@ public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
 //                            //"nal/" + n
 //                            n
 //                    );
-        byte[] bb;
-        try {
             bb = nn.readAllBytes();
+
         } catch (IOException e) {
+
             e.printStackTrace();
             bb = ArrayUtils.EMPTY_BYTE_ARRAY;
-        }
-        return PremiseDeriverSource.parse(load(bb)).distinct().collect(Collectors.toList());
 
+        }
+        return (PremiseDeriverSource.parse(load(bb)).distinct().collect(Collectors.toList()));
 
     }, 32, false);
 
@@ -83,19 +82,13 @@ public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
         throw new UnsupportedOperationException();
     }
 
-    static Stream<String> load(@NotNull byte[] data) {
+    static Stream<String> load(byte[] data) {
         return preprocess(Streams.stream(Splitter.on('\n').split(new String(data))));
     }
 
-    static Stream<String> preprocess(@NotNull Stream<String> lines) {
+    static Stream<String> preprocess(Stream<String> lines) {
 
-        return lines.map(s -> {
-
-            s = s.trim(); //HACK write a better file loader
-
-            if (s.isEmpty() || s.startsWith("//")) {
-                return null;
-            }
+        return lines.map(String::trim).filter(s -> !s.isEmpty() && !s.startsWith("//")).map(s -> {
 
             if (s.contains("..")) {
                 s = s.replace("A..", "%A.."); //add var pattern manually to ellipsis
@@ -109,9 +102,8 @@ public class PremiseDeriverRuleSet extends HashSet<PremiseDeriverProto> {
 //            }
 
             return s;
-            //lines2.add(s);
 
-        }).filter(Objects::nonNull);
+        });
 
 
 //        if (filtering) {

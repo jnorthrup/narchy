@@ -186,7 +186,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
 
             Task x = IO.taskFromBytes(m.data());
             if (x == null) {
-                logger.warn("received invalid task {} {}", from, m);
+                super.logger.warn("received invalid task {} {}", from, m);
                 return;
             }
 

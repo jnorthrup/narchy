@@ -71,7 +71,7 @@ public class MixMultiExec extends AbstractExec {
 
                 super.commit();
 
-                System.out.println(toString());
+                System.out.println(this);
 
                 return this;
             }
