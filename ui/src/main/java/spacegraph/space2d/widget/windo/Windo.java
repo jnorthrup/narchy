@@ -99,8 +99,8 @@ public class Windo extends Stacking {
             //if (dragMode == null && !finger.prevButtonDown[ZoomOrtho.PAN_BUTTON] /* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
             {
 
-                if (potentialDragMode == null && hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
-                    if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                if (hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
+                    if (hitPoint.y <= resizeBorder) {
                         potentialDragMode = DragEdit.RESIZE_S;
                     }
                     if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
@@ -109,7 +109,7 @@ public class Windo extends Stacking {
                 }
 
                 if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
-                    if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
+                    if (hitPoint.x <= resizeBorder) {
                         potentialDragMode = DragEdit.RESIZE_W;
                     }
                     if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
@@ -118,7 +118,7 @@ public class Windo extends Stacking {
                 }
 
                 if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-                    if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                    if (hitPoint.y <= resizeBorder) {
                         potentialDragMode = DragEdit.RESIZE_SW;
                     }
                     if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
@@ -128,7 +128,7 @@ public class Windo extends Stacking {
 
                 if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
 
-                    if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                    if (hitPoint.y <= resizeBorder) {
                         potentialDragMode = DragEdit.RESIZE_SE;
                     }
                     if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
@@ -168,8 +168,8 @@ public class Windo extends Stacking {
     }
 
     public boolean fingeringBounds(Finger finger) {
-        v2 f;
-        return (f = finger.pos)!= null && bounds.contains(f.x, f.y);
+        v2 f = finger.pos;
+        return bounds.contains(f.x, f.y);
     }
 
     public v2 windowHitPointRel(Finger finger) {
@@ -215,30 +215,33 @@ public class Windo extends Stacking {
         if (p != null && p!=DragEdit.MOVE) {
 
             Ortho root = (Ortho) root();
-            if (root==null)
+            if (root==null) {
                 return;
+            }
 
             float W, H;
 
 
             gl.glPushMatrix();
 
-            v2 mousePos;
 
+
+            float pmx, pmy;
             if (this instanceof ZoomOrtho.HUD) {
                 W = w();
                 H = h();
-                mousePos = root.finger.posGlobal;
+                v2 mousePos = root.finger.posPixel;
+                pmx = mousePos.x; pmy = mousePos.y;
             } else {
                 W = H = 0.5f;
-                mousePos = root.finger.pos.clone();
+                v2 mousePos = root.finger.pos;
+                pmx = mousePos.x; pmy = mousePos.y;
                 //mousePos.scaled(W, H);
                 //mousePos.add(+W/2, +H/2); //???
                 //gl.glTranslatef(-W/2, -H/2, 0); //???
             }
 
-            float pmx = mousePos.x;
-            float pmy = mousePos.y;
+
             float resizeBorder = Math.max(W, H) * Windo.resizeBorder;
             switch (p) {
                 case RESIZE_N:
@@ -246,6 +249,12 @@ public class Windo extends Stacking {
                     Draw.quad2d(gl, pmx, pmy, W/2, H-resizeBorder,
                             W/2+resizeBorder/2, H,
                             W/2-resizeBorder/2, H);
+                    break;
+                case RESIZE_S:
+                    colorDragIndicator(gl);
+                    Draw.quad2d(gl, pmx, pmy, W/2, resizeBorder,
+                            W/2+resizeBorder/2, 0,
+                            W/2-resizeBorder/2, 0);
                     break;
                 case RESIZE_E:
                     colorDragIndicator(gl);

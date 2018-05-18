@@ -1,6 +1,5 @@
 package spacegraph.input.finger;
 
-import com.jogamp.newt.opengl.GLWindow;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.util.math.v2;
@@ -12,46 +11,40 @@ public class FingerResizeWindow extends FingerResize {
     final static int MIN_HEIGHT = MIN_WIDTH;
 
     private final JoglSpace window;
-    private final RectFloat2D originalSize;
-    private float x1, y1, x2, y2;
 
     public FingerResizeWindow(JoglSpace window, int button, Windo.DragEdit mode) {
-        super(button, mode);
+        super(button, mode, true);
         this.window = window;
-        GLWindow w = this.window.window;
-        int sh = w.getHeight();
-        int sw = w.getWidth();
-        int sy = w.getY();
-        int sx = w.getX();
-        originalSize = RectFloat2D.XYXY((float) sx, (float) sy, (float) (sw + sx), (float) (sh + sy));
     }
 
 
     @Override
     protected v2 pos(Finger finger) {
-        return new v2(Finger.pointer.getX(), -Finger.pointer.getY());
+        //screen absolute
+        return finger.posScreen.clone();
     }
+
 
     @Override
     protected RectFloat2D size() {
-        return originalSize;
+        JoglSpace w = this.window;
+        int sx = w.window.getX();
+        int sy = w.window.getY();
+        return RectFloat2D.XYXY(sx, sy, sx + w.window.getWidth(), sy + w.window.getHeight());
     }
 
+
     @Override
-    protected void resize(float _x1, float _y1, float _x2, float _y2) {
+    protected void resize(float x1, float y1, float x2, float y2) {
 
 
-        x1 = _x1;
-        y1 = _y1;
-        x2 = _x2;
-        y2 = _y2;
-
+        assert(x1 <= x2);
+        assert(y1 <= y2);
 
         int w = Math.max(MIN_WIDTH, Math.round(x2 - x1));
         int h = Math.max(MIN_HEIGHT, Math.round(y2 - y1)); //y2-y1);
-        window.setPosition(Math.round(x1), Math.round(y1));
-        window.setSize(w, h);
 
+        window.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
     }
 
 }

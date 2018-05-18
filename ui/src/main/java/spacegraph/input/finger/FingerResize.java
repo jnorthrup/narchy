@@ -7,34 +7,30 @@ import spacegraph.util.math.v2;
 public abstract class FingerResize extends FingerDragging {
     protected final static float aspectRatioRatioLimit = 0.1f;
     protected final Windo.DragEdit mode;
+    private final boolean invY;
     private RectFloat2D before;
 
     private v2 posStart;
 
     public FingerResize(int button, Windo.DragEdit mode) {
+        this(button, mode, false);
+    }
+
+    public FingerResize(int button, Windo.DragEdit mode, boolean invertY) {
         super(button);
         this.mode = mode;
-
-
+        this.invY = invertY;
     }
 
     @Override
     public boolean start(Finger f) {
-        if (super.start(f)) {
-            this.posStart = pos(f);
-            this.before = size();
-
-            return true;
-        }
-
-        return false;
+        this.posStart = pos(f);
+        this.before = size();
+        return super.start(f);
     }
 
     @Override
     public boolean drag(Finger finger) {
-
-        if (before == null)
-            return true; //not init'd yet
 
         v2 pos = this.pos(finger);
         float fx = pos.x;
@@ -42,29 +38,38 @@ public abstract class FingerResize extends FingerDragging {
 
         switch (mode) {
             case RESIZE_S: {
+                float top, bottom;
                 float bh = before.h;
-                float bottom = before.bottom();
                 float ty = (fy - posStart.y);
-                resize(
-                        before.left(),
-                        Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh + ty),
-                        before.right(),
-                        bottom
-                );
+                if (!invY) {
+                    bottom = before.bottom();
+                    top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh + ty);
+                } else {
+                    top = before.top();
+                    bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh - ty);
+                }
+                resize(before.left(), top, before.right(), bottom );
+                break;
             }
-            break;
             case RESIZE_N: {
-                float top = before.top();
+                float top, bottom;
                 float bh = before.h;
                 float ty = (fy - posStart.y);
+                if (!invY) {
+                    top = before.top();
+                    bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh + ty);
+                } else {
+                    bottom = before.bottom();
+                    top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh - ty);
+                }
                 resize(
                         before.left(),
                         top,
                         before.right(),
-                        Math.max(top + aspectRatioRatioLimit * bh, top + bh + ty)
+                        bottom
                 );
+                break;
             }
-            break;
 
 
             case RESIZE_NE: {

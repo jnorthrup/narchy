@@ -92,16 +92,6 @@ public class ScrollGrid<X> extends Bordering {
                         final float sy = view.y;
 
                         @Override
-                        public float xStart() {
-                            return 0;
-                        }
-
-                        @Override
-                        public float yStart() {
-                            return 0;
-                        }
-
-                        @Override
                         public void move(float tx, float ty) {
                             view(sx - tx, sy - ty);
                         }

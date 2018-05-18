@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.button;
 
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.widget.text.Label;
@@ -72,7 +73,7 @@ public class PushButton extends AbstractButton {
     }
 
     @Override
-    protected void onClick() {
+    protected void onClick(Finger f) {
         if (onClick!=null)
             onClick.accept(this);
     }

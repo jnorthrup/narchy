@@ -13,9 +13,9 @@ public abstract class AbstractButton extends Widget {
 
 
 
-    final Predicate<Finger> pressable = Finger.clicked(0, ()->{
+    final Predicate<Finger> pressable = Finger.clicked(0, (f)->{
         dz = 0;
-        onClick();
+        onClick(f);
     }, ()-> {
         dz = 0.5f;
     }, () -> {
@@ -30,7 +30,7 @@ public abstract class AbstractButton extends Widget {
         pressable.test(finger);
     }
 
-    protected abstract void onClick();
+    protected abstract void onClick(Finger f);
 
 //    static void label(GL2 gl, String text) {
 //        gl.glColor3f(0.75f, 0.75f, 0.75f);

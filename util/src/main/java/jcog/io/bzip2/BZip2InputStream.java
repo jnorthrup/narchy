@@ -208,26 +208,26 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         } else {
             int retChar = currentChar;
             switch(currentState) {
-            case START_BLOCK_STATE:
-                break;
-            case RAND_PART_A_STATE:
-                break;
-            case RAND_PART_B_STATE:
-                setupRandPartB();
-                break;
-            case RAND_PART_C_STATE:
-                setupRandPartC();
-                break;
-            case NO_RAND_PART_A_STATE:
-                break;
-            case NO_RAND_PART_B_STATE:
-                setupNoRandPartB();
-                break;
-            case NO_RAND_PART_C_STATE:
-                setupNoRandPartC();
-                break;
-            default:
-                break;
+                case START_BLOCK_STATE:
+                    break;
+                case RAND_PART_A_STATE:
+                    break;
+                case RAND_PART_B_STATE:
+                    setupRandPartB();
+                    break;
+                case RAND_PART_C_STATE:
+                    setupRandPartC();
+                    break;
+                case NO_RAND_PART_A_STATE:
+                    break;
+                case NO_RAND_PART_B_STATE:
+                    setupNoRandPartB();
+                    break;
+                case NO_RAND_PART_C_STATE:
+                    setupNoRandPartC();
+                    break;
+                default:
+                    break;
             }
             return retChar;
         }
@@ -257,13 +257,13 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         magic5 = bsGetUChar();
         magic6 = bsGetUChar();
         if (magic1 == 0x17 && magic2 == 0x72 && magic3 == 0x45
-            && magic4 == 0x38 && magic5 == 0x50 && magic6 == 0x90) {
+                && magic4 == 0x38 && magic5 == 0x50 && magic6 == 0x90) {
             complete();
             return;
         }
 
         if (magic1 != 0x31 || magic2 != 0x41 || magic3 != 0x59
-            || magic4 != 0x26 || magic5 != 0x53 || magic6 != 0x59) {
+                || magic4 != 0x26 || magic5 != 0x53 || magic6 != 0x59) {
             badBlockHeader();
             streamEnd = true;
             return;
@@ -288,7 +288,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         }
 
         computedCombinedCRC = (computedCombinedCRC << 1)
-            | (computedCombinedCRC >>> 31);
+                | (computedCombinedCRC >>> 31);
         computedCombinedCRC ^= computedBlockCRC;
     }
 
@@ -502,7 +502,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                 }
             }
             hbCreateDecodeTables(limit[t], base[t], perm[t], len[t], minLen,
-                                 maxLen, alphaSize);
+                    maxLen, alphaSize);
             minLens[t] = minLen;
         }
     }
@@ -861,7 +861,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
     private void setDecompressStructureSizes(int newSize100k) {
         if (!(0 <= newSize100k && newSize100k <= 9 && 0 <= blockSize100k
-               && blockSize100k <= 9)) {
+                && blockSize100k <= 9)) {
             // throw new IOException("Invalid block size");
         }
 

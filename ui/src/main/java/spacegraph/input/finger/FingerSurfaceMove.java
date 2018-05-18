@@ -25,22 +25,10 @@ public class FingerSurfaceMove extends FingerMove {
     }
 
     @Override
-    public float xStart() {
-        return before.x;
-    }
-
-    @Override
-    public float yStart() {
-        return before.y;
-    }
-
-    @Override
     public void move(float tx, float ty) {
-        moved(tx, ty, moving.w() + tx, moving.h() + ty);
-    }
-
-    protected void moved(float x1, float y1, float x2, float y2) {
-        moving.pos(x1, y1, x2, y2);
+        tx += before.x;
+        ty += before.y;
+        moving.pos(tx, ty, moving.w() + tx, moving.h() + ty);
     }
 
 

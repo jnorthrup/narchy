@@ -1,8 +1,6 @@
 package spacegraph.video;
 
-import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -50,7 +48,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     public float bottom;
     public float zNear = 0.5f;
     public float zFar = 1200;
-    public int windowX, windowY;
 
     protected int debug;
     protected float aspect;
@@ -153,7 +150,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         initLighting(gl);
 
-        updateWindowInfo();
         initInput();
 
         onUpdate((Consumer) (w -> pending.removeIf((x) -> {
@@ -265,7 +261,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
             gl.glDisable(GL2.GL_DEPTH_TEST);
 
-            SurfaceRender r = new SurfaceRender(window.getWidth(), window.getHeight(), dtMS);
+            SurfaceRender r = new SurfaceRender(getWidth(), getHeight(), dtMS);
             for (int i = 0; i < facialsSize; i++) {
                 Surface l = layers.get(i);
                 if (l.visible()) {
@@ -400,38 +396,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     }
 
 
-    @Override
-    public void windowResized(WindowEvent windowEvent) {
-        updateWindowInfo();
-    }
-
-    @Override
-    public void windowMoved(WindowEvent windowEvent) {
-        updateWindowInfo();
-    }
-
-
-    private void updateWindowInfo() {
-        GLWindow rww = window;
-        if (rww == null)
-            return;
-//        if (!rww.isRealized() || !rww.isVisible() || !rww.isNativeValid()) {
-//            return;
-//        }
-
-//        if (gettingScreenPointer.compareAndSet(false, true)) {
-//
-//            window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
-//                try {
-        Point p = rww.getLocationOnScreen(new Point());
-        windowX = p.getX();
-        windowY = p.getY();
-//                } finally {
-//                    gettingScreenPointer.set(false);
-//                }
-//            });
-//        }
-    }
 
     @Override
     public final void reshape(GLAutoDrawable drawable,
@@ -440,9 +404,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
                               int width,
                               int height) {
 
-        //height = (height == 0) ? 1 : height;
-
-        //updateCamera();
     }
 
     @Override

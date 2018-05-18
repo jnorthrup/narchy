@@ -1,6 +1,5 @@
 package spacegraph.input.finger;
 
-import com.jogamp.nativewindow.util.Point;
 import com.jogamp.opengl.GL2;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -11,6 +10,7 @@ import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -21,18 +21,13 @@ import java.util.function.Predicate;
  */
 public class Finger {
 
-    /**
-     * global pointer screen coordinate, set by window the (main) cursor was last active in
-     * needs replaced with per-finger pointer tracking to support multitouch
-     */
-    @Deprecated public final static Point pointer = new Point();
 
     final static int MAX_BUTTONS = 5;
     /**
      * TODO scale this to pixel coordinates, this spatial coordinate is tricky and resolution dependent anyway
      */
     final static float DRAG_THRESHOLD = 3f;
-    public final v2 pos = new v2(), posGlobal = new v2();
+    public final v2 pos = new v2(), posPixel = new v2(), posScreen = new v2();
     public final v2[] hitOnDown = new v2[MAX_BUTTONS], hitOnDownGlobal = new v2[MAX_BUTTONS];
     public final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
@@ -72,6 +67,10 @@ public class Finger {
     }
 
     public static Predicate<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
+        return clicked(button, (f) -> clicked.run(), armed, hover, becameIdle );
+    }
+
+    public static Predicate<Finger> clicked(int button, Consumer<Finger> clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
 
         final boolean[] idle = {true};
 
@@ -83,7 +82,7 @@ public class Finger {
             Surface what;
             if (finger != null && (what = finger.touching()) != null) {
                 if ((clicked != null) && finger.clickedNow(button, what)) {
-                    clicked.run();
+                    clicked.accept(finger);
                     return true;
                 } else if ((armed != null) && finger.pressing(button)) {
                     armed.run();
@@ -148,7 +147,7 @@ public class Finger {
             boolean pressed = pressing(b);
             if (!wasPressed && pressed) {
                 hitOnDown[b] = new v2(pos);
-                hitOnDownGlobal[b] = new v2(posGlobal);
+                hitOnDownGlobal[b] = new v2(posPixel);
             } else if (wasPressed && !pressed) {
                 hitOnDownGlobal[b] = hitOnDown[b] = null; //release
             }
@@ -227,7 +226,7 @@ public class Finger {
     }
 
     public boolean dragging(int button) {
-        return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
+        return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posPixel) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
 
     private void on(@Nullable Widget touchNext) {
@@ -341,8 +340,8 @@ public class Finger {
         float ch = 175f; //TODO proportional to ortho height (pixels)
         float cw = 175f; //TODO proportional to ortho width (pixels)
 
-        float smx = posGlobal.x;
-        float smy = posGlobal.y;
+        float smx = posPixel.x;
+        float smy = posPixel.y;
 
         gl.glColor4f(0.5f, 0.5f, 0.5f, 0.25f);
         Draw.rectStroke(gl, smx - cw / 2f, smy - ch / 2f, cw, ch);

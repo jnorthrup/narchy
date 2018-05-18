@@ -85,20 +85,22 @@ public class ZoomOrtho extends Ortho {
         }
 
         @Override
-        public void startDrag() {
-            super.startDrag();
+        public boolean start(Finger f) {
             camStart = new v3(cam);
+            return super.start(f);
         }
 
         @Override
         public void move(float dx, float dy) {
             cam.set(camStart.x - dx / scale.x * speed,
-                    camStart.y + dy / scale.y * speed);
+                    camStart.y - dy / scale.y * speed);
         }
 
     };
 
     final Fingering fingerWindowMove = new FingerMovePixels(MOVE_WINDOW_BUTTON) {
+
+
 
         @Override
         protected JoglSpace window() {
@@ -106,9 +108,22 @@ public class ZoomOrtho extends Ortho {
         }
 
         @Override
-        public void move(float dx, float dy) {
-            window.setPosition(Math.round(windowStartX + dx), Math.round(windowStartY + dy));
+        protected v2 pos(Finger finger) {
+            //screen absolute
+            return new v2(finger.posPixel.x + window.getX(), -finger.posPixel.y + window.getY() + window.getHeight() );
         }
+
+        @Override
+        public void move(float dx, float dy) {
+//            System.out.println(windowStartX + ","+ windowStartY + " +- " +  + dx + "," + dy);
+//            window.setPosition(
+//                    Math.round(windowStartX + dx),
+//                    Math.round(windowStartY - dy));
+            window.setPosition(
+                    Math.round(windowStartX + dx),
+                    Math.round(windowStartY + dy));
+        }
+
     };
 
 
@@ -290,7 +305,7 @@ public class ZoomOrtho extends Ortho {
         }
 
         public v2 windowHitPointRel(Finger finger) {
-            v2 v = new v2(finger.posGlobal);
+            v2 v = new v2(finger.posPixel);
             v.x = v.x/w(); //normalize
             v.y = v.y/h();
             return v;

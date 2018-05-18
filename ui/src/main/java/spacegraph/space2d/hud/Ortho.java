@@ -508,28 +508,16 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
     private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
 
         if (moved) {
-            //        int windowWidth = window.getWidth();
-            int windowHeight = window.getHeight();
+            JoglSpace w = this.window;
+
             int pmx = e.getX();
-            int pmy = windowHeight - e.getY();
+            int pmy = w.window.getHeight() - e.getY();
+            float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
+            float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
 
-
-            float W = w();
-            float H = h();
-
-            //screen coordinates
-            float msx = e.getX();
-            float msy = window.getHeight() - e.getY();
-
-            float wmx = +cam.x + (-0.5f * W + msx) / scale.x;
-            float wmy = +cam.y + (-0.5f * H + msy) / scale.y;
-
+            finger.posPixel.set(pmx, pmy);
+            finger.posScreen.set(w.window.getX() + pmx, w.window.getY() + pmy);
             finger.pos.set(wmx, wmy);
-            finger.posGlobal.set(pmx, pmy);
-
-            if (window.window != null) {
-                Finger.pointer.set(window.windowX + e.getX(), window.windowY + e.getY());
-            }
         }
 
         if (buttonsDown!=null) {

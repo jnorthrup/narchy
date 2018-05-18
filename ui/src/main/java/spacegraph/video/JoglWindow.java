@@ -143,12 +143,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public final int getWidth() {
-        return window.getSurfaceWidth();
-
+        return nw;
     }
-
     public final int getHeight() {
-        return window.getSurfaceHeight();
+        return nh;
+    }
+    public final int getX() {
+        return nx;
+    }
+    public final int getY() {
+        return ny;
     }
 
     @Override
@@ -157,10 +161,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowResized(WindowEvent windowEvent) {
+        GLWindow w = this.window;
+        nw = w.getSurfaceWidth();
+        nh = w.getSurfaceHeight();
     }
 
     @Override
     public void windowMoved(WindowEvent windowEvent) {
+        GLWindow w = this.window;
+        nx = w.getX();
+        ny = w.getY();
     }
 
     @Override
@@ -256,15 +266,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             window.addWindowListener(this);
 
 
-            //W.getScreen().getDisplay().getEDTUtil().invoke(false, ()->{
             W.setTitle(title);
-            setSize(w, h);
             if (x != Integer.MIN_VALUE) {
-                setPosition(x, y);
+                setPositionAndSize(x, y, w, h);
+            } else {
+                setSize(w, h);
             }
-
-            setVisible(true);
-
         });
 
         if (!async) {
@@ -278,31 +285,66 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
-    private void setVisible(boolean b) {
-        if (window == null || window.isVisible() != b)
-            pre((s) -> s.window.setVisible(b));
+    public void setVisible(boolean b) {
+        if (!b)
+            setSize(0, 0);
+        else {
+            int nw = this.nw, nh = this.nh;
+            if (nw == 0 || nh == 0) {
+                nw = nh = 100; //?
+            }
+            setSize(nw, nh);
+        }
     }
 
     public void setPosition(int x, int y) {
-
-        //TODO buffer subsequent setPositions only applying the final one on the EDT before frame render
-        pre((s) -> {
-            GLWindow w = s.window;
-            if (w!=null) {
-                if (w.getX() != x || w.getY() != y) {
-                    w.setPosition(x, y);
-                }
-            }
-        });
-
+        setPositionAndSize(x, y, nw, nh);
     }
 
     public void setSize(int w, int h) {
+        setPositionAndSize(nx, ny, w, h);
+    }
 
-        //TODO buffer subsequent setSize only applying the final one on the EDT before frame render
-        if (window == null || window.getWidth() != w || window.getHeight() != h) {
-            pre((s) -> s.window.setSize(w, h));
+    private volatile int nx, ny, nw, nh;
+    private final Consumer<JoglWindow> windowUpdater = (s)->{
+        GLWindow w = window;
+        if (nx!= w.getX() || ny!= w.getY())
+            w.setPosition(nx, ny);
+        int nw = this.nw;
+        int nh = this.nh;
+
+        if (nw == 0 || nh == 0) {
+            if (w.isVisible()) {
+                w.setVisible(false);
+                return;
+            }
+        } else {
+            if (!w.isVisible())
+                w.setVisible(true);
         }
+
+        if (nw!= w.getSurfaceWidth() || nh!= w.getSurfaceHeight()) {
+            w.setSize(nw, nh);
+        }
+    };
+
+    public void setPositionAndSize(int x, int y, int w, int h) {
+
+        if (window==null) return; //WTF
+
+        boolean change = false;
+        if (change |= (nx!=x))
+            nx = x ;
+        if (change |= (ny!=y))
+            ny = y;
+        if (change |= (nw!=w))
+            nw = w;
+        if (change |= (nh!=h))
+            nh = h;
+
+        if (change)
+            pre(windowUpdater);
+
     }
 
     @Override
