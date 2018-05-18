@@ -56,7 +56,11 @@ public class NARchy extends NARS {
         nar.questionPriDefault.set(0.35f);
         nar.questPriDefault.set(0.35f);
 
-        ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (t -> true), 16, 64);
+        ConjClustering conjClusterB = new ConjClustering(nar, BELIEF,
+                //(t -> true)
+                t -> t.isInput()
+                , 16, 64);
+
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
         return nar;

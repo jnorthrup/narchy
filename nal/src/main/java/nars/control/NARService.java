@@ -50,7 +50,7 @@ public class NARService extends Service<NAR> implements Termed {
 
         stopping(nar);
 
-        this.nar = null;
+        //this.nar = null; //<- not safe to nullify if executing
     }
 
     public void clear() {

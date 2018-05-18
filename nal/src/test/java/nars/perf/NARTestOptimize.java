@@ -26,7 +26,7 @@ import java.util.concurrent.Executors;
 public class NARTestOptimize {
 
     static final int threads =
-            4;
+            2;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 

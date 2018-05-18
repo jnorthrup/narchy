@@ -649,7 +649,7 @@ public class Builtin {
         nar.onOp1("load", (id, nn) -> {
             Runnable r = nn.memory.copy(id, nn.self());
             if (r!=null)
-                r.run();
+                nn.runLater(r);
         });
 
         /** eternal tasks only */

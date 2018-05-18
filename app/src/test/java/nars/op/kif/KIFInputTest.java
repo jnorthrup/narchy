@@ -1,6 +1,7 @@
 package nars.op.kif;
 
 import jcog.Texts;
+import jcog.Util;
 import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
@@ -123,27 +124,43 @@ class KIFInputTest {
                 //NARS.tmp();
                 NARchy.core();
 
-        n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
+        n.beliefPriDefault.set(0.05f);
+        n.activateConceptRate.set(0.01f);
+
         n.input("load(\"file:///tmp/sumo/Merge.kif.nalz\");");
-        n.input("load(\"file:///tmp/sumo/Economy.kif.nalz\");");
         n.input("load(\"file:///tmp/sumo/Mid-level-ontology.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/Economy.kif.nalz\");");
         n.run(1);
         System.err.println(n.concepts.size() + " concepts");
         n.clear();
 
-        //n.log();
-        n.onTask(x->{
-            if (x.isGoal() && x.conf() > 0.1f) {
-                System.out.println(x.proof());
-            }
-        });
+        n.logPriMin(System.out, 0.3f);
+//        n.onTask(x->{
+//            if (x.isGoal() && x.conf() > 0.05f) {
+//                System.out.println(x);
+//                //System.out.println(x.proof());
+//            }
+//        });
 
 
         SimpleDeriver.forTasks(n,
             List.of(
                 n.inputTask("$1.0 possesses(I,#everything)!"),
                 n.inputTask("$1.0 uses(#anything, I)!"),
-                n.inputTask("$1.0 --Dead:I!")
+                n.inputTask("$1.0 --[Dead]:I!"),
+                n.inputTask("$1.0 Corporation:I."),
+                n.inputTask("$1.0 Human:I."),
+                n.inputTask("$1.0 (I-->Man)!"),
+                n.inputTask("$1.0 hasAward(I, #all)!"),
+                n.inputTask("$1.0 wants(I, #all)."),
+                n.inputTask("$1.0 needs(I, #all)."),
+                n.inputTask("$1.0 --lacks(I, #anything)!"),
+                n.inputTask("$1.0 benefits(#all, I)!"),
+                n.inputTask("$1.0 --suffers(#anything, Is)!"),
+                n.inputTask("$1.0 income(I, #money, #anyReason)!")
+
+
                 //n.inputTask("$1.0 Getting(#everything, I)!"),
                 //n.inputTask("$1.0 ChangeOfPossession(#everything,I)!"),
             ));
@@ -152,8 +169,10 @@ class KIFInputTest {
 //
 //        n.input("$1.0 --ChemicalDecomposition(I,#1)!"); //chemical decomposition==>combustion lol
 
-        n.run(15000);
-        n.stats().forEach((s,v)->System.out.println(s + "\t" + v));
+        n.startFPS(10f);
+        Util.sleep(1000*40);
+        n.stop();
+        //n.stats().forEach((s,v)->System.out.println(s + "\t" + v));
     }
 
     @Test public void test1() throws Exception {

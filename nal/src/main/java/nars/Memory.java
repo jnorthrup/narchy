@@ -312,8 +312,8 @@ public class Memory {
         return copy(i, o, null);
     }
 
-    @Nullable
-    public Runnable copy(Term i, Term o, @Nullable Function<Stream<Task>, Stream<Task>> filter) {
+    /** returns a runnable copy procedure for the resolved readers and writers */
+    @Nullable public Runnable copy(Term i, Term o, @Nullable Function<Stream<Task>, Stream<Task>> filter) {
         Set<Supplier<Stream<Task>>> readers = readers(i).collect(toSet());
         if (!readers.isEmpty()) {
             Set<Consumer<Stream<Task>>> writers = writers(o).collect(toSet());

@@ -20,9 +20,9 @@ import static nars.Op.BELIEF;
 public class ThermostatTest {
 
 
-    final Runnable pause = () -> {
-        //Util.sleep(500);
-    };
+//    final Runnable pause = () -> {
+//        //Util.sleep(500);
+//    };
 //    @Test
 //    @Disabled
     public static void main (String[] args) {// void test1() {
