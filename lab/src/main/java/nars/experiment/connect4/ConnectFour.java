@@ -1,11 +1,18 @@
 package nars.experiment.connect4;
 
+import jcog.math.random.XoRoShiRo128PlusRandom;
+import nars.NAR;
+import nars.Narsese;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static nars.experiment.connect4.C4.dropConcept;
 
 //import aima.core.environment.connectfour.ConnectFourAIPlayer;
 //import aima.core.environment.connectfour.ConnectFourGame;
@@ -56,9 +63,11 @@ public class ConnectFour {
          * for player 2.
          */
         private final byte[] board;
+        private final XoRoShiRo128PlusRandom rng;
         int winPositions1;
         int winPositions2;
-        private int moveCount, invalidCount;
+        private final AtomicInteger moveCount = new AtomicInteger();
+        private volatile int invalidCount;
         /**
          * Indicates the utility of the state. 1: win for player 1, 0: win for
          * player 2, 0.5: draw, -1 for all non-terminal states.
@@ -70,6 +79,7 @@ public class ConnectFour {
         }
 
         ConnectFourState(int rows, int cols) {
+            this.rng = new XoRoShiRo128PlusRandom();
             this.cols = cols;
             this.rows = rows;
             board = new byte[rows * cols];
@@ -79,7 +89,8 @@ public class ConnectFour {
         public void clear() {
             Arrays.fill(board, (byte) 0);
             utility = -1;
-            invalidCount = moveCount = winPositions1 = winPositions2 = 0;
+            moveCount.set(rng.nextBoolean() ? 0 : 1);
+            invalidCount = winPositions1 = winPositions2 = 0;
         }
 
         private double utility() {
@@ -90,13 +101,12 @@ public class ConnectFour {
             return board[row * cols + col] & 3;
         }
 
-        public int moving() {
-            return moveCount % 2 + 1;
+        protected int moving() {
+            int m = moveCount.get() % 2 + 1;
+
+            return m;
         }
 
-        public int moveCount() {
-            return moveCount;
-        }
 
         public int invalidCount() {
             return invalidCount;
@@ -110,8 +120,8 @@ public class ConnectFour {
             }
             int row = freeRow(col);
             if (row != -1) {
-                moveCount++;
-                if (moveCount == board.length)
+                moveCount.getAndIncrement();
+                if (moveCount.get() == board.length)
                     utility = 0.5;
                 if (isWinPositionFor(row, col, 1)) {
                     winPositions1--;
@@ -345,8 +355,8 @@ public class ConnectFour {
         public static class Play {
 
             protected int player;
-            private ConnectFourState game;
-            private int moving;
+            protected ConnectFourState game;
+
 
             /**
              * TODO not public
@@ -356,26 +366,20 @@ public class ConnectFour {
                 this.game = game;
             }
 
-            public void moving(int whosMove) {
-                synchronized (game) {
-                    this.moving = whosMove;
-                }
+            public void moving(String who, boolean really) {
+
             }
 
             public boolean drop(int which) {
-                synchronized (game) {
-                    if (this.moving != player) {
+
+                int moving = game.moving();
+                    if (moving != player) {
                         notMoving(player);
                         return false;
                     } else {
-                        if (game.drop(which, player)) {
-                            moving(this.moving == 1 ? 2 : 1);
-                            return true;
-                        } else {
-                            return false;
-                        }
+                        return game.drop(which, player);
                     }
-                }
+
             }
 
             /**
@@ -385,10 +389,10 @@ public class ConnectFour {
 
             }
 
-            public int winner() {
+            public int whoWon() {
                 synchronized (game) {
 
-                    if (game.isTerminal()) {
+                    if (isTerminal()) {
                         if (game.getUtility(ConnectFourState.players[0]) == 1) {
                             return 1;
                         } else if (game.getUtility(ConnectFourState.players[1]) == 1) {
@@ -401,12 +405,20 @@ public class ConnectFour {
             }
 
             public void see() {
-                synchronized (game) {
+                //synchronized (game) {
                     //scan through board by calling its methods providing sight of the board state
                     for (int r = 0; r < game.rows; r++)
-                        for (int c = 0; c < game.cols; c++)
-                            game.get(r, c);
-                }
+                        for (int c = 0; c < game.cols; c++) {
+                            int x = game.get(r, c);
+                            board(r, c, "blank", 0==x);
+                            board(r, c, "red", 1==x);
+                            board(r, c, "yel", 2==x);
+                        }
+                //}
+
+            }
+
+            public void board(int r, int c, String what, boolean isIt) {
 
             }
 
@@ -416,6 +428,16 @@ public class ConnectFour {
 
             public void clear() {
                 game.clear();
+            }
+
+            protected void tryDrop(NAR nar, int which) {
+                try {
+                    nar.input(dropConcept(which, nar, true, game, player) +
+                            "! |..+100ms");
+                } catch (Narsese.NarseseException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }
@@ -586,7 +608,7 @@ public class ConnectFour {
             int won = 0;
             String statusText;
             if (!game.isTerminal()) {
-                String toMove = ConnectFourState.players[game.moving()];
+                String toMove = ConnectFourState.players[game.moving()-1];
                 statusText = "Next move: " + toMove;
                 statusBar.setForeground(toMove.equals("red") ? Color.RED
                         : Color.YELLOW);

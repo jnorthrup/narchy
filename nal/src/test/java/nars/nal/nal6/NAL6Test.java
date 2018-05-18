@@ -335,8 +335,8 @@ public class NAL6Test extends NALTest {
         tester.believe("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))"); //en("There is a lock that can be opened by every key.");
         tester.believe("<{lock1} --> lock>"); //en("Lock-1 is a lock.");
         tester.mustBelieve(cycles*2, "<<$1 --> key> ==> open($1,{lock1})>", 1.00f,
-                0.73f);
-        //0.43f); //en("I guess Lock-1 can be opened by every key.");
+               // 0.73f);
+                0.43f); //en("I guess Lock-1 can be opened by every key.");
 
     }
 
@@ -350,7 +350,8 @@ public class NAL6Test extends NALTest {
         tester.mustBelieve(cycles, "(<#1 --> key> && open(#1,{lock1}))",
                 1.00f,
                 //0.81f
-                0.73f
+                //0.73f
+                0.43f
         ); //en("I guess there is a key that can open Lock-1.");
     }
 

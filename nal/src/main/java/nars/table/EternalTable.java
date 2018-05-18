@@ -277,24 +277,24 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
             //same conf, same stamp, both non-cyclic; interpolate to avoid one being preferred over another arbitrarily
             float xconf = x.conf();
-            if (Util.equals(xconf, y.conf(), nar.confResolution.floatValue()) &&
-                    (!x.isCyclic() && !y.isCyclic()) &&
-                    Arrays.equals(x.stamp(), y.stamp())) {
+            if ((!x.isCyclic() && !y.isCyclic()) &&
+                 Arrays.equals(x.stamp(), y.stamp()) &&
+                 Util.equals(xconf, y.conf(), nar.confResolution.floatValue())) {
 
                 conclusion = new PreciseTruth(0.5f * (x.freq() + y.freq()), xconf);
 
-            } /*else if (Stamp.overlapsAny(y, x)) {
-                boolean FILTER_WEAKER_BUT_EQUAL = false;
-                if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && xconf >= y.conf() &&
-                        Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
-                        Arrays.equals(y.stamp(), x.stamp())) {
-                    y.delete();
-                    return null; //subsume by stronger belief with same freq and stamp
-                }
+            } else if (Stamp.overlapsAny(y, x)) {
+//                boolean FILTER_WEAKER_BUT_EQUAL = false;
+//                if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && xconf >= y.conf() &&
+//                        Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
+//                        Arrays.equals(y.stamp(), x.stamp())) {
+//                    y.delete();
+//                    return null; //subsume by stronger belief with same freq and stamp
+//                }
 
                 continue; //unrevisable
 
-            } */ else {
+            } else {
 
 
                 //

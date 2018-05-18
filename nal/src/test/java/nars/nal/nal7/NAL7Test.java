@@ -903,7 +903,7 @@ public class NAL7Test extends NALTest {
 
     @Test
     public void testDTTaskEnd() {
-        Param.DEBUG = true;
+
         test
                 .inputAt(2, "x. :|:")
                 .inputAt(5, "y. :|:")

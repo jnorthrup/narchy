@@ -18,7 +18,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
+import static nars.Op.CONJ;
 import static nars.Op.PROD;
+import static nars.Op.SetBits;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -28,7 +30,9 @@ public class TermlinkTemplates extends FasterList<Term> {
         }
     };
 
-    /** index of the last concept template; any others beyond this index are non-conceptualizable */
+    /**
+     * index of the last concept template; any others beyond this index are non-conceptualizable
+     */
     byte concepts;
 
     TermlinkTemplates(Term[] terms) {
@@ -38,13 +42,13 @@ public class TermlinkTemplates extends FasterList<Term> {
             sortThisByBoolean((t) -> !conceptualizable(t));
 
         //scan backwards to find the index where the first non-conceptualizable occurrs
-        int lastConcept = size-1;
+        int lastConcept = size - 1;
         for (; lastConcept >= 0; lastConcept--) {
             if (conceptualizable(get(lastConcept)))
                 break;
         }
-        assert(lastConcept < 127);
-        concepts = (byte)(lastConcept+1);
+        assert (lastConcept < 127);
+        concepts = (byte) (lastConcept + 1);
     }
 
     /**
@@ -53,23 +57,25 @@ public class TermlinkTemplates extends FasterList<Term> {
      */
     public static TermlinkTemplates templates(Term term) {
 
-        if (term.subs() > 0) {
+        if (term.subs() <= 0)
+            return EMPTY;
 
-            ArrayHashSet<Term> tc =
-                    //new UnifiedSet<>(id.volume() /* estimate */);
-                    new ArrayHashSet<>(term.volume());
 
-            if (Param.DEBUG_EXTRA) {
-                if (!term.equals(term.concept())) {
-                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
-                }
+
+        ArrayHashSet<Term> tc =
+                new ArrayHashSet<>(term.volume() /* estimate */);
+
+        if (Param.DEBUG_EXTRA) {
+            if (!term.equals(term.concept())) {
+                throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
             }
+        }
 
-            templates(term, tc, 0,
-                    //2
-                    //term.isAny(IMPL.bit | CONJ.bit | INH.bit) ? 4 : 2
-                    term, layers(term)
-            );
+        templates(term, tc, 0,
+                //2
+                //term.isAny(IMPL.bit | CONJ.bit | INH.bit) ? 4 : 2
+                term, layers(term)
+        );
 
 //            //"if ((tEquivalence || (tImplication && (i == 0))) && ((t1 instanceof Conjunction) || (t1 instanceof Negation))) {"
 //            if (/*term.hasAll(IMPL.bit | CONJ.bit) && */term.op() == IMPL || term.op()==CONJ) {
@@ -82,11 +88,9 @@ public class TermlinkTemplates extends FasterList<Term> {
 //            }
 
 
-            int tcs = tc.size();
-            if (tcs > 0) {
-                return new TermlinkTemplates(((FasterList<Term>)(tc.list)).toArrayRecycled(Term[]::new)); //store as list for compactness and fast iteration
-            }
-
+        int tcs = tc.size();
+        if (tcs > 0) {
+            return new TermlinkTemplates(((FasterList<Term>) (tc.list)).toArrayRecycled(Term[]::new)); //store as list for compactness and fast iteration
         }
 
 
@@ -101,10 +105,6 @@ public class TermlinkTemplates extends FasterList<Term> {
         if (x == Op.imExt || x == Op.imInt)
             return; //NO
 
-//        switch (o) {
-//            case VAR_QUERY:
-//                return; //NO
-//        }
 
         if (((depth > 0) || selfTermLink(x)) && !tc.add(x))
             return; //already added
@@ -113,21 +113,38 @@ public class TermlinkTemplates extends FasterList<Term> {
             return;
 
         Subterms bb = x.subterms();
+
+        if (x.op() == CONJ && bb.hasAny(CONJ)) {
+            //special case: decompose complex conj directly to individual events
+            int nextDepth = depth+1;
+            x.eventsWhile((when,what) -> {
+                templates(what.unneg(), tc, nextDepth, root, maxDepth);
+                return true;
+            }, 0, true, true, true, 0);
+            return;
+        }
+
+//        switch (o) {
+//            case VAR_QUERY:
+//                return; //NO
+//        }
+
+
 //        int bs = bb.subs();
 //        if (bs > 0) {
-            int nextDepth = depth;
-            bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
+        int nextDepth = depth;
+        bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
 //        }
     }
 
-    /** whether to recurse templates past a certain subterm.
-     *  implements specific structural exclusions */
+    /**
+     * whether to recurse templates past a certain subterm.
+     * implements specific structural exclusions
+     */
     private static boolean templateRecurseInto(Term root, int depth, Term subterm) {
         Op s = subterm.op();
         if (!s.conceptualizable || s.atomic)
             return false;
-
-
 
 
 //        Op r = root.op();
@@ -205,22 +222,23 @@ public class TermlinkTemplates extends FasterList<Term> {
         switch (x.op()) {
 
             case PROD:
-                return 2;
+                return 1;
 
             case SETe:
             case SETi:
-                return 2;
+                return 1;
 
             case DIFFe:
             case DIFFi:
             case SECTi:
             case SECTe:
-                return 2;
+                return 1;
 
 
             case SIM:
                 Subterms xx = x.subterms();
-                if (xx.hasAny(Op.VariableBits) || (xx.sub(0).isAny(Op.SetBits) || xx.sub(1).isAny(Op.SetBits)))
+                if (xx.hasAny(Op.VariableBits) ||
+                        (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits))))
                     return 3;
                 else
                     return 2;
@@ -229,15 +247,16 @@ public class TermlinkTemplates extends FasterList<Term> {
                 return 3;
 
             case IMPL:
-                //if (x.hasAny(Op.CONJ))
-                return 4;
-                //else
-                  //  return 3;
+                if (x.hasAny(Op.CONJ))
+                    return 4;
+                else
+                    return 3;
 
             case CONJ:
                 //if (x.hasAny(Op.INH))
-                    return 3;
-                //else return 2;
+                //return 3; else
+                return 2;
+
 
             default:
                 throw new UnsupportedOperationException("unhandled operator type: " + x.op());
@@ -245,7 +264,13 @@ public class TermlinkTemplates extends FasterList<Term> {
         }
     }
 
-    /** creates a sub-array of the conceptualizable terms and shuffles them */
+    public static boolean conceptualizable(Term x) {
+        return x.op().conceptualizable;
+    }
+
+    /**
+     * creates a sub-array of the conceptualizable terms and shuffles them
+     */
     public Concept[] concepts(NAR nar, boolean conceptualize) {
         int concepts = this.concepts;
         if (concepts == 0)
@@ -266,11 +291,9 @@ public class TermlinkTemplates extends FasterList<Term> {
         }
     }
 
-    public static boolean conceptualizable(Term x) {
-        return x.op().conceptualizable;
-    }
-
-    /** link and activate the templates */
+    /**
+     * link and activate the templates
+     */
     public void linkAndActivate(Concept src, float budgeted, NAR nar) {
         int n = this.size();
         if (n == 0)

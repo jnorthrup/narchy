@@ -134,7 +134,7 @@ public class AtomicRoulette<X> {
 
     public void decide(Random rng, IntPredicate kontinue) {
 
-        int i = 1;
+        int i = 0;
 
         boolean kontinued;
         restart: do {
@@ -167,7 +167,7 @@ public class AtomicRoulette<X> {
                 int pp;
                 int start = i;
                 while (((pp = pri.get(i)) == 0) || ((distance = distance - pp) > 0)) {
-                    if (++i == count) i = 1;
+                    if (++i == count) i = 0;
                     if (i == start) {
                         kontinued = kontinue.test(-1); //idle signal that nothing was selected
                         continue restart;

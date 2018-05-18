@@ -13,7 +13,6 @@ import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -21,27 +20,27 @@ import java.util.stream.Stream;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseDeriverSource {
+public class PremiseDeriverSource extends ProxyTerm {
 
     public final String source;
-    protected final Term term;
 
     public PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
-        this.term =
+        super(
             $.pFast(parseRuleComponents(ruleSrc))
-                .transform(new UppercaseAtomsToPatternVariables());
+                .transform(new UppercaseAtomsToPatternVariables())
+        );
 
         this.source = ruleSrc;
     }
 
     protected PremiseDeriverSource(PremiseDeriverSource raw, PremisePatternIndex index)  {
-        this.term = (index.pattern(raw.term));
+        super((index.pattern(raw.ref)));
         this.source = raw.source;
     }
 
-    static class UppercaseAtomsToPatternVariables implements TermTransform {
+    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String,Term> implements TermTransform {
 
-        final Map<String,Term> patternVars = new UnifiedMap<>(8);
+        public UppercaseAtomsToPatternVariables() { super(8); }
 
         @Override
         public Termed transformAtomic(Term atomic) {
@@ -49,7 +48,7 @@ public class PremiseDeriverSource {
                 if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
                     String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return patternVars.computeIfAbsent(name, (n)->$.varPattern(1+patternVars.size()));
+                        return this.computeIfAbsent(name, (n)->$.varPattern(1 + this.size()));
                         //return $.v(VAR_PATTERN, name);
                     }
                 }

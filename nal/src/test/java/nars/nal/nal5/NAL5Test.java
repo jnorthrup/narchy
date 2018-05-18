@@ -214,8 +214,8 @@ public class NAL5Test extends NALTest {
                 .believe("(&&, x, y, z)")
                 .believe("x", 0.80f, 0.9f)
                 .mustBelieve(cycles, "(y && z)", 0.80f,
-                        0.58f);
-                        //0.43f);
+                        //0.58f);
+                        0.43f);
     }
 
     @Test
@@ -224,8 +224,8 @@ public class NAL5Test extends NALTest {
                 .believe("(&&, --x, y, z)")
                 .believe("x", 0.20f, 0.9f)
                 .mustBelieve(cycles, "(&&,y,z)", 0.80f,
-                        0.58f);
-                        //0.43f /*0.43f*/);
+                        //0.58f);
+                        0.43f /*0.43f*/);
     }
 
     @Test

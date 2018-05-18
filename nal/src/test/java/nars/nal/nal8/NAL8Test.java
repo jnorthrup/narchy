@@ -842,7 +842,6 @@ public class NAL8Test extends NALTest {
     public void conjDecomposeGoalAfterNegNeg() {
 
         test
-                .log()
                 .inputAt(3, "(a &&+3 --b). :|:")
                 .inputAt(6, "--b! :|:")
                 .mustGoal(16, "a", 1f, 0.81f, (t) -> t >= 6) //since b is not desired now, it should reverse predict the goal of a

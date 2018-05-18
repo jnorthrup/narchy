@@ -106,6 +106,24 @@ public class TermLinkTest {
         testTemplates("(x && y)",
                 "[x, y]");
     }
+
+    @Test
+    public void testTemplateConjInsideConj() throws Narsese.NarseseException {
+        testTemplates("(x && (y &&+1 z))",
+                "[x, y, z]");
+    }
+    @Test
+    public void testTemplateConjInsideConjInsideImpl() throws Narsese.NarseseException {
+        testTemplates("(a ==> (x && y))",
+                "[(x&&y), a, x, y]");
+    }
+
+    @Test
+    public void testTemplateConjInsideConjInsideImpl2() throws Narsese.NarseseException {
+        testTemplates("((a && b) ==> (x && (y &&+1 z)))",
+                "[((y&&z) &&+- x), (a&&b), a, b, x, y, z]");
+    }
+
     @Test
     public void testTemplateConj1Neg() throws Narsese.NarseseException {
         testTemplates("(x &&+- --x)",

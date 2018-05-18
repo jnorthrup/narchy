@@ -48,21 +48,23 @@ public class BooleanTest {
         d.freqResolution.set(0.02f);
         d.termVolumeMax.set(28);
 
+//        Param.DEBUG = true;
 //        d.log();
+
         String[] outcomes = {
-                "x:{0}", //"(x-->(0,0))",
-                "x:{1}", //"(x-->(0,1))",
-                "x:{2}", //"(x-->(1,0))",
-                "x:{3}"}; //"(x-->(1,1))"};
+                "a", //"(x-->(0,0))",
+                "b", //"(x-->(0,1))",
+                "c", //"(x-->(1,0))",
+                "d"}; //"(x-->(1,1))"};
         //String expected = "(x --> (" + i + "," + j + "))";
 
-        d.believe("( (--(x-->i) && --(x-->j)) ==> " + outcomes[0] + ")");
-        d.believe("( (--(x-->i) && (x-->j)) ==> " + outcomes[1] + ")");
-        d.believe("( ((x-->i) && --(x-->j)) ==> " + outcomes[2] + ")");
-        d.believe("( ((x-->i) && (x-->j)) ==> " + outcomes[3] + ")");
+        d.believe("( (--i && --j) ==> " + outcomes[0] + ")");
+        d.believe("( (--i && j) ==> " + outcomes[1] + ")");
+        d.believe("( (i && --j) ==> " + outcomes[2] + ")");
+        d.believe("( (i && j) ==> " + outcomes[3] + ")");
 
-        Term I = $.$("(x-->i)").negIf(i == 0);
-        Term J = $.$("(x-->j)").negIf(j == 0);
+        Term I = $.$("i").negIf(i == 0);
+        Term J = $.$("j").negIf(j == 0);
 
 //                d.believe(I);
 //                d.believe(J);
@@ -194,13 +196,13 @@ public class BooleanTest {
 //
 //                //String expected = "(x --> (" + i + "," + j + "))";
 //
-//                d.believe("( (--(x-->i) && --(x-->j)) ==> " + outcomes[0] + ")");
-//                d.believe("( (--(x-->i) && (x-->j)) ==> " + outcomes[1] + ")");
-//                d.believe("( ((x-->i) && --(x-->j)) ==> " + outcomes[2] + ")");
-//                d.believe("( ((x-->i) && (x-->j)) ==> " + outcomes[3] + ")");
+//                d.believe("( (--i && --j) ==> " + outcomes[0] + ")");
+//                d.believe("( (--i && j) ==> " + outcomes[1] + ")");
+//                d.believe("( (i && --j) ==> " + outcomes[2] + ")");
+//                d.believe("( (i && j) ==> " + outcomes[3] + ")");
 //
-//                Compound I = $.negIf($.$("(x-->i)"), i == 0);
-//                Compound J = $.negIf($.$("(x-->j)"), j == 0);
+//                Compound I = $.negIf($.$("i"), i == 0);
+//                Compound J = $.negIf($.$("j"), j == 0);
 //
 ////                d.believe(I);
 ////                d.believe(J);

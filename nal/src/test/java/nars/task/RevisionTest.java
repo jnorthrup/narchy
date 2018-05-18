@@ -351,7 +351,7 @@ public class RevisionTest {
     @Test public void testIntermpolationOrderPartialMismatch2() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 (d &&+1 c)))");
         Compound b = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
-        String expected = "[((a &&+1 b) &&+1 (c&&d))]";
+        String expected = "[((a &&+1 b) &&+1 (d &&+1 c)), ((a &&+1 b) &&+1 (c&|d)), ((a &&+1 b) &&+2 (c&|d)), ((a &&+1 b) &&+1 (c &&+1 d))]";
         permuteChoose(a, b, expected);
     }
 
@@ -385,7 +385,7 @@ public class RevisionTest {
     @Test public void testIntermpolationOrderMixDternal2Reverse() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
         Compound b = $.$("((a && b) &&+1 (c &&+1 d))");
-        permuteChoose(a, b, "[(((a&&b) &&+1 c) &&+1 d), (((a&&b) &&+1 c) &&+2 d), ((a&&b) &&+1 (c&|d))]");
+        permuteChoose(a, b, "[(((a&&b) &&+1 c) &&+1 d), (((a&&b) &&+1 c) &&+2 d), (((a&&b) &&+2 c) &&+1 d), ((a&&b) &&+2 (c&|d))]");
     }
     @Test public void testIntermpolationOrderPartialMismatchReverse() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 c))");

@@ -78,7 +78,7 @@ public class PremiseRuleTest {
 //        );
             PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
-            assertEquals(vv, x.term().volume());
+            assertEquals(vv, x.ref.volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Revision-->Belief),(Weak-->Desire))))", x.toString());
 
         }
@@ -89,7 +89,7 @@ public class PremiseRuleTest {
 //        );
             PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Revision, Goal:Weak)");
             //x = PremiseRule.rule(x);
-            assertEquals(vv, x.term().volume()); //same volume as previous block
+            assertEquals(vv, x.ref.volume()); //same volume as previous block
             //assertEquals("(((%1-->%2),(%2-->%1)),((nonvar<->%1),((Revision-->Belief),(Weak-->Desire))))", x.toString());
         }
         {
@@ -99,7 +99,7 @@ public class PremiseRuleTest {
 //        );
             PremiseDeriverSource x = PremiseDeriverSource.parse(" <A --> B>, <B --> A> |- <A <-> B>,  (Belief:Conversion, Punctuation:Belief)");
             //x = PremiseRule.rule(x);
-            assertEquals(vv, x.term().volume());
+            assertEquals(vv, x.ref.volume());
             //assertEquals("(((%1-->%2),(%2-->%1)),((%1<->%2),((Conversion-->Belief),(Judgment-->Punctuation))))", x.toString());
         }
 
@@ -118,7 +118,7 @@ public class PremiseRuleTest {
         PremiseDeriverSource x = PremiseDeriverSource.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Strong)");
         //x = PremiseRule.rule(x);
         //assertEquals("(((%1-->%2),(%3-->%2)),((%1<->%3),((Comparison-->Belief),(Strong-->Desire))))", x.toString());
-        assertEquals(vv, x.term().volume());
+        assertEquals(vv, x.ref.volume());
 
     }
 
@@ -195,7 +195,7 @@ TODO - share unification state for different truth/conclusions
 //        return rule(
 //                r
 //        );
-        Compound y = (Compound) PremiseDeriverSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").term();
+        Compound y = (Compound) PremiseDeriverSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").ref;
         Terms.printRecursive(System.out, y);
     }
 

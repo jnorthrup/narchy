@@ -1,10 +1,9 @@
 package nars;
 
 import jcog.User;
-import jcog.Util;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.exe.Focus;
-import nars.exe.PoolMultiExec;
+import nars.exe.WorkerMultiExec;
 import nars.index.concept.CaffeineIndex;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
@@ -34,19 +33,22 @@ public class NARchy extends NARS {
 
                 .index(new CaffeineIndex(1000 * 128 * 1024))
 
-                //.exe(new WorkerMultiExec(512, 2, 64))
-                .exe(new PoolMultiExec /*WorkerMultiExec*/(
-                        Util.concurrencyDefault(2), 512,
-                    new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
-                        //        , 64, 512))
-                ))
+                .exe(new WorkerMultiExec(
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        1, 128, 1024))
+
+//                .exe(new PoolMultiExec /*WorkerMultiExec*/(
+//                        Util.concurrencyDefault(2), 512,
+//                    new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
+//                        //        , 64, 512))
+//                ))
 //                .exe(new AbstractExec(64) {
 //                    @Override
 //                    public boolean concurrent() {
 //                        return true;
 //                    }
 //                })
-                .time(new RealTime.CS().durFPS(10f))
+                .time(new RealTime.CS(true /* HACK */).durFPS(10f))
                 //.memory("/tmp/nal")
                 .get();
 
@@ -57,8 +59,8 @@ public class NARchy extends NARS {
         nar.questPriDefault.set(0.35f);
 
         ConjClustering conjClusterB = new ConjClustering(nar, BELIEF,
-                //(t -> true)
-                t -> t.isInput()
+                (t -> true)
+                //t -> t.isInput()
                 , 16, 64);
 
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);

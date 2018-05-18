@@ -18,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AIMATests {
 
+    final NAR n = NARS.tmp(6);
 
 
 
     @ParameterizedTest
     @ValueSource(doubles = { 0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5 })
     public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
 
         n.termVolumeMax.set(16);
         n.freqResolution.set((float)truthRes);
@@ -43,7 +43,6 @@ public class AIMATests {
 
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
 
         n.freqResolution.set(0.04f);
         n.confResolution.set(0.02f);
@@ -59,7 +58,7 @@ public class AIMATests {
         //new PrologCore(n);
         //n.run(1);
 
-        //n.log();
+//        n.log();
         n.believe(
             //"((&&, American($x),Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
             "((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
@@ -103,7 +102,7 @@ public class AIMATests {
         });
         //
         //n.log();
-        n.run(2000);
+        n.run(3000);
 //        n.concept($.$("Criminal")).print();
 //        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {

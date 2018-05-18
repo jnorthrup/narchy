@@ -46,12 +46,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     /**
      * conditions which can be tested before unification
      */
-    public PrediTerm<PreDerivation>[] PRE;
+    private PrediTerm<PreDerivation>[] PRE;
 
     /**
      * consequences applied after unification
      */
-    public PostCondition[] POST;
+    PostCondition[] POST;
 
 
     final SortedSet<MatchConstraint> constraints = new TreeSet<>(PrediTerm.sortByCost);
@@ -75,8 +75,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         //1. construct precondition term array
         //Term[] terms = terms();
 
-        Term[] precon = ((Subterms) term.sub(0)).arrayShared();
-        Term[] postcons = ((Subterms) term.sub(1)).arrayShared();
+        Term[] precon = ((Subterms) ref.sub(0)).arrayShared();
+        Term[] postcons = ((Subterms) ref.sub(1)).arrayShared();
 
 
 
@@ -817,11 +817,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     }
 
     public Compound build() {
-        return (Compound) term.sub(0);
+        return (Compound) ref.sub(0);
     }
 
     public Compound conclusion() {
-        return (Compound) term.sub(1);
+        return (Compound) ref.sub(1);
     }
 
     /**
@@ -965,7 +965,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         @Override
         public String toString() {
-            return $.p(rule.term, $.the(id)).toString();
+            return $.p(rule.ref, $.the(id)).toString();
         }
     }
 

@@ -71,6 +71,10 @@ public class XoRoShiRo128PlusRandom extends AtomicRandom {
         setSeed(seed);
     }
 
+    /** seeds with system nano clock */
+    public XoRoShiRo128PlusRandom() {
+        this(System.nanoTime());
+    }
 
 
     @Override protected long _nextLong() {

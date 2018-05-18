@@ -27,7 +27,7 @@ public class ThermostatTest {
 //    @Disabled
     public static void main (String[] args) {// void test1() {
         //
-        final int DUR = 1;
+        final int DUR = 3;
 
         final int subTrainings = 2;
         final int thinkDurs = 4; //pause between episodes
@@ -35,13 +35,14 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
+        n.dtDither.set(0f);
         n.timeFocus.set(2);
-        n.termVolumeMax.set(34);
-//        n.freqResolution.set(0.05f);
-//        n.confResolution.set(0.01f);
-        n.activateConceptRate.set(0.5f);
+        n.termVolumeMax.set(18);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.01f);
+        n.activateConceptRate.set(0.1f);
 
-        n.goalPriDefault.set(1f);
+        n.goalPriDefault.set(0.5f);
 //        n.forgetRate.set(2f);
         //n.deep.set(0.8);
 

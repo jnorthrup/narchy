@@ -14,7 +14,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL4Test extends NALTest {
 
 
-    static final int CYCLES = 650;
+    static final int CYCLES = 150;
 
     @Override protected NAR nar() { return NARS.tmp(6); }
 
@@ -91,7 +91,8 @@ public class NAL4Test extends NALTest {
         test
                 .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
-                .mustBelieve(CYCLES, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*2, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*2, "((neutralization,acid,\\) --> (reaction,acid,//))", 1.0f, 0.81f)
         ;
     }
     @Disabled
@@ -129,7 +130,7 @@ public class NAL4Test extends NALTest {
         test
                 .believe("f(x,z)", 1.0f, 0.9f)
                 .believe("f(y,z)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES * 16, "f:((x,z)&(y,z))", 1.0f, 0.81f);
+                .mustBelieve(CYCLES * 2, "f:((x,z)&(y,z))", 1.0f, 0.81f);
     }
 
 

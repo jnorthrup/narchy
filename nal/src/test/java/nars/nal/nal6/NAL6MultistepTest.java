@@ -10,7 +10,6 @@ import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Created by me on 10/29/16.
@@ -32,24 +31,24 @@ public class NAL6MultistepTest {
 //
 //                evidence(alarm,true).
 //
-//                query(burglary).
-//                query(earthquake).
+//                queryburglary.
+//                queryearthquake.
 
         NAR n = NARS.tmp();
 
         //d.log();
         n.input(
-                "(burglary). %0.7;0.9%",
-                "(earthquake). %0.2;0.9%",
-                "(p_alarm1). %0.9;0.9%",
-                "(p_alarm2). %0.8;0.9%",
-                "(p_alarm3). %0.1;0.9%",
-                "((&&, (burglary), (earthquake), (p_alarm1)) ==> (alarm)). %1.0;0.95%",
-                "((&&, (burglary), (--,(earthquake)), (p_alarm2)) ==> (alarm)). %1.0;0.95%",
-                "((&&, (--,(burglary)), (earthquake), (p_alarm3)) ==> (alarm)). %1.0;0.95%",
-                "(alarm).",
-                "(burglary)?",
-                "(earthquake)?"
+                "burglary. %0.7;0.9%",
+                "earthquake. %0.2;0.9%",
+                "p_alarm1. %0.9;0.9%",
+                "p_alarm2. %0.8;0.9%",
+                "p_alarm3. %0.1;0.9%",
+                "((&&, burglary, earthquake, p_alarm1) ==> alarm). %1.0;0.95%",
+                "((&&, burglary, --earthquake, p_alarm2) ==> alarm). %1.0;0.95%",
+                "((&&, --burglary, earthquake, p_alarm3) ==> alarm). %1.0;0.95%",
+                "alarm.",
+                "burglary?",
+                "earthquake?"
         );
 
 
@@ -57,8 +56,8 @@ public class NAL6MultistepTest {
         for (int i = 0; i < 5; i++) {
             //long now = d.time();
             n.run(100);
-            burglary = n.conceptualize("(burglary)");
-            earthquake = n.conceptualize("(earthquake)");            // burglary.print();  earthquake.print();
+            burglary = n.conceptualize("burglary");
+            earthquake = n.conceptualize("earthquake");            // burglary.print();  earthquake.print();
             //System.out.println("burglary=" + burglary.belief(Tense.ETERNAL,0, nar) + "\tearthquake=" + earthquake.belief(Tense.ETERNAL,0, nar));
         }
 
@@ -66,9 +65,9 @@ public class NAL6MultistepTest {
 
         //result from Probcog:  earthquake=23%, burglary=99%
         Truth burgTruth = n.beliefTruth(burglary, Tense.ETERNAL);
-        assertNotNull(burgTruth);
-        assertEquals(0.99f, burgTruth.freq(), 0.4f /* approximate */);
-        assertEquals(0.31f, n.beliefTruth(earthquake,Tense.ETERNAL).freq(), 0.2f /* approximate */);
+        assertEquals(0.65f, burgTruth.freq(), 0.1f /* approximate */);
+        Truth eqTruth = n.beliefTruth(earthquake, Tense.ETERNAL);
+        assertEquals(0.31f, eqTruth.freq(), 0.2f /* approximate */);
     }
 
 
@@ -82,21 +81,21 @@ public class NAL6MultistepTest {
 //        0.1::alarm :- \+burglary, earthquake.
 //
 //                evidence(alarm,true).
-//                query(burglary).
-//                query(earthquake).
+//                queryburglary.
+//                queryearthquake.
 
         NAR n = new NARS().get();
 
         //d.log();
         n.input(
-                "(burglary).   %0.7;0.9%",
-                "(earthquake). %0.2;0.9%",
-                "((&&, (burglary), (earthquake)) ==> (alarm)).      %0.9;0.9%",
-                "((&&, (burglary), (--,(earthquake))) ==> (alarm)). %0.8;0.9%",
-                "((&&, (--,(burglary)), (earthquake)) ==> (alarm)). %0.1;0.9%",
-                "(alarm).",
-                "(burglary)?",
-                "(earthquake)?"
+                "burglary.   %0.7;0.9%",
+                "earthquake. %0.2;0.9%",
+                "((&&, burglary, earthquake) ==> alarm).      %0.9;0.9%",
+                "((&&, burglary, (--,earthquake)) ==> alarm). %0.8;0.9%",
+                "((&&, (--,burglary), earthquake) ==> alarm). %0.1;0.9%",
+                "alarm.",
+                "burglary?",
+                "earthquake?"
         );
 
         TaskConcept burglary = null, earthquake = null;
@@ -104,8 +103,8 @@ public class NAL6MultistepTest {
             // burglary.print();  earthquake.print();
             //long now = d.time();
             n.run(100);
-            burglary = (TaskConcept) n.conceptualize("(burglary)");
-            earthquake = (TaskConcept)n.conceptualize("(earthquake)");            // burglary.print();  earthquake.print();
+            burglary = (TaskConcept) n.conceptualize("burglary");
+            earthquake = (TaskConcept)n.conceptualize("earthquake");            // burglary.print();  earthquake.print();
             System.out.println("burglary=" + n.beliefTruth(burglary,0) + "\tearthquake=" + earthquake.beliefs().truth(Tense.ETERNAL, n));
         }
 

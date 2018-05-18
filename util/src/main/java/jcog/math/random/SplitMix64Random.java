@@ -103,7 +103,7 @@ public class SplitMix64Random extends Random {
      * @param x a long integer.
      * @return a hash value with good avalanching properties.
      */
-    public static long murmurHash3(long x) {
+    static long murmurHash3(long x) {
         x ^= x >>> 33;
         x *= 0xff51afd7ed558ccdL;
         x ^= x >>> 33;

@@ -612,7 +612,7 @@ public enum Op {
 
     public static TermBuilder terms =
             new InterningTermBuilder();
-            //new TermBuilder.HeapTermBuilder();
+            //new HeapTermBuilder();
 
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);

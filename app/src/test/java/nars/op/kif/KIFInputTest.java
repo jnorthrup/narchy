@@ -118,7 +118,7 @@ class KIFInputTest {
     }
 
     @Test public void testLoad() throws Narsese.NarseseException {
-        Param.DEBUG = true;
+        //Param.DEBUG = true;
 
         NAR n =
                 //NARS.tmp();
