@@ -5,15 +5,14 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.AspectAlign;
-import spacegraph.space2d.container.EmptySurface;
+import spacegraph.space2d.container.EmptyContainer;
 import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 
 /**
  * Created by me on 7/29/16.
  */
-public class Label extends AspectAlign {
+public class Label extends EmptyContainer {
 
     private String text = "(null)";
 
@@ -35,7 +34,7 @@ public class Label extends AspectAlign {
     }
 
     public Label(String s) {
-        super(new EmptySurface());
+        //super(new EmptySurface());
         text(s);
     }
 
@@ -45,7 +44,10 @@ public class Label extends AspectAlign {
     }
 
     @Override
-    protected void doLayout(float tx, float ty, float tw, float th) {
+    protected void doLayout(int dtMS) {
+        float tx = x(), ty = y();
+        float tw = w();
+        float th = h();
         innerBounds = RectFloat2D.XYXY(tx, ty, tx + tw, ty + th);
 
         int len = text().length();

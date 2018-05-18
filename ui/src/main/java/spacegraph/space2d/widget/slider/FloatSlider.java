@@ -11,7 +11,6 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedur
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.SurfaceBase;
 import spacegraph.space2d.SurfaceRender;
-import spacegraph.space2d.container.AspectAlign;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.text.Label;
@@ -63,7 +62,7 @@ public class FloatSlider extends Widget {
 
         content(new Stacking(
                 new Scale(slider = m, 0.95f),
-                label.scale(0.85f).align(AspectAlign.Align.Center)
+                new Scale(label, 0.85f)
         ));
     }
 

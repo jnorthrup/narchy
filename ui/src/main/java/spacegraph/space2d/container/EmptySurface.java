@@ -7,7 +7,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.util.math.v2;
 
-public final class EmptySurface extends Surface {
+public class EmptySurface extends Surface {
 
     public EmptySurface() {
         visible = false;
