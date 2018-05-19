@@ -20,7 +20,6 @@ import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
-import static nars.Op.SetBits;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -236,18 +235,18 @@ public class TermlinkTemplates extends FasterList<Term> {
 
 
             case SIM:
-                Subterms xx = x.subterms();
-                if (xx.hasAny(Op.VariableBits) ||
-                        (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits))))
-                    return 3;
-                else
+//                Subterms xx = x.subterms();
+//                if (xx.hasAny(Op.VariableBits) ||
+//                        (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits))))
+//                    return 3;
+//                else
                     return 2;
 
             case INH:
                 return 3;
 
             case IMPL:
-                if (x.hasAny(Op.CONJ))
+                if (x./*subterms().*/hasAll(Op.CONJ.bit | Op.INH.bit))
                     return 4;
                 else
                     return 3;

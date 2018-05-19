@@ -1,8 +1,14 @@
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
 
+repositories {
+//    maven { url 'https://jitpack.io' }
+    mavenCentral()
+}
+
 
 dependencies {
+//    compile 'com.github.kotlin-graphics:imgui:-SNAPSHOT'
 
     //compile project(':gp')
     compile project(':app')
