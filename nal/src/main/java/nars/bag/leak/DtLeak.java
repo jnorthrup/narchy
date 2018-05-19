@@ -20,11 +20,8 @@ import static nars.time.Tense.ETERNAL;
  */
 public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
-    float RATE_THRESH = 1f;
-
     public final MutableFloat rate /* base rate items per dt */;
-
-
+    float RATE_THRESH = 1f;
     private volatile long lastLeak = ETERNAL;
     private volatile float lastBudget;
 
@@ -35,45 +32,42 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
     public float commit(NAR nar, float work) {
 
-            float forgetRate = nar.forgetRate.floatValue();
+        float forgetRate = nar.forgetRate.floatValue();
 
-            if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
+        long now = nar.time();
+        int dur = nar.dur();
 
-                long now = nar.time();
-                int dur = nar.dur();
+        long last = this.lastLeak;
+        if (last == ETERNAL) {
+            this.lastLeak = last = now;
+        }
 
-                long last = this.lastLeak;
-                if (last == ETERNAL) {
-                    last = now - dur;
-                }
+        if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
 
-                return commit(now, last, dur, work);
+            //durations delta
+            float durDT = Math.max(0, (now - last) / ((float) dur));
 
+            float nextBudget = work * rate.floatValue() * durDT + lastBudget;
+            //System.out.println(this + " " + rate + " " + durDT + " " + nextBudget + " { " + lastBudget );
+
+            if (nextBudget >= RATE_THRESH) {
+                this.lastLeak = now;
+
+                return commit(nextBudget);
             }
+        }
 
 
         return 0;
     }
 
-    protected float commit(long now, long last, int dur, float work) {
-
-        //durations delta
-        float durDT = Math.max(0, (now - last) / ((float) dur));
-
-        float nextBudget = work * rate.floatValue() * durDT + lastBudget;
-        //System.out.println(this + " " + rate + " " + durDT + " " + nextBudget + " { " + lastBudget );
-
-        if (nextBudget < RATE_THRESH) {
-            return 0; //wait longer
-        }
-
-        this.lastLeak = now;
+    protected float commit(float nextBudget) {
 
         final float[] budget = {nextBudget};
 
         Random rng = random();
 
-        bag.sample(rng, (Bag.BagCursor<Y>)((v) -> {
+        bag.sample(rng, (Bag.BagCursor<Y>) ((v) -> {
 
             float cost = receive(v);
             budget[0] -= cost;

@@ -13,7 +13,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,9 +68,31 @@ public class Abbreviation/*<S extends Term>*/ {
                 return 1f; //HACK TODO use Cause
             }
 
-            @Override
-            protected float leak(Task b) {
-                return input(b, super.nar) && abbreviate(b, super.nar) ? 1f : 0f;
+           @Override
+           protected boolean preFilter(Task next) {
+               int vol = next.volume();
+               if (vol < volume.lo() || vol > volume.hi())
+                   return false;
+
+               return super.preFilter(next);
+           }
+
+           @Override
+            protected float leak(Task t) {
+               Concept abbreviable  = t.concept(nar, true);
+               if (abbreviable!=null &&
+                       !(abbreviable instanceof PermanentConcept) &&
+                       abbreviable.term().equals(t.term()) && /* identical to its conceptualize */
+                       abbreviable.meta("abbr") == null) {
+
+                   Term abbreviation;
+                   if ((abbreviation = abbreviate(t, abbreviable, super.nar))!=null) {
+                       abbreviable.meta("abbr", abbreviation);
+                       return 1;
+                   }
+               }
+
+               return 0;
             }
 
             //            @Override
@@ -125,36 +146,9 @@ public class Abbreviation/*<S extends Term>*/ {
 //        input(b, bag.bag::put, (Compound) taskTerm, 1f, nar);
 //    }
 
-    private boolean input(Task t, NAR nar) {
-        int vol = t.volume();
-        if (vol < volume.lo())
-            return false;
-
-        if (vol <= volume.hi()) {
-            if (t.concept(nar,true).term().equals(t.term()) /* identical to its conceptualize */) {
-                Concept abbreviable = nar.concept(t);
-                if ((abbreviable != null) &&
-                        !(abbreviable instanceof PermanentConcept) &&
-                                abbreviable.meta("abbr") == null) {
-
-                    //each.accept(new PLink<>(t, b.priElseZero()));
-                    return true;
-                }
-            }
-        } else {
-//            //recursiely try subterms of a temporal or exceedingly large concept
-//            //budget with a proportion of this compound relative to their volume contribution
-//            float subScale = 1f / (1 + t.subs());
-//            t.forEach(x -> {
-//                if (x.subs() > 0)
-//                    input(b, each, ((Compound) x), subScale, nar);
-//            });
-        }
-        return false;
-    }
 
 
-    @NotNull
+
     protected String nextSerialTerm() {
 
         return termPrefix + Integer.toString(currentTermSerial.incrementAndGet(), 36);
@@ -197,7 +191,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
 
 
-    protected boolean abbreviate(Task t, NAR nar) {
+    protected Term abbreviate(Task t, Concept abbreviable, NAR nar) {
 
         Term abbreviated = t.term();
         Concept abbrConcept = t.concept(nar, false);
@@ -220,7 +214,7 @@ public class Abbreviation/*<S extends Term>*/ {
 
             Compound abbreviation = newRelation(abbreviated, aliasTerm);
                 if (abbreviation == null)
-                    return false; //maybe could happen
+                    return null; //maybe could fail
 
                 float pri = t.priElseZero();
                 Task abbreviationTask = Task.tryTask(abbreviation, BELIEF,
@@ -231,7 +225,15 @@ public class Abbreviation/*<S extends Term>*/ {
                                     te, BELIEF, tr,
                                     nar.time(), ETERNAL, ETERNAL,
                                     nar.evidence()
-                            );
+                            ) {
+                                @Override
+                                public void run(NAR nar) {
+                                    super.run(nar);
+                                    @Nullable Concept tc = concept(nar, false);
+                                    if (tc!=null)
+                                        tc.meta("abbr", tc); //prevent the abbreviation from becoming directly abbreviated by a new abbreviation
+                                }
+                            };
 //
 //
                             //ta.meta(Abbreviation.class, new Term[]{abbreviatedTerm, aliasTerm.term()});
@@ -279,12 +281,12 @@ public class Abbreviation/*<S extends Term>*/ {
                 nar.input(abbreviationTask);
                 logger.info("{}", abbreviationTask.term());
 
-                return true;
+                return aliasTerm;
             }
 
         }
 
-        return false;
+        return null;
     }
 
 //        final NLPGen nlpGen = new NLPGen();

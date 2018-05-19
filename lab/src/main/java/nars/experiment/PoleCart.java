@@ -173,12 +173,12 @@ public class PoleCart extends NAgentX {
 //            nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
 
 
-        actionUnipolar($.p("left"), (a) -> {
+        actionUnipolar($.the("L"), (a) -> {
             if (!manualOverride)
                 action = Util.clampBi((float) (action + a));
             return a;
         });
-        actionUnipolar($.p("right"), (a) -> {
+        actionUnipolar($.the("R"), (a) -> {
             if (!manualOverride)
                 action = Util.clampBi((float) (action - a));
             return a;
