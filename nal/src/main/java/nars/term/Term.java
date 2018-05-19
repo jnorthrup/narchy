@@ -831,7 +831,7 @@ public interface Term extends Termed, Comparable<Termed> {
         if (this instanceof The)
             return this;
         else
-            throw new RuntimeException(getClass() + " needs to impl the()");
+            throw new RuntimeException(getClass() + " does not support the()");
     }
 
     default boolean equalsNeg(Term t) {

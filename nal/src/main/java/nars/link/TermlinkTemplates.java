@@ -221,17 +221,17 @@ public class TermlinkTemplates extends FasterList<Term> {
         switch (x.op()) {
 
             case PROD:
-                return 1;
+                return 2;
 
             case SETe:
             case SETi:
-                return 1;
+                return 2;
 
             case DIFFe:
             case DIFFi:
             case SECTi:
             case SECTe:
-                return 1;
+                return 2;
 
 
             case SIM:
@@ -240,7 +240,7 @@ public class TermlinkTemplates extends FasterList<Term> {
 //                        (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits))))
 //                    return 3;
 //                else
-                    return 2;
+                    return 3;
 
             case INH:
                 return 3;

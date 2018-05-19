@@ -26,11 +26,14 @@ public class AnonVector extends TermVector {
     /** assumes the array contains only AnonID instances */
     public AnonVector(Term... s) {
         super(s); //TODO optimize this for certain Anom invariants (ie. no variables etc)
+
+        boolean hasNeg = anyNeg(); //HACK quick filterer
+
         short[] t = subterms = new short[s.length];
         for (int i = 0, sLength = s.length; i < sLength; i++) {
             Term ss = s[i];
             boolean neg;
-            if (ss.op()==NEG) {
+            if (hasNeg && ss.op()==NEG) {
                 ss = ss.unneg();
                 neg = true;
             } else {
@@ -100,22 +103,27 @@ public class AnonVector extends TermVector {
 
     @Override
     public boolean containsRecursively(Term t) {
-        if (contains(t))
-            return true;
-        return (t.op() == NEG) || (anyNeg() && contains(t.neg())); //TODO write absolute matcher in one pass
+
+        return contains(t); //same as recursive since this is flat vector
+
+//        if (contains(t))
+//            return true;
+//        return (t.op() == NEG) || (anyNeg() && contains(t.neg())); //TODO write absolute matcher in one pass
+    }
+
+
+    @Override
+    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
+        return contains(t);
+//        return !impossibleSubTerm(t) && ( anyNeg() ?
+//                super.containsRecursively(t, root, inSubtermsOf) //negation's must be handled as compounds TODO write a faster impl of this
+//                :
+//                containsRecursively(t) );
     }
 
     @Override
     public boolean isTemporal() {
         return false; //this is limited to atomics so there is no temporal possibility
-    }
-
-    @Override
-    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        return !impossibleSubTerm(t) && ( anyNeg() ?
-                super.containsRecursively(t, root, inSubtermsOf) //negation's must be handled as compounds TODO write a faster impl of this
-                :
-                containsRecursively(t) );
     }
 
     private boolean anyNeg() {

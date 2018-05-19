@@ -62,8 +62,7 @@ public class ImplicationTest {
 
         assertContains(oo, "x. %0.0% ((--,x)==>y). y=%1.0;.81%");
         assertContains(oo, "y. %0.0% ((--,x)==>y). x=%1.0;.45%");
-        assertContains(oo, "y. %0.0% (--,((--,x)==>y)). x=%0.0;.82%");
-        assertContains(oo, "y. %0.0% (--,((--,x)==>y)). x=%0.0;.82%");
+        assertContains(oo, "y. %0.0% (--,((--,x)==>y)). x=%0.0;.81%");
         //...
 
     }

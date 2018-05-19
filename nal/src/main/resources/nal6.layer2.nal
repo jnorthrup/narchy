@@ -53,22 +53,16 @@
         //TODO reversals if they are included
 
 
-    Y, (&&,X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,X,A..+), X,Y,strict), (Belief:Deduction)
-    Y, (&&,--X,A..+), neq(X,Y) |- subIfUnifiesAny((&&,--X,A..+), X,Y,strict), (Belief:DeductionN)
     //(Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
         //(Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
       //(P --> Y), (&&,(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(P-->X),A..+), X,Y,strict), (Belief:Deduction)
         //  (P --> Y), (&&,--(P-->X),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(P-->X),A..+), X,Y,strict), (Belief:DeductionN)
 
-    Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
-    Y, ((&&,--X,A..+) ==> Z), neq(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
     //(Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
         //(Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
       //(P --> Y), ((&&,(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
           //(P --> Y), ((&&,--(P-->X),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(P-->X),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
 
-    Y, (Z ==> (&&,X,A..+)), neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,X,A..+)), X,Y,strict), (Belief:Deduction)
-    Y, (Z ==> (&&,--X,A..+)), neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--X,A..+)), X,Y,strict), (Belief:DeductionN)
     //(Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
         //(Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
       //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(P-->X),A..+)), X,Y,strict), (Belief:Deduction)

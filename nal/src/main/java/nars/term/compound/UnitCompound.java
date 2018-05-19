@@ -39,6 +39,11 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
+    public boolean containsNeg(Term x) {
+        return sub().equalsNeg(x);
+    }
+
+    @Override
     public boolean containsRoot(Term x) {
         return sub().equalsRoot(x);
     }

@@ -326,8 +326,5 @@ public class LightCompoundDT implements Compound {
 //    }
 
 
-    @Override
-    public Term the() {
-        return this;
-    }
+
 }

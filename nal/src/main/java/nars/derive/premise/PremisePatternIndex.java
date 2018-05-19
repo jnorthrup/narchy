@@ -264,7 +264,10 @@ public class PremisePatternIndex extends MapConceptIndex {
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
             super((Compound) op.the(subterms.arrayShared()), dt);
         }
-
+        @Override
+        public Term the() {
+            return this;
+        }
         abstract protected static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 
             final Ellipsis ellipsis;

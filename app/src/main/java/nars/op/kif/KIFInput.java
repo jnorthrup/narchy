@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.op.rdfowl.NQuadsRDF.equi;
 
@@ -74,6 +75,26 @@ public class KIFInput {
     private final boolean includeRelatedInternalConcept = true;
     private final boolean includeDoc = false;
     private transient final Map<Term, FnDef> fn = new HashMap();
+
+
+    //usually these quantifiers semantics are inferrable from context.
+    //adding them to the knowledge is at best redundant, at worst it starts
+    //relating things which *should* remain related.
+    //when this is input with varying degrees of confidence
+    //then such statements could just be assigned lower confidence.
+    private static final boolean includePredArgCounts = false;
+    static final Set<Term> predExclusions = Set.of(
+            //Object?
+            $$("UnaryPredicate"),
+            $$("BinaryPredicate"),$$("TernaryPredicate"),
+            $$("QuaternaryPredicate"), $$("QuintaryPredicate"),
+
+            $$("UnaryFunction"), $$("BinaryFunction"), $$("TernaryFunction"),
+            $$("QuaternaryRelation"),
+            $$("QuintaryRelation"),
+            $$("SingleValuedRelation"),$$("TotalValueRelation")
+            //etc
+    );
 
     public KIFInput(InputStream is) throws Exception {
         this.kif = new KIF();
@@ -263,9 +284,12 @@ public class KIFInput {
                     if (args.size() != 2) {
                         throw new RuntimeException("instance expects 2 arguments");
                     } else {
-                        y = //$.inst
-                                INH.the
-                                        (args.get(0), args.get(1));
+                        Term pred = args.get(1);
+                        if (!includePredArgCounts && predExclusions.contains(pred))
+                            return null;
+
+                        Term subj = args.get(0);
+                        y = $.inst(subj, pred);
                         if (y instanceof Bool)
                             return y;
                     }
@@ -283,9 +307,15 @@ public class KIFInput {
                 break;
 
             case "equal":
-                y = $.func("isEqual", args.get(0), args.get(1)); //"equal" is NARchy built-in
+                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
+                    //write in impl form
+                    y = impl(args.get(0), args.get(1), false);
+                } else {
+                    //input as-is
+                }
+                //y = $.func("isEqual", args.get(0), args.get(1)); //"equal" is NARchy built-in
                 //y = $.sim(args.get(0), args.get(1));
-                break;
+                //break;
 
 
             case "forall":
@@ -302,10 +332,10 @@ public class KIFInput {
                     }
                 }
                 if (!missingAParamVar) {
-                    return args.get(1); //skip over the for variables since it is contained in the expression
+                    y = args.get(1); //skip over the for variables since it is contained in the expression
+                } else {
+                    y = impl(args.get(0), args.get(1), true);
                 }
-
-                y = impl(args.get(0), args.get(1), true);
                 break;
             case "exists":
                 y = args.get(1); //skip over the first parameter, since depvar is inherently existential
@@ -317,6 +347,18 @@ public class KIFInput {
                 y = impl(args.get(0), args.get(1), false);
                 break;
 
+
+            case "causes":
+                y = IMPL.the(args.get(0), 1, args.get(1));
+                break;
+
+            case "cooccur":
+            case "during":
+                y = CONJ.the(args.get(0), 0, args.get(1));
+                break;
+            case "meetsTemporally":
+                y = CONJ.the(args.get(0), +1, args.get(1));
+                break;
 
             case "domain":
                 //TODO use the same format as Range, converting quantity > 1 to repeats in an argument list
@@ -349,16 +391,19 @@ public class KIFInput {
                 }
                 break;
 
+            case "partition":
+            case "disjointDecomposition":
+                if (args.size() > 2) {
+                    y = disjoint(args.subList(1, args.size()), args.get(0));
+                }
+                break;
             case "disjointRelation":
             case "disjoint":
             case "inverse":
             case "contraryAttribute":
                 //like n-ary disjoint
                 Variable v0 = $.varDep(1);
-                y = Op.INH.the(
-                        v0,
-                        Op.SECTe.the(args.toArray(Op.EmptyTermArray))
-                ).neg();
+                y = disjoint(args, v0);
 
                 break;
 
@@ -441,6 +486,15 @@ public class KIFInput {
             return Null;
         }
 
+        return y;
+    }
+
+    public Term disjoint(List<Term> args, Term v0) {
+        Term y;
+        y = Op.INH.the(
+                v0,
+                Op.SECTe.the(args.toArray(Op.EmptyTermArray))
+        ).neg();
         return y;
     }
 

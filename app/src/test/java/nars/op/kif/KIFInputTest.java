@@ -46,7 +46,7 @@ class KIFInputTest {
     @Test
     public void testSUMOViaMemory2() {
         String sumo =
-                "Transportation";
+                "Merge";
                 //"People";
                 //"Merge";
                 //"Law";
@@ -109,6 +109,9 @@ class KIFInputTest {
             if (!ii.endsWith(".kif"))
                 return;
 
+            if (ii.startsWith("WorldAirports")) //exclusions
+                return;
+
             String name = ii.substring(ii.lastIndexOf('/')+1, ii.lastIndexOf('.'));
             Term O = Atomic.the("file:///tmp/sumo/" + name + ".kif.nalz");
             Runnable r = n.memory.copy(I, O);
@@ -148,11 +151,11 @@ class KIFInputTest {
             List.of(
                 n.inputTask("$1.0 possesses(I,#everything)!"),
                 n.inputTask("$1.0 uses(#anything, I)."),
-                n.inputTask("$1.0 --[Dead]:I!"),
-                n.inputTask("$1.0 Corporation:I."),
-                n.inputTask("$1.0 Human:I."),
-                n.inputTask("$1.0 (I-->Man)."),
-                n.inputTask("$1.0 hasAward(I, #all)!"),
+                n.inputTask("$1.0 --Dead:{I}!"),
+                //n.inputTask("$1.0 Corporation:I."),
+                n.inputTask("$1.0 Human:{I}."),
+                //n.inputTask("$1.0 (I-->Man)."),
+                //n.inputTask("$1.0 hasAward(I, #all)!"),
                 n.inputTask("$1.0 wants(I, #all)."),
                 n.inputTask("$1.0 needs(I, #all)."),
                 n.inputTask("$1.0 --lacks(I, #anything)!"),

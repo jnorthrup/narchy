@@ -5,6 +5,7 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.exe.Focus;
 import nars.exe.WorkerMultiExec;
 import nars.index.concept.CaffeineIndex;
+import nars.op.ArithmeticIntroduction;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
@@ -64,6 +65,8 @@ public class NARchy extends NARS {
                 , 16, 64);
 
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
+
+        new ArithmeticIntroduction(4, nar);
 
         return nar;
     }

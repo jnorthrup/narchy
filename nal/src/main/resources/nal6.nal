@@ -14,8 +14,6 @@
 
     B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction, Time:TaskPlusBeliefDT)
     B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:InductionPN, Time:TaskPlusBeliefDT)
-        B, (X ==> (&&,C,A..+)), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Abduction, Goal:Deduction)
-        B, (X ==> (&&,--C,A..+)), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:AbductionN, Goal:DeductionN)
 
     B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:InductionN, Time:TaskPlusBeliefDT)
     B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
@@ -24,14 +22,24 @@
     B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
 //            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:Abduction)
 //            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:AbductionN)
-        B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:Induction)
-        B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:DeductionN, Goal:InductionN)
-                B, (--(&&,C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:Deduction, Goal:Induction)
-                B, (--(&&,--C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:DeductionN, Goal:InductionN)
+
+        Y, ((&&,X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y,strict), (Belief:Analogy)
+        Y, ((&&,--X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==>+- Z), X,Y,strict), (Belief:AnalogyN)
+            //Y, (--(&&,X,A..+) ==> X), TODO
+
+        Y, (Z ==> (&&,X,A..+)), neqRCom(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,X,A..+)), X,Y,strict), (Belief:Analogy)
+        Y, (Z ==> (&&,--X,A..+)), neqRCom(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--X,A..+)), X,Y,strict), (Belief:AnalogyN)
+
+        //B, ((&&,C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Deduction, Goal:Induction)
+        //B, ((&&,--C,A..+) ==> X), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:DeductionN, Goal:InductionN)
+                //B, (--(&&,C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:Deduction, Goal:Induction)
+                //B, (--(&&,--C,A..+) ==> X), notImpl(B) |- (--,subIfUnifiesAny((&&,X,A..+),C,B)), (Belief:DeductionN, Goal:InductionN)
 //            B, ((&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:Deduction)
 //            B, ((&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- subIfUnifiesAny(((&&,A..+) ==>+- X),C,B), (Belief:DeductionN)
 //                B, (--(&&,C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==>+- X),C,B)), (Belief:Deduction)
 //                B, (--(&&,--C,A..+) ==> X), neq(B,C), notImpl(B) |- (--,subIfUnifiesAny(((&&,A..+) ==>+- X),C,B)), (Belief:DeductionN)
+//        B, (X ==> (&&,C,A..+)), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:Abduction, Goal:Deduction)
+//        B, (X ==> (&&,--C,A..+)), notImpl(B) |- subIfUnifiesAny((&&,X,A..+),C,B), (Belief:AbductionN, Goal:DeductionN)
 
             //(Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
               //  (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
@@ -93,6 +101,7 @@
                 //(S ==> M), (P ==> M), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
     (P ==> M), (M ==> S) |- (S ==>+- P), (Belief:Exemplification)
+        (P ==> M), (--M ==> S) |- (S ==>+- P), (Belief:ExemplificationN)
 
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
@@ -123,11 +132,9 @@
     //Same as for inheritance
 
 
-    //impl subjects are not truth symmetric
     (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
     (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
 
-    //impl predicates are truth symmetric
     (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized)
     (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
 
@@ -383,6 +390,8 @@
     (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
             //, isNot(X,"#")
 
+   // Y, (&&,X,A..+), neqRCom(X,Y) |- subIfUnifiesAny((&&,X,A..+), X,Y,strict), (Belief:Deduction)
+   // Y, (&&,--X,A..+), neqRCom(X,Y) |- subIfUnifiesAny((&&,--X,A..+), X,Y,strict), (Belief:DeductionN)
 
      //((&&,X,A..+) && Z), Z |- (X &&+- Z), (Belief:StructuralDeduction, Goal:StructuralDeduction)
      //(Z && (&&,X,A..+)), Z |- (Z &&+- X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
