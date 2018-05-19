@@ -125,6 +125,7 @@ public class AnonVector extends TermVector {
 //        return false;
     }
 
+
     @Override
     public Iterator<Term> iterator() {
         return new AnonArrayIterator(subterms);

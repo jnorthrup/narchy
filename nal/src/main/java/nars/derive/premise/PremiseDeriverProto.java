@@ -222,6 +222,15 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
                     break;
+
+                case "eventsOf":
+                    neq(constraints, X, Y);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
+                    //eventPrefilter(pre, Y, taskPattern, beliefPattern); //<- Y is possibly a CONJ though not necesarily
+                    constraints.add(new SubOfConstraint(X, Y, false, false, Events, 1));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, Events, 1));
+                    break;
+
                 case "eventCommon":
                     eventPrefilter(pre, X, taskPattern, beliefPattern);
                     eventPrefilter(pre, Y, taskPattern, beliefPattern);

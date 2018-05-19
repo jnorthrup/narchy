@@ -173,6 +173,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
     boolean containsRoot(Term t);
 
+
     //    default boolean recurseTerms(Predicate<Term> parentsMust, Predicate<Term> whileTrue) {
 //        return recurseTerms(parentsMust, whileTrue, this);
 //    }

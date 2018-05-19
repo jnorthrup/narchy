@@ -43,6 +43,11 @@ public class Anon {
     }
     /** returns true if anything changed */
     public boolean rollback(int uniques) {
+        if (uniques == 0) {
+            clear();
+            return true;
+        }
+
         int max;
         if (uniques < (max = uniques())) {
             for (int i = uniques; i < max; i++)

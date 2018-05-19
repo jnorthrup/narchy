@@ -56,6 +56,6 @@ public class SubOfConstraint extends RelationConstraint {
         }
 
         //if posOrNeg, discover if the negative case is valid.  positive (normal) case is tested after
-        return !containment.test( container, contentP) && (polarityCompare!=0 || !containment.test( container,  contentP.neg()));
+        return !containment.test( container, contentP, polarityCompare==0);
     }
 }

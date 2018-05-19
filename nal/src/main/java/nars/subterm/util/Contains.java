@@ -1,5 +1,6 @@
 package nars.subterm.util;
 
+import nars.subterm.Subterms;
 import nars.term.Term;
 
 import java.util.function.BiPredicate;
@@ -13,6 +14,7 @@ public enum Contains implements BiPredicate<Term, Term> {
 
 
     Subterm() {
+
         @Override
         public boolean test(Term container, Term x) {
             return container.contains(x);
@@ -36,35 +38,88 @@ public enum Contains implements BiPredicate<Term, Term> {
 
     Event() {
         @Override
-        public boolean test(Term container, Term x) {
+        public boolean test(Term container, Term x, boolean testNegAlso) {
             if (container.op() != CONJ)
                 return false;
-            //throw new RuntimeException("this possibility should have been filtered");
 
+            if (!testNegAlso) {
+                return test(container, x);
+            } else {
+                Subterms subContainer = container.subterms();
+                if (subContainer.contains(x) || subContainer.containsNeg(x))
+                    return true;
 
+                //if eventsWhile() returned false means it found it
+                return subContainer.hasAny(CONJ) && !container.eventsWhile((when, what) ->
+                            !(x.equals(what) || x.equalsNeg(what)),
+                    0, true, true, true, 0);
+            }
+        }
+
+        @Override
+        public boolean test(Term container, Term x) {
 
             //simple subterm test, which catches compound sub-sequences that the event iteration is too granular for
             if (container.contains(x))
                 return true;
 
-            final boolean[] found = {false};
-
-            container.eventsWhile((when, what) -> {
-                if (x.equals(what.root())) {
-                    found[0] = true;
-                    return false;
-                }
-                return true;
-            }, 0, true, true, true, 0);
-
-            return found[0];
+            //if eventsWhile() returned false means it found it
+            return container.subterms().hasAny(CONJ) && !container.eventsWhile((when, what) ->
+                    !x.equals(what),
+        0, true, true, true, 0);
 
         }
 
         public float cost() {
             return 2f;
         }
-    };
+    },
+
+    /** conj containment of another conj (events) or event */
+    Events() {
+
+        @Override
+        public boolean test(Term container, Term xx) {
+            if (container.op() != CONJ || container.volume() <= xx.volume())
+                return false;
+
+            //simple subterm test, which catches compound sub-sequences that the event iteration is too granular for
+            final boolean[] result = {true};
+            xx.eventsWhile((when, x) -> {
+
+                if (container.impossibleSubTerm(x)) {
+                    result[0] = false;
+                    return false;
+                }
+
+                if (container.contains(x))
+                    return true; //continue
+
+                //if eventsWhile() returned false means it found it
+                if (!(container.subterms().hasAny(CONJ) && !container.eventsWhile((when2, what) ->
+                                !x.equals(what),
+                        0, true, true, true, 0))) {
+                    result[0] = false;
+                    return false;
+                } else {
+                    return true; //continue
+                }
+
+            }, 0, true, true, true, 0);
+
+            return result[0];
+        }
+
+        public float cost() {
+            return 2f;
+        }
+    }
+    ;
 
     abstract public float cost();
+
+    public boolean test(Term container, Term contentP, boolean testNegAlso) {
+        return test( container, contentP) ||
+                (testNegAlso && test( container,  contentP.neg()));
+    }
 }

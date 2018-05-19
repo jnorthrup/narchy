@@ -216,20 +216,27 @@
 
     (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:AbductionPB)
     (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((--X ==>+- Y) && --(Y ==>+- X)), (Belief:AbductionPBN)
-        //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (X ==>+- Y), (Belief:Abduction)
-        //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (Y ==>+- X), (Belief:Abduction)
-        ((&&,M,A..+) ==> C), ((&&,A..+) ==> C)          |- M, (Belief:AbductionPB)
-            (--(&&,M,A..+) ==> C), (--(&&,A..+) ==> C)  |- M, (Belief:AbductionPB)
-        ((&&,M,A) ==> C),    (A ==> C)                  |- M, (Belief:AbductionPB)
-            (--(&&,M,A) ==> C),    (--A ==> C)          |- M, (Belief:AbductionPB)
+    
+
+    (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
+        (--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
+                //((&&,M,A..+) ==> Y), ((&&,A..+) ==> Y)          |- M, (Belief:AbductionPB)
+                //((&&,M,A) ==> Y),    (A ==> Y)                  |- M, (Belief:AbductionPB)
+                    //(--(&&,M,A..+) ==> Y), (--(&&,A..+) ==> Y)  |- M, (Belief:AbductionPB)
+                    //(--(&&,M,A) ==> Y),    (--A ==> Y)          |- M, (Belief:AbductionPB)
+
+            //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (X ==>+- Y), (Belief:Abduction)
+            //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (Y ==>+- X), (Belief:Abduction)
+
+    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:InductionPB)
+        //    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
+        //    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
+        //        (--(&&,X,A..+) ==> C), (--(&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
+        //        (--(&&,X,A..+) ==> C), (--(&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
+        //        //(--(&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)  ???
+        //        //(--(&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)  ???
 
 
-    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
-        (--(&&,X,A..+) ==> C), (--(&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
-        //(--(&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)  ???
-    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
-        (--(&&,X,A..+) ==> C), (--(&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
-        //(--(&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)  ???
 
     (X ==> C), (B==>M), eventOfPosOrNeg(X,B) |- ((conjWithoutPosOrNeg(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //(X ==> C), (B==>M), eventOfNeg(X,B) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
@@ -371,9 +378,9 @@
 
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
-     (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
+    (&&,X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
             //, isNot(X,"#")
-     (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+    (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
             //, isNot(X,"#")
 
 

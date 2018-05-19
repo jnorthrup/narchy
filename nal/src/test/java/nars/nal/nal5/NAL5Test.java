@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 200;
+    final int cycles = 300;
 
     @Override
     protected NAR nar() {
@@ -133,16 +133,16 @@ public class NAL5Test extends NALTest {
 
         test
                 
-                .believe("(b)")
-                .believe("((b)==>(c))", 1, 0.9f)
-                .mustBelieve(cycles, "(c)", 1.00f, 0.81f);
+                .believe("b")
+                .believe("(b==>c)", 1, 0.9f)
+                .mustBelieve(cycles, "c", 1.00f, 0.81f);
     }
 //    @Test public void testImplBeliefNegPos() {
 //        //B, (A ==> C), belief(positive) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
 //        test()
-//                .believe("(--,(b))")
-//                .believe("((b)==>(c))",1,0.9f)
-//                .mustNotOutput(cycles,"(c)",BELIEF);
+//                .believe("(--,b)")
+//                .believe("(b==>c)",1,0.9f)
+//                .mustNotOutput(cycles,"c",BELIEF);
 //    }
 
     @Test
@@ -150,9 +150,9 @@ public class NAL5Test extends NALTest {
         //B, (A ==> C), belief(negative) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
 
         test
-                .believe("(b)")
-                .believe("((b) ==> --(c))", 1, 0.9f)
-                .mustBelieve(cycles, "(c)", 0.00f, 0.81f);
+                .believe("b")
+                .believe("(b ==> --c)", 1, 0.9f)
+                .mustBelieve(cycles, "c", 0.00f, 0.81f);
     }
 
     @Test
@@ -214,8 +214,8 @@ public class NAL5Test extends NALTest {
                 .believe("(&&, x, y, z)")
                 .believe("x", 0.80f, 0.9f)
                 .mustBelieve(cycles, "(y && z)", 0.80f,
-                        //0.58f);
-                        0.43f);
+                        0.58f);
+                        //0.43f);
     }
 
     @Test

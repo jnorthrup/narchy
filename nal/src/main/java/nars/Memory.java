@@ -97,14 +97,45 @@ public class Memory {
 
     final static Atomic stdin = Atomic.the("stdin");
     final static Atomic stdout = Atomic.the("stdout");
-
-
+    static final TasksToBytes Tasks_To_Binary = new TasksToBytes("nal") {
+        @Override
+        public void accept(Stream<Task> tt, OutputStream out) {
+            tt.forEach(t -> {
+                try {
+                    out.write(IO.taskToBytes(t));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    };
+    /**
+     * bzip2 compressed
+     * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
+     */
+    static final TasksToBytes Tasks_To_BinaryZipped = new TasksToBytes("nalz") {
+        @Override
+        public void accept(Stream<Task> tt, OutputStream out) {
+            try (OutputStream o = new BZip2OutputStream(out)) {
+                DynBytes d = new DynBytes(256);
+                tt.forEach(t -> {
+                    try {
+                        IO.bytes(t, d).appendTo(o);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (ArithmeticException f) {
+                return; //TODO check, but probably was empty (no tasks)
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    };
     final Logger logger = LoggerFactory.getLogger(Memory.class);
     final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
     final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
-
-
     final MemoryResolver StdIOResolver = new MemoryResolver() {
 
         @Override
@@ -199,22 +230,56 @@ public class Memory {
         public Stream<Term> contents(Term x, Memory m) {
             Stream<URI> uri = termToURIs(x);
             if (uri != null) {
-                return uri.flatMap(u -> {
-                    Path p = Paths.get(u); // Path.of(u);
-                    if (Files.isDirectory(p)) {
-                        try(Stream<Path> ff = Files.list(p)) {
-                            return ff.map(pp -> uriToTerm(pp.toUri()));
-                        } catch (IOException e) {
-                            logger.warn("{} {}", u, e);
-                        }
+                return uri.map(Path::of).filter(p -> Files.isDirectory(p)).flatMap(p -> {
+                    try {
+                        return Files.list(p).map(pp -> uriToTerm(pp.toUri()));
+                    } catch (IOException e) {
+                        logger.warn("{} {}", p, e);
+                        return Stream.empty();
                     }
-
-                    return Stream.empty();
                 });
             }
             return null;
         }
     };
+    /**
+     * bzip2 compressed
+     * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
+     */
+    final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
+
+
+        @Override
+        public Stream<Task> apply(InputStream ii) {
+            return Streams.stream(() -> new Iterator<Task>() {
+
+                final DataInputStream i = new DataInputStream(new BZip2InputStream(ii));
+                Task next = null;
+
+
+                @Override
+                public boolean hasNext() {
+                    try {
+                        next = IO.readTask(i);
+                        return true;
+                    } catch (EOFException f) {
+                        next = null;
+                        return false;
+                    } catch (IOException e) {
+                        next = null;
+                        logger.warn("{} {}", ii, e);
+                        return false;
+                    }
+                }
+
+                @Override
+                public Task next() {
+                    return next;
+                }
+            });
+        }
+    };
+
     public Memory() {
         resolvers.add(URIResolver);
         resolvers.add(StdIOResolver);
@@ -312,8 +377,11 @@ public class Memory {
         return copy(i, o, null);
     }
 
-    /** returns a runnable copy procedure for the resolved readers and writers */
-    @Nullable public Runnable copy(Term i, Term o, @Nullable Function<Stream<Task>, Stream<Task>> filter) {
+    /**
+     * returns a runnable copy procedure for the resolved readers and writers
+     */
+    @Nullable
+    public Runnable copy(Term i, Term o, @Nullable Function<Stream<Task>, Stream<Task>> filter) {
         Set<Supplier<Stream<Task>>> readers = readers(i).collect(toSet());
         if (!readers.isEmpty()) {
             Set<Consumer<Stream<Task>>> writers = writers(o).collect(toSet());
@@ -342,7 +410,6 @@ public class Memory {
         return null;
     }
 
-
     public interface MemoryResolver {
         @Nullable
         Stream<Supplier<Stream<Task>>> readers(Term x, Memory m);
@@ -359,7 +426,9 @@ public class Memory {
         }
 
 
-        /** entry points into memory.  none by default */
+        /**
+         * entry points into memory.  none by default
+         */
         default Stream<Term> roots(Memory m) {
             return Stream.empty();
         }
@@ -410,81 +479,6 @@ public class Memory {
             this.extensions = extension;
         }
     }
-
-    static final TasksToBytes Tasks_To_Binary = new TasksToBytes("nal") {
-        @Override
-        public void accept(Stream<Task> tt, OutputStream out) {
-            tt.forEach(t -> {
-                try {
-                    out.write(IO.taskToBytes(t));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-    };
-
-    /**
-     * bzip2 compressed
-     * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
-     */
-    static final TasksToBytes Tasks_To_BinaryZipped = new TasksToBytes("nalz") {
-        @Override
-        public void accept(Stream<Task> tt, OutputStream out) {
-            try(OutputStream o = new BZip2OutputStream(out)) {
-                DynBytes d = new DynBytes(256);
-                tt.forEach(t -> {
-                    try {
-                        IO.bytes(t, d).appendTo(o);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } catch (ArithmeticException f) {
-                return; //TODO check, but probably was empty (no tasks)
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    /**
-     * bzip2 compressed
-     * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
-     */
-    final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
-
-
-        @Override
-        public Stream<Task> apply(InputStream ii) {
-            return Streams.stream(()-> new Iterator<Task>() {
-
-                final DataInputStream i = new DataInputStream(new BZip2InputStream(ii));
-                Task next = null;
-
-
-                @Override
-                public boolean hasNext() {
-                    try {
-                        next = IO.readTask(i);
-                        return true;
-                    } catch (EOFException f) {
-                        next = null;
-                        return false;
-                    } catch (IOException e) {
-                        next = null;
-                        logger.warn("{} {}", ii, e);
-                        return false;
-                    }
-                }
-
-                @Override
-                public Task next() {
-                    return next;
-                }
-            });
-        }
-    };
 
     /*
     TODO lucene user resolver:

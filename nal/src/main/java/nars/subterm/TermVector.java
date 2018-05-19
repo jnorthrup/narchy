@@ -7,6 +7,8 @@ import nars.term.Term;
 
 import java.util.Iterator;
 
+import static nars.Op.NEG;
+
 /**
  * what differentiates TermVector from TermContainer is that
  * a TermVector specifically for subterms.  while both
@@ -34,6 +36,9 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
         this.normalized = Subterms.super.isNormalized();
     }
 
+    @Override public boolean containsNeg(Term x) {
+        return x.op()==NEG ? contains(x.unneg()) : (hasAny(NEG) && contains(x.neg()));
+    }
 
     protected void equivalentTo(TermVector that) {
         //EQUIVALENCE---

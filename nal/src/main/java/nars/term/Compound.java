@@ -350,6 +350,11 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
+    default boolean containsNeg(Term x) {
+        return subterms().containsNeg(x);
+    }
+
+    @Override
     default boolean containsRoot(Term x) {
         if (!impossibleSubTerm(x)) {
             Term xr = x.root();

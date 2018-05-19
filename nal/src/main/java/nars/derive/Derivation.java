@@ -74,9 +74,10 @@ public class Derivation extends PreDerivation {
     public NAR nar;
 
 
+    final static int ANON_INITIAL_CAPACITY = 16;
     public final Anon anon =
-            //new Anon(ANON_CAPACITY);
-            new CachedAnon(16, 16*1024);
+            //new Anon(ANON_INITIAL_CAPACITY);
+            new CachedAnon(ANON_INITIAL_CAPACITY, 16*1024); //<-- needs TESTED
 
     /** temporary un-transform map */
     public Map<Term,Term> untransform = new UnifiedMap<>();
@@ -242,6 +243,7 @@ public class Derivation extends PreDerivation {
 //        m.put(TaskTerm, taskTerm);
 //        m.put(BeliefTerm, beliefTerm);
         this.derivationFunctors = Maps.immutable.ofMap(m);
+
     }
 
     @Override
@@ -264,6 +266,7 @@ public class Derivation extends PreDerivation {
 
 
         if (this._task!=null && this._task.term().equals(_task.term())) {
+
 
             //same task; just rollback anon to the point where a belief's uniques can be added
 
@@ -569,6 +572,7 @@ public class Derivation extends PreDerivation {
     @Override
     public void clear() {
         anon.clear();
+        taskUniques = 0;
         premiseBuffer.clear();
         derivedTasks.clear();
         untransform.clear();

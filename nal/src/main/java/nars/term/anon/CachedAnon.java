@@ -23,6 +23,10 @@ public class CachedAnon extends Anon {
 
     @Override
     public boolean rollback(int uniques) {
+        if (uniques == 0) {
+            clear();
+            return true;
+        }
         if (super.rollback(uniques)) {
             externCache.clear(); //must clear externCache if uniques are removed;
             //TODO technically we can keep externCache entries that dont involve the removed uniques
