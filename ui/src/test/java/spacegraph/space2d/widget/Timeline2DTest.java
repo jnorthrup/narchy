@@ -11,11 +11,11 @@ public class Timeline2DTest {
     public static void main(String[] args) {
 
         Timeline2D.SimpleTimelineModel dummyModel = new Timeline2D.SimpleTimelineModel();
-        int events = 50;
+        int events = 30;
         int range = 50;
         for (int i = 0; i < events; i++) {
             long start = (long) (Math.random()* range);
-            long length = (long) (Math.random()*10);
+            long length = (long) (Math.random()*10)+1;
             dummyModel.add(new Timeline2D.SimpleEvent("x" + i, start, start+length));
         }
 

@@ -1,21 +1,23 @@
 package spacegraph.space2d.widget;
 
 import com.google.common.collect.Iterables;
-import jcog.Util;
+import jcog.list.FasterList;
 import jcog.math.Longerval;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.PeekableIntIterator;
+import org.roaringbitmap.RoaringBitmap;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Clipped;
-import spacegraph.space2d.container.ForceDirected2D;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.windo.Widget;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Consumer;
 
@@ -33,20 +35,62 @@ public class Timeline2D<E> extends Graph2D<E> {
         nodeBuilder(view);
 
         //simple hack to prevent event nodes from overlapping.  it could be better
-        ForceDirected2D<E> l = new ForceDirected2D<>() {
-            @Override
-            protected void apply(NodeVis<E> n, RectFloat2D target) {
+//        Graph2DLayout<E> l = new ForceDirected2D<E>() {
+//            {
+//                repelSpeed.set(0.25f);
+//            }
+//            @Override
+//            protected void apply(NodeVis<E> n, RectFloat2D target) {
+//
+//                float h = Timeline2D.this.h()/8; //TODO parameterizable func
+//                float y = Util.clamp(target.cy(), Timeline2D.this.top() + h/2, Timeline2D.this.bottom()-h/2);
+//                long[] r = model.range(n.id);
+//                float x1 = x(r[0]);
+//                float x2 = x(r[1]+1);
+//                n.pos(x1, y - h/2, x2, y + h/2);
+//            }
+//        };
 
-                float h = Timeline2D.this.h()/8; //TODO parameterizable func
-                float y = Util.clamp(target.cy(), Timeline2D.this.top() + h/2, Timeline2D.this.bottom()-h/2);
-                long[] r = model.range(n.id);
-                float x1 = x(r[0]);
-                float x2 = x(r[1]+1);
-                n.pos(x1, y - h/2, x2, y + h/2);
-            }
-        };
-        l.repelSpeed.set(0.25f);
-        layout(l);
+//        Graph2DLayout<E> l = new Dyn2DLayout<>() {
+//
+//            @Override
+//            public void initialize(Graph2D<E> g, NodeVis<E> n) {
+//                long[] r = model.range(n.id);
+//                float x1 = x(r[0]);
+//                float x2 = x(r[1]+1);
+//                float cy = (float) (g.y() + (Math.random() * g.h()));
+//                float h= g.h()/8;
+//                n.pos(x1, cy-h/2, x2, cy+h/2);
+//            }
+//
+//            @Override
+//            protected void apply(NodeVis<E> n, RectFloat2D target) {
+//                float h = Timeline2D.this.h()/8;
+//
+//                //System.out.println(n + " " + target);
+//
+//                float y = Util.clamp(Util.lerp(0.75f,
+//                        n.cy(),
+//                        //target.cy()
+//                        //Util.clamp(target.cy(), 0 + h/2, Timeline2D.this.h() - h/2)
+//                        target.cy() ),
+//
+//                    //    Timeline2D.this.top(), Timeline2D.this.bottom())
+//                    h/2, Timeline2D.this.h() - h/2)
+//
+//                        + 0//  (float)(Math.random()-0.5f)*h/10f
+//                ;
+//
+//                long[] r = model.range(n.id);
+//                float x1 = x(r[0]);
+//                float x2 = x(r[1]+1);
+//
+//                n.pos(x1, Timeline2D.this.top() + y - h/2, x2, Timeline2D.this.top() + y + h/2);
+//
+//                //super.apply(n, target);
+//            }
+//        };
+        layout(new DefaultTimelineLayout());
     }
 
     public Surface withControls() {
@@ -60,7 +104,10 @@ public class Timeline2D<E> extends Graph2D<E> {
             @Override
             public boolean prePaint(SurfaceRender r) {
                 float p = (float) this.value();
-                viewShift(((p - 0.5f) * 2) * (tEnd-tStart)*0.1f);
+                float v = (p - 0.5f) * 2;
+                if (Math.abs(v) > 0.05f) {
+                    viewShift(v * (tEnd - tStart) * 0.1f);
+                }
                 return super.prePaint(r);
             }
         }.type(SliderModel.KnobHoriz);
@@ -136,6 +183,24 @@ public class Timeline2D<E> extends Graph2D<E> {
             return Longerval.intersectLength(r[0], r[1], start, end)>=0;
         }
 
+        default int compareStart(X x, X y) {
+            long rx = range(x)[0];
+            long ry = range(y)[0];
+            return Long.compare(rx,ry);
+        }
+
+        default int compareDur(X x, X y) {
+            long[] rx = range(x);
+            long[] ry = range(y);
+            return Long.compare(rx[1]-rx[0],ry[1]-ry[0]);
+        }
+
+        default long intersectLength(X x, X y) {
+            long[] rx = range(x);
+            long[] ry = range(y);
+            return Longerval.intersectLength(rx[0], rx[1], ry[0], ry[1]);
+        }
+
     }
 
     public static class SimpleEvent implements Comparable<SimpleEvent> {
@@ -182,4 +247,78 @@ public class Timeline2D<E> extends Graph2D<E> {
     }
 
 
+    private class DefaultTimelineLayout implements Graph2DLayout<E> {
+
+        @Override
+        public void layout(Graph2D<E> g, int dtMS) {
+            FasterList<NodeVis<E>> byDuration = new FasterList<>();
+
+            g.forEachValue(n -> {
+                if (n.showing()) {
+                    //set widths
+                    byDuration.add(n);
+                }
+            });
+            byDuration.sortThis((x,y)->{
+                if (x == y) return 0;
+                int wc = model.compareDur(x.id, y.id);
+                if (wc!=0)
+                    return wc;
+                int xc = model.compareStart(x.id, y.id);
+                if (xc!=0)
+                    return xc;
+                return ((Comparable)x.id).compareTo(y.id); //Integer.compare(x.hashCode(), y.hashCode());
+            });
+            if (byDuration.isEmpty())
+                return;
+
+            List<RoaringBitmap> lanes = new FasterList();
+            RoaringBitmap l0 = new RoaringBitmap();
+            l0.add(0); //largest event assigned to lane 0
+            lanes.add(l0);
+
+            for (int i = 1, byDurationSize = byDuration.size(); i < byDurationSize; i++) {
+                NodeVis<E> in = byDuration.get(i);
+                RectFloat2D ib = in.bounds;
+                //find lowest lane that doesnt intersect
+                int lane = -1;
+                nextLane: for (int l = 0, lanesSize = lanes.size(); l < lanesSize; l++) {
+                    RoaringBitmap r = lanes.get(l);
+                    PeekableIntIterator rr = r.getIntIterator();
+                    boolean collision = false;
+                    while (rr.hasNext()) {
+                        int j = rr.next();
+                        if (model.intersectLength(byDuration.get(j).id,in.id)>0) {
+                            collision = true;
+                            break ; //next lane
+                        }
+                    }
+                    if (!collision) {
+                        lane = l;
+                        r.add(i);
+                        break;
+                    }
+                }
+                if (lane == -1) {
+                    RoaringBitmap newLane = new RoaringBitmap();
+                    newLane.add(i);
+                    lanes.add(newLane);
+                }
+            }
+
+            int nlanes = lanes.size();
+            float laneHeight = g.h()/nlanes;
+            float Y = g.y();
+            for (int i = 0; i < nlanes; i++) {
+                RoaringBitmap ri = lanes.get(i);
+                PeekableIntIterator ii = ri.getIntIterator();
+                while (ii.hasNext()) {
+                    int j =  ii.next();
+                    NodeVis<E> jj = byDuration.get(j);
+                    long[] w = model.range(jj.id);
+                    jj.pos(x(w[0]), Y+laneHeight*i, x(w[1]), Y+laneHeight*(i+1));
+                }
+            }
+        }
+    }
 }

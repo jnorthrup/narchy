@@ -9,8 +9,10 @@ import jcog.tree.rtree.rect.RectFloat2D;
  */
 public class MovingRectFloat2D {
 
-    float x, y;
-    float w, h;
+    public float x;
+    public float y;
+    public float w;
+    public float h;
     float rad;
 
     public MovingRectFloat2D() {
@@ -30,7 +32,11 @@ public class MovingRectFloat2D {
         return rad;
     }
 
-
+    public MovingRectFloat2D pos(float dx, float dy) {
+        this.x = dx + w/2;
+        this.y = dy + h/2;
+        return this;
+    }
     public MovingRectFloat2D move(float dx, float dy) {
         this.x += dx;
         this.y += dy;

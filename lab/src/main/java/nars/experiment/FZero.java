@@ -145,9 +145,9 @@ public class FZero extends NAgentX {
         Scalar dVelY = senseNumberDifference($.inh(id,$.p("vel", "y")), () -> (float) fz.vehicleMetrics[0][8]);
         Scalar dAccel = senseNumberDifference($.inh(id,"accel"), () -> (float) fz.vehicleMetrics[0][6]);//.resolution(0.02f);
         Scalar dAngVel = senseNumberDifference($.func("ang", id, $.the("vel")), () -> (float) fz.playerAngle);//.resolution(0.02f);
-        DemultiplexedScalar ang = senseNumber(angle -> $.func("ang", id, $.the(angle) ) /*SETe.the($.the(angle)))*/, () ->
+        DemultiplexedScalar ang = senseNumber(angle -> $.inh($.func("ang", id ), $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                4, //4 cardinal directions
+                9, //4 cardinal directions
                 //DigitizedScalar.FuzzyNeedle
                 DigitizedScalar.Needle
                 //DigitizedScalar.FuzzyBinary

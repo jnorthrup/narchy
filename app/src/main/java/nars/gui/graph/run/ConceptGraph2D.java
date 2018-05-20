@@ -72,13 +72,14 @@ public class ConceptGraph2D extends Graph2D<Concept> {
            );
            updateNode(nn);
         });
-        this.layout(new ForceDirected2D<>() {
+//        this.layout(new Dyn2DLayout())
+        this.layout(new ForceDirected2D<Concept>() {
             @Override
             public void layout(Graph2D<Concept> g, int dtMS) {
 
                 AUTOSCALE =
                         controls.nodeScale.floatValue() *
-                        (float) (Math.min(bounds.w, bounds.h)
+                        (float) (Math.min(g.bounds.w, g.bounds.h)
                         / Math.sqrt(1f + nodes()));
 
                 g.forEachValue(nn -> {

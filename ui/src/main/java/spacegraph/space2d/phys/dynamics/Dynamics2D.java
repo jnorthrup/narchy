@@ -136,6 +136,9 @@ public class Dynamics2D {
     private final Sweep backup1 = new Sweep();
     private final Sweep backup2 = new Sweep();
 
+    public Dynamics2D() {
+        this(new v2());
+    }
 
     /**
      * Construct a world object.
@@ -575,9 +578,7 @@ public class Dynamics2D {
         //        invokeLater(()->{
 
 
-        Runnable next;
-        while ((next = queue.poll()) != null)
-            next.run();
+        sync();
 
         invoke(() -> {
 
@@ -660,6 +661,12 @@ public class Dynamics2D {
 
 
 
+    }
+
+    public void sync() {
+        Runnable next;
+        while ((next = queue.poll()) != null)
+            next.run();
     }
 
     /**

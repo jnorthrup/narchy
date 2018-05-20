@@ -1,10 +1,7 @@
 package spacegraph.space2d.container;
 
 import jcog.Util;
-import jcog.data.pool.DequePool;
-import jcog.list.FasterList;
 import jcog.math.FloatRange;
-import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
@@ -14,18 +11,14 @@ import java.util.List;
 
 import static spacegraph.util.math.v3.v;
 
-public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
-
-    final List<Graph2D.NodeVis<X>> nodes = new FasterList();
-    final List<MovingRectFloat2D> bounds = new FasterList();
-    final DequePool<MovingRectFloat2D> boundsPool = new DequePool<MovingRectFloat2D>(128) {
-        @Override
-        public MovingRectFloat2D create() {
-            return new MovingRectFloat2D();
-        }
-    };
+public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
 
     int iterations = 1;
+
+    @Override
+    protected MovingRectFloat2D newContainer() {
+        return new MovingRectFloat2D();
+    }
 
     public final FloatRange repelSpeed =new FloatRange(0.1f, 0, 0.2f);
 
@@ -35,30 +28,8 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
 
     float minAttractDistRelativeToRadii;
 
-    @Override
-    public void layout(Graph2D<X> g, int dtMS) {
 
-
-        nodes.clear();
-        boundsPool.take(bounds);
-
-        float ox = g.bounds.x;
-        float oy = g.bounds.y;
-        float recenterX =  + ox + g.bounds.w/2,
-                recenterY = + oy + g.bounds.h/2;
-
-        g.forEachValue(v -> {
-            if (v.visible() && !v.pinned()) {
-                nodes.add(v);
-                MovingRectFloat2D m = boundsPool.get();
-                m.set(v.bounds);
-                m.move(-recenterX, -recenterY, 1f); //shift to relative coordinates
-                bounds.add(m);
-            }
-        });
-        int n = nodes.size();
-        if (n == 0)
-            return;
+    @Override protected void layoutDynamic(Graph2D<X> g) {
 
         maxRepelDist = g.radius();
 
@@ -67,6 +38,7 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
         int iterations = this.iterations;
         float repelSpeed = this.repelSpeed.floatValue()/iterations;
         float attractSpeed = this.attractSpeed.floatValue()/iterations;
+        int n = bounds.size();
         for (int ii = 0; ii < iterations; ii++) {
             for (int x = 0; x < n; x++) {
                 MovingRectFloat2D bx = bounds.get(x);
@@ -91,17 +63,10 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
             center.add(bx.cx(), bx.cy());
         }
         center.scaled(1f/n); //average
-        float tx = Util.lerp(0.5f, recenterX - center.x, recenterX);
-        float ty = Util.lerp(0.5f, recenterY - center.y, recenterY);
-        for (int i = 0; i < n; i++) {
-            apply(nodes.get(i), bounds.get(i).get(tx, ty));
-        }
+        tx = Util.lerp(0.5f, recenterX - center.x, recenterX);
+        ty = Util.lerp(0.5f, recenterY - center.y, recenterY);
     }
 
-    /** override this to control the final position the layout specifies */
-    protected void apply(Graph2D.NodeVis<X> n, RectFloat2D target) {
-        n.pos(target);
-    }
 
     /** HACK this reads the positions from the nodevis not the rectangle */
     private void attract(Graph2D.NodeVis<X> from, MovingRectFloat2D b, float attractSpeed) {
