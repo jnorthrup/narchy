@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.pool.DequePool;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.space2d.widget.Graph2D;
 import spacegraph.util.MovingRectFloat2D;
 import spacegraph.util.math.Tuple2f;
@@ -93,11 +94,13 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
         float tx = Util.lerp(0.5f, recenterX - center.x, recenterX);
         float ty = Util.lerp(0.5f, recenterY - center.y, recenterY);
         for (int i = 0; i < n; i++) {
-            //if (!b.isZeroMotion()) {
-                //nodes.get(i).pos(b.get(maxMovement, limit));
-            nodes.get(i).pos(bounds.get(i).get(tx, ty));
-            //}
+            apply(nodes.get(i), bounds.get(i).get(tx, ty));
         }
+    }
+
+    /** override this to control the final position the layout specifies */
+    protected void apply(Graph2D.NodeVis<X> n, RectFloat2D target) {
+        n.pos(target);
     }
 
     /** HACK this reads the positions from the nodevis not the rectangle */
@@ -166,10 +169,10 @@ public class ForceDirected2D<X> implements Graph2D.Graph2DLayout<X> {
 
         v2 v = v(delta.x * s, delta.y * s);
 
-        double baRad = br / abr;
+        double baRad = 1; //br / abr;
         a.move(v.x * baRad, v.y * baRad);
-        double abRad = -ar / abr;
-        b.move(v.x * abRad, v.y * abRad);
+        double abRad = 1; //ar / abr;
+        b.move(v.x * -abRad, v.y * abRad);
 
     }
 

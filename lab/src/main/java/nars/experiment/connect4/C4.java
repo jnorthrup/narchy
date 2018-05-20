@@ -23,8 +23,6 @@ import spacegraph.space2d.container.Splitting;
 import javax.swing.*;
 import java.util.List;
 
-import static jcog.Texts.n2;
-
 /** connect-4 experiments */
 public class C4 {
 
@@ -36,9 +34,9 @@ public class C4 {
 
         public NARPlayer(int whoAmI, ConnectFour.ConnectFourState game) {
             NAR n = NARchy.core();
-            ((RealTime)n.time).durFPS(20f);
+            ((RealTime)n.time).durFPS(10f);
 
-            n.beliefPriDefault.set(0.25f);
+            n.beliefPriDefault.set(0.5f);
             n.goalPriDefault.set(0.75f);
             this.n = n;
 
@@ -88,12 +86,12 @@ public class C4 {
 
                 //action questions and prompt goal
                 for (int i =0; i < play.game.cols; i++) {
-                    for (boolean c : new boolean[] { true, false }) {
+                    for (boolean c : new boolean[] { true/*, false */}) {
                         n.input(dropConcept(i, c) + "@ |..+500ms");
                     }
                 }
 
-                n.input("(drop(c,#x,#y) &| --drop(c,#w,#f))! |..+500ms");
+                //n.input("(drop(c,#x,#y) &| --drop(c,#w,#f))! |..+500ms");
                 //n.input("drop(c,#x,true)! |"); //|..+1sec");
 
             } catch (Exception e) {
@@ -106,24 +104,19 @@ public class C4 {
             play.moving("red", who==1);
             play.moving("yel", who==2);
 
-            //n.run(1);
-
             play.see();
+
+            inputAssumptions();
 
             if (play.player == who) {
 
-                inputAssumptions();
 
                 //curiosity
                 try {
-                    String f = n2(n.random().nextFloat());
-                    n.input(dropConcept(n.random().nextInt(play.game.cols), true) + "! |..+1sec %" + f + ";0.02%");
+                    n.input(dropConcept(n.random().nextInt(play.game.cols), true) + "! |..+1sec %1.0;0.02%");
                 } catch (Narsese.NarseseException e) {
                     e.printStackTrace();
                 }
-
-                Util.sleep(600); //think
-
 
                 int triesRemain = 7;
                 IntHashSet tried = new IntHashSet();
@@ -156,18 +149,6 @@ public class C4 {
 
                 //force
                 while (play.game.moving()==play.player && !play.game.drop(randomCol(), play.player)) { }
-
-            } else {
-
-//                //dont attempt to move while the other player is, also clearing all choices so previous goal doesnt get repeated by default
-//                for (int i = 0; i < play.game.cols; i++) {
-//                    try {
-//                        n.input(dropConcept(i, true) +
-//                                "! | %0.25;0.05%");
-//                    } catch (Narsese.NarseseException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
 
             }
         }
@@ -214,6 +195,7 @@ public class C4 {
 
         while (true) {
 
+
             int who = game.moving();
 //            int invalids = game.invalidCount();
 
@@ -233,14 +215,24 @@ public class C4 {
 
             if (winner!=0) {
 
+                int loser = winner==1 ? 2 : 1;
+
                 System.err.println("winner: " + winner);
 
                 //reinforcement repeated
                 for (int i = 0; i < 10; i++) {
                     A.play.whoWon();
                     B.play.whoWon();
+                    //HACK
+                    try {
+                        A.n.input("--whoWon(c," + loser + "). |");
+                        B.n.input("--whoWon(c," + loser + "). |");
+                    } catch (Narsese.NarseseException e) {
+                        e.printStackTrace();
+                    }
                     Util.sleep(100);
                 }
+
 
                 A.play.clear();
                 B.play.clear();

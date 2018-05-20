@@ -105,11 +105,11 @@ public class FZero extends NAgentX {
 //                .resolution(0.05f);
 
 
-        initToggle();
+        //initToggle();
         //initTankContinuous();
         //actionSwitch();
         //initTankDiscrete();
-        //initBipolar(true);
+        initBipolar(false);
         //initBipolar(true);
 
         //new Implier(1, this, new float[] { 0, 1 });

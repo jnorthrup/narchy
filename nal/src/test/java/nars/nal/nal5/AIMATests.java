@@ -44,13 +44,13 @@ public class AIMATests {
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.04f);
+        n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
 //        n.activationRate.set(0.1f);
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.7f);
 //        n.beliefPriDefault.set(0.7f);
-        n.termVolumeMax.set(22);
+        n.termVolumeMax.set(24);
         //n.conceptActivation.set(0.5f);
 
 //        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(2));
@@ -91,18 +91,18 @@ public class AIMATests {
 
 //        n.run(200);
 //        n.clear();
-//        n.question($.$$(
-//                "Criminal(?x)"
+        n.question($.$$(
+                "Criminal(?x)"
 //        ));
-        n.question($.$(
-                "Criminal:?x"
+//        n.question($.$(
+//                "Criminal:?x"
 
         ), ETERNAL, (q,a)->{
             System.out.println(a);
         });
         //
         //n.log();
-        n.run(3000);
+        n.run(5000);
 //        n.concept($.$("Criminal")).print();
 //        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {

@@ -410,7 +410,7 @@ public class ConnectFour {
                     for (int r = 0; r < game.rows; r++)
                         for (int c = 0; c < game.cols; c++) {
                             int x = game.get(r, c);
-                            board(r, c, "blank", 0==x);
+                            board(r, c, "emt", 0==x);
                             board(r, c, "red", 1==x);
                             board(r, c, "yel", 2==x);
                         }
@@ -433,7 +433,9 @@ public class ConnectFour {
             protected void tryDrop(NAR nar, int which) {
                 try {
                     nar.input(dropConcept(which, nar, true, game, player) +
-                            "! |..+100ms");
+                            "! |"
+                            //"! |..+100ms"
+                    );
                 } catch (Narsese.NarseseException e) {
                     e.printStackTrace();
                 }

@@ -1,27 +1,80 @@
 package spacegraph.space2d.widget;
 
 import com.google.common.collect.Iterables;
+import jcog.Util;
 import jcog.math.Longerval;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.grid.MutableMapContainer;
+import spacegraph.space2d.SurfaceRender;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Clipped;
+import spacegraph.space2d.container.ForceDirected2D;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.slider.FloatSlider;
+import spacegraph.space2d.widget.slider.SliderModel;
+import spacegraph.space2d.widget.windo.Widget;
 
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
-public class Timeline2D<E> extends MutableMapContainer<E, E> {
+public class Timeline2D<E> extends Graph2D<E> {
 
     /** viewable range */
     double tStart = 0, tEnd = 1;
 
     final TimelineModel<E> model;
 
-    final Function<E, Surface> view;
 
-    public Timeline2D(TimelineModel<E> model, Function<E, Surface> view) {
+    public Timeline2D(TimelineModel<E> model, Consumer<NodeVis<E>> view) {
+        super();
         this.model = model;
-        this.view = view;
+        nodeBuilder(view);
+
+        //simple hack to prevent event nodes from overlapping.  it could be better
+        ForceDirected2D<E> l = new ForceDirected2D<>() {
+            @Override
+            protected void apply(NodeVis<E> n, RectFloat2D target) {
+
+                float h = Timeline2D.this.h()/8; //TODO parameterizable func
+                float y = Util.clamp(target.cy(), Timeline2D.this.top() + h/2, Timeline2D.this.bottom()-h/2);
+                long[] r = model.range(n.id);
+                float x1 = x(r[0]);
+                float x2 = x(r[1]+1);
+                n.pos(x1, y - h/2, x2, y + h/2);
+            }
+        };
+        l.repelSpeed.set(0.25f);
+        layout(l);
+    }
+
+    public Surface withControls() {
+        return new Widget(new Splitting(new Clipped(this), controls(), 0.2f));
+    }
+
+    public Surface controls() {
+        Bordering b = new Bordering();
+
+        FloatSlider whenSlider = new FloatSlider(0.5f, 0, 1) {
+            @Override
+            public boolean prePaint(SurfaceRender r) {
+                float p = (float) this.value();
+                viewShift(((p - 0.5f) * 2) * (tEnd-tStart)*0.1f);
+                return super.prePaint(r);
+            }
+        }.type(SliderModel.KnobHoriz);
+
+        b.center(whenSlider);
+
+        FloatSlider zoomSlider = new FloatSlider(0.5f, 0, 1).type(SliderModel.KnobVert);
+        b.edge(Bordering.E, 0.5f).east(zoomSlider);
+
+        return b;
+    }
+
+    public Timeline2D<E> viewShift(double dt) {
+        return view(tStart+dt, tEnd+dt);
     }
 
     public Timeline2D<E> view(double start, double end) {
@@ -35,39 +88,34 @@ public class Timeline2D<E> extends MutableMapContainer<E, E> {
         double s = tStart;
         double e = tEnd;
         float X = x();
-        if (t <= s) return X;
         float W = w();
-        if (t >= e) return W + X;
         return (float)(((t - s)) / (e - s) * W + X);
     }
 
     public synchronized Timeline2D<E> update() {
-        clear();
-        model.events((long)Math.floor(tStart), (long)Math.ceil(tEnd-1)).forEach(e->{
-           put(e, e, this::viewFunc);
-        });
+        set(model.events((long)Math.floor(tStart), (long)Math.ceil(tEnd-1)));
         return this;
     }
 
-    @Override
-    protected void doLayout(int dtMS) {
-        final int[] lane = {0};
-        int lanes = cellMap.cache.size();
-        forEachKeySurface((e,s)->{
-            long[] r = model.range(e);
-            float x1 = x(r[0]);
-            float x2 = x(r[1]+1);
-            float yy[] = y(e, lane[0]++, lanes);
-            float h = h();
-            float y = y();
-            s.pos(x1, y + yy[0] * h, x2, y + yy[1] * h);
-        });
-    }
+//    @Override
+//    protected void doLayout(int dtMS) {
+//        //final int[] lane = {0};
+//        //int lanes = cellMap.cache.size();
+//        float height = h()/8; //TODO
+//        forEachKeySurface((e,s)->{
+//            long[] r = model.range(e);
+//            float x1 = x(r[0]);
+//            float x2 = x(r[1]+1);
+//            float y = s.cy();
+//            float y1 = y -height/2;
+//            float y2 = y +height/2;
+//            //float yy[] = y(e, lane[0]++, lanes);
+////            float h = h();
+////            float y = y();
+//            s.pos(x1, y1, x2, y2); //only affect X
+//        });
+//    }
 
-    protected Surface viewFunc(E e, E ee) {
-        Surface s = view.apply(e);
-        return s;
-    }
 
     /** range of values between 0..1 */
     float[] y(E event, int lane, int lanes) {

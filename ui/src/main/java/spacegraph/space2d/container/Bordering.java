@@ -27,7 +27,7 @@ public class Bordering extends MutableContainer {
     protected float borderNorth = 0.25f;
 
     boolean autocollapse = true;
-    
+
     public Bordering() {
         super();
     }
@@ -79,7 +79,7 @@ public class Bordering extends MutableContainer {
         float H = h();
         float w2, h2;
 
-        boolean aspectEqual = true;
+        boolean aspectEqual = false;
         if (aspectEqual) {
             w2 = h2 = Math.min(W, H) / 2;
         } else {
@@ -92,20 +92,10 @@ public class Bordering extends MutableContainer {
 
         float borderWest, borderEast, borderNorth, borderSouth;
         int l = children.length;
-        if (autocollapse && (!(l > Bordering.W && children[Bordering.W] != null) &&
-                !(l > Bordering.E && children[Bordering.E] != null))) {
-            borderWest = borderEast = 0; //collapse
-        } else {
-            borderWest = this.borderWest;
-            borderEast = this.borderEast;
-        }
-        if (autocollapse && (!(l > Bordering.N && children[Bordering.N] != null) &&
-                !(l > Bordering.S && children[Bordering.S] != null))) {
-            borderNorth = borderSouth = 0; //collapse
-        } else {
-            borderNorth = this.borderNorth;
-            borderSouth = this.borderSouth;
-        }
+        borderWest = autocollapse && !(l > Bordering.W && children[Bordering.W] != null) ? 0 : this.borderWest;
+        borderEast = autocollapse && !(l > Bordering.E && children[Bordering.E] != null) ? 0 : this.borderEast;
+        borderNorth = autocollapse && !(l > Bordering.N && children[Bordering.N] != null) ? 0 : this.borderNorth;
+        borderSouth = autocollapse && !(l > Bordering.S && children[Bordering.S] != null) ? 0 : this.borderSouth;
 
         for (int i = 0, childrenLength = l; i < childrenLength; i++) {
             Surface c = children[i];
@@ -171,7 +161,7 @@ public class Bordering extends MutableContainer {
     /**
      * replace center content
      */
-    public Bordering content(Surface next) {
+    public Bordering center(Surface next) {
         set(C, next);
         return this;
     }

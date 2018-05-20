@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 
 import static nars.$.$;
+import static nars.$.$$;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,6 +96,14 @@ public class AnonTest {
         AnonVector av = new AnonVector(x);
         ArrayTermVector bv = new ArrayTermVector(x);
         assertEqual(bv, av);
+
+        assertFalse(av.contains(x[0].neg()));
+        assertFalse(av.containsRecursively(x[0].neg()));
+
+        assertFalse(av.contains($$("x")));
+        assertFalse(av.containsRecursively($$("x")));
+        assertFalse(av.contains($$("x").neg()));
+        assertFalse(av.containsRecursively($$("x").neg()));
 
         Term twoNeg = x[2];
         assertTrue(av.contains(twoNeg));

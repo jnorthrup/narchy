@@ -102,23 +102,23 @@ public class AnonVector extends TermVector {
     }
 
     @Override
-    public boolean containsRecursively(Term t) {
-
-        return contains(t); //same as recursive since this is flat vector
-
-//        if (contains(t))
-//            return true;
-//        return (t.op() == NEG) || (anyNeg() && contains(t.neg())); //TODO write absolute matcher in one pass
-    }
-
-
-    @Override
     public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        return contains(t);
-//        return !impossibleSubTerm(t) && ( anyNeg() ?
-//                super.containsRecursively(t, root, inSubtermsOf) //negation's must be handled as compounds TODO write a faster impl of this
-//                :
-//                containsRecursively(t) );
+        if (t.op() == NEG) {
+            if (anyNeg()) {
+                Term tt = t.unneg();
+                if (tt instanceof AnonID) {
+                    return indexOf((AnonID)tt,true)!=-1;
+                }
+            }
+        }else {
+            if (t instanceof AnonID) {
+                return (indexOf((AnonID)t, false)!=-1)  //the positive version
+                        ||
+                       (anyNeg() && indexOf((AnonID)t, true)!=-1 && inSubtermsOf.test(t.neg())); //the negative version, and tested as such
+            }
+
+        }
+        return false;
     }
 
     @Override

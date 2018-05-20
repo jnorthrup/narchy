@@ -453,10 +453,9 @@ public enum Terms {
             case 1: return ok.getFirst();
         }
 
-        oi.compact();
-
         //keep only the unique subterms which are not contained by other terms in the list
         //terms which are contained by other terms in the list
+        //oi.compact();
 //        final int[] minScore = {Integer.MAX_VALUE};
 //        {
 //            //Iterator<ObjectIntPair<Term>> oo = oi.keyValuesView().iterator();
@@ -486,7 +485,7 @@ public enum Terms {
             //prefer least aggressive options to gradually introduce variables rather than destroy the most information first, prefer to destroy small amounts first
             //sample preferring least complexity
             Term[] x = oi.keysView().toArray(Op.EmptyTermArray);
-            return x[ Roulette.selectRoulette(x.length, (n)->1f/(x[n].complexity()), rng) ];
+            return x[ Roulette.selectRoulette(x.length, n->1f/(x[n].volume()), rng) ];
 
 //            MutableIntIterator oo = oi.intIterator();
 //            float ms = minScore[0];
@@ -549,8 +548,7 @@ public enum Terms {
                 uu.remove();
         }
 
-        if (uniques.isEmpty()) return null;
-        return uniques;
+        return uniques.isEmpty() ? null : uniques;
         //uniques.keyValuesView().select((oi)->oi.getTwo()>=minTotalScore);
     }
 

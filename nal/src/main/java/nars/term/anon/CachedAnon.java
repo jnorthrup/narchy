@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-/** TODO imiplement these as CachedTransform-wrapped sub-implementations of the Anon.GET and PUT transforms, each with their own cache */
+/** TODO implement these as CachedTransform-wrapped sub-implementations of the Anon.GET and PUT transforms, each with their own cache */
 public class CachedAnon extends Anon {
 
     private Map<Term,Term> externCache;
