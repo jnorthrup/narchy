@@ -46,6 +46,10 @@ import static java.lang.String.format;
  *
  * @author anthonycorbacho
  * @since 0.0.1
+ *
+ * see also:
+ *      http://grokconstructor.appspot.com/do/automatic
+ *      https://github.com/logstash-plugins/logstash-patterns-core/tree/master/patterns
  */
 public class Grok implements Serializable {
 

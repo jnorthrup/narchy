@@ -2401,14 +2401,6 @@ public enum Util {
         return Math.max(1, Runtime.getRuntime().availableProcessors() - reserveForOtherThreads);
     }
 
-    private static volatile Executor executor = ForkJoinPool.commonPool();
-    public static Executor executor() {
-        return executor;
-    }
-    public static void setExecutor(Executor e) {
-        executor = e;
-    }
-
     /** modifies the input; instance compare, not .equals */
     public static <X> X[] replaceDirect(X[] xx, X from, X to) {
         for (int i = 0, xxLength = xx.length; i < xxLength; i++) {

@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Narsese;
 import nars.Task;
 import nars.control.NARService;
+import org.eclipse.collections.api.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.nio.file.WatchEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,9 +30,9 @@ public class NoteFS extends NARService {
         fs = new FSWatch(path, n.exe, this::reload);
     }
 
-    private void reload(Path path) {
+    private void reload(Pair<Path, WatchEvent.Kind> event) {
 
-        path = path.toAbsolutePath();
+        Path path = event.getOne().toAbsolutePath();
 
         if (!loadable(path))
             return;

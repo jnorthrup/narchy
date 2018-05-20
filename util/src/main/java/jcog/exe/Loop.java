@@ -1,12 +1,8 @@
 package jcog.exe;
 
-import jcog.Util;
-import jcog.exe.realtime.AdmissionQueueWheelModel;
 import jcog.exe.realtime.FixedRateTimedFuture;
-import jcog.exe.realtime.HashedWheelTimer;
 import org.slf4j.Logger;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,41 +11,24 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Created by me on 10/20/16.
+ *
+ * the Runnable.run method is actually the iteration which will
+ * be repeatedly called.
+ * Do not call it externally.
  */
-abstract public class Loop {
+abstract public class Loop implements Runnable {
 
     protected final Logger logger;
 
     //make Loop extend FixedRateFuture...
-    @Deprecated private volatile FixedRateTimedFuture<?> task = null;
+    @Deprecated private volatile FixedRateTimedFuture task = null;
 
     /** busy lock */
     private final AtomicBoolean executing = new AtomicBoolean(false);
 
-    /** global timer */
-    private static HashedWheelTimer timer = null;
-
-    public static synchronized HashedWheelTimer timer() {
-        if (timer == null) {
-            Executor exe = Util.executor();
-            HashedWheelTimer.logger.info("global timer start: executor={}", exe);
-            timer = new HashedWheelTimer(
-                        new AdmissionQueueWheelModel(32, TimeUnit.MILLISECONDS.toNanos(1)),
-                         //HashedWheelTimer.WaitStrategy.YieldingWait,
-                        HashedWheelTimer.WaitStrategy.SleepWait,
-                    exe);
-        }
-        return timer;
-    }
 
     public static Loop of(Runnable iteration) {
-        return new Loop() {
-            @Override
-            public boolean next() {
-                iteration.run();
-                return true;
-            }
-        };
+        return new LambdaLoop(iteration);
     }
 
     /**
@@ -59,18 +38,12 @@ abstract public class Loop {
      */
     public final AtomicInteger periodMS = new AtomicInteger(-1);
 
-    public static void invokeLater(Runnable r) {
 
-        //timer().execute(r);
-        timer().submit(r);
-    }
-
-
-    @Override
-    public String toString() {
-        return super.toString() + " ideal=" + periodMS + "ms";
-                //Texts.n4(dutyTime.getMean()) + "+-" + Texts.n4(dutyTime.getStandardDeviation()) + "ms avg";
-    }
+//    @Override
+//    public String toString() {
+//        return super.toString() + " ideal=" + periodMS + "ms";
+//                //Texts.n4(dutyTime.getMean()) + "+-" + Texts.n4(dutyTime.getStandardDeviation()) + "ms avg";
+//    }
 
     /**
      * create but do not start
@@ -120,8 +93,8 @@ abstract public class Loop {
 //                    myNewThread.start();
                     assert(this.task == null);
                     onStart();
-                    this.task = timer()
-                        .scheduleAtFixedRate(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                    this.task = Exe.timer()
+                        .scheduleAtFixedRate(this, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                         //.scheduleWithFixedDelay(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS <= 0) {
@@ -130,7 +103,7 @@ abstract public class Loop {
 
                 synchronized (periodMS) {
                     //Thread prevThread = this.thread;
-                    FixedRateTimedFuture<?> prevTask = this.task;
+                    FixedRateTimedFuture prevTask = this.task;
                     if (prevTask != null) {
 
                         this.task = null;
@@ -194,7 +167,7 @@ abstract public class Loop {
     }
 
 
-    protected final void loop() {
+    @Override public final void run() {
 
 
         if (!executing.compareAndSet(false, true))
@@ -269,4 +242,5 @@ abstract public class Loop {
     public long periodNS() {
         return periodMS.longValue() * 1000000;
     }
+
 }

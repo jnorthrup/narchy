@@ -9,6 +9,7 @@ import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
+import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
 import jcog.exe.Loop;
 import org.slf4j.Logger;
@@ -121,7 +122,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public void off() {
         GLWindow w = this.window;
         if (w != null)
-            Loop.invokeLater(w::destroy);
+            Exe.invokeLater(w::destroy);
     }
 
 
@@ -247,7 +248,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     public void show(String title, int w, int h, int x, int y, boolean async) {
 
-        Loop.timer().execute(() -> {
+        Exe.invokeLater(() -> {
 
             if (window != null) {
                 //TODO apply w,h,x,y to the existing window

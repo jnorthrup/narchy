@@ -6,6 +6,8 @@ import java.util.function.Consumer;
 /** reschedules after each execution.  at that point it has the option
  * to use a fixed delay or to subtract from it the duty cycle
  * consumed since being invoked, to approximate fixed rate.
+ *
+ * TODO AbstracdtTimedRunnable
  */
 public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
 

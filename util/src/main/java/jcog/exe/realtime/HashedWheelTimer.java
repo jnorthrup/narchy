@@ -249,10 +249,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     @Override
-    public FixedRateTimedFuture<?> scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
+    public FixedRateTimedFuture scheduleAtFixedRate(Runnable runnable, long initialDelay, long period, TimeUnit unit) {
         return scheduleFixedRate(TimeUnit.NANOSECONDS.convert(period, unit),
                 TimeUnit.NANOSECONDS.convert(initialDelay, unit),
-                constantlyNull(runnable));
+                runnable);
     }
 
     @Override
@@ -270,9 +270,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     /**
-     * Executor Delegates
+     * Executor Delegate, invokes immediately bypassing the timer's ordered scheduling.
+     * Use submit for invokeLater-like behavior
      */
-
     @Override
     public final void execute(Runnable command) {
         executor.execute(command);
@@ -373,14 +373,14 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
 
-    private <V> FixedRateTimedFuture<V> scheduleFixedRate(long recurringTimeout,
-                                                          long firstDelay,
-                                                          Callable<V> callable) {
+    private <V> FixedRateTimedFuture scheduleFixedRate(long recurringTimeout,
+                                                       long firstDelay,
+                                                       Runnable callable) {
 
         isTrue(recurringTimeout >= resolution,
                 "Cannot schedule tasks for amount of time less than timer precision.");
 
-        FixedRateTimedFuture<V> r = new FixedRateTimedFuture(0, callable,
+        FixedRateTimedFuture r = new FixedRateTimedFuture(0, callable,
                 recurringTimeout, resolution, wheels);
 
         if (firstDelay > 0) {

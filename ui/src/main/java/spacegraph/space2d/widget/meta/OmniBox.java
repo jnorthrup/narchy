@@ -2,7 +2,7 @@ package spacegraph.space2d.widget.meta;
 
 import com.googlecode.lanterna.TerminalPosition;
 import jcog.Texts;
-import jcog.exe.Loop;
+import jcog.exe.Exe;
 import jdk.jshell.JShell;
 import jdk.jshell.SourceCodeAnalysis;
 import jdk.jshell.execution.LocalExecutionControlProvider;
@@ -155,7 +155,7 @@ public class OmniBox extends Widget {
             if (text.isEmpty())
                 return; //though it works , temporary to avoid it clearing after ctrl-enter
 
-            Loop.invokeLater(() -> {
+            Exe.invokeLater(() -> {
                 if (cursorPos!=currentPos || !text.equals(currentText))
                     return; //text or position changed while this was processing; discard these results
 

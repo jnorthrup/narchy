@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.Util;
+import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
 import nars.derive.Derivers;
@@ -100,6 +101,12 @@ abstract public class NAgentX extends NAgent {
 
     public static TimeAware runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
+        try {
+            Exe.setProfiler(new Exe.UDPeerProfiler());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         //The.Subterms.the =
         //The.Subterms.CaffeineSubtermBuilder.get();
         //The.Subterms.HijackSubtermBuilder.get();
@@ -161,9 +168,9 @@ abstract public class NAgentX extends NAgent {
                         //new Focus.AERevaluator(new SplitMix64Random(1)),
                         Util.concurrencyDefault(2),
                         512, 2048) {
-                        {
-                            Util.setExecutor(this);
-                        }
+//                        {
+//                            Exe.setExecutor(this);
+//                        }
                      }
                 )
 

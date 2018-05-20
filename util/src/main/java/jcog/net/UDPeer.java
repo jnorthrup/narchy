@@ -311,6 +311,11 @@ public class UDPeer extends UDP {
         seen(x, 1f);
         return y;
     }
+
+    public int tellSome(Object msg, int ttl) throws JsonProcessingException {
+        return tellSome(msg, ttl, false);
+    }
+
     public int tellSome(Object msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
         Msg x = new Msg(TELL.id, (byte) ttl, me, null, Util.toBytes(msg,Object.class));
         int y = tellSome(x, 1f, onlyIfNotSeen);
