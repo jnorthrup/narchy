@@ -19,6 +19,7 @@ package jcog.grammar.evolve.strategy.impl;
 
 import jcog.grammar.evolve.strategy.ExecutionStrategy;
 import jcog.grammar.evolve.strategy.RunStrategy;
+
 import java.util.Map;
 import java.util.logging.Logger;
 

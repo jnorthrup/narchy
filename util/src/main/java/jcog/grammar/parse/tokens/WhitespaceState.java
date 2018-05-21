@@ -1,6 +1,7 @@
 package jcog.grammar.parse.tokens;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PushbackReader;
 import java.math.BigDecimal;
 
 /*

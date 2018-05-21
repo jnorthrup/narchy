@@ -19,6 +19,7 @@ package jcog.grammar.evolve.inputs;
 
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.configuration.DatasetContainer;
+
 import java.util.Random;
 
 /**
@@ -29,7 +30,7 @@ public class Context {
 
     public enum EvaluationPhases {
 
-        TRAINING, VALIDATION, LEARNING;
+        TRAINING, VALIDATION, LEARNING
     }
 
     //This property is not useful in production, commented out
@@ -38,9 +39,9 @@ public class Context {
     private EvaluationPhases phase;
     private boolean stripedPhase = false;
     private boolean separateAndConquerEnabled = false; 
-    private Random random;
-    private Configuration configuration;
-    private long seed;
+    private final Random random;
+    private final Configuration configuration;
+    private final long seed;
 
     public Context(EvaluationPhases phase, final Configuration configuration) {
         this.phase = phase;

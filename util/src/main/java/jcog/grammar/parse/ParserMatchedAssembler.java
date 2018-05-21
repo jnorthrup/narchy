@@ -1,8 +1,5 @@
 package jcog.grammar.parse;
 
-import jcog.grammar.parse.Assembly;
-import jcog.grammar.parse.IAssembler;
-
 import java.util.List;
 import java.util.Stack;
 import java.util.function.BiConsumer;

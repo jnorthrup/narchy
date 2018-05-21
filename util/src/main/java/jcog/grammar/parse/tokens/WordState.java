@@ -1,8 +1,10 @@
 package jcog.grammar.parse.tokens;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PushbackReader;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A wordState returns a word from a reader. Like other states, a tokenizer

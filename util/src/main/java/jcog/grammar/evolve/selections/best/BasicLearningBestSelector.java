@@ -20,6 +20,7 @@ package jcog.grammar.evolve.selections.best;
 import jcog.grammar.evolve.outputs.FinalSolution;
 import jcog.grammar.evolve.outputs.JobEvolutionTrace;
 import jcog.grammar.evolve.outputs.Results;
+
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -31,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class BasicLearningBestSelector implements BestSelector {
     
-    private static Logger LOG = Logger.getLogger(BasicLearningBestSelector.class.getName());
+    private static final Logger LOG = Logger.getLogger(BasicLearningBestSelector.class.getName());
    
 
     @Override

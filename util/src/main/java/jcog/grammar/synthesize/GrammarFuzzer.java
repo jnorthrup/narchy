@@ -15,24 +15,13 @@
 package jcog.grammar.synthesize;
 
 import jcog.grammar.synthesize.util.GrammarUtils;
-import jcog.grammar.synthesize.util.GrammarUtils.Grammar;
-import jcog.grammar.synthesize.util.GrammarUtils.MultiAlternationNode;
-import jcog.grammar.synthesize.util.GrammarUtils.MultiConstantNode;
-import jcog.grammar.synthesize.util.GrammarUtils.Node;
-import jcog.grammar.synthesize.util.GrammarUtils.NodeMerges;
-import jcog.grammar.synthesize.util.GrammarUtils.RepetitionNode;
+import jcog.grammar.synthesize.util.GrammarUtils.*;
 import jcog.grammar.synthesize.util.ParseTreeUtils;
 import jcog.grammar.synthesize.util.ParseTreeUtils.ParseTreeMultiConstantNode;
 import jcog.grammar.synthesize.util.ParseTreeUtils.ParseTreeNode;
 import jcog.grammar.synthesize.util.ParseTreeUtils.ParseTreeRepetitionNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class GrammarFuzzer {
     public static class SampleParameters {

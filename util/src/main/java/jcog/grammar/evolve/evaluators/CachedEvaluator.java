@@ -22,6 +22,6 @@ package jcog.grammar.evolve.evaluators;
  * @author MaleLabTs
  */
 public interface CachedEvaluator extends TreeEvaluator{
-    public double getRatio();
-    public long getCacheSizeBytes();
+    double getRatio();
+    long getCacheSizeBytes();
 }

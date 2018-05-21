@@ -15,16 +15,7 @@
 package jcog.grammar.synthesize;
 
 import jcog.grammar.synthesize.util.GrammarUtils;
-import jcog.grammar.synthesize.util.GrammarUtils.AlternationNode;
-import jcog.grammar.synthesize.util.GrammarUtils.ConstantNode;
-import jcog.grammar.synthesize.util.GrammarUtils.Context;
-import jcog.grammar.synthesize.util.GrammarUtils.Grammar;
-import jcog.grammar.synthesize.util.GrammarUtils.MultiAlternationNode;
-import jcog.grammar.synthesize.util.GrammarUtils.MultiConstantNode;
-import jcog.grammar.synthesize.util.GrammarUtils.Node;
-import jcog.grammar.synthesize.util.GrammarUtils.NodeData;
-import jcog.grammar.synthesize.util.GrammarUtils.NodeMerges;
-import jcog.grammar.synthesize.util.GrammarUtils.RepetitionNode;
+import jcog.grammar.synthesize.util.GrammarUtils.*;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -33,6 +33,7 @@ import jcog.grammar.evolve.terminalsets.TerminalSetBuilder;
 import jcog.grammar.evolve.terminalsets.TokenizedContextTerminalSetBuilder;
 import jcog.grammar.evolve.tree.*;
 import jcog.list.FasterList;
+import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.io.File;
 import java.util.*;
@@ -72,21 +73,21 @@ public class Configuration {
             "@","#"," "," ");
 
         this.ranges = new FasterList<>();
-        this.operators = FasterList.newListWith(
-            "jcog.grammar.evolve.tree.operator.Group",
-            "jcog.grammar.evolve.tree.operator.NonCapturingGroup",
-            "jcog.grammar.evolve.tree.operator.ListMatch",
-            "jcog.grammar.evolve.tree.operator.ListNotMatch",
-            "jcog.grammar.evolve.tree.operator.MatchOneOrMore",
-            //"jcog.grammar.evolve.tree.operator.MatchOneOrMoreGreedy",
-            "jcog.grammar.evolve.tree.operator.MatchZeroOrMore",
-            //"jcog.grammar.evolve.tree.operator.MatchZeroOrMoreGreedy",
-            "jcog.grammar.evolve.tree.operator.MatchZeroOrOne",
-            //"jcog.grammar.evolve.tree.operator.MatchZeroOrOneGreedy",
-            "jcog.grammar.evolve.tree.operator.MatchMinMax"
-            //"jcog.grammar.evolve.tree.operator.MatchMinMaxGreedy",
-            //"jcog.grammar.evolve.tree.operator.Backreference",
-            //"jcog.grammar.evolve.tree.Anchor"
+        this.operators = FastList.newListWith(
+                "jcog.grammar.evolve.tree.operator.Group",
+                "jcog.grammar.evolve.tree.operator.NonCapturingGroup",
+                "jcog.grammar.evolve.tree.operator.ListMatch",
+                "jcog.grammar.evolve.tree.operator.ListNotMatch",
+                "jcog.grammar.evolve.tree.operator.MatchOneOrMore",
+                //"jcog.grammar.evolve.tree.operator.MatchOneOrMoreGreedy",
+                "jcog.grammar.evolve.tree.operator.MatchZeroOrMore",
+                //"jcog.grammar.evolve.tree.operator.MatchZeroOrMoreGreedy",
+                "jcog.grammar.evolve.tree.operator.MatchZeroOrOne",
+                //"jcog.grammar.evolve.tree.operator.MatchZeroOrOneGreedy",
+                "jcog.grammar.evolve.tree.operator.MatchMinMax"
+                //"jcog.grammar.evolve.tree.operator.MatchMinMaxGreedy",
+                //"jcog.grammar.evolve.tree.operator.Backreference",
+                //"jcog.grammar.evolve.tree.Anchor"
         );
 
         //Add context wise operators (lookaround)
@@ -198,7 +199,7 @@ public class Configuration {
     private String configName;
     private transient NodeFactory nodeFactory;
     private transient InitialPopulationBuilder populationBuilder;
-    private Map<String, String> populationBuilderParameters;
+    private final Map<String, String> populationBuilderParameters;
     private Map<String, String> terminalSetBuilderParameters;
     private transient TerminalSetBuilder terminalSetBuilder;
     private DatasetContainer datasetContainer;
@@ -206,7 +207,7 @@ public class Configuration {
     private Map<String, String> postprocessorParameters;
     private List<String> constants;
     private List<String> ranges;
-    private List<String> operators;
+    private final List<String> operators;
     private transient BestSelector bestSelector;
     private Map<String, String> bestSelectorParameters;
     private boolean  isFlagging = false;

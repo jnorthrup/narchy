@@ -39,8 +39,8 @@ import java.util.List;
  */
 public class Variation {
 
-    private Context context;
-    private Generation growth;
+    private final Context context;
+    private final Generation growth;
 
     public Variation(Context context) {
         this.context = context;

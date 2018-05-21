@@ -17,11 +17,11 @@
  */
 package jcog.grammar.evolve.evaluators;
 
-import org.eclipse.collections.impl.list.mutable.FastList;
 import jcog.grammar.evolve.inputs.Context;
 import jcog.grammar.evolve.inputs.DataSet.Bounds;
 import jcog.grammar.evolve.inputs.DataSet.Example;
 import jcog.grammar.evolve.tree.Node;
+import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.util.List;
 import java.util.Map;

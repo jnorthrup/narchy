@@ -1,6 +1,5 @@
 package jcog.grammar.parse;
 
-import jcog.grammar.parse.*;
 import jcog.grammar.parse.tokens.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

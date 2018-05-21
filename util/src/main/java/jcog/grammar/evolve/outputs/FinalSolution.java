@@ -20,6 +20,7 @@ package jcog.grammar.evolve.outputs;
 import jcog.grammar.evolve.objective.Ranking;
 import jcog.grammar.evolve.tree.DescriptionContext;
 import jcog.grammar.evolve.tree.Node;
+
 import java.util.HashMap;
 import java.util.Map;
 

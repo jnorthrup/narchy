@@ -4,8 +4,8 @@ import jcog.grammar.parse.tokens.Literal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static jcog.grammar.parse.RepetitionTest.size;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LiteralTest extends AbstractParsingTest {
 

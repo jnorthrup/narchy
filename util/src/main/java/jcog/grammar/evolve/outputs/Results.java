@@ -262,7 +262,7 @@ public class Results {
     }
     
     
-    public static Results load(String fileName) throws IOException{
+    public static Results load(String fileName) {
         throw new TODO();
 //        FileInputStream fis = new FileInputStream(new File(fileName));
 //        InputStreamReader isr = new InputStreamReader(fis);

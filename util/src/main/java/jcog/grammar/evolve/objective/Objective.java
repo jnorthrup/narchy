@@ -17,9 +17,9 @@
  */
 package jcog.grammar.evolve.objective;
 
-import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.evaluators.TreeEvaluator;
 import jcog.grammar.evolve.inputs.Context;
+import jcog.grammar.evolve.tree.Node;
 
 /**
  *
@@ -27,8 +27,8 @@ import jcog.grammar.evolve.inputs.Context;
  */
 public interface Objective {
 
-    public void setup(Context context);
-    public double[] fitness(Node individual);
+    void setup(Context context);
+    double[] fitness(Node individual);
     TreeEvaluator getTreeEvaluator();
     Objective cloneObjective();
 }

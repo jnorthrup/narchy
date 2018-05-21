@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public class ConsoleRegexTurtle {
 
-    private static String WARNING_MESSAGE = "\nWARNING\n"
+    private static final String WARNING_MESSAGE = "\nWARNING\n"
             + "The quality of the solution depends on a number of factors, including size and syntactical properties of the learning information.\n"
             + "The algorithms embedded in this experimental prototype have always been tested with at least 25 matches over at least 2 examples.\n"
             + "It is very unlikely that a smaller number of matches allows obtaining a useful solution.\n";
@@ -271,7 +271,7 @@ public class ConsoleRegexTurtle {
             }
         } catch (RuntimeException ex) {
             System.out.println("Problem parsing commandline parameters.\n" + HELP_MESSAGE);
-            System.out.println("Error details:" + ex.toString());
+            System.out.println("Error details:" + ex);
             System.exit(1);
         }
 

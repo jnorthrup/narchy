@@ -18,6 +18,7 @@
 package jcog.grammar.evolve.generations;
 
 import jcog.grammar.evolve.tree.Node;
+
 import java.util.List;
 
 /**
@@ -26,5 +27,5 @@ import java.util.List;
  */
 public interface Generation {
 
-    public List<Node> generate(int popSize);
+    List<Node> generate(int popSize);
 }

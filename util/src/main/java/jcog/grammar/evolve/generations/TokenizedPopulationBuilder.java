@@ -44,10 +44,10 @@ import java.util.*;
  */
 public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
-    private List<Node> population = new FastList();
-    private Map<String,Double> winnerTokens = new UnifiedMap();
+    private final List<Node> population = new FastList();
+    private final Map<String,Double> winnerTokens = new UnifiedMap();
     
-    private Tokenizer tokenizer = new BasicTokenizer();
+    private final Tokenizer tokenizer = new BasicTokenizer();
      
     /**
      * Initialises a population from examples by replacing charcters with "\\w"

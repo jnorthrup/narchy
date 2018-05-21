@@ -1,8 +1,8 @@
 package jcog.grammar.parse.tokens;
 
-import java.util.Set;
-
 import jcog.grammar.parse.Parser;
+
+import java.util.Set;
 
 public class UpperCaseWord extends Word {
 	@Override

@@ -19,6 +19,7 @@ package jcog.grammar.evolve.postprocessing;
 
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.outputs.Results;
+
 import java.util.Map;
 
 /**
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 public interface Postprocessor {
 
-    public void setup(Map<String, String> parameters);
+    void setup(Map<String, String> parameters);
 
-    public void elaborate(Configuration config, Results results, long timeTaken);
+    void elaborate(Configuration config, Results results, long timeTaken);
 }

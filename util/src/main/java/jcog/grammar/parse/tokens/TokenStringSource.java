@@ -1,7 +1,8 @@
 package jcog.grammar.parse.tokens;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.

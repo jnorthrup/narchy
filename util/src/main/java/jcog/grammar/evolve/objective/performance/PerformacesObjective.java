@@ -18,7 +18,6 @@
 package jcog.grammar.evolve.objective.performance;
 
 import jcog.grammar.evolve.configuration.Configuration;
-import jcog.grammar.evolve.utils.BasicStats;
 import jcog.grammar.evolve.evaluators.TreeEvaluationException;
 import jcog.grammar.evolve.evaluators.TreeEvaluator;
 import jcog.grammar.evolve.inputs.Context;
@@ -29,6 +28,8 @@ import jcog.grammar.evolve.objective.Objective;
 import jcog.grammar.evolve.outputs.FinalSolution;
 import jcog.grammar.evolve.tree.Constant;
 import jcog.grammar.evolve.tree.Node;
+import jcog.grammar.evolve.utils.BasicStats;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

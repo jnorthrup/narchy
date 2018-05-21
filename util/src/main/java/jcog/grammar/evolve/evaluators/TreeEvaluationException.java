@@ -18,6 +18,7 @@
 package jcog.grammar.evolve.evaluators;
 
 import jcog.grammar.evolve.strategy.RunStrategy;
+
 import java.util.regex.PatternSyntaxException;
 
 /**

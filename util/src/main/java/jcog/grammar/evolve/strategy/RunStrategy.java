@@ -18,8 +18,8 @@
 package jcog.grammar.evolve.strategy;
 
 import jcog.grammar.evolve.configuration.Configuration;
-import jcog.grammar.evolve.evaluators.TreeEvaluationException;
 import jcog.grammar.evolve.inputs.Context;
+
 import java.util.concurrent.Callable;
 
 /**

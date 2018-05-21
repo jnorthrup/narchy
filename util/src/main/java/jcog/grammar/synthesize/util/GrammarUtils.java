@@ -169,7 +169,7 @@ public class GrammarUtils {
         }
 
         public String toString() {
-            return '(' + this.first.toString() + ")+(" + this.second.toString();
+            return '(' + this.first.toString() + ")+(" + this.second;
         }
     }
 
@@ -195,7 +195,7 @@ public class GrammarUtils {
         public String toString() {
             StringBuilder sb = new StringBuilder();
             for (Node child : this.children) {
-                sb.append('(').append(child.toString()).append(")+");
+                sb.append('(').append(child).append(")+");
             }
             return sb.substring(0, sb.length() - 1);
         }
@@ -228,7 +228,7 @@ public class GrammarUtils {
         }
 
         public String toString() {
-            return this.start.toString() + '(' + this.rep.toString() + ")*" + this.end.toString();
+            return this.start.toString() + '(' + this.rep + ")*" + this.end;
         }
     }
 

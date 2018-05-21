@@ -18,9 +18,10 @@
 package jcog.grammar.evolve.strategy.impl;
 
 import jcog.grammar.evolve.configuration.Configuration;
+import jcog.grammar.evolve.evaluators.TreeEvaluationException;
 import jcog.grammar.evolve.strategy.ExecutionListenerFactory;
 import jcog.grammar.evolve.strategy.RunStrategy;
-import jcog.grammar.evolve.evaluators.TreeEvaluationException;
+
 import java.util.Map;
 
 /**

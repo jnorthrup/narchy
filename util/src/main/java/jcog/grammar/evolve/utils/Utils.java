@@ -17,16 +17,16 @@
  */
 package jcog.grammar.evolve.utils;
 
-import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.api.set.primitive.CharSet;
-import org.eclipse.collections.impl.list.mutable.FastList;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 import jcog.grammar.evolve.inputs.DataSet;
 import jcog.grammar.evolve.inputs.DataSet.Bounds;
 import jcog.grammar.evolve.objective.Ranking;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.tree.RegexRange;
+import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.api.set.primitive.CharSet;
+import org.eclipse.collections.impl.list.mutable.FastList;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 
 import java.io.*;
 import java.util.*;

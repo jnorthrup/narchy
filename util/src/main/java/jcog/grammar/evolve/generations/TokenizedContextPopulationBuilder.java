@@ -17,7 +17,6 @@
  */
 package jcog.grammar.evolve.generations;
 
-import org.eclipse.collections.impl.list.mutable.FastList;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.inputs.Context;
 import jcog.grammar.evolve.inputs.DataSet;
@@ -31,6 +30,7 @@ import jcog.grammar.evolve.tree.operator.*;
 import jcog.grammar.evolve.utils.BasicTokenizer;
 import jcog.grammar.evolve.utils.Tokenizer;
 import jcog.grammar.evolve.utils.Utils;
+import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.util.*;
 
@@ -46,11 +46,11 @@ import java.util.*;
  */
 public class TokenizedContextPopulationBuilder implements InitialPopulationBuilder {
 
-    private List<Node> population = new FastList();
+    private final List<Node> population = new FastList();
     private Map<String,Double> winnerMatchTokens;
     private Map<String,Double> winnerUnMatchTokens;
     
-    private Tokenizer tokenizer = new BasicTokenizer();
+    private final Tokenizer tokenizer = new BasicTokenizer();
      
     /**
      * Initialises a population from examples by replacing charcters with "\\w"

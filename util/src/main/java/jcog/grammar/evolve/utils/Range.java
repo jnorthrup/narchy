@@ -26,7 +26,7 @@ import java.util.List;
  * @author MaleLabTs
  */
 public final class Range implements Comparable<Range>{
-    private int startIndex;
+    private final int startIndex;
     private int endIndex;
 
     public Range(int startIndex, int endIndex) {

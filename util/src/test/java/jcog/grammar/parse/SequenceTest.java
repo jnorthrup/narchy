@@ -1,16 +1,16 @@
 package jcog.grammar.parse;
 
+import jcog.grammar.parse.tokens.CaselessLiteral;
 import jcog.grammar.parse.tokens.Num;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import jcog.grammar.parse.tokens.CaselessLiteral;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static jcog.grammar.parse.RepetitionTest.contains;
 import static jcog.grammar.parse.RepetitionTest.size;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SequenceTest extends AbstractParsingTest {
 

@@ -25,7 +25,7 @@ import java.util.Comparator;
  */
 public class SingleObjectiveComparator implements Comparator<Ranking> {
 
-    private int objective;
+    private final int objective;
 
     public SingleObjectiveComparator(int objective) {
         this.objective = objective;

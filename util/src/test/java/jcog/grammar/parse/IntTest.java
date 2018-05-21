@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
+import static jcog.grammar.parse.RepetitionTest.size;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static jcog.grammar.parse.RepetitionTest.size;
 
 public class IntTest extends AbstractParsingTest {
 

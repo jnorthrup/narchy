@@ -2,10 +2,6 @@ package jcog.grammar.parse;
 
 //import groovy.lang.Closure;
 
-import jcog.grammar.parse.Assembly;
-import jcog.grammar.parse.IAssembler;
-import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Terminal;
 import jcog.grammar.parse.tokens.*;
 
 import java.io.BufferedReader;

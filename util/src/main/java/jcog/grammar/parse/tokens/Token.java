@@ -1,6 +1,7 @@
 package jcog.grammar.parse.tokens;
 
-import java.math.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.

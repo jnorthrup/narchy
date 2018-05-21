@@ -26,5 +26,5 @@ import jcog.grammar.evolve.tree.Node;
  */
 public interface Selection {
 
-    public Node select(Ranking[] population);
+    Node select(Ranking[] population);
 }

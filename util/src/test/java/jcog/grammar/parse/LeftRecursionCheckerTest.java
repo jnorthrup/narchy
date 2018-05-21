@@ -1,9 +1,6 @@
 package jcog.grammar.parse;
 
 
-import jcog.grammar.parse.Grammar;
-import jcog.grammar.parse.GrammarException;
-import jcog.grammar.parse.LeftRecursionChecker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

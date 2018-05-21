@@ -1,11 +1,11 @@
 package jcog.grammar.parse;
 
+import jcog.grammar.parse.tokens.CaselessLiteral;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import jcog.grammar.parse.tokens.CaselessLiteral;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static jcog.grammar.parse.RepetitionTest.size;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CaselessLiteralTest extends AbstractParsingTest {
 

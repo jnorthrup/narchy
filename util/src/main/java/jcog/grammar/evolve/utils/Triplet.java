@@ -24,9 +24,9 @@ import java.util.Objects;
  * @author MaleLabTs
  */
 public class Triplet<F, S, T> {
-    private F first;
-    private S second;
-    private T third;
+    private final F first;
+    private final S second;
+    private final T third;
 
     public Triplet(F first, S second, T third) {
         this.first = first;

@@ -20,6 +20,7 @@ package jcog.grammar.evolve.generations;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.inputs.Context;
 import jcog.grammar.evolve.tree.Node;
+
 import java.util.List;
 
 /**
@@ -32,7 +33,7 @@ public interface InitialPopulationBuilder {
      * Returns a copy of the shared population list
      * @return
      */
-    public void init(List<Node> target);
+    void init(List<Node> target);
     
     
     /**
@@ -40,11 +41,11 @@ public interface InitialPopulationBuilder {
      * @param context
      * @return
      */
-    public List<Node> init(Context context);
+    List<Node> init(Context context);
 
     /**
      * Updates the shared population object (into main configuration) 
      * @param configuration
      */
-    public void setup(Configuration configuration);
+    void setup(Configuration configuration);
 }

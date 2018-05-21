@@ -17,9 +17,9 @@
  */
 package jcog.grammar.evolve.tree.operator;
 
-import org.eclipse.collections.impl.list.mutable.FastList;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.tree.ParentNode;
+import org.eclipse.collections.impl.list.mutable.FastList;
 
 /**
  *

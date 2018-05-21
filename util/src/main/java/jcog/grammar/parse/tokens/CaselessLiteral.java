@@ -1,8 +1,8 @@
 package jcog.grammar.parse.tokens;
 
-import java.util.Set;
-
 import jcog.grammar.parse.Parser;
+
+import java.util.Set;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.

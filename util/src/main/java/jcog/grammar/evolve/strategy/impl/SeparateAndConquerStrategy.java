@@ -17,7 +17,6 @@
  */
 package jcog.grammar.evolve.strategy.impl;
 
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.evaluators.TreeEvaluationException;
 import jcog.grammar.evolve.objective.Objective;
@@ -25,6 +24,7 @@ import jcog.grammar.evolve.objective.Ranking;
 import jcog.grammar.evolve.objective.performance.PerformacesObjective;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.tree.operator.Or;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
 

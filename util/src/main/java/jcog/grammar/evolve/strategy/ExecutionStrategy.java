@@ -24,7 +24,7 @@ import jcog.grammar.evolve.configuration.Configuration;
  * @author MaleLabTs
  */
 public interface ExecutionStrategy {
-    public void execute(Configuration configuration, ExecutionListenerFactory listenerFactory) throws Exception;
+    void execute(Configuration configuration, ExecutionListenerFactory listenerFactory) throws Exception;
 
-    public void shutdown();
+    void shutdown();
 }

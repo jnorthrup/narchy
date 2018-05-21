@@ -1,12 +1,10 @@
 package jcog.grammar.parse;
 
+import jcog.grammar.parse.tokens.CaselessLiteral;
 import jcog.grammar.parse.tokens.Num;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import jcog.grammar.parse.tokens.CaselessLiteral;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AlternationTest extends AbstractParsingTest {
 

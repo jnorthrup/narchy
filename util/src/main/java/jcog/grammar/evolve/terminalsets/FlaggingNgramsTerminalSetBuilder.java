@@ -17,7 +17,6 @@
  */
 package jcog.grammar.evolve.terminalsets;
 
-import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.inputs.Context;
 import jcog.grammar.evolve.inputs.DataSet;
@@ -26,6 +25,7 @@ import jcog.grammar.evolve.tree.Constant;
 import jcog.grammar.evolve.tree.Leaf;
 import jcog.grammar.evolve.tree.NodeFactory;
 import jcog.grammar.evolve.utils.Utils;
+import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 
 import java.util.*;
 

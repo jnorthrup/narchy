@@ -1,6 +1,7 @@
 package jcog.grammar.parse;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
  * Copyright (c) 2000 Steven J. Metsker. All Rights Reserved.

@@ -1,7 +1,10 @@
 package jcog.grammar.parse.tokens;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.PushbackReader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.

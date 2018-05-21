@@ -1,9 +1,8 @@
 package jcog.grammar.parse;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Function;
-
-import jcog.grammar.parse.Parser;
 
 class ParserCollector {
 

@@ -18,6 +18,7 @@
 package jcog.grammar.evolve.selections.best;
 
 import jcog.grammar.evolve.outputs.Results;
+
 import java.util.Map;
 
 /**
@@ -27,6 +28,6 @@ import java.util.Map;
  * @author MaleLabTs
  */
 public interface BestSelector {
-    public void setup(Map<String, String> parameters);
-    public void elaborate(Results results);
+    void setup(Map<String, String> parameters);
+    void elaborate(Results results);
 }

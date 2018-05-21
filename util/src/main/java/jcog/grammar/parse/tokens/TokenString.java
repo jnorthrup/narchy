@@ -1,7 +1,8 @@
 package jcog.grammar.parse.tokens;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -26,7 +27,7 @@ public class TokenString {
 	/**
 	 * the tokens in this tokenString
 	 */
-	private Token[] tokens;
+	private final Token[] tokens;
 
 	/**
 	 * Constructs a tokenString from the supplied tokens.

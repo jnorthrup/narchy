@@ -2,8 +2,6 @@ package jcog.grammar.parse;
 
 import java.util.Set;
 
-import jcog.grammar.parse.Parser;
-
 public class LeftRecursionChecker {
 
 	private final Grammar grammar;

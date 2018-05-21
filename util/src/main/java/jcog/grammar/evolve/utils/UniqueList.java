@@ -18,6 +18,7 @@
 package jcog.grammar.evolve.utils;
 
 import jcog.grammar.evolve.tree.Node;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

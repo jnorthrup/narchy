@@ -18,6 +18,7 @@
 package jcog.grammar.evolve.tree;
 
 import jcog.grammar.evolve.tree.operator.Concatenator;
+
 import java.util.ArrayList;
 import java.util.List;
 

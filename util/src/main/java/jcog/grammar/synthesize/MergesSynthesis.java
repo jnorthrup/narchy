@@ -23,8 +23,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static jcog.grammar.synthesize.util.GrammarUtils.getAllNodes;
-import static jcog.grammar.synthesize.util.GrammarUtils.getDescendants;
+import static jcog.grammar.synthesize.util.GrammarUtils.*;
 
 public class MergesSynthesis {
     public static NodeMerges getMergesMultiple(Iterable<Node> roots, Predicate<String> oracle) {

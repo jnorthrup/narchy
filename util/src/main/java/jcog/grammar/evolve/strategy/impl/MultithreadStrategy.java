@@ -18,16 +18,13 @@
 package jcog.grammar.evolve.strategy.impl;
 
 import jcog.grammar.evolve.configuration.Configuration;
+import jcog.grammar.evolve.evaluators.TreeEvaluationException;
 import jcog.grammar.evolve.strategy.ExecutionListener;
 import jcog.grammar.evolve.strategy.ExecutionListenerFactory;
 import jcog.grammar.evolve.strategy.RunStrategy;
-import jcog.grammar.evolve.evaluators.TreeEvaluationException;
+
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

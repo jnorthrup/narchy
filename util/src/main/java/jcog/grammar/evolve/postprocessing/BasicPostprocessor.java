@@ -17,7 +17,6 @@
  */
 package jcog.grammar.evolve.postprocessing;
 
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.evaluators.TreeEvaluationException;
 import jcog.grammar.evolve.evaluators.TreeEvaluator;
@@ -29,6 +28,7 @@ import jcog.grammar.evolve.outputs.Results;
 import jcog.grammar.evolve.tree.Constant;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.utils.BasicStats;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class BasicPostprocessor implements Postprocessor {
 
-    private static Logger LOG = Logger.getLogger(BasicPostprocessor.class.getName());
+    private static final Logger LOG = Logger.getLogger(BasicPostprocessor.class.getName());
     private boolean populateOptionalFields = true;
     static public final String PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS = "populateOptionalFields";
    

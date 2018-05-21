@@ -17,7 +17,6 @@
  */
 package jcog.grammar.evolve.strategy.impl;
 
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.evaluators.TreeEvaluationException;
 import jcog.grammar.evolve.evaluators.TreeEvaluator;
@@ -37,6 +36,7 @@ import jcog.grammar.evolve.strategy.RunStrategy;
 import jcog.grammar.evolve.tree.Constant;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.utils.BasicStats;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

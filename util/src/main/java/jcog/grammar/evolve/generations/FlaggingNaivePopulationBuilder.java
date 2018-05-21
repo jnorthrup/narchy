@@ -38,7 +38,7 @@ import java.util.*;
  */
 public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder {
 
-    private List<Node> population = new FasterList();
+    private final List<Node> population = new FasterList();
     private final boolean useDottification;
     private final boolean useWordClasses;
 

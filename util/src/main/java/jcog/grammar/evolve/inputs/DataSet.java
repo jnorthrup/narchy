@@ -70,7 +70,7 @@ public class DataSet implements Serializable {
     
     private transient DataSet stripedDataset;
     
-    private transient Map<Long, List<DataSet>> separateAndConquerLevels = new ConcurrentHashMap<>();
+    private final transient Map<Long, List<DataSet>> separateAndConquerLevels = new ConcurrentHashMap<>();
     //private transient DataSet datasetFocus = null;
     //private final static Logger LOG = Logger.getLogger(DataSet.class.getName());
     
@@ -695,7 +695,7 @@ public class DataSet implements Serializable {
 
         public int size(){
             return ( this.end - this.start );
-        };
+        }
 
         @Override
         public int hashCode() {
