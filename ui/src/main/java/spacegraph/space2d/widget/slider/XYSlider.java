@@ -47,12 +47,9 @@ public class XYSlider extends Surface {
             finger.tryFingering(new FingerDragging(0) {
 
                 @Override
-                public boolean start(Finger f) {
-                    if (super.start(f)) {
-                        pressing = true;
-                        return true;
-                    }
-                    return false;
+                protected boolean startDrag(Finger f) {
+                    pressing = true;
+                    return super.startDrag(f);
                 }
 
                 @Override

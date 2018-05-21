@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
@@ -1156,24 +1155,34 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     short[] cause();
 
 
+
+
+    /** evaluate the midpoint value of every pair of times, and then multiply by x area between them */
+    default float eviIntegRectMid(long dur, long... times) {
+        float e = 0;
+        for (int i = 1, timesLength = times.length; i < timesLength; i++) {
+            long a = times[i-1];
+            long b = times[i];
+            assert(b>a);
+            long ab = (a+b)/2L;
+            e += (b-a) * evi(ab, dur);
+        }
+        return e;
+    }
+
+
+    /** maybe */
+//    default float eviIntegPieceWise(long dur, long... times) {
+////        if (times.length == 2) {
+////            return evi(times[0], dur)
+////        }
+//        throw new TODO();
+//    }
+
     /**
      * https://www.intmath.com/integration/5-trapezoidal-rule.php
      * long[] points needs to be sorted, unique, and not contain any ETERNALs
      */
-    default float eviInteg(long dur, long... times) {
-        assert (times.length > 1);
-        //return eviIntegPieceWise(dur, times);
-        return eviIntegTrapezoidal(dur, times);
-    }
-
-    /** maybe */
-    default float eviIntegPieceWise(long dur, long... times) {
-//        if (times.length == 2) {
-//            return evi(times[0], dur)
-//        }
-        throw new TODO();
-    }
-
     default float eviIntegTrapezoidal(long dur, long... times) {
 
 

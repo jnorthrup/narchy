@@ -6,7 +6,7 @@ buildscript {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         //maven { url 'https://stamp-project.github.io/stamp-maven-repository' }
     }
-//    configurations.maybeCreate("pitest")
+    configurations.maybeCreate("pitest")
 
     dependencies {
 //        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
@@ -101,7 +101,7 @@ pitest {
 //        mainSourceSets = [project.sourceSets.main, project(':util').sourceSets.main]
 //        additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
 //    }
-
+    setJvmPath('/home/me/jdk11img')
     targetTests = [
             //'nars.nal.nal1.NAL1Test',
             //'nars.nal.nal1.NAL1MultistepTest',

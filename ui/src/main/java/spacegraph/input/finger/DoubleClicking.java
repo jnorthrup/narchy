@@ -21,6 +21,8 @@ public class DoubleClicking {
     /** in milliseconds */
     long doubleClickTime = Long.MIN_VALUE;
 
+    int count = 0;
+
     public DoubleClicking(int button, Consumer<v2> doubleClicked) {
         this.button = button;
         this.onDoubleClick = doubleClicked;
@@ -28,13 +30,19 @@ public class DoubleClicking {
 
 
     public boolean update(Finger finger) {
-        if (finger!=null && finger.pressing /*clickedNow*/(button)) {
+        if (finger!=null && finger.pressedNow(button))  {
             //System.out.println("click " + doubleClickSpot + " " + finger.hitOnDown[0] + " " + (System.currentTimeMillis() - doubleClickTime));
             v2 downHit = finger.hitOnDownGlobal[button];
-            if (downHit!=null && doubleClickSpot!=null && doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD) && System.currentTimeMillis() - doubleClickTime < maxDoubleClickTime) {
+            if (downHit!=null && doubleClickSpot!=null && doubleClickSpot.equals(downHit, PIXEL_DISTANCE_THRESHOLD) &&
+                    System.currentTimeMillis() - doubleClickTime < maxDoubleClickTime) {
                 //System.out.println("double click");
-                onDoubleClick.accept(finger.pos);
-                return true;
+                if (count++ == 2) {
+                    doubleClickSpot = null;
+                    doubleClickTime = Long.MIN_VALUE;
+                    count = 0;
+                    onDoubleClick.accept(finger.pos);
+                    return true;
+                }
             }
 
             doubleClickSpot = finger.hitOnDownGlobal[button];

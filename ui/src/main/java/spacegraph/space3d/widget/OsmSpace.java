@@ -117,9 +117,9 @@ public class OsmSpace implements GLUtessellatorCallback {
             private v2 translateStart;
 
             @Override
-            public boolean start(Finger f) {
+            protected boolean startDrag(Finger f) {
                 translateStart = translate.clone();
-                return super.start(f);
+                return super.startDrag(f);
             }
 
             @Override

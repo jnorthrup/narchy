@@ -87,10 +87,8 @@ public class Dyn2DSurface extends Wall implements Animated {
         private volatile MouseJoint mj;
 
         @Override
-        public boolean start(Finger f) {
-            boolean b = super.start(f);
-            if (b) {
-
+        protected boolean startDrag(Finger f) {
+            if (super.startDrag(f)) {
                 Body2D touched2D;
                 if (((touched2D = pick(f)) != null)) {
                     MouseJointDef def = new MouseJointDef();
@@ -108,10 +106,10 @@ public class Dyn2DSurface extends Wall implements Animated {
                     mj = (MouseJoint) W.addJoint(new MouseJoint(W.pool, def));
                     return true;
                 }
-
             }
             return false;
         }
+
 
         public Body2D pick(Finger ff) {
             v2 p = ff.pos.scale(scaling);

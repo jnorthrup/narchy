@@ -126,14 +126,15 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
     @Override
     public void windowResized(WindowEvent e) {
-        if (autoresize()) {
-            //re-maximize
-            int ww = window.getWidth();
-            int hh = window.getHeight();
+//        if (autoresize()) {
+//            //re-maximize
+            int ww = window.window.getWidth();
+            int hh = window.window.getHeight();
             pos(0, 0, ww, hh); //triggers layout
-        } else {
-            layout(); //only layout
-        }
+//        } else {
+//            layout(); //only layout
+//        }
+        doLayout(0);
     }
 
 
@@ -513,7 +514,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
 
             finger.posPixel.set(pmx, pmy);
-            finger.posScreen.set(w.window.getX() + pmx, w.window.getY() + pmy);
+            finger.posScreen.set(w.window.getX() + pmx, e.getY() + w.window.getY());
             finger.pos.set(wmx, wmy);
         }
 

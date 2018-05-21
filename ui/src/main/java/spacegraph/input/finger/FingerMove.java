@@ -41,13 +41,13 @@ public abstract class FingerMove extends FingerDragging {
     }
 
     @Override
-    public boolean start(Finger f) {
-        this.startPos = pos(f).clone();
-        return super.start(f);
+    protected boolean startDrag(Finger f) {
+        this.startPos = pos(f);
+        return super.startDrag(f);
     }
 
     protected v2 pos(Finger finger) {
-        return finger.pos;
+        return finger.pos.clone();
     }
 
 

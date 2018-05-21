@@ -20,19 +20,18 @@ abstract public class FingerMovePixels extends FingerMove {
 
     protected abstract JoglSpace window();
 
-    @Override
-    public boolean start(Finger f) {
 
+    @Override
+    protected boolean startDrag(Finger f) {
         JoglSpace w = window();
         windowStartX = w.getX();
         windowStartY = w.getY();
-
-        return super.start(f);
+        return super.startDrag(f);
     }
 
     @Override
     protected v2 pos(Finger finger) {
-        return new v2(finger.posPixel.x, finger.posPixel.y);
+        return finger.posPixel.clone();
     }
 
 }

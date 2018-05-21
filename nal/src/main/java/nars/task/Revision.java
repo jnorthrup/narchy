@@ -23,6 +23,7 @@ import nars.truth.Truthed;
 import nars.truth.polation.TruthPolation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.primitive.LongSet;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -325,8 +326,11 @@ public class Revision {
 //        return mergeTemporal(nar, tt);
 //    }
 
-    /** forces projection */
-    @Nullable public static Task mergeTasks(NAR nar, TaskRegion... tt) {
+    /**
+     * forces projection
+     */
+    @Nullable
+    public static Task mergeTasks(NAR nar, TaskRegion... tt) {
         long[] u = Tense.union(tt);
         return mergeTasks(nar, 0, u[0], u[1], true, tt);
     }
@@ -346,12 +350,12 @@ public class Revision {
             long maxStart = Long.MIN_VALUE;
             for (TaskRegion z : tasks) {
                 long zs = z.start();
-                if (zs!=ETERNAL) {
+                if (zs != ETERNAL) {
                     minStart = Math.min(minStart, zs);
                     maxStart = Math.max(maxStart, z.end());
                 }
             }
-            if (minStart!=MAX_VALUE) {
+            if (minStart != MAX_VALUE) {
                 //shrink the eternal range to the temporal range covered by the tasks
                 start = minStart;
                 end = maxStart;
@@ -436,46 +440,63 @@ public class Revision {
     /**
      * convenience method for selecting evidence integration strategy
      */
-    public static float eviInteg(Task x, long start, long end, long dur) {
-        if (start == end) {
+    public static float eviInteg(Task x, long qStart, long qEnd, long dur) {
+        if (qStart == qEnd) {
             //point in time or eternity
-            return x.evi(start, dur);
+            return x.evi(qStart, dur);
         } else {
-            long xStart = x.start();
-            if (xStart == ETERNAL)
-                return x.evi() * (end-start+1); //simple
+            long tStart = x.start();
+            if (tStart == ETERNAL)
+                return x.evi() * (qEnd - qStart + 1); //simple
 
-            long d = end - start;
-            if (d <= dur || d < 2) {
-                return x.eviInteg(dur,
-                        start,
-                        end);
-            } else {
-                @Nullable Longerval se = Longerval.intersect(start, end, xStart, x.end());
-                if (se != null) {
+//            long d = end - start;
+//            if (d <= dur || d < 2) {
+//                return x.eviIntegTrapezoidal(dur,
+//                        start,
+//                        end);
+//            } else {
+            long tEnd = x.end();
 
-                    boolean a = (se.a > start && se.a < end);  //add point se.a?
+            LongHashSet points = new LongHashSet(4);
 
-                    boolean b = (se.b > start && se.b < end && se.b!=se.a); //add point se.b?
+            //trim to query region
+            @Nullable Longerval qt = Longerval.intersect(qStart, qEnd, tStart, x.end());
+            if (qt!=null) {
+                tStart = Math.max(qStart, tStart);
+                tEnd = Math.min(qEnd, tEnd);
 
-                    if (a && b) {
-                        return x.eviInteg(dur, start, se.a, se.b, end);
-                    } else if (a) {
-                        return x.eviInteg(dur, start, se.a, end);
-                    } else if (b) {
-                        return x.eviInteg(dur, start, se.b, end);
+                points.add(tStart - 1);
+                points.add(tStart);
+                if (tEnd != tStart) {
+                    if (tStart + 1 != tEnd) {
+                        points.add((tStart + tEnd) / 2L); //midpoint of the task
                     }
-
+                    points.add(tEnd);
+                    points.add(tEnd + 1);
+                } else {
+                    points.add(tStart + 1);
                 }
 
-                return x.eviInteg(dur, start, end);
 
+                    points.add(qt.a);
+                    if (qt.a != qt.b)
+                        points.add(qt.b);
 
-//                return x.eviInteg(dur,
-//                        start,
-//                        (start + end) / 2L, //midpoint
-//                        end);
             }
+
+            points.add(qStart);
+            if (qStart!=qEnd) {
+                points.add(qEnd);
+                if (qStart+1!=qEnd)
+                    points.add((qStart+qEnd)/2L);
+            }
+
+
+
+
+            return x.eviIntegRectMid(dur, points.toSortedArray());
+            //return x.eviIntegTrapezoidal(dur, points.toSortedArray());
+
         }
     }
 
@@ -590,7 +611,7 @@ public class Revision {
         if (x == null && y == null)
             return null;
 
-        if (filter !=null) {
+        if (filter != null) {
             if (x != null && !filter.test(x))
                 x = null;
             if (y != null && !filter.test(y))
@@ -607,12 +628,12 @@ public class Revision {
             return x;
 
         //choose highest confidence
-        Top<Task> top = new Top<>(t-> eviAvg(t, start, end, 1));
+        Top<Task> top = new Top<>(t -> eviAvg(t, start, end, 1));
 
         if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
             //try to revise
             Task xy = mergeTasks(nar, start, end, x, y);
-            if (xy != null && (filter==null || filter.test(xy)))
+            if (xy != null && (filter == null || filter.test(xy)))
                 top.accept(xy);
         }
         top.accept(x);

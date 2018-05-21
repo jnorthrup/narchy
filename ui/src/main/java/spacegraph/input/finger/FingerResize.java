@@ -23,10 +23,10 @@ public abstract class FingerResize extends FingerDragging {
     }
 
     @Override
-    public boolean start(Finger f) {
+    protected boolean startDrag(Finger f) {
         this.posStart = pos(f);
         this.before = size();
-        return super.start(f);
+        return super.startDrag(f);
     }
 
     @Override
@@ -94,10 +94,10 @@ public abstract class FingerResize extends FingerDragging {
                 resize(
                         pmx,
                         before.top(),
-                        Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx),
+                        pmx + Math.max(aspectRatioRatioLimit * bw, bw + tx),
                         before.bottom());
+                break;
             }
-            break;
 
 
 

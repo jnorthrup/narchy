@@ -184,7 +184,7 @@ abstract public class NAgentX extends NAgent {
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
-                        new HijackConceptIndex(64 * 1024 ,  4)
+                        new HijackConceptIndex(128 * 1024 ,  4)
                         //new MapConceptIndex(new ConcurrentOpenHashMap<>())
                         //new MapConceptIndex(new CustomConcurrentHashMap<>(STRONG, EQUALS, SOFT, EQUALS, 128*1024))
                 )

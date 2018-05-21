@@ -11,8 +11,12 @@ abstract public class FingerDragging extends Fingering {
     }
 
     @Override
-    public boolean start(Finger f) {
-        return f.pressing(button) && drag(f);
+    final public boolean start(Finger f) {
+        return f.pressing(button) && startDrag(f) && drag(f);
+    }
+
+    protected boolean startDrag(Finger f) {
+        return true;
     }
 
 

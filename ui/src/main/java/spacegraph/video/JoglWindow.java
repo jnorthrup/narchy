@@ -193,9 +193,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowMoved(WindowEvent windowEvent) {
-        GLWindow w = this.window;
-        nx = w.getX();
-        ny = w.getY();
+        //GLWindow w = this.window;
+        //nx = w.getX();
+        //ny = w.getY();
     }
 
     @Override
@@ -335,13 +335,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         if (window == null) return; //WTF
 
         boolean change = false;
-        if (change |= (nx != x))
+        if (change |= (window.getX() != x))
             nx = x;
-        if (change |= (ny != y))
+        if (change |= (window.getY() != y))
             ny = y;
-        if (change |= (nw != w))
+        if (change |= (window.getWidth() != w))
             nw = w;
-        if (change |= (nh != h))
+        if (change |= (window.getHeight() != h))
             nh = h;
 
         if (change)
@@ -462,15 +462,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 public boolean next() {
 
 
-                    if (window != null && !preRenderTasks.isEmpty()) {
-                        preRenderTasks.removeIf(r -> {
-                            r.accept(JoglWindow.this);
-                            return true;
-                        });
-                    }
+                    if (window != null) {
+                        if (!preRenderTasks.isEmpty()) {
+                            preRenderTasks.removeIf(r -> {
+                                r.accept(JoglWindow.this);
+                                return true;
+                            });
+                        }
 
-                    if (!paused) {
-                        try {
+                        if (!paused) {
+                            try {
 //                            //for debug
 //                            if (window.isSurfaceLockedByOtherThread()) {
 //                                Thread surfaceLockOwner = window.getSurfaceLockOwner();
@@ -480,17 +481,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                                );
 //                            }
 
-                            //if (!window.isSurfaceLockedByOtherThread())
-                            //impl.display(drawables, ignoreExceptions, printExceptions);
+//                                if (!window.isSurfaceLockedByOtherThread())
+//                                impl.display(drawables, ignoreExceptions, printExceptions);
 
-                            animThread = Thread.currentThread();
+                                animThread = Thread.currentThread();
 
-                            drawables.forEach(GLAutoDrawable::display);
+                                //if (!window.isSurfaceLockedByOtherThread())
+                                    drawables.forEach(GLAutoDrawable::display);
 
-                        } catch (final UncaughtAnimatorException dre) {
-                            //quitIssued = true;
-                            dre.printStackTrace();
-                        }
+                            } catch (final UncaughtAnimatorException dre) {
+                                //quitIssued = true;
+                                dre.printStackTrace();
+                            }
 
                     /*else if (pauseIssued && !quitIssued) { // PAUSE
 //                        if (DEBUG) {
@@ -520,6 +522,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                            }
 //                        }
                     }*/
+                        }
                     }
                     return true;
 

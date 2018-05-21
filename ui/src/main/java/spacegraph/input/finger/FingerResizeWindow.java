@@ -21,7 +21,7 @@ public class FingerResizeWindow extends FingerResize {
     @Override
     protected v2 pos(Finger finger) {
         //screen absolute
-        return finger.posScreen.clone();
+        return finger.posScreen.scale(1f,-1f);
     }
 
 

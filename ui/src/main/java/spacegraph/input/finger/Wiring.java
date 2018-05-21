@@ -37,16 +37,15 @@ public class Wiring extends FingerDragging {
     }
 
     @Override
-    public boolean start(Finger f) {
-        if (super.start(f)) {
-
+    protected boolean startDrag(Finger f) {
+        if (super.startDrag(f)) {
             if (this.start instanceof Wireable)
-                ((Wireable)start).onWireOut(this, true);
-
+                ((Wireable) start).onWireOut(this, true);
             return true;
         }
         return false;
     }
+
 
     @Override
     public boolean escapes() {
