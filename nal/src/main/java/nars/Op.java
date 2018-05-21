@@ -1,7 +1,6 @@
 package nars;
 
 
-import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import nars.op.SetFunc;
@@ -11,6 +10,7 @@ import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -369,7 +369,7 @@ public enum Op {
      */
     IMPL("==>", 5, OpType.Statement, Args.Two) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term compound(int dt, Term... u) {
             assert(u.length==2);
             return statement(this, dt, u[0], u[1]);
         }
@@ -1433,7 +1433,7 @@ public enum Op {
 
             if (predicate.op() == NEG) {
                 //negated predicate gets unwrapped to outside
-                return IMPL.compound(dt, new Term[]{subject, predicate.unneg()}).neg();
+                return IMPL.compound(dt, subject, predicate.unneg()).neg();
             }
 
 
@@ -1534,7 +1534,7 @@ public enum Op {
             // (C ==>+- (A ==>+- B))   <<==>>  ((C &&+- A) ==>+- B)
             switch (predicate.op()) {
                 case IMPL: {
-                    return IMPL.compound(predicate.dt(), new Term[]{CONJ.compound(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1)});
+                    return IMPL.compound(predicate.dt(), CONJ.compound(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1));
                 }
 //                case CONJ: {
 //                    // (C ==>+- (A &&+ B))   <<==>>  ((C &&+- A) ==>+ B)
@@ -1778,7 +1778,8 @@ public enum Op {
         int xv = x.volume();
         int yv = y.volume();
         if (xv == yv)
-            return x.containsRecursively(y, true, delim) || y.containsRecursively(x, true, delim);
+            return Terms.commonStructure(x,y) &&
+                    (x.containsRecursively(y, true, delim) || y.containsRecursively(x, true, delim));
         else if (xv > yv)
             return x.containsRecursively(y, true, delim);
         else
@@ -1932,7 +1933,7 @@ public enum Op {
         if (aaa == 1)
             return args.first();
         else {
-            return compound(intersection, DTERNAL, args.toArray(new Term[aaa]));
+            return compound(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
         }
     }
 
@@ -1988,12 +1989,12 @@ public enum Op {
         }
     }
 
-    public static Term conjEternalize(FasterList<LongObjectPair<Term>> events, int start, int end) {
-        if (end - start == 1)
-            return events.get(start).getTwo();
-        else
-            return CONJ.compound(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
-    }
+//    public static Term conjEternalize(FasterList<LongObjectPair<Term>> events, int start, int end) {
+//        if (end - start == 1)
+//            return events.get(start).getTwo();
+//        else
+//            return CONJ.compound(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
+//    }
 
     public final Term the(Subterms s) {
         return the(s.arrayShared());
@@ -2099,9 +2100,6 @@ public enum Op {
         return terms.compound(this, dt, u);
     }
 
-    public final Term compound(Term... u) {
-        return compound(DTERNAL, u);
-    }
 
     /**
      * direct constructor

@@ -18,6 +18,7 @@ import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.EllipsisOneOrMore;
 import nars.unify.match.EllipsisZeroOrMore;
+import nars.util.term.TermHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -78,7 +79,7 @@ public class EllipsisTest {
 
                 System.out.println(seed + ": " + x + " unify " + y + " => " + r);
 
-                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax, 128) {
+                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax, 128, new TermHashMap()) {
 
                     @Override
                     public void tryMatch() {

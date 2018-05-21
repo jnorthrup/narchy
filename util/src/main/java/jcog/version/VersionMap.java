@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
-    private final Versioning context;
+    protected final Versioning context;
     public final Map<X, Versioned<Y>> map;
     public final int elementStackSizeDefault; //stackSizePerElement
 

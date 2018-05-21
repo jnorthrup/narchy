@@ -81,9 +81,8 @@ public final class Evaluation {
     }
 
     private void reset() {
-        if (v.reset())
-            subst.map.clear();
         proc.clear();
+        v.reset();
     }
 
     public boolean get(Term x, TermContext context, Predicate<Term> each) {

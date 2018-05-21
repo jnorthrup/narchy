@@ -51,15 +51,6 @@ public abstract class PreDerivation extends Unify {
 //        return (t.isPositive() ? +1 : -1);
 //    }
 
-    @Override public boolean reset() {
-
-        if (super.reset()) {
-            this.xy.map.clear(); //must also happen to be consistent
-            this.termutes.clear();
-            return true;
-        }
-        return false;
-    }
 
     public boolean hasBeliefTruth() {
         return beliefTruth!=null || beliefTruthDuringTask!=null;

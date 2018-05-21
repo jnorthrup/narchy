@@ -780,9 +780,9 @@ public interface Term extends Termed, Comparable<Termed> {
 
 
     @Nullable
-    default Term replace(Map<Term, Term> m) {
+    default Term replace(Map<? extends Term, Term> m) {
         if (m.size()==1) {
-            Map.Entry<Term, Term> e = m.entrySet().iterator().next();
+            Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
             return replace(e.getKey(), e.getValue()); //1-ary should be faster
         }
 

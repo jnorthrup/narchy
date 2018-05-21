@@ -20,11 +20,11 @@ public final class IntroVars extends AbstractPred<Derivation> {
     }
 
     @Override
-    public boolean test(Derivation p) {
-        final Term x = p.derivedTerm;
+    public boolean test(Derivation d) {
+        final Term x = d.derivedTerm;
 
 
-        @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, p.random);
+        @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, d.random);
         if (xy == null)
             return false;
 
@@ -33,14 +33,14 @@ public final class IntroVars extends AbstractPred<Derivation> {
         if (!y.unneg().op().conceptualizable ||
             y.equals(x) || /* keep only if it differs */
             //!y.hasAny(Op.ConstantAtomics) ||  //entirely variablized
-            !Task.validTaskTerm(y, p.concPunc, true)
+            !Task.validTaskTerm(y, d.concPunc, true)
         )
             return false;
 
 
         Map<Term, Term> changes = xy.getTwo();
-        changes.forEach(p::replaceXY);
-        p.derivedTerm = y;
+        changes.forEach((cx,cy)->d.untransform.put(cy, cx));
+        d.derivedTerm = y;
 
 //            //reduce evidence by a factor proportional to the number of variables introduced
 //            p.concEviFactor *= (((float)(1+y.complexity()))/(1+x.complexity()));

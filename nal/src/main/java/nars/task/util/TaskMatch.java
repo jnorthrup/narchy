@@ -5,6 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.control.PrediTerm;
 import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
@@ -109,7 +110,7 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
      * @param xy
      * @return true for callee to continue matching, false to stop
      */
-    abstract protected void accept(Task task, Map<Term, Term> xy);
+    abstract protected void accept(Task task, Map<Variable, Term> xy);
 
 
 }

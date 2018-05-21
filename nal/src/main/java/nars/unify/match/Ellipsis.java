@@ -16,6 +16,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
     private final int minArity;
     protected final byte num;
+    //private final short id;
 
 
 //    /** a placeholder that indicates an expansion of one or more terms that will be provided by an Ellipsis match.
@@ -104,11 +105,16 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
         assert(target.op()==VAR_PATTERN); //only VAR_PATTERN for now
         this.minArity = minArity;
         this.num = target.anonNum();
+        //id = AnonID.termToId(type, num);
     }
 
-
-
 //    @Override
+//    public short anonID() {
+//        return id;
+//    }
+
+
+    //    @Override
 //    public final boolean equals(Object obj) {
 //        return //((obj instanceof Ellipsis) && id == ((Ellipsis)obj).id)
 //                //||

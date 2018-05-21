@@ -9,6 +9,7 @@ import nars.$;
 import nars.derive.Derivation;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.control.AbstractPred;
 import nars.term.control.AndCondition;
 import nars.term.control.PrediTerm;
@@ -30,11 +31,11 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
-    public final Term x;
+    public final Variable x;
 
     protected MatchConstraint(Term x, String func, Term... args) {
         super($.func("unifyIf", x, $.func(func, args)));
-        this.x = x;
+        this.x = (Variable) x;
     }
 
     public static PrediTerm<Derivation> combineConstraints(AndCondition<Derivation> a) {
@@ -191,7 +192,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
 
         private final MatchConstraint[] cache;
-        final Term target;
+        final Variable target;
 
         /** groups the constraints into their respective targets */
         public static Iterable<PrediTerm<Derivation>> the(MatchConstraint[] c) {

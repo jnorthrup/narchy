@@ -4,6 +4,7 @@ import nars.$;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.Variable;
 import nars.term.control.PrediTerm;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +19,7 @@ abstract public class RelationConstraint extends MatchConstraint {
     protected final boolean yNeg;
 
     protected RelationConstraint(Term x, Term y, String func, Term... args) {
-        super(x, func, args.length > 0 ? $.p(y, $.p(args)) : y);
+        super((Variable)x, func, args.length > 0 ? $.p(y, $.p(args)) : y);
         this.y = y;
         this.yUnneg = y.unneg();
         this.yNeg = y.op()==NEG;

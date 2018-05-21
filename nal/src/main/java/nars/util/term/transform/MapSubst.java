@@ -10,21 +10,22 @@ import java.util.Map;
 
 public final class MapSubst implements Subst {
 
-    @Nullable public static Subst the(Map<Term, Term> m) {
+    @Nullable public static Subst the(Map<? extends Term, Term> m) {
         switch (m.size()) {
             case 0:
                 return null;
             case 1:
-                return new MapSubst1(m.entrySet().iterator().next());
+                throw new UnsupportedOperationException("use replace(X,Y)");
+                //return new MapSubst1(m.entrySet().iterator().next());
             //case 2: apply first item then second, elides map lookup on each term?
             default:
                 return new MapSubst(m);
         }
     }
 
-    public final Map<Term, Term> xy;
+    public final Map<? extends Term, Term> xy;
 
-    private MapSubst(Map<Term, Term> xy) {
+    private MapSubst(Map<? extends Term, Term> xy) {
         this.xy = xy;
     }
 
@@ -81,7 +82,7 @@ public final class MapSubst implements Subst {
         private final Term from;
         private final Term to;
 
-        private MapSubst1(Map.Entry<Term,Term> e) {
+        private MapSubst1(Map.Entry<? extends Term,Term> e) {
             this(e.getKey(), e.getValue());
         }
 

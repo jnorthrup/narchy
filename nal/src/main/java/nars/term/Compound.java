@@ -63,10 +63,10 @@ public interface Compound extends Term, IPair, Subterms {
 
         return
                 (a.opX() == bb.opX())
-                    &&
-                (a.dt() == bb.dt())
-                    &&
-                (a.subterms().equals(bb.subterms()))
+                        &&
+                        (a.dt() == bb.dt())
+                        &&
+                        (a.subterms().equals(bb.subterms()))
                 ;
     }
 
@@ -111,7 +111,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int opX() {
-        return Term.opX(op(), (short)volume());
+        return Term.opX(op(), (short) volume());
     }
 
     @Override
@@ -192,14 +192,14 @@ public interface Compound extends Term, IPair, Subterms {
      * unification matching entry point (default implementation)
      *
      * @param y compound to match against (the instance executing this method is considered 'x')
-     * @param u  the substitution context holding the match state
+     * @param u the substitution context holding the match state
      * @return whether match was successful or not, possibly having modified subst regardless
      */
     @Override
     default boolean unify(/*@NotNull*/ Term y, /*@NotNull*/ Unify u) {
-        return  equals(y)
+        return equals(y)
                 ||
-                ( op() == y.op() && unifySubterms(y, u))
+                (op() == y.op() && unifySubterms(y, u))
                 ||
                 y.unifyReverse(this, u);
     }
@@ -212,15 +212,41 @@ public interface Compound extends Term, IPair, Subterms {
         Subterms ysubs = ty.subterms();
 
         int xs, ys;
-        if ((xs=xsubs.subs()) != (ys = ysubs.subs()))
+        if ((xs = xsubs.subs()) != (ys = ysubs.subs()))
             return false;
 
-        if (xs>1 && isCommutative()) {
+        if (op().temporal) {
+            //DT must be different , which is more specific
+            int xdt = this.dt();
+            int ydt = ty.dt();
+            if (xdt!=ydt) {
+                boolean xOrY;
+                if (xdt == XTERNAL && ydt != XTERNAL) {
+                    xOrY = false; //y
+                } else if (xdt != XTERNAL && ydt == XTERNAL) {
+                    xOrY = true;
+                } else {
+                    if (xdt == DTERNAL && ydt != DTERNAL) {
+                        xOrY = false;
+                    } else if (xdt != DTERNAL && ydt == DTERNAL) {
+                        xOrY = true;
+                    } else {
+                        return false; //differing specific time
+                    }
+                }
+            }
+
+            if (xsubs.equals(ysubs))
+                return true;
+            //else: continue
+        }
+
+        if (xs > 1 && isCommutative()) {
             //consider arity=2 XTERNAL as non-commutive at this point,
             // since it allows repeats.
             // although the order doesnt matter like general commutivity
             // and we are in the commutive unification procedure already.
-            boolean yCommutive = ty.isCommutative() && (ty.dt()!=XTERNAL || ys != 2);
+            boolean yCommutive = ty.isCommutative() && (ty.dt() != XTERNAL || ys != 2);
             return xsubs.unifyCommute(ysubs, yCommutive, u);
         } else {
             if (xs == 1) {
@@ -432,7 +458,7 @@ public interface Compound extends Term, IPair, Subterms {
                 case DTERNAL:
                 case XTERNAL:
                     return true;
-                    //return (subs() > 1);
+                //return (subs() > 1);
                 default:
                     return false;
             }
@@ -520,7 +546,7 @@ public interface Compound extends Term, IPair, Subterms {
             return 0;
 
         Op op = op();
-        if (op!=CONJ)
+        if (op != CONJ)
             return DTERNAL;
 
         int dt = dt();
@@ -566,7 +592,7 @@ public interface Compound extends Term, IPair, Subterms {
                 if (x.equals(yy1))
                     return dt;
             }
-         }
+        }
 
         boolean reverse;
         int idt;
@@ -694,11 +720,11 @@ public interface Compound extends Term, IPair, Subterms {
                 long t = offset;
 
 
-                boolean changeDT = t!=ETERNAL && t!=TIMELESS;
+                boolean changeDT = t != ETERNAL && t != TIMELESS;
 
                 level++;
 
-                if (dt >=0) {
+                if (dt >= 0) {
                     //forward
                     for (int i = 0; i < s; i++) {
                         Term st = tt.sub(i);
@@ -746,7 +772,8 @@ public interface Compound extends Term, IPair, Subterms {
 //        return false;
 //    }
 
-    @Override default boolean hasXternal() {
+    @Override
+    default boolean hasXternal() {
         return dt() == XTERNAL ||
                 subterms().hasXternal();
     }
@@ -777,25 +804,25 @@ public interface Compound extends Term, IPair, Subterms {
 
         Evaluation.TermContext context;
 //        if (!(_context instanceof Evaluation.TermContext.MapTermContext)) {
-            //pre-resolve functors
-            UnifiedMap<Term, Term> resolved = new UnifiedMap<>(4);
-            recurseTerms(t -> t.hasAny(ATOM), t -> {
-                if (t.op() == ATOM) {
-                    resolved.computeIfAbsent(t, tt -> {
-                        Termed ttt = _context.apply(tt);
-                        if ((ttt instanceof Functor || ttt instanceof Operator)) {
-                            return ttt.term();
-                        } else {
-                            return null; //dont map
-                        }
-                    });
-                }
-                return true;
-            }, null);
-            if (resolved.isEmpty())
-                return this;
+        //pre-resolve functors
+        UnifiedMap<Term, Term> resolved = new UnifiedMap<>(4);
+        recurseTerms(t -> t.hasAny(ATOM), t -> {
+            if (t.op() == ATOM) {
+                resolved.computeIfAbsent(t, tt -> {
+                    Termed ttt = _context.apply(tt);
+                    if ((ttt instanceof Functor || ttt instanceof Operator)) {
+                        return ttt.term();
+                    } else {
+                        return null; //dont map
+                    }
+                });
+            }
+            return true;
+        }, null);
+        if (resolved.isEmpty())
+            return this;
 
-            context = new Evaluation.TermContext.MapTermContext(resolved);
+        context = new Evaluation.TermContext.MapTermContext(resolved);
 //        } else {
 //            //re-use existing pre-solved Context
 //            context = _context;
@@ -805,8 +832,6 @@ public interface Compound extends Term, IPair, Subterms {
 
 
         /*if (hasAll(opBits))*/
-
-
 
 
 //        Termed ff = context.applyIfPossible(this);
@@ -824,9 +849,9 @@ public interface Compound extends Term, IPair, Subterms {
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
         for (int i = 0, n = uu.subs(); i < n; i++) {
-            Term xi = xy!=null ? xy[i] : uu.sub(i);
+            Term xi = xy != null ? xy[i] : uu.sub(i);
             Term yi = xi.evalSafe(context, o, i, remain);
-            if (xi!=yi) {
+            if (xi != yi) {
                 if (yi == null) {
                     //nothing
                 } else {
@@ -852,10 +877,8 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
 
-
-
         Term u;
-        if (xy!=null) {
+        if (xy != null) {
             if (ellipsisAdds > 0) {
                 //flatten ellipsis
                 xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
@@ -873,25 +896,24 @@ public interface Compound extends Term, IPair, Subterms {
         //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
         if (o == INH && uu.hasAll(Op.funcInnerBits)) {
             Term pred, subj;
-            if ((pred=uu.sub(1)) instanceof Functor && (subj=uu.sub(0)).op() == PROD) {
+            if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
 
                 Term v = ((Function<Subterms, Term>) pred).apply(subj.subterms());
                 if (v instanceof AbstractPred) {
                     u = $.the(((Predicate) v).test(null));
                 } else if (v == null) {
                     //null means to keep 'u' unchanged same
-                } else  {
+                } else {
                     u = v; //continue with the evaluation result
                 }
             }
         }
 
-        if (u!=this && (u.equals(this) && u.getClass()==getClass()))
+        if (u != this && (u.equals(this) && u.getClass() == getClass()))
             return this; //return to this instance, undoing any substitutions necessary to reach this eval
 
         return u;
     }
-
 
 
     @Override
@@ -989,24 +1011,23 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
     @Override
     default Term concept() {
 
         Term term = unneg().root(); //unneg just in case
 
         Op op = term.op();
-        assert(op!=NEG);
+        assert (op != NEG);
         if (!op.conceptualizable)
             return Null;
 
 
         Term term2 = term.normalize();
-        if (term2!=term) {
+        if (term2 != term) {
             if (term2 == null)
                 return Null;
 
-            assert(term2.op() == op);
+            assert (term2.op() == op);
 //            if (!term2.op().conceptualizable)
 //                return Null;
 
@@ -1026,11 +1047,11 @@ public interface Compound extends Term, IPair, Subterms {
         if (
                 opX() == x.opX()
                         &&
-                structure() == x.structure()
-                ) {
+                        structure() == x.structure()
+        ) {
 
             Term root = root();
-            return (root!=this && root.equals(x)) || root.equals(x.root());
+            return (root != this && root.equals(x)) || root.equals(x.root());
         }
 
         return false;

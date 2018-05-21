@@ -33,13 +33,15 @@ public class Versioning<X>
         return false;
     }
 
-    /** hard clear; use with caution */
-    public boolean reset() {
-        if (this.size != 0) {
-            this.size = 0; //HACK instant revert to zero
-            return true;
+    /** hard clear; use with caution  */
+    public void reset() {
+
+        for (int i = 0; i < size; i++) {
+            items[i].clear();
+            items[i] = null;
         }
-        return false;
+
+        this.size = 0; //instant revert to zero
     }
 
     /**
@@ -50,7 +52,12 @@ public class Versioning<X>
 
         int s = size;
         if (s<=when || s == 0)
+            return false;
+
+        if (when == 0) {
+            reset();
             return true;
+        }
 
         int c = s - when;
         final Versioned<X>[] i = this.items;

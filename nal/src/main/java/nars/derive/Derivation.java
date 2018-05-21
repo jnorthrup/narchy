@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Prioritized;
-import jcog.version.Versioned;
 import nars.*;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
@@ -38,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -172,10 +170,6 @@ public class Derivation extends PreDerivation {
 
     private ImmutableLongSet taskStamp;
 
-    static Supplier<Map<Term,Versioned<Term>>> _termMapBuilder = ()->{
-        return new TermHashMap();
-    };
-
     /**
      * if using this, must set: nar, index, random, DerivationBudgeting
      */
@@ -183,7 +177,10 @@ public class Derivation extends PreDerivation {
         super(
                 //null /* any var type */
                 VAR_PATTERN
-                , null, Param.UnificationStackMax, 0, Derivation._termMapBuilder.get());
+                , null, Param.UnificationStackMax, 0,
+                    new TermHashMap()
+                    //new NormalizedVariableMap() //<-- TODO
+        );
 
         //random generator local to this Derivation context.
         //gets seeded by NAR rng every init
@@ -263,7 +260,10 @@ public class Derivation extends PreDerivation {
      */
     public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
 
+        this.termutes.clear();
+
         reset();
+
         this.derivedTerm = null;
 
 

@@ -11,7 +11,7 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.unify.constraint.MatchConstraint;
 import nars.unify.mutate.Termutator;
-import nars.util.term.TermHashMap;
+import nars.util.term.NormalizedVariableMap;
 import nars.util.term.transform.Subst;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,9 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 
 /* recurses a pair of compound term tree's subterms
@@ -57,7 +54,7 @@ public abstract class Unify extends Versioning implements Subst {
 //    public final TermIndex terms;
 
 
-    public final VersionMap<Term, Term> xy;
+    public final VersionMap<Variable, Term> xy;
 
     /**
      * temporal tolerance; if -1, then it is not tested
@@ -80,10 +77,10 @@ public abstract class Unify extends Versioning implements Subst {
      * @param random
      */
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
-        this(type, random, stackMax, initialTTL, new TermHashMap<>());
+        this(type, random, stackMax, initialTTL, new NormalizedVariableMap<>());
     }
 
-    protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL, Map<Term,Versioned<Term>> termMap) {
+    protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL, Map/*<Variable,Versioned<Term>>*/ termMap) {
         super(stackMax, initialTTL);
 
 //        this.terms = terms;
@@ -359,39 +356,14 @@ public abstract class Unify extends Versioning implements Subst {
 //                return y;   //try set
 //        });
 
-        Versioned<Term> y0Versioned = xy.getVersioned(x);
-        if (y0Versioned != null) {
-            Term y0 = y0Versioned.get();
-            if (y0 != null) {
-                if (y0.equals(y))
-                    return true;
 
-                if (y0.equalsRoot(y)) {
-                    int ydt = y.dt();
-                    if (ydt != XTERNAL) {
-                        int y0dt = y0.dt();
-                        if ((y0dt == XTERNAL) || (y0dt == DTERNAL && ydt != DTERNAL)) {
-                            //replace because y is more temporally specific
-                            //replaceXY(x, y);
-                            y0Versioned.set(y);
-                        }
-                    }
-                    return true; //keep X, but continue
-                } else {
-                    return false; //mismatch
-                }
+        return replaceXY(x, y);
 
-            }
-
-            return y0Versioned.set(y) != null;
-        } else {
-            return replaceXY(x, y);
-        }
     }
 
 
 
-    public final boolean replaceXY(final Term x, final Term y) {
+    public final boolean replaceXY(final Variable x, final Term y) {
         return xy.tryPut(x, y);
     }
 
@@ -402,10 +374,10 @@ public abstract class Unify extends Versioning implements Subst {
 //        return this.ttl += x;
 //    }
 
-    public boolean constant(Termlike xsubs, Termlike ysubs) {
-        //return relevantVariables(xsubs) || (varSymmetric && relevantVariables(ysubs));
-        return constant(xsubs) && (!varSymmetric || constant(ysubs));
-    }
+//    public boolean constant(Termlike xsubs, Termlike ysubs) {
+//        //return relevantVariables(xsubs) || (varSymmetric && relevantVariables(ysubs));
+//        return constant(xsubs) && (!varSymmetric || constant(ysubs));
+//    }
 
     /**
      * whether is constant with respect to the current matched variable type
@@ -432,8 +404,8 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-    private class ConstrainedVersionMap extends VersionMap<Term, Term> {
-        public ConstrainedVersionMap(Versioning versioning, Map<Term,Versioned<Term>> termMap) {
+    private class ConstrainedVersionMap extends VersionMap<Variable, Term> {
+        public ConstrainedVersionMap(Versioning versioning, Map<Variable,Versioned<Term>> termMap) {
             super(versioning,
                     //4
                     termMap,
@@ -472,7 +444,7 @@ public abstract class Unify extends Versioning implements Subst {
 //        }
 
         @Override
-        protected Versioned newEntry(Term x) {
+        protected Versioned newEntry(Variable x) {
             return new ConstrainedVersionedTerm();
         }
 
@@ -548,7 +520,7 @@ public abstract class Unify extends Versioning implements Subst {
         return constrain(m.x, m);
     }
 
-    public boolean constrain(Term target, MatchConstraint... mm) {
+    public boolean constrain(Variable target, MatchConstraint... mm) {
         Versioned<Term> v = xy.getOrCreateIfAbsent(target);
         for (MatchConstraint m : mm) {
             if (!((ConstrainedVersionedTerm) v).constrain(m)) {

@@ -9,6 +9,7 @@ import nars.term.anon.Anon;
 import nars.test.TestNAR;
 import nars.unify.Unify;
 import nars.util.signal.RuleTest;
+import nars.util.term.TermHashMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -108,7 +109,7 @@ public class UnifyTest {
 
             Unify sub = new Unify(type,
                     new XorShift128PlusRandom(1),
-                    Param.UnificationStackMax, INITIAL_TTL) {
+                    Param.UnificationStackMax, INITIAL_TTL, new TermHashMap()) {
 
 
                 @Override

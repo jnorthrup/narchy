@@ -2,6 +2,7 @@ package nars.unify.constraint;
 
 import nars.subterm.util.Contains;
 import nars.term.Term;
+import nars.term.Variable;
 
 public class SubOfConstraint extends RelationConstraint {
     private final boolean forward;
@@ -19,7 +20,7 @@ public class SubOfConstraint extends RelationConstraint {
     }
 
     public SubOfConstraint(Term x, Term y, /* HACK change to forward semantics */ boolean reverse, boolean canEqual, Contains contains, int polarityCompare) {
-        super(x, y,
+        super((Variable)x, y,
             contains.name() +
             (!reverse ? "->" : "<-") +
             (canEqual ? "|=" : "") +

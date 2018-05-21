@@ -15,7 +15,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.anon.Anom;
-import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -28,7 +27,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.term.compound.FastCompound.ov;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -234,51 +232,51 @@ public class IO {
     }
 
 
-    /**
-     * direct method of reading Atomic from a byte[]
-     */
-    public static Atomic readAtomic(byte[] b) {
-        byte oo = b[0];
-        if (oo == SPECIAL_OP)
-            return (Atomic) termFromBytes(b);
-
-        Op o = ov[oo];
-        switch (o) {
-
-            case ATOM:
-                return new Atom(b);
-
-            case VAR_PATTERN:
-            case VAR_DEP:
-            case VAR_QUERY:
-            case VAR_INDEP:
-                return $.v(o, b[1]);
-
-            case INT:
-//                byte subType = in.readByte();
-//                switch (subType) {
-//                    case 0: return Int.the( in.readInt());
-//                    case 1: return Int.range( in.readInt(), in.readInt() );
-//                    default: throw new TODO();
-//                }
-                return (Atomic) termFromBytes(b);
-            //throw new TODO();
-
-
-            //TODO normalized Variable cases
-
-            default:
-
-
-//                try {
-//                    return $.$(new String(b));
-//                } catch (Narsese.NarseseException e) {
-//                }
-//                    throw new TODO();
-                return (Atomic) termFromBytes(b);
-
-        }
-    }
+//    /**
+//     * direct method of reading Atomic from a byte[]
+//     */
+//    public static Atomic readAtomic(byte[] b) {
+//        byte oo = b[0];
+//        if (oo == SPECIAL_OP)
+//            return (Atomic) termFromBytes(b);
+//
+//        Op o = ov[oo];
+//        switch (o) {
+//
+//            case ATOM:
+//                return new Atom(b);
+//
+//            case VAR_PATTERN:
+//            case VAR_DEP:
+//            case VAR_QUERY:
+//            case VAR_INDEP:
+//                return $.v(o, b[1]);
+//
+//            case INT:
+////                byte subType = in.readByte();
+////                switch (subType) {
+////                    case 0: return Int.the( in.readInt());
+////                    case 1: return Int.range( in.readInt(), in.readInt() );
+////                    default: throw new TODO();
+////                }
+//                return (Atomic) termFromBytes(b);
+//            //throw new TODO();
+//
+//
+//            //TODO normalized Variable cases
+//
+//            default:
+//
+//
+////                try {
+////                    return $.$(new String(b));
+////                } catch (Narsese.NarseseException e) {
+////                }
+////                    throw new TODO();
+//                return (Atomic) termFromBytes(b);
+//
+//        }
+//    }
 
     static Atomic readAtomic(DataInput in, /*@NotNull*/ Op o, byte subType) throws IOException {
 
@@ -305,12 +303,13 @@ public class IO {
                 }
             }
             default:
-                String s = in.readUTF();
-                try {
-                    return $.$(s);
-                } catch (Narsese.NarseseException e) {
-                    throw new UnsupportedEncodingException(e.getMessage());
-                }
+                throw new UnsupportedEncodingException();
+//                String s = in.readUTF();
+//                try {
+//                    return $.$(s);
+//                } catch (Narsese.NarseseException e) {
+//                    throw new UnsupportedEncodingException(e.getMessage());
+//                }
         }
 
     }

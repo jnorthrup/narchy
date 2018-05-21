@@ -2,7 +2,6 @@ package nars.term.compound;
 
 import jcog.Util;
 import jcog.data.byt.DynBytes;
-import nars.IO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -31,28 +30,28 @@ abstract public class FastCompound implements Compound /* The */ {
 
     private static final int MAX_LAYERS = 8;
 
-    private final int MAX_LAYER_LEN = 8;
-
-    /** TODO */
-    abstract public static class FastCompoundSerializedAtoms extends FastCompound {
-        @NotNull
-        private final byte[][] atoms;
-
-        protected FastCompoundSerializedAtoms(byte[][] atoms, byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
-            super(shadow, structure, hash, volume, normalized);
-            this.atoms = atoms;
-        }
-
-        @Override
-        protected Term atom(byte id) {
-            return IO.readAtomic(atoms[id]);
-        }
-
-        @Override
-        protected int atomCount() {
-            return atoms.length;
-        }
-    }
+//    private final int MAX_LAYER_LEN = 8;
+//
+//    /** TODO */
+//    abstract public static class FastCompoundSerializedAtoms extends FastCompound {
+//        @NotNull
+//        private final byte[][] atoms;
+//
+//        protected FastCompoundSerializedAtoms(byte[][] atoms, byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
+//            super(shadow, structure, hash, volume, normalized);
+//            this.atoms = atoms;
+//        }
+//
+//        @Override
+//        protected Term atom(byte id) {
+//            return IO.readAtomic(atoms[id]);
+//        }
+//
+//        @Override
+//        protected int atomCount() {
+//            return atoms.length;
+//        }
+//    }
 
     public static class FastCompoundInstancedAtoms extends FastCompound {
         @NotNull
