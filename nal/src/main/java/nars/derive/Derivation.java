@@ -267,7 +267,8 @@ public class Derivation extends PreDerivation {
         this.derivedTerm = null;
 
 
-        if (this._task!=null && this._task.term().equals(_task.term())) {
+
+        if (taskUniques>0 && this._task!=null && this._task.term().equals(_task.term())) {
 
 
             //same task; just rollback anon to the point where a belief's uniques can be added

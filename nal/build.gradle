@@ -6,12 +6,12 @@ buildscript {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         //maven { url 'https://stamp-project.github.io/stamp-maven-repository' }
     }
-    configurations.maybeCreate("pitest")
+//    configurations.maybeCreate("pitest")
 
     dependencies {
 //        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
         classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
-        pitest 'org.pitest:pitest-junit5-plugin:0.5'
+        pitest 'org.pitest:pitest-junit5-plugin:0.6-SNAPSHOT'
     }
 }
 apply plugin: "info.solidsoft.pitest"
@@ -103,11 +103,11 @@ pitest {
 //    }
 
     targetTests = [
-            'nars.nal.nal1.NAL1Test',
+            //'nars.nal.nal1.NAL1Test',
             //'nars.nal.nal1.NAL1MultistepTest',
             //'nars.nal.nal2.*',
             //'nars.derive.TemporalizeTest',
-            //'nars.task.*'
+            'nars.task.*'
     ]
     targetClasses = [
             'nars.term.*',
@@ -119,9 +119,10 @@ pitest {
     ]
 
 
-    jvmArgs = ["-ea"]
+    //jvmArgs = ["-ea"]
 
-    pitestVersion = '1.3.2'
+    verbose = true
+    pitestVersion = '1.4.1-SNAPSHOT'
     testPlugin = "junit5"
     timeoutFactor = 3
     enableDefaultIncrementalAnalysis = true
