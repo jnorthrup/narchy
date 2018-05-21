@@ -23,7 +23,8 @@ import java.util.function.Consumer;
 public class Timeline2D<E> extends Graph2D<E> {
 
     /** viewable range */
-    double tStart = 0, tEnd = 1;
+    protected double tStart = 0;
+    protected double tEnd = 1;
 
     final TimelineModel<E> model;
 
@@ -156,15 +157,15 @@ public class Timeline2D<E> extends Graph2D<E> {
         return update();
     }
 
-    public float x(long t) {
+    public float x(double t) {
         double s = tStart;
         double e = tEnd;
         float X = x();
         float W = w();
-        return (float)(((t - s)) / (e - s) * W + X);
+        return (float)((t - s) / (e - s) * W + X);
     }
 
-    public synchronized Timeline2D<E> update() {
+    public Timeline2D<E> update() {
         set(model.events((long)Math.floor(tStart), (long)Math.ceil(tEnd-1)));
         return this;
     }
@@ -196,7 +197,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 //        return new float[] { lane * thick + margin, (lane+1)*thick - margin };
 //    }
 
-    interface TimelineModel<X> {
+    public interface TimelineModel<X> {
         /** any events intersecting with the provided range */
         Iterable<X> events(long start, long end);
         long[] range(X event);
@@ -272,9 +273,48 @@ public class Timeline2D<E> extends Graph2D<E> {
             return Integer.compare(System.identityHashCode(this), System.identityHashCode(x));
         }
 
+        public double range() {
+            return end-start;
+        }
     }
 
     public static class SimpleTimelineModel extends ConcurrentSkipListSet<SimpleEvent> implements TimelineModel<SimpleEvent> {
+
+        @Override
+        public Iterable<SimpleEvent> events(long start, long end) {
+            //HACK TODO use NavigableMap iterators correctly
+            return Iterables.filter(this, x-> intersects(x, start, end));
+        }
+
+        @Override
+        public boolean intersects(SimpleEvent simpleEvent, long start, long end) {
+            return Longerval.intersectLength(simpleEvent.start, simpleEvent.end, start, end) >= 0;
+        }
+
+        @Override
+        public long[] range(SimpleEvent event) {
+            return new long[] { event.start, event.end };
+        }
+    }
+
+    public static class FixedSizeTimelineModel extends ConcurrentSkipListSet<SimpleEvent> implements TimelineModel<SimpleEvent> {
+
+        private final int cap;
+
+        public FixedSizeTimelineModel(int cap) {
+            this.cap = cap;
+        }
+
+        @Override
+        public boolean add(SimpleEvent simpleEvent) {
+            if (super.add(simpleEvent)) {
+                while (size() > cap) {
+                    pollLast();
+                }
+                return true;
+            }
+            return false;
+        }
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {

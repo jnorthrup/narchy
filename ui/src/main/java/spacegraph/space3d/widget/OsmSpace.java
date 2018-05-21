@@ -6,13 +6,19 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import jcog.list.FasterList;
+import jcog.math.FloatRange;
+import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerMove;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.space3d.AbstractSpatial;
 import spacegraph.space3d.phys.Collidable;
-import spacegraph.util.geo.ECEF;
 import spacegraph.util.geo.osm.GeoCoordinate;
 import spacegraph.util.geo.osm.Osm;
 import spacegraph.util.geo.osm.OsmNode;
 import spacegraph.util.geo.osm.OsmWay;
+import spacegraph.util.math.v2;
 import spacegraph.video.Draw;
 
 import java.util.List;
@@ -25,7 +31,8 @@ import static com.jogamp.opengl.GL.GL_POINTS;
 /**
  * Created by unkei on 2017/04/25.
  */
-public class OsmSpace extends AbstractSpatial<Osm> implements GLUtessellatorCallback {
+public class OsmSpace implements GLUtessellatorCallback {
+
 
 
     //    double scale = 0.3; //global scale
@@ -34,6 +41,10 @@ public class OsmSpace extends AbstractSpatial<Osm> implements GLUtessellatorCall
 //    GeoCoordinate center;
     final GeoCoordinate min;
     final GeoCoordinate max;
+    private final Osm osm;
+    private final GeoCoordinate center;
+
+    float scaleLat = 1, scaleLon = 1;
 
     boolean wireframe;
 
@@ -43,7 +54,7 @@ public class OsmSpace extends AbstractSpatial<Osm> implements GLUtessellatorCall
     private GL2 gl;
 
     public OsmSpace(Osm osm) {
-        super(osm);
+        this.osm = osm;
         min = new GeoCoordinate(0, 0);
         max = new GeoCoordinate(0, 0);
 
@@ -58,55 +69,135 @@ public class OsmSpace extends AbstractSpatial<Osm> implements GLUtessellatorCall
         double minLon = osm.bounds.minLon;
         double maxLat = osm.bounds.maxLat;
         double maxLon = osm.bounds.maxLon;
-//        scaleLat = scale * 2f / (maxLat - minLat);
-//        scaleLon = scale * 2f / (maxLon - minLon);
-//        center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
+        scaleLat = (float) ( (maxLat - minLat));
+        scaleLon = (float) ( (maxLon - minLon));
+        scaleLat = scaleLon = Math.max(scaleLat, scaleLon); //1:1
+        center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
 
     }
 
-    @Override
-    public void forEachBody(Consumer<Collidable> c) {
-        //none
-    }
 
-    @Override
-    public float radius() {
-        return 0; //N/A
-    }
-
-    static void project(GeoCoordinate global, double[] target) {
+    void project(GeoCoordinate global, double[] target) {
         project(global, target, 0);
     }
 
-    static void project(GeoCoordinate global, double[] target, int offset) {
+    void project(GeoCoordinate global, double[] target, int offset) {
 
-//        //2D flat projection
-//        target[0] = (global.latitude - center.latitude) * scaleLat;
-//        target[1] = (global.longitude - center.longitude) * scaleLon;
-//        target[2] = 0;
+        //2D flat projection
+        target[offset++] = (global.latitude - center.latitude);
+        target[offset++] = (global.longitude - center.longitude);
+        target[offset/*++*/] = 0;
 
-        //3D ECEF
-        double[] t = ECEF.latlon2ecef(global.latitude * 20, global.longitude * 20, global.altitude);
-        double s = 100 * 1E-7;
-        target[offset++] = t[0] * s;
-        target[offset++] = t[1] * s;
-        target[offset/*++*/] = t[2] * s;
+//        //3D ECEF
+//        double[] t = ECEF.latlon2ecef(global.latitude * 20, global.longitude * 20, global.altitude);
+//        double s = 100 * 1E-7;
+//        target[offset++] = t[0] * s;
+//        target[offset++] = t[1] * s;
+//        target[offset/*++*/] = t[2] * s;
 
     }
 
-    @Override
-    public void renderAbsolute(GL2 gl, int dtMS) {
-        if (render == null) {
-            render = compile();
-            this.gl = gl;
+    public Surface surface() {
+        return new OsmSurface();
+
+    }
+
+    public OsmVolume volume() {
+        return new OsmVolume();
+    }
+
+    public class OsmSurface extends Widget implements Finger.RotationAbsorbed {
+
+        final FloatRange scale = new FloatRange(1f, 0.001f, 1000f);
+        final v2 translate= new v2();
+
+        final FingerMove pan = new FingerMove(0) {
+
+
+            private v2 translateStart;
+
+            @Override
+            public boolean start(Finger f) {
+                translateStart = translate.clone();
+                return super.start(f);
+            }
+
+            @Override
+            public void move(float tx, float ty) {
+                //System.out.println(startPos + " "  + tx + " "  + ty);
+                float scale = OsmSurface.this.scale.floatValue()/2;
+                translate.set((translateStart.x+tx*scale), (translateStart.y+ty*scale));
+            }
+        };
+
+        @Override
+        public Surface tryTouch(Finger finger) {
+            float wheel;
+            if ((wheel = finger.rotationY())!=0) {
+                //zoom
+                scale.multiply( (1f - wheel*0.1f) );
+            }
+
+            if (finger.tryFingering(pan)) {
+            }
+
+            return this;
         }
-        render.accept(gl);
+
+        @Override
+        protected void paintBelow(GL2 gl) {
+
+        }
+
+        @Override
+        protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+            if (render == null) {
+                render = compile(gl, osm);
+            }
+
+            gl.glPushMatrix();
+            gl.glTranslatef( translate.x + bounds.x+bounds.w/2, translate.y + bounds.y+bounds.h/2, 0);
+
+            float baseScale = Math.max(bounds.w, bounds.h);
+            float scale = this.scale.floatValue();
+            gl.glScalef(baseScale * scale, baseScale * scale, 1);
+
+            render.accept(gl);
+
+            gl.glPopMatrix();
+        }
     }
 
+    public class OsmVolume extends AbstractSpatial<Osm> {
 
-    protected Consumer<GL2> compile() {
+        protected OsmVolume() {
+            super(osm);
+        }
+
+        @Override
+        public void forEachBody(Consumer<Collidable> c) {
+
+        }
+
+        @Override
+        public float radius() {
+            return 0;
+        }
+
+        @Override
+        public void renderAbsolute(GL2 gl, int dtMS) {
+            if (render == null) {
+                render = compile(gl, osm);
+            }
+            render.accept(gl);
+        }
+
+    }
+
+    protected Consumer<GL2> compile(GL2 _gl, Osm osm) {
+        this.gl = _gl;
         List<Consumer<GL2>> draw = new FasterList();
-        Osm osm = id;
+
         for (OsmWay way : osm.ways) {
 
             Map<String, String> tags = way.tags;
@@ -368,7 +459,6 @@ public class OsmSpace extends AbstractSpatial<Osm> implements GLUtessellatorCall
                 gl.glColor3dv(pointer, 3);
             gl.glVertex3dv(pointer, 0);
         }
-
     }
 
     @Override

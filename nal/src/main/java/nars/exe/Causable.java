@@ -1,6 +1,7 @@
 package nars.exe;
 
 import jcog.exe.Can;
+import jcog.exe.Exe;
 import nars.NAR;
 import nars.Param;
 import nars.control.NARService;
@@ -74,6 +75,8 @@ abstract public class Causable extends NARService {
 
         if (completed >= 0) //TODO this should be done after releasing the singleton state
             can.add((end - start), completed);
+
+        Exe.profiled(can, start, end);
 
         if (error != null) {
             if (Param.DEBUG) {

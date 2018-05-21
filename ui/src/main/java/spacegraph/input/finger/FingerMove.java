@@ -5,7 +5,7 @@ import spacegraph.util.math.v2;
 public abstract class FingerMove extends FingerDragging {
 
     protected final float xSpeed, ySpeed;
-    private v2 startPos;
+    protected v2 startPos;
 
     public FingerMove(int button) {
         this(button, true, true);
@@ -42,7 +42,7 @@ public abstract class FingerMove extends FingerDragging {
 
     @Override
     public boolean start(Finger f) {
-        this.startPos = pos(f);
+        this.startPos = pos(f).clone();
         return super.start(f);
     }
 

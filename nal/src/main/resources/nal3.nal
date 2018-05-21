@@ -24,7 +24,7 @@
 
 //// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
 //if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
-
+//TODO maybe X-S should work like set difference, not 'without(' current semantics
      (X --> M), (S --> M), is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposePositiveNegativeNegative)
          (X-->M), (S --> N), is(S,"|"), subOf(S,X), neq(M,N) |- subIfUnifiesAny((without(S,X) --> N), N, M), (Belief:DecomposePositiveNegativeNegative)
      (X --> M), (S --> M), is(S,"&"), subOf(S,X) |- (without(S,X) --> M), (Belief:DecomposeNegativePositivePositive)

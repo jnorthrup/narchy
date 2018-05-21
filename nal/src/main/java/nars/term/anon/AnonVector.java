@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
+import nars.subterm.util.TermList;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -49,6 +50,22 @@ public class AnonVector extends TermVector {
 
 
     @Override
+    public Subterms replaceSubs(Term from, Term to) {
+        int found;
+        if ((found = indexOf(from))==-1)
+            return this;
+
+        short eq = subterms[found]; //the term to look for
+        int n = subs();
+        TermList t = new TermList(n);
+        for (int i = 0; i < n; i++) {
+            short si = subterms[i];
+            t.addWithoutResizeCheck(si == eq ? to : idToTermWithNegationTest(si)); //substituted
+        }
+        return t;
+    }
+
+    @Override
     public final Term sub(int i) {
         return idToTermWithNegationTest(subterms[i]);
     }
@@ -58,15 +75,13 @@ public class AnonVector extends TermVector {
         short[] ss = subterms;
         out.writeByte(ss.length);
         for (short s : ss) {
-            if (s > 0) {
-                idToTerm(s).append(out);
-            } else {
+            if (s < 0) {
                 //wrap (prepend) with a virtual NEG
                 out.writeByte(Op.NEG.id);
-                idToTerm((short)-s).append(out);
+                s = (short)-s;
             }
+            idToTerm(s).append(out);
         }
-
     }
 
     @Override
@@ -75,10 +90,10 @@ public class AnonVector extends TermVector {
     }
 
     int indexOf(AnonID t, boolean neg) {
-        short id = t.anonID();
-        if (neg)
-            id = (short)(-id);
-        return ArrayUtils.indexOf(subterms, id);
+        return ArrayUtils.indexOf(subterms, t.anonID(neg));
+    }
+    int indexOf(AnonID t) {
+        return ArrayUtils.indexOf(subterms, t.anonID());
     }
 
     @Override
@@ -112,7 +127,7 @@ public class AnonVector extends TermVector {
             }
         }else {
             if (t instanceof AnonID) {
-                return (indexOf((AnonID)t, false)!=-1)  //the positive version
+                return (indexOf((AnonID)t)!=-1)  //the positive version
                         ||
                        (anyNeg() && indexOf((AnonID)t, true)!=-1 && inSubtermsOf.test(t.neg())); //the negative version, and tested as such
             }

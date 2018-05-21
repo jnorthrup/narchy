@@ -8,6 +8,7 @@ import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +21,7 @@ import static nars.time.Tense.DTERNAL;
 
 public class SetFunc {
 
-    public static final Functor union = new Functor.BinaryFunctor("union") {
+    public static final Functor union = new BinarySetFunctor("union") {
 
         @Override
         public boolean validOp(Op o) {
@@ -38,7 +39,7 @@ public class SetFunc {
     /**
      * all X which are in the first term AND not in the second term
      */
-    public static final Functor differ = new Functor.BinaryFunctor("differ") {
+    public static final Functor differ = new BinarySetFunctor("differ") {
 
         @Override
         public boolean validOp(Op o) {
@@ -53,7 +54,7 @@ public class SetFunc {
 
 
 
-    public static final Functor intersect = new Functor.BinaryFunctor("intersect") {
+    public static final Functor intersect = new BinarySetFunctor("intersect") {
 
         @Override
         public boolean validOp(Op o) {
@@ -178,6 +179,40 @@ public class SetFunc {
                 return null;
             }
         };
+
     }
+
+    abstract static class BinarySetFunctor extends Functor implements Functor.InlineFunctor {
+
+        protected BinarySetFunctor( String id) {
+            super(id);
+        }
+
+        public boolean validOp(Op o) {
+            return true;
+        }
+
+        @Nullable
+        @Override
+        public final Term apply(Subterms x) {
+            if (x.subs() != 2)
+                throw new UnsupportedOperationException("# args must equal 2");
+
+
+            Term a = x.sub(0);
+            Term b = x.sub(1);
+            if ((a instanceof Variable) || (b instanceof Variable))
+                return null;
+
+            if (!validOp(a.op()) || !validOp(b.op()))
+                return Null;
+
+            return apply(a, b);
+        }
+
+        @Nullable
+        public abstract Term apply(Term a, Term b);
+    }
+
 
 }

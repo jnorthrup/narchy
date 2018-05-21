@@ -86,7 +86,7 @@ public class Label extends EmptyContainer {
             return false;
         }
 
-        textThickness = Math.min(5, 0.5f + (p/70f));
+        textThickness = Math.min(3, 0.5f + (p/70f));
 
         return super.prePaint(r);
     }

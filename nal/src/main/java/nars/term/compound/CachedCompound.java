@@ -79,6 +79,11 @@ abstract public class CachedCompound implements Compound, The {
             return 0;
         }
 
+        @Override
+        public int subTimeSafe(Term x, int after) {
+            return equals(x) ? 0 : DTERNAL;
+        }
+
         //TODO other assumptions
     }
 

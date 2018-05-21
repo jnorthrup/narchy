@@ -3,18 +3,15 @@ package nars.util.term.transform;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.subterm.util.DisposableTermList;
 import nars.subterm.util.TermList;
 import nars.term.Compound;
 import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.NormalizedVariable;
-import nars.unify.match.EllipsisMatch;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.NEG;
-import static nars.Op.VAR_QUERY;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -52,102 +49,23 @@ public interface TermTransform extends Evaluation.TermContext {
 
         Subterms xx = x.subterms();
 
-        Subterms yy = transformSubterms(xx);
+        Subterms yy = xx.transformSubs(this);
+        if (yy == null)
+            return Null; //return null;
 
-        if (yy == null) {
-            return null;
-        } else if (yy != xx || op != x.op()) {
+        return transformedCompound(x, op, dt, xx, yy);
+    }
 
-
-            Term z = the(op, op.temporal ? dt : DTERNAL, (TermList)yy);
-
-
-//            if (op==x.op() && Arrays.equals(xx.arrayShared(),z.subterms().arrayShared())) {
-//                System.err.println("duplicated unnecessarily? ");
-//            }
-
-//            //seems to happen very infrequently so probably not worth the test
-//            if (x != z && x.equals(z))
-//                return x; //unchanged
-
-            return z;
+    /** called after subterms transform has been applied */
+    @Nullable default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
+        if (yy != xx || op != x.op()) {
+            return the(op, op.temporal ? dt : DTERNAL, (TermList)yy);
         } else {
             return x.dt(dt);
         }
     }
 
-    /**
-     * returns 'x' unchanged if no changes were applied,
-     * returns 'y' if changes
-     * returns null if untransformable
-     */
-    default Subterms transformSubterms(Subterms x) {
 
-        int s = x.subs();
-
-        TermList y = null;
-
-        for (int i = 0; i < s; i++) {
-
-            Term xi = x.sub(i);
-
-            Term yi = xi.transform(this);
-
-            if (yi == null)
-                return null;
-
-            if (yi instanceof EllipsisMatch) {
-                EllipsisMatch xe = (EllipsisMatch) yi;
-                int xes = xe.subs();
-
-                if (y == null) {
-                    y = new DisposableTermList(s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
-                    if (i > 0) {
-                        y.addAll(x, 0, i); //add previously skipped subterms
-                    }
-                }
-
-                if (xes > 0) {
-                    for (int j = 0; j < xes; j++) {
-                        @Nullable Term k = xe.sub(j).transform(this);
-                        if (k==null) {
-                            return null;
-                        } else {
-                            y.add(k);
-                        }
-                    }
-                }
-
-            } else {
-
-                if (xi != yi /*&& (yi.getClass() != xi.getClass() || !xi.equals(yi))*/) {
-
-//                    if (xi.equals(yi)) {
-//                        System.err.println("duplicated unnecessarily? ");
-//                        xi.printRecursive();
-//                        yi.printRecursive();
-//                        System.out.println();
-//                    }
-
-//                    if (yi == null) {
-//                        return null;
-//                    }
-
-                    if (y == null) {
-                        y = new DisposableTermList(s);
-                        if (i > 0) y.addAll(x, 0, i); //add previously skipped subterms
-                    }
-                }
-
-                if (y != null)
-                    y.add(yi);
-
-            }
-
-        }
-
-        return y != null ? y : x;
-    }
 
 
     /**

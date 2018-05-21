@@ -162,7 +162,13 @@ public class ZoomOrtho extends Ortho {
 
     @Override
     public void mouseWheelMoved(MouseEvent e) {
+        if (e.isConsumed())
+            return;
+
         super.mouseWheelMoved(e);
+
+        if (e.isConsumed())
+            return;
 
         //when wheel rotated on negative (empty) space, adjust scale
         //if (mouse.touching == null) {

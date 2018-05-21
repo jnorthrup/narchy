@@ -135,6 +135,22 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         return f1(fName(termAtom), safeFunctor(ff));
     }
 
+    public static Functor f1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
+        return new AbstractInlineFunctor1(termAtom) {
+            @Override protected final Term apply(Term x) {
+                return ff.apply(x);
+            }
+        };
+    }
+
+    public static Functor f2Inline(@NotNull String termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
+        return new AbstractInlineFunctor2(termAtom) {
+            @Override protected final Term apply(Term a, Term b) {
+                return ff.apply(a, b);
+            }
+        };
+    }
+
     public static <X extends Term> LambdaFunctor f1Const(@NotNull String termAtom, @NotNull Function<X, Term> ff) {
         return f1(fName(termAtom), (Term x) -> {
             if (x == null || x.hasVars())
@@ -242,6 +258,58 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         });
     }
 
+    /** marker interface for functors which are allowed to be applied during
+     * transformation or term construction processes.
+     * these are good for simple functors that are guaranteed to return quickly.
+     */
+    public interface InlineFunctor extends Function<Subterms,Term> {
+
+        default Term applyArgs(Term args) {
+            return apply(args.subterms());
+        }
+
+    }
+
+
+    abstract public static class AbstractInlineFunctor extends Functor implements Functor.InlineFunctor {
+
+        protected AbstractInlineFunctor(String atom) {
+            super(atom);
+        }
+    }
+    abstract public static class AbstractInlineFunctor1 extends AbstractInlineFunctor {
+
+        protected AbstractInlineFunctor1(String atom) {
+            super(atom);
+        }
+
+        @Override
+        final public Term applyArgs(Term args) {
+            return args.subs()!=1 ? Null : apply(args.sub(0));
+        }
+
+        @Override
+        final public Term apply(Subterms terms) {
+            return terms.subs() != 1 ? Null : apply(terms.sub(0));
+        }
+
+        protected abstract Term apply(Term x);
+    }
+
+    abstract public static class AbstractInlineFunctor2 extends AbstractInlineFunctor {
+
+        protected AbstractInlineFunctor2(String atom) {
+            super(atom);
+        }
+
+        @Override
+        final public Term apply(Subterms terms) {
+            return terms.subs() != 2 ? Null : apply(terms.sub(0), terms.sub(1));
+        }
+
+        protected abstract Term apply(Term a, Term b);
+    }
+
 
     public static final class LambdaFunctor extends Functor {
 
@@ -282,40 +350,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         public abstract Term apply(Term x);
     }
 
-    /**
-     * Created by me on 12/12/15.
-     */
-    public abstract static class BinaryFunctor extends Functor {
-
-        protected BinaryFunctor(@NotNull String id) {
-            super(id);
-        }
-
-        public boolean validOp(Op o) {
-            return true;
-        }
-
-        @Nullable
-        @Override
-        public final Term apply(Subterms x) {
-            if (x.subs() != 2)
-                throw new UnsupportedOperationException("# args must equal 2");
-
-
-            Term a = x.sub(0);
-            Term b = x.sub(1);
-            if ((a instanceof Variable) || (b instanceof Variable))
-                return null;
-
-            if (!validOp(a.op()) || !validOp(b.op()))
-                return Null;
-
-            return apply(a, b);
-        }
-
-        @Nullable
-        public abstract Term apply(Term a, Term b);
-    }
 
     public abstract static class FunctorResolver implements Evaluation.TermContext {
 

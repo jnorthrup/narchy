@@ -413,4 +413,8 @@ public class MutableFloat extends Number implements FloatSupplier {
             return v;
         }
     }
+
+    public void multiply(float v) {
+        this.set(get() * v);
+    }
 }

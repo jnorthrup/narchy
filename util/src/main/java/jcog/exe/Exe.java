@@ -1,17 +1,22 @@
 package jcog.exe;
 
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import jcog.exe.realtime.AdmissionQueueWheelModel;
 import jcog.exe.realtime.HashedWheelTimer;
 import jcog.net.UDPeer;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** static execution context: JVM-global dispatch, logging, profiling, etc. */
 public enum Exe { ;
@@ -63,9 +68,16 @@ public enum Exe { ;
         executor = e;
     }
 
+    /** record an already-timed event */
+    public static void profiled(Object what, long start, long end) {
+        Profiler p = profiler;
+        if (p!=null)
+            p.profiled(what, start, end);
+    }
+
     public static abstract class Profiler {
 
-        abstract public void run(Object what, long startNS, long endNS);
+        abstract public void profiled(Object what, long startNS, long endNS);
 
         public Runnable run(Runnable r) {
             return new ProfiledRunnable(r);
@@ -83,7 +95,7 @@ public enum Exe { ;
                 long start = System.nanoTime();
                 r.run();
                 long end = System.nanoTime();
-                Profiler.this.run(r, start, end);
+                Profiler.this.profiled(r, start, end);
             }
         }
     }
@@ -95,22 +107,54 @@ public enum Exe { ;
     }
 
     public static class UDPeerProfiler extends Profiler {
+
+        final static org.slf4j.Logger logger = LoggerFactory.getLogger(UDPeerProfiler.class);
+
         final UDPeer p = new UDPeer();
+
+        final AtomicBoolean busy = new AtomicBoolean();
+        final MultithreadConcurrentQueue<JsonNode> out = new MultithreadConcurrentQueue(2048);
 
         public UDPeerProfiler() throws IOException {
             p.runFPS(10f);
         }
 
         @Override
-        public void run(Object what, long startNS, long endNS) {
-            if (p.connected()) {
-                String w = what.toString();
-                Map<String, Serializable> msg = Map.of("_", w, "t", new long[]{startNS, endNS,});
+        public void profiled(Object what, long startNS, long endNS) {
+            if (!p.connected())
+                return;
+
+            //Map<String, Serializable> msg = Map.of("_", w, "t", new long[]{startNS, endNS,});
+
+            ArrayNode range = JsonNodeFactory.instance.arrayNode(2);
+            range.add(startNS);
+            range.add(endNS);
+            ObjectNode newest = JsonNodeFactory.instance.objectNode();
+            newest.put("t", range);
+
+            String w = what.toString();
+            newest.put("_", w);
+
+
+            if (busy.compareAndSet(false, true)) {
+                int s = out.size();
+                ArrayNode a = JsonNodeFactory.instance.arrayNode(s + 1);
+                if (s > 0) {
+                    for ( ; s > 0; s--) {
+                        a.add(out.poll());
+                    }
+                }
+                a.add(newest);
                 try {
-                    p.tellSome(msg, 2, true);
+                    p.tellSome(a, 2, true);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
+                } finally {
+                    busy.set(false);
                 }
+            } else {
+                if (!out.offer(newest))
+                    logger.warn("dropped profiling msg");
             }
         }
     }

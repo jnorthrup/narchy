@@ -1,7 +1,6 @@
 package nars.util.term.transform;
 
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -36,7 +35,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 //            //assert (dt == XTERNAL || dt == DTERNAL);
 //            Term y = Retemporalize.super.transformCompound(x, op, dt);
 //            return y!=x ? xternalIfNecessary(x, y, dt) : x;
-            throw new UnsupportedOperationException("apparently not called");
+            throw new UnsupportedOperationException("apparently this is never called");
         }
 
         @Override
@@ -126,6 +125,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
         }
     }
 
+
     default Term transformTemporal(Compound x, int dtNext) {
         if (x.dt() == dtNext && !requiresTransform(x.subterms()))
             return x; //no change
@@ -140,15 +140,6 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
      */
     default boolean requiresTransform(Termlike x) {
         return x.hasAny(Op.Temporal);
-    }
-
-    @Override
-    default Subterms transformSubterms(Subterms x) {
-        if (requiresTransform(x)) {
-            return NegObliviousTermTransform.super.transformSubterms(x);
-        } else {
-            return x;
-        }
     }
 
     @Deprecated

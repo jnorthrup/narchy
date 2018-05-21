@@ -482,7 +482,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         WaitStrategy SleepWait = (long deadline) -> {
 
             long sleepTimeNanos = deadline - System.nanoTime();
-            Util.sleepNS(sleepTimeNanos);
+            if (sleepTimeNanos >= 0)
+                Util.sleepNS(sleepTimeNanos);
         };
 
         /**

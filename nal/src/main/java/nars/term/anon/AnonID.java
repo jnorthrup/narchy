@@ -93,4 +93,8 @@ public interface AnonID extends Term, The {
     }
 
 
+    default short anonID(boolean neg) {
+        short id = anonID();
+        return neg ? (short) (-id) : id;
+    }
 }

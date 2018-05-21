@@ -14,7 +14,7 @@ import static nars.Op.Null;
  * if STRICT is 4th argument, then there will only be a valid result
  * if the input has changed (not if nothing changed, and not if the attempted change had no effect)
  */
-public class Subst extends Functor {
+public class Subst extends Functor implements Functor.InlineFunctor {
 
     //TODO use special symbol encoding to avoid collision with equivalent normal input
     final static Term STRICT = Atomic.the("strict");

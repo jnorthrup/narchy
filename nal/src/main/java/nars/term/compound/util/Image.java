@@ -16,9 +16,9 @@ public enum Image { ;
 
     static final int imageBits = PROD.bit | Op.VAR_DEP.bit | INH.bit;
 
-    public static final Functor imageNormalize = Functor.f1("imageNormalize", Image::imageNormalize);
-    public static final Functor imageInt = Functor.f2("imageInt", Image::imageInt);
-    public static final Functor imageExt = Functor.f2("imageExt", Image::imageExt);
+    public static final Functor imageNormalize = Functor.f1Inline("imageNormalize", Image::imageNormalize);
+    public static final Functor imageInt = Functor.f2Inline("imageInt", Image::imageInt);
+    public static final Functor imageExt = Functor.f2Inline("imageExt", Image::imageExt);
 
     public static Term imageExt(Term t, Term x) {
         //P-->I
@@ -53,7 +53,7 @@ public enum Image { ;
     }
 
     public static Term imageNormalize(Term _t) {
-        if (!(_t instanceof Compound))
+        if (!(_t instanceof Compound) && !_t.hasAll(imageBits))
             return _t;
 
         boolean negated;
@@ -66,7 +66,7 @@ public enum Image { ;
             negated = false;
         }
 
-        if (t.hasAll(imageBits) && t.op()==INH) {
+        if (t.op()==INH) {
             Term s = t.sub(0);
             Subterms ss = null;
             boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.imInt);

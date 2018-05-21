@@ -67,7 +67,7 @@ import static nars.Op.VAR_DEP;
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
  *
  */
-public class SubIfUnify extends Functor {
+public class SubIfUnify extends Functor  {
 
 
     final static Term INDEP_VAR = $.quote("$");
@@ -90,7 +90,7 @@ public class SubIfUnify extends Functor {
 
         //TODO compile at function construction time
 
-        boolean force = false;
+//        boolean force = false;
         int pp = a.subs();
         for (int p = 3; p < pp; p++) {
             Term ai = a.sub(p);

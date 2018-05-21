@@ -5,10 +5,7 @@ import jcog.data.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Prioritized;
 import jcog.version.Versioned;
-import nars.$;
-import nars.NAR;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.control.Cause;
 import nars.derive.premise.PreDerivation;
 import nars.derive.step.Occurrify;
@@ -17,10 +14,7 @@ import nars.op.Subst;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.task.proxy.TaskWithTerm;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Termed;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.anon.Anon;
 import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
@@ -472,6 +466,26 @@ public class Derivation extends PreDerivation {
 
     }
 
+    /** accelerated version that executes inline functors */
+    @Override
+    public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
+        //InlineFunctor application
+        if (op == INH && yy.subs()==2) {
+            Term pred;
+            if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) { //TODO only inline functors
+                Term args = yy.sub(0);
+                if (args.op()==PROD) {
+                    Term v = ((Functor.InlineFunctor) pred).applyArgs(args);
+                    if (v!=null)
+                        return v;
+                    //else: miss?
+                }
+            }
+        }
+
+        return super.transformedCompound(x, op, dt, xx, yy);
+    }
+
     /**
      * only returns derivation-specific functors.  other functors must be evaluated at task execution time
      */
@@ -481,7 +495,7 @@ public class Derivation extends PreDerivation {
         if (atomic instanceof Atom) {
             Termed f = derivationFunctors.get(atomic);
             if (f != null)
-                return f.term();
+                return (Term)f;
         }
 
         if (atomic instanceof Bool)//assert (!(x instanceof Bool));
@@ -644,22 +658,26 @@ public class Derivation extends PreDerivation {
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
 
-    private final Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
-        if (subterm instanceof Bool)
-            return subterm;
+    private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
+        @Override
+        protected Term apply(Term subterm, Term whichTask) {
+            if (subterm instanceof Bool)
+                return subterm;
 
-        Truth compared;
-        if (whichTask.equals(Task)) {
-            compared = taskTruth;
-        } else {
-            compared = beliefTruth;
+            Truth compared;
+            if (whichTask.equals(Task)) {
+                compared = taskTruth;
+            } else {
+                compared = beliefTruth;
+            }
+            if (compared == null)
+                return Null;
+            else
+                return compared.isNegative() ? subterm.neg() : subterm;
         }
-        if (compared == null)
-            return Null;
-        else
-            return compared.isNegative() ? subterm.neg() : subterm;
-    });
+    };
 
+    //TODO make inline
     private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     private final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
         x = anon.get(x);

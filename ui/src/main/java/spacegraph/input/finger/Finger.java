@@ -3,6 +3,7 @@ package spacegraph.input.finger;
 import com.jogamp.opengl.GL2;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.util.AtomicFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Widget;
@@ -156,6 +157,7 @@ public class Finger {
 
         //finally:
         prevButtonDown.copyFrom(buttonDown);
+
     }
 
     public String buttonSummary() {
@@ -217,6 +219,9 @@ public class Finger {
 
             if (ff == null)
                 fingering.compareAndSet(f0, null);
+
+            for (AtomicFloat r : rotation)
+                r.getAndZero();
 
         }
 
@@ -350,5 +355,33 @@ public class Finger {
         Draw.line(gl, smx, smy - ch, smx, smy + ch);
         Draw.line(gl, smx - cw, smy, smx + cw, smy);
 
+    }
+
+    final AtomicFloat[] rotation = new AtomicFloat[3];
+
+    {
+        rotation[0] = new AtomicFloat();
+        rotation[1] = new AtomicFloat();
+        rotation[2] = new AtomicFloat();
+    }
+    public boolean rotationAdd(float[] rotation) {
+        for (int i = 0; i < rotation.length; i++)
+            this.rotation[i].add(rotation[i]);
+        Surface t = touching();
+        System.out.println(t);
+        return (t instanceof Finger.RotationAbsorbed);
+    }
+
+    public float rotationX() {
+        return rotation[0].floatValue();
+    }
+    public float rotationY() {
+        return rotation[1].floatValue();
+    }
+    public float rotationZ() {
+        return rotation[2].floatValue();
+    }
+
+    public interface RotationAbsorbed {
     }
 }

@@ -49,12 +49,14 @@ public final class Termify extends AbstractPred<Derivation> {
 
         d.derivedTerm = null;
         nar.emotion.deriveTermify.increment();
+
+        d.untransform.clear();
+
         Term c1 = pattern.transform(d);
         if (c1 == null || !c1.op().conceptualizable)
             return false;
 
         nar.emotion.deriveEval.increment();
-        d.untransform.clear();
         c1 = c1.eval(d);
 
         if (!Taskify.valid(c1, (byte) 0 /* dont consider punc consequences until after temporalization */)) {

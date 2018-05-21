@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.TODO;
 import jcog.Texts;
 import jcog.User;
 import jcog.list.FasterList;
@@ -66,22 +65,25 @@ public class Builtin {
             Image.imageExt,
 
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
-            Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
-                        Term x = Conj.without(conj, event, false);
-                        if (conj.equals(x))
-                            return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
-                        return x;
-                    }
-            ),
-
+            new Functor.AbstractInlineFunctor2("conjWithout") {
+                @Override
+                protected Term apply(Term conj, Term event) {
+                    Term x = Conj.without(conj, event, false);
+                    if (conj.equals(x))
+                        return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+                    return x;
+                }
+            },
             /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
-            Functor.f2((Atom) $.the("conjWithoutAll"), (Term include, Term exclude) -> {
-                        Term x = Conj.withoutAll(include, exclude);
-                        if (include.equals(x))
-                            return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
-                        return x;
-                    }
-            ),
+            new Functor.AbstractInlineFunctor2("conjWithoutAll") {
+                @Override
+                protected Term apply(Term include, Term exclude) {
+                    Term x = Conj.withoutAll(include, exclude);
+                    if (include.equals(x))
+                        return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+                    return x;
+                }
+            },
 
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
@@ -366,10 +368,20 @@ public class Builtin {
 
         }));
 
-        nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) ->
-                Op.without(container, x -> x.equals(content), nar.random())));
-        nar.on(Functor.f2((Atom) $.the("withoutPosOrNeg"), (Term container, Term content) ->
-                Op.without(container, x -> x.unneg().equals(content), nar.random())));
+        nar.on(new Functor.AbstractInlineFunctor2("without") {
+            @Override
+            protected Term apply(Term container, Term content) {
+                return Op.without(container, x -> x.equals(content), nar.random());
+            }
+        });
+        nar.on(new Functor.AbstractInlineFunctor2("withoutPosOrNeg") {
+            @Override
+            protected Term apply(Term container, Term content) {
+                Term c = content.unneg();
+                return Op.without(container, x -> x.unneg().equals(c), nar.random());
+            }
+        });
+
 
         /**
          * TODO rename this to 'dropAnyCommutive'
@@ -471,55 +483,40 @@ public class Builtin {
 
 //            return r;
         }));
-        nar.on(Functor.f2((Atom) $.the("conjEvent"), (Term c, Term when) -> {
-            if (c.op() != CONJ || !(when instanceof Atom))
-                return Null;
 
-
-            throw new TODO(); //extract earliest or latest &| timeslice of events
-
-//            if (c.dt() == DTERNAL || c.dt() == 0) {
-//                return c.sub(nar.random().nextInt(c.subs())); //choose a subterm at random
-//            }
-//            assert (c.subs() == 2);
-//            int target;
-//            switch (when.toString()) {
-//                case "early":
-//                    target = 0;
-//                    break;
-//                case "late":
-//                    target = 1;
-//                    break;
-//                default:
-//                    throw new UnsupportedOperationException();
-//            }
-//            if (c.dt() < 0)
-//                target = 1 - target;
-//            return c.sub(target);
-        }));
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
-        nar.on(Functor.f2((Atom) $.the("conjWithoutPosOrNeg"), (Term conj, Term event) -> {
-            Term x = Conj.without(conj, event, true);
-            if (conj.equals(x))
-                return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
-            return x;
-        }));
+        nar.on(new Functor.AbstractInlineFunctor2("conjWithoutPosOrNeg") {
+            @Override
+            protected Term apply(Term conj, Term event) {
+                Term x = Conj.without(conj, event, true);
+                if (conj.equals(x))
+                    return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+                return x;
+            }
+        });
 
-        /** extracts only the events preceding the specified events */
-        nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) -> {
-            Term x = Conj.conjDrop(conj, event, false);
-            if (conj.equals(x))
-                return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
-            return x;
-        }));
-        nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) -> {
-            Term x = Conj.conjDrop(conj, event, true);
-            if (conj.equals(x))
-                return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
-            return x;
-        } ));
+        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfLatest") {
+            @Override
+            protected Term apply(Term conj, Term event) {
+                Term x = Conj.conjDrop(conj, event, false);
+                if (conj.equals(x))
+                    return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+                return x;
+            }
+        });
+
+        nar.on(new Functor.AbstractInlineFunctor2("conjDropIfEarliest") {
+            @Override
+            protected Term apply(Term conj, Term event) {
+                Term x = Conj.conjDrop(conj, event, true);
+                if (conj.equals(x))
+                    return Null; //HACK this is used for derivations but in ordinary usage should return the instance not Null
+                return x;
+            }
+        });
+
 
 
         nar.on(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
@@ -603,11 +600,11 @@ public class Builtin {
         //new System(nar);
 
         nar.onOp(Op.BELIEF_TERM, (x, nn) -> {
-            return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term,truth)->{
-                    return new NALTask(term, BELIEF, truth,
-                            nn.time(), ETERNAL, ETERNAL, nn.evidence()).pri(nn.priDefault(BELIEF));
-            });
-        }
+                    return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> {
+                        return new NALTask(term, BELIEF, truth,
+                                nn.time(), ETERNAL, ETERNAL, nn.evidence()).pri(nn.priDefault(BELIEF));
+                    });
+                }
         );
 //        nar.onOp(Op.GOAL_TERM, (x, nn) -> {
 //            nar.goal(x);
@@ -648,7 +645,7 @@ public class Builtin {
     static void initMemoryOps(NAR nar) {
         nar.onOp1("load", (id, nn) -> {
             Runnable r = nn.memory.copy(id, nn.self());
-            if (r!=null)
+            if (r != null)
                 nn.runLater(r);
         });
 

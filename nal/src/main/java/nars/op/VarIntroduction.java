@@ -1,6 +1,7 @@
 package nars.op;
 
 import nars.term.Term;
+import nars.term.atom.Bool;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +25,8 @@ public abstract class VarIntroduction {
         assert (vars < 127 - 1);
         //ensure the variables wont collide with existing variables by assigning an introduced variable to unique ID
         Term v = introduce(x, u, (byte)(vars+1));
+        if (v == null || v instanceof Bool)
+            return null;
 
         Term y = x.replace(u, v);
         if (y != null && !y.equals(x)) {

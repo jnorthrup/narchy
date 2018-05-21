@@ -785,12 +785,7 @@ public interface Term extends Termed, Comparable<Termed> {
         return s != null ? transform(s) : this;
     }
 
-    default Term replace(Term from, Term to) {
-        if (from.equals(to))
-            return this;
-        else
-            return equals(from) ? to : (impossibleSubTerm(from) ? this : transform(new MapSubst.MapSubst1(from, to)));
-    }
+    Term replace(Term from, Term to);
 
     default Term neg() {
         return Neg.the(this);

@@ -58,6 +58,28 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     protected long dtMS = 0;
     private long lastRenderMS = System.currentTimeMillis();
+    private volatile int nx, ny, nw, nh;
+    private final Consumer<JoglWindow> windowUpdater = (s) -> {
+        GLWindow w = window;
+        if (nx != w.getX() || ny != w.getY())
+            w.setPosition(nx, ny);
+        int nw = this.nw;
+        int nh = this.nh;
+
+        if (nw == 0 || nh == 0) {
+            if (w.isVisible()) {
+                w.setVisible(false);
+                return;
+            }
+        } else {
+            if (!w.isVisible())
+                w.setVisible(true);
+        }
+
+        if (nw != w.getSurfaceWidth() || nh != w.getSurfaceHeight()) {
+            w.setSize(nw, nh);
+        }
+    };
 
     protected JoglWindow() {
         logger = LoggerFactory.getLogger(toString());
@@ -74,6 +96,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     static GLWindow window() {
         return window(config());
     }
+
+
+//    protected World2D getWorld() {
+//        return model != null ? model.getCurrTest().getWorld() : world;
+//    }
 
     static GLWindow window(GLCapabilitiesImmutable config) {
         GLWindow w = GLWindow.create(config);
@@ -114,17 +141,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return config;
     }
 
-
-//    protected World2D getWorld() {
-//        return model != null ? model.getCurrTest().getWorld() : world;
-//    }
-
     public void off() {
         GLWindow w = this.window;
         if (w != null)
             Exe.invokeLater(w::destroy);
     }
-
 
     public final void pre(Consumer<JoglWindow> beforeNextRender) {
         preRenderTasks.add(beforeNextRender);
@@ -146,12 +167,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public final int getWidth() {
         return nw;
     }
+
     public final int getHeight() {
         return nh;
     }
+
     public final int getX() {
         return nx;
     }
+
     public final int getY() {
         return ny;
     }
@@ -227,7 +251,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public final void display(GLAutoDrawable drawable) {
-        if (gl==null)
+        if (gl == null)
             gl = drawable.getGL().getGL2(); //HACK this is due to the async window opening stuff
 
         rendering.set(true);
@@ -306,41 +330,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         setPositionAndSize(nx, ny, w, h);
     }
 
-    private volatile int nx, ny, nw, nh;
-    private final Consumer<JoglWindow> windowUpdater = (s)->{
-        GLWindow w = window;
-        if (nx!= w.getX() || ny!= w.getY())
-            w.setPosition(nx, ny);
-        int nw = this.nw;
-        int nh = this.nh;
-
-        if (nw == 0 || nh == 0) {
-            if (w.isVisible()) {
-                w.setVisible(false);
-                return;
-            }
-        } else {
-            if (!w.isVisible())
-                w.setVisible(true);
-        }
-
-        if (nw!= w.getSurfaceWidth() || nh!= w.getSurfaceHeight()) {
-            w.setSize(nw, nh);
-        }
-    };
-
     public void setPositionAndSize(int x, int y, int w, int h) {
 
-        if (window==null) return; //WTF
+        if (window == null) return; //WTF
 
         boolean change = false;
-        if (change |= (nx!=x))
-            nx = x ;
-        if (change |= (ny!=y))
+        if (change |= (nx != x))
+            nx = x;
+        if (change |= (ny != y))
             ny = y;
-        if (change |= (nw!=w))
+        if (change |= (nw != w))
             nw = w;
-        if (change |= (nh!=h))
+        if (change |= (nh != h))
             nh = h;
 
         if (change)
@@ -439,12 +440,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             setIgnoreExceptions(false);
             setPrintExceptions(false);
 
+
             //setExclusiveContext(true);
 
 //            fpsCounter = new FPSCounterImpl();
 //            final boolean isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
 //            fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4 * 60, System.err);
             this.loop = new Loop() {
+
+                @Override
+                public String toString() {
+                    return JoglWindow.this + ".render";
+                }
 
                 @Override
                 protected void onStart() {
@@ -454,17 +461,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 @Override
                 public boolean next() {
 
+
+                    if (window != null && !preRenderTasks.isEmpty()) {
+                        preRenderTasks.removeIf(r -> {
+                            r.accept(JoglWindow.this);
+                            return true;
+                        });
+                    }
+
                     if (!paused) {
-                        if (window != null) {
-                            preRenderTasks.removeIf(r -> {
-                                r.accept(JoglWindow.this);
-                                return true;
-                            });
-                        }
-
-                        if (!drawablesEmpty) { // RUN
-
-                            try {
+                        try {
 //                            //for debug
 //                            if (window.isSurfaceLockedByOtherThread()) {
 //                                Thread surfaceLockOwner = window.getSurfaceLockOwner();
@@ -474,13 +480,18 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                                );
 //                            }
 
-                                //if (!window.isSurfaceLockedByOtherThread())
-                                impl.display(drawables, ignoreExceptions, printExceptions);
-                            } catch (final UncaughtAnimatorException dre) {
-                                //quitIssued = true;
-                                dre.printStackTrace();
-                            }
+                            //if (!window.isSurfaceLockedByOtherThread())
+                            //impl.display(drawables, ignoreExceptions, printExceptions);
+
+                            animThread = Thread.currentThread();
+
+                            drawables.forEach(GLAutoDrawable::display);
+
+                        } catch (final UncaughtAnimatorException dre) {
+                            //quitIssued = true;
+                            dre.printStackTrace();
                         }
+
                     /*else if (pauseIssued && !quitIssued) { // PAUSE
 //                        if (DEBUG) {
 //                            System.err.println("FPSAnimator pausing: " + alreadyPaused + ", " + Thread.currentThread() + ": " + toString());
@@ -581,6 +592,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         public final boolean start() {
             return false;
         }
+
 
         @Override
         public final boolean stop() {

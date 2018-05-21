@@ -10,10 +10,10 @@ package spacegraph.input.finger;
 abstract public class Fingering {
 
     /** return true to allow begin */
-    abstract public boolean start(Finger f);
+    protected abstract boolean start(Finger f);
 
     /** return false to finish */
-    abstract public boolean update(Finger f);
+    protected abstract boolean update(Finger f);
 
     public void stop(Finger finger) {
 
@@ -22,7 +22,7 @@ abstract public class Fingering {
     /** whether this is allowed to continue updating the finger's currently
      * touched widget after it activates.
      */
-    public boolean escapes() {
+    protected boolean escapes() {
         return false;
     }
 }

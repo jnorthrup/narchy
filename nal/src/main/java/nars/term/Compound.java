@@ -28,6 +28,7 @@ import nars.IO;
 import nars.Op;
 import nars.concept.Operator;
 import nars.subterm.Subterms;
+import nars.subterm.util.TermList;
 import nars.term.anon.Anon;
 import nars.term.compound.UnitCompound;
 import nars.term.control.AbstractPred;
@@ -492,6 +493,23 @@ public interface Compound extends Term, IPair, Subterms {
     default int eventCount() {
         return this.dt() != DTERNAL && op() == CONJ ? subterms().sum(Term::eventCount) : 1;
     }
+
+    default Term replace(Term from, Term to) {
+        if (!from.equals(to)) {
+            if (this.equals(from))
+                return to;
+
+            Subterms oldSubs = subterms();
+            Subterms newSubs = oldSubs.replaceSubs(from, to);
+            if (newSubs == null)
+                return Null;
+            if (!newSubs.equals(oldSubs)) {
+                return op().the(dt(), (TermList) newSubs);
+            }
+        }
+        return this;
+    }
+
 
     /**
      * TODO do shuffled search to return different repeated results wherever they may appear

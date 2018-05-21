@@ -1,6 +1,7 @@
 package jcog.net;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import jcog.Util;
@@ -317,11 +318,14 @@ public class UDPeer extends UDP {
     }
 
     public int tellSome(Object msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
-        Msg x = new Msg(TELL.id, (byte) ttl, me, null, Util.toBytes(msg,Object.class));
-        int y = tellSome(x, 1f, onlyIfNotSeen);
-        seen(x, 1f);
-        return y;
+        byte[] b = Util.toBytes(msg, Object.class);
+        return tellSome(b, ttl, onlyIfNotSeen);
     }
+    public int tellSome(JsonNode msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
+        byte[] b = Util.toBytes(msg, JsonNode.class);
+        return tellSome(b, ttl, onlyIfNotSeen);
+    }
+
     /**
      * send to a specific known recipient
      */

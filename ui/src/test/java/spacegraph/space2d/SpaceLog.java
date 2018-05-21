@@ -2,8 +2,11 @@ package spacegraph.space2d;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.jogamp.opengl.GL2;
+import jcog.User;
 import jcog.Util;
+import jcog.exe.Loop;
 import jcog.io.FSWatch;
 import jcog.net.UDPeer;
 import jcog.util.Grok;
@@ -11,10 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.Clipped;
 import spacegraph.space2d.container.Scale;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Timeline2D;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space3d.widget.OsmSpace;
+import spacegraph.util.geo.IRL;
 import spacegraph.video.Draw;
 
 import java.io.IOException;
@@ -34,10 +41,9 @@ public class SpaceLog {
 
     final Grok grok = Grok.all();
 
-    /** time buffer
-     * TODO make fixed size, like ring buffer
-     * */
-    final Timeline2D.SimpleTimelineModel time = new Timeline2D.SimpleTimelineModel();
+    /** time buffer */
+    final Timeline2D.FixedSizeTimelineModel time =
+            new Timeline2D.FixedSizeTimelineModel(4096);
 
     public SpaceLog() throws IOException {
         this(0);
@@ -60,13 +66,17 @@ public class SpaceLog {
     }
 
     public void input(Object origin, byte[] data) {
+        //try to parse as json
         try {
             JsonNode x = Util.fromBytes(data, JsonNode.class);
-            input(origin, x);
+            if (input(origin, x))
+                return;
         } catch (IOException j) {
+        }
+
+        //try to parse as object
             try {
                 Object x = Util.fromBytes(data, Object.class);
-                //JsonNode x = Util.msgPackMapper.readTree(data);
                 input(origin, x);
             } catch (IOException e) {
                 //try to interpret it via UTF-8 String
@@ -76,7 +86,7 @@ public class SpaceLog {
                     logger.info("recv: {}\n{}", origin, ms.toMap());
                 }
             }
-        }
+
     }
 
     public void input(Object origin, Object x) {
@@ -89,6 +99,15 @@ public class SpaceLog {
         logger.info("recv: {}\n\t{}", origin, x);
     }
     public boolean input(Object origin, JsonNode x) {
+
+        //interpret a raw array as a container of messages
+        if (x instanceof ArrayNode) {
+            x.forEach(e -> {
+               input(origin, e);
+            });
+            return true;
+        }
+
         JsonNode id = x.get("_");
         if (id!=null) {
             long s = x.get("t").get(0).asLong();
@@ -109,16 +128,23 @@ public class SpaceLog {
 //        dummyModel.add(new Timeline2D.SimpleEvent("z", 2, 5));
 //        dummyModel.add(new Timeline2D.SimpleEvent("w", 3, 3)); //point
 
-        SpaceGraph.window(new Timeline2D<>(time,
-                e->e.set(new Scale(
-                        new PushButton(e.id.toString()) {
+        IRL i = new IRL(User.the());
+        i.load(-80.65, 28.58, -80.60, 28.63);
+
+        Surface space = new OsmSpace(i.osm).surface();
+
+
+        Surface timeline = new Timeline2D<>(time,
+                e -> e.set(new Scale(
+                        new PushButton(e.id.name) {
+                            final int eHash = e.id.name.hashCode();
+
                             @Override
                             protected void paintBelow(GL2 gl) {
-                                int eHash = e.id.hashCode();
                                 Draw.colorHash(gl, eHash);
                                 Draw.rect(gl, bounds);
                             }
-                        }, 0.8f))){
+                        }, 0.8f))) {
 
             boolean autoNow = true;
 
@@ -131,26 +157,34 @@ public class SpaceLog {
             @Override
             public Bordering controls() {
                 Bordering b = super.controls();
-                b.west(new CheckBox("Auto").set(autoNow).on(x->autoNow = x));
+                b.west(new CheckBox("Auto").set(autoNow).on(x -> autoNow = x));
                 return b;
             }
 
             @Override
             protected boolean prePaint(SurfaceRender r) {
                 if (autoNow) {
-                    view(System.nanoTime());
+                    double when = System.nanoTime();
+                    double range = tEnd - tStart;
+                    assert (range > 0);
+                    SimpleEvent lastEvent = time.last();
+                    double end = Math.min(lastEvent.end + lastEvent.range() / 2, when);
+                    double start = end - range;
+                    view(start, end);
+                    //view(System.nanoTime());
                 }
                 return super.prePaint(r);
             }
-        }.view(0, 15_000_000_000L /* ns */).withControls(), 800, 600);
+        }.view(0, 15_000_000_000L /* ns */).withControls();
+        SpaceGraph.window(new Gridding(new Clipped(space), timeline), 800, 600);
 
     }
 
     public static void main(String[] args) throws IOException {
         SpaceLog s = new SpaceLog();
 
-//        Loop.of(new DummyLogGenerator(new UDPeer())).runFPS(0.75f);
-//        Loop.of(new DummyLogGenerator(new UDPeer())).runFPS(0.2f);
+        Loop.of(new DummyLogGenerator(new UDPeer())).runFPS(0.75f);
+        Loop.of(new DummyLogGenerator(new UDPeer())).runFPS(0.2f);
 
         new FSWatch("/tmp", (p)-> {
             s.input("/tmp", p);
