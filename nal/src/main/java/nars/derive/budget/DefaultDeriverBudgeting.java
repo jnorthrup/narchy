@@ -1,18 +1,21 @@
 package nars.derive.budget;
 
+import jcog.Util;
+import jcog.math.FloatRange;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.DeriverBudgeting;
 import nars.truth.Truth;
 
-import static nars.truth.TruthFunctions.w2cSafe;
-
 /** TODO parameterize, modularize, refactor etc */
 public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
+    /** global multiplier */
+    public final FloatRange scale = new FloatRange(1f, 0f, 1f);
+
     @Override
     public float pri(Task t, Derivation d) {
-        float factor = 1f;
+        float factor = this.scale.floatValue();
 
         //t.volume();
 
@@ -21,7 +24,11 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             float pCompl = d.parentComplexitySum;
             float dCompl = t.voluplexity();
             float relGrowthCost =
-                    (pCompl / (pCompl + dCompl)); //allow > 1
+                    (pCompl / (pCompl + dCompl));
+
+            //curve
+            relGrowthCost = Util.sqr(relGrowthCost);
+
             factor *= relGrowthCost;
 
 
@@ -94,14 +101,15 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             boolean single = d.single;
             float pEvi = single ? d.premiseEviSingle : d.premiseEviDouble;
             if (pEvi > 0) {
-                float pConf = w2cSafe(pEvi);
+                //float pConf = w2cSafe(pEvi);
 
                 float dEvi = derivedTruth.evi();
-                float dConf = w2cSafe(dEvi);
-                if (!single)
-                    dConf*=2; //count the derived confidence twice to be fair to comparison against the combined evidence of 2 parents
+                //float dConf = derivedTruth.conf();
+                if (single)
+                    pEvi *=2; //count the derived confidence twice to be fair to comparison against the combined evidence of 2 parents
 
-                float eviFactor = dConf / pConf; //allow > 1
+                //float eviFactor = dConf / pConf; //allow > 1
+                float eviFactor = dEvi / pEvi; //allow > 1
                 factor *= eviFactor;
             }
 

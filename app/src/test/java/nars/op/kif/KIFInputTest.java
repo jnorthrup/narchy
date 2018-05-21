@@ -5,14 +5,15 @@ import jcog.Util;
 import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
-import nars.derive.deriver.SimpleDeriver;
+import nars.derive.Deriver;
+import nars.derive.budget.DefaultDeriverBudgeting;
+import nars.derive.deriver.MatrixDeriver;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
-import java.util.List;
 
 import static nars.$.$$;
 
@@ -23,9 +24,9 @@ class KIFInputTest {
     public void testSUMOViaMemory() {
         String sumo =
                 "Transportation";
-                //"People";
-                //"Merge";
-                //"Law";
+        //"People";
+        //"Merge";
+        //"Law";
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.shell();
@@ -34,27 +35,28 @@ class KIFInputTest {
 
         Term I = $$(inURL);
         Term O =
-            //n.self();
-            //Atomic.the("stdout");
-            Atomic.the("file:///tmp/x.nalz");
+                //n.self();
+                //Atomic.the("stdout");
+                Atomic.the("file:///tmp/x.nalz");
 
         Runnable r = n.memory.copy(I, O);
         r.run();
 
         //n.input("copy(\" + inURL + "\", \"file:///tmp/" + sumo + ".nal\")");
     }
+
     @Test
     public void testSUMOViaMemory2() {
         String sumo =
                 "Merge";
-                //"People";
-                //"Merge";
-                //"Law";
+        //"People";
+        //"Merge";
+        //"Law";
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.
                 tmp();
-                //shell();
+        //shell();
 
         n.memory.on(KIFInput.load);
 
@@ -89,7 +91,7 @@ class KIFInputTest {
         //System.out.println(structure);
         structure.nodeSet().forEach((t) -> {
             System.out.println(t + " " +
-                    GraphMeter.clustering((AdjGraph)structure, t)
+                    GraphMeter.clustering((AdjGraph) structure, t)
             );
         });
 
@@ -97,7 +99,8 @@ class KIFInputTest {
         //n.input("copy(\" + inURL + "\", \"file:///tmp/" + sumo + ".nal\")");
     }
 
-    @Test public void testGenerate() {
+    @Test
+    public void testGenerate() {
         String sumoDir = "file:///home/me/sumo/";
 
         NAR n = NARS.shell();
@@ -112,7 +115,7 @@ class KIFInputTest {
             if (ii.startsWith("WorldAirports")) //exclusions
                 return;
 
-            String name = ii.substring(ii.lastIndexOf('/')+1, ii.lastIndexOf('.'));
+            String name = ii.substring(ii.lastIndexOf('/') + 1, ii.lastIndexOf('.'));
             Term O = Atomic.the("file:///tmp/sumo/" + name + ".kif.nalz");
             Runnable r = n.memory.copy(I, O);
             r.run();
@@ -120,7 +123,8 @@ class KIFInputTest {
 
     }
 
-    @Test public void testLoad() throws Narsese.NarseseException {
+    @Test
+    public void testLoad() throws Narsese.NarseseException {
         //Param.DEBUG = true;
 
         NAR n =
@@ -138,7 +142,7 @@ class KIFInputTest {
         System.err.println(n.concepts.size() + " concepts");
         n.clear();
 
-        n.logPriMin(System.out, 0.3f);
+        n.logPriMin(System.out, 0.01f);
 //        n.onTask(x->{
 //            if (x.isGoal() && x.conf() > 0.05f) {
 //                System.out.println(x);
@@ -146,65 +150,90 @@ class KIFInputTest {
 //            }
 //        });
 
+        Deriver.derivers(n).forEach( (d)->
+                ((DefaultDeriverBudgeting)(((MatrixDeriver)d).prioritize))
+                        .scale.set(0.2f) );
 
-        SimpleDeriver.forTasks(n,
-            List.of(
-                n.inputTask("$1.0 possesses(I,#everything)!"),
-                n.inputTask("$1.0 uses(#anything, I)."),
-                n.inputTask("$1.0 --Dead:{I}!"),
-                //n.inputTask("$1.0 Corporation:I."),
-                n.inputTask("$1.0 Human:{I}."),
-                //n.inputTask("$1.0 (I-->Man)."),
-                //n.inputTask("$1.0 hasAward(I, #all)!"),
-                n.inputTask("$1.0 wants(I, #all)."),
-                n.inputTask("$1.0 needs(I, #all)."),
-                n.inputTask("$1.0 --lacks(I, #anything)!"),
-                n.inputTask("$1.0 benefits(#all, I)!"),
-                n.inputTask("$1.0 --suffers(#anything, Is)!"),
-                n.inputTask("$1.0 income(I, #money, #anyReason)!")
+        n.input("$1.0 possesses(I,#everything)!");
+        n.input("$1.0 uses(#anything, I).");
+        n.input("$1.0 --Dead:{I}!");
+        n.input("$1.0 Human:{I}.");
+        n.input("$1.0 --needs(I, #all)!");
+        n.input("$1.0 --lacks(I, #anything)!");
+        n.input("$1.0 benefits(#all, I)!");
+        n.input("$1.0 --suffers(#anything, I)!");
+        n.input("$1.0 income(I, #money, #anyReason)!");
+        n.input("$1.0 --(I-->Hungry)!");
+        n.input("$1.0 --(I-->Thirsty)!");
+        n.input("$1.0 enjoys(I,?x)?");
+        n.input("$1.0 dislikes(I,?x)?");
+        n.input("$1.0 needs(I,?x)?");
+        n.input("$1.0 wants(I,?x)?");
+        n.input("$1.0 patient(?what,I)?"); //what do I participate in
 
-
-                //n.inputTask("$1.0 Getting(#everything, I)!"),
-                //n.inputTask("$1.0 ChangeOfPossession(#everything,I)!"),
-            ));
+        //n.input("$1.0 Corporation:I.");
+        //n.input("$1.0 (I-->Man).");
+        //n.input("$1.0 hasAward(I, #all)!");
+        //n.input("$1.0 wants(I, #all).");
+//        SimpleDeriver.forTasks(n,
+//            List.of(
+//                n.inputTask("$1.0 possesses(I,#everything)!"),
+//                n.inputTask("$1.0 uses(#anything, I)."),
+//                n.inputTask("$1.0 --Dead:{I}!"),
+//                //n.inputTask("$1.0 Corporation:I."),
+//                n.inputTask("$1.0 Human:{I}."),
+//                //n.inputTask("$1.0 (I-->Man)."),
+//                //n.inputTask("$1.0 hasAward(I, #all)!"),
+//                n.inputTask("$1.0 wants(I, #all)."),
+//                n.inputTask("$1.0 needs(I, #all)."),
+//                n.inputTask("$1.0 --lacks(I, #anything)!"),
+//                n.inputTask("$1.0 benefits(#all, I)!"),
+//                n.inputTask("$1.0 --suffers(#anything, I)!"),
+//                n.inputTask("$1.0 income(I, #money, #anyReason)!")
+//
+//
+//                //n.inputTask("$1.0 Getting(#everything, I)!"),
+//                //n.inputTask("$1.0 ChangeOfPossession(#everything,I)!"),
+//            ));
 
 //        n.input("$1.0 --Giving(#anything, I)!");
 //
 //        n.input("$1.0 --ChemicalDecomposition(I,#1)!"); //chemical decomposition==>combustion lol
 
         n.startFPS(10f);
-        Util.sleep(1000*40);
+        Util.sleep(1000 * 40);
         n.stop();
         //n.stats().forEach((s,v)->System.out.println(s + "\t" + v));
     }
 
-    @Test public void test1() throws Exception {
+    @Test
+    public void test1() throws Exception {
 
 
-            NAR nar = NARS.tmp();
-            //MetaGoal.Perceive.set(e.emotion.want, -0.1f);
-            //e.emotion.want(MetaGoal.Perceive, -0.1f);
+        NAR nar = NARS.tmp();
+        //MetaGoal.Perceive.set(e.emotion.want, -0.1f);
+        //e.emotion.want(MetaGoal.Perceive, -0.1f);
 
-            //new PrologCore(e);
+        //new PrologCore(e);
 
-            String I =
-                    //"/home/me/sumo/Biography.kif"
-                    //"/home/me/sumo/Military.kif"
-                    //"/home/me/sumo/ComputerInput.kif"
-                    //"/home/me/sumo/FinancialOntology.kif"
-                    "/home/me/sumo/Merge.kif"
-                    //"/home/me/sumo/emotion.kif"
-                    //"/home/me/sumo/Weather.kif"
-                    ;
+        String I =
+                //"/home/me/sumo/Biography.kif"
+                //"/home/me/sumo/Military.kif"
+                //"/home/me/sumo/ComputerInput.kif"
+                //"/home/me/sumo/FinancialOntology.kif"
+                "/home/me/sumo/Merge.kif"
+                //"/home/me/sumo/emotion.kif"
+                //"/home/me/sumo/Weather.kif"
+                ;
 
-            String O = "/home/me/d/sumo_merge.nal";
-            KIFInput k = new KIFInput(new FileInputStream(I));
+        String O = "/home/me/d/sumo_merge.nal";
+        KIFInput k = new KIFInput(new FileInputStream(I));
 
-            k.output(O);
+        k.output(O);
 
-            //nar.log();
+        //nar.log();
 
-            nar.inputNarsese(new FileInputStream(O));
+        nar.inputNarsese(new FileInputStream(O));
 
 //        final PrintStream output = System.out;
 //        for (Term x : k.beliefs) {
@@ -226,7 +255,7 @@ class KIFInputTest {
 //(instance Org1-1 Organization)
 //(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
 //(answer yes)
-            //e.clear();
+        //e.clear();
 //        nar.believe("Organization:org1");
 //        e.question("member(?1, org1)?", ETERNAL, (q,a)->{
 //            System.out.println(a);
@@ -234,20 +263,20 @@ class KIFInputTest {
 //        nar.ask($.$$("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
 //           System.out.println(t);
 //        });
-            //e.believe("accountHolder(xyz,1)");
+        //e.believe("accountHolder(xyz,1)");
 //        e.ask($.$safe("(EmotionalState<->?1)"), ETERNAL, QUESTION, (t)->{
 //           System.out.println(t);
 //        });
-            //e.believe("attribute(xyz,Philosopher)");
-            //e.input("(xyz<->?1)?");
+        //e.believe("attribute(xyz,Philosopher)");
+        //e.input("(xyz<->?1)?");
 
-            nar.run(10000);
+        nar.run(10000);
 //        Thread.sleep(1000);
 //        e.run(1000);
-            //e.conceptsActive().forEach(s -> System.out.println(s));
+        //e.conceptsActive().forEach(s -> System.out.println(s));
 
-            //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
-            //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";
+        //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
+        //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";
 
 
 //        TrieDeriver miniDeriver =
@@ -266,7 +295,7 @@ class KIFInputTest {
 
 //        miniDeriver.print(System.out);
 
-            //d.clear();
+        //d.clear();
 
 
 //        e.onTask(t -> {
@@ -294,9 +323,9 @@ class KIFInputTest {
 //        e.input("starts(A,B).");
 //        e.input("[GovernmentFn]:A.");
 //        e.input("[WealthFn]:B.");
-            nar.run(2500);
+        nar.run(2500);
 //        d.conceptsActive().forEach(System.out::println);
-            //d.concept("[Phrase]").print();
+        //d.concept("[Phrase]").print();
 
 
     }

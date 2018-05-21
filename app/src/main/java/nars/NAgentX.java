@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.signal.Bitmap2D;
+import jcog.util.Int2Function;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.derive.deriver.SimpleDeriver;
@@ -748,10 +749,14 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable String id, C bc) {
-        return senseCamera(id != null ? $$(id) : null, bc);
+        return senseCamera((Term)(id != null ? $$(id) : null), bc);
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Term id, C bc) {
+        return addCamera(new Bitmap2DSensor(id, bc, nar()));
+    }
+
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Int2Function<Term> id, C bc) {
         return addCamera(new Bitmap2DSensor(id, bc, nar()));
     }
 

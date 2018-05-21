@@ -33,7 +33,6 @@ public class Finger {
     public final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
 
-    //TODO wheel state
     /**
      * exclusive state which may be requested by a surface
      */
@@ -368,7 +367,7 @@ public class Finger {
         for (int i = 0; i < rotation.length; i++)
             this.rotation[i].add(rotation[i]);
         Surface t = touching();
-        System.out.println(t);
+
         return (t instanceof Finger.RotationAbsorbed);
     }
 

@@ -45,7 +45,7 @@ public class Gradius4K extends GamePanel {
     public static final int VK_SHOOT = 0x42;
     public int score;
     public int playerDead = 1;
-    public int SPEED = 5;
+    public int SPEED = 3;
     public float cameraX;
     public float[] player = new float[256];
 
@@ -85,6 +85,7 @@ public class Gradius4K extends GamePanel {
     public static final int TYPE_BULLET = 3;
     public static final int TYPE_ENEMY = 4;
     public static final int TYPE_POWER_UP = 5;
+    public boolean paused = false;
 
     public static void main(String[] args) {
         new Gradius4K();
@@ -269,6 +270,11 @@ public class Gradius4K extends GamePanel {
 
 
         while (true) {
+
+            if (paused) {
+                Util.sleep(updateMS);
+                continue;
+            }
 
 
             // -- update starts ----------------------------------------------------

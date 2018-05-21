@@ -24,19 +24,24 @@ public class Gradius extends NAgentX {
 
         this.g = new Gradius4K();
 
-        g.updateMS = 40;
+        g.updateMS = 20;
 
         //senseCameraReduced($.p(id,$.the("ae")), (Supplier)()->g.image, 32,32,2,2).resolution(0.5f);
 
 
-        senseCamera(p(id, $.the("SW")), new Scale(() -> g.image, 25, 25)
-                .window(0, 0, 0.5f, 0.5f)).resolution(0.05f);
-        senseCamera(p(id, $.the("NW")), new Scale(() -> g.image, 25, 25)
-                .window(0.5f, 0, 1f, 0.5f)).resolution(0.05f);
-        senseCamera(p(id, $.the("SE")), new Scale(() -> g.image, 25, 25)
-                .window(0, 0.5f, 0.5f, 1f)).resolution(0.05f);
-        senseCamera(p(id, $.the("NE")), new Scale(() -> g.image, 25, 25)
-                .window(0.5f, 0.5f, 1f, 1f)).resolution(0.05f);
+        //senseCamera((x,y)->$.p($.the("SW"), $.the(x), $.the(y)),
+        senseCamera((x,y)->$.p($.the("SW"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
+                        new Scale(() -> g.image, 25, 25)
+                    .window(0, 0, 0.5f, 0.5f)).resolution(0.05f);
+        senseCamera((x,y)->$.p($.the("NW"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
+                new Scale(() -> g.image, 25, 25)
+                    .window(0.5f, 0, 1f, 0.5f)).resolution(0.05f);
+        senseCamera((x,y)->$.p($.the("SE"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
+                new Scale(() -> g.image, 25, 25)
+                    .window(0, 0.5f, 0.5f, 1f)).resolution(0.05f);
+        senseCamera((x,y)->$.p($.the("NE"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
+                new Scale(() -> g.image, 25, 25)
+                    .window(0.5f, 0.5f, 1f, 1f)).resolution(0.05f);
 
         //Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 50, 50)).resolution(0.05f);
 
@@ -52,11 +57,11 @@ public class Gradius extends NAgentX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        senseNumber((level)->$.inh(p($.the("Y"), $.the(level)), id),
+        senseNumber((level)->(p($.the("Y"), $.the(level))),
                 ()->g.player[OBJ_Y] / height,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
-        senseNumber((level)->$.inh(p($.the("X"), $.the(level)), id),
+        senseNumber((level)->(p($.the("X"), $.the(level))),
                 ()->g.player[OBJ_X] / width,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
@@ -108,6 +113,9 @@ public class Gradius extends NAgentX {
 
         actionPushButton($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
+
+        actionToggle($.inh("pause", id),
+                (b) -> g.paused = b);
 
         //initBipolar();
         initToggle();
@@ -189,6 +197,8 @@ public class Gradius extends NAgentX {
     @Override
     protected float act() {
 
+        if (g.paused)
+            return 0; //Float.NaN;
 
         int nextScore = g.score;
 

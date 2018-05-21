@@ -74,7 +74,15 @@ public class Derivation extends PreDerivation {
             new CachedAnon(ANON_INITIAL_CAPACITY, 16*1024); //<-- needs TESTED
 
     /** temporary un-transform map */
-    public Map<Term,Term> untransform = new UnifiedMap<>();
+    public Map<Term,Term> untransform = new UnifiedMap<>() {
+        @Override
+        public Term put(Term key, Term value) {
+            if (key.equals(value))
+                return null; //HACK ignore
+
+            return super.put(key, value);
+        }
+    };
     public long[] concOcc;
 
 
