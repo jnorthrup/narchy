@@ -485,23 +485,22 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     /**
      * creates lazily computing proxy task which facades the task to the target time range
      */
-    static Task project(@Nullable Task t, long subStart, long subEnd, TimeAware n, boolean negated) {
+    static Task project(boolean flexible, @Nullable Task t, long subStart, long subEnd, TimeAware n, boolean negated) {
 
-        if (t.isEternal() || t.containedBy(subStart, subEnd)) {
-            //no need to project, but apply negation if negate
-            return negated ? Task.negated(t) : t;
+        if (!flexible && !(t.isEternal() || t.containedBy(subStart, subEnd))) {
+            @Nullable Longerval intersection = Longerval.intersect(subStart, subEnd, t.start(), t.end());
+            if (intersection != null) {
+                //narrow to the intersecting region
+                subStart = intersection.a;
+                subEnd = intersection.b;
+            }
+
+            Truth ttt = t.truth(subStart, subEnd, n.dur());
+            return (ttt != null) ?
+                    new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, ttt.negIf(negated)) : null;
         }
 
-        @Nullable Longerval intersection = Longerval.intersect(subStart, subEnd, t.start(), t.end());
-        if (intersection!=null) {
-            //narrow to the intersecting region
-            subStart = intersection.a;
-            subEnd = intersection.b;
-        }
-
-        Truth ttt = t.truth(subStart, subEnd, n.dur());
-        return (ttt != null) ?
-                new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, ttt.negIf(negated)) : null;
+        return negated ? Task.negated(t) : t; //dont project, but apply negate if necessary
     }
 
     /**

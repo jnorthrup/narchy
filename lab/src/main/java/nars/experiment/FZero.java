@@ -105,11 +105,11 @@ public class FZero extends NAgentX {
 //                .resolution(0.05f);
 
 
-        //initToggle();
+        initToggle();
         //initTankContinuous();
         //actionSwitch();
         //initTankDiscrete();
-        initBipolar(false);
+        //initBipolar(false);
         //initBipolar(true);
 
         //new Implier(1, this, new float[] { 0, 1 });
@@ -148,8 +148,8 @@ public class FZero extends NAgentX {
         DemultiplexedScalar ang = senseNumber(angle -> $.inh($.func("ang", id ), $.the(angle)) /*SETe.the($.the(angle)))*/, () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 9, //4 cardinal directions
-                //DigitizedScalar.FuzzyNeedle
-                DigitizedScalar.Needle
+                DigitizedScalar.FuzzyNeedle
+                //DigitizedScalar.Needle
                 //DigitizedScalar.FuzzyBinary
         ).resolution(0.01f);
 

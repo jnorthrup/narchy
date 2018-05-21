@@ -323,10 +323,10 @@
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:Task)
-    X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:Weak, Time:Task)
+    X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:Task)
 
     C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:Belief)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:Weak, Time:Belief)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakN, Time:Belief)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 

@@ -61,8 +61,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 );
                 if (bt != null) {
 
-                        /** project to a specific time, and apply negation if necessary */
-                        bt = Task.project(bt, subStart, subEnd, n, negated);
+                    /** project to a specific time, and apply negation if necessary */
+                    bt = Task.project(true, bt, subStart, subEnd, n, negated);
 
                 } else {
                     //bt = null; //missing truth, but yet still may be able to conclude a result

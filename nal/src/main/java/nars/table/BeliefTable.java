@@ -166,7 +166,7 @@ public interface BeliefTable extends TaskTable {
             return null;
         if (m.containedBy(start,end))
             return m;
-        Task t = Task.project(m, start, end, nar, false);
+        Task t = Task.project(false, m, start, end, nar, false);
         if (t instanceof TaskProxy)
             t = ((TaskProxy)t).clone();
         return t;

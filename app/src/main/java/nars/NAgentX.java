@@ -7,7 +7,6 @@ import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
-import nars.derive.deriver.SimpleDeriver;
 import nars.exe.Focus;
 import nars.exe.WorkerMultiExec;
 import nars.gui.EmotionPlot;
@@ -381,10 +380,10 @@ abstract public class NAgentX extends NAgent {
         n.synch();
 
 
-        new SimpleDeriver(a.fire(), n::input, Derivers.nal(6, 8, n,
-            //"motivation.nal",
-            "goal_analogy.nal"
-        ), SimpleDeriver.GlobalTermLinker);
+//        new SimpleDeriver(a.fire(), n::input, Derivers.nal(6, 8, n,
+//            //"motivation.nal",
+//            "goal_analogy.nal"
+//        ), SimpleDeriver.GlobalTermLinker);
 
         Loop loop = n.startFPS(narFPS);
 

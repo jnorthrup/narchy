@@ -3,6 +3,7 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
+import nars.Param;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -648,6 +649,7 @@ public class NAL8Test extends NALTest {
     @Test
     public void testGoalConjunctionNegative1N() {
 
+        Param.DEBUG = true;
         test
                 .input("--a!")
                 .input("(--a && b).")

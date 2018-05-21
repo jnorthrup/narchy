@@ -50,7 +50,9 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Occurrify extends TimeGraph {
 
-    public static final TaskTimeMerge mergeDefault = TaskTimeMerge.Union;
+    public static final TaskTimeMerge mergeDefault =
+            TaskTimeMerge.Union;
+            //TaskTimeMerge.Intersect;
 
     public static final ImmutableMap<Term, TaskTimeMerge> merge;
     static {
@@ -490,7 +492,7 @@ public class Occurrify extends TimeGraph {
             };
 
             @Override public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveOccDT(d, x, d.occ(x));
+                return solveOccDTWithGoalOverride(d, x, d.occ(x));
             }
 
             @Override
@@ -514,14 +516,10 @@ public class Occurrify extends TimeGraph {
          */
         Union() {
             @Override public Pair<Term, long[]> solve(Derivation d, Term x) {
-
-                //override for goal
-                if (d.concPunc == GOAL) { //HACK
-                    return Task.solve(d, x);
-                }
-
-                return solveOccDT(d, x, d.occ(x));
+                return solveOccDTWithGoalOverride(d, x, d.occ(x));
             }
+
+
 
             @Override
             long[] occurrence(Derivation d) {
@@ -594,6 +592,15 @@ public class Occurrify extends TimeGraph {
                 p = null;
             }
             return p == null ? solveAuto(d, x) : p;
+        }
+
+        protected Pair<Term, long[]> solveOccDTWithGoalOverride(Derivation d, Term x, Occurrify occ) {
+            //override for goal
+            if (d.concPunc == GOAL) { //HACK
+                return Task.solve(d, x);
+            }
+
+            return solveOccDT(d, x, d.occ(x));
         }
 
         /** gets the optional premise pre-filter for this consequence.  */
