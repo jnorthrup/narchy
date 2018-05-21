@@ -11,7 +11,7 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.unify.constraint.MatchConstraint;
 import nars.unify.mutate.Termutator;
-import nars.util.term.NormalizedVariableMap;
+import nars.util.term.TermHashMap;
 import nars.util.term.transform.Subst;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -77,7 +77,10 @@ public abstract class Unify extends Versioning implements Subst {
      * @param random
      */
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
-        this(type, random, stackMax, initialTTL, new NormalizedVariableMap<>());
+        this(type, random, stackMax, initialTTL,
+                new TermHashMap()
+                //new NormalizedVariableMap<>() //<- TODO: CommonVariables, and EllipsisMatch need it
+        );
     }
 
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL, Map/*<Variable,Versioned<Term>>*/ termMap) {
