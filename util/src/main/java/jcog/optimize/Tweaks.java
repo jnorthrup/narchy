@@ -319,11 +319,6 @@ public class Tweaks<X> {
     }
 
 
-    public Optimize<X> optimize(Supplier<X> subjects) {
-        return new Optimize<>(subjects, this);
-    }
-
-
     public Pair<List<Tweak<X, ?>>, SortedSet<String>> get(Map<String, Float> additionalHints) {
         Map<String, Float> h;
         if (!this.hints.isEmpty()) {
@@ -358,16 +353,13 @@ public class Tweaks<X> {
     }
 
 
-    public Result<X> optimize(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {
+    /** simple scalar eval */
+    public Optimizing<X> optimize(FloatFunction<X> score) {
+        return optimize(new Optimizing.Score<>(score));
+    }
 
-        float controlScoreSum = 0;
-        for (int i = 0; i < repeats; i++) {
-            controlScoreSum += eval.floatValueOf(subjects);
-        }
-        float controlScore = controlScoreSum / repeats;
-        System.out.println("control score=" + controlScore); //TODO move to supereclass
-
-        return optimize(subjects).run(maxIterations, repeats, eval);
+    public Optimizing<X> optimize(Optimizing.Optimal<X,?>... seeks) {
+        return new Optimizing<>(subjects, this, seeks);
     }
 
 }

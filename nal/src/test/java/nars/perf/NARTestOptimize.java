@@ -1,6 +1,6 @@
 package nars.perf;
 
-import jcog.io.arff.ARFF;
+import jcog.optimize.Optimizing;
 import jcog.optimize.Result;
 import jcog.optimize.Tweaks;
 import nars.NAR;
@@ -16,7 +16,6 @@ import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
 import nars.nal.nal8.NAL8Test;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Set;
@@ -26,12 +25,10 @@ import java.util.concurrent.Executors;
 public class NARTestOptimize {
 
     static final int threads =
-            2;
+            4;
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
-    /** necessary to do what jdk "parallel" streams refuses to do... WTF */
-    static final ExecutorService exe = Executors.newFixedThreadPool(threads);
 
     public static void main(String[] args) {
 
@@ -43,56 +40,46 @@ public class NARTestOptimize {
 //            e.printStackTrace();
 //        }
 
-        final ARFF[] results = new ARFF[1];
 
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            String file = "/tmp/" + NARTestOptimize.class + "_" + System.currentTimeMillis() + ".arff";
-            try {
-                results[0].writeToFile(file);
-                System.out.println("saved: " + file);
-            } catch (IOException e) {
-                e.printStackTrace();
+
+
+        Optimizing<NAR> opt = new Tweaks<>(() -> {
+            NAR n = NARS.tmp();
+            return n;
+        }).discover(new Tweaks.DiscoveryFilter() {
+
+            final Set<Class> excludeClasses = Set.of(NARLoop.class);
+            final Set<String> excludeFields = Set.of(
+                    "DEBUG",
+                    "dtMergeOrChoose",
+                    "TEMPORAL_SOLVER_ITERATIONS",
+                    "dtDither",
+                    "timeFocus",
+                    "beliefConfDefault",
+                    "goalConfDefault"
+            );
+
+            @Override
+            protected boolean includeClass(Class<?> targetType) {
+                return !excludeClasses.contains(targetType);
             }
-        }));
-        while (true) {
-            Result<NAR> r = new Tweaks<>(() -> {
-                NAR n = NARS.tmp();
-                return n;
-            })
-                .discover(new Tweaks.DiscoveryFilter() {
 
-                    final Set<Class> excludeClasses = Set.of(NARLoop.class);
-                    final Set<String> excludeFields = Set.of(
-                            "DEBUG",
-                            "dtMergeOrChoose",
-                            "TEMPORAL_SOLVER_ITERATIONS",
-                            "dtDither",
-                            "timeFocus",
-                            "beliefConfDefault",
-                            "goalConfDefault"
-                    );
+            @Override
+            protected boolean includeField(Field f) {
+                return
+                        !Modifier.isStatic(f.getModifiers()) &&
+                                !excludeFields.contains(f.getName());
+            }
 
-                    @Override
-                    protected boolean includeClass(Class<?> targetType) {
-                        return !excludeClasses.contains(targetType);
-                    }
-
-                    @Override
-                    protected boolean includeField(Field f) {
-                        return
-                            !Modifier.isStatic(f.getModifiers()) &&
-                            !excludeFields.contains(f.getName());
-                    }
-
-                })
+        })
                 .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Perceive, p)
                 )
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(2 /*32*1024*/, 1, (n) ->
-                        JUnitNAR.tests(exe, n, 0.25f,
+                .optimize((n) ->
+                        JUnitNAR.tests(n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
                                 NAL2Test.class,
@@ -103,14 +90,13 @@ public class NARTestOptimize {
                                 NAL8Test.class
                         ));
 
-            //r.print();
-            //r.tree(2, 8).print();
-            if (results[0] == null)
-                results[0] = r.data;
-            else {
-                results[0].addAll(r.data);
-            }
-            System.out.println("ARFF: " + results[0].data.size());
+        opt.saveOnShutdown("/tmp/" + NARTestOptimize.class.getName() + "_" + System.currentTimeMillis() + ".arff");
+
+        //TODO ensure threads are unique
+        ExecutorService pool = Executors.newFixedThreadPool(threads);
+
+        while (true) {
+            Result<NAR> r = opt.run( /*32*1024*/ 10, 10, pool);
         }
 
 

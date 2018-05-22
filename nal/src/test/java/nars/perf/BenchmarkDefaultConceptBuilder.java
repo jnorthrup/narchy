@@ -1,6 +1,5 @@
 package nars.perf;
 
-import com.google.common.util.concurrent.MoreExecutors;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.util.DefaultConceptBuilder;
@@ -64,8 +63,8 @@ public class BenchmarkDefaultConceptBuilder {
             });
             return n;
         };
-        JUnitNAR.tests(MoreExecutors.directExecutor(), s, 1f,
-            NAL1Test.class, NAL2Test.class, NAL1MultistepTest.class
+        JUnitNAR.tests(s.get(),
+                NAL1Test.class, NAL2Test.class, NAL1MultistepTest.class
         );
     }
 

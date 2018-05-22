@@ -44,7 +44,7 @@ public class TweaksTest {
         assertTrue(a.tweaks.size() >= 4);
 
         //assertEquals(4, a.all.size());
-        Result<Model> r = a.optimize(64, 1, (m)->m.get().score());
+        Result<Model> r = a.optimize((m)->m.score()).run(15);
         r.print();
         r.tree(3, 4).print();
         assertTrue(r.best().getOne() > 5f);

@@ -12,16 +12,20 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalS
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -44,7 +48,6 @@ public class Optimize<X> {
     final Supplier<X> subject;
 
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
-    private ARFF data;
 
     protected Optimize(Supplier<X> subject, Tweaks<X> t) {
         this(subject, t, Map.of("autoInc", autoInc_default));
@@ -69,11 +72,22 @@ public class Optimize<X> {
         this.tweaks = ready;
     }
 
-    public final Result<X> run(int maxIterations, FloatFunction<Supplier<X>> eval) {
-        return run(maxIterations, 1, eval);
-    }
 
-    public Result<X> run(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {
+    /**
+     * TODO support evaluator that collects data during execution, and return score as one data field
+     *
+     * @param data
+     * @param maxIterations
+     * @param repeats
+     * @param eval
+     * @param exe
+     * @return
+     */
+    public Result<X> run(final ARFF data, int maxIterations, int repeats,
+                         //FloatFunction<Supplier<X>> eval,
+                         Optimizing.Optimal<X,?>[] eval,
+                         ExecutorService exe) {
+
 
         assert (repeats >= 1);
 
@@ -104,6 +118,8 @@ public class Optimize<X> {
             i++;
         }
 
+        //TODO add the seeks to the experiment vector
+
 
         FasterList<DoubleObjectPair<double[]>> experiments = new FasterList<>(maxIterations);
 
@@ -117,13 +133,40 @@ public class Optimize<X> {
 
                 double sum = 0;
 
+                Supplier<X> x = () -> subject(point);
+
+                List<Map<String,Object>> exp = new FasterList(repeats);
+
+                CountDownLatch c = new CountDownLatch(repeats);
+                List<Future<X>> each = new FasterList(repeats);
                 for (int r = 0; r < repeats; r++) {
-
-                    Supplier<X> x = () -> subject(point);
-
-                    sum += eval.floatValueOf(x);
-
+                    each.add( exe.submit(()->{
+                        try {
+                            return x.get();
+                        } finally {
+                            c.countDown();
+                        }
+                    }) );
                 }
+
+                c.await();
+
+                for (int r = 0; r < repeats; r++) {
+                    X y =  each.get(r).get();
+
+                    float subScore = 0;
+                    Map<String,Object> e = new HashMap();
+                    for (Optimizing.Optimal<X,?> o : eval) {
+                        ObjectFloatPair<?> xy = o.eval(y);
+                        e.put(o.id, xy.getOne());
+                        subScore += xy.getTwo();
+                    }
+
+                    sum += subScore;
+                    exp.add(e);
+                }
+
+                //TODO interplate and store the detected features
 
                 score = sum / repeats;
 
@@ -156,9 +199,6 @@ public class Optimize<X> {
 //                    Stream.of("score"), tweaks.stream().map(t -> t.id)
 //            ).toArray(String[]::new));
 
-        data = new ARFF();
-        data.defineNumeric("score");
-        tweaks.forEach(t -> t.defineIn(data));
 
         experimentStart();
 

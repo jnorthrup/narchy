@@ -444,7 +444,10 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
      * Save the data into a file.
      */
     public void writeToFile(String filename) throws IOException {
-        write(new FileWriter(filename));
+        try (FileWriter w = new FileWriter(filename)) {
+            write(w);
+            w.flush();
+        }
     }
 
     /**
