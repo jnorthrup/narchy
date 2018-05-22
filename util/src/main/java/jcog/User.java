@@ -4,10 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.StringField;
+import jcog.exe.Exe;
+import jcog.math.Longerval;
+import jcog.tree.rtree.rect.RectDoubleND;
+import jcog.tree.rtree.rect.RectFloatND;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
@@ -24,11 +25,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
 
 /**
  * general user-scope global utilities and facilities
@@ -36,14 +38,13 @@ import java.util.function.Supplier;
 public class User {
 
     private static User user = null;
-    private final ExecutorService exe = ForkJoinPool.commonPool();
 
     /**
      * general purpose user notification broadcast
      */
     public final Topic<Object> notice = new ListTopic();
 
-    static final Logger logger = LoggerFactory.getLogger(User.class);
+    private static final Logger logger = LoggerFactory.getLogger(User.class);
 
     private final Directory d;
 
@@ -102,7 +103,7 @@ public class User {
      * @param base
      * @return
      */
-    static NRTCachingDirectory nrt(Directory base) {
+    private static NRTCachingDirectory nrt(Directory base) {
         //This will cache all newly flushed segments, all merges whose expected segment size is <= 5 MB, unless the net cached bytes exceeds 60 MB
         // at which point all writes will not be cached (until the net bytes falls below 60 MB).
         return new NRTCachingDirectory(base, 5.0, 60.0);
@@ -147,7 +148,7 @@ public class User {
 
     public void notice(Object x) {
         logger.info("-> {}", x);
-        notice.emitAsync(x, exe);
+        notice.emitAsync(x, Exe.executor());
     }
 
     public On onNotice(Consumer x) {
@@ -197,7 +198,7 @@ public class User {
                 TopDocs y = iis.search(
                         new TermQuery(id(id)), 1);
                 if (y.totalHits > 0)
-                    D[0] = iis.doc(y.scoreDocs[0].doc);
+                    D[0] = iis.doc(y.scoreDocs[0].doc); //only the first, they should be uniquely id'd
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -209,7 +210,7 @@ public class User {
     }
 
     public void run(Runnable r) {
-        exe.submit(r);
+        Exe.executor().execute(r);
     }
 
     /** view for a search result document, w/ score and method to decode to lazily object.
@@ -382,17 +383,27 @@ public class User {
         return (X) codecs.get(codec).unapply(doc);
     }
 
-    Document document(String id, Object x) {
-        String codec = codec(x);
+    /** unique identifier */
+    private static final String ID = "i";
+
+    /** how is stored */
+    private static final String CODEC = "c";
+
+    /** spatiotemporal bounds */
+    static final String BOUNDS = "b";
+
+    private Document document(String id, Object x) {
 
         Document d = new Document();
-        d.add(new StringField("i", id, Field.Store.YES));
-        d.add(new StringField("c", codec, Field.Store.YES));
+        d.add(new StringField(ID, id, Field.Store.YES));
+
+        String codec = codec(x);
+        d.add(new StringField(CODEC, codec, Field.Store.YES));
         codecs.get(codec).apply(d, x);
         return d;
     }
 
-    String codec(Object input) {
+    private String codec(Object input) {
 
         String c;
         switch (input.getClass().getSimpleName()) {
@@ -416,7 +427,7 @@ public class User {
         X unapply(Document doc);
     }
 
-    public final Map<String, DocCodec> codecs = Map.of(
+    private final Map<String, DocCodec> codecs = Map.of(
             "string", new DocCodec<String>() {
 
                 @Override
@@ -450,6 +461,30 @@ public class User {
                         d.add(new StringField("javatype",
                                 o.getClass().getName(),
                                 Field.Store.YES));
+
+                        if (o instanceof RectFloatND) {
+                            RectFloatND r = (RectFloatND)o;
+                            if (r.dim() == 4) {
+                                double[] min = Util.toDouble(r.min.coord);
+                                double[] max = Util.toDouble(r.max.coord);
+                                d.add(new DoubleRange(BOUNDS, min, max));
+                            }
+                        } else if (o instanceof RectDoubleND) {
+                            RectDoubleND r = (RectDoubleND)o;
+                            if (r.dim() == 4) {
+                                double[] min = (r.min.coord);
+                                double[] max = (r.max.coord);
+                                d.add(new DoubleRange(BOUNDS, min, max));
+                            }
+                        } else if (o instanceof Longerval) {
+                            //time only (assumes unixtime ms)
+                            Longerval l = (Longerval)o;
+                            double[] min = { l.a, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY };
+                            double[] max = { l.b, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY };
+                            d.add(new DoubleRange(BOUNDS, min, max));
+                        }
+
+
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
