@@ -13,6 +13,10 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
     /** global multiplier */
     public final FloatRange scale = new FloatRange(1f, 0f, 1f);
 
+    /** how important is it to retain evidence.
+     * leniency towards uncertain derivations */
+    public final FloatRange evidenceImportance = new FloatRange(0.75f, 0f, 1f);
+
     @Override
     public float pri(Task t, Derivation d) {
         float factor = this.scale.floatValue();
@@ -110,7 +114,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
                 //float eviFactor = dConf / pConf; //allow > 1
                 float eviFactor = dEvi / pEvi; //allow > 1
-                factor *= eviFactor;
+                factor *= Util.lerp(evidenceImportance.floatValue(), 1, eviFactor);
             }
 
             //opinionation: preference for polarized beliefs/goals
@@ -119,7 +123,8 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
         } else {
             //QUESTIONS and QUESTS: apply the rel growth cost factor again
             //since there is no truth to heuristically discount
-            factor *= relGrowthCost;
+            //factor *= relGrowthCost;
+            factor *= Util.lerp(evidenceImportance.floatValue(), 1, relGrowthCost); //discount balanced with the truth version
         }
 
         return factor * d.pri;

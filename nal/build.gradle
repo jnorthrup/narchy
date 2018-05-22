@@ -67,6 +67,13 @@ dependencies {
     }
     testCompile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
 
+    testCompile(group: 'org.pitest', name: 'pitest', version: '1.4.0')
+    testCompile(group: 'org.pitest', name: 'pitest-entry', version: '1.4.0')
+    testCompile(group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.5') {
+        exclude(module: 'testng')
+        exclude(module: 'junit')
+    }
+
 
 //    testCompile(group: 'fr.inria.stamp', name:'dspot', version:'1.0.2-SNAPSHOT')
 }

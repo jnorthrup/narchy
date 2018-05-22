@@ -7,7 +7,6 @@ import nars.task.Tasked;
 import nars.test.condition.NARCondition;
 import nars.test.condition.TaskCondition;
 import nars.time.Tense;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +36,7 @@ public class TestNAR {
      * TODO separate way to generate a test report containing
      * both successful and unsuccessful tests
      */
-    static final boolean collectTrace = false;
+    public boolean collectTrace = false;
 
     public int temporalTolerance;
     float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
@@ -63,8 +62,6 @@ public class TestNAR {
     private Topic<Tasked>[] outputEvents;
     //public final List<ExplainableTask> explanations = new ArrayList();
 
-    @Nullable
-    public Object result;
 
     boolean finished;
     private boolean exitOnAllSuccess = true;
@@ -75,6 +72,8 @@ public class TestNAR {
      * (0..1) = success in > 1 cycles,
      * +1 = success in <= 1 cycles */
     public float score;
+
+    public boolean reportStats = false;
 
     public TestNAR(NAR nar) {
         set(nar);
@@ -184,7 +183,7 @@ public class TestNAR {
                 :
                 0;
 
-        if (testAndPrintReport) {
+        {
 
             //if (requires.isEmpty())
             //return this;
@@ -199,13 +198,12 @@ public class TestNAR {
 //            HitMeter[] eventMeters1 = var.toArray(new HitMeter[var.size()]);
 
 
-            String pattern = "{}\n\t{} {} {}IN \ninputs";
-            Object[] args = {id, time, result/*, eventMeters1*/};
+            if (reportStats) {
+                String pattern = "{}\n\t{} {} {}IN \ninputs";
+                Object[] args = {id, time};
 
-            if (result != null) {
-                logger.error(pattern, args);
-            } else {
                 logger.info(pattern, args);
+
             }
 
             succeedsIfAll.forEach(c ->
@@ -219,9 +217,14 @@ public class TestNAR {
 //            System.out.flush();
 //            System.err.flush();
 
+
+
+        }
+
+
+        if (reportStats) {
             nar.emotion.printer(System.out).run();
             nar.stats(System.out);
-
         }
 
         assertSuccess(success);
@@ -238,7 +241,7 @@ public class TestNAR {
     
     public TestNAR runUntil(long finalCycle) {
 
-        result = null;
+        //result = null;
 
 //        if (showOutput)
 //            nar.trace();

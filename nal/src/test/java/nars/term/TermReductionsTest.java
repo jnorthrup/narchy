@@ -235,7 +235,36 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    public void testImplicationShouldBeValid() throws Narsese.NarseseException {
+    public void testConjParaEteReduction() throws Narsese.NarseseException {
+        String o = "(((--,a)&&b)&|b))";
+        String q = "((--,a)&|b)";
+        Term oo = $(o);
+        assertEquals(q, oo.toString());
+    }
+
+    @Test
+    public void testConjEteParaReduction() throws Narsese.NarseseException {
+        String o = "(((--,a)&|b)&&b))";
+        String q = "((--,a)&|b)";
+        Term oo = $(o);
+        assertEquals(q, oo.toString());
+    }
+
+    @Test
+    public void testConjParaEteReductionInvalid() {
+        assertEquals(False,
+            $$("(((--,a)&&b)&|(--,b)))")
+        );
+    }
+    @Test
+    public void testConjParaEteReductionInvalid2() {
+        assertEquals(False,
+                $$("(((--,a)&&(--,b))&|b))")
+        );
+    }
+
+    @Test
+    public void testConjParaEteReduction2() throws Narsese.NarseseException {
         String o = "(((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)) ==>-807 (((--,tetris(isRow,2,true))&&tetris(isRowClear,8,true))&|tetris(isRowClear,8,true)))";
         String q = "(((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)) ==>-807 ((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)))";
         Term oo = $(o);
@@ -1029,15 +1058,27 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjNearIdentity() {
         assertReduction(True, "( (a&&b) ==> (a&|b) )");
 
-        assertReduction("(&|,(a&&b),a,b)",
-            //"(a&|b)",
-                "( (a&&b) &| (a&|b) )");
-
-        assertReduction("(&|,((X,x)&&#1),(X,x),#1)", "( ((X,x)&&#1) &| ((X,x)&|#1) )");
+        assertReduction(//"(&|,((X,x)&&#1),(X,x),#1)",
+                    "((X,x)&|#1)",
+                "( ((X,x)&&#1) &| ((X,x)&|#1) )");
 
         assertReduction("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
     }
 
+    @Test public void testConjParallelOverrideEternal() {
+
+        assertReduction(//"(&|,(a&&b),a,b)",
+                "(a&|b)",
+                "( (a&&b) &| (a&|b) )");
+
+    }
+    @Test public void testConjParallelOverrideEternal2() {
+
+        assertReduction(//"(&|,(a&&b),a,b)",
+                "(a&|b)",
+                "( (a&&b) && (a&|b) )");
+
+    }
     @Test
     public void testConjInImplicationTautology() {
         Term x0 = $.$$("((x &&+2 x) ==>-2 x)");

@@ -33,11 +33,9 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -54,7 +52,10 @@ import static nars.op.rdfowl.NQuadsRDF.equi;
  **/
 public class KIFInput {
 
-    static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
+    private static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
+    private static final Term SYMMETRIC_RELATION = $$("SymmetricRelation");
+    private static final Term ASYMMETRIC_RELATION = $$("AsymmetricRelation");
+
     public static Memory.BytesToTasks load = new Memory.BytesToTasks("kif") {
 
         @Override
@@ -68,13 +69,19 @@ public class KIFInput {
             return null;
         }
     };
-    final Set<Term> beliefs = new TreeSet();
+
+
+
+    private final SortedSet<Term> beliefs = new ConcurrentSkipListSet<>();
     private final KIF kif;
-    private final boolean includeSubclass = true;
-    private final boolean includeInstance = true;
     private final boolean includeRelatedInternalConcept = true;
     private final boolean includeDoc = false;
+
     private transient final Map<Term, FnDef> fn = new HashMap();
+    private final Set<Term> symmetricRelations = new HashSet();
+    {
+        symmetricRelations.add(SYMMETRIC_RELATION);
+    }
 
 
     //usually these quantifiers semantics are inferrable from context.
@@ -83,7 +90,7 @@ public class KIFInput {
     //when this is input with varying degrees of confidence
     //then such statements could just be assigned lower confidence.
     private static final boolean includePredArgCounts = false;
-    static final Set<Term> predExclusions = Set.of(
+    private static final Set<Term> predExclusions = Set.of(
             //Object?
             $$("UnaryPredicate"),
             $$("BinaryPredicate"),$$("TernaryPredicate"),
@@ -92,11 +99,14 @@ public class KIFInput {
             $$("UnaryFunction"), $$("BinaryFunction"), $$("TernaryFunction"),
             $$("QuaternaryRelation"),
             $$("QuintaryRelation"),
-            $$("SingleValuedRelation"),$$("TotalValueRelation")
+            $$("SingleValuedRelation"),$$("TotalValuedRelation"),
+
+            $$("AsymmetricRelation") //product relation is by implicitly asymmetric
+
             //etc
     );
 
-    public KIFInput(InputStream is) throws Exception {
+    KIFInput(InputStream is) throws Exception {
         this.kif = new KIF();
         kif.read(is);
 
@@ -126,6 +136,7 @@ public class KIFInput {
             /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
         });
 
+        //apply domain and range predicates
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
             Term[] vt = Util.map(0, ds, i -> $.varDep(1 + i), Term[]::new);
@@ -155,6 +166,30 @@ public class KIFInput {
 
         });
 
+        if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
+            //rewrite symmetric relations
+            beliefs.removeIf(belief -> {
+                if (belief.op() == INH) {
+                    Term fn = belief.sub(1);
+                    if (symmetricRelations.contains(fn)) {
+                        //Term symmetric = INH.the(PROD.the(SETe.the(b.sub(0).subterms())), fn);
+                        Term ab = belief.sub(0);
+                        if (ab.op() != PROD) {
+                            return false; //ie  inheritance involving symmetric relation
+                        }
+                        assert(ab.subs()==2);
+                        Term a = ab.sub(0);
+                        Term b = ab.sub(1);
+                        Term symmetric = INH.the(SECTe.the(PROD.the(a, b), PROD.the(b, a)), fn);
+                        //System.out.println(belief + " -> " + symmetric);
+                        beliefs.add(symmetric);
+                        return true; //remove original
+                    }
+                }
+                return false;
+            });
+        }
+
         beliefs.removeIf(b -> {
             if (b.hasAny(BOOL)) {
                 return true;
@@ -174,7 +209,7 @@ public class KIFInput {
         //nar.believe(y);
     }
 
-    static Term atomic(String sx) {
+    private static Term atomic(String sx) {
         sx = sx.replace("?", "#"); //query var to depvar HACK
         try {
             return $.$(sx);
@@ -183,7 +218,7 @@ public class KIFInput {
         }
     }
 
-    static Function<Term, Term> domainRangeMerger(Term type) {
+    private static Function<Term, Term> domainRangeMerger(Term type) {
         return (existing) -> {
             if (existing.equals(type))
                 return existing;
@@ -194,7 +229,7 @@ public class KIFInput {
 
 
 
-    Term formulaToTerm(String sx, int level) {
+    private Term formulaToTerm(String sx, int level) {
         sx = sx.replace("?", "#"); //query var to depvar HACK
 
         Formula f = new Formula(sx);
@@ -207,7 +242,7 @@ public class KIFInput {
 //        }
     }
 
-    public Term formulaToTerm(final Formula x, int level) {
+    private Term formulaToTerm(final Formula x, int level) {
 
         String xCar = x.car();
         String root = xCar; //root operate
@@ -260,18 +295,6 @@ public class KIFInput {
                 y = $.p(args);
                 break;
 
-            case "attribute":
-            case "subrelation":
-            case "subclass":
-            case "subAttribute":
-                if (includeSubclass) {
-                    if (args.size() != 2) {
-                        throw new RuntimeException("subclass expects 2 arguments");
-                    } else {
-                        y = INH.the(args.get(0), args.get(1));
-                    }
-                }
-                break;
 
             case "exhaustiveAttribute": {
                 //ex: (exhaustiveAttribute RiskAttribute HighRisk LowRisk)
@@ -279,22 +302,42 @@ public class KIFInput {
                 break;
             }
 
+
+            case "subclass":
             case "instance":
-                if (includeInstance) {
+            case "attribute":
+            case "subrelation":
+            case "subAttribute":
+
                     if (args.size() != 2) {
                         throw new RuntimeException("instance expects 2 arguments");
                     } else {
                         Term pred = args.get(1);
+
+                        Term subj = args.get(0);
+
+                        if (symmetricRelations.contains(pred)) {
+                            symmetricRelations.add(subj);
+                        }
+
+                        if (pred.equals(SYMMETRIC_RELATION)) {
+                            return null; //direct subclass of symmetric relation, this is what we make implicit so we dont need this belief
+                        }
+
                         if (!includePredArgCounts && predExclusions.contains(pred))
                             return null;
 
-                        Term subj = args.get(0);
-                        y = $.inst(subj, pred);
+                        if (root.equals("instance"))
+                            y = $.inst(subj, pred);
+                        else
+                            y = INH.the(subj, pred);
+
                         if (y instanceof Bool)
                             return y;
                     }
-                }
+
                 break;
+
             case "relatedInternalConcept":
                 /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
                 if (includeRelatedInternalConcept) {
@@ -315,7 +358,7 @@ public class KIFInput {
                 }
                 //y = $.func("isEqual", args.get(0), args.get(1)); //"equal" is NARchy built-in
                 //y = $.sim(args.get(0), args.get(1));
-                //break;
+                break;
 
 
             case "forall":
@@ -367,6 +410,9 @@ public class KIFInput {
                         Term subj = (args.get(0));
                         Term arg = (args.get(1));
                         Term type = (args.get(2));
+                        if (type.equals(ASYMMETRIC_RELATION)) {
+                            return null; //obvious
+                        }
                         FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
 
                         d.domain.updateValue(((Int) arg).id, () -> type, domainRangeMerger(type));
@@ -382,6 +428,9 @@ public class KIFInput {
                     if (args.size() == 2) {
                         Term subj = args.get(0);
                         Term range = args.get(1);
+                        if (range.equals(ASYMMETRIC_RELATION)) {
+                            return null; //obvious
+                        }
                         FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
                         d.range = range;
                     } else {
@@ -489,7 +538,7 @@ public class KIFInput {
         return y;
     }
 
-    public Term disjoint(List<Term> args, Term v0) {
+    private Term disjoint(List<Term> args, Term v0) {
         Term y;
         y = Op.INH.the(
                 v0,
@@ -590,17 +639,6 @@ public class KIFInput {
         return null;
     }
 
-    public void output(String path) throws FileNotFoundException {
-        logger.info("output {} beliefs to {}", beliefs.size(), path);
-        output(new PrintStream(new FileOutputStream(path)));
-    }
-
-    public void output(PrintStream out) {
-        beliefs.forEach(b -> {
-            out.print(b);
-            out.println(".");
-        });
-    }
 
     static class FnDef {
         final IntObjectHashMap<Term> domain = new IntObjectHashMap();

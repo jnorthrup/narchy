@@ -229,7 +229,6 @@ class KIFInputTest {
         String O = "/home/me/d/sumo_merge.nal";
         KIFInput k = new KIFInput(new FileInputStream(I));
 
-        k.output(O);
 
         //nar.log();
 

@@ -222,14 +222,15 @@ public enum Op {
 
                         Term a = u[0];
                         Term b = u[1];
-                        if ((a.structure() & b.structure()) != 0) {
+                        if (Terms.commonStructure(a, b)) {
                             if (a.equals(b))
                                 return u[0];
                             if (a.equalsNeg(b))
                                 return False;
                         }
 
-                        if (!a.hasAny(Op.CONJ.bit | Op.NEG.bit) && !b.hasAny(Op.CONJ.bit | Op.NEG.bit)) {
+                        if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
+                        //if (!a.hasAny(Op.CONJ.bit | Op.NEG.bit) && !b.hasAny(Op.CONJ.bit | Op.NEG.bit)) {
                             //fast case: no inner conjunction or negations
                             return compound(CONJ, dt, sorted(u[0], u[1]));
                         }

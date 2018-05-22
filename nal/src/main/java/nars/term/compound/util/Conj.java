@@ -395,39 +395,45 @@ public class Conj {
             polarity = true;
         }
 
-        int dt;
-        boolean atEternal = at == ETERNAL;
-        if (x == CONJ && (dt = t.dt()) != XTERNAL
-                && (dt != DTERNAL || atEternal)
-                && (dt != 0 || !atEternal)
+        if (x == CONJ) {
+            int dt = t.dt();
+
+            boolean atEternal = at == ETERNAL;
+
+            if ((dt != XTERNAL)
+                ////&& (dt == DTERNAL || atEternal)
+                ////&& (dt != 0 || !atEternal)
                 && (!atEternal || (dt == DTERNAL))
-                ) {
+
+            ) {
+
 
 //            try {
-            return t.eventsWhile((w, e) -> add(e, w),
-                    at,
-                    !atEternal,
-                    atEternal, //only decompose DTERNAL if in the ETERNAL context, otherwise they are embedded as events
-                    false, 0);
+                return t.eventsWhile((w, e) -> add(e, w),
+                        at,
+                        true,
+                        true,
+                        false, 0);
 //            } catch (StackOverflowError e) {
 //                System.err.println(t + " " + at + " " + dt);
 //                throw new RuntimeException(t + " should not have recursed");
 //            }
-        } else {
-
-            int id = add(t);
-            if (!polarity)
-                id = -id;
-
-
-            if (!addIfValid(at, id)) {
-                //contradiction
-                term = False;
-                return false;
             }
-
-            return true;
         }
+
+
+
+        int id = add(t);
+        if (!polarity)
+            id = -id;
+
+        if (!addIfValid(at, id)) {
+            //contradiction
+            term = False;
+            return false;
+        }
+
+        return true;
     }
 
     public boolean add(Term t, long start, long end, int maxSamples, int minSegmentLength) {
@@ -452,6 +458,28 @@ public class Conj {
     }
 
     protected boolean addIfValid(long at, int id) {
+//        if (at == ETERNAL) {
+//            //TODO check for conflicts in non-eternal slots
+//            Iterator<LongObjectPair> ii = event.keyValuesView().iterator();
+//            while (ii.hasNext()) {
+//                LongObjectPair ee = ii.next();
+//                //if (ee.getOne()==ETERNAL) continue; //checked below, TODO combine with that because it's here
+//                int cmp = conflictOrSame(ee.getTwo(), id);
+//                if (cmp == -1)
+//                    return false; //conflict
+//                if (cmp == +1) {
+//                    return true; //already exists
+//                }
+//            }
+//        } else {
+//            //check temporal conflicts with eternal
+//            Object eteEvents = event.get(ETERNAL);
+//            int cmp = conflictOrSame(eteEvents, id);
+//            if (cmp == -1)
+//                return false; //conflict
+//            if (cmp == +1)
+//                return true; //already added
+//        }
         Object what = event.get(at);
         if (what == null) {
             byte[] bwhat = new byte[ROARING_UPGRADE_THRESH];
@@ -467,6 +495,10 @@ public class Conj {
             }
         } else {
             byte[] ii = (byte[]) what;
+            if (indexOfZeroTerminated(ii, ((byte)id)) != -1) {
+                //already added
+                return true;
+            }
             if (indexOfZeroTerminated(ii, ((byte) -id)) == -1) {
                 int nextSlot = indexOfZeroTerminated(ii, (byte) 0);
                 if (nextSlot != -1) {
@@ -483,6 +515,26 @@ public class Conj {
             }
         }
         return false;
+    }
+
+    static int conflictOrSame(Object e, int id) {
+        if (e == null) {
+            //nothing to test
+        } else if (e instanceof RoaringBitmap) {
+            RoaringBitmap r = (RoaringBitmap) e;
+            if (r.contains(-id))
+                return -1; //conflcit
+            else if (r.contains(id)) {
+                return +1; //subsume this time-specific event into the outer eternal
+            }
+        } else if (e instanceof byte[]) {
+            byte[] r = (byte[])e;
+            if (indexOfZeroTerminated(r, (byte)-id)!=-1)
+                return -1; //conflcit
+            else if (indexOfZeroTerminated(r, (byte)id)!=-1)
+                return +1; //subsume this time-specific event into the outer eternal
+        }
+        return 0;
     }
 
     public int add(Term t) {

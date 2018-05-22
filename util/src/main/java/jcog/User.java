@@ -37,6 +37,19 @@ import static java.lang.Double.POSITIVE_INFINITY;
  */
 public class User {
 
+    /** unique identifier */
+    static final String ID = "i";
+
+    /** how is stored */
+    static final String CODEC = "c";
+
+    /** spatiotemporal bounds */
+    static final String BOUNDS = "b";
+
+    /** a tag field (multiple allowed) */
+    static final String TAG = "t";
+
+
     private static User user = null;
 
     /**
@@ -383,14 +396,6 @@ public class User {
         return (X) codecs.get(codec).unapply(doc);
     }
 
-    /** unique identifier */
-    private static final String ID = "i";
-
-    /** how is stored */
-    private static final String CODEC = "c";
-
-    /** spatiotemporal bounds */
-    static final String BOUNDS = "b";
 
     private Document document(String id, Object x) {
 

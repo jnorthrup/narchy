@@ -56,8 +56,8 @@ public class NarseseBaseTest extends NarseseTest {
 
     @Test
     public void testTruth() throws Narsese.NarseseException {
-        testTruth("%1;0.9%", 1f, 0.9f);
         testTruth("%1.0;0.90%", 1f, 0.9f);
+        testTruth("%1;0.9%", 1f, 0.9f);
         testTruth("%1.00;0.90%", 1f, 0.9f);
         testTruth("%1;0.90%", 1f, 0.9f);
         testTruth("%1;.9%", 1f, 0.9f);

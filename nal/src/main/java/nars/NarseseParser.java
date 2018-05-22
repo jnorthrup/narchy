@@ -19,7 +19,6 @@ import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.unify.match.Ellipsis;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import tec.uom.se.AbstractQuantity;
 
@@ -264,8 +263,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         QuotedAtom(),
                         URIAtom(),
 
-                        seq(oper, ColonReverseInheritance()),
-
+                        seq(oper, temporal, ColonReverseInheritance()),
 
 
                         //TODO match Ellipsis as an optional continuation of the prefix variable that was already parsed.\
@@ -517,7 +515,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     static final AbstractMatcher ValidAtomCharMatcher = new AbstractMatcher("'ValidAtomChar'") {
 
 
-        @NotNull
         @Override
         public MatcherType getType() {
             return MatcherType.TERMINAL;
@@ -542,15 +539,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
      * MACRO: y:x    becomes    <x --> y>
      */
     public Rule ColonReverseInheritance() {
-        return sequence(
+        return seq(
                 Term(false, false),
                 ':',
                 Term(),
-
-                push($.inh(the(pop()), the(pop())))
-                ///*push(Compound.class), */push(the(pop())), push(the(pop())),
-                // popTerm(Op.INH)
-
+                push(INH.the(the(pop()), the(pop())))
         );
     }
 
