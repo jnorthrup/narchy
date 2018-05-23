@@ -27,33 +27,41 @@ class HttpConnection {
     private static final int RAWHEAD_SIZE = 512;
     final SelectionKey key;
     final SocketChannel channel;
-    private final ConnectionStateChangeListener stateChangeListener;
-    private final File defaultRoute;
-    private final Map<String, File> routes;
-    private final LinkedList<HttpResponse> responses = new LinkedList<>(); // responses that still have to be sent out
-    private final HashMap<String, String> headers = new HashMap<>();
-    long nanoLastReceived;
+
+    @Deprecated private final ConnectionStateChangeListener stateChangeListener;
+    @Deprecated private final File defaultRoute;
+    @Deprecated private final Map<String, File> routes;
+    @Deprecated private final LinkedList<HttpResponse> responses = new LinkedList<>(); // responses that still have to be sent out
+
+    private final HttpModel model;
+
+    long lastReceivedNS;
     boolean websocket = false;
-    ByteBuffer rawHead; // The bytes of the entire head (request-line and headers)
+
+    protected ByteBuffer rawHead; // The bytes of the entire head (request-line and headers)
+    private ByteBuffer lineBuffer;
+
+    protected final HashMap<String, String> request = new HashMap<>();
     private HttpResponse currentResponse; // the response that is currently being sent;
+
     private boolean keepAlive;
     // Data about the current state (remember that multiple request may be made per connection):
     private STATE state;
     private METHOD method;
     private URI requestUri;
     private int clientHttpMinor; // The minor http version of the request. Aka 123 in HTTP/1.123
-    private ByteBuffer lineBuffer;
 
-    HttpConnection(ConnectionStateChangeListener stateChangeListener, SelectionKey key, SocketChannel sChannel, File defaultRoute, Map<String, File> routes) {
+    HttpConnection(ConnectionStateChangeListener stateChangeListener, HttpModel model, SelectionKey key, SocketChannel sChannel, File defaultRoute, Map<String, File> routes) {
         this.stateChangeListener = stateChangeListener;
         this.key = key;
         this.channel = sChannel;
         this.defaultRoute = defaultRoute;
         this.routes = routes;
+        this.model = model;
 
         setState(STATE.WAIT_FOR_REQUEST_LINE);
 
-        nanoLastReceived = System.nanoTime();
+        lastReceivedNS = System.nanoTime();
 
         try {
             logger.info("connect {}", sChannel.getRemoteAddress());
@@ -65,7 +73,7 @@ class HttpConnection {
     // https://www.rfc-editor.org/rfc/rfc2616.txt
     @SuppressWarnings("unchecked")
     public void read(ByteBuffer buf) throws IOException {
-        nanoLastReceived = System.nanoTime();
+        lastReceivedNS = System.nanoTime();
 
         //logger.info(buf.position() + ":" + buf.limit() + ":{};", dumpBuffer(buf, false));
 
@@ -76,9 +84,10 @@ class HttpConnection {
         while (buf.hasRemaining()) {
             boolean requestReady = false;
             try {
-                requestReady = readHttpRequest(buf);
+                requestReady = decodeRequest(buf);
             } catch (HttpException ex) {
-                addResponse(new HttpResponse(method, headers /*(Map<String, String>) headers.clone()*/, ex.status, ex.getMessage(), ex.fatal || !this.keepAlive, null));
+                //TODO model.onHTTPError(this, ex)
+                respond(new HttpResponse(method,  ex.status, ex.getMessage(), ex.fatal || !this.keepAlive, null));
 
                 setState(ex.fatal ? STATE.BAD_REQUEST : STATE.WAIT_FOR_REQUEST_LINE);
 
@@ -95,11 +104,11 @@ class HttpConnection {
                 }
 
                 if (file == null) {
-                    addResponse(new HttpResponse(method,
-                            headers /*(Map<String, String>) headers.clone()*/, 404, "File Not Found", !this.keepAlive, null));
+                    respond(new HttpResponse(method,
+                            /*(Map<String, String>) headers.clone()*/ 404, "File Not Found", !this.keepAlive, null));
                 } else {
-                    addResponse(new HttpResponse(method,
-                            headers /*(Map<String, String>) headers.clone()*/, 200, "", !this.keepAlive, file));
+                    respond(new HttpResponse(method,
+                            /*(Map<String, String>) headers.clone()*/ 200, "", !this.keepAlive, file));
                 }
 
                 // this clears our current header info, etc
@@ -116,11 +125,12 @@ class HttpConnection {
 
 
         int start = 0;
-        while (start < requestPath.length() && requestPath.charAt(start) == '/') {
+        int rpl = requestPath.length();
+        while (start < rpl && requestPath.charAt(start) == '/') {
             ++start;
         }
 
-        int len = requestPath.length();
+        int len = rpl;
         while (len >= start && requestPath.charAt(len - 1) == '/') {
             --len;
         }
@@ -175,7 +185,7 @@ class HttpConnection {
         return file;
     }
 
-    private void addResponse(HttpResponse resp) {
+    private void respond(HttpResponse resp) {
         responses.add(resp);
         key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
@@ -183,7 +193,7 @@ class HttpConnection {
     /**
      * @return true if the reqeust has been fully read and a response may be sent
      */
-    private boolean readHttpRequest(ByteBuffer buf) throws HttpException {
+    private boolean decodeRequest(ByteBuffer buf) throws HttpException {
         /*
          * Request       = Request-Line              ; Section 5.1
          *                 *(( general-header        ; Section 4.5
@@ -217,7 +227,8 @@ class HttpConnection {
         }
 
         if (state == STATE.DONE_READING) {
-            if ("websocket".equalsIgnoreCase(headers.get("upgrade"))) {
+            String upgradeField = request.get("upgrade");
+            if (upgradeField!=null && "websocket".equalsIgnoreCase(upgradeField)) {
                 websocket = true;
                 setState(STATE.UPGRADE);
                 return false;
@@ -228,7 +239,7 @@ class HttpConnection {
             }
 
 
-            if (headers.containsKey("content-length")) {
+            if (request.containsKey("content-length")) {
                 // POST, OPTIONS, etc is not supported
                 throw new HttpException(400, true, "Request body is not allowed for this method");
             }
@@ -382,8 +393,8 @@ class HttpConnection {
                     String name = headerLine.group(1);
                     String value = headerLine.group(2);
                     // todo: multiple headers with the same name
-                    headers.put(name.toLowerCase(), value.trim());
-                    if (headers.size() > 50) {
+                    request.put(name.toLowerCase(), value.trim());
+                    if (request.size() > 50) {
                         throw new HttpException(400, true, "Too many headers");
                     }
                 } else {
@@ -420,7 +431,7 @@ class HttpConnection {
 
         if (newState == STATE.DONE_READING) {
             if (this.clientHttpMinor > 0) {
-                this.keepAlive = "keep-alive".equals(headers.get("connection"));
+                this.keepAlive = "keep-alive".equals(request.get("connection"));
                 //logger.info("Keep-alive enabled");
             } else {
                 this.keepAlive = false;
@@ -444,7 +455,7 @@ class HttpConnection {
                 this.rawHead.clear();
             }
 
-            this.headers.clear();
+            this.request.clear();
             this.keepAlive = false;
         }
     }
@@ -454,7 +465,7 @@ class HttpConnection {
         while (!responses.isEmpty() || currentResponse != null) {
             if (currentResponse == null) {
                 currentResponse = responses.removeFirst();
-                currentResponse.prepare();
+                currentResponse.prepare(this);
             }
 
             if (currentResponse.write(channel)) {

@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,36 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpWebSocketServerTest {
 
     public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
-        HttpServer server = new HttpServer("localhost", 8080, new File("/tmp"), new HttpWebSocketServerListener() {
-            @Override
-            public boolean wssConnect(SelectionKey key) {
-                return true;
-            }
+        HttpServer server = new HttpServer("localhost", 8080, new File("/tmp"), new HttpModel() {
 
             @Override
             public void wssOpen(WebSocket ws, ClientHandshake handshake) {
                 ws.send("hi");
             }
 
-            @Override
-            public void wssClose(WebSocket ws, int code, String reason, boolean remote) {
-
-            }
-
-            @Override
-            public void wssMessage(WebSocket ws, String message) {
-
-            }
-
-            @Override
-            public void wssMessage(WebSocket ws, ByteBuffer message) {
-
-            }
-
-            @Override
-            public void wssError(WebSocket ws, Exception ex) {
-
-            }
         });
 
 

@@ -1,10 +1,8 @@
 package jcog.net.http;
 
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
-import org.java_websocket.SocketChannelIOHelper;
-import org.java_websocket.WebSocket;
-import org.java_websocket.WebSocketAdapter;
-import org.java_websocket.WebSocketImpl;
+import org.java_websocket.*;
+import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.Handshakedata;
@@ -17,20 +15,21 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Joris
  */
-class HttpWebSocketServer extends WebSocketAdapter {
+class WebSocketSelector extends WebSocketAdapter {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger("jcog/net/http");
     private final MultithreadConcurrentQueue<NewChannel> newChannels = new MultithreadConcurrentQueue(1024);
-    private final HttpWebSocketServerListener listener;
+    private final HttpModel listener;
     private final Set<WebSocket> connections = new LinkedHashSet<>();
     private final Selector selector = Selector.open();;
 
 
-    HttpWebSocketServer(HttpWebSocketServerListener listener) throws IOException {
+    WebSocketSelector(HttpModel listener) throws IOException {
         this.listener = listener;
     }
 
@@ -38,7 +37,7 @@ class HttpWebSocketServer extends WebSocketAdapter {
         return this.connections;
     }
 
-    private boolean registerNewChannel() throws IOException {
+    private boolean nextRegistration() throws IOException {
         NewChannel newChannel = newChannels.poll();
         if (newChannel == null) {
             return false; // done
@@ -54,6 +53,7 @@ class HttpWebSocketServer extends WebSocketAdapter {
 
         if (!onConnect(conn.key)) {
             conn.key.cancel();
+            log.info("connect reject: {}", chan.getRemoteAddress());
         } else {
             conn.channel = chan;
 
@@ -61,14 +61,14 @@ class HttpWebSocketServer extends WebSocketAdapter {
             newChannel.prependData = null;
 
             conn.decode(prependData);
+            log.info("connect: {}", chan.getRemoteAddress());
         }
 
-        log.info("connect: {}", chan.getRemoteAddress());
 
         return true;
     }
 
-    private boolean readable(SelectionKey key, WebSocketImpl conn) throws IOException {
+    private boolean readable(WebSocketImpl conn) throws IOException {
         buffer.clear();
         int read = conn.channel.read(buffer);
         buffer.flip();
@@ -105,7 +105,7 @@ class HttpWebSocketServer extends WebSocketAdapter {
 
     private final ByteBuffer buffer = ByteBuffer.allocate(WebSocketImpl.RCVBUF);
 
-    synchronized void onStart() throws IOException {
+    synchronized void onStart() {
 
     }
 
@@ -128,7 +128,7 @@ class HttpWebSocketServer extends WebSocketAdapter {
                     return true;
                 }
 
-                while (registerNewChannel()) {
+                while (nextRegistration()) {
                 }
 
                 Iterator<SelectionKey> it;
@@ -145,7 +145,7 @@ class HttpWebSocketServer extends WebSocketAdapter {
                     try {
                         if (key.isReadable()) {
                             conn = (WebSocketImpl) key.attachment();
-                            if (readable(key, conn)) {
+                            if (readable(conn)) {
                                 it.remove();
                             }
 
@@ -325,5 +325,15 @@ class HttpWebSocketServer extends WebSocketAdapter {
 
     interface UpgradeWebSocketHandler {
         void upgradeWebSocketHandler(SocketChannel sChannel, ByteBuffer prependData);
+    }
+
+    /**
+     * @author Joris
+     */
+    static class ServerWebSocketImpl extends WebSocketImpl {
+        ServerWebSocketImpl(WebSocketListener listener) {
+            // Draft_17 corresponds to Sec-WebSocket-Version: 13 which is RFC 6455
+            super(listener, List.of(new Draft_6455()));
+        }
     }
 }

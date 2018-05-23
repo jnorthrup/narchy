@@ -81,7 +81,7 @@ public class MjpegServer /*extends NanoHTTPD*/ {
             }
             response.append("</body></html>");
             Map<String, String> headers = new HashMap();
-            return new HttpResponse(HttpUtil.METHOD.GET, headers, 200, response.toString(), false, null);
+            return new HttpResponse(HttpUtil.METHOD.GET, 200, response.toString(), false, null);
         } else {
             try {
                 VideoWebClient client = new VideoWebClient(videoFeeds.get(feed), feed, socket);

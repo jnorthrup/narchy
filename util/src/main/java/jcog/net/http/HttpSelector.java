@@ -5,6 +5,7 @@ import jcog.net.http.HttpConnection.STATE;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
@@ -17,23 +18,25 @@ import java.util.logging.Logger;
 /**
  * @author Joris
  */
-class HttpTransfer implements ConnectionStateChangeListener {
+class HttpSelector implements ConnectionStateChangeListener {
 
     private final long TIMEOUT_CHECK_PERIOD_ms = 1_000;
     private final long TIMEOUT_PERIOD_ms = 5_000;
 
     private static final Logger log = Logger.getLogger("jcog/net/http");
-    private final File defaultRoute;
-    private final Map<String, File> routes = new ConcurrentHashMap<>();
-    private final HttpWebSocketServer.UpgradeWebSocketHandler upgradeWebSocketHandler;
+    @Deprecated private final File defaultRoute;
+    @Deprecated private final Map<String, File> routes = new ConcurrentHashMap<>();
+    private final WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler;
     private final ByteBuffer buf = ByteBuffer.allocateDirect(HttpServer.BUFFER_SIZE);
     private final ConcurrentLinkedQueue<SocketChannel> newChannels = new ConcurrentLinkedQueue<>();
+    private final HttpModel model;
     //private volatile boolean running = false;
     //private volatile boolean ready = false;
     private Selector selector;
-    private long lastTimeoutCheck = System.nanoTime();
+    //private long lastTimeoutCheck = System.nanoTime();
 
-    HttpTransfer(File httpdocs, HttpWebSocketServer.UpgradeWebSocketHandler upgradeWebSocketHandler) {
+    HttpSelector(HttpModel model, File httpdocs, WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler) {
+        this.model = model;
         this.defaultRoute = httpdocs;
         this.upgradeWebSocketHandler = upgradeWebSocketHandler;
     }
@@ -53,8 +56,8 @@ class HttpTransfer implements ConnectionStateChangeListener {
     @Override
     public void connectionStateChange(HttpConnection conn, STATE oldState, STATE newState) {
         if (newState == STATE.CLOSED) {
-            conn.key.attach(null);
-            conn.key.cancel();
+        conn.key.attach(null);
+        conn.key.cancel();
             try {
                 conn.channel.close();
             } catch (IOException ex) {
@@ -80,7 +83,7 @@ class HttpTransfer implements ConnectionStateChangeListener {
         }
     }
 
-    public void onStart() {
+    public synchronized void onStart() {
         try {
             selector = Selector.open();
         } catch (IOException e) {
@@ -103,7 +106,7 @@ class HttpTransfer implements ConnectionStateChangeListener {
             sChannel.configureBlocking(false);
             sChannel.socket().setTcpNoDelay(false);
             SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
-            key.attach(new HttpConnection(this, key, sChannel, defaultRoute, routes));
+            key.attach(new HttpConnection(this, model, key, sChannel, defaultRoute, routes));
         }
 
         Iterator<SelectionKey> it;
@@ -111,19 +114,21 @@ class HttpTransfer implements ConnectionStateChangeListener {
         long now = System.nanoTime();
 
 
-        if (now - lastTimeoutCheck > TIMEOUT_CHECK_PERIOD_ms * 1_000_000) {
-            lastTimeoutCheck = now;
+        {
+//        if (now - lastTimeoutCheck > TIMEOUT_CHECK_PERIOD_ms * 1_000_000) {
+//            lastTimeoutCheck = now;
             it = selector.keys().iterator();
 
             while (it.hasNext()) {
                 SelectionKey key = it.next();
                 HttpConnection conn = (HttpConnection) key.attachment();
-                if (now - conn.nanoLastReceived > TIMEOUT_PERIOD_ms * 1_000_000L) {
-                    log.log(Level.INFO, "Dropping connection {0} because of timeout", conn.channel.getRemoteAddress());
+                if (now - conn.lastReceivedNS > TIMEOUT_PERIOD_ms * 1_000_000L) {
                     key.attach(null);
                     key.cancel();
+                    SocketAddress remote = conn.channel.getRemoteAddress();
                     conn.channel.close();
                     conn.closed();
+                    log.log(Level.INFO, "Dropping connection {0} because of timeout", remote);
                 }
             }
         }
@@ -169,7 +174,7 @@ class HttpTransfer implements ConnectionStateChangeListener {
     }
 
 
-    public void onStop() {
+    public synchronized void onStop() {
         try {
             selector.close();
         } catch (IOException e) {

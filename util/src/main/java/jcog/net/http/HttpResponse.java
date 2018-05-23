@@ -9,7 +9,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -21,7 +20,6 @@ class HttpResponse {
     private static final Logger log = Logger.getLogger("jcog/net/http");
     final boolean close;
     private final METHOD requestMethod;
-    private final Map<String, String> requestHeaders;
     private int status;
     private String statusMessage;
     private boolean sendStatusAsContent = true;
@@ -37,16 +35,15 @@ class HttpResponse {
 
     //TODO non-File , byte[] response method
 
-    HttpResponse(METHOD requestMethod, Map<String, String> requestHeaders, int status, String statusMessage, boolean close, File file) {
+    HttpResponse(METHOD requestMethod, int status, String statusMessage, boolean close, File file) {
         this.requestMethod = requestMethod;
-        this.requestHeaders = requestHeaders;
         this.status = status;
         this.statusMessage = statusMessage;
         this.close = close;
         this.file = file;
     }
 
-    public void prepare() {
+    public void prepare(HttpConnection con) {
         assert this.headers == null;
         long fileLength = 0;
 
@@ -75,7 +72,7 @@ class HttpResponse {
         if (sendFile) {
             lastModified = new Date(file.lastModified());
 
-            String ifModifiedSince = requestHeaders.get("if-modified-since");
+            String ifModifiedSince = con.request.get("if-modified-since");
             if (ifModifiedSince != null) {
                 try {
                     Date ifModifiedSinceDate = HttpUtil.HttpDateUtils.parseDate(ifModifiedSince);
@@ -125,7 +122,7 @@ class HttpResponse {
                 log.log(Level.SEVERE, "Error reading file", ex);
             }
 
-            String rangeValue = requestHeaders.get("range");
+            String rangeValue = con.request.get("range");
 
 
             if (sendFile && rangeValue != null) {
