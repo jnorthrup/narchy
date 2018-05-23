@@ -450,8 +450,8 @@ public enum Op {
 
     public static final String DISJstr = "||";
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
-    public static final int funcBits = Op.or(Op.ATOM, Op.INH, Op.PROD);
-    public static final int funcInnerBits = Op.or(Op.ATOM, Op.PROD);
+    public static final int FuncBits = Op.or(Op.ATOM, Op.INH, Op.PROD);
+    public static final int FuncInnerBits = Op.or(Op.ATOM, Op.PROD);
     public static final byte BELIEF = '.';
     public static final byte QUESTION = '?';
     public static final byte GOAL = '!';
@@ -1353,7 +1353,7 @@ public enum Op {
      */
     @Nullable
     public static <X> Pair<X, Term> functor(Term maybeOperation, Function<Term, X> invokes) {
-        if (maybeOperation.hasAll(Op.funcBits)) {
+        if (maybeOperation.hasAll(Op.FuncBits)) {
             Term c = maybeOperation;
             if (c.op() == INH) {
                 Term s0 = c.sub(0);

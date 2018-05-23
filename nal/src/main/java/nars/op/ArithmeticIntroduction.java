@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.Paper;
 import jcog.Util;
 import jcog.list.FasterList;
 import nars.$;
@@ -25,42 +26,45 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * introduces arithmetic relationships between differing numeric subterms
+ * responsible for showing the reasoner mathematical relations between
+ * numbers appearing in compound terms.
+ *
  * TODO
  *      greater/less than comparisons
  *
+ *
  */
+@Paper
 public class ArithmeticIntroduction extends LeakBack {
 
     public static Term apply(Term x) {
-        return apply(x, null);
+        return apply(x, true);
     }
 
-    public static Term apply(Term x, @Nullable Anon anon) {
-        if ((anon == null && !x.hasAny(INT)) || x.complexity() < 3)
+    public static Term apply(Term x, boolean eternal) {
+        return apply(x, null, eternal);
+    }
+
+    public static Term apply(Term x, @Nullable Anon anon, boolean eternal) {
+        if (anon == null && !x.hasAny(INT) || x.complexity() < 3)
             return x;
 
         //find all unique integer subterms
-        IntHashSet ints = new IntHashSet();
-        x.recurseTerms((t) -> {
-            Int it = null;
+        IntHashSet ints = new IntHashSet(4);
+        x.recurseTerms(t->t.hasAny(Op.INT), t -> {
             if (t instanceof Anom) {
-                Anom aa = ((Anom) t);
-                Term ta = anon.get(aa);
-                if (ta.op() == INT)
-                    it = ((Int) ta);
-            } else if (t instanceof Int) {
-                it = (Int) t;
+                t = anon.get(t);
             }
-            if (it == null)
-                return;
+            if (t instanceof Int) {
+                ints.add(((Int) t).id);
+            }
+            return true;
+        }, x);
 
-            ints.add((it.id));
-        });
-
-        //Set<Term> ints = ((Compound) x).recurseTermsToSet(INT);
         int ui = ints.size();
         if (ui <= 1)
             return x; //nothing to do
@@ -80,30 +84,30 @@ public class ArithmeticIntroduction extends LeakBack {
             int ia = ii[a];
             for (int b = a + 1; b < ui; b++) {
                 int ib = ii[b];
-                assert(ib > ia);
+                assert ib > ia;
 
-                if (ib - ia < ia && (ia!=0)) {
+                if (ib - ia < ia && ia!=0) {
 
                     mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
-                            Int.the(ib), $.func("add", v, $.the(ib - ia))
+                            Int.the(ib), $.func(MathFunc.add, v, $.the(ib - ia))
                     });
 
                     mods.getIfAbsentPut(ib, FasterList::new).add(()-> new Term[]{
-                            Int.the(ia), $.func("add", v, $.the(ia - ib))
+                            Int.the(ia), $.func(MathFunc.add, v, $.the(ia - ib))
                     });
 
-                } else if ((ia!=0 && ia!=1) && (ib!=0 && ib!=1) && Util.equals(ib/ia, (((float)ib)/ia), Float.MIN_NORMAL)) {
+                } else if (ia!=0 && ia!=1 && ib!=0 && ib!=1 && Util.equals(ib/ia, (float)ib /ia, Float.MIN_NORMAL)) {
 
                     mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
-                            Int.the(ib), $.func("mul", v, $.the(ib/ia))
+                            Int.the(ib), $.func(MathFunc.mul, v, $.the(ib/ia))
                     });
                 } else if (ia == -ib) {
                     //negation (x * -1)
                     mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
-                            Int.the(ib), $.func("mul", v, $.the(-1))
+                            Int.the(ib), $.func(MathFunc.mul, v, $.the(-1))
                     });
                     mods.getIfAbsentPut(ib, FasterList::new).add(()-> new Term[]{
-                            Int.the(ia), $.func("mul", v, $.the(-1))
+                            Int.the(ia), $.func(MathFunc.mul, v, $.the(-1))
                     });
                 }
 
@@ -138,7 +142,7 @@ public class ArithmeticIntroduction extends LeakBack {
         }
 
         Term y =
-                CONJ.the(yy, SIM.the(baseTerm, v));
+                CONJ.the(yy, eternal ? DTERNAL : 0, SIM.the(baseTerm, v));
                 //IMPL.the(SIM.the(baseTerm, v), yy);
                 //IMPL.the(yy, SIM.the(baseTerm, v));
 
@@ -168,7 +172,7 @@ public class ArithmeticIntroduction extends LeakBack {
     @Override
     protected float leak(Task xx) {
         Term x = xx.term();
-        Term y = apply(x);
+        Term y = apply(x, xx.isEternal());
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
             if (yy!=null) {

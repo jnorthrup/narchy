@@ -232,6 +232,7 @@ public class Derivation extends PreDerivation {
                 uniSub,
                 polarizeFunc,
                 termlinkRandomProxy
+
         };
 
         Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
@@ -479,7 +480,7 @@ public class Derivation extends PreDerivation {
     @Override
     public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         //InlineFunctor application
-        if (op == INH && yy.subs()==2) {
+        if (op == INH && yy.subs()==2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit) ) {
             Term pred;
             if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) { //TODO only inline functors
                 Term args = yy.sub(0);

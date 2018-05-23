@@ -334,9 +334,10 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    default Term subPath(int n, byte... path) {
+    default Term subPath(int subPathLen, byte... path) {
         Term ptr = this;
-        for (byte b : path) {
+        for (int i = 0; i < subPathLen; i++) {
+            byte b = path[i];
             if ((ptr = ptr.sub(b)) == Null)
                 return Null;
         }
@@ -344,9 +345,9 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    default Term subPath(int n, ByteList path) {
+    default Term subPath(int subPathLen, ByteList path) {
         Term ptr = this;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < subPathLen; i++) {
             if ((ptr = ptr.sub(path.get(i))) == Null)
                 return Null;
         }

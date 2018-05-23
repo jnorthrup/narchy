@@ -799,7 +799,7 @@ public interface Compound extends Term, IPair, Subterms {
         if (remain-- < 0)
             return this; //recursion limit
 
-        if (!hasAll(Op.funcBits))
+        if (!hasAll(Op.FuncBits))
             return this;
 
         Evaluation.TermContext context;
@@ -894,7 +894,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         //recursively compute contained subterm functors
         //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
-        if (o == INH && uu.hasAll(Op.funcInnerBits)) {
+        if (o == INH && uu.hasAll(Op.FuncInnerBits)) {
             Term pred, subj;
             if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
 

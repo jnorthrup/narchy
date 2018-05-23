@@ -10,6 +10,8 @@ import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.proto.TaskAddTask;
 import nars.derive.Premise;
+import nars.link.TaskLink;
+import nars.link.Tasklinks;
 import nars.task.*;
 import nars.task.proxy.TaskWithNegatedTruth;
 import nars.task.proxy.TaskWithTruthAndOccurrence;
@@ -18,7 +20,6 @@ import nars.task.util.TaskRegion;
 import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.Bool;
 import nars.term.var.VarIndep;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -31,7 +32,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1028,54 +1028,73 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         //Term y = x.eval(n.concepts.functors);
 
         //this might be overkill
-        Set<ITask> yy = new UnifiedSet<>(4);
+        Set<ITask> yy = new LinkedHashSet<>(4);
         Evaluation.solve(x, n.functors,
                 _y -> {
-                    ITask y = preProcess(n, x, _y);
-                    if (y!=null)
-                        yy.add(y);
+                    preProcess(n, _y, yy);
                     return true;
                 });
 
         switch (yy.size()) {
             case 0:
-                //return preProcess(n, x, x);
                 return null;
             case 1:
                 return yy.iterator().next();
             default:
-                return new NativeTask.RunTask(() ->
-                        yy.forEach(z -> z.next(n))
+                //HACK use some kind of iterator
+                return new NativeTask.NARTask((nn) ->
+                        yy.forEach(z -> {
+                            ITask zz = z;
+                            while ((zz = zz.next(nn))!=null) { }
+                        })
                 );
         }
 
     }
 
     @Nullable
-    default ITask preProcess(NAR n, Term x, Term y) {
+    default void preProcess(NAR n, Term y, Collection<ITask> queue) {
+
+
+        boolean cmd = isCommand();
+        if (!cmd) {
+            queue.add(new TaskAddTask(this)); //probably should be added first
+        }
+
+        Term x = term();
         if (!x.equals(y)) {
 
             //clone a new task because it has changed
 
-            Task result;
-            if (y instanceof Bool) {
+
+            if (Operator.func(y).equals(Evaluation.TRUE)) {
                 if (isQuestionOrQuest()) {
+
+                    y = Operator.arg(y, 0); //unwrap
+
                     //convert to final implicit answer
                     byte p = isQuestion() ? BELIEF : GOAL;
 
-                    @Nullable Task finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
+                    @Nullable Task result = clone(this, y, $.t(1f, n.confDefault(p)), p);
 
-                    delete();
 
-                    if (finalResult != null) {
-                        return new TaskAddTask(finalResult);
+                    if (result != null) {
+                        //delete();
+                        queue.add(new TaskAddTask(result));
+                        //HACK tasklink question to answer
+                        queue.add(new NativeTask.NARTask(nn -> {
+                            Tasklinks.linkTask(
+                                    new TaskLink.GeneralTaskLink(result, nn, priElseZero()),
+                                    concept(nn, true).tasklinks(),
+                                    null);
+                            //TaskLinkTask( result, pri(), concept(n, true))
+                        }));
                     } else {
                         //TODO maybe print error, at least in debug mode
-                        return null;
                     }
                 } else {
-                    //belief or goal boolean, wtf
-                    return null;
+                    //belief or goal boolean, wtf. obvious
+                    return;
                 }
             } else {
                 @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(),
@@ -1087,17 +1106,36 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                            it would be the only one.
                          */
                 //TODO see if a TaskProxy would work here
-                result = yy != null ? clone(this, yy.getOne().negIf(yy.getTwo())) : null;
+                if (yy!=null) {
+                    Term yyz = yy.getOne();
+                    @Nullable Task result;
+//                    if (yyz.subterms().OR(qx -> qx.op().var)) {
+                        //still seem to be variables, continue as a revised question
+                        result = clone(this, yyz.negIf(yy.getTwo()));
+//                    } else {
+//                        //top-level variables seem eliminated. convert to belief with default truth
+//                        byte p = isQuestion() ? BELIEF : GOAL;
+//                        result = clone(this, yyz.negIf(yy.getTwo()), $.t(1,n.confDefault(p)), p);
+//                    }
+
+                    if (result!=null) {
+                        queue.add(new TaskAddTask(result));
+
+//                        //HACK tasklink question to answer
+//                        queue.add(new NativeTask.NARTask(nn -> {
+//                            Tasklinks.linkTask(
+//                                    new TaskLink.GeneralTaskLink(result, nn, priElseZero()),
+//                                    concept(nn, true).tasklinks(),
+//                                    null);
+//                            //TaskLinkTask( result, pri(), concept(n, true))
+//                        }));
+                    }
+                }
             }
-
-            delete(); //delete intermediate
-
-            return result;
         }
 
         //invoke possible Operation
 
-        boolean cmd = isCommand();
         if (cmd || (isGoal() && !isEternal())) {
             //resolve possible functor in goal or command
             //TODO question functors
@@ -1111,28 +1149,26 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     //TODO add a pre-test guard here to avoid executing a task which will be inconsequential anyway
                     Task yy = o.getOne().execute.apply(this, n);
                     if (yy != null && !this.equals(yy)) {
-                        return yy;
+                        queue.add(yy);
                     }
                 } catch (Throwable xtt) {
                     //n.logger.error("{} {}", this, t);
-                    return Operator.error(this, xtt, n.time());
+                    queue.add(Operator.error(this, xtt, n.time()));
+                    return;
                 }
                 if (cmd) {
                     n.eventTask.emit(this);
-                    return null;
+                    return;
                 }
                 //otherwise: allow processing goal
             }
         }
 
-        if (!cmd) {
-            return new TaskAddTask(this);
-        } else {
+        if (cmd) {
             //default: Echo
             n.out(term());
         }
 
-        return null;
     }
 
 //    @Override

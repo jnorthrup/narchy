@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class Tasklinks {
 
-    static void linkTask(TaskLink xx, Bag<?, TaskLink> b, @Nullable MutableFloat overflow) {
+    public static void linkTask(TaskLink xx, Bag<?, TaskLink> b, @Nullable MutableFloat overflow) {
 
         if (overflow != null) {
             TaskLink yy = b.put(xx, overflow);

@@ -15,8 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
-import static nars.Op.ATOM;
-import static nars.Op.INH;
+import static nars.Op.*;
 
 /**
  * Operator interface specifically for goal and command punctuation
@@ -42,6 +41,8 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         this.execute = execute;
     }
 
+
+
     @Override
     public Term term() {
         return this;
@@ -65,8 +66,8 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         return operation.sub(0).subterms();
     }
 
-    public static Atom func(Termed operation) {
-        return (Atom) operation.sub(1);
+    public static Term func(Termed operation) {
+        return (operation.hasAll(Op.FuncBits) && operation.op()==INH && operation.sub(0).op()==PROD ) ? operation.sub(1) : Op.Null;
     }
 
     public static Task error(Task x, Throwable error, long when) {
@@ -89,6 +90,10 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
 
     static Task command(String func, long now, @NotNull Term... args) {
         return Operator.command($.func(func, args), now);
+    }
+
+    public static Term arg(Term operation, int sub) {
+        return operation.sub(0).subterms().sub(sub);
     }
 
     public static Term[] argsArray(Term x) {

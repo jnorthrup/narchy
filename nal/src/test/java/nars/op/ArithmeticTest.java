@@ -1,6 +1,5 @@
 package nars.op;
 
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -8,15 +7,10 @@ import nars.Narsese;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** arithmetic operators and arithmetic introduction tests */
 public class ArithmeticTest {
-
-    final Random rng = new XoRoShiRo128PlusRandom(1);
-
 
 
     @Test

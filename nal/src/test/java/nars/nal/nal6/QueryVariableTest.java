@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.time.Tense.ETERNAL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -108,12 +109,15 @@ public class QueryVariableTest {
         NAR n = NARS.tmpEternal();
 
 
+//        n.log();
         n.input("<a <-> b>. %1.0;0.5%",
                 "<b --> a>. %1.0;0.5%");
         n.run(cyclesBeforeQuestion);
 
 
         n.question(question, ETERNAL, (q, a) -> {
+            assertEquals('?', q.punc());
+            assertEquals('.', a.punc());
             if (!a.isDeleted())
                 b.set(true);
         });

@@ -68,7 +68,7 @@ class HttpWebSocketServerTest {
 
 
     static class JSTest {
-        
+
         public static class MyInterface {
 
             private final Map<String,Object> map = new HashMap();
@@ -102,14 +102,14 @@ class HttpWebSocketServerTest {
 
             c.connectBlocking();
 
-            Util.sleep(100);
+            Util.sleep(500);
 
             assertTrue(c.isOpen());
 
             c.send("put(\"x\", 1234)");
             c.send("get(\"x\")");
 
-            Util.sleep(100);
+            Util.sleep(500);
 
             c.closeBlocking();
             //-----------

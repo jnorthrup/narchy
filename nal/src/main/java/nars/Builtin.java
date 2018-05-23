@@ -204,7 +204,7 @@ public class Builtin {
                 }
             },
 
-            new Functor.CommutiveBinaryBidiFunctor("equal") {
+            new Functor.InlineCommutiveBinaryBidiFunctor("equal") {
 
                 @Override
                 protected Term compute(Term x, Term y) {

@@ -7,6 +7,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.task.ITask;
 import nars.task.NativeTask;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,7 +17,7 @@ public class TaskAddTask extends NativeTask {
 
     private final Task task;
 
-    public TaskAddTask(Task task) {
+    public TaskAddTask(@NotNull Task task) {
         this.task = task;
     }
 

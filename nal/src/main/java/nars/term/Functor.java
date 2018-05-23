@@ -436,10 +436,12 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else {
                     //verify
                     Term XY = compute(x);
-                    if (XY==null || XY.equals(y)) {
+                    if (XY == null)
+                        return null;  //unchanged yet
+                    else if (XY.equals(y)) {
                         //equal
-                        return null; //unchanged
-                        //return True;
+                        //return null;
+                        return True;
                     } else {
                         //inequal
                         return False;
@@ -633,6 +635,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         @Override
         protected final Term computeYfromXandXY(Term x, Term y, Term xy) {
             return computeXfromYandXY(y, x, xy);
+        }
+    }
+
+    abstract public static class InlineCommutiveBinaryBidiFunctor extends CommutiveBinaryBidiFunctor implements InlineFunctor {
+
+        public InlineCommutiveBinaryBidiFunctor(String name) {
+            super(name);
         }
     }
 }

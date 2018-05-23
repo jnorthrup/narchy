@@ -3,6 +3,7 @@ package nars.task;
 import com.google.common.primitives.Longs;
 import jcog.pri.Priority;
 import nars.NAR;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -162,28 +163,25 @@ public abstract class NativeTask implements ITask, Priority {
 //    }
 //
 
-//    /**
-//     * wraps a Runnable
-//     */
-//    public static class NARTask extends NativeTask {
-//
-//        final Consumer run;
-//
-//        public NARTask(@NotNull Consumer<NAR> runnable) {
-//            run = runnable;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return run.toString();
-//        }
-//
-//        @Override
-//        public ITask run(NAR x) {
-//            run.accept(x);
-//            return null;
-//        }
-//
-//    }
+    public static class NARTask extends NativeTask {
+
+        final Consumer run;
+
+        public NARTask( Consumer<NAR> runnable) {
+            run = runnable;
+        }
+
+        @Override
+        public String toString() {
+            return run.toString();
+        }
+
+        @Override
+        public ITask next(NAR x) {
+            run.accept(x);
+            return null;
+        }
+
+    }
 
 }

@@ -6,6 +6,7 @@ import jcog.exe.Exe;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.java_websocket.WebSocket;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,12 +148,12 @@ public class JSSocket<X> implements HttpModel {
             if (socket.isClosed())
                 return;
 
-            q.add(expr);
+            if (!q.offer(expr))
+                socket.close(CloseFrame.TOOBIG, "Overflow"); //exceeds rate limit
+
             if (pending.compareAndSet(false, true)) {
                 Exe.invokeLater(this);
             }
-
-
         }
 
         @Override

@@ -31,6 +31,7 @@ import static nars.term.Terms.sorted;
  */
 public class Int implements Intlike, The {
 
+
     /*@Stable*/
     private final byte[] bytesCached;
 
@@ -46,14 +47,6 @@ public class Int implements Intlike, The {
         }
     }
 
-    public static Intlike range(int from, int to) {
-        return ((from == to) ? the(from) :
-                new IntRange(from, to));
-    }
-
-    final static int INT_ATOM = Term.opX(INT, 0);
-    final static int INT_RANGE = Term.opX(INT, 1);
-
     public final int id;
 
     protected static final Int[] pos = new Int[Param.MAX_INTERNED_INTS];
@@ -65,6 +58,19 @@ public class Int implements Intlike, The {
             neg[i] = new Int(-i);
         }
     }
+
+    public static final Term ZERO = Int.the(0);
+    public static final Term ONE = Int.the(1);
+    public static final Term TWO = Int.the(2);
+    public static final Term NEG_ONE = Int.the(-1);
+
+    public static Intlike range(int from, int to) {
+        return ((from == to) ? the(from) :
+                new IntRange(from, to));
+    }
+
+    final static int INT_ATOM = Term.opX(INT, 0);
+    final static int INT_RANGE = Term.opX(INT, 1);
 
 
     protected Int(int id, byte[] bytes) {

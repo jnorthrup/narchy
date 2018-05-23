@@ -5,8 +5,11 @@ import jcog.util.ArrayIterator;
 import jcog.util.CartesianIterator;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
+import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -19,9 +22,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.ATOM;
+import static nars.Op.*;
 
 public final class Evaluation {
+
+    public static final Atom TRUE = (Atom) Atomic.the("true");
 
     static final ThreadLocal<Evaluation> solving = ThreadLocal.withInitial(Evaluation::new);
 
@@ -59,7 +64,7 @@ public final class Evaluation {
     }
 
     public static boolean solve(Term x, TermContext context, Predicate<Term> each) {
-        if (!x.hasAll(Op.funcBits)) {
+        if (!x.hasAll(Op.FuncBits)) {
             each.test(x);
             return false;
         }
@@ -130,7 +135,16 @@ public final class Evaluation {
 
                 if (y != null && !y.equals(x)) {
 
-                    y = y.eval(context);
+                    Term z = y.eval(context);
+                    if (z  == True || z == False) {
+                        if (z != Null) {
+                            //determined absolutely true or false: implies that this is the answer to a question
+                            each.test($.func(TRUE, y).negIf(z == False));
+                        }
+                        continue;
+                    } else {
+                        y = z; //continue
+                    }
                     if (proc.isEmpty()) {
 
                         if (y!=null) {
