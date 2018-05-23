@@ -195,7 +195,7 @@ public class BeliefTableTest {
             if (!tt.isInput() && tt.start()%3!=0 && tt.end()%3!=0 || tt.isBefore(0) || tt.isAfter(3))
                 fail();
         });
-        t.test(true);
+        t.test();
     }
 
     @Test

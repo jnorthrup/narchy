@@ -171,12 +171,12 @@ public class QuestionTest {
             int seed = i + 1;
 
             TestNAR withQuestion = testProvider.apply(seed, 0);
-            withQuestion.test(true);
+            withQuestion.test();
             withTime.accept(withQuestion.time());
             withTasks.add(withQuestion.nar);
 
             TestNAR withoutQuestion = testProvider.apply(seed, 1);
-            withoutQuestion.test(true);
+            withoutQuestion.test();
             withOutTime.accept(withoutQuestion.time());
             withoutTasks.add(withoutQuestion.nar);
         }

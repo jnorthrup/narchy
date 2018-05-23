@@ -20,7 +20,7 @@ public interface HttpWebSocketServerListener
          * {@link #onOpen(WebSocket, ClientHandshake)}, {@link #onWebsocketHandshakeReceivedAsServer(WebSocket, Draft, ClientHandshake)}
 	 *
          */
-        @ThreadSafe
+        
         boolean wssConnect(SelectionKey key);
         
         /**
@@ -28,7 +28,7 @@ public interface HttpWebSocketServerListener
          * @param ws
          * @param handshake  
          */
-        @ThreadSafe
+        
         void wssOpen(WebSocket ws, ClientHandshake handshake);
         
         /**
@@ -40,7 +40,7 @@ public interface HttpWebSocketServerListener
          * @param remote Returns whether or not the closing of the connection was initiated by the remote host.
 	 *
          */
-        @ThreadSafe
+        
         void wssClose(WebSocket ws, int code, String reason, boolean remote);
         
          /**
@@ -51,7 +51,7 @@ public interface HttpWebSocketServerListener
          * @see #onMessage(WebSocket, ByteBuffer)
 	 *
          */
-        @ThreadSafe
+        
         void wssMessage(WebSocket ws, String message);
         
         /**
@@ -62,7 +62,7 @@ public interface HttpWebSocketServerListener
          * @see #onMessage(WebSocket, String)
 	 *
          */
-        @ThreadSafe
+        
         void wssMessage(WebSocket ws, ByteBuffer message);
 
         /**
@@ -75,6 +75,6 @@ public interface HttpWebSocketServerListener
          * port could not be bound.
 	 * @param ex 
          */
-        @ThreadSafe
+        
         void wssError(WebSocket ws, Exception ex);
 }

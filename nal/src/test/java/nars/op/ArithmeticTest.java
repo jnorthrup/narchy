@@ -107,7 +107,7 @@ public class ArithmeticTest {
                 "((a,add($1,1))==>(#1<->4))",
                 1f, 0.81f);
         t.mustBelieve(1000, "(a,5)", 1f, 0.5f);
-        t.test(true);
+        t.test();
     }
 
 }

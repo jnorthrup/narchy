@@ -20,7 +20,7 @@ public class MetaGoalTest {
         n.log();
 
         DeductiveMeshTest m = new DeductiveMeshTest(n, new int[] { 3, 3 }, 3500);
-        m.test.test(true);
+        m.test.test();
         //n.run(500);
 
         analyzeCauses(n);

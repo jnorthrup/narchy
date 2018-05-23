@@ -78,7 +78,7 @@ class HttpResponse {
             String ifModifiedSince = requestHeaders.get("if-modified-since");
             if (ifModifiedSince != null) {
                 try {
-                    Date ifModifiedSinceDate = HttpDateUtils.parseDate(ifModifiedSince);
+                    Date ifModifiedSinceDate = HttpUtil.HttpDateUtils.parseDate(ifModifiedSince);
 
                     if (lastModified.after(ifModifiedSinceDate)) {
                         sendFile = false;
@@ -87,7 +87,7 @@ class HttpResponse {
                         statusMessage = "Not Modified";
                         sendStatusAsContent = false;
                     }
-                } catch (HttpDateUtils.DateParseException ex) {
+                } catch (HttpUtil.HttpDateUtils.DateParseException ex) {
                 }
             }
         }
@@ -206,7 +206,7 @@ class HttpResponse {
         headerString.append("Server: Aphelion\r\n");
         headerString.append("X-Frame-Options: SAMEORIGIN\r\n");
         headerString.append("Date: ");
-        headerString.append(HttpDateUtils.formatDate(new Date()));
+        headerString.append(HttpUtil.HttpDateUtils.formatDate(new Date()));
         headerString.append("\r\n");
 
         if (!sendFile) {
@@ -246,7 +246,7 @@ class HttpResponse {
             }
 
             headerString.append("Last-Modified: ");
-            headerString.append(HttpDateUtils.formatDate(lastModified));
+            headerString.append(HttpUtil.HttpDateUtils.formatDate(lastModified));
             headerString.append("\r\n");
 
             headerString.append("Content-Type: ");

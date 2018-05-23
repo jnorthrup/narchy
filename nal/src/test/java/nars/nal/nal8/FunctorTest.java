@@ -1,15 +1,19 @@
 package nars.nal.nal8;
 
-import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.term.Evaluation;
+import nars.term.Term;
 import nars.test.TestNAR;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
+import static nars.$.$$;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class FunctorTest {
@@ -32,7 +36,7 @@ public class FunctorTest {
         n.run(1);
 
         assertTrue(got[0]);
-        assertTrue(n.beliefTruth($.$$("[a,b]"), ETERNAL)!=null);
+        assertTrue(n.beliefTruth($$("[a,b]"), ETERNAL)!=null);
     }
 
     @Test
@@ -69,7 +73,7 @@ public class FunctorTest {
 //            t.nar.concept($.the("(complexity((y-->x))<->3)")).print();
 //
 //        });
-        t.test(true);
+        t.test();
 
     }
 
@@ -88,18 +92,30 @@ public class FunctorTest {
         t.mustBelieve(TIME, "equal(complexity((x)),complexity(x))", 0f, 0.90f);
         t.mustBelieve(TIME, "c({x,y})", 1f, 0.81f);
         t.mustBelieve(TIME, "c({x,(x)})", 0f, 0.81f);
-        t.test(true);
+        t.test();
     }
 
+    @Disabled
     @Test
     public void testExecutionResultIsCondition() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
-
         d.input("(add($x,1,$y) ==> ($y <-> inc($x))).");
         d.input("((inc(2) <-> $x) ==> its($x)).");
         d.run(64);
     }
 
+    @Test public void testAnon1() {
+        NAR d = NARS.shell();
+        Set<Term> result = Evaluation.solveAll($$("anon((a,b),#x)"), d);
+        assertEquals("[anon((a,b),(_1,_2))]", result.toString());
+    }
+
+    @Test public void testAnon2() throws Narsese.NarseseException {
+        NAR d = NARS.shell();
+        d.log();
+        d.input("anon((a,b),#x)?");
+        d.run(3);
+    }
 //    @Test
 //    public void testJSON1() throws Narsese.NarseseException {
 //        Term t = IO.fromJSON("{ \"a\": [1, 2], \"b\": \"x\", \"c\": { \"d\": 1 } }");

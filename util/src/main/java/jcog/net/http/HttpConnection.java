@@ -2,6 +2,7 @@ package jcog.net.http;
 
 import jcog.net.http.HttpUtil.HttpException;
 import jcog.net.http.HttpUtil.METHOD;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,15 +16,14 @@ import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 /**
  * @author Joris
  */
 class HttpConnection {
-    private static final Logger log = Logger.getLogger("jcog/net/http");
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HttpConnection.class);
     private static final int RAWHEAD_SIZE = 512;
     final SelectionKey key;
     final SocketChannel channel;
@@ -56,9 +56,9 @@ class HttpConnection {
         nanoLastReceived = System.nanoTime();
 
         try {
-            log.log(Level.INFO, "New TCP Connection: {0}", sChannel.getRemoteAddress());
+            logger.info("connect {}", sChannel.getRemoteAddress());
         } catch (IOException | NullPointerException ex) {
-            log.log(Level.SEVERE, null, ex);
+            logger.error(null, ex);
         }
     }
 
@@ -67,7 +67,7 @@ class HttpConnection {
     public void read(ByteBuffer buf) throws IOException {
         nanoLastReceived = System.nanoTime();
 
-        //log.log(Level.INFO, buf.position() + ":" + buf.limit() + ":{0};", dumpBuffer(buf, false));
+        //logger.info(buf.position() + ":" + buf.limit() + ":{};", dumpBuffer(buf, false));
 
         if (state == STATE.CLOSED || state == STATE.BAD_REQUEST || state == STATE.UPGRADE) {
             return;
@@ -78,15 +78,11 @@ class HttpConnection {
             try {
                 requestReady = readHttpRequest(buf);
             } catch (HttpException ex) {
-                addResponse(new HttpResponse(method, (HashMap<String, String>) headers.clone(), ex.status, ex.getMessage(), ex.fatal || !this.keepAlive, null));
+                addResponse(new HttpResponse(method, headers /*(Map<String, String>) headers.clone()*/, ex.status, ex.getMessage(), ex.fatal || !this.keepAlive, null));
 
-                if (ex.fatal) {
-                    setState(STATE.BAD_REQUEST);
-                } else {
-                    setState(STATE.WAIT_FOR_REQUEST_LINE);
-                }
+                setState(ex.fatal ? STATE.BAD_REQUEST : STATE.WAIT_FOR_REQUEST_LINE);
 
-                log.log(Level.SEVERE, null, ex);
+                logger.error(null, ex);
             }
 
             if (requestReady) {
@@ -95,21 +91,19 @@ class HttpConnection {
                 try {
                     file = getRoute(requestUri.getPath());
                 } catch (NoSuchFileException ex) {
-                    log.log(Level.INFO, "No such file: ", ex.getMessage());
+                    logger.info("No such file: ", ex.getMessage());
                 }
 
                 if (file == null) {
-                    addResponse(new HttpResponse(method, (HashMap<String, String>) headers.clone(), 404, "File Not Found", !this.keepAlive, null));
+                    addResponse(new HttpResponse(method,
+                            headers /*(Map<String, String>) headers.clone()*/, 404, "File Not Found", !this.keepAlive, null));
                 } else {
-                    addResponse(new HttpResponse(method, (HashMap<String, String>) headers.clone(), 200, "Okay!", !this.keepAlive, file));
+                    addResponse(new HttpResponse(method,
+                            headers /*(Map<String, String>) headers.clone()*/, 200, "", !this.keepAlive, file));
                 }
 
                 // this clears our current header info, etc
-                if (this.keepAlive) {
-                    setState(STATE.WAIT_FOR_REQUEST_LINE);
-                } else {
-                    setState(STATE.CLOSED);
-                }
+                setState(this.keepAlive ? STATE.WAIT_FOR_REQUEST_LINE : STATE.CLOSED);
             }
 
         }
@@ -157,7 +151,7 @@ class HttpConnection {
 
             file = file.getCanonicalFile();
             if (!file.getPath().startsWith(routeFile.getPath())) {
-                log.log(Level.WARNING, "Attempt to access file outside of the route directory");
+                logger.warn("Attempt to access file outside of the route directory");
                 throw new NoSuchFileException(file.getPath());
             }
 
@@ -174,7 +168,7 @@ class HttpConnection {
         file = file.getCanonicalFile();
 
         if (!file.getPath().startsWith(defaultRoute.getPath())) {
-            log.log(Level.WARNING, "Attempt to access file outside of the route directory");
+            logger.warn("Attempt to access file outside of the route directory");
             throw new NoSuchFileException(file.getPath());
         }
 
@@ -209,7 +203,7 @@ class HttpConnection {
             buf.position(pos);
         }
 
-        //log.log(Level.INFO, buf.position() + ":" + buf.limit() + ":{0};", dumpBuffer(buf, false));
+        //logger.info(buf.position() + ":" + buf.limit() + ":{};", dumpBuffer(buf, false));
 
         if (state == STATE.WAIT_FOR_REQUEST_LINE) {
             readRequestLine(buf);
@@ -239,7 +233,7 @@ class HttpConnection {
                 throw new HttpException(400, true, "Request body is not allowed for this method");
             }
 
-            //log.log(Level.SEVERE, "Remaining in buffer:{0}", dumpBuffer(buf, true));
+            //logger.error("Remaining in buffer:{}", dumpBuffer(buf, true));
 
 
             return true;
@@ -427,7 +421,7 @@ class HttpConnection {
         if (newState == STATE.DONE_READING) {
             if (this.clientHttpMinor > 0) {
                 this.keepAlive = "keep-alive".equals(headers.get("connection"));
-                //log.log(Level.INFO, "Keep-alive enabled");
+                //logger.info("Keep-alive enabled");
             } else {
                 this.keepAlive = false;
             }
@@ -465,9 +459,9 @@ class HttpConnection {
 
             if (currentResponse.write(channel)) {
                 if (currentResponse.close) {
-                    log.log(Level.INFO, "Closing... {0}:{1}", new Object[]{currentResponse.close, this.keepAlive});
                     setState(STATE.CLOSED);
                     channel.close(); // TODO: does this immediately clear the outgoing buffer?
+                    logger.info("closed {}", this.keepAlive);
                 }
 
                 // the response is done writing

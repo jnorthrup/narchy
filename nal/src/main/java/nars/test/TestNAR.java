@@ -39,6 +39,7 @@ public class TestNAR {
     public boolean collectTrace = false;
 
     public int temporalTolerance;
+    public boolean quiet = false;
     float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
     float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
 
@@ -119,7 +120,8 @@ public class TestNAR {
 //        return this;
 //    }
 
-    public TestNAR run(long finalCycle, boolean testAndPrintReport /* for use with JUnit */) {
+    public TestNAR run(long finalCycle  /* for use with JUnit */) {
+
 
 
         if (requireConditions)
@@ -164,9 +166,11 @@ public class TestNAR {
         for (NARCondition t : failsIfAny) {
             if (t.isTrue()) {
 
-                logger.error("mustNot: {}", t);
-                t.log(logger);
-                ((TaskCondition) t).matched.forEach(shouldntHave -> logger.error("Must not:\n{}", shouldntHave.proof()));
+                if (!quiet) {
+                    logger.error("mustNot: {}", t);
+                    t.log(logger);
+                    ((TaskCondition) t).matched.forEach(shouldntHave -> logger.error("Must not:\n{}", shouldntHave.proof()));
+                }
 
 
                 success = false;
@@ -198,7 +202,7 @@ public class TestNAR {
 //            HitMeter[] eventMeters1 = var.toArray(new HitMeter[var.size()]);
 
 
-            if (reportStats) {
+            if (!quiet && reportStats) {
                 String pattern = "{}\n\t{} {} {}IN \ninputs";
                 Object[] args = {id, time};
 
@@ -206,13 +210,15 @@ public class TestNAR {
 
             }
 
-            succeedsIfAll.forEach(c ->
-                    c.log(logger)
-            );
+            if (!quiet) {
+                succeedsIfAll.forEach(c ->
+                        c.log(logger)
+                );
 
-            if (trace != null)
-                logger.trace("{}", trace.getBuffer());
 
+                if (trace != null)
+                    logger.trace("{}", trace.getBuffer());
+            }
 
 //            System.out.flush();
 //            System.err.flush();
@@ -222,7 +228,7 @@ public class TestNAR {
         }
 
 
-        if (reportStats) {
+        if (!quiet && reportStats) {
             nar.emotion.printer(System.out).run();
             nar.stats(System.out);
         }
@@ -634,10 +640,6 @@ public class TestNAR {
     }
 
 
-    public TestNAR test() {
-        return test(trace);
-    }
-
 
     //    public static final class Report implements Serializable {
 //
@@ -676,13 +678,13 @@ public class TestNAR {
 //    }
 
 
-    public TestNAR test(boolean testAndPrintReport /* for use with JUnit */) {
-        return run(0, testAndPrintReport);
+    public TestNAR test(/* for use with JUnit */) {
+        return run(0);
     }
 
     
     public TestNAR test(long cycles) {
-        return run(cycles, true);
+        return run(cycles);
     }
 
     final class EarlyExit implements Consumer<NAR> {

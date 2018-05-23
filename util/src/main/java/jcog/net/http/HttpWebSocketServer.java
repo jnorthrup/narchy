@@ -1,5 +1,6 @@
 package jcog.net.http;
 
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import org.java_websocket.SocketChannelIOHelper;
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketAdapter;
@@ -17,49 +18,20 @@ import java.nio.channels.*;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author Joris
  */
-class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
+class HttpWebSocketServer extends WebSocketAdapter {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger("jcog/net/http");
-    public final Thread thread = new Thread(this);
-    private final ConcurrentLinkedQueue<NewChannel> newChannels = new ConcurrentLinkedQueue<>();
+    private final MultithreadConcurrentQueue<NewChannel> newChannels = new MultithreadConcurrentQueue(1024);
     private final HttpWebSocketServerListener listener;
     private final Set<WebSocket> connections = new LinkedHashSet<>();
-    private volatile boolean ready = false;
-    private Selector selector;
-    private ByteBuffer buffer;
+    private final Selector selector = Selector.open();;
 
-    HttpWebSocketServer(HttpWebSocketServerListener listener) {
+
+    HttpWebSocketServer(HttpWebSocketServerListener listener) throws IOException {
         this.listener = listener;
-        if (this.listener == null) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    @ThreadSafe
-    public void startWaitReady() {
-        thread.start();
-
-        while (!ready) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-    }
-
-    @ThreadSafe
-    public void stop() {
-        thread.interrupt();
-    }
-
-    public void setDeamon(boolean on) {
-        thread.setDaemon(on);
     }
 
     public Set<WebSocket> connections() {
@@ -72,26 +44,26 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
             return false; // done
         }
 
-        log.info("new websocket connection: {}", newChannel.sChannel.getRemoteAddress());
-
-        newChannel.sChannel.configureBlocking(false);
-
-
         WebSocketImpl conn = new ServerWebSocketImpl(this);
 
-        newChannel.sChannel.socket().setTcpNoDelay(true);
-        conn.key = newChannel.sChannel.register(selector, SelectionKey.OP_READ, conn);
+        SocketChannel chan = newChannel.sChannel;
+        chan.configureBlocking(false);
+        chan.socket().setTcpNoDelay(true);
+
+        conn.key = chan.register(selector, SelectionKey.OP_READ, conn);
 
         if (!onConnect(conn.key)) {
             conn.key.cancel();
         } else {
-            conn.channel = newChannel.sChannel;
+            conn.channel = chan;
 
             ByteBuffer prependData = newChannel.prependData;
             newChannel.prependData = null;
 
             conn.decode(prependData);
         }
+
+        log.info("connect: {}", chan.getRemoteAddress());
 
         return true;
     }
@@ -120,7 +92,7 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
         return false; // false = keep this connection in the selector list
     }
 
-    private boolean writable(SelectionKey key, WebSocketImpl conn) throws IOException {
+    private static boolean writable(SelectionKey key, WebSocketImpl conn) throws IOException {
         if (SocketChannelIOHelper.batch(conn, conn.channel)) {
             if (key.isValid()) {
                 key.interestOps(SelectionKey.OP_READ);
@@ -131,49 +103,45 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
         return false; // false = there is more to write, but give other connections a chance to write something
     }
 
-    @Override
-    public void run() {
-        thread.setName("WebSocketServer-" + thread.getId());
+    private final ByteBuffer buffer = ByteBuffer.allocate(WebSocketImpl.RCVBUF);
 
-        buffer = ByteBuffer.allocate(WebSocketImpl.RCVBUF);
+    synchronized void onStart() throws IOException {
 
+    }
+
+    synchronized void onStop() {
+        for (WebSocket ws : connections) {
+            ws.close(CloseFrame.NORMAL);
+        }
+        connections.clear();
+    }
+
+    public boolean next() {
         try {
-            try {
-                selector = Selector.open();
-            } catch (IOException ex) {
-                log.warn("Unable to open selector {}", ex);
-                return;
-            }
 
-            ready = true;
 
-            while (!thread.isInterrupted()) {
-                SelectionKey key = null;
 
-                Iterator<SelectionKey> it;
                 try {
-                    selector.select();
-
-                    while (registerNewChannel()) {
-                    }
-
-                    it = selector.selectedKeys().iterator();
-
-                } catch (ClosedSelectorException ex) {
-                    break;
-                } catch (IOException ex) {
-                    log.warn("IOException in select() {}", ex);
-                    break;
+                    //selector.select(SELECTION_PERIOD);
+                    selector.selectNow();
+                } catch (ClosedSelectorException | IOException ex) {
+                    return true;
                 }
 
+                while (registerNewChannel()) {
+                }
+
+                Iterator<SelectionKey> it;
+                it = selector.selectedKeys().iterator();
                 while (it.hasNext()) {
-                    WebSocketImpl conn = null;
-                    key = it.next();
+
+                    SelectionKey key = it.next();
 
                     if (!key.isValid()) {
                         continue;
                     }
 
+                    WebSocketImpl conn = null;
                     try {
                         if (key.isReadable()) {
                             conn = (WebSocketImpl) key.attachment();
@@ -195,7 +163,9 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
                         }
 
                     } catch (ClosedSelectorException ex) {
-                        break;
+//                        it.remove();
+//                        break;
+                        return false; //?
                     } catch (CancelledKeyException ex) {
                         it.remove();
 
@@ -209,17 +179,16 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
                     }
 
                 }
-            }
 
 
-            for (WebSocket ws : connections) {
-                ws.close(CloseFrame.NORMAL);
-            }
-        } catch (RuntimeException ex) {
+
+        } catch (Exception ex) {
             log.warn("{}", ex);
 
             onError(null, ex);
         }
+
+        return true;
     }
 
     private void handleIOException(WebSocket conn, IOException ex) {
@@ -308,9 +277,12 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
         listener.wssError(conn, ex);
     }
 
-    @ThreadSafe
+    
     void addNewChannel(SocketChannel sChannel, ByteBuffer prependData) {
-        newChannels.add(new NewChannel(sChannel, prependData));
+        if (!newChannels.offer(new NewChannel(sChannel, prependData))) {
+            System.err.println("newChannel queue overflow");
+        }
+
         try {
             selector.wakeup();
         } catch (IllegalStateException | NullPointerException ex) {
@@ -327,19 +299,18 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
     public void onWebsocketCloseInitiated(WebSocket ws, int code, String reason) {
     }
 
-    private Socket getSocket(WebSocket conn) {
-        WebSocketImpl impl = (WebSocketImpl) conn;
-        return ((SocketChannel) impl.key.channel()).socket();
+    private static Socket socket(WebSocket conn) {
+        return ((SocketChannel) ((WebSocketImpl) conn).key.channel()).socket();
     }
 
     @Override
     public InetSocketAddress getLocalSocketAddress(WebSocket conn) {
-        return (InetSocketAddress) getSocket(conn).getLocalSocketAddress();
+        return (InetSocketAddress) socket(conn).getLocalSocketAddress();
     }
 
     @Override
     public InetSocketAddress getRemoteSocketAddress(WebSocket conn) {
-        return (InetSocketAddress) getSocket(conn).getRemoteSocketAddress();
+        return (InetSocketAddress) socket(conn).getRemoteSocketAddress();
     }
 
     private static final class NewChannel {
@@ -350,5 +321,9 @@ class HttpWebSocketServer extends WebSocketAdapter implements Runnable {
             this.sChannel = sChannel;
             this.prependData = prependData;
         }
+    }
+
+    interface UpgradeWebSocketHandler {
+        void upgradeWebSocketHandler(SocketChannel sChannel, ByteBuffer prependData);
     }
 }

@@ -38,7 +38,7 @@ public class LinkageTest extends NALTest {
         tester.believe(premise1); //.en("If robin is a type of bird then robin can fly.");
         tester.believe(premise2); //.en("Robin is a type of bird.");
 
-        tester.run(runCycles, false);
+        tester.run(runCycles);
 
         Concept ret = tester.nar.conceptualize(premise1);
         assertTrue(isPassed2(premise2, ret), ret + " termlinks contains " + premise2);

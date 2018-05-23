@@ -196,6 +196,14 @@ public class Builtin {
                             $.the(Texts.levenshteinDistance(a.toString(), b.toString()))
             ),
 
+            new Functor.UnaryBidiFunctor("anon") {
+
+                @Override
+                protected Term compute(Term x) {
+                    return x.op().var ? null : x.anon();
+                }
+            },
+
             new Functor.CommutiveBinaryBidiFunctor("equal") {
 
                 @Override

@@ -87,6 +87,7 @@ public class JUnitNAR {
     private static float test(NAR s, Method m) {
         try {
             NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
+            t.test.quiet = true;
             t.test.set(s); //overwrite NAR with the supplier
             t.test.nar.random().setSeed(
                     System.nanoTime()
@@ -103,7 +104,7 @@ public class JUnitNAR {
             Param.DEBUG = false;
 
             try {
-                t.test.test(false);
+                t.test.test();
                 return t.test.score;
                 //return 1 + t.test.score; //+1 for successful completion
             } catch (Throwable ee) {

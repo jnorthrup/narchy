@@ -17,11 +17,15 @@ import java.util.logging.Logger;
 /**
  * @author Joris
  */
-class HttpDownloadThread implements ConnectionStateChangeListener {
+class HttpTransfer implements ConnectionStateChangeListener {
+
+    private final long TIMEOUT_CHECK_PERIOD_ms = 1_000;
+    private final long TIMEOUT_PERIOD_ms = 5_000;
+
     private static final Logger log = Logger.getLogger("jcog/net/http");
     private final File defaultRoute;
     private final Map<String, File> routes = new ConcurrentHashMap<>();
-    private final UpgradeWebSocketHandler upgradeWebSocketHandler;
+    private final HttpWebSocketServer.UpgradeWebSocketHandler upgradeWebSocketHandler;
     private final ByteBuffer buf = ByteBuffer.allocateDirect(HttpServer.BUFFER_SIZE);
     private final ConcurrentLinkedQueue<SocketChannel> newChannels = new ConcurrentLinkedQueue<>();
     //private volatile boolean running = false;
@@ -29,7 +33,7 @@ class HttpDownloadThread implements ConnectionStateChangeListener {
     private Selector selector;
     private long lastTimeoutCheck = System.nanoTime();
 
-    HttpDownloadThread(File httpdocs, UpgradeWebSocketHandler upgradeWebSocketHandler) {
+    HttpTransfer(File httpdocs, HttpWebSocketServer.UpgradeWebSocketHandler upgradeWebSocketHandler) {
         this.defaultRoute = httpdocs;
         this.upgradeWebSocketHandler = upgradeWebSocketHandler;
     }
@@ -84,10 +88,12 @@ class HttpDownloadThread implements ConnectionStateChangeListener {
         }
     }
 
+
+
     public void next() throws IOException {
 
         try {
-            selector.select(500);
+            selector.selectNow(); //(SELECTION_PERIOD);
         } catch (ClosedSelectorException | IOException ex) {
             return;
         }
@@ -104,14 +110,15 @@ class HttpDownloadThread implements ConnectionStateChangeListener {
 
         long now = System.nanoTime();
 
-        if (now - lastTimeoutCheck > 1_000_000_000L) {
+
+        if (now - lastTimeoutCheck > TIMEOUT_CHECK_PERIOD_ms * 1_000_000) {
             lastTimeoutCheck = now;
             it = selector.keys().iterator();
 
             while (it.hasNext()) {
                 SelectionKey key = it.next();
                 HttpConnection conn = (HttpConnection) key.attachment();
-                if (now - conn.nanoLastReceived > HttpServer.HTTP_TIMEOUT * 1_000_000_000L) {
+                if (now - conn.nanoLastReceived > TIMEOUT_PERIOD_ms * 1_000_000L) {
                     log.log(Level.INFO, "Dropping connection {0} because of timeout", conn.channel.getRemoteAddress());
                     key.attach(null);
                     key.cancel();
@@ -168,7 +175,7 @@ class HttpDownloadThread implements ConnectionStateChangeListener {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        selector =null;
+
     }
 
 
@@ -209,7 +216,7 @@ class HttpDownloadThread implements ConnectionStateChangeListener {
      * Add a new socket channel to be handled by this thread.
      */
 
-    @ThreadSafe
+    @HttpUtil.ThreadSafe
     void addNewChannel(SocketChannel sChannel) {
         newChannels.add(sChannel);
 

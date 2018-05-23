@@ -3,31 +3,31 @@ package jcog.net.http;
 import jcog.Util;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
+import sun.net.www.content.text.PlainTextInputStream;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.ServerSocketChannel;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpWebSocketServerTest {
 
-    public static void main(String[] args) throws IOException {
-        InetSocketAddress listenAddress = new InetSocketAddress("localhost", 8080);
-        ServerSocketChannel ssChannel = HttpServer.openServerChannel(listenAddress);
-
-// MyWebSocketListener should implement HttpWebSocketServerListener
-        //HttpWebSocketServer server = new HttpWebSocketServer(ne wHttpW
-        HttpServer server = new HttpServer(ssChannel, new File("/tmp"), new HttpWebSocketServerListener() {
+    public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
+        HttpServer server = new HttpServer("localhost", 8080, new File("/tmp"), new HttpWebSocketServerListener() {
             @Override
             public boolean wssConnect(SelectionKey key) {
-                return false;
+                return true;
             }
 
             @Override
             public void wssOpen(WebSocket ws, ClientHandshake handshake) {
-
+                ws.send("hi");
             }
 
             @Override
@@ -51,25 +51,33 @@ class HttpWebSocketServerTest {
             }
         });
 
-// Spawn threads
 
+        server.runFPS(20f);
 
-        server.runFPS(10f);
+        //test http client connect
+        URL u = new URL("http://localhost:8080/");
+        URLConnection urlConnection = u.openConnection();
+        PlainTextInputStream content = (PlainTextInputStream) urlConnection.getContent();
 
-        Util.sleep(200000);
+        String x = new String(content.readAllBytes());
+        assertEquals("", x); //empty string, default server content handler for now
+        //------------------
 
-//        while (!Thread.interrupted())
-//        {
-//            // Accept new connections (non blocking)
-//            // You could run this in your main loop, or as a seperate thread
-//            server.loop();
-//
-//            // ArrayBlockingQueue.poll(1, TimeUnit.MILLISECONDS); would also work,
-//            // for example when you have an event loop with worker threads.
-//
-//            // Use a simple sleep in this example
-//            Thread.sleep(1);
-//        }
+        //test websocket client connect
+        WebSocketTest.Client c = new WebSocketTest.Client();
+
+        c.connectBlocking();
+
+        Util.sleep(500);
+
+        assertTrue(c.isOpen());
+
+        c.send("abc");
+
+        Util.sleep(500);
+
+        c.closeBlocking();
+        //-----------
 
 
         server.stop();

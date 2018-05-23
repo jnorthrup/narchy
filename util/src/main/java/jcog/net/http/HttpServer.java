@@ -1,25 +1,21 @@
 package jcog.net.http;
 
 import jcog.exe.Loop;
+import jcog.list.FastCoWList;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedChannelException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
+import java.nio.channels.*;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A simple http 1.1 server with WebSockets.
@@ -42,57 +38,64 @@ import java.util.logging.Logger;
  *
  * @author Joris
  */
-public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWebSocketServerListener {
+public class HttpServer extends Loop implements HttpWebSocketServer.UpgradeWebSocketHandler, HttpWebSocketServerListener {
+    
     static final int LINEBUFFER_SIZE = 512; // Used to combine a line that spans multiple TCP segments
-    static final long HTTP_TIMEOUT = 10;
     private static final int RCVBUFFER_SIZE = 16384;
     static final int BUFFER_SIZE = RCVBUFFER_SIZE + LINEBUFFER_SIZE;
-    private static final int WEBSOCKET_PARSE_THREADS = 2;
-    private static final Logger log = Logger.getLogger("jcog/net/http");
+    private static final int WEBSOCKET_HANDLERS = 1;
+    
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HttpServer.class);
     private final ServerSocketChannel ssChannel;
-    private final List<HttpWebSocketServer> websocketServers;
+    private final List<HttpWebSocketServer> websocketServers = new FastCoWList(HttpWebSocketServer[]::new);
     private final AtomicInteger upgradeWebSocketHandler_counter = new AtomicInteger();
     private final Set<WebSocket> websockets = new LinkedHashSet<>();
-    private volatile HttpWebSocketServerListener websocketListener;
-    private boolean stop = false;
-    private File httpdocs;
-    private HttpDownloadThread downloadThread;
+    private final HttpWebSocketServerListener websocketListener;
+    private volatile boolean stop = false;
+    private final HttpTransfer downloadThread;
+
+    public HttpServer(String host, int port, File httpdocs_, HttpWebSocketServerListener websocketListener) throws IOException {
+        this(new InetSocketAddress(host, port), httpdocs_, websocketListener);
+    }
+
+    public HttpServer(InetSocketAddress addr, File httpdocs_, HttpWebSocketServerListener websocketListener) throws IOException {
+        this(HttpServer.openServerChannel(addr), httpdocs_, websocketListener);
+    }
 
     public HttpServer(ServerSocketChannel ssChannel, File httpdocs_, HttpWebSocketServerListener websocketListener) throws IOException {
         this.ssChannel = ssChannel;
-        this.httpdocs = httpdocs_.getCanonicalFile();
         this.websocketListener = websocketListener;
 
         if (ssChannel == null) {
             throw new IllegalArgumentException();
         }
 
-        if (this.httpdocs != null) {
-            if (!this.httpdocs.isDirectory()) {
-                this.httpdocs = null;
-                log.log(Level.WARNING, "argument httpdocs is not a directory");
+
+        File httpdocs = null;
+        if (httpdocs_ != null) {
+            httpdocs = httpdocs_.getCanonicalFile();
+            if (!httpdocs.isDirectory()) {
+                //httpdocs = null;
+                logger.warn("argument httpdocs is not a directory");
             }
         }
 
+        downloadThread = new HttpTransfer(
+                httpdocs == null ? null : new File(httpdocs.getPath()), this);
 
-        downloadThread = new HttpDownloadThread(
-                this.httpdocs == null ? null : new File(this.httpdocs.getPath()), this);
-
-        websocketServers = new ArrayList<>(WEBSOCKET_PARSE_THREADS);
-        for (int a = 0; a < WEBSOCKET_PARSE_THREADS; ++a) {
-            HttpWebSocketServer server = new HttpWebSocketServer(this);
-            server.setDeamon(true);
-            websocketServers.add(server);
+        for (int a = 0; a < WEBSOCKET_HANDLERS; ++a) {
+            websocketServers.add(new HttpWebSocketServer(this));
         }
     }
 
-    public static ServerSocketChannel openServerChannel(InetSocketAddress listenAddr) throws IOException {
+    static ServerSocketChannel openServerChannel(InetSocketAddress listenAddr) throws IOException {
         ServerSocketChannel ssChannel = ServerSocketChannel.open();
         ssChannel.configureBlocking(false);
-        ssChannel.socket().bind(listenAddr);
-        ssChannel.socket().setReceiveBufferSize(RCVBUFFER_SIZE);
+        ServerSocket socket = ssChannel.socket();
+        socket.bind(listenAddr);
+        socket.setReceiveBufferSize(RCVBUFFER_SIZE);
 
-        log.log(Level.INFO, "Listening on {0}:{1,number,#}", new Object[]{ssChannel.socket().getInetAddress(), getListeningPort(ssChannel)});
+        logger.info("Listening on {}:{}", socket.getInetAddress(), getListeningPort(ssChannel));
         return ssChannel;
     }
 
@@ -120,7 +123,7 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
     }
 
     @Override
-    protected void onStart() {
+    protected synchronized void onStart() {
         if (stop) {
             throw new IllegalStateException();
         }
@@ -128,10 +131,14 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
         downloadThread.onStart();
 
         for (HttpWebSocketServer s : websocketServers) {
-            s.startWaitReady();
+            try {
+                s.onStart();
+            } catch (IOException e) {
+                logger.error("starting {}: {}", s, e);
+            }
         }
 
-        log.log(Level.INFO, "Http server setup at {0}:{1,number,#}", new Object[]{ssChannel.socket().getInetAddress(), getListeningPort(ssChannel)});
+        //logger.info("Http server setup at {0}:{1,number,#}", new Object[]{ssChannel.socket().getInetAddress(), getListeningPort(ssChannel)});
     }
 
     public int getListeningPort() {
@@ -139,22 +146,16 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
     }
 
     @Override
-    protected void onStop() {
-        downloadThread.onStop();
-        for (HttpWebSocketServer s : websocketServers) {
-            s.thread.interrupt();
-        }
-
-        try {
-            for (HttpWebSocketServer s : websocketServers) {
-                s.thread.join();
-            }
-        } catch (InterruptedException ex) {
-        }
-
-        downloadThread = null;
+    protected synchronized void onStop() {
         stop = true;
-        log.log(Level.INFO, "HttpServer has stopped");
+
+        downloadThread.onStop();
+
+        for (HttpWebSocketServer s : websocketServers) {
+            s.onStop();
+        }
+
+        logger.info("{} stop", this);
     }
 
 
@@ -176,41 +177,35 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
             // However normally this error should only shown once.
             // Stop running the loop (or unregister this object from the loop)
             // when calling close()
-            log.log(Level.INFO, "Channel closed in accept()");
+            logger.info("Channel closed in accept()");
         } catch (IOException ex) {
-            log.log(Level.SEVERE, "IOException in accept()", ex);
+            logger.error("IOException in accept()", ex);
         }
+
+
+        websocketServers.forEach(HttpWebSocketServer::next);
 
         try {
             downloadThread.next();
+        } catch (ClosedSelectorException e) {
+            //probably normal disconnect of server socket
         } catch (IOException e) {
-            log.log(Level.SEVERE, "IOException in download thread()", e);
+            logger.error("IOException in download thread()", e);
         }
 
         return true;
     }
 
-    /**
-     * Returns a WebSocket[] of currently connected clients. use synchronized() on the list while doing anything
-     * with it
-     *
-     * @return The currently connected clients.
-     */
-    @ThreadSafe
-    public Set<WebSocket> websockets() {
-        return websockets;
-    }
 
     @Override
-    @ThreadSafe // The list is not modified after the constructor
+    // The list is not modified after the constructor
     public void upgradeWebSocketHandler(SocketChannel sChannel, ByteBuffer prependData) {
-        HttpWebSocketServer s = websocketServers.get(upgradeWebSocketHandler_counter.get() % websocketServers.size());
-        upgradeWebSocketHandler_counter.incrementAndGet();
+        HttpWebSocketServer s = websocketServers.get(upgradeWebSocketHandler_counter.getAndIncrement() % websocketServers.size());
         s.addNewChannel(sChannel, prependData);
     }
 
     @Override
-    @ThreadSafe
+
     public boolean wssConnect(SelectionKey key) {
         HttpWebSocketServerListener listener = this.websocketListener;
 
@@ -222,12 +217,10 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
     }
 
     @Override
-    @ThreadSafe
+
     public void wssOpen(WebSocket conn, ClientHandshake handshake) {
         HttpWebSocketServerListener listener = this.websocketListener;
-        synchronized (websockets) {
-            websockets.add(conn);
-        }
+        websockets.add(conn);
 
         if (listener != null) {
             listener.wssOpen(conn, handshake);
@@ -235,7 +228,7 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
     }
 
     @Override
-    @ThreadSafe
+
     public void wssClose(WebSocket conn, int code, String reason, boolean remote) {
         HttpWebSocketServerListener listener = this.websocketListener;
         try {
@@ -243,14 +236,12 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
                 listener.wssClose(conn, code, reason, remote);
             }
         } finally {
-            synchronized (websockets) {
-                websockets.remove(conn);
-            }
+            websockets.remove(conn);
         }
     }
 
     @Override
-    @ThreadSafe
+
     public void wssMessage(WebSocket conn, String message) {
         HttpWebSocketServerListener listener = this.websocketListener;
         if (listener != null) {
@@ -259,7 +250,7 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
     }
 
     @Override
-    @ThreadSafe
+
     public void wssMessage(WebSocket conn, ByteBuffer message) {
         HttpWebSocketServerListener listener = this.websocketListener;
         if (listener != null) {
@@ -268,7 +259,7 @@ public class HttpServer extends Loop implements UpgradeWebSocketHandler, HttpWeb
     }
 
     @Override
-    @ThreadSafe
+
     public void wssError(WebSocket conn, Exception ex) {
         HttpWebSocketServerListener listener = this.websocketListener;
         if (listener != null) {

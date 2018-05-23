@@ -110,7 +110,7 @@ class HttpMime {
      * @param extension A file extension without a dot. for example "html"
      * @return A mime type string, for example "text/html; charset=UTF-8"
      */
-    @ThreadSafe
+    @HttpUtil.ThreadSafe
     // The HashMap can not be modified after static initialization and is thus thread safe (http://docs.oracle.com/javase/6/docs/api/java/util/HashMap.html)
     private static String getMime(String extension) {
         return mime.getOrDefault(extension, "application/octet-stream");
@@ -122,7 +122,7 @@ class HttpMime {
      * @param file
      * @return A mime type string, for example "text/html; charset=UTF-8"
      */
-    @ThreadSafe
+    @HttpUtil.ThreadSafe
     public static String getMime(File file) {
         String path = file.getPath();
         int i = path.lastIndexOf('.');

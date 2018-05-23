@@ -138,11 +138,23 @@ public class Optimize<X> {
                 List<Map<String,Object>> exp = new FasterList(repeats);
 
                 CountDownLatch c = new CountDownLatch(repeats);
-                List<Future<X>> each = new FasterList(repeats);
+                List<Future<Map<String,Object>>> each = new FasterList(repeats);
                 for (int r = 0; r < repeats; r++) {
                     each.add( exe.submit(()->{
                         try {
-                            return x.get();
+                            X y = x.get();
+
+                            float subScore = 0;
+                            Map<String,Object> e = new HashMap();
+                            for (Optimizing.Optimal<X,?> o : eval) {
+                                ObjectFloatPair<?> xy = o.eval(y);
+                                e.put(o.id, xy.getOne());
+                                subScore += xy.getTwo();
+                            }
+
+                            e.put("_", subScore); //HACK
+
+                            return e;
                         } finally {
                             c.countDown();
                         }
@@ -152,18 +164,10 @@ public class Optimize<X> {
                 c.await();
 
                 for (int r = 0; r < repeats; r++) {
-                    X y =  each.get(r).get();
+                    Map<String, Object> y = each.get(r).get();
+                    exp.add(y);
 
-                    float subScore = 0;
-                    Map<String,Object> e = new HashMap();
-                    for (Optimizing.Optimal<X,?> o : eval) {
-                        ObjectFloatPair<?> xy = o.eval(y);
-                        e.put(o.id, xy.getOne());
-                        subScore += xy.getTwo();
-                    }
-
-                    sum += subScore;
-                    exp.add(e);
+                    sum += (Float)y.get("_");
                 }
 
                 //TODO interplate and store the detected features

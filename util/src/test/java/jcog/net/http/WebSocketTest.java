@@ -1,4 +1,4 @@
-package jcog.net;
+package jcog.net.http;
 
 import jcog.Util;
 import org.java_websocket.WebSocket;

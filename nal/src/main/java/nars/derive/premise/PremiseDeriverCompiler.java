@@ -46,10 +46,10 @@ public enum PremiseDeriverCompiler {
     private static final IntToFloatFunction throttleFlat =
             (int choice)-> 1f;
 
-    private static IntToFloatFunction throttleSoftmax(Cause[] causes) {
-        return (int choice)->
-                Util.softmax(causes[choice].value(), TRIE_DERIVER_TEMPERATURE);
-    }
+//    private static IntToFloatFunction throttleSoftmax(Cause[] causes) {
+//        return (int choice)->
+//                Util.softmax(causes[choice].value(), TRIE_DERIVER_TEMPERATURE);
+//    }
 
     private static final float[] ONE_CHOICE = new float[]{Float.NaN};
 
@@ -103,7 +103,8 @@ public enum PremiseDeriverCompiler {
 
 
             IntToFloatFunction throttle =
-                    throttleSoftmax(causes);
+                    i->causes[i].amp();
+                    //throttleSoftmax(causes);
                     //throttleFlat;
 
 
@@ -153,8 +154,8 @@ public enum PremiseDeriverCompiler {
         // sum of downstream cause values, applied to some activation function
         IntToFloatFunction branchThrottle = branch ->
                 Util.sum(
-                        (Cause cause) -> Util.softmax(cause.value(), TRIE_DERIVER_TEMPERATURE), //softmax
-                        //Cause::amp, //amp (TanH)
+                        //(Cause cause) -> Util.softmax(cause.value(), TRIE_DERIVER_TEMPERATURE), //softmax
+                        Cause::amp, //amp (TanH)
                         rootBranches[branch].causes
                 );
 

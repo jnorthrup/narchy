@@ -2120,13 +2120,16 @@ public enum Util {
         }
         return w;
     }
-
-    public static float[] softmax(int num, IntToFloatFunction build, float temperature) {
-        return Util.map(num, i -> softmax(build.valueOf(i), temperature) );
-    }
+//
+//    public static float[] softmax(int num, IntToFloatFunction build, float temperature) {
+//        return Util.map(num, i -> softmax(build.valueOf(i), temperature) );
+//    }
 
     public static float softmax(float x, float temp) {
-        return (float) Math.exp(x/temp);
+        float f = (float) Math.exp(x/temp);
+        if (!Float.isFinite(f))
+            throw new RuntimeException("softmax(" + f + "," + temp + ") is non-finite" );
+        return f;
     }
 
 

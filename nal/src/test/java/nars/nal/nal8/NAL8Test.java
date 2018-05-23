@@ -70,7 +70,7 @@ public class NAL8Test extends NALTest {
                 .input(new NALTask($.$("(a-->b)"), GOAL, $.t(1f, 0.9f), 5, 10, 20, new long[]{100}).pri(0.5f))
                 .input(new NALTask($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), 4, 5, 25, new long[]{101}).pri(0.5f))
                 .mustGoal(cycles, "(a-->c)", 1f, 0.4f,
-                        //(x) -> (x >= 10 && x <= 20) //10..20
+                        //x -> (x >= 10 && x <= 20) //10..20
                         x -> x >=5 && x <= 25
                 )
         ;
@@ -174,9 +174,9 @@ public class NAL8Test extends NALTest {
     public void testDesiredConjPos() {
         TestNAR t = test;
         t
-                .believe("(x)")
-                .goal("((x)&&(y))")
-                .mustGoal(cycles, "(y)", 1f, 0.81f);
+                .believe("x")
+                .goal("(x&&y)")
+                .mustGoal(cycles, "y", 1f, 0.81f);
     }
 
     @Test
@@ -205,9 +205,9 @@ public class NAL8Test extends NALTest {
 
         TestNAR t = test;
         t
-                .goal("(x)")
-                .believe("((x)==>(y))")
-                .mustGoal(cycles, "(y)", 1f, 0.81f);
+                .goal("x")
+                .believe("(x==>y)")
+                .mustGoal(cycles, "y", 1f, 0.81f);
     }
 
     @Test
@@ -215,17 +215,17 @@ public class NAL8Test extends NALTest {
 
         test
                 //.log()
-                .goal("((x) &&+3 (y))", Tense.Present, 1f, 0.9f)
-                .mustGoal(cycles, "(x)", 1f, 0.81f, 0)
-                //.mustNotOutput(cycles, "(y)", GOAL, 3)
-                .mustNotOutput(cycles, "(y)", GOAL, ETERNAL);
+                .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
+                .mustGoal(cycles, "x", 1f, 0.81f, 0)
+                //.mustNotOutput(cycles, "y", GOAL, 3)
+                .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
     @Test
     public void testGoalConjunctionDecomposeNeg() {
         test
-                .goal("((x) &&+3 (y))", Tense.Present, 0f, 0.9f)
-                .mustNotOutput(cycles, "(x)", GOAL, 0);
+                .goal("(x &&+3 y)", Tense.Present, 0f, 0.9f)
+                .mustNotOutput(cycles, "x", GOAL, 0);
     }
 
     @Disabled
@@ -289,11 +289,11 @@ public class NAL8Test extends NALTest {
     public void testConditionalGoalConjunctionDecomposePositiveGoal() {
 
         test
-                .goal("(x)", Tense.Present, 1f, 0.9f)
-                .believe("((x) &&+3 (y))", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "(x)", 1f, 0.81f, 0)
-                .mustBelieve(cycles, "(y)", 1f, 0.81f, 3)
-        //.mustDesire(cycles, "(y)", 1f, 0.81f, 3)
+                .goal("x", Tense.Present, 1f, 0.9f)
+                .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "x", 1f, 0.81f, 0)
+                .mustBelieve(cycles, "y", 1f, 0.81f, 3)
+        //.mustDesire(cycles, "y", 1f, 0.81f, 3)
         ;
     }
 
@@ -309,41 +309,41 @@ public class NAL8Test extends NALTest {
     public void testConditionalGoalConjunctionDecomposePositivePostconditionGoal() {
 
         test
-                .goal("(y)", Tense.Present, 1f, 0.9f)
-                .believe("((x) &&+3 (y))", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "(x)", 1f, 0.81f, 0)
-                .mustBelieve(cycles, "(y)", 1f, 0.81f, 3)
-                .mustGoal(cycles, "(x)", 1f, 0.81f, (t) -> t >= 0);
+                .goal("y", Tense.Present, 1f, 0.9f)
+                .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "x", 1f, 0.81f, 0)
+                .mustBelieve(cycles, "y", 1f, 0.81f, 3)
+                .mustGoal(cycles, "x", 1f, 0.81f, (t) -> t >= 0);
     }
 
     @Test
     public void testConditionalGoalConjunctionDecomposePositiveGoalNegativeBeliefSubterm() {
 
         test
-                .goal("(x)", Tense.Present, 1f, 0.9f)
-                .believe("(--(x) &&+3 (y))", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "(x)", 0f, 0.81f, 0)
-                .mustBelieve(cycles, "(y)", 1f, 0.81f, 3)
+                .goal("x", Tense.Present, 1f, 0.9f)
+                .believe("(--x &&+3 y)", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "x", 0f, 0.81f, 0)
+                .mustBelieve(cycles, "y", 1f, 0.81f, 3)
         ;
-        //.mustDesire(cycles, "(y)", 0f, 0.81f, 3);
+        //.mustDesire(cycles, "y", 0f, 0.81f, 3);
     }
 
     @Test
     public void testConditionalGoalConjunctionDecomposeNegativeGoal() {
 
         test
-                .goal("(x)", Tense.Present, 0f, 0.9f)
-                .believe("((x) &&+3 (y))", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "(x)", 1f, 0.81f, 0)
-                .mustBelieve(cycles, "(y)", 1f, 0.81f, 3)
-        //.mustDesire(cycles, "(y)", 0f, 0.81f, 0)
+                .goal("x", Tense.Present, 0f, 0.9f)
+                .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "x", 1f, 0.81f, 0)
+                .mustBelieve(cycles, "y", 1f, 0.81f, 3)
+        //.mustDesire(cycles, "y", 0f, 0.81f, 0)
         ;
     }
 
 
     @Test
     public void testConjSeqGoalDecomposeForward() {
-        //after a belief has been fedback, continue decomposing the conjunction goal to expose the (y) desire:
+        //after a belief has been fedback, continue decomposing the conjunction goal to expose the y desire:
 
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
@@ -355,7 +355,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void testConjParGoalDecomposeForward() {
-        //after a belief has been fedback, continue decomposing the conjunction goal to expose the (y) desire:
+        //after a belief has been fedback, continue decomposing the conjunction goal to expose the y desire:
         test
                 .goal("(x &| y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
@@ -365,7 +365,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void testConjSeqGoalNegDecomposeForward() {
-        //after a belief has been fedback, continue decomposing the conjunction goal to expose the (y) desire:
+        //after a belief has been fedback, continue decomposing the conjunction goal to expose the y desire:
         test
                 .goal("(--x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 0f, 0.9f)
@@ -525,9 +525,9 @@ public class NAL8Test extends NALTest {
     @Test
     public void testGoalSimilaritySpreadingParameter() {
         test
-                .input("R(x)!")
+                .input("Rx!")
                 .input("(x <-> y).")
-                .mustGoal(cycles, "R(y)", 1.0f, 0.4f);
+                .mustGoal(cycles, "Ry", 1.0f, 0.4f);
     }
 
     //    @Test
@@ -593,9 +593,9 @@ public class NAL8Test extends NALTest {
 
         //requires a non-standard rule that form a belief from question
         test
-                .inputAt(0, "(||, (x), (y))?")
-                .believe("(x)")
-                .mustBelieve(cycles, "(&&, (--,(x)), (--,(y)))", 0f, 0.81f, ETERNAL);
+                .inputAt(0, "(||, x, y)?")
+                .believe("x")
+                .mustBelieve(cycles, "(&&, (--,x), (--,y))", 0f, 0.81f, ETERNAL);
     }
 
 
@@ -612,9 +612,9 @@ public class NAL8Test extends NALTest {
 //    @Test public void testMixedTemporalInductionGoalConj() {
 //        test()
 //                
-//                .inputAt(0, "(x). :|:")
-//                .inputAt(1, "(y)! :|:")
-//                .mustDesire(cycles, "((x) &&+1 (y))", 1f,0.81f, 0)
+//                .inputAt(0, "x. :|:")
+//                .inputAt(1, "y! :|:")
+//                .mustDesire(cycles, "(x &&+1 y)", 1f,0.81f, 0)
 //        ;
 //    }
 
@@ -945,7 +945,7 @@ public class NAL8Test extends NALTest {
         test.goal("a")
                 .believe("(b &&+1 (a &&+1 c))")
                 .mustGoal(cycles, "(b &&+1 (a &&+1 c))", 1f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, (x)->true); //error if opposite freq is generated
+                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, x->true); //error if opposite freq is generated
     }
 
     @Test public void testGoalByConjAssociationNegPos() {
@@ -953,20 +953,20 @@ public class NAL8Test extends NALTest {
         test.goal("--a")
                 .believe("(b &&+1 (a &&+1 c))")
                 .mustGoal(cycles, "(b &&+1 (a &&+1 c))", 0f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, (x)->true); //error if opposite freq is generated
+                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, x->true); //error if opposite freq is generated
     }
 @Test public void testGoalByConjAssociationPosNeg() {
 //        X, C, eventOfPosOrNeg(C,--X) |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
     test.goal("a")
             .believe("(b &&+1 (--a &&+1 c))")
             .mustGoal(cycles, "(b &&+1 (--a &&+1 c))", 0f, 0.45f)
-            .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, (x)->true); //error if opposite freq is generated
+            .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, x->true); //error if opposite freq is generated
 }
     @Test public void testGoalByConjAssociationNegNeg() {
 //        X, C, eventOfPosOrNeg(C,--X) |- (--,polarize(C,task)), (Goal:WeakDepolarizedTask)
         test.goal("--a")
                 .believe("(b &&+1 (--a &&+1 c))")
                 .mustGoal(cycles, "(b &&+1 (--a &&+1 c))", 1f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, (x)->true); //error if opposite freq is generated
+                .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, x->true); //error if opposite freq is generated
     }
 }

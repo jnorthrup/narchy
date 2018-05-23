@@ -25,10 +25,10 @@ import java.util.function.Supplier;
 public class MjpegServer /*extends NanoHTTPD*/ {
 
     //public final static Logger log = LoggerFactory.getLogger(MjpegServer.class.getCanonicalName());
-    public final Map<String, BlockingQueue<Supplier<byte[]>>> videoFeeds = new ConcurrentHashMap<>();
-    public final Map<String, VideoWebClient> clients = new ConcurrentHashMap<>();
+    private final Map<String, BlockingQueue<Supplier<byte[]>>> videoFeeds = new ConcurrentHashMap<>();
+    private final Map<String, VideoWebClient> clients = new ConcurrentHashMap<>();
 
-    public MjpegServer() {
+    private MjpegServer() {
         super();
     }
 
@@ -62,13 +62,13 @@ public class MjpegServer /*extends NanoHTTPD*/ {
 //            return serveFile(uri, header, new File("."), true);
 //        }
 
-        int pos0 = uri.lastIndexOf("/");
+        int pos0 = uri.lastIndexOf('/');
         if (pos0 != -1) {
             feed = uri.substring(pos0 + 1);
         }
 
         if (!videoFeeds.containsKey(feed)) {
-            StringBuffer response = new StringBuffer(String.format("<html><body align=center>video feeds<br/>", feed));
+            StringBuilder response = new StringBuilder(String.format("<html><body align=center>video feeds<br/>", feed));
             for (Map.Entry<String, BlockingQueue<Supplier<byte[]>>> o : videoFeeds.entrySet()) {
                 // Map.Entry<String,Supplier<byte[]>> pairs = o;
                 // response.append(String.format("<a href=\"http://%\" >%s</a><br/>",
@@ -76,7 +76,7 @@ public class MjpegServer /*extends NanoHTTPD*/ {
                 response.append(String.format("<img src=\"%s\" /><br/>%s<br/>", o.getKey(), o.getKey()));
                 //log.info(o.getKey());
             }
-            if (videoFeeds.size() == 0) {
+            if (videoFeeds.isEmpty()) {
                 response.append("no video feed exist - try attaching a VideoSource to the VideoStreamer");
             }
             response.append("</body></html>");
@@ -98,17 +98,17 @@ public class MjpegServer /*extends NanoHTTPD*/ {
         return null; // serveFile(uri, header, new File("."), true);
     }
 
-    public static class Connection {
+    static class Connection {
         boolean initialized = false;
         Socket socket;
         OutputStream os;
 
-        public Connection(Socket socket) throws IOException {
+        Connection(Socket socket) throws IOException {
             this.socket = socket;
             os = socket.getOutputStream();
         }
 
-        public void close() {
+        void close() {
             try {
                 socket.close();
                 socket = null;
@@ -117,10 +117,10 @@ public class MjpegServer /*extends NanoHTTPD*/ {
         }
     }
 
-    public class VideoWebClient extends Thread {
-        final ArrayList<Connection> connections = new ArrayList<Connection>();
-        String feed;
-        BlockingQueue<Supplier<byte[]>> videoFeed;
+    static class VideoWebClient extends Thread {
+        final ArrayList<Connection> connections = new ArrayList<>();
+        final String feed;
+        final BlockingQueue<Supplier<byte[]>> videoFeed;
 
         VideoWebClient(BlockingQueue<Supplier<byte[]>> videoFeed, String feed, Socket socket) throws IOException {
             // super(String.format("stream_%s:%s",

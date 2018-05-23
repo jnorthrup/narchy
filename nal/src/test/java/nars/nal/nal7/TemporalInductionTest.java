@@ -84,7 +84,7 @@ public class TemporalInductionTest {
         if (!(a.contains("--") /*NEG*/ && a.equals(b)))
             t.mustBelieve(cycles, "(" + b + " ==>-" + dt + " " + a + ")", 1.00f, 0.45f /*inductionConf*/, dt);
 
-        t.run(cycles, true);
+        t.run(cycles);
     }
 
 

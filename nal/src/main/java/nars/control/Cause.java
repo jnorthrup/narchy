@@ -48,7 +48,7 @@ public class Cause implements Comparable<Cause> {
      * 0..+1
      */
     public float amp() {
-        return gain() / 2f;
+        return Math.max(Float.MIN_NORMAL, gain() / 2f);
     }
 
     /**
