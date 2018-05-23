@@ -5,7 +5,6 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -47,15 +46,15 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     private final WebSocketSelector ws;
 
 
-    public HttpServer(String host, int port, File httpdocs_, HttpModel model) throws IOException {
-        this(new InetSocketAddress(host, port), httpdocs_, model);
+    public HttpServer(String host, int port, HttpModel model) throws IOException {
+        this(new InetSocketAddress(host, port), model);
     }
 
-    public HttpServer(InetSocketAddress addr, File httpdocs_, HttpModel model) throws IOException {
-        this(HttpServer.openServerChannel(addr), httpdocs_, model);
+    public HttpServer(InetSocketAddress addr, HttpModel model) throws IOException {
+        this(HttpServer.openServerChannel(addr), model);
     }
 
-    public HttpServer(ServerSocketChannel ssChannel, File httpdocs_, HttpModel model) throws IOException {
+    public HttpServer(ServerSocketChannel ssChannel, HttpModel model) throws IOException {
         this.ssChannel = ssChannel;
         this.model = model;
 

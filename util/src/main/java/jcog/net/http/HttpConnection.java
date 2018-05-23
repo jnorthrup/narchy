@@ -113,7 +113,8 @@ class HttpConnection {
 
     public void respond(String content) {
         respond(new HttpResponse(method,
-                /*(Map<String, String>) headers.clone()*/ 200, content, !this.keepAlive, null));
+                /*(Map<String, String>) headers.clone()*/ 200,
+                content, !this.keepAlive, null));
     }
 
     public void respond(byte[] content) {

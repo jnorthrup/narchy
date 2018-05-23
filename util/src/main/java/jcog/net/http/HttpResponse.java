@@ -190,7 +190,9 @@ class HttpResponse {
         headerString.append("HTTP/1.1 ");
         headerString.append(status);
         headerString.append(' ');
-        headerString.append(statusMessage);
+        if (!sendStatusAsContent) {
+            headerString.append(statusMessage);
+        }
         headerString.append("\r\n");
 
         if (close) {

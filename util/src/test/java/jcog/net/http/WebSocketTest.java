@@ -95,7 +95,7 @@ public class WebSocketTest {
 
         @Override
         public void onOpen(ServerHandshake handshakedata) {
-            send("wtf");
+
         }
 
         @Override

@@ -972,16 +972,16 @@ public class Opjects extends DefaultTermizer {
         return o1 == VAR_DEP || o1 == PROD || (o1.atomic && !o1.var);
     }
 
-    protected Term validMethod(Term method) {
-        if (method.op() != ATOM)
-            return null;
-        if (methodExclusions.contains(method.toString()))
-            return null;
-
-        //TODO check a cached list of the reflected methods of the target class
-
-        return method;
-    }
+//    protected Term validMethod(Term method) {
+//        if (method.op() != ATOM)
+//            return null;
+//        if (methodExclusions.contains(method.toString()))
+//            return null;
+//
+//        //TODO check a cached list of the reflected methods of the target class
+//
+//        return method;
+//    }
 
     protected boolean validMethod(Method m) {
         if (methodExclusions.contains(m.getName()))
