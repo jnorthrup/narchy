@@ -24,6 +24,10 @@ class HttpWebSocketServerTest {
                 ws.send("hi");
             }
 
+            @Override
+            public void response(HttpConnection h) {
+                h.respond("");
+            }
         });
 
 

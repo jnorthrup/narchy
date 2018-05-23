@@ -24,8 +24,6 @@ class HttpSelector implements ConnectionStateChangeListener {
     private final long TIMEOUT_PERIOD_ms = 5_000;
 
     private static final Logger log = Logger.getLogger("jcog/net/http");
-    @Deprecated private final File defaultRoute;
-    @Deprecated private final Map<String, File> routes = new ConcurrentHashMap<>();
     private final WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler;
     private final ByteBuffer buf = ByteBuffer.allocateDirect(HttpServer.BUFFER_SIZE);
     private final ConcurrentLinkedQueue<SocketChannel> newChannels = new ConcurrentLinkedQueue<>();
@@ -35,23 +33,11 @@ class HttpSelector implements ConnectionStateChangeListener {
     private Selector selector;
     //private long lastTimeoutCheck = System.nanoTime();
 
-    HttpSelector(HttpModel model, File httpdocs, WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler) {
+    HttpSelector(HttpModel model, WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler) {
         this.model = model;
-        this.defaultRoute = httpdocs;
         this.upgradeWebSocketHandler = upgradeWebSocketHandler;
     }
 
-    /**
-     * Register a route (url path) to be served by the specified file or directory.
-     *
-     * @param path The path part of the URL that this route applies to.
-     *             Must not begin or end with a slash
-     *             For example "assets" or "abc/def"
-     * @param file File or directory
-     */
-    public void addRouteStatic(String path, File file) throws IOException, SecurityException {
-        routes.put(path, file.getCanonicalFile());
-    }
 
     @Override
     public void connectionStateChange(HttpConnection conn, STATE oldState, STATE newState) {
@@ -106,7 +92,7 @@ class HttpSelector implements ConnectionStateChangeListener {
             sChannel.configureBlocking(false);
             sChannel.socket().setTcpNoDelay(false);
             SelectionKey key = sChannel.register(selector, SelectionKey.OP_READ);
-            key.attach(new HttpConnection(this, model, key, sChannel, defaultRoute, routes));
+            key.attach(new HttpConnection(this, model, key, sChannel));
         }
 
         Iterator<SelectionKey> it;
@@ -128,7 +114,7 @@ class HttpSelector implements ConnectionStateChangeListener {
                     SocketAddress remote = conn.channel.getRemoteAddress();
                     conn.channel.close();
                     conn.closed();
-                    log.log(Level.INFO, "Dropping connection {0} because of timeout", remote);
+                    log.log(Level.INFO, "timeout {0}", remote);
                 }
             }
         }
@@ -203,25 +189,24 @@ class HttpSelector implements ConnectionStateChangeListener {
             return false;
         }
 
-        if (read < 0) {
-            return false;
-        }
-
         if (read > 0) {
             buf.limit(buf.position());
             buf.reset();
 
             conn.read(buf);
+            return true;
+        } else {
+            return false;
         }
 
-        return true;
+
     }
 
     /**
      * Add a new socket channel to be handled by this thread.
      */
 
-    @HttpUtil.ThreadSafe
+    
     void addNewChannel(SocketChannel sChannel) {
         newChannels.add(sChannel);
 

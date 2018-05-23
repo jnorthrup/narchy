@@ -46,7 +46,6 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     private final HttpSelector http;
     private final WebSocketSelector ws;
 
-    private volatile boolean stop = false;
 
     public HttpServer(String host, int port, File httpdocs_, HttpModel model) throws IOException {
         this(new InetSocketAddress(host, port), httpdocs_, model);
@@ -65,17 +64,9 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
         }
 
 
-        File httpdocs = null;
-        if (httpdocs_ != null) {
-            httpdocs = httpdocs_.getCanonicalFile();
-            if (!httpdocs.isDirectory()) {
-                //httpdocs = null;
-                logger.warn("argument httpdocs is not a directory");
-            }
-        }
 
-        http = new HttpSelector(this,
-                httpdocs == null ? null : new File(httpdocs.getPath()), this);
+
+        http = new HttpSelector(this, this);
 
 
         ws = new WebSocketSelector(this);
@@ -89,7 +80,7 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
         socket.bind(listenAddr);
         socket.setReceiveBufferSize(RCVBUFFER_SIZE);
 
-        logger.info("Listening on {}:{}", socket.getInetAddress(), getListeningPort(ssChannel));
+        logger.info("listen {}:{}", socket.getInetAddress(), getListeningPort(ssChannel));
         return ssChannel;
     }
 
@@ -112,50 +103,38 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
         return sock.getLocalPort();
     }
 
-    public void addRouteStatic(String path, File file) throws IOException, SecurityException {
-        http.addRouteStatic(path, file);
-    }
-
-    @Override
-    protected synchronized void onStart() {
-        if (stop) {
-            throw new IllegalStateException();
-        }
-
-        http.onStart();
-        ws.onStart();
-
-        //logger.info("Http server setup at {0}:{1,number,#}", new Object[]{ssChannel.socket().getInetAddress(), getListeningPort(ssChannel)});
-    }
-
     public int getListeningPort() {
         return getListeningPort(ssChannel);
     }
 
     @Override
-    protected synchronized void onStop() {
-        stop = true;
+    protected synchronized void onStart() {
 
+        http.onStart();
+
+        ws.onStart();
+
+        //logger.info("Http server setup at {0}:{1,number,#}", new Object[]{ssChannel.socket().getInetAddress(), getListeningPort(ssChannel)});
+    }
+
+    @Override
+    protected synchronized void onStop() {
         http.onStop();
 
         ws.onStop();
-
-        logger.info("{} stop", this);
     }
 
 
     @Override
     public boolean next() {
-        if (stop) {
-            //throw new IllegalStateException();
-            return false;
-        }
 
         try {
             SocketChannel sChannel;
             while ((sChannel = ssChannel.accept()) != null) {
                 http.addNewChannel(sChannel);
             }
+
+            http.next();
 
         } catch (ClosedChannelException ex) {
             // This exception is okay after stop() has been called.
@@ -169,14 +148,6 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
 
 
         ws.next();
-
-        try {
-            http.next();
-        } catch (ClosedSelectorException e) {
-            //?
-        } catch (IOException e) {
-            logger.error("IOException in download thread()", e);
-        }
 
         return true;
     }
@@ -215,5 +186,10 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     @Override
     public final void wssError(WebSocket conn, Exception ex) {
         model.wssError(conn, ex);
+    }
+
+    @Override
+    public final void response(HttpConnection h) {
+        model.response(h);
     }
 }

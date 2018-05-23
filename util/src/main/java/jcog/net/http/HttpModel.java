@@ -88,4 +88,9 @@ public interface HttpModel {
     default void wssError(WebSocket ws, Exception ex) {
 
     }
+
+    default void response(HttpConnection h) {
+
+    }
+
 }

@@ -22,9 +22,10 @@ class HttpResponse {
     private final METHOD requestMethod;
     private int status;
     private String statusMessage;
+    private ByteBuffer headers;
+
     private boolean sendStatusAsContent = true;
     private File file;
-    private ByteBuffer headers;
     private RandomAccessFile raf;
     private long fileBytesSent = 0;
     private ByteBuffer fileBuffer;
@@ -200,7 +201,7 @@ class HttpResponse {
             headerString.append("Allow: GET, HEAD\r\n");
         }
 
-        headerString.append("Server: Aphelion\r\n");
+        headerString.append("Server: Client\r\n");
         headerString.append("X-Frame-Options: SAMEORIGIN\r\n");
         headerString.append("Date: ");
         headerString.append(HttpUtil.HttpDateUtils.formatDate(new Date()));
