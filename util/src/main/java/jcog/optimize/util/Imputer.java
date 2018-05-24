@@ -1,8 +1,10 @@
-package jcog.optimize;
+package jcog.optimize.util;
 
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import jcog.list.FasterList;
+import jcog.optimize.Tweak;
+import jcog.optimize.Tweaks;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

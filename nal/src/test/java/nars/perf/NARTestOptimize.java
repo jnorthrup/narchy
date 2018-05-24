@@ -1,7 +1,7 @@
 package nars.perf;
 
+import jcog.Util;
 import jcog.optimize.Optimizing;
-import jcog.optimize.Result;
 import jcog.optimize.Tweaks;
 import nars.NAR;
 import nars.NARLoop;
@@ -15,17 +15,21 @@ import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
 import nars.nal.nal8.NAL8Test;
+import nars.util.NALTest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
+
+import static nars.perf.JUnitNAR.*;
 
 public class NARTestOptimize {
 
     static final int threads =
-            4;
+            Util.concurrencyDefault(1);
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
@@ -43,10 +47,7 @@ public class NARTestOptimize {
 
 
 
-        Optimizing<NAR> opt = new Tweaks<>(() -> {
-            NAR n = NARS.tmp();
-            return n;
-        }).discover(new Tweaks.DiscoveryFilter() {
+        Optimizing<NAR,NALTest> opt = new Tweaks<>(NARS::tmp).discover(new Tweaks.DiscoveryFilter() {
 
             final Set<Class> excludeClasses = Set.of(NARLoop.class);
             final Set<String> excludeFields = Set.of(
@@ -78,17 +79,20 @@ public class NARTestOptimize {
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize((n) ->
-                        JUnitNAR.tests(n,
-                                NAL1Test.class,
-                                NAL1MultistepTest.class,
-                                NAL2Test.class,
-                                NAL3Test.class,
-                                NAL5Test.class,
-                                NAL6Test.class,
-                                NAL7Test.class,
-                                NAL8Test.class
-                        ));
+                .optimize((Function<NAR,NALTest>)(s-> test(s, randomTest(
+                        NAL1Test.class,
+                        NAL1MultistepTest.class,
+                        NAL2Test.class,
+                        NAL3Test.class,
+                        NAL5Test.class,
+                        NAL6Test.class,
+                        NAL7Test.class,
+                        NAL8Test.class
+                ))), new Optimizing.Score<>("completeFast", 1f, t->
+                    t!=null ? t.test.score : 0
+                ), new Optimizing.Score<>("deriveUniquely", 0.5f, t->
+                    t!=null ? 1f/(1f+t.test.nar.emotion.deriveFailDerivationDuplicate.getValue().floatValue()) : 0
+                ));
 
         opt.saveOnShutdown("/tmp/" + NARTestOptimize.class.getName() + "_" + System.currentTimeMillis() + ".arff");
 
@@ -96,7 +100,7 @@ public class NARTestOptimize {
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         while (true) {
-            Result<NAR> r = opt.run( /*32*1024*/ 10, 10, pool);
+            Optimizing.Result r = opt.run( /*32*1024*/ 64, 20, pool);
         }
 
 

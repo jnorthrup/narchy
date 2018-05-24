@@ -137,7 +137,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
      */
     public ARFF(Collection<ImmutableList> data) {
         super();
-        relation = "";
+        relation = "data";
         comment = null;
         this.data = data;
     }
@@ -519,13 +519,12 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
      * TODO check data type of each point component
      */
     public boolean add(Object... point) {
-        if (point.length != attribute_names.size())
-            throw new UnsupportedOperationException("row structure mismatch: provided " + point.length + " != expected " + attribute_names.size());
-
         return add(Lists.immutable.of(point)); //TODO impl ImmutableList to cache hashcode
     }
 
     public boolean add(ImmutableList point) {
+        if (point.size() != attribute_names.size())
+            throw new UnsupportedOperationException("row structure mismatch: provided " + point.size() + " != expected " + attribute_names.size());
         return this.data.add(point);
     }
 

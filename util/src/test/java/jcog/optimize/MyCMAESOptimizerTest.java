@@ -1,5 +1,6 @@
 package jcog.optimize;
 
+import jcog.optimize.util.MyCMAESOptimizer;
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;

@@ -1,6 +1,7 @@
-package jcog.optimize;
+package jcog.optimize.tweak;
 
 import jcog.list.FasterList;
+import jcog.optimize.Tweak;
 import jcog.util.ObjectFloatToFloatFunction;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public class TweakFloat<X> extends Tweak<X,Float> {
     private float min, max;
     private float inc;
 
-    protected TweakFloat(String id, float min, float max, float inc, Function<X,Float> get, ObjectFloatToFloatFunction<X> set) {
+    public TweakFloat(String id, float min, float max, float inc, Function<X, Float> get, ObjectFloatToFloatFunction<X> set) {
         super(id, get, set::value);
         this.min = min;
         this.max = max;

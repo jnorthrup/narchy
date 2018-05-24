@@ -30,14 +30,6 @@ public class JUnitNAR {
 
     }
 
-    /**
-     * HACK runs all Junit test methods, returnign the sum of the test scores divided by tests (mean test score)
-     */
-    public static float tests(NAR s, Class<? extends NALTest>... c) {
-
-
-        return test(s, randomTest(c));
-    }
 
 //        if (fractionToRun < 1f) {
 //            int toRemove = Math.round((1f-fractionToRun)* mm);
@@ -72,7 +64,7 @@ public class JUnitNAR {
 //        return sum.floatValue()/totalTests;
 
 
-    public static Method randomTest(Class<? extends NALTest>[] c) {
+    public static Method randomTest(Class<? extends NALTest>... c) {
         //TODO cache this
         List<Method> methods = Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getMethods())
@@ -84,10 +76,15 @@ public class JUnitNAR {
         return methods.get(ThreadLocalRandom.current().nextInt(mm));
     }
 
-    private static float test(NAR s, Method m) {
+    public static NALTest test(NAR s, Method m) {
+        NALTest t = null;
         try {
-            NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
-            t.test.quiet = true;
+            t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
+        } catch (Exception e) {
+            return null;
+        }
+
+        t.test.quiet = true;
             t.test.set(s); //overwrite NAR with the supplier
             t.test.nar.random().setSeed(
                     System.nanoTime()
@@ -98,23 +95,20 @@ public class JUnitNAR {
             try {
                 m.invoke(t);
             } catch (Throwable ee) {
-                return -1; //fatal setup
+                return null; //fatal setup
             }
 
             Param.DEBUG = false;
 
             try {
                 t.test.test();
-                return t.test.score;
                 //return 1 + t.test.score; //+1 for successful completion
             } catch (Throwable ee) {
                 //return -2f;
                 //return -1f;
-                return 0.0f; //fatal during test
+                return null; //0.0f; //fatal during test
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0.0f;
-        }
+            return t;
+
     }
 }

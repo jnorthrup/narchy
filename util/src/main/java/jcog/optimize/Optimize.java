@@ -1,8 +1,9 @@
 package jcog.optimize;
 
-import com.google.common.base.Joiner;
 import jcog.io.arff.ARFF;
 import jcog.list.FasterList;
+import jcog.optimize.tweak.TweakFloat;
+import jcog.optimize.util.MyCMAESOptimizer;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.SimpleBounds;
@@ -12,7 +13,6 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalS
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.slf4j.Logger;
@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -39,32 +39,13 @@ public class Optimize<X> {
      * <p>
      * this controls the exploration rate
      */
-    static final float autoInc_default = 5f;
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
     final List<Tweak<X, ?>> tweaks;
     final Supplier<X> subject;
 
-    protected Optimize(Supplier<X> subject, Tweaks<X> t) {
-        this(subject, t, Map.of("autoInc", autoInc_default));
-    }
-
-    protected Optimize(Supplier<X> subject, Tweaks<X> t, Map<String, Float> hints) {
-        Pair<List<Tweak<X, ?>>, SortedSet<String>> uu = t.get(hints);
-        List<Tweak<X, ?>> ready = uu.getOne();
-        SortedSet<String> unknown = uu.getTwo();
-        if (ready.isEmpty()) {
-            throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(unknown));
-        }
-
-
-        if (!unknown.isEmpty()) {
-            for (String w : unknown) {
-                logger.warn("unknown: {}", w);
-            }
-        }
-
+    protected Optimize(Supplier<X> subject,  List<Tweak<X, ?>> t) {
         this.subject = subject;
-        this.tweaks = ready;
+        this.tweaks = t;
     }
 
 
@@ -78,10 +59,11 @@ public class Optimize<X> {
      * @param exe
      * @return
      */
-    public Result<X> run(final ARFF data, int maxIterations, int repeats,
-                         //FloatFunction<Supplier<X>> eval,
-                         Optimizing.Optimal<X, ?>[] seeks,
-                         ExecutorService exe) {
+    public <Y> Optimizing.Result run(final ARFF data, int maxIterations, int repeats,
+                                 //FloatFunction<Supplier<X>> eval,
+                                 Function<X,Y> experiment,
+                                 Optimizing.Optimal<Y, ?>[] seeks,
+                                 Function<Callable,Future> exe) {
 
 
         assert (repeats >= 1);
@@ -126,13 +108,14 @@ public class Optimize<X> {
             CountDownLatch c = new CountDownLatch(repeats);
             List<Future<Map<String, Object>>> each = new FasterList(repeats);
             for (int r = 0; r < repeats; r++) {
-                Future<Map<String, Object>> ee = exe.submit(() -> {
+                Future<Map<String, Object>> ee = exe.apply(() -> {
                     try {
-                        X y = x.get();
+                        X xx = x.get();
+                        Y y = experiment.apply(xx);
 
                         float subScore = 0;
                         Map<String, Object> e = new LinkedHashMap(seeks.length); //lhm to maintain seek order
-                        for (Optimizing.Optimal<X, ?> o : seeks) {
+                        for (Optimizing.Optimal<Y, ?> o : seeks) {
                             ObjectFloatPair<?> xy = o.eval(y);
                             e.put(o.id, xy.getOne());
                             subScore += xy.getTwo();
@@ -239,7 +222,7 @@ public class Optimize<X> {
             logger.info("solve {} {}", func, t);
         }
 
-        return new Result<>(data, tweaks);
+        return new Optimizing.Result(data);
     }
 
     void solve(int dim, ObjectiveFunction func, double[] mid, double[] min, double[] max, double[] inc, int maxIterations) {

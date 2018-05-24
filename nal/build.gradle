@@ -6,15 +6,15 @@ buildscript {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         //maven { url 'https://stamp-project.github.io/stamp-maven-repository' }
     }
-    configurations.maybeCreate("pitest")
+//    configurations.maybeCreate("pitest")
+//    dependencies {
+//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
+//        pitest 'org.pitest:pitest-junit5-plugin:0.6-SNAPSHOT'
+//    }
 
-    dependencies {
-//        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
-        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.3.0'
-        pitest 'org.pitest:pitest-junit5-plugin:0.6-SNAPSHOT'
-    }
 }
-apply plugin: "info.solidsoft.pitest"
+
+//apply plugin: "info.solidsoft.pitest"
 
 //compileJava {
 //    options.compilerArgs = ['-verbose']
@@ -62,10 +62,6 @@ dependencies {
 
 //    compile group: 'net.openhft', name: 'chronicle-bytes', version: '1.10.4'
 
-    testCompile(group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.21') {
-        exclude(module: 'commons-math3')
-    }
-    testCompile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
 
     testCompile(group: 'org.pitest', name: 'pitest', version: '1.4.0')
     testCompile(group: 'org.pitest', name: 'pitest-entry', version: '1.4.0')
@@ -73,6 +69,12 @@ dependencies {
         exclude(module: 'testng')
         exclude(module: 'junit')
     }
+
+    testCompile(group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.21') {
+        exclude(module: 'commons-math3')
+    }
+    testCompile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.21'
+
 
 
 //    testCompile(group: 'fr.inria.stamp', name:'dspot', version:'1.0.2-SNAPSHOT')
@@ -101,45 +103,43 @@ dependencies {
 //    ]
 //}
 
-pitest {
-//    configurations { mutableCodeBase { transitive false } }
-//    dependencies { mutableCodeBase project(':util') }
-//    pitest {
-//        mainSourceSets = [project.sourceSets.main, project(':util').sourceSets.main]
-//        additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
-//    }
-    setJvmPath('/home/me/jdk11img')
-    targetTests = [
-            //'nars.nal.nal1.NAL1Test',
-            //'nars.nal.nal1.NAL1MultistepTest',
-            //'nars.nal.nal2.*',
-            //'nars.derive.TemporalizeTest',
-            'nars.task.*'
-    ]
-    targetClasses = [
-            'nars.term.*',
-            'nars.nal.*',
-            //'nars.table.*',
-            //'nars.concept.*',
-            //'nars.control.*',
-            'nars.derive.time.*'
-    ]
-
-
-    //jvmArgs = ["-ea"]
-
-    verbose = true
-    pitestVersion = '1.4.1-SNAPSHOT'
-    testPlugin = "junit5"
-    timeoutFactor = 3
-    enableDefaultIncrementalAnalysis = true
-    threads = 4
-
-    outputFormats = ['HTML']
-    timestampedReports = false
-}
+//pitest {
+////    configurations { mutableCodeBase { transitive false } }
+////    dependencies { mutableCodeBase project(':util') }
+////    pitest {
+////        mainSourceSets = [project.sourceSets.main, project(':util').sourceSets.main]
+////        additionalMutableCodePaths = [configurations.mutableCodeBase.singleFile]
+////    }
+//    setJvmPath('/home/me/jdk11img')
+//    targetTests = [
+//            //'nars.nal.nal1.NAL1Test',
+//            //'nars.nal.nal1.NAL1MultistepTest',
+//            //'nars.nal.nal2.*',
+//            //'nars.derive.TemporalizeTest',
+//            'nars.task.*'
+//    ]
+//    targetClasses = [
+//            'nars.term.*',
+//            'nars.nal.*',
+//            //'nars.table.*',
+//            //'nars.concept.*',
+//            //'nars.control.*',
+//            'nars.derive.time.*'
+//    ]
 //
-//description = ''
+//
+//    //jvmArgs = ["-ea"]
+//
+//    verbose = true
+//    pitestVersion = '1.4.1-SNAPSHOT'
+//    testPlugin = "junit5"
+//    timeoutFactor = 3
+//    enableDefaultIncrementalAnalysis = true
+//    threads = 4
+//
+//    outputFormats = ['HTML']
+//    timestampedReports = false
+//}
 
 
 

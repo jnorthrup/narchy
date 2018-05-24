@@ -9,6 +9,7 @@ import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.Range;
+import jcog.optimize.tweak.TweakFloat;
 import jcog.util.ObjectFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
@@ -60,7 +61,7 @@ public class Tweaks<X> {
     /**
      * set of all partially or fully ready Tweaks
      */
-    protected final List<Tweak<X, ?>> tweaks = new FasterList();
+    public final List<Tweak<X, ?>> tweaks = new FasterList();
 
     public Tweaks(X subject) {
         this(() -> subject);
@@ -355,21 +356,21 @@ public class Tweaks<X> {
 
 
     /** simple scalar eval */
-    public Optimizing<X> optimize(FloatFunction<X> score) {
-        return optimize(new Optimizing.Score<>(score));
+    public Optimizing<X,X> optimize(FloatFunction<X> score) {
+        return optimize((x->x), new Optimizing.Score<>(score));
     }
 
     /** multi-scalar - automatically named scores (score0, score1... ) */
-    public Optimizing<X> optimize(FloatFunction<X>... scores) {
+    public <Y> Optimizing<X,Y> optimize(Function<X,Y> experiment, FloatFunction<Y>... scores) {
         final int[] j = {0};
-        return optimize(Util.map(
+        return optimize(experiment, Util.map(
                     s-> new Optimizing.Score<>("score" + (j[0]++), s),
                     new Optimizing.Score[scores.length],
                     scores));
     }
 
-    public Optimizing<X> optimize(Optimizing.Optimal<X,?>... seeks) {
-        return new Optimizing<>(subjects, this, seeks);
+    public <Y> Optimizing<X,Y> optimize(Function<X,Y> experiment, Optimizing.Optimal<Y,?>... seeks) {
+        return new Optimizing<>(subjects, this, experiment, seeks);
     }
 
 }

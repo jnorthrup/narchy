@@ -49,7 +49,7 @@ public class TweaksTest {
         assertTrue(a.tweaks.size() >= 4);
 
         //assertEquals(4, a.all.size());
-        Result<Model> r = a.optimize((m)->m.score()).run(25);
+        Optimizing.Result r = a.optimize((m)->m.score()).run(25);
         assertEquals(5, r.data.attrCount());
 
         r.print();
@@ -66,7 +66,7 @@ public class TweaksTest {
 
 
 
-        Result<Model> r = a.optimize(m->m.score(), m->m.score2()).run(25);
+        Optimizing.Result r = a.optimize(m->m.score(), m->m.score2()).run(25);
         assertEquals(7, r.data.attrCount());
 
         r.print();
