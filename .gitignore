@@ -31,7 +31,6 @@ UIFiles
 
 jmh-result.text
 .gradle/
-gradle/
 
 nal/tree.xml
 nal/vis.xml
@@ -45,6 +44,4 @@ narchy.ipr
 narchy.iws
 log/
 gradle.properties
-gradlew
-gradlew.bat
 dumps/

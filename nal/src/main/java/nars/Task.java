@@ -1080,11 +1080,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
                     if (result != null) {
                         //delete();
+                        float pBeforeDrain = priElseZero();
+                        pri(0); //drain pri from here
                         queue.add(new TaskAddTask(result));
                         //HACK tasklink question to answer
                         queue.add(new NativeTask.NARTask(nn -> {
                             Tasklinks.linkTask(
-                                    new TaskLink.GeneralTaskLink(result, nn, priElseZero()),
+                                    new TaskLink.GeneralTaskLink(result, nn, pBeforeDrain / 2f),
                                     concept(nn, true).tasklinks(),
                                     null);
                             //TaskLinkTask( result, pri(), concept(n, true))
@@ -1092,7 +1094,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     } else {
                         //TODO maybe print error, at least in debug mode
                     }
-                } else {
+
+                } else{
                     //belief or goal boolean, wtf. obvious
                     return;
                 }
@@ -1119,6 +1122,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //                    }
 
                     if (result!=null) {
+                        pri(0); //drain pri from here
                         queue.add(new TaskAddTask(result));
 
 //                        //HACK tasklink question to answer

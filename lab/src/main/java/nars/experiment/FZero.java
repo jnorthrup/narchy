@@ -368,16 +368,28 @@ public class FZero extends NAgentX {
 
     private void initToggle() {
 
-        actionToggle($.inh(id, $.the("left")), (b) -> {
-            fz.left = b;
+        actionPushButton($.the("left"), (b) -> {
+            if (b && fz.right) {
+                fz.left = fz.right = false;
+                return false;
+            } else {
+                fz.left = b;
+                return b;
+            }
         });
-        actionToggle($.inh(id, $.the("right")), (b) -> {
-            fz.right = b;
+        actionPushButton($.the("right"), (b) -> {
+            if (b && fz.left) {
+                fz.left = fz.right = false;
+                return false;
+            } else {
+                fz.right = b;
+                return b;
+            }
         });
-        actionToggle($.inh(id, $.the("fwd")), (b) -> {
+        actionToggle($.the("fwd"), (b) -> {
             fz.thrust = b;
         });
-        actionToggle($.inh(id, $.the("brake")), () -> {
+        actionToggle($.the("brake"), () -> {
             //fz.left = fz.right = false;
             fz.vehicleMetrics[0][6] *= 0.9f;
         });

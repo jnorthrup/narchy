@@ -12,6 +12,7 @@ import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.BooleanToBooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.NotNull;
@@ -360,15 +361,18 @@ public interface NAct {
     }
 
     default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
+        actionPushButton(t, (x)-> { on.value(x); return x; });
+    }
+
+    default void actionPushButton(@NotNull Term t, @NotNull BooleanToBooleanFunction on) {
         float thresh =
                 //0.6f;
                 0.5f + nar().freqResolution.get();
         //0.5f;
 
         GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
-            boolean positive = f >= thresh;
-            on.value(positive);
-            return positive ? 1f : 0f;
+            boolean posOrNeg = f >= thresh;
+            return on.valueOf(posOrNeg) ? 1f : 0f;
         });
         b.resolution.set(1f);
 

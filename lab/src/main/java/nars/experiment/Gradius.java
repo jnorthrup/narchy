@@ -111,7 +111,7 @@ public class Gradius extends NAgentX {
 
         /*nar.believe($.inh(*///$.sete(
 
-        actionPushButton($.inh("fire", id),
+        actionToggle($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
         actionToggle($.inh("pause", id),

@@ -4,6 +4,7 @@ import jcog.Paper;
 import jcog.Util;
 import jcog.decide.Roulette;
 import jcog.list.FasterList;
+import jcog.memoize.HijackMemoize;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -14,9 +15,9 @@ import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Int;
-import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -74,15 +75,93 @@ public class ArithmeticIntroduction extends LeakBack {
 
         int[] ii = ints.toSortedArray();  //increasing so that relational comparisons can assume that 'a' < 'b'
 
+        List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mmm = mods(ii);
+
+        //TODO fair select randomly if multiple of the same length
+
+        //RichIterable<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mkv = mods.keyValuesView(); //toSortedListBy(i->-i.getTwo().size());
+
+        //select randomly, weighted by the most frequently associated base term
+
+
+        int choice = Roulette.selectRoulette(mmm.size(), c -> mmm.get(c).getTwo().size(), random);
+
+        IntObjectPair<List<Pair<Term, Function<Term, Term>>>> m = mmm.get(choice);
+
+        Term baseTerm = Int.the(m.getOne());
+        if (anon!=null)
+            baseTerm = anon.put(baseTerm);
+
+        Variable V = $.varDep("b");
+        Term yy = x.replace(baseTerm, V);
+
+        for (Pair<Term, Function<Term, Term>> s : m.getTwo()) {
+            Term s0 = s.getOne();
+            Term s1 = s.getTwo().apply(V);
+            if (anon!=null)
+                s0 = anon.put(s0); //TODO check
+            yy = yy.replace(s0, s1);
+        }
+
+        Term y =
+                CONJ.the(yy, eternal ? DTERNAL : 0, SIM.the(baseTerm, V));
+                //IMPL.the(SIM.the(baseTerm, v), yy);
+                //IMPL.the(yy, SIM.the(baseTerm, v));
+
+        if (y.op()!=CONJ) {
+        //if (y.op()!=IMPL) {
+            return null; //something happened
+        }
+
+        if (x.isNormalized()) {
+            y = y.normalize();
+        }
+        return y;
+    }
+
+    final static class IntArrayListCached extends IntArrayList {
+        private final int hash;
+
+        public IntArrayListCached(int[] ii) {
+            super(ii);
+            int hash = ii[0];
+            for (int i = 1; i < ii.length; i++)
+                hash = Util.hashCombine(hash, ii[i]);
+            this.hash = hash;
+        }
+
+        public int[] toArray() {
+            return items;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+    }
+
+    static final HijackMemoize<IntArrayListCached,List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>>>
+        modsCache = new HijackMemoize<>(ArithmeticIntroduction::_mods, 512, 3);
+
+    static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mods(int[] ii) {
+//        if (ThreadLocalRandom.current().nextFloat() < 0.01f)
+//            System.out.println(modsCache.summary());
+        return modsCache.apply(new IntArrayListCached(ii));
+    }
+
+    static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> _mods(IntArrayListCached iii) {
         //potential mods to select from
         //FasterList<Supplier<Term[]>> mods = new FasterList(1);
+
+        int[] ii = iii.toArray();
+
         IntObjectHashMap<List<Pair<Term, Function<Term,Term>>>> mods = new IntObjectHashMap<>(ii.length);
 
 
         //test arithmetic relationships
-        for (int a = 0; a < ui; a++) {
+        for (int a = 0; a < ii.length; a++) {
             int ia = ii[a];
-            for (int b = 0; b < ui; b++) {
+            for (int b = 0; b < ii.length; b++) {
                 if (a == b) continue;
 
                 int ib = ii[b];
@@ -92,7 +171,7 @@ public class ArithmeticIntroduction extends LeakBack {
                 if (ia == -ib) {
                     //negation (x * -1)
                     maybe(mods, ia).add(pair(
-                            Int.the(ib), v->$.func(MathFunc.mul, v,Int.NEG_ONE)
+                            Int.the(ib), v-> $.func(MathFunc.mul, v,Int.NEG_ONE)
                     ));
 //                    maybe(mods, ib).add(pair(
 //                            Int.the(ia), v-> $.func(MathFunc.mul, v, Int.NEG_ONE)
@@ -125,50 +204,7 @@ public class ArithmeticIntroduction extends LeakBack {
 //                ));
             }
         }
-        if (mods.isEmpty())
-            return x;
-
-        //TODO fair select randomly if multiple of the same length
-
-        //RichIterable<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mkv = mods.keyValuesView(); //toSortedListBy(i->-i.getTwo().size());
-
-        //select randomly, weighted by the most frequently associated base term
-        MutableList<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mmm = mods.keyValuesView().toList();
-
-        int choice = Roulette.selectRoulette(mmm.size(), c -> mmm.get(c).getTwo().size(), random);
-
-        IntObjectPair<List<Pair<Term, Function<Term, Term>>>> m = mmm.get(choice);
-
-        int base = m.getOne();
-        Term baseTerm = Int.the(base);
-        if (anon!=null)
-            baseTerm = anon.put(baseTerm);
-
-        Variable V = $.varDep("b");
-        Term yy = x.replace(baseTerm, V);
-
-        for (Pair<Term, Function<Term, Term>> s : m.getTwo()) {
-            Term s0 = s.getOne();
-            Term s1 = s.getTwo().apply(V);
-            if (anon!=null)
-                s0 = anon.put(s0); //TODO check
-            yy = yy.replace(s0, s1);
-        }
-
-        Term y =
-                CONJ.the(yy, eternal ? DTERNAL : 0, SIM.the(baseTerm, V));
-                //IMPL.the(SIM.the(baseTerm, v), yy);
-                //IMPL.the(yy, SIM.the(baseTerm, v));
-
-        if (y.op()!=CONJ) {
-        //if (y.op()!=IMPL) {
-            return null; //something happened
-        }
-
-        if (x.isNormalized()) {
-            y = y.normalize();
-        }
-        return y;
+        return !mods.isEmpty() ? mods.keyValuesView().toList() : List.of();
     }
 
     public static List<Pair<Term, Function<Term, Term>>> maybe(IntObjectHashMap<List<Pair<Term, Function<Term, Term>>>> mods, int ia) {

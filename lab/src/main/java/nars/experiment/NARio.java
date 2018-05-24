@@ -142,15 +142,15 @@ public class NARio extends NAgentX {
 
     private void initButton() {
 
-        actionPushButton($$("left"),
+        actionToggle($$("left"),
                 n -> mario.scene.key(Mario.KEY_LEFT, n));
-        actionPushButton($$("right"),
+        actionToggle($$("right"),
                 n -> mario.scene.key(Mario.KEY_RIGHT, n));
-        actionPushButton($$("jump"),
+        actionToggle($$("jump"),
                 n -> mario.scene.key(Mario.KEY_JUMP, n));
-        actionPushButton($$("down"),
+        actionToggle($$("down"),
                 n -> mario.scene.key(Mario.KEY_DOWN, n));
-        actionPushButton($$("speed"),
+        actionToggle($$("speed"),
                 n -> mario.scene.key(Mario.KEY_SPEED, n));
 
 
