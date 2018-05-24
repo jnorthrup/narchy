@@ -2,8 +2,6 @@ package spacegraph.space2d.widget.meta;
 
 import spacegraph.SpaceGraph;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class OmniBoxTest {
 
     static class OmniBox_JShell {

@@ -27,8 +27,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.pitest.reloc.asm;
 
-import org.objectweb.asm.*;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

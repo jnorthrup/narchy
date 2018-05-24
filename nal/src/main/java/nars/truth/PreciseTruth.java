@@ -2,7 +2,6 @@ package nars.truth;
 
 import jcog.Util;
 import nars.Param;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;

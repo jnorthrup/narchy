@@ -35,8 +35,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static nars.Param.TRIE_DERIVER_TEMPERATURE;
-
 /**
  * high-level interface for compiling premise deriver rules
  */

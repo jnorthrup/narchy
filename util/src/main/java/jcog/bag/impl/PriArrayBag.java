@@ -5,7 +5,6 @@ import jcog.pri.op.PriMerge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class PriArrayBag<X extends Priority> extends ArrayBag<X,X> {

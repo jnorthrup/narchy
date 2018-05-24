@@ -1098,8 +1098,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 }
             } else {
                 @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(),
-                        false
-                        //!isInput() || !Param.DEBUG_EXTRA
+                        //false
+                        !isInput() || !Param.DEBUG_EXTRA
                 );
                         /* the evaluated result here acts as a memoization of possibly many results
                            depending on whether the functor is purely static in which case

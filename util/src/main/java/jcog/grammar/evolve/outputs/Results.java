@@ -23,7 +23,6 @@ import jcog.grammar.evolve.inputs.DataSet;
 import jcog.grammar.evolve.inputs.DataSet.Example;
 import jcog.grammar.evolve.utils.BasicStats;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

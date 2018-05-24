@@ -1,11 +1,14 @@
 package nars.op;
 
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
+
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -60,6 +63,8 @@ public class ArithmeticTest {
 
     }
 
+    final Random rng = new XoRoShiRo128PlusRandom(1);
+    
     @Test
     public void test1() throws Narsese.NarseseException {
         assertEquals(
@@ -67,14 +72,21 @@ public class ArithmeticTest {
                 //"(($1,add($1,1))==>($1<->2))",
                 //"((#1,#2) && add(#1,1,#2))",
                 //"(2,#1)&&add(#1,",
-                ArithmeticIntroduction.apply($.$("(2,3)")).toString());
+                ArithmeticIntroduction.apply($.$("(2,3)"), true, rng).toString());
     }
 
     @Test public void test2() throws Narsese.NarseseException {
         assertEquals(
                 "(x(#1,add(#1,1))&&(#1<->2))",
                 //"(x($1,add($1,1))==>($1<->2))",
-                ArithmeticIntroduction.apply($.$("x(2,3)")).toString());
+                ArithmeticIntroduction.apply($.$("x(2,3)"), true, rng).toString());
+    }
+    @Test public void test2b() throws Narsese.NarseseException {
+        assertEquals(
+                "(x(#1,add(#1,1))&|(#1<->2))",
+                //"(x($1,add($1,1))==>($1<->2))",
+                ArithmeticIntroduction.apply($.$("x(2,3)"), false, rng).toString());
+
     }
 
     @Test
@@ -100,7 +112,7 @@ public class ArithmeticTest {
                 //"((a,add(#1,1))&&(#1<->4))",
                 "((a,add($1,1))==>(#1<->4))",
                 1f, 0.81f);
-        t.mustBelieve(1000, "(a,5)", 1f, 0.5f);
+        t.mustBelieve(100, "(a,5)", 1f, 0.5f);
         t.test();
     }
 

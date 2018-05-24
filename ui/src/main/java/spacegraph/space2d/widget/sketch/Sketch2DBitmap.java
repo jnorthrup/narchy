@@ -3,7 +3,6 @@ package spacegraph.space2d.widget.sketch;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.signal.Bitmap2D;
-import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.math3.random.MersenneTwister;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
@@ -13,7 +12,6 @@ import spacegraph.space2d.widget.button.ColorToggle;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.tab.ButtonSet;
-import spacegraph.space2d.widget.windo.Widget;
 import spacegraph.util.math.v2;
 import spacegraph.video.Tex;
 

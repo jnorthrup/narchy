@@ -12,7 +12,6 @@ import nars.term.atom.Atom;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 

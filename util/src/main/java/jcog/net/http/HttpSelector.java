@@ -3,14 +3,11 @@ package jcog.net.http;
 import jcog.net.http.HttpConnection.ConnectionStateChangeListener;
 import jcog.net.http.HttpConnection.STATE;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;

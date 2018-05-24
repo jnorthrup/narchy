@@ -484,10 +484,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                                if (!window.isSurfaceLockedByOtherThread())
 //                                impl.display(drawables, ignoreExceptions, printExceptions);
 
-                                animThread = Thread.currentThread();
-
-                                //if (!window.isSurfaceLockedByOtherThread())
+                                if (!window.isSurfaceLockedByOtherThread()) {
+                                    animThread = Thread.currentThread();
                                     drawables.forEach(GLAutoDrawable::display);
+                                }
 
                             } catch (final UncaughtAnimatorException dre) {
                                 //quitIssued = true;

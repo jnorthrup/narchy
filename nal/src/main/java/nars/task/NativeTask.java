@@ -3,7 +3,6 @@ package nars.task;
 import com.google.common.primitives.Longs;
 import jcog.pri.Priority;
 import nars.NAR;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 

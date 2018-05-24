@@ -2,6 +2,7 @@ package nars.op;
 
 import jcog.Paper;
 import jcog.Util;
+import jcog.decide.Roulette;
 import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
@@ -13,8 +14,8 @@ import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Int;
-import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
@@ -23,10 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.Random;
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * introduces arithmetic relationships between differing numeric subterms
@@ -41,15 +44,15 @@ import static nars.time.Tense.DTERNAL;
 @Paper
 public class ArithmeticIntroduction extends LeakBack {
 
-    public static Term apply(Term x) {
-        return apply(x, true);
+    public static Term apply(Term x, Random random) {
+        return apply(x, true, random);
     }
 
-    public static Term apply(Term x, boolean eternal) {
-        return apply(x, null, eternal);
+    public static Term apply(Term x, boolean eternal, Random random) {
+        return apply(x, null, eternal, random);
     }
 
-    public static Term apply(Term x, @Nullable Anon anon, boolean eternal) {
+    public static Term apply(Term x, @Nullable Anon anon, boolean eternal, Random random) {
         if (anon == null && !x.hasAny(INT) || x.complexity() < 3)
             return x;
 
@@ -73,44 +76,53 @@ public class ArithmeticIntroduction extends LeakBack {
 
         //potential mods to select from
         //FasterList<Supplier<Term[]>> mods = new FasterList(1);
-        IntObjectHashMap<List<Supplier<Term[]>>> mods = new IntObjectHashMap(ii.length);
+        IntObjectHashMap<List<Pair<Term, Function<Term,Term>>>> mods = new IntObjectHashMap<>(ii.length);
 
-        Variable v =
-                $.varDep("x");
-                //$.varIndep("x");
 
         //test arithmetic relationships
         for (int a = 0; a < ui; a++) {
             int ia = ii[a];
-            for (int b = a + 1; b < ui; b++) {
+            for (int b = 0; b < ui; b++) {
+                if (a == b) continue;
+
                 int ib = ii[b];
-                assert ib > ia;
 
-                if (ib - ia < ia && ia!=0) {
 
-                    mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
-                            Int.the(ib), $.func(MathFunc.add, v, $.the(ib - ia))
-                    });
-
-                    mods.getIfAbsentPut(ib, FasterList::new).add(()-> new Term[]{
-                            Int.the(ia), $.func(MathFunc.add, v, $.the(ia - ib))
-                    });
-
-                } else if (ia!=0 && ia!=1 && ib!=0 && ib!=1 && Util.equals(ib/ia, (float)ib /ia, Float.MIN_NORMAL)) {
-
-                    mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
-                            Int.the(ib), $.func(MathFunc.mul, v, $.the(ib/ia))
-                    });
-                } else if (ia == -ib) {
+                int BMinA = ib - ia;
+                if (ia == -ib) {
                     //negation (x * -1)
-                    mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
-                            Int.the(ib), $.func(MathFunc.mul, v, $.the(-1))
-                    });
-                    mods.getIfAbsentPut(ib, FasterList::new).add(()-> new Term[]{
-                            Int.the(ia), $.func(MathFunc.mul, v, $.the(-1))
-                    });
+                    maybe(mods, ia).add(pair(
+                            Int.the(ib), v->$.func(MathFunc.mul, v,Int.NEG_ONE)
+                    ));
+//                    maybe(mods, ib).add(pair(
+//                            Int.the(ia), v-> $.func(MathFunc.mul, v, Int.NEG_ONE)
+//                    ));
+                } else if (ia!=0 && Math.abs(ia)!=1 && ib!=0 && Math.abs(ib)!=1 && Util.equals(ib/ia, (float)ib /ia, Float.MIN_NORMAL)) {
+
+                    //integer scaling
+                    maybe(mods, ia).add(pair(
+                            Int.the(ib), v->$.func(MathFunc.mul, v, $.the(ib/ia))
+                    ));
+                } else if (ia < ib) { // if (/*BMinA < Math.abs(ia)*/ /* && ia!=0*/) {
+
+                    maybe(mods, ia).add(pair(
+                            Int.the(ib), v-> $.func(MathFunc.add, v, $.the(BMinA))
+                    ));
+
+//                    maybe(mods, ib).add(pair(
+//                            Int.the(ia), v-> $.func(MathFunc.add, v, $.the(-BMinA))
+//                    ));
+
                 }
 
+//                maybe(mods, ia).add(pair(
+//                        Int.the(ib), v->
+//                                $.func("\">\"", v)       //ib => ">(v=ia)"
+//                ));
+//                maybe(mods, ib).add(pair(
+//                        Int.the(ia), v->
+//                                $.func("\">\"", v).neg() //ia => --">(v=ib)"
+//                ));
             }
         }
         if (mods.isEmpty())
@@ -118,32 +130,33 @@ public class ArithmeticIntroduction extends LeakBack {
 
         //TODO fair select randomly if multiple of the same length
 
-        RichIterable<IntObjectPair<List<Supplier<Term[]>>>> mkv = mods.keyValuesView();
+        //RichIterable<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mkv = mods.keyValuesView(); //toSortedListBy(i->-i.getTwo().size());
 
+        //select randomly, weighted by the most frequently associated base term
+        MutableList<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mmm = mods.keyValuesView().toList();
 
-        int ms = mkv.maxBy(e -> e.getTwo().size()).getTwo().size();
-        mkv.reject(e->e.getTwo().size() < ms);
+        int choice = Roulette.selectRoulette(mmm.size(), c -> mmm.get(c).getTwo().size(), random);
 
-        //convention: choose lowest base
-        MutableList<IntObjectPair<List<Supplier<Term[]>>>> mmm = mkv.toSortedListBy(IntObjectPair::getOne);
+        IntObjectPair<List<Pair<Term, Function<Term, Term>>>> m = mmm.get(choice);
 
-        IntObjectPair<List<Supplier<Term[]>>> m = mmm.get(0);
         int base = m.getOne();
         Term baseTerm = Int.the(base);
         if (anon!=null)
             baseTerm = anon.put(baseTerm);
 
-        Term yy = x.replace(baseTerm, v);
+        Variable V = $.varDep("b");
+        Term yy = x.replace(baseTerm, V);
 
-        for (Supplier<Term[]> s : m.getTwo()) {
-            Term[] mm = s.get();
+        for (Pair<Term, Function<Term, Term>> s : m.getTwo()) {
+            Term s0 = s.getOne();
+            Term s1 = s.getTwo().apply(V);
             if (anon!=null)
-                mm[0] = anon.put(mm[0]);
-            yy = yy.replace(mm[0], mm[1]);
+                s0 = anon.put(s0); //TODO check
+            yy = yy.replace(s0, s1);
         }
 
         Term y =
-                CONJ.the(yy, eternal ? DTERNAL : 0, SIM.the(baseTerm, v));
+                CONJ.the(yy, eternal ? DTERNAL : 0, SIM.the(baseTerm, V));
                 //IMPL.the(SIM.the(baseTerm, v), yy);
                 //IMPL.the(yy, SIM.the(baseTerm, v));
 
@@ -156,6 +169,10 @@ public class ArithmeticIntroduction extends LeakBack {
             y = y.normalize();
         }
         return y;
+    }
+
+    public static List<Pair<Term, Function<Term, Term>>> maybe(IntObjectHashMap<List<Pair<Term, Function<Term, Term>>>> mods, int ia) {
+        return mods.getIfAbsentPut(ia, FasterList::new);
     }
 
     public static final Logger logger = LoggerFactory.getLogger(ArithmeticIntroduction.class);
@@ -172,17 +189,20 @@ public class ArithmeticIntroduction extends LeakBack {
     @Override
     protected float pri(Task t) {
         float p = super.pri(t);
-        int intTerms = t.term().intifyRecurse((n,sub)->sub.op()==INT ? n+1 : n, 0);
-        assert(intTerms > 0);
-        if (intTerms < 2)
+        Term tt = t.term();
+        int numInts = tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
+        assert(numInts > 0);
+        if (numInts < 2)
             return Float.NaN;
 
-        return p * (1 - 0.5f/(intTerms-1));
+        //ratio of number subterms to volume
+        float intTerms = numInts / ((float)tt.volume());
+        return p * intTerms;
     }
     @Override
     protected float leak(Task xx) {
         Term x = xx.term();
-        Term y = apply(x, xx.isEternal());
+        Term y = apply(x, xx.isEternal(), nar.random());
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
             //TODO apply a pri discount if size grow

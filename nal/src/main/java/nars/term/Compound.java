@@ -21,6 +21,7 @@
 package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.WTF;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.$;
@@ -925,6 +926,7 @@ public interface Compound extends Term, IPair, Subterms {
 //            ((vars == 1) && (pVars == 0) && varOffset == 0) ?
 //                    VariableNormalization.singleVariableNormalization //special case for efficiency
 //                    :
+
 
         Term y = transform(
                 new nars.util.term.transform.CompoundNormalization(this, varOffset)
