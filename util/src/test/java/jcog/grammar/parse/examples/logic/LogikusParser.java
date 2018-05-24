@@ -4,7 +4,6 @@ import jcog.grammar.parse.*;
 import jcog.grammar.parse.examples.mechanics.LowercaseWord;
 import jcog.grammar.parse.examples.mechanics.UppercaseWord;
 import jcog.grammar.parse.examples.track.Track;
-import jcog.grammar.parse.tokens.Literal;
 import jcog.grammar.parse.tokens.Num;
 import jcog.grammar.parse.tokens.QuotedString;
 import jcog.grammar.parse.tokens.Symbol;
@@ -84,7 +83,7 @@ import jcog.grammar.parse.tokens.Symbol;
 public class LogikusParser {
 	protected Sequence structure;
 	protected Sequence expression;
-	protected Sequence list;
+	protected Track list;
 
 	/*
 	 * Return a parser that recognizes the grammar:
@@ -93,8 +92,8 @@ public class LogikusParser {
 	 */
 	protected Parser arg() {
 		Alternation a = new Alternation();
-		a.add(expression());
-		a.add(functor().setAssembler(new AtomAssembler()));
+		a.get(expression());
+		a.get(functor().put(new AtomAssembler()));
 		return a;
 	}
 
@@ -110,13 +109,13 @@ public class LogikusParser {
 	public Parser axiom() {
 		Sequence s = new Sequence("axiom");
 
-		s.add(structure());
+		s.get(structure());
 		Alternation a = new Alternation();
-		a.add(ruleDef());
-		a.add(new Empty());
-		s.add(a);
+		a.get(ruleDef());
+		a.get(new Empty());
+		s.get(a);
 
-		s.setAssembler(new AxiomAssembler());
+		s.put(new AxiomAssembler());
 		return s;
 	}
 
@@ -130,14 +129,9 @@ public class LogikusParser {
 	 * times.
 	 */
 	protected static Sequence commaList(Parser p) {
-		Sequence commaP = new Track();
-		commaP.add(new Symbol(',').discard());
-		commaP.add(p);
-
-		Sequence s = new Sequence();
-		s.add(p);
-		s.add(new Repetition(commaP));
-		return s;
+		return new Sequence(p, new Repetition(
+				new Track().see(',').get(p))
+		);
 	}
 
 	/**
@@ -149,16 +143,11 @@ public class LogikusParser {
 	 *
 	 * @return a parser that recognizes a comparison
 	 */
-	public Sequence comparison() {
-		Track t = new Track("comparison");
-		t.add(operator());
-		t.add(new Symbol('(').discard());
-		t.add(arg());
-		t.add(new Symbol(',').discard());
-		t.add(arg());
-		t.add(new Symbol(')').discard());
-		t.setAssembler(new ComparisonAssembler());
-		return t;
+	public Parser comparison() {
+		return new Track("comparison")
+			.get(operator())
+			.see('(').get(arg()).see(',').get(arg()).see(')')
+			.put(new ComparisonAssembler());
 	}
 
 	/**
@@ -172,13 +161,8 @@ public class LogikusParser {
 	 * @return a parser that recognizes a condition
 	 */
 	public Alternation condition() {
-		Alternation a = new Alternation("condition");
-		a.add(structure());
-		a.add(not());
-		a.add(evaluation());
-		a.add(comparison());
-		a.add(list());
-		return a;
+		return new Alternation("condition",
+			structure(), not(), evaluation(), comparison(), list());
 	}
 
 	/*
@@ -188,9 +172,9 @@ public class LogikusParser {
 	 */
 	protected Parser divideFactor() {
 		Sequence s = new Sequence("divideFactor");
-		s.add(new Symbol('/').discard());
-		s.add(factor());
-		s.setAssembler(new ArithmeticAssembler('/'));
+		s.get(new Symbol('/').ok());
+		s.get(factor());
+		s.put(new ArithmeticAssembler('/'));
 		return s;
 	}
 
@@ -206,16 +190,12 @@ public class LogikusParser {
 	 * its second term.
 	 */
 	protected Parser evaluation() {
-
-		Track t = new Track("evaluation");
-		t.add(new Symbol('#').discard());
-		t.add(new Symbol('(').discard());
-		t.add(arg());
-		t.add(new Symbol(',').discard());
-		t.add(arg());
-		t.add(new Symbol(')').discard());
-		t.setAssembler(new EvaluationAssembler());
-		return t;
+		return new Track("evaluation")
+				.see('#').see('(')
+				.get(arg())
+				.see(',')
+				.get(arg())
+				.see(')').put(new EvaluationAssembler());
 	}
 
 	/*
@@ -230,11 +210,11 @@ public class LogikusParser {
 		 */
 		if (expression == null) {
 			expression = new Sequence("expression");
-			expression.add(phrase());
+			expression.get(phrase());
 			Alternation a = new Alternation();
-			a.add(plusPhrase());
-			a.add(minusPhrase());
-			expression.add(new Repetition(a));
+			a.get(plusPhrase());
+			a.get(minusPhrase());
+			expression.get(new Repetition(a));
 		}
 		return expression;
 	}
@@ -245,15 +225,10 @@ public class LogikusParser {
 	 *    factor = '(' expression ')' | Num | variable;
 	 */
 	protected Parser factor() {
-		Alternation a = new Alternation("factor");
-		Sequence s = new Sequence();
-		s.add(new Symbol('(').discard());
-		s.add(expression());
-		s.add(new Symbol(')').discard());
-		a.add(s);
-		a.add(num());
-		a.add(variable());
-		return a;
+		return new Alternation("factor",
+			new Sequence().see('(').get(expression()).see(')'),
+			num(),
+			variable());
 	}
 
 	/*
@@ -263,9 +238,9 @@ public class LogikusParser {
 	 */
 	protected Parser functor() {
 		Alternation a = new Alternation("functor");
-		a.add(new Symbol('.'));
-		a.add(new LowercaseWord());
-		a.add(new QuotedString());
+		a.get(new Symbol('.'));
+		a.get(new LowercaseWord());
+		a.get(new QuotedString());
 		return a;
 	}
 
@@ -281,17 +256,16 @@ public class LogikusParser {
 	 *
 	 * @return a parser that recognizes a list
 	 */
-	public Sequence list() {
+	public Parser list() {
+
 		if (list == null) {
 			list = new Track("list");
-			list.add(new Symbol('[')); // push this, as a fence
 
-			Alternation a = new Alternation();
-			a.add(listContents());
-			a.add(new Empty().setAssembler(new ListAssembler()));
-
-			list.add(a);
-			list.add(new Symbol(']').discard());
+			list.get('[') // push this, as a fence
+				.or(
+					listContents(),
+					new Empty().put(new ListAssembler())
+				).see(']');
 		}
 		return list;
 	}
@@ -302,9 +276,7 @@ public class LogikusParser {
 	 *    listContents = commaList(term) listTail;
 	 */
 	protected Parser listContents() {
-		Sequence s = commaList(term());
-		s.add(listTail());
-		return s;
+		return commaList(term()).get(listTail());
 	}
 
 	/*
@@ -313,19 +285,12 @@ public class LogikusParser {
 	 *    listTail = ('|' (variable | list)) | Empty;
 	 */
 	protected Parser listTail() {
-		Alternation tail = new Alternation();
-		tail.add(variable());
-		tail.add(list());
-
-		Track barTail = new Track("bar tail");
-		barTail.add(new Symbol('|').discard());
-		barTail.add(tail);
-		barTail.setAssembler(new ListWithTailAssembler());
-
-		Alternation a = new Alternation();
-		a.add(barTail);
-		a.add(new Empty().setAssembler(new ListAssembler()));
-		return a;
+		return new Alternation(
+			new Track("bar tail").see('|').or(
+					variable(), list()
+				).put(new ListWithTailAssembler()),
+			new Empty().put(new ListAssembler())
+		);
 	}
 
 	/*
@@ -334,11 +299,7 @@ public class LogikusParser {
 	 *    minusPhrase = '-' phrase;
 	 */
 	protected Parser minusPhrase() {
-		Sequence s = new Sequence("minusPhrase");
-		s.add(new Symbol('-').discard());
-		s.add(phrase());
-		s.setAssembler(new ArithmeticAssembler('-'));
-		return s;
+		return new Sequence("minusPhrase").see('-').get(phrase()).put(new ArithmeticAssembler('-'));
 	}
 
 	/*
@@ -347,11 +308,7 @@ public class LogikusParser {
 	 *     not = "not" structure;
 	 */
 	protected Parser not() {
-		Track t = new Track("not");
-		t.add(new Literal("not").discard());
-		t.add(structure());
-		t.setAssembler(new NotAssembler());
-		return t;
+		return new Track("not").see("not").get(structure()).put(new NotAssembler());
 	}
 
 	/*
@@ -359,9 +316,7 @@ public class LogikusParser {
 	 * stacks a corresponding atom.
 	 */
 	public Parser num() {
-		Parser n = new Num();
-		n.setAssembler(new AtomAssembler());
-		return n;
+		return new Num().put(new AtomAssembler());
 	}
 
 	/*
@@ -370,14 +325,13 @@ public class LogikusParser {
 	 *     operator = '<' | '>' | '=' | "<=" | ">=" | "!=" ;
 	 */
 	protected Parser operator() {
-		Alternation a = new Alternation("operator");
-		a.add(new Symbol('<'));
-		a.add(new Symbol('>'));
-		a.add(new Symbol('='));
-		a.add(new Symbol("<="));
-		a.add(new Symbol(">="));
-		a.add(new Symbol("!="));
-		return a;
+		return new Alternation("operator",
+				new Symbol('<'),
+				new Symbol('>'),
+				new Symbol('='),
+				new Symbol("<="),
+				new Symbol(">="),
+				new Symbol("!="));
 	}
 
 	/*
@@ -386,13 +340,9 @@ public class LogikusParser {
 	 *    phrase = factor ('*' factor | '/' factor)*;
 	 */
 	protected Parser phrase() {
-		Sequence phrase = new Sequence("phrase");
-		phrase.add(factor());
-		Alternation a = new Alternation();
-		a.add(timesFactor());
-		a.add(divideFactor());
-		phrase.add(new Repetition(a));
-		return phrase;
+		return new Sequence("phrase").get(factor())
+				.get(new Repetition(
+						new Alternation(timesFactor(), divideFactor())));
 	}
 
 	/*
@@ -402,9 +352,9 @@ public class LogikusParser {
 	 */
 	protected Parser plusPhrase() {
 		Sequence s = new Sequence("plusPhrase");
-		s.add(new Symbol('+').discard());
-		s.add(phrase());
-		s.setAssembler(new ArithmeticAssembler('+'));
+		s.get(new Symbol('+').ok());
+		s.get(phrase());
+		s.put(new ArithmeticAssembler('+'));
 		return s;
 	}
 
@@ -418,9 +368,7 @@ public class LogikusParser {
 	 * @return a parser that recognizes a query
 	 */
 	public static Parser query() {
-		Parser p = commaList(new LogikusParser().condition());
-		p.setAssembler(new AxiomAssembler());
-		return p;
+		return commaList(new LogikusParser().condition()).put(new AxiomAssembler());
 	}
 
 	/*
@@ -429,10 +377,8 @@ public class LogikusParser {
 	 *    ruleDef = ":-" commaList(condition); 
 	 */
 	protected Parser ruleDef() {
-		Track t = new Track("rule definition");
-		t.add(new Symbol(":-").discard());
-		t.add(commaList(condition()));
-		return t;
+		return new Track("rule definition")
+				.see(":-").get(commaList(condition()));
 	}
 
 	/**
@@ -461,18 +407,18 @@ public class LogikusParser {
 	protected Parser structure() {
 		if (structure == null) {
 			structure = new Sequence("structure");
-			structure.add(functor());
+			structure.get(functor());
 
 			Track t = new Track("list in parens");
-			t.add(new Symbol('(')); // push this as a fence
-			t.add(commaList(term()));
-			t.add(new Symbol(')').discard());
+			t.get(new Symbol('(')); // push this as a fence
+			t.get(commaList(term()));
+			t.get(new Symbol(')').ok());
 
 			Alternation a = new Alternation();
-			a.add(t.setAssembler(new StructureWithTermsAssembler()));
-			a.add(new Empty().setAssembler(new AtomAssembler()));
+			a.get(t.put(new StructureWithTermsAssembler()));
+			a.get(new Empty().put(new AtomAssembler()));
 
-			structure.add(a);
+			structure.get(a);
 		}
 		return structure;
 	}
@@ -483,12 +429,8 @@ public class LogikusParser {
 	 *    term = structure | Num | list | variable;
 	 */
 	protected Parser term() {
-		Alternation a = new Alternation("term");
-		a.add(structure());
-		a.add(num());
-		a.add(list());
-		a.add(variable());
-		return a;
+		return new Alternation("term",
+				structure(),num(), list(),variable());
 	}
 
 	/*
@@ -497,11 +439,7 @@ public class LogikusParser {
 	 *    timesFactor = '*' factor;
 	 */
 	protected Parser timesFactor() {
-		Sequence s = new Sequence("timesFactor");
-		s.add(new Symbol('*').discard());
-		s.add(factor());
-		s.setAssembler(new ArithmeticAssembler('*'));
-		return s;
+		return new Sequence("timesFactor").see('*').get(factor()).put(new ArithmeticAssembler('*'));
 	}
 
 	/*
@@ -513,15 +451,8 @@ public class LogikusParser {
 	 * anonymous variable.
 	 */
 	protected Parser variable() {
-		Parser v = new UppercaseWord();
-		v.setAssembler(new VariableAssembler());
-
-		Parser anon = new Symbol('_').discard();
-		anon.setAssembler(new AnonymousAssembler());
-
-		Alternation a = new Alternation();
-		a.add(v);
-		a.add(anon);
-		return a;
+		return new Alternation(
+			new UppercaseWord().put(new VariableAssembler()),
+			new Symbol('_').ok().put(new AnonymousAssembler()));
 	}
 }

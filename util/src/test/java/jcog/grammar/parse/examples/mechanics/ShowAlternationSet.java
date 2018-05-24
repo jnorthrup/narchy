@@ -28,8 +28,8 @@ public class ShowAlternationSet {
 
 		Alternation assignment = new Alternation();
 
-		assignment.add(new Sequence().add(new Word()).add(new Symbol('=').discard()).add(assignment));
-		assignment.add(new Word());
+		assignment.get(new Sequence().get(new Word()).get(new Symbol('=').ok()).get(assignment));
+		assignment.get(new Word());
 
 		String s = "i = j = k = l = m";
 

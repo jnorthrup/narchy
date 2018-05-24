@@ -27,7 +27,7 @@ public class VariableAssembler implements IAssembler {
 	 * Pop the name of a variable, lookup the variable in the
 	 * target's scope, and push the variable.
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		SlingTarget target = (SlingTarget) a.getTarget();
 		Token t = (Token) a.pop();
 		a.push(target.lookup(t.sval()));

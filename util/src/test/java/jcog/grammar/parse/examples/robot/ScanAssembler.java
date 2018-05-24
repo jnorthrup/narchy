@@ -19,7 +19,7 @@ public class ScanAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		ScanCommand sc = new ScanCommand();
 		Token t = (Token) a.pop();
 		sc.setLocation(t.sval());

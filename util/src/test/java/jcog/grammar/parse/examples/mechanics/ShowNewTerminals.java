@@ -24,19 +24,19 @@ public class ShowNewTerminals {
 		Parser variable = new UppercaseWord();
 		Parser known = new LowercaseWord();
 
-		Parser term = new Alternation().add(variable).add(known);
+		Parser term = new Alternation().get(variable).get(known);
 
 		// anonymous Assembler subclasses note element type
 
-		variable.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		variable.put(new IAssembler() {
+			public void accept(Assembly a) {
 				Object o = a.pop();
 				a.push("VAR(" + o + ")");
 			}
 		});
 
-		known.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		known.put(new IAssembler() {
+			public void accept(Assembly a) {
 				Object o = a.pop();
 				a.push("KNOWN(" + o + ")");
 			}

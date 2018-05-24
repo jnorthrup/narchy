@@ -27,13 +27,13 @@ public class ShowTrack {
 
 		empty = new Empty();
 
-		commaWord = new Track().add(new Symbol(',').discard()).add(new Word());
+		commaWord = new Track().get(new Symbol(',').ok()).get(new Word());
 
-		actualList = new Sequence().add(new Word()).add(new Repetition(commaWord));
+		actualList = new Sequence().get(new Word()).get(new Repetition(commaWord));
 
-		contents = new Alternation().add(empty).add(actualList);
+		contents = new Alternation().get(empty).get(actualList);
 
-		list = new Track().add(new Symbol('(').discard()).add(contents).add(new Symbol(')').discard());
+		list = new Track().get(new Symbol('(').ok()).get(contents).get(new Symbol(')').ok());
 
 		return list;
 	}

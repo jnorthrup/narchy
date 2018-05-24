@@ -23,7 +23,7 @@ public class RuleGrammar extends Grammar {
 
 	private void initRules() {
 
-		addRule("rule", seq(new LowerCaseWord(), sym("=").discard(), ref("expression"), alt(sym(";").discard(), new Empty())));
+		addRule("rule", seq(new LowerCaseWord(), sym("=").ok(), ref("expression"), alt(sym(";").ok(), new Empty())));
 		addAssembler("rule", new RuleAssembler());
 
 		addRule("expression", seq(ref("sequence"), rep(ref("alternationSequence"))));
@@ -33,22 +33,22 @@ public class RuleGrammar extends Grammar {
 		addRule("sequenceFactor", seq(ref("factor"), ref("sequence")));
 		addAssembler("sequenceFactor", new SequenceAssembler());
 
-		addRule("alternationSequence", seq(sym("|").discard(), (ref("sequence"))));
+		addRule("alternationSequence", seq(sym("|").ok(), (ref("sequence"))));
 		addAssembler("alternationSequence", new AlternationAssembler());
 
 		addRule("factor", alt(ref("phrase"), ref("repetition"), ref("atLeastOne")));
 
-		addRule("repetition", seq(ref("phrase"), sym("*").discard()));
+		addRule("repetition", seq(ref("phrase"), sym("*").ok()));
 		addAssembler("repetition", new RepetitionAssembler(0));
 
-		addRule("atLeastOne", seq(ref("phrase"), sym("+").discard()));
+		addRule("atLeastOne", seq(ref("phrase"), sym("+").ok()));
 		addAssembler("atLeastOne", new RepetitionAssembler(1));
 
-		addRule("phrase", alt(seq(sym("(").discard(), ref("expression"), sym(")").discard()), ref("atom")));
+		addRule("phrase", alt(seq(sym("(").ok(), ref("expression"), sym(")").ok()), ref("atom")));
 
 		addRule("atom", alt(ref("caseless"), ref("symbol"), ref("discard"), ref("reference"), ref("terminal")));
 
-		addRule("discard", seq(sym("#").discard(), alt(ref("symbol"), ref("caseless"))));
+		addRule("discard", seq(sym("#").ok(), alt(ref("symbol"), ref("caseless"))));
 		addAssembler("discard", new DiscardAssembler());
 
 		addRule("caseless", terminal("CaselessLiteralDef"));
@@ -80,7 +80,7 @@ public class RuleGrammar extends Grammar {
 	private static Sequence seq(Parser... parsers) {
 		Sequence seq = new Sequence();
 		for (Parser each : parsers) {
-			seq.add(each);
+			seq.get(each);
 		}
 		return seq;
 	}
@@ -88,7 +88,7 @@ public class RuleGrammar extends Grammar {
 	private static Alternation alt(Parser... parsers) {
 		Alternation alt = new Alternation();
 		for (Parser each : parsers) {
-			alt.add(each);
+			alt.get(each);
 		}
 		return alt;
 	}
@@ -98,7 +98,7 @@ public class RuleGrammar extends Grammar {
 	}
 
 	class SequenceAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			Parser last = (Parser) a.pop();
 			Parser butlast = (Parser) a.pop();
 			Sequence seq;
@@ -113,7 +113,7 @@ public class RuleGrammar extends Grammar {
 	}
 
 	class AlternationAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			Parser last = (Parser) a.pop();
 			Parser butlast = (Parser) a.pop();
 			Alternation alt;
@@ -122,13 +122,13 @@ public class RuleGrammar extends Grammar {
 			} else {
 				alt = alt(butlast);
 			}
-			alt.add(last);
+			alt.get(last);
 			a.push(alt);
 		}
 	}
 
 	class RuleAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			if (a.elementsRemaining() > 0)
 				return;
 			Parser parser = (Parser) a.pop();
@@ -139,43 +139,43 @@ public class RuleGrammar extends Grammar {
 	}
 
 	class CaselessAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			String quoted = ((Token) a.pop()).sval();
 			String caseless = quoted.substring(1, quoted.length() - 1);
 			CaselessLiteral constant = new CaselessLiteral(caseless);
 			if (targetGrammar.areAllConstantsDiscarded())
-				constant.discard();
+				constant.ok();
 			a.push(constant);
 		}
 	}
 
 	static class DiscardAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			Terminal t = (Terminal) a.getStack().peek();
-			t.discard();
+			t.ok();
 		}
 	}
 
 	class SymbolAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			String quoted = ((Token) a.pop()).sval();
 			String symbol = quoted.substring(1, quoted.length() - 1);
 			Symbol constant = new Symbol(symbol);
 			if (targetGrammar.areAllConstantsDiscarded())
-				constant.discard();
+				constant.ok();
 			a.push(constant);
 		}
 	}
 
 	class TerminalAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			String terminalType = ((Token) a.pop()).sval();
 			a.push(targetGrammar.terminal(terminalType));
 		}
 	}
 
 	class ReferenceAssembler implements IAssembler {
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			String ruleName = ((Token) a.pop()).sval();
 			a.push(new RuleReference(ruleName, targetGrammar));
 		}
@@ -188,7 +188,7 @@ public class RuleGrammar extends Grammar {
 			this.requiredMatches = requiredMatches;
 		}
 
-		public void workOn(Assembly a) {
+		public void accept(Assembly a) {
 			Parser atomicStep = (Parser) a.pop();
 			a.push(new Repetition(atomicStep).requireMatches(requiredMatches));
 		}

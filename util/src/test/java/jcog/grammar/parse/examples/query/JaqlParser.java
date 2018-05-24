@@ -50,7 +50,7 @@ public class JaqlParser {
 	 * Recognize a class name.
 	 */
 	protected Parser className() {
-		return new Word().setAssembler(new ClassNameAssembler());
+		return new Word().put(new ClassNameAssembler());
 	}
 
 	/*
@@ -71,12 +71,12 @@ public class JaqlParser {
 	 */
 	protected static Sequence commaList(Parser p) {
 		Sequence commaP = new Track();
-		commaP.add(new Symbol(',').discard());
-		commaP.add(p);
+		commaP.get(new Symbol(',').ok());
+		commaP.get(p);
 
 		Sequence s = new Sequence();
-		s.add(p);
-		s.add(new Repetition(commaP));
+		s.get(p);
+		s.get(new Repetition(commaP));
 		return s;
 	}
 
@@ -111,8 +111,8 @@ public class JaqlParser {
 	 */
 	protected Parser optionalWhere() {
 		Alternation a = new Alternation();
-		a.add(new Empty());
-		a.add(where());
+		a.get(new Empty());
+		a.get(where());
 		return a;
 	}
 
@@ -125,11 +125,11 @@ public class JaqlParser {
 	 */
 	public Parser select() {
 		Sequence s = new Track();
-		s.add(new CaselessLiteral("select").discard());
-		s.add(selectTerms());
-		s.add(new CaselessLiteral("from").discard());
-		s.add(classNames());
-		s.add(optionalWhere());
+		s.get(new CaselessLiteral("select").ok());
+		s.get(selectTerms());
+		s.get(new CaselessLiteral("from").ok());
+		s.get(classNames());
+		s.get(optionalWhere());
 		return s;
 	}
 
@@ -140,8 +140,8 @@ public class JaqlParser {
 	protected Parser selectTerm() {
 		// wrap expression so we can add an assembler
 		Sequence s = new Sequence("selectTerm");
-		s.add(comparisonParser().expression());
-		s.setAssembler(new SelectTermAssembler());
+		s.get(comparisonParser().expression());
+		s.put(new SelectTermAssembler());
 		return s;
 	}
 
@@ -169,8 +169,8 @@ public class JaqlParser {
 	 */
 	protected Parser where() {
 		Sequence s = new Sequence();
-		s.add(new CaselessLiteral("where").discard());
-		s.add(comparisons());
+		s.get(new CaselessLiteral("where").ok());
+		s.get(comparisons());
 		return s;
 	}
 }

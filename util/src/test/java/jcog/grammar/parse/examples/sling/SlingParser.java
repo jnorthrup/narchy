@@ -85,11 +85,11 @@ public class SlingParser {
 	 */
 	protected Parser assignment() {
 		Track t = new Track("assignment");
-		t.add(variable());
-		t.add(new Symbol('=').discard());
-		t.add(expression());
-		t.add(new Symbol(';').discard());
-		t.setAssembler(new AssignmentAssembler());
+		t.get(variable());
+		t.get(new Symbol('=').ok());
+		t.get(expression());
+		t.get(new Symbol(';').ok());
+		t.put(new AssignmentAssembler());
 		return t;
 	}
 
@@ -104,23 +104,23 @@ public class SlingParser {
 	protected Parser baseElement() {
 		if (baseElement == null) {
 			baseElement = new Alternation("base elements");
-			baseElement.add(oneArg("abs", new Abs()));
-			baseElement.add(twoArg("cartesian", new Cartesian()));
-			baseElement.add(oneArg("ceil", new Ceil()));
-			baseElement.add(oneArg("cos", new Cos()));
-			baseElement.add(oneArg("floor", new Floor()));
-			baseElement.add(num());
-			baseElement.add(noArgs("random", new Random()));
-			baseElement.add(pi());
-			baseElement.add(twoArg("polar", new Polar()));
-			baseElement.add(s1());
-			baseElement.add(s2());
-			baseElement.add(scale());
-			baseElement.add(oneArg("sin", new Sin()));
-			baseElement.add(twoArg("sling", new Sling()));
-			baseElement.add(noArgs("t", new T()));
-			baseElement.add(oneArg("tan", new Tan()));
-			baseElement.add(variable());
+			baseElement.get(oneArg("abs", new Abs()));
+			baseElement.get(twoArg("cartesian", new Cartesian()));
+			baseElement.get(oneArg("ceil", new Ceil()));
+			baseElement.get(oneArg("cos", new Cos()));
+			baseElement.get(oneArg("floor", new Floor()));
+			baseElement.get(num());
+			baseElement.get(noArgs("random", new Random()));
+			baseElement.get(pi());
+			baseElement.get(twoArg("polar", new Polar()));
+			baseElement.get(s1());
+			baseElement.get(s2());
+			baseElement.get(scale());
+			baseElement.get(oneArg("sin", new Sin()));
+			baseElement.get(twoArg("sling", new Sling()));
+			baseElement.get(noArgs("t", new T()));
+			baseElement.get(oneArg("tan", new Tan()));
+			baseElement.get(variable());
 		}
 		return baseElement;
 	}
@@ -129,7 +129,7 @@ public class SlingParser {
 	 * Recognize a comma.
 	 */
 	protected static Parser comma() {
-		return new Symbol(',').discard();
+		return new Symbol(',').ok();
 	}
 
 	/*
@@ -139,9 +139,9 @@ public class SlingParser {
 	 */
 	protected Track divideElement() {
 		Track t = new Track();
-		t.add(new Symbol('/').discard());
-		t.add(element());
-		t.setAssembler(new FunctionAssembler(new Arithmetic('/')));
+		t.get(new Symbol('/').ok());
+		t.get(element());
+		t.put(new FunctionAssembler(new Arithmetic('/')));
 		return t;
 	}
 
@@ -154,12 +154,12 @@ public class SlingParser {
 
 		Alternation a = new Alternation("element");
 		Sequence s = new Sequence();
-		s.add(new Symbol('(').discard());
-		s.add(expression());
-		s.add(new Symbol(')').discard());
-		a.add(s);
-		a.add(baseElement());
-		a.add(negative());
+		s.get(new Symbol('(').ok());
+		s.get(expression());
+		s.get(new Symbol(')').ok());
+		a.get(s);
+		a.get(baseElement());
+		a.get(negative());
 		return a;
 	}
 
@@ -172,11 +172,11 @@ public class SlingParser {
 
 		if (expression == null) {
 			expression = new Sequence("expression");
-			expression.add(term());
+			expression.get(term());
 			Alternation rest = new Alternation();
-			rest.add(plusTerm());
-			rest.add(minusTerm());
-			expression.add(new Repetition(rest));
+			rest.get(plusTerm());
+			rest.get(minusTerm());
+			expression.get(new Repetition(rest));
 		}
 		return expression;
 	}
@@ -190,26 +190,26 @@ public class SlingParser {
 	 */
 	protected Parser forStatement() {
 		Track t = new Track();
-		t.add(reserve("for"));
-		t.add(lParen());
+		t.get(reserve("for"));
+		t.get(lParen());
 
 		// variable
-		t.add(variable());
-		t.add(comma());
+		t.get(variable());
+		t.get(comma());
 
 		// from
-		t.add(expression());
-		t.add(comma());
+		t.get(expression());
+		t.get(comma());
 
 		// to
-		t.add(expression());
-		t.add(rParen());
+		t.get(expression());
+		t.get(rParen());
 
 		// commands
-		t.add(lBrace());
-		t.add(statements());
-		t.add(rBrace());
-		t.setAssembler(new ForAssembler());
+		t.get(lBrace());
+		t.get(statements());
+		t.get(rBrace());
+		t.put(new ForAssembler());
 		return t;
 	}
 
@@ -225,7 +225,7 @@ public class SlingParser {
 	 * Recognize a left parenthesis.
 	 */
 	protected static Parser lParen() {
-		return new Symbol('(').discard();
+		return new Symbol('(').ok();
 	}
 
 	/*
@@ -235,9 +235,9 @@ public class SlingParser {
 	 */
 	protected Track minusTerm() {
 		Track t = new Track();
-		t.add(new Symbol('-').discard());
-		t.add(term());
-		t.setAssembler(new FunctionAssembler(new Arithmetic('-')));
+		t.get(new Symbol('-').ok());
+		t.get(term());
+		t.put(new FunctionAssembler(new Arithmetic('-')));
 		return t;
 	}
 
@@ -248,9 +248,9 @@ public class SlingParser {
 	 */
 	protected Parser negative() {
 		Sequence s = new Sequence("negative baseElement");
-		s.add(new Symbol('-').discard());
-		s.add(baseElement());
-		s.setAssembler(new NegativeAssembler());
+		s.get(new Symbol('-').ok());
+		s.get(baseElement());
+		s.put(new NegativeAssembler());
 		return s;
 	}
 
@@ -262,7 +262,7 @@ public class SlingParser {
 	 */
 	protected Parser noArgs(String name, SlingFunction f) {
 		Parser p = reserve(name);
-		p.setAssembler(new FunctionAssembler(f));
+		p.put(new FunctionAssembler(f));
 		return p;
 	}
 
@@ -271,7 +271,7 @@ public class SlingParser {
 	 * number and that uses a <code>NumAssembler</code>.
 	 */
 	protected Parser num() {
-		return new Num().setAssembler(new NumAssembler());
+		return new Num().put(new NumAssembler());
 	}
 
 	/*
@@ -280,11 +280,11 @@ public class SlingParser {
 	 */
 	protected Parser oneArg(String name, SlingFunction f) {
 		Track t = new Track(name);
-		t.add(reserve(name));
-		t.add(lParen());
-		t.add(expression());
-		t.add(rParen());
-		t.setAssembler(new FunctionAssembler(f));
+		t.get(reserve(name));
+		t.get(lParen());
+		t.get(expression());
+		t.get(rParen());
+		t.put(new FunctionAssembler(f));
 		return t;
 	}
 
@@ -294,7 +294,7 @@ public class SlingParser {
 	 */
 	protected Parser pi() {
 		ReservedLiteral pi = reserve("pi");
-		pi.setAssembler(new PiAssembler());
+		pi.put(new PiAssembler());
 		return pi;
 	}
 
@@ -305,10 +305,10 @@ public class SlingParser {
 	 */
 	protected Parser plotStatement() {
 		Track t = new Track();
-		t.add(reserve("plot"));
-		t.add(expression());
-		t.add(semicolon());
-		t.setAssembler(new PlotAssembler());
+		t.get(reserve("plot"));
+		t.get(expression());
+		t.get(semicolon());
+		t.put(new PlotAssembler());
 		return t;
 	}
 
@@ -319,9 +319,9 @@ public class SlingParser {
 	 */
 	protected Track plusTerm() {
 		Track t = new Track();
-		t.add(new Symbol('+').discard());
-		t.add(term());
-		t.setAssembler(new FunctionAssembler(new Arithmetic('+')));
+		t.get(new Symbol('+').ok());
+		t.get(term());
+		t.put(new FunctionAssembler(new Arithmetic('+')));
 		return t;
 	}
 
@@ -329,7 +329,7 @@ public class SlingParser {
 	 * Recognize a right brace.
 	 */
 	protected static Parser rBrace() {
-		return new Symbol('}').discard();
+		return new Symbol('}').ok();
 	}
 
 	/*
@@ -339,9 +339,9 @@ public class SlingParser {
 	 */
 	protected Track remainderElement() {
 		Track t = new Track();
-		t.add(new Symbol('%').discard());
-		t.add(element());
-		t.setAssembler(new FunctionAssembler(new Arithmetic('%')));
+		t.get(new Symbol('%').ok());
+		t.get(element());
+		t.put(new FunctionAssembler(new Arithmetic('%')));
 		return t;
 	}
 
@@ -353,7 +353,7 @@ public class SlingParser {
 	protected ReservedLiteral reserve(String s) {
 		wors().addReservedWord(s);
 		ReservedLiteral lit = new ReservedLiteral(s);
-		lit.discard();
+		lit.ok();
 		return lit;
 	}
 
@@ -361,7 +361,7 @@ public class SlingParser {
 	 * Recognize a right parenthesis.
 	 */
 	protected static Parser rParen() {
-		return new Symbol(')').discard();
+		return new Symbol(')').ok();
 	}
 
 	/*
@@ -370,7 +370,7 @@ public class SlingParser {
 	protected Parser s1() {
 		Parser p = reserve("s1");
 		// the index here recovers a real slider from the target
-		p.setAssembler(new SliderAssembler(1));
+		p.put(new SliderAssembler(1));
 		return p;
 
 	}
@@ -380,7 +380,7 @@ public class SlingParser {
 	 */
 	protected Parser s2() {
 		Parser p = reserve("s2");
-		p.setAssembler(new SliderAssembler(2));
+		p.put(new SliderAssembler(2));
 		return p;
 	}
 
@@ -391,17 +391,17 @@ public class SlingParser {
 	 */
 	protected Parser scale() {
 		Track t = new Track("scale");
-		t.add(reserve("scale"));
-		t.add(lParen());
+		t.get(reserve("scale"));
+		t.get(lParen());
 
-		t.add(expression());
+		t.get(expression());
 
-		t.add(comma());
-		t.add(expression());
+		t.get(comma());
+		t.get(expression());
 
-		t.add(rParen());
+		t.get(rParen());
 
-		t.setAssembler(new ScaleAssembler());
+		t.put(new ScaleAssembler());
 		return t;
 	}
 
@@ -409,7 +409,7 @@ public class SlingParser {
 	 * Recognize a semicolon.
 	 */
 	protected static Parser semicolon() {
-		return new Symbol(';').discard();
+		return new Symbol(';').ok();
 	}
 
 	/*
@@ -427,9 +427,9 @@ public class SlingParser {
 	protected Parser statement() {
 		if (statement == null) {
 			statement = new Alternation("Statement");
-			statement.add(assignment());
-			statement.add(forStatement());
-			statement.add(plotStatement());
+			statement.get(assignment());
+			statement.get(forStatement());
+			statement.get(plotStatement());
 		}
 		return statement;
 	}
@@ -441,8 +441,8 @@ public class SlingParser {
 	 */
 	protected Parser statements() {
 		Sequence s = new Sequence();
-		s.add(statement());
-		s.add(new Repetition(statement()));
+		s.get(statement());
+		s.get(new Repetition(statement()));
 		return s;
 	}
 
@@ -454,12 +454,12 @@ public class SlingParser {
 	 */
 	protected Parser term() {
 		Sequence s = new Sequence("term");
-		s.add(element());
+		s.get(element());
 		Alternation a = new Alternation();
-		a.add(timesElement());
-		a.add(divideElement());
-		a.add(remainderElement());
-		s.add(new Repetition(a));
+		a.get(timesElement());
+		a.get(divideElement());
+		a.get(remainderElement());
+		s.get(new Repetition(a));
 		return s;
 	}
 
@@ -470,9 +470,9 @@ public class SlingParser {
 	 */
 	protected Track timesElement() {
 		Track t = new Track();
-		t.add(new Symbol('*').discard());
-		t.add(element());
-		t.setAssembler(new FunctionAssembler(new Arithmetic('*')));
+		t.get(new Symbol('*').ok());
+		t.get(element());
+		t.put(new FunctionAssembler(new Arithmetic('*')));
 		return t;
 	}
 
@@ -497,13 +497,13 @@ public class SlingParser {
 	 */
 	protected Parser twoArg(String name, SlingFunction f) {
 		Track t = new Track(name);
-		t.add(reserve(name));
-		t.add(lParen());
-		t.add(expression());
-		t.add(comma());
-		t.add(expression());
-		t.add(rParen());
-		t.setAssembler(new FunctionAssembler(f));
+		t.get(reserve(name));
+		t.get(lParen());
+		t.get(expression());
+		t.get(comma());
+		t.get(expression());
+		t.get(rParen());
+		t.put(new FunctionAssembler(f));
 		return t;
 	}
 
@@ -511,7 +511,7 @@ public class SlingParser {
 	 * Recognize a word as a variable.
 	 */
 	protected Parser variable() {
-		return new Word().setAssembler(new VariableAssembler());
+		return new Word().put(new VariableAssembler());
 	}
 
 	/*

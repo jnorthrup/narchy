@@ -1,5 +1,8 @@
 package jcog.grammar.parse;
 
+import jcog.grammar.parse.tokens.Literal;
+import jcog.grammar.parse.tokens.Symbol;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +31,11 @@ public class Sequence extends CollectionParser {
 	 * Constructs a nameless sequence.
 	 */
 	public Sequence() {
+	}
+
+	public Sequence(Parser... p) {
+		for (Parser x : p)
+			get(x);
 	}
 
 	/**
@@ -113,4 +121,15 @@ public class Sequence extends CollectionParser {
 		return leftChildren;
 	}
 
+	public Sequence see(String x) {
+		get(new Literal(x).ok());
+		return this;
+	}
+
+	public CollectionParser get(char c) {
+		return get(new Symbol(c));
+	}
+	public CollectionParser get(String s) {
+		return get(new Literal(s));
+	}
 }

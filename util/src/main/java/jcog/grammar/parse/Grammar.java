@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Grammar {
 
@@ -61,7 +62,7 @@ public class Grammar {
 		hasBeenChecked = false;
 	}
 
-	public void addRule(String ruleName, Parser parser, IAssembler assembler) {
+	public void addRule(String ruleName, Parser parser, Consumer<Assembly> assembler) {
 		addRule(ruleName, parser);
 		addAssembler(ruleName, assembler);
 	}
@@ -135,11 +136,11 @@ public class Grammar {
 		return ruleGrammar;
 	}
 
-	public void addAssembler(String ruleName, IAssembler assembler) {
+	public void addAssembler(String ruleName, Consumer<Assembly> assembler) {
 		if (!ruleExists(ruleName)) {
 			throw new GrammarException("Rule '" + ruleName + "' does not exist.");
 		}
-		getRule(ruleName).setAssembler(assembler);
+		getRule(ruleName).put(assembler);
 	}
 
 	private boolean ruleExists(String ruleName) {

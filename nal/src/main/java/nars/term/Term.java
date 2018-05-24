@@ -214,6 +214,11 @@ public interface Term extends Termed, Comparable<Termed> {
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, this);
     }
+//    //TODO
+//    @Override
+//    default int intifyRecurse(Predicate<Term> descendIf, IntObjectToIntFunction<Term> reduce, int v) {
+//        return descendIf.test(this) ? reduce.intValueOf(v, this) : v;
+//    }
 
     /**
      * whether this term is or contains, as subterms, any temporal terms

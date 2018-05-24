@@ -26,20 +26,20 @@ public class MinimathAnonymous {
 		Sequence e = new Sequence();
 
 		Num n = new Num();
-		n.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		n.put(new IAssembler() {
+			public void accept(Assembly a) {
 				Token t = (Token) a.pop();
 				a.push(new Double(t.nval()));
 			}
 		});
 
-		e.add(n);
+		e.get(n);
 
 		Sequence m = new Sequence();
-		m.add(new Symbol('-').discard());
-		m.add(n);
-		m.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		m.get(new Symbol('-').ok());
+		m.get(n);
+		m.put(new IAssembler() {
+			public void accept(Assembly a) {
 				Double d1 = (Double) a.pop();
 				Double d2 = (Double) a.pop();
 				Double d3 = new Double(d2.doubleValue() - d1.doubleValue());
@@ -47,7 +47,7 @@ public class MinimathAnonymous {
 			}
 		});
 
-		e.add(new Repetition(m));
+		e.get(new Repetition(m));
 
 		TokenAssembly t = new TokenAssembly("25 - 16 - 9");
 		Assembly out = e.completeMatch(t);

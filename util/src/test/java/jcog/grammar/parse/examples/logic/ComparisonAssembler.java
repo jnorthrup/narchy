@@ -21,7 +21,7 @@ public class ComparisonAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		ComparisonTerm second = (ComparisonTerm) a.pop();
 		ComparisonTerm first = (ComparisonTerm) a.pop();
 		Token t = (Token) a.pop();

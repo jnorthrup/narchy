@@ -40,7 +40,7 @@ public class ShowRegularParser {
 
 		// four letters
 		Parser L = new Letter();
-		Parser L4 = new Sequence("LLLL").add(L).add(L).add(L).add(L);
+		Parser L4 = new Sequence("LLLL").get(L).get(L).get(L).get(L);
 		showMatch(L4, "java");
 		showMatch(L4, "joe");
 		showMatch(new Repetition(L), "coffee");

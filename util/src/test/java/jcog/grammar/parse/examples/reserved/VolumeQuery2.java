@@ -24,9 +24,9 @@ public class VolumeQuery2 {
 	 */
 	public static Parser query() {
 
-		Parser a = new Alternation().add(new Word()).add(volume());
+		Parser a = new Alternation().get(new Word()).get(volume());
 
-		Parser s = new Sequence().add(new Repetition(a)).add(new Symbol('?'));
+		Parser s = new Sequence().get(new Repetition(a)).get(new Symbol('?'));
 
 		return s;
 	}
@@ -68,8 +68,8 @@ public class VolumeQuery2 {
 
 		// an anonymous Assembler subclass notes volume matches
 
-		p.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		p.put(new IAssembler() {
+			public void accept(Assembly a) {
 				Object o = a.pop();
 				a.push("VOL(" + o + ")");
 			}

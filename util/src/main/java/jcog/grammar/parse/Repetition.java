@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -36,7 +37,7 @@ public class Repetition extends Parser {
 	/*
 	 * an assembler to apply at the beginning of a match
 	 */
-	private IAssembler preAssembler;
+	private Consumer<Assembly> preAssembler;
 
 	private int numberOfRequiredMatches = 0;
 
@@ -115,7 +116,7 @@ public class Repetition extends Parser {
 	public Set<Assembly> match(Set<Assembly> in) {
 		if (preAssembler != null) {
 			for (Assembly assembly : in) {
-				preAssembler.workOn(assembly);
+				preAssembler.accept(assembly);
 			}
 		}
 		Set<Assembly> out = numberOfRequiredMatches == 0 ? elementClone(in) : new HashSet<>();
@@ -157,7 +158,7 @@ public class Repetition extends Parser {
 	 * 
 	 * @return Parser this
 	 */
-	public Parser setPreAssembler(IAssembler preAssembler) {
+	public Parser setPreAssembler(Consumer<Assembly> preAssembler) {
 		this.preAssembler = preAssembler;
 		return this;
 	}

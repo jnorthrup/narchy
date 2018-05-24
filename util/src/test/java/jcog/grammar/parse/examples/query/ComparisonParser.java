@@ -54,8 +54,8 @@ public class ComparisonParser {
 		// arg = expression | QuotedString;
 
 		Alternation a = new Alternation();
-		a.add(expression());
-		a.add(new QuotedString().setAssembler(new AtomAssembler()));
+		a.get(expression());
+		a.get(new QuotedString().put(new AtomAssembler()));
 		return a;
 	}
 
@@ -64,10 +64,10 @@ public class ComparisonParser {
 	 */
 	public Parser comparison() {
 		Sequence s = new Sequence("comparison");
-		s.add(arg());
-		s.add(operator());
-		s.add(arg());
-		s.setAssembler(new ComparisonAssembler());
+		s.get(arg());
+		s.get(operator());
+		s.get(arg());
+		s.put(new ComparisonAssembler());
 		return s;
 	}
 
@@ -76,9 +76,9 @@ public class ComparisonParser {
 	 */
 	protected Parser divideFactor() {
 		Sequence s = new Sequence("divideFactor");
-		s.add(new Symbol('/').discard());
-		s.add(factor());
-		s.setAssembler(new ArithmeticAssembler('/'));
+		s.get(new Symbol('/').ok());
+		s.get(factor());
+		s.put(new ArithmeticAssembler('/'));
 		return s;
 	}
 
@@ -95,13 +95,13 @@ public class ComparisonParser {
 
 			// expression = term ('+' term | '-' term)*;
 			expression = new Sequence("expression");
-			expression.add(term());
+			expression.get(term());
 
 			// second part
 			Alternation a = new Alternation();
-			a.add(plusTerm());
-			a.add(minusTerm());
-			expression.add(new Repetition(a));
+			a.get(plusTerm());
+			a.get(minusTerm());
+			expression.get(new Repetition(a));
 		}
 		return expression;
 	}
@@ -116,14 +116,14 @@ public class ComparisonParser {
 
 		//  '(' expression ')'
 		Sequence s = new Sequence();
-		s.add(new Symbol('(').discard());
-		s.add(expression());
-		s.add(new Symbol(')').discard());
-		factor.add(s);
+		s.get(new Symbol('(').ok());
+		s.get(expression());
+		s.get(new Symbol(')').ok());
+		factor.get(s);
 
 		// Num | variable
-		factor.add(new Num().setAssembler(new AtomAssembler()));
-		factor.add(variable());
+		factor.get(new Num().put(new AtomAssembler()));
+		factor.get(variable());
 
 		return factor;
 	}
@@ -133,9 +133,9 @@ public class ComparisonParser {
 	 */
 	protected Parser minusTerm() {
 		Sequence s = new Sequence("minusTerm");
-		s.add(new Symbol('-').discard());
-		s.add(term());
-		s.setAssembler(new ArithmeticAssembler('-'));
+		s.get(new Symbol('-').ok());
+		s.get(term());
+		s.put(new ArithmeticAssembler('-'));
 		return s;
 	}
 
@@ -144,12 +144,12 @@ public class ComparisonParser {
 	 */
 	protected Parser operator() {
 		Alternation a = new Alternation("operator");
-		a.add(new Symbol('<'));
-		a.add(new Symbol('>'));
-		a.add(new Symbol('='));
-		a.add(new Symbol("<="));
-		a.add(new Symbol(">="));
-		a.add(new Symbol("!="));
+		a.get(new Symbol('<'));
+		a.get(new Symbol('>'));
+		a.get(new Symbol('='));
+		a.get(new Symbol("<="));
+		a.get(new Symbol(">="));
+		a.get(new Symbol("!="));
 		return a;
 	}
 
@@ -158,9 +158,9 @@ public class ComparisonParser {
 	 */
 	protected Parser plusTerm() {
 		Sequence s = new Sequence("plusTerm");
-		s.add(new Symbol('+').discard());
-		s.add(term());
-		s.setAssembler(new ArithmeticAssembler('+'));
+		s.get(new Symbol('+').ok());
+		s.get(term());
+		s.put(new ArithmeticAssembler('+'));
 		return s;
 	}
 
@@ -172,14 +172,14 @@ public class ComparisonParser {
 		Sequence term = new Sequence("term");
 
 		// first part
-		term.add(factor());
+		term.get(factor());
 
 		// second part
 		Alternation a = new Alternation();
-		a.add(timesFactor());
-		a.add(divideFactor());
+		a.get(timesFactor());
+		a.get(divideFactor());
 
-		term.add(new Repetition(a));
+		term.get(new Repetition(a));
 		return term;
 	}
 
@@ -188,9 +188,9 @@ public class ComparisonParser {
 	 */
 	protected Parser timesFactor() {
 		Sequence s = new Sequence("timesFactor");
-		s.add(new Symbol('*').discard());
-		s.add(factor());
-		s.setAssembler(new ArithmeticAssembler('*'));
+		s.get(new Symbol('*').ok());
+		s.get(factor());
+		s.put(new ArithmeticAssembler('*'));
 		return s;
 	}
 
@@ -198,6 +198,6 @@ public class ComparisonParser {
 	 * Recognizes any word.
 	 */
 	protected Parser variable() {
-		return new Word().setAssembler(new VariableAssembler(speller));
+		return new Word().put(new VariableAssembler(speller));
 	}
 }

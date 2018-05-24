@@ -68,7 +68,7 @@ public class Terminal extends Parser {
 	 * @return boolean true, if this terminal should push itself on a assembly's
 	 *         stack
 	 */
-	public Terminal discard() {
+	public Terminal ok() {
 		this.discard = true;
 		return this;
 	}

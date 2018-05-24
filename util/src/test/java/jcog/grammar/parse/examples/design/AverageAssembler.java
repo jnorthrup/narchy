@@ -16,7 +16,7 @@ public class AverageAssembler implements IAssembler {
 	 * Increases a running average, by the length of the string
 	 * on the stack.
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Token t = (Token) a.pop();
 		String s = t.sval();
 		RunningAverage avg = (RunningAverage) a.getTarget();

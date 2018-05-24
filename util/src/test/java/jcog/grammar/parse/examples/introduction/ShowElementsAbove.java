@@ -27,10 +27,10 @@ public class ShowElementsAbove {
 	 */
 	public static void main(String args[]) {
 
-		Parser list = new Sequence().add(new Symbol('{')).add(new Repetition(new Word())).add(new Symbol('}').discard());
+		Parser list = new Sequence().get(new Symbol('{')).get(new Repetition(new Word())).get(new Symbol('}').ok());
 
-		list.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		list.put(new IAssembler() {
+			public void accept(Assembly a) {
 				Token fence = new Token('{');
 				System.out.println(AssemblerHelper.elementsAbove(a, fence));
 			}

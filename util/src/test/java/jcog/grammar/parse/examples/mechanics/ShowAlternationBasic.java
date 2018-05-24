@@ -31,8 +31,8 @@ public class ShowAlternationBasic {
 	public static void main(String args[]) {
 
 		Alternation a = new Alternation();
-		a.add(new Literal("steaming"));
-		a.add(new Literal("hot"));
+		a.get(new Literal("steaming"));
+		a.get(new Literal("hot"));
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("hot hot steaming hot coffee"));

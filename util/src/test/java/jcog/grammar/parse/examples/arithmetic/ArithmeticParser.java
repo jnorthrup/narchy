@@ -67,9 +67,9 @@ public class ArithmeticParser {
 	 */
 	protected Parser divideFactor() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('/').discard());
-		s.add(factor());
-		s.setAssembler(new DivideAssembler());
+		s.get(new Symbol('/').ok());
+		s.get(factor());
+		s.put(new DivideAssembler());
 		return s;
 	}
 
@@ -84,9 +84,9 @@ public class ArithmeticParser {
 	 */
 	protected Parser expFactor() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('^').discard());
-		s.add(factor());
-		s.setAssembler(new ExpAssembler());
+		s.get(new Symbol('^').ok());
+		s.get(factor());
+		s.put(new ExpAssembler());
 		return s;
 	}
 
@@ -106,13 +106,13 @@ public class ArithmeticParser {
 
 			// expression = term (plusTerm | minusTerm)*;
 			expression = new Sequence("expression");
-			expression.add(term());
+			expression.get(term());
 
 			Alternation a = new Alternation();
-			a.add(plusTerm());
-			a.add(minusTerm());
+			a.get(plusTerm());
+			a.get(minusTerm());
 
-			expression.add(new Repetition(a));
+			expression.get(new Repetition(a));
 		}
 		return expression;
 	}
@@ -132,11 +132,11 @@ public class ArithmeticParser {
 			factor = new Alternation("factor");
 
 			Sequence s = new Sequence();
-			s.add(phrase());
-			s.add(expFactor());
+			s.get(phrase());
+			s.get(expFactor());
 
-			factor.add(s);
-			factor.add(phrase());
+			factor.get(s);
+			factor.get(phrase());
 		}
 		return factor;
 	}
@@ -151,9 +151,9 @@ public class ArithmeticParser {
 	 */
 	protected Parser minusTerm() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('-').discard());
-		s.add(term());
-		s.setAssembler(new MinusAssembler());
+		s.get(new Symbol('-').ok());
+		s.get(term());
+		s.put(new MinusAssembler());
 		return s;
 	}
 
@@ -170,12 +170,12 @@ public class ArithmeticParser {
 		Alternation phrase = new Alternation("phrase");
 
 		Sequence s = new Sequence();
-		s.add(new Symbol('(').discard());
-		s.add(expression());
-		s.add(new Symbol(')').discard());
-		phrase.add(s);
+		s.get(new Symbol('(').ok());
+		s.get(expression());
+		s.get(new Symbol(')').ok());
+		phrase.get(s);
 
-		phrase.add(new Num().setAssembler(new NumAssembler()));
+		phrase.get(new Num().put(new NumAssembler()));
 		return phrase;
 	}
 
@@ -189,9 +189,9 @@ public class ArithmeticParser {
 	 */
 	protected Parser plusTerm() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('+').discard());
-		s.add(term());
-		s.setAssembler(new PlusAssembler());
+		s.get(new Symbol('+').ok());
+		s.get(term());
+		s.put(new PlusAssembler());
 		return s;
 	}
 
@@ -213,13 +213,13 @@ public class ArithmeticParser {
 	 */
 	protected Parser term() {
 		Sequence s = new Sequence("term");
-		s.add(factor());
+		s.get(factor());
 
 		Alternation a = new Alternation();
-		a.add(timesFactor());
-		a.add(divideFactor());
+		a.get(timesFactor());
+		a.get(divideFactor());
 
-		s.add(new Repetition(a));
+		s.get(new Repetition(a));
 		return s;
 	}
 
@@ -233,9 +233,9 @@ public class ArithmeticParser {
 	 */
 	protected Parser timesFactor() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('*').discard());
-		s.add(factor());
-		s.setAssembler(new TimesAssembler());
+		s.get(new Symbol('*').ok());
+		s.get(factor());
+		s.put(new TimesAssembler());
 		return s;
 	}
 

@@ -20,7 +20,7 @@ public class VariableAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Token t = (Token) a.pop();
 		String name = t.sval();
 		a.push(new Variable(name));

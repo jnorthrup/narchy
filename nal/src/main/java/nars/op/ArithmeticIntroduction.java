@@ -120,6 +120,7 @@ public class ArithmeticIntroduction extends LeakBack {
 
         RichIterable<IntObjectPair<List<Supplier<Term[]>>>> mkv = mods.keyValuesView();
 
+
         int ms = mkv.maxBy(e -> e.getTwo().size()).getTwo().size();
         mkv.reject(e->e.getTwo().size() < ms);
 
@@ -168,13 +169,23 @@ public class ArithmeticIntroduction extends LeakBack {
     protected boolean preFilter(Task next) {
         return next.term().hasAny(Op.INT);
     }
+    @Override
+    protected float pri(Task t) {
+        float p = super.pri(t);
+        int intTerms = t.term().intifyRecurse((n,sub)->sub.op()==INT ? n+1 : n, 0);
+        assert(intTerms > 0);
+        if (intTerms < 2)
+            return Float.NaN;
 
+        return p * (1 - 0.5f/(intTerms-1));
+    }
     @Override
     protected float leak(Task xx) {
         Term x = xx.term();
         Term y = apply(x, xx.isEternal());
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
+            //TODO apply a pri discount if size grow
             if (yy!=null) {
                 input(yy);
                 return 1;

@@ -26,13 +26,13 @@ public class MinimathRecognize {
 	public static void main(String args[]) {
 		Sequence e = new Sequence();
 
-		e.add(new Num());
+		e.get(new Num());
 
 		Sequence m = new Sequence();
-		m.add(new Symbol('-'));
-		m.add(new Num());
+		m.get(new Symbol('-'));
+		m.get(new Num());
 
-		e.add(new Repetition(m));
+		e.get(new Repetition(m));
 
 		System.out.println(e.completeMatch(new TokenAssembly("25 - 16 - 9")));
 	}

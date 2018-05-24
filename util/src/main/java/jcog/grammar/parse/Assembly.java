@@ -46,6 +46,7 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 
 	/**
 	 * stack size when matching starts
+	 * //TODO use IntStack, make final
 	 */
 	private Stack<Integer> stackSizesBeforeMatch = new Stack<>();
 	{

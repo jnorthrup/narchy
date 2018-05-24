@@ -19,7 +19,7 @@ public class NumAssembler implements IAssembler {
 	 * 
 	 * @param   Assembly   the assembly whose stack to use
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Token t = (Token) a.pop();
 		a.push(new Double(t.nval()));
 	}

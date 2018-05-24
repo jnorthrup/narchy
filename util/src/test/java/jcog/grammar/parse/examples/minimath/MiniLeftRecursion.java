@@ -31,12 +31,12 @@ public class MiniLeftRecursion {
 		Num n = new Num();
 
 		Sequence s = new Sequence();
-		s.add(e);
-		s.add(new Symbol('-').discard());
-		s.add(n);
+		s.get(e);
+		s.get(new Symbol('-').ok());
+		s.get(n);
 
-		e.add(n);
-		e.add(s);
+		e.get(n);
+		e.get(s);
 
 		// now hang (or crash)
 		e.completeMatch(new TokenAssembly("25 - 16 - 9"));

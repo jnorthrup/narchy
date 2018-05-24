@@ -35,7 +35,7 @@ public class PrettyRepetitionAssembler implements IAssembler {
 	 * @param Assembly
 	 *            the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		CompositeNode newNode = new CompositeNode(name);
 		List<Object> v = AssemblerHelper.elementsAbove(a, fence);
 		for (Object each : v) {

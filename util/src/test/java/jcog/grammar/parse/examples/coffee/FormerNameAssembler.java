@@ -19,7 +19,7 @@ public class FormerNameAssembler implements IAssembler {
 	 *
 	 * @param   Assembly   the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Token t = (Token) a.pop();
 		Coffee c = (Coffee) a.getTarget();
 		c.setFormerName(t.sval().trim());

@@ -20,7 +20,7 @@ public class EvaluationAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Term second = (Term) a.pop();
 		Term first = (Term) a.pop();
 		a.push(new Evaluation(first, second));

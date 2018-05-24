@@ -34,12 +34,12 @@ public class ShowAmbiguity {
 
 		// volume = "cups" | "gallon" | "liter";
 
-		Parser volume = new Alternation().add(new Literal("cups")).add(new Literal("gallon")).add(new Literal("liter"));
+		Parser volume = new Alternation().get(new Literal("cups")).get(new Literal("gallon")).get(new Literal("liter"));
 
 		// an anonymous Assembler subclass notes volume matches
 
-		volume.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		volume.put(new IAssembler() {
+			public void accept(Assembly a) {
 				Object o = a.pop();
 				a.push("VOL(" + o + ")");
 			}
@@ -47,9 +47,9 @@ public class ShowAmbiguity {
 
 		// query = (Word | volume)* '?';
 
-		Parser wordOrVolume = new Alternation().add(new Word()).add(volume);
+		Parser wordOrVolume = new Alternation().get(new Word()).get(volume);
 
-		Parser query = new Sequence().add(new Repetition(wordOrVolume)).add(new Symbol('?'));
+		Parser query = new Sequence().get(new Repetition(wordOrVolume)).get(new Symbol('?'));
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("How many cups are in a gallon?"));

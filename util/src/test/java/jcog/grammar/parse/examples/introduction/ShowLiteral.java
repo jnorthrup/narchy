@@ -17,11 +17,11 @@ public class ShowLiteral {
 	 */
 	public static void main(String args[]) {
 		Sequence s = new Sequence();
-		s.add(new Literal("int"));
-		s.add(new Word());
-		s.add(new Symbol('='));
-		s.add(new Num());
-		s.add(new Symbol(';'));
+		s.get(new Literal("int"));
+		s.get(new Word());
+		s.get(new Symbol('='));
+		s.get(new Num());
+		s.get(new Symbol(';'));
 
 		Assembly a = s.completeMatch(new TokenAssembly("int i = 3;"));
 

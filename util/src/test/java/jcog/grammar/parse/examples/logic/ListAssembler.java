@@ -37,7 +37,7 @@ public class ListAssembler implements IAssembler {
 	 * @param Assembly
 	 *            the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Token fence = new Token('[');
 		List<Object> termVector = AssemblerHelper.elementsAbove(a, fence);
 		Term[] termArray = StructureWithTermsAssembler.vectorReversedIntoTerms(termVector);

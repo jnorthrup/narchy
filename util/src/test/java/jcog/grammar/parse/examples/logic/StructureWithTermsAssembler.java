@@ -48,7 +48,7 @@ public class StructureWithTermsAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		List<Object> termVector = AssemblerHelper.elementsAbove(a, new Token('('));
 		Term[] termArray = vectorReversedIntoTerms(termVector);
 		Token t = (Token) a.pop();

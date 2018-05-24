@@ -737,10 +737,6 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    public X addThen(X x) {
-        add(x);
-        return x;
-    }
 
     public void removeNulls() {
         switch (size) {

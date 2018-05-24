@@ -45,9 +45,9 @@ public class RobotParser {
 	 */
 	public Parser command() {
 		Alternation a = new Alternation();
-		a.add(pickCommand());
-		a.add(placeCommand());
-		a.add(scanCommand());
+		a.get(pickCommand());
+		a.get(placeCommand());
+		a.get(scanCommand());
 		return a;
 	}
 
@@ -67,11 +67,11 @@ public class RobotParser {
 	 */
 	protected Parser pickCommand() {
 		Sequence s = new Sequence();
-		s.add(new CaselessLiteral("pick"));
-		s.add(new CaselessLiteral("carrier"));
-		s.add(new CaselessLiteral("from"));
-		s.add(location());
-		s.setAssembler(new PickAssembler());
+		s.get(new CaselessLiteral("pick"));
+		s.get(new CaselessLiteral("carrier"));
+		s.get(new CaselessLiteral("from"));
+		s.get(location());
+		s.put(new PickAssembler());
 		return s;
 	}
 
@@ -82,11 +82,11 @@ public class RobotParser {
 	 */
 	protected Parser placeCommand() {
 		Sequence s = new Sequence();
-		s.add(new CaselessLiteral("place"));
-		s.add(new CaselessLiteral("carrier"));
-		s.add(new CaselessLiteral("at"));
-		s.add(location());
-		s.setAssembler(new PlaceAssembler());
+		s.get(new CaselessLiteral("place"));
+		s.get(new CaselessLiteral("carrier"));
+		s.get(new CaselessLiteral("at"));
+		s.get(location());
+		s.put(new PlaceAssembler());
 		return s;
 	}
 
@@ -97,9 +97,9 @@ public class RobotParser {
 	 */
 	protected Parser scanCommand() {
 		Sequence s = new Sequence();
-		s.add(new CaselessLiteral("scan"));
-		s.add(location());
-		s.setAssembler(new ScanAssembler());
+		s.get(new CaselessLiteral("scan"));
+		s.get(location());
+		s.put(new ScanAssembler());
 		return s;
 	}
 

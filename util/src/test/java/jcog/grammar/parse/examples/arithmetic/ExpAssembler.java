@@ -18,7 +18,7 @@ public class ExpAssembler implements IAssembler {
 	 * 
 	 * @param   Assembly   the assembly whose stack to use
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Double d1 = (Double) a.pop();
 		Double d2 = (Double) a.pop();
 		Double d3 = new Double(Math.pow(d2.doubleValue(), d1.doubleValue()));

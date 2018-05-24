@@ -19,7 +19,7 @@ public class AlsoFrenchAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Coffee c = (Coffee) a.getTarget();
 		c.setAlsoOfferFrench(true);
 	}

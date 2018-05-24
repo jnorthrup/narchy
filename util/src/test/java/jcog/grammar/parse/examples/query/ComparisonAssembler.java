@@ -23,7 +23,7 @@ public class ComparisonAssembler implements IAssembler {
 	 * comparison to the query builder that this assembler 
 	 * expects to find in the assembly's target.
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		ComparisonTerm second = (ComparisonTerm) a.pop();
 		Token t = (Token) a.pop();
 		ComparisonTerm first = (ComparisonTerm) a.pop();

@@ -69,7 +69,7 @@ public class ParserMatchedAssemblerTest {
 		};
 
 		assembler = new ParserMatchedAssembler(matchedRule);
-		assembler.workOn(assembly);
+		assembler.accept(assembly);
 
 		assertTrue("ab".equals(assembly.getStack().peek()));
 	}

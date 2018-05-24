@@ -31,7 +31,7 @@ public class ScaleAssembler implements IAssembler {
 	 * 
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		SlingFunction last = (SlingFunction) a.pop();
 		SlingFunction nextToLast = (SlingFunction) a.pop();
 		a.push(new Point(0, 0));
@@ -40,6 +40,6 @@ public class ScaleAssembler implements IAssembler {
 		a.push(nextToLast);
 		a.push(last);
 
-		new FunctionAssembler(new Scale()).workOn(a);
+		new FunctionAssembler(new Scale()).accept(a);
 	}
 }

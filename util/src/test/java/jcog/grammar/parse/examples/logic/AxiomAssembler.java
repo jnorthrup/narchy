@@ -22,7 +22,7 @@ public class AxiomAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Stack s = a.getStack();
 		Structure[] sa = new Structure[s.size()];
 		for (int i = 0; i < s.size(); i++) {

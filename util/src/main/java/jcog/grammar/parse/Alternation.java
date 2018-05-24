@@ -1,7 +1,8 @@
 package jcog.grammar.parse;
 
+import jcog.list.ArrayUnenforcedSet;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -30,6 +31,10 @@ public class Alternation extends CollectionParser {
 	 */
 	public Alternation() {
 	}
+	public Alternation(Parser... p) {
+		for (Parser pp : p)
+			get(pp);
+	}
 
 	/**
 	 * Constructs an alternation with the given name.
@@ -39,6 +44,11 @@ public class Alternation extends CollectionParser {
 	 */
 	public Alternation(String name) {
 		super(name);
+	}
+	public Alternation(String name, Parser... alts) {
+		this(name);
+		for (Parser a : alts)
+			get(a);
 	}
 
 	/**
@@ -69,7 +79,7 @@ public class Alternation extends CollectionParser {
 	 */
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
-		Set<Assembly> out = new HashSet<>();
+		Set<Assembly> out = new ArrayUnenforcedSet<>();
 		for (Parser p : subparsers) {
 			out.addAll(p.matchAndAssemble(in));
 		}
@@ -129,10 +139,11 @@ public class Alternation extends CollectionParser {
 	}
 
 	@Override
-	public Set<Parser> leftChildren() {
-		Set<Parser> leftChildren = new HashSet<>(1);
-		leftChildren.addAll(subparsers);
-		return leftChildren;
+	public Iterable<Parser> leftChildren() {
+//		Set<Parser> leftChildren = new HashSet<>(1);
+//		leftChildren.addAll(subparsers);
+//		return leftChildren;
+		return subparsers;
 	}
 
 }

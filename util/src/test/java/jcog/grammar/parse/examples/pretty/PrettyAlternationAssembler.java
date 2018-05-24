@@ -32,7 +32,7 @@ public class PrettyAlternationAssembler implements IAssembler {
 	 *
 	 * @param   Assembly   the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		CompositeNode newNode = new CompositeNode(name);
 		ComponentNode node = (ComponentNode) a.pop();
 		newNode.insert(node);

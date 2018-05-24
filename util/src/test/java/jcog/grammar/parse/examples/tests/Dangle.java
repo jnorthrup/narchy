@@ -42,10 +42,10 @@ public class Dangle {
 	 */
 	public static Parser callCustomer() {
 		Sequence s = new Sequence("<callCustomer>");
-		s.add(new Literal("callCustomer"));
-		s.add(new Symbol('('));
-		s.add(new Symbol(')'));
-		s.add(new Symbol(';'));
+		s.get(new Literal("callCustomer"));
+		s.get(new Symbol('('));
+		s.get(new Symbol(')'));
+		s.get(new Symbol(';'));
 		return s;
 	}
 
@@ -56,11 +56,11 @@ public class Dangle {
 	 */
 	public static Parser comparison() {
 		Sequence s = new Sequence("<comparison>");
-		s.add(new Symbol('('));
-		s.add(expression());
-		s.add(operator());
-		s.add(expression());
-		s.add(new Symbol(')'));
+		s.get(new Symbol('('));
+		s.get(expression());
+		s.get(operator());
+		s.get(expression());
+		s.get(new Symbol(')'));
 		return s;
 	}
 
@@ -71,8 +71,8 @@ public class Dangle {
 	 */
 	public static Parser expression() {
 		Alternation a = new Alternation("<expression>");
-		a.add(new Word());
-		a.add(new Num());
+		a.get(new Word());
+		a.get(new Num());
 		return a;
 	}
 
@@ -83,11 +83,11 @@ public class Dangle {
 	 */
 	public static Parser ifelse() {
 		Sequence s = new Sequence("<ifelse>");
-		s.add(new Literal("if"));
-		s.add(comparison());
-		s.add(statement());
-		s.add(new Literal("else"));
-		s.add(statement());
+		s.get(new Literal("if"));
+		s.get(comparison());
+		s.get(statement());
+		s.get(new Literal("else"));
+		s.get(statement());
 		return s;
 	}
 
@@ -98,9 +98,9 @@ public class Dangle {
 	 */
 	public static Parser iff() {
 		Sequence s = new Sequence("<iff>");
-		s.add(new Literal("if"));
-		s.add(comparison());
-		s.add(statement());
+		s.get(new Literal("if"));
+		s.get(comparison());
+		s.get(statement());
 		return s;
 	}
 
@@ -111,12 +111,12 @@ public class Dangle {
 	 */
 	public static Parser operator() {
 		Alternation a = new Alternation("<operator>");
-		a.add(new Symbol('<'));
-		a.add(new Symbol('>'));
-		a.add(new Symbol('='));
-		a.add(new Symbol("<="));
-		a.add(new Symbol(">="));
-		a.add(new Symbol("!="));
+		a.get(new Symbol('<'));
+		a.get(new Symbol('>'));
+		a.get(new Symbol('='));
+		a.get(new Symbol("<="));
+		a.get(new Symbol(">="));
+		a.get(new Symbol("!="));
 		return a;
 	}
 
@@ -127,10 +127,10 @@ public class Dangle {
 	 */
 	public static Parser sendBill() {
 		Sequence s = new Sequence("<sendBill>");
-		s.add(new Literal("sendBill"));
-		s.add(new Symbol('('));
-		s.add(new Symbol(')'));
-		s.add(new Symbol(';'));
+		s.get(new Literal("sendBill"));
+		s.get(new Symbol('('));
+		s.get(new Symbol(')'));
+		s.get(new Symbol(';'));
 		return s;
 	}
 
@@ -148,10 +148,10 @@ public class Dangle {
 	public static Parser statement() {
 		if (statement == null) {
 			statement = new Alternation("<statement>");
-			statement.add(iff());
-			statement.add(ifelse());
-			statement.add(callCustomer());
-			statement.add(sendBill());
+			statement.get(iff());
+			statement.get(ifelse());
+			statement.get(callCustomer());
+			statement.get(sendBill());
 		}
 		return statement;
 	}

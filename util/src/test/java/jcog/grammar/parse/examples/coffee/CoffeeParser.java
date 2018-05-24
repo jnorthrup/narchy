@@ -47,15 +47,15 @@ public class CoffeeParser {
 	 */
 	public Parser coffee() {
 		Symbol comma = new Symbol(',');
-		comma.discard();
+		comma.ok();
 		Sequence s = new Sequence();
-		s.add(name());
-		s.add(comma);
-		s.add(roast());
-		s.add(comma);
-		s.add(country());
-		s.add(comma);
-		s.add(price());
+		s.get(name());
+		s.get(comma);
+		s.get(roast());
+		s.get(comma);
+		s.get(country());
+		s.get(comma);
+		s.get(price());
 		return s;
 	}
 
@@ -68,7 +68,7 @@ public class CoffeeParser {
 	 * object.
 	 */
 	protected Parser country() {
-		return new Word().setAssembler(new CountryAssembler());
+		return new Word().put(new CountryAssembler());
 	}
 
 	/*
@@ -81,9 +81,9 @@ public class CoffeeParser {
 	 */
 	protected Parser formerName() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('(').discard());
-		s.add(new Word().setAssembler(new FormerNameAssembler()));
-		s.add(new Symbol(')').discard());
+		s.get(new Symbol('(').ok());
+		s.get(new Word().put(new FormerNameAssembler()));
+		s.get(new Symbol(')').ok());
 		return s;
 	}
 
@@ -98,11 +98,11 @@ public class CoffeeParser {
 	 */
 	protected Parser name() {
 		Sequence s = new Sequence();
-		s.add(new Word().setAssembler(new NameAssembler()));
+		s.get(new Word().put(new NameAssembler()));
 		Alternation a = new Alternation();
-		a.add(formerName());
-		a.add(new Empty());
-		s.add(a);
+		a.get(formerName());
+		a.get(new Empty());
+		s.get(a);
 		return s;
 	}
 
@@ -116,9 +116,9 @@ public class CoffeeParser {
 	 */
 	protected Parser orFrench() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('/').discard());
-		s.add(new CaselessLiteral("french").discard());
-		s.setAssembler(new AlsoFrenchAssembler());
+		s.get(new Symbol('/').ok());
+		s.get(new CaselessLiteral("french").ok());
+		s.put(new AlsoFrenchAssembler());
 		return s;
 	}
 
@@ -130,7 +130,7 @@ public class CoffeeParser {
 	 * Use a PriceAssembler to update the target coffee object.
 	 */
 	protected Parser price() {
-		return new Num().setAssembler(new PriceAssembler());
+		return new Num().put(new PriceAssembler());
 	}
 
 	/*
@@ -144,11 +144,11 @@ public class CoffeeParser {
 	 */
 	protected Parser roast() {
 		Sequence s = new Sequence();
-		s.add(new Word().setAssembler(new RoastAssembler()));
+		s.get(new Word().put(new RoastAssembler()));
 		Alternation a = new Alternation();
-		a.add(orFrench());
-		a.add(new Empty());
-		s.add(a);
+		a.get(orFrench());
+		a.get(new Empty());
+		s.get(a);
 		return s;
 	}
 

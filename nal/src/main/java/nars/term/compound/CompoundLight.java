@@ -53,8 +53,8 @@ public class CompoundLight implements Compound {
 
     @Override
     public Term the() {
-        //return op.compound(DTERNAL, arrayShared());
-        throw new UnsupportedOperationException();
+        return op.compound(DTERNAL, arrayShared());
+//        /throw new UnsupportedOperationException();
     }
 
     @Override

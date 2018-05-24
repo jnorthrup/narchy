@@ -40,8 +40,8 @@ public class MidiParser {
 	public Parser expression() {
 		if (expression == null) {
 			expression = new Sequence();
-			expression.add(term());
-			expression.add(new Repetition(minusTerm()));
+			expression.get(term());
+			expression.get(new Repetition(minusTerm()));
 		}
 		return expression;
 	}
@@ -65,9 +65,9 @@ public class MidiParser {
 	 */
 	protected Parser minusTerm() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('-').discard());
-		s.add(term());
-		s.setAssembler(new MinusAssembler());
+		s.get(new Symbol('-').ok());
+		s.get(term());
+		s.put(new MinusAssembler());
 		return s;
 	}
 
@@ -83,13 +83,13 @@ public class MidiParser {
 	protected Parser term() {
 
 		Sequence s = new Sequence();
-		s.add(new Symbol('(').discard());
-		s.add(expression());
-		s.add(new Symbol(')').discard());
+		s.get(new Symbol('(').ok());
+		s.get(expression());
+		s.get(new Symbol(')').ok());
 
 		Alternation a = new Alternation();
-		a.add(s);
-		a.add(new Num().setAssembler(new NumAssembler()));
+		a.get(s);
+		a.get(new Num().put(new NumAssembler()));
 		return a;
 	}
 }

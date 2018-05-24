@@ -23,23 +23,23 @@ public class SequenceTest extends AbstractParsingTest {
 
 	@Test
 	public void noMatch() {
-		sequence.add(new CaselessLiteral("abc"));
+		sequence.get(new CaselessLiteral("abc"));
 		assertNoMatch("def");
 	}
 
 	@Test
 	public void fullMatch() {
-		sequence.add(new CaselessLiteral("abc"));
+		sequence.get(new CaselessLiteral("abc"));
 		assertCompleteMatch("abc");
 
-		sequence.add(new Num());
+		sequence.get(new Num());
 		Assembly result = completeMatch("abc 1.0");
 		assertEquals(new BigDecimal("1.0"), popValueFromAssembly(result));
 	}
 
 	@Test
 	public void partialMatch() {
-		sequence.add(new CaselessLiteral("abc"));
+		sequence.get(new CaselessLiteral("abc"));
 		Assembly result = bestMatch("abc def");
 		assertEquals(1, result.elementsRemaining());
 		assertEquals(1, result.elementsConsumed());
@@ -48,15 +48,15 @@ public class SequenceTest extends AbstractParsingTest {
 
 	@Test
 	public void children() {
-		sequence.add(new CaselessLiteral("abc"));
-		sequence.add(new Num());
+		sequence.get(new CaselessLiteral("abc"));
+		sequence.get(new Num());
 		assertEquals(2, size(getParser().children()));
 	}
 
 	@Test
 	public void leftChildren() {
-		sequence.add(new CaselessLiteral("abc"));
-		sequence.add(new Num());
+		sequence.get(new CaselessLiteral("abc"));
+		sequence.get(new Num());
 		assertEquals(1, size(getParser().leftChildren()));
 		assertTrue(contains(getParser().leftChildren(), new CaselessLiteral("abc")), ()->"" + getParser().leftChildren());
 	}

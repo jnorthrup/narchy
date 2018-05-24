@@ -24,13 +24,13 @@ public class ShowPush {
 	 */
 	public static void main(String[] args) {
 
-		Parser open = new Symbol('(').discard();
-		Parser close = new Symbol(')').discard();
-		Parser comma = new Symbol(',').discard();
+		Parser open = new Symbol('(').ok();
+		Parser close = new Symbol(')').ok();
+		Parser comma = new Symbol(',').ok();
 
 		Num num = new Num();
 
-		Parser coord = new Sequence().add(open).add(num).add(comma).add(num).add(comma).add(num).add(close);
+		Parser coord = new Sequence().get(open).get(num).get(comma).get(num).get(comma).get(num).get(close);
 
 		Assembly out = coord.bestMatch(new TokenAssembly("(23.4, 34.5, 45.6)"));
 

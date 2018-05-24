@@ -49,7 +49,7 @@ public class SliderAssembler implements IAssembler {
 	 * @param  Assembly  the assembly to work on
 	 * 
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		SlingTarget target = (SlingTarget) a.getTarget();
 		JSlider js = (slider == 1) ? target.s1() : target.s2();
 		a.push(new Slider(js));

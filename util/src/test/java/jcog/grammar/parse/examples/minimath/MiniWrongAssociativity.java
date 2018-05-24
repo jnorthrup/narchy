@@ -34,16 +34,16 @@ public class MiniWrongAssociativity {
 	public static void main(String args[]) {
 		Alternation e = new Alternation();
 		Num n = new Num();
-		n.setAssembler(new NumAssembler());
+		n.put(new NumAssembler());
 
 		Sequence s = new Sequence();
-		s.add(n);
-		s.add(new Symbol('-').discard());
-		s.add(e);
-		s.setAssembler(new MinusAssembler());
+		s.get(n);
+		s.get(new Symbol('-').ok());
+		s.get(e);
+		s.put(new MinusAssembler());
 
-		e.add(s);
-		e.add(n);
+		e.get(s);
+		e.get(n);
 
 		Assembly out = e.completeMatch(new TokenAssembly("25 - 16 - 9"));
 

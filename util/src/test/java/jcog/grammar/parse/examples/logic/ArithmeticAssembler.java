@@ -33,7 +33,7 @@ public class ArithmeticAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		ArithmeticTerm operand1 = (ArithmeticTerm) a.pop();
 		ArithmeticTerm operand0 = (ArithmeticTerm) a.pop();
 		a.push(new ArithmeticOperator(operator, operand0, operand1));

@@ -26,22 +26,22 @@ public class RobotMonolithic {
 		Sequence scanCommand = new Sequence();
 		Word location = new Word();
 
-		command.add(pickCommand);
-		command.add(placeCommand);
-		command.add(scanCommand);
+		command.get(pickCommand);
+		command.get(placeCommand);
+		command.get(scanCommand);
 
-		pickCommand.add(new CaselessLiteral("pick"));
-		pickCommand.add(new CaselessLiteral("carrier"));
-		pickCommand.add(new CaselessLiteral("from"));
-		pickCommand.add(location);
+		pickCommand.get(new CaselessLiteral("pick"));
+		pickCommand.get(new CaselessLiteral("carrier"));
+		pickCommand.get(new CaselessLiteral("from"));
+		pickCommand.get(location);
 
-		placeCommand.add(new CaselessLiteral("place"));
-		placeCommand.add(new CaselessLiteral("carrier"));
-		placeCommand.add(new CaselessLiteral("at"));
-		placeCommand.add(location);
+		placeCommand.get(new CaselessLiteral("place"));
+		placeCommand.get(new CaselessLiteral("carrier"));
+		placeCommand.get(new CaselessLiteral("at"));
+		placeCommand.get(location);
 
-		scanCommand.add(new CaselessLiteral("scan"));
-		scanCommand.add(location);
+		scanCommand.get(new CaselessLiteral("scan"));
+		scanCommand.get(location);
 
 		String s = "pick carrier from DB101_IN";
 

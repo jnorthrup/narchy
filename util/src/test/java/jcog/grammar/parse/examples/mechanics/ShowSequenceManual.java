@@ -29,7 +29,7 @@ public class ShowSequenceManual {
 		Parser world = new Literal("world");
 		Parser bang = new Symbol('!');
 
-		Parser s = new Sequence().add(hello).add(world).add(bang);
+		Parser s = new Sequence().get(hello).get(world).get(bang);
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("Hello world!"));

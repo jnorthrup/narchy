@@ -34,16 +34,16 @@ public class MinimathCompute {
 		Sequence e = new Sequence();
 
 		Num n = new Num();
-		n.setAssembler(new NumAssembler());
+		n.put(new NumAssembler());
 
-		e.add(n);
+		e.get(n);
 
 		Sequence m = new Sequence();
-		m.add(new Symbol('-').discard());
-		m.add(n);
-		m.setAssembler(new MinusAssembler());
+		m.get(new Symbol('-').ok());
+		m.get(n);
+		m.put(new MinusAssembler());
 
-		e.add(new Repetition(m));
+		e.get(new Repetition(m));
 
 		TokenAssembly t = new TokenAssembly("25 - 16 - 9");
 		Assembly out = e.completeMatch(t);

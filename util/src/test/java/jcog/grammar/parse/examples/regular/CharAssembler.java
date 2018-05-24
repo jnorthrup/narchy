@@ -19,7 +19,7 @@ public class CharAssembler implements IAssembler {
 	 * 
 	 * @param   Assembly   the assembly whose stack to use
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		a.push(new SpecificChar((Character) a.pop()));
 	}
 }

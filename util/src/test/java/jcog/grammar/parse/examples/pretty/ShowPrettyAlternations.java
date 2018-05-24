@@ -31,8 +31,8 @@ public class ShowPrettyAlternations {
 	 */
 	public static Parser alligator() {
 		Alternation a = new Alternation("<alligator>");
-		a.add(new Literal("chineseGator"));
-		a.add(new Literal("americanGator"));
+		a.get(new Literal("chineseGator"));
+		a.get(new Literal("americanGator"));
 		return a;
 	}
 
@@ -41,8 +41,8 @@ public class ShowPrettyAlternations {
 	 */
 	public static Parser crocodile() {
 		Alternation a = new Alternation("<crocodile>");
-		a.add(new Literal("nileCroc"));
-		a.add(new Literal("cubanCroc"));
+		a.get(new Literal("nileCroc"));
+		a.get(new Literal("cubanCroc"));
 		return a;
 	}
 
@@ -52,8 +52,8 @@ public class ShowPrettyAlternations {
 	 */
 	public static Parser crocodilian() {
 		Alternation a = new Alternation("<crocodilian>");
-		a.add(crocodile());
-		a.add(alligator());
+		a.get(crocodile());
+		a.get(alligator());
 		return a;
 	}
 
@@ -62,8 +62,8 @@ public class ShowPrettyAlternations {
 	 */
 	public static Parser lizard() {
 		Alternation a = new Alternation("<lizard>");
-		a.add(new Literal("gecko"));
-		a.add(new Literal("iguana"));
+		a.get(new Literal("gecko"));
+		a.get(new Literal("iguana"));
 		return a;
 	}
 
@@ -88,8 +88,8 @@ public class ShowPrettyAlternations {
 	 */
 	public static Parser reptile() {
 		Alternation a = new Alternation("<reptile>");
-		a.add(crocodilian());
-		a.add(squamata());
+		a.get(crocodilian());
+		a.get(squamata());
 		return a;
 	}
 
@@ -98,8 +98,8 @@ public class ShowPrettyAlternations {
 	 */
 	public static Parser snake() {
 		Alternation a = new Alternation("<snake>");
-		a.add(new Literal("cobra"));
-		a.add(new Literal("python"));
+		a.get(new Literal("cobra"));
+		a.get(new Literal("python"));
 		return a;
 	}
 
@@ -109,8 +109,8 @@ public class ShowPrettyAlternations {
 	 */
 	public static Parser squamata() {
 		Alternation a = new Alternation("<squamata>");
-		a.add(snake());
-		a.add(lizard());
+		a.get(snake());
+		a.get(lizard());
 		return a;
 	}
 }

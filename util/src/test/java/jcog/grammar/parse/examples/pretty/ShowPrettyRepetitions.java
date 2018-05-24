@@ -46,8 +46,8 @@ public class ShowPrettyRepetitions {
 	 */
 	public static Sequence seq() {
 		Sequence seq = new Sequence("<seq>");
-		seq.add(new Repetition(new Word(), "<rep1>"));
-		seq.add(new Repetition(new Word(), "<rep2>"));
+		seq.get(new Repetition(new Word(), "<rep1>"));
+		seq.get(new Repetition(new Word(), "<rep2>"));
 		return seq;
 	}
 }

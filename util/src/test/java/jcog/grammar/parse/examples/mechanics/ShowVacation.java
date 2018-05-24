@@ -33,11 +33,11 @@ public class ShowVacation {
 	 */
 	public static void main(String args[]) {
 
-		Parser prepare = new Alternation().add(new Literal("plan").discard()).add(new Literal("shop").discard()).add(new Literal("pack").discard());
+		Parser prepare = new Alternation().get(new Literal("plan").ok()).get(new Literal("shop").ok()).get(new Literal("pack").ok());
 
-		Parser enjoy = new Alternation().add(new Literal("swim").discard()).add(new Literal("hike").discard()).add(new Literal("relax").discard());
+		Parser enjoy = new Alternation().get(new Literal("swim").ok()).get(new Literal("hike").ok()).get(new Literal("relax").ok());
 
-		Parser vacation = new Sequence().add(new VerboseRepetition(prepare)).add(new VerboseRepetition(enjoy));
+		Parser vacation = new Sequence().get(new VerboseRepetition(prepare)).get(new VerboseRepetition(enjoy));
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("plan pack hike relax"));

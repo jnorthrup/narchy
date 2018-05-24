@@ -33,7 +33,7 @@ public class ListWithTailAssembler implements IAssembler {
 	 * @param Assembly
 	 *            the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Term tail = (Term) a.pop();
 
 		Token fence = new Token('[');

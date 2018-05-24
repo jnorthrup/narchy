@@ -51,7 +51,7 @@ public class ForAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		// pop the elements of a "for" loop
 		CommandSequence cs = popCommandSequence(a);
 		SlingFunction to = (SlingFunction) a.pop();

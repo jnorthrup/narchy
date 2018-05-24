@@ -17,15 +17,15 @@ public class AlternationTest extends AbstractParsingTest {
 
 	@Test
 	public void noMatch() {
-		alternation.add(new CaselessLiteral("abc"));
+		alternation.get(new CaselessLiteral("abc"));
 		assertNoMatch("def");
 	}
 
 	@Test
 	public void fullMatch() {
-		alternation.add(new CaselessLiteral("abc"));
-		alternation.add(new Num());
-		alternation.add(new Empty());
+		alternation.get(new CaselessLiteral("abc"));
+		alternation.get(new Num());
+		alternation.get(new Empty());
 		assertCompleteMatch("abc");
 		assertCompleteMatch("2.3");
 		assertCompleteMatch("");
@@ -34,15 +34,15 @@ public class AlternationTest extends AbstractParsingTest {
 
 	@Test
 	public void children() {
-		alternation.add(new CaselessLiteral("abc"));
-		alternation.add(new Num());
+		alternation.get(new CaselessLiteral("abc"));
+		alternation.get(new Num());
 		Assertions.assertEquals(2, RepetitionTest.size(getParser().children()));
 	}
 
 	@Test
 	public void leftChildren() {
-		alternation.add(new CaselessLiteral("abc"));
-		alternation.add(new Num());
+		alternation.get(new CaselessLiteral("abc"));
+		alternation.get(new Num());
 		Assertions.assertEquals(2, RepetitionTest.size(getParser().leftChildren()));
 	}
 

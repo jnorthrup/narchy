@@ -29,7 +29,7 @@ public class ShowAssembler {
 		in.setTarget(new RunningAverage());
 
 		Word w = new Word();
-		w.setAssembler(new AverageAssembler());
+		w.put(new AverageAssembler());
 		Parser p = new Repetition(w);
 
 		Assembly out = p.completeMatch(in);

@@ -18,7 +18,7 @@ public class ClassNameAssembler implements IAssembler {
 	 * Pop a class name, and inform a QueryBuilder that this
 	 * is a class to select from.
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		QueryBuilder b = (QueryBuilder) a.getTarget();
 		Token t = (Token) a.pop();
 		b.addClassName(t.sval());

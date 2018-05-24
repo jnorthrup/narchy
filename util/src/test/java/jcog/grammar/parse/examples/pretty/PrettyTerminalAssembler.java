@@ -19,7 +19,7 @@ public class PrettyTerminalAssembler implements IAssembler {
 	 *
 	 * @param   Assembly   the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Token t = (Token) a.pop();
 		a.push(new TerminalNode(t.value()));
 	}

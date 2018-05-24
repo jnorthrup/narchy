@@ -2,6 +2,7 @@ package jcog.data.graph;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
+import jcog.data.ArrayHashSet;
 import jcog.data.graph.search.Search;
 import jcog.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -172,9 +173,11 @@ public abstract class NodeGraph<N, E> {
 
         protected static <N,E> MutableNode<N,E> withEdgeSets(N id, int inOutInitialCapacity) {
             return new MutableNode<>(id,
-                    new FastIteratingHashSet<>(inOutInitialCapacity),
+                    new ArrayHashSet<>(inOutInitialCapacity),
+                    new ArrayHashSet<>(inOutInitialCapacity)
+                    //new FastIteratingHashSet<>(inOutInitialCapacity),
                     //new HashSet<>();
-                    new FastIteratingHashSet<>(inOutInitialCapacity)
+                    //new FastIteratingHashSet<>(inOutInitialCapacity)
                     //new HashSet<>();
             );
         }

@@ -16,7 +16,7 @@ public class SelectTermAssembler implements IAssembler {
 	/**
 	 * Pop a term and pass it to a query builder.
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		QueryBuilder b = (QueryBuilder) a.getTarget();
 		Term t = (Term) a.pop();
 		b.addTerm(t);

@@ -40,7 +40,7 @@ public class VariableAssembler implements IAssembler {
 	 * a <code>Variable</code> of that name. Check the spelling
 	 * of the name with the speller provided in the constructor.
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Token t = (Token) a.pop();
 		String properName = speller.getVariableName(t.sval());
 		if (properName == null) {

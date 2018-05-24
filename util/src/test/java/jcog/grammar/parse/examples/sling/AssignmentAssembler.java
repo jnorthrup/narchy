@@ -28,7 +28,7 @@ public class AssignmentAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		SlingFunction f = (SlingFunction) a.pop();
 		Variable v = (Variable) a.pop();
 		a.push(new AssignFunctionCommand(v, f));

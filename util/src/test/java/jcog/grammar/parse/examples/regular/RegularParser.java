@@ -58,8 +58,8 @@ public class RegularParser {
 
 			// expression = term orTerm*;
 			expression = new Sequence();
-			expression.add(term());
-			expression.add(new Repetition(orTerm()));
+			expression.get(term());
+			expression.get(new Repetition(orTerm()));
 		}
 		return expression;
 	}
@@ -71,8 +71,8 @@ public class RegularParser {
 	 */
 	protected Parser factor() {
 		Alternation a = new Alternation();
-		a.add(phrase());
-		a.add(phraseStar());
+		a.get(phrase());
+		a.get(phraseStar());
 		return a;
 	}
 
@@ -87,9 +87,9 @@ public class RegularParser {
 	 */
 	protected Parser letterOrDigit() {
 		Alternation a = new Alternation();
-		a.add(new Letter());
-		a.add(new Digit());
-		a.setAssembler(new CharAssembler());
+		a.get(new Letter());
+		a.get(new Digit());
+		a.put(new CharAssembler());
 		return a;
 	}
 
@@ -103,7 +103,7 @@ public class RegularParser {
 	 */
 	protected Parser nextFactor() {
 		Parser p = factor();
-		p.setAssembler(new AndAssembler());
+		p.put(new AndAssembler());
 		return p;
 	}
 
@@ -117,9 +117,9 @@ public class RegularParser {
 	 */
 	protected Parser orTerm() {
 		Sequence s = new Sequence();
-		s.add(new SpecificChar('|').discard());
-		s.add(term());
-		s.setAssembler(new OrAssembler());
+		s.get(new SpecificChar('|').ok());
+		s.get(term());
+		s.put(new OrAssembler());
 		return s;
 	}
 
@@ -130,14 +130,14 @@ public class RegularParser {
 	 */
 	protected Parser phrase() {
 		Alternation a = new Alternation();
-		a.add(letterOrDigit());
+		a.get(letterOrDigit());
 
 		Sequence s = new Sequence();
-		s.add(new SpecificChar('(').discard());
-		s.add(expression());
-		s.add(new SpecificChar(')').discard());
+		s.get(new SpecificChar('(').ok());
+		s.get(expression());
+		s.get(new SpecificChar(')').ok());
 
-		a.add(s);
+		a.get(s);
 		return a;
 	}
 
@@ -151,9 +151,9 @@ public class RegularParser {
 	 */
 	protected Parser phraseStar() {
 		Sequence s = new Sequence();
-		s.add(phrase());
-		s.add(new SpecificChar('*').discard());
-		s.setAssembler(new StarAssembler());
+		s.get(phrase());
+		s.get(new SpecificChar('*').ok());
+		s.put(new StarAssembler());
 		return s;
 	}
 
@@ -175,8 +175,8 @@ public class RegularParser {
 	 */
 	protected Parser term() {
 		Sequence term = new Sequence();
-		term.add(factor());
-		term.add(new Repetition(nextFactor()));
+		term.get(factor());
+		term.get(new Repetition(nextFactor()));
 		return term;
 	}
 

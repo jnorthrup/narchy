@@ -82,8 +82,11 @@ public abstract class TaskLeak extends Causable {
     }
 
     public final void accept(Task t) {
-        if (preFilter(t))
-            queue.put(new PLink<>(t, pri(t)));
+        if (preFilter(t)) {
+            float p = pri(t);
+            if (p == p)
+                queue.put(new PLink<>(t, p));
+        }
     }
 
     /** an adjusted priority of the task for its insertion to the leak bag */

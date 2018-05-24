@@ -22,8 +22,8 @@ public class ShowBestMatch {
 
 		Alternation a = new Alternation();
 
-		a.add(new Literal("steaming"));
-		a.add(new Literal("hot"));
+		a.get(new Literal("steaming"));
+		a.get(new Literal("hot"));
 
 		Repetition adjectives = new Repetition(a);
 

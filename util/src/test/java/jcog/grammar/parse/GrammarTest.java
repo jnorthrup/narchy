@@ -74,7 +74,7 @@ public class GrammarTest {
         assertNull(grammar.getRule("mystart"));
         grammar.addRule("mystart", new Empty());
         grammar.addAssembler("mystart", new IAssembler() {
-            public void workOn(Assembly a) {
+            public void accept(Assembly a) {
                 a.setTarget(target);
             }
         });
@@ -87,7 +87,7 @@ public class GrammarTest {
     public void assemblersCanOnlyBeAddedToExistingRules() {
         assertThrows(GrammarException.class, () -> {
             grammar.addAssembler("mystart", new IAssembler() {
-                public void workOn(Assembly a) {
+                public void accept(Assembly a) {
                 }
             });
         });
@@ -116,8 +116,8 @@ public class GrammarTest {
         assertFalse(grammar.parse("hello 12.34").isCompleteMatch());
 
         Sequence sequence = new Sequence();
-        sequence.add(new CaselessLiteral("hello"));
-        sequence.add(new Num());
+        sequence.get(new CaselessLiteral("hello"));
+        sequence.get(new Num());
         grammar.addRule("referenced", sequence);
         assertTrue(grammar.parse("HELLO 12.34").isCompleteMatch());
         assertFalse(grammar.parse("hello you").isCompleteMatch());
@@ -139,13 +139,13 @@ public class GrammarTest {
         assertCheckFails();
 
         Sequence startClause = new Sequence();
-        startClause.add(new Int());
-        startClause.add(new RuleReference("unused", grammar));
+        startClause.get(new Int());
+        startClause.get(new RuleReference("unused", grammar));
         grammar.addRule("mystart", startClause);
         grammar.check();
 
         //Add recursive clause reference
-        startClause.add(new Repetition(new RuleReference("mystart", grammar)));
+        startClause.get(new Repetition(new RuleReference("mystart", grammar)));
         grammar.check();
 
         grammar.addRule("more unused", new Empty());
@@ -245,28 +245,28 @@ public class GrammarTest {
     private void defineTrackRobotGrammar() {
         //From BPWJ, pp. 50
         Alternation command = new Alternation();
-        command.add(new RuleReference("pickCommand", grammar));
-        command.add(new RuleReference("placeCommand", grammar));
-        command.add(new RuleReference("scanCommand", grammar));
+        command.get(new RuleReference("pickCommand", grammar));
+        command.get(new RuleReference("placeCommand", grammar));
+        command.get(new RuleReference("scanCommand", grammar));
         grammar.addRule("command", command);
 
         Sequence pickCommand = new Sequence();
-        pickCommand.add(new CaselessLiteral("pick"));
-        pickCommand.add(new CaselessLiteral("carrier"));
-        pickCommand.add(new CaselessLiteral("from"));
-        pickCommand.add(new RuleReference("location", grammar));
+        pickCommand.get(new CaselessLiteral("pick"));
+        pickCommand.get(new CaselessLiteral("carrier"));
+        pickCommand.get(new CaselessLiteral("from"));
+        pickCommand.get(new RuleReference("location", grammar));
         grammar.addRule("pickCommand", pickCommand);
 
         Sequence placeCommand = new Sequence();
-        placeCommand.add(new CaselessLiteral("place"));
-        placeCommand.add(new CaselessLiteral("carrier"));
-        placeCommand.add(new CaselessLiteral("at"));
-        placeCommand.add(new RuleReference("location", grammar));
+        placeCommand.get(new CaselessLiteral("place"));
+        placeCommand.get(new CaselessLiteral("carrier"));
+        placeCommand.get(new CaselessLiteral("at"));
+        placeCommand.get(new RuleReference("location", grammar));
         grammar.addRule("placeCommand", placeCommand);
 
         Sequence scanCommand = new Sequence();
-        scanCommand.add(new CaselessLiteral("scan"));
-        scanCommand.add(new RuleReference("location", grammar));
+        scanCommand.get(new CaselessLiteral("scan"));
+        scanCommand.get(new RuleReference("location", grammar));
         grammar.addRule("scanCommand", scanCommand);
 
         grammar.addRule("location", new Word());

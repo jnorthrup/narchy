@@ -20,7 +20,7 @@ public class NotAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Structure s = (Structure) a.pop();
 		a.push(new Not(s));
 	}

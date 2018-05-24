@@ -1,6 +1,7 @@
 package jcog.grammar.parse;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class Parser {
 	/*
@@ -11,7 +12,7 @@ public abstract class Parser {
 	 * an object that will work on an assembly whenever this parser successfully
 	 * matches against the assembly
 	 */
-	private IAssembler assembler;
+	private Consumer<Assembly> assembler;
 
 	/**
 	 * Constructs a nameless parser.
@@ -181,7 +182,7 @@ public abstract class Parser {
 		Set<Assembly> out = match(in);
 		if (assembler != null) {
 			for (Assembly assembly : out) {
-				assembler.workOn(assembly);
+				assembler.accept(assembly);
 			}
 		}
 		announceMatchingEnd(out);
@@ -234,7 +235,7 @@ public abstract class Parser {
 	 *
 	 * @return Parser this
 	 */
-	public Parser setAssembler(IAssembler assembler) {
+	public Parser put(Consumer<Assembly> assembler) {
 		this.assembler = assembler;
 		return this;
 	}

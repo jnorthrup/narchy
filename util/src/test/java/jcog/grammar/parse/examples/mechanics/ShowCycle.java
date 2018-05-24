@@ -25,7 +25,7 @@ public class ShowCycle {
 		Alternation ticks = new Alternation();
 		Literal tick = new Literal("tick");
 
-		ticks.add(tick).add(new Sequence().add(tick).add(ticks));
+		ticks.get(tick).get(new Sequence().get(tick).get(ticks));
 
 		System.out.println(ticks.bestMatch(new TokenAssembly("tick tick tick tick")));
 

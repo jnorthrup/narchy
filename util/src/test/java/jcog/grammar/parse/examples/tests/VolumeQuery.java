@@ -31,8 +31,8 @@ public class VolumeQuery {
 	 *     query = (Word | volume)* '?';
 	 */
 	public static Parser query() {
-		Parser a = new Alternation().add(new Word()).add(volume());
-		Parser s = new Sequence().add(new Repetition(a)).add(new Symbol('?'));
+		Parser a = new Alternation().get(new Word()).get(volume());
+		Parser s = new Sequence().get(new Repetition(a)).get(new Symbol('?'));
 		return s;
 	}
 
@@ -42,7 +42,7 @@ public class VolumeQuery {
 	 *     volume = "cups" | "gallon" | "liter";
 	 */
 	public static Parser volume() {
-		Parser a = new Alternation().add(new Literal("cups")).add(new Literal("gallon")).add(new Literal("liter"));
+		Parser a = new Alternation().get(new Literal("cups")).get(new Literal("gallon")).get(new Literal("liter"));
 		return a;
 	}
 }

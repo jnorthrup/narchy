@@ -2,7 +2,6 @@ package nars.nal.nal7;
 
 import nars.$;
 import nars.Narsese;
-import nars.Param;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
@@ -690,10 +689,10 @@ public class NAL7Test extends NALTest {
                 1.0f, 0.81f,
                 0);
         tester.mustBelieve(cycles,
-                "(at(SELF,#1) &&+4 on({t002},#1))",
+                "(at(SELF,{#1}) &&+4 on({t002},{#1}))",
                 1.0f, 0.81f,
                 0);
-        tester.mustNotOutput(cycles, "(at(SELF,#1) &&-4 on({t002},#1))", BELIEF, ETERNAL);
+        tester.mustNotOutput(cycles, "(at(SELF,{#1}) &&-4 on({t002},{#1}))", BELIEF, ETERNAL);
 
     }
 

@@ -22,7 +22,7 @@ public class StarAssembler implements IAssembler {
 	 * 
 	 * @param   Assembly   the assembly whose stack to use
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		a.push(new Repetition((Parser) a.pop()));
 	}
 }

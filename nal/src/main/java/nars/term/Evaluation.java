@@ -139,7 +139,9 @@ public final class Evaluation {
                     if (z  == True || z == False) {
                         if (z != Null) {
                             //determined absolutely true or false: implies that this is the answer to a question
-                            each.test($.func(TRUE, y).negIf(z == False));
+                            Term zz = $.func(TRUE, y).negIf(z == False).normalize();
+                            if (zz!=null && !zz.equals(x))
+                                each.test(zz);
                         }
                         continue;
                     } else {

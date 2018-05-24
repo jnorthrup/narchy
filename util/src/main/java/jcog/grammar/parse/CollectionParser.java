@@ -1,6 +1,8 @@
 package jcog.grammar.parse;
 
-import java.util.ArrayList;
+import jcog.grammar.parse.tokens.Symbol;
+import jcog.list.FasterList;
+
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +26,7 @@ public abstract class CollectionParser extends Parser {
 	/**
 	 * the parsers this parser is a collection of
 	 */
-	public final List<Parser> subparsers = new ArrayList<>();
+	public final List<Parser> subparsers = new FasterList<>(1);
 
 	/**
 	 * Supports subclass constructors with no arguments.
@@ -50,9 +52,14 @@ public abstract class CollectionParser extends Parser {
 	 * 
 	 * @return this
 	 */
-	public CollectionParser add(Parser e) {
+	public CollectionParser get(Parser e) {
 		subparsers.add(e);
 		return this;
+	}
+
+	/** match a character (but dont push it) */
+	public CollectionParser see(char c) {
+		return get(new Symbol(c).ok());
 	}
 
 	public CollectionParser addTop(Parser e) {
@@ -93,4 +100,8 @@ public abstract class CollectionParser extends Parser {
 		return subparsers;
 	}
 
+	public CollectionParser or(Parser... p) {
+		assert(p.length > 1);
+		return get(new Alternation(p));
+	}
 }

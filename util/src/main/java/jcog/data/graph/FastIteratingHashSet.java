@@ -5,13 +5,14 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /** buffers a lazily updated array-backed cache of the values
  * for fast iteration and streaming */
 public class FastIteratingHashSet<X> extends LinkedHashSet<X> {
 
-    Object[] cache = ArrayUtils.EMPTY_OBJECT_ARRAY;
+    volatile Object[] cache = ArrayUtils.EMPTY_OBJECT_ARRAY;
 
     public FastIteratingHashSet() {
         super();
@@ -46,11 +47,12 @@ public class FastIteratingHashSet<X> extends LinkedHashSet<X> {
             if (s == 0) {
                 cache = ArrayUtils.EMPTY_OBJECT_ARRAY;
             } else {
-                cache = new Object[s];
+                Object[] c = cache = new Object[s];
+
                 Iterator<X> xx = super.iterator();
                 int i = 0;
                 while (xx.hasNext())
-                    cache[i++] = xx.next();
+                    c[i++] = xx.next();
             }
         }
         return s;
@@ -60,6 +62,15 @@ public class FastIteratingHashSet<X> extends LinkedHashSet<X> {
     public void clear() {
         super.clear();
         cache = ArrayUtils.EMPTY_OBJECT_ARRAY;
+    }
+
+    @Override
+    public void forEach(Consumer<? super X> action) {
+        if (update() > 0) {
+            for (Object x : cache) {
+                action.accept((X) x);
+            }
+        }
     }
 
     @Override

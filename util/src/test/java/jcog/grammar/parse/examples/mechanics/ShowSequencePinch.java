@@ -25,7 +25,7 @@ public class ShowSequencePinch {
 	 */
 	public static void main(String[] args) {
 
-		Parser s = new VerboseSequence().add(new Repetition(new Word())).add(new Symbol('!'));
+		Parser s = new VerboseSequence().get(new Repetition(new Word())).get(new Symbol('!'));
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("Hello world!"));

@@ -4,6 +4,7 @@ import nars.$;
 import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
 
@@ -124,20 +125,23 @@ public enum MathFunc { ;
                 return compute(xx, yy);
 
             } else {
+                boolean changed = false;
                 if (y.compareTo(x) < 0) {
                     //swap order to canonical natural ordering
                     Term t = x;
                     x = y;
                     y = t;
 
+                    changed = true;
                 }
 
-                if (x.contains(term) || y.contains(term)) {
-                    //TODO extract and re-arrange any commutive instances of this same function
-                    System.out.println("simplify: " + x + "," + y);
-                }
+                //TODO extract and re-arrange any commutive instances of this same function
+//                if (x.contains(term) || y.contains(term)) {
+//                    System.out.println("simplify: " + x + "," + y);
+//                }
 
-                return null;
+                return changed ? $.func((Atomic)term, x, y) : null;
+
             }
         }
 

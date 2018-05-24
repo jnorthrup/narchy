@@ -39,12 +39,12 @@ public class Midimath {
 		Sequence expression = new Sequence();
 
 		Sequence plusTerm = new Sequence();
-		plusTerm.add(new Symbol('+').discard());
-		plusTerm.add(term());
-		plusTerm.setAssembler(new PlusAssembler());
+		plusTerm.get(new Symbol('+').ok());
+		plusTerm.get(term());
+		plusTerm.put(new PlusAssembler());
 
-		expression.add(term());
-		expression.add(new Repetition(plusTerm));
+		expression.get(term());
+		expression.get(new Repetition(plusTerm));
 		return expression;
 	}
 
@@ -67,15 +67,15 @@ public class Midimath {
 		Sequence term = new Sequence();
 
 		Num n = new Num();
-		n.setAssembler(new NumAssembler());
+		n.put(new NumAssembler());
 
 		Sequence timesNum = new Sequence();
-		timesNum.add(new Symbol('*').discard());
-		timesNum.add(n);
-		timesNum.setAssembler(new TimesAssembler());
+		timesNum.get(new Symbol('*').ok());
+		timesNum.get(n);
+		timesNum.put(new TimesAssembler());
 
-		term.add(n);
-		term.add(new Repetition(timesNum));
+		term.get(n);
+		term.get(new Repetition(timesNum));
 		return term;
 	}
 }

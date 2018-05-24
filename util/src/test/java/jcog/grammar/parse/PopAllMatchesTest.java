@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,13 +46,13 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	}
 
 	public void sequence() {
-		parser = new Sequence().add(new Literal("abc"));
+		parser = new Sequence().get(new Literal("abc"));
 		result = bestMatch("abc");
 		List<Object> allMatches = result.popAllMatches();
 		assertEquals(1, allMatches.size());
 		assertEquals(1, result.getStackSizesBeforeMatch().size());
 
-		parser = new Sequence().add(new Literal("abc")).add(new Word()).add(new Symbol(",").discard());
+		parser = new Sequence().get(new Literal("abc")).get(new Word()).get(new Symbol(",").ok());
 		result = bestMatch("abc hello,");
 		allMatches = result.popAllMatches();
 		assertEquals(2, allMatches.size());
@@ -61,7 +62,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 	}
 
 	public void alternation() {
-		parser = new Alternation().add(new Literal("abc")).add(new Literal("def"));
+		parser = new Alternation().get(new Literal("abc")).get(new Literal("def"));
 		result = bestMatch("abc");
 		List<Object> allMatches = result.popAllMatches();
 		assertEquals(1, allMatches.size());
@@ -85,7 +86,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 
 	@Test
 	public void repetitionOfSequence() {
-		Parser seq = new Sequence().add(new Word());
+		Parser seq = new Sequence().get(new Word());
 		parser = new Repetition(seq);
 
 		result = bestMatch("");
@@ -103,13 +104,13 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 
 	@Test
 	public void sequenceOfRepetition() {
-		Parser rep = new Repetition(new Word()).setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		Parser rep = new Repetition(new Word()).put(new IAssembler() {
+			public void accept(Assembly a) {
 				List<Object> list = a.popAllMatches();
 				a.push(list);
 			}
 		});
-		parser = new Sequence().add(new Symbol("(")).add(rep).add(new Symbol(")"));
+		parser = new Sequence().get(new Symbol("(")).get(rep).get(new Symbol(")"));
 		result = bestMatch("(a b c d)");
 		List<Object> allMatches = result.popAllMatches();
 		assertEquals(3, allMatches.size());
@@ -119,17 +120,17 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 
 	@Test
 	public void stackManipulatedByAssemblers() {
-		IAssembler deleteAssembler = new IAssembler() {
-			public void workOn(Assembly a) {
+		Consumer<Assembly> deleteAssembler = new IAssembler() {
+			public void accept(Assembly a) {
 				a.pop();
 			}
 		};
-		IAssembler changeToStringAssembler = new IAssembler() {
-			public void workOn(Assembly a) {
+		Consumer<Assembly> changeToStringAssembler = new IAssembler() {
+			public void accept(Assembly a) {
 				a.push(((Token) a.pop()).sval());
 			}
 		};
-		parser = new Sequence().add(new Literal("abc").setAssembler(deleteAssembler)).add(new Word().setAssembler(changeToStringAssembler)).add(new Symbol(",").discard());
+		parser = new Sequence().get(new Literal("abc").put(deleteAssembler)).get(new Word().put(changeToStringAssembler)).get(new Symbol(",").ok());
 		result = bestMatch("abc hello,");
 		List<Object> allMatches = result.popAllMatches();
 		assertEquals(1, allMatches.size());
@@ -139,16 +140,16 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 
 	@Test
 	public void commaSeparatedListInBrackets() {
-		IAssembler changeToStringAssembler = new IAssembler() {
-			public void workOn(Assembly a) {
+		Consumer<Assembly> changeToStringAssembler = new IAssembler() {
+			public void accept(Assembly a) {
 				a.push(((Token) a.pop()).sval());
 			}
 		};
-		Sequence commaList = (Sequence) new Sequence().add(new Word().setAssembler(changeToStringAssembler));
-		Parser commaTerm = new Sequence().add(new Symbol(",").discard()).add(new Word().setAssembler(changeToStringAssembler));
-		commaList.add(new Repetition(commaTerm));
-		Parser content = new Alternation().add(new Empty()).add(commaList);
-		parser = new Sequence().add(new Symbol("[").discard()).add(content).add(new Symbol("]").discard());
+		Sequence commaList = (Sequence) new Sequence().get(new Word().put(changeToStringAssembler));
+		Parser commaTerm = new Sequence().get(new Symbol(",").ok()).get(new Word().put(changeToStringAssembler));
+		commaList.get(new Repetition(commaTerm));
+		Parser content = new Alternation().get(new Empty()).get(commaList);
+		parser = new Sequence().get(new Symbol("[").ok()).get(content).get(new Symbol("]").ok());
 
 		result = bestMatch("[]");
 		assertTrue(result.popAllMatches().isEmpty());

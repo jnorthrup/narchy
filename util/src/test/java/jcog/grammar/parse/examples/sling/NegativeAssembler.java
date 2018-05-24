@@ -22,9 +22,9 @@ public class NegativeAssembler implements IAssembler {
 	 *
 	 * @param  Assembly  the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		// the term is already there, so push second term
 		a.push(new Point(-1, -1));
-		new FunctionAssembler(new Arithmetic('*')).workOn(a);
+		new FunctionAssembler(new Arithmetic('*')).accept(a);
 	}
 }

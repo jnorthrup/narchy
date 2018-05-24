@@ -31,7 +31,7 @@ public class PrettySequenceAssembler implements IAssembler {
 	 *
 	 * @param   Assembly   the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		CompositeNode newNode = new CompositeNode(name);
 		for (int i = 0; i < numberNodes; i++) {
 			ComponentNode node = (ComponentNode) a.pop();

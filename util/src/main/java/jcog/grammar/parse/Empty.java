@@ -53,7 +53,8 @@ public class Empty extends Parser {
 	 */
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
-		return elementClone(in);
+		return in;
+		//return elementClone(in);
 	}
 
 	/*

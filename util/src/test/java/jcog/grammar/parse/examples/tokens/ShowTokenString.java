@@ -32,9 +32,9 @@ public class ShowTokenString {
 
 		// a parser that counts words
 
-		Parser w = new Word().discard();
-		w.setAssembler(new IAssembler() {
-			public void workOn(Assembly a) {
+		Parser w = new Word().ok();
+		w.put(new IAssembler() {
+			public void accept(Assembly a) {
 				if (a.getStack().isEmpty()) {
 					a.push(new Integer(1));
 				} else {

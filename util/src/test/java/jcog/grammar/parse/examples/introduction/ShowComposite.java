@@ -21,12 +21,12 @@ public class ShowComposite {
 	public static void main(String[] args) {
 
 		Alternation adjective = new Alternation();
-		adjective.add(new Literal("steaming"));
-		adjective.add(new Literal("hot"));
+		adjective.get(new Literal("steaming"));
+		adjective.get(new Literal("hot"));
 
 		Sequence good = new Sequence();
-		good.add(new Repetition(adjective));
-		good.add(new Literal("coffee"));
+		good.get(new Repetition(adjective));
+		good.get(new Literal("coffee"));
 
 		String s = "hot hot steaming hot coffee";
 		Assembly a = new TokenAssembly(s);

@@ -27,7 +27,7 @@ public class PrettyVisitor extends ParserVisitor {
 			return;
 		}
 		visited.add(a);
-		a.setAssembler(new PrettyAlternationAssembler(a.getName()));
+		a.put(new PrettyAlternationAssembler(a.getName()));
         for (Parser child : a.subparsers) {
 			child.accept(this, visited);
 		}
@@ -38,7 +38,7 @@ public class PrettyVisitor extends ParserVisitor {
 	 * <code>PrettyEmptyAssembler</code> object.
 	 */
 	public void visitEmpty(Empty e, Set<Parser> visited) {
-		e.setAssembler(new PrettyEmptyAssembler());
+		e.put(new PrettyEmptyAssembler());
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class PrettyVisitor extends ParserVisitor {
 		visited.add(r);
 		Object fence = new Object();
 		r.setPreAssembler(new FenceAssembler(fence));
-		r.setAssembler(new PrettyRepetitionAssembler(r.getName(), fence));
+		r.put(new PrettyRepetitionAssembler(r.getName(), fence));
 		r.getSubparser().accept(this, new HashSet<>(visited));
 	}
 
@@ -69,7 +69,7 @@ public class PrettyVisitor extends ParserVisitor {
 			return;
 		}
 		visited.add(s);
-        s.setAssembler(new PrettySequenceAssembler(s.getName(), s.subparsers.size()));
+        s.put(new PrettySequenceAssembler(s.getName(), s.subparsers.size()));
         for (Parser child : s.subparsers) {
 			child.accept(this, visited);
 		}
@@ -80,6 +80,6 @@ public class PrettyVisitor extends ParserVisitor {
 	 * <code>PrettyTerminalAssembler</code> object.
 	 */
 	public void visitTerminal(Terminal t, Set<Parser> visited) {
-		t.setAssembler(new PrettyTerminalAssembler());
+		t.put(new PrettyTerminalAssembler());
 	}
 }

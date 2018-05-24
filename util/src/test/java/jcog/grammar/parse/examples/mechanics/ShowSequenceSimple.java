@@ -28,7 +28,7 @@ public class ShowSequenceSimple {
 		Parser world = new Literal("world");
 		Parser bang = new Symbol('!');
 
-		Parser s = new VerboseSequence().add(hello).add(world).add(bang);
+		Parser s = new VerboseSequence().get(hello).get(world).get(bang);
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("Hello world!"));

@@ -20,11 +20,11 @@ public class AndAssembler implements IAssembler {
 	 * 
 	 * @param   Assembly   the assembly whose stack to use
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Object top = a.pop();
 		Sequence s = new Sequence();
-		s.add((Parser) a.pop());
-		s.add((Parser) top);
+		s.get((Parser) a.pop());
+		s.get((Parser) top);
 		a.push(s);
 	}
 }

@@ -22,11 +22,11 @@ public class OrAssembler implements IAssembler {
 	 * 
 	 * @param   Assembly   the assembly whose stack to use
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Object top = a.pop();
 		Alternation alt = new Alternation();
-		alt.add((Parser) a.pop());
-		alt.add((Parser) top);
+		alt.get((Parser) a.pop());
+		alt.get((Parser) top);
 		a.push(alt);
 	}
 }

@@ -29,13 +29,13 @@ public class ShowEmpty {
 
 		empty = new Empty();
 
-		commaTerm = new Sequence().add(new Symbol(',').discard()).add(new Word());
+		commaTerm = new Sequence().get(new Symbol(',').ok()).get(new Word());
 
-		actualList = new Sequence().add(new Word()).add(new Repetition(commaTerm));
+		actualList = new Sequence().get(new Word()).get(new Repetition(commaTerm));
 
-		contents = new Alternation().add(empty).add(actualList);
+		contents = new Alternation().get(empty).get(actualList);
 
-		list = new Sequence().add(new Symbol('[').discard()).add(contents).add(new Symbol(']').discard());
+		list = new Sequence().get(new Symbol('[').ok()).get(contents).get(new Symbol(']').ok());
 
 		String test[] = new String[] { "[die_bonder_2, oven_7, wire_bonder_3, mold_1]", "[]", "[mold_1]" };
 		for (int i = 0; i < test.length; i++) {

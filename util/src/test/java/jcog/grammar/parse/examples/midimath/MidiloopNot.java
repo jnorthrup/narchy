@@ -43,12 +43,12 @@ public class MidiloopNot {
 			expression = new Sequence();
 
 			Sequence plusTerm = new Sequence();
-			plusTerm.add(new Symbol('+').discard());
-			plusTerm.add(term());
-			plusTerm.setAssembler(new PlusAssembler());
+			plusTerm.get(new Symbol('+').ok());
+			plusTerm.get(term());
+			plusTerm.put(new PlusAssembler());
 
-			expression.add(term());
-			expression.add(new Repetition(plusTerm));
+			expression.get(term());
+			expression.get(new Repetition(plusTerm));
 		}
 		return expression;
 	}
@@ -65,12 +65,12 @@ public class MidiloopNot {
 		Alternation factor = new Alternation();
 
 		Sequence parenExpression = new Sequence();
-		parenExpression.add(new Symbol('(').discard());
-		parenExpression.add(expression());
-		parenExpression.add(new Symbol(')').discard());
+		parenExpression.get(new Symbol('(').ok());
+		parenExpression.get(expression());
+		parenExpression.get(new Symbol(')').ok());
 
-		factor.add(parenExpression);
-		factor.add(new Num().setAssembler(new NumAssembler()));
+		factor.get(parenExpression);
+		factor.get(new Num().put(new NumAssembler()));
 		return factor;
 	}
 
@@ -94,12 +94,12 @@ public class MidiloopNot {
 		Sequence term = new Sequence();
 
 		Sequence timesFactor = new Sequence();
-		timesFactor.add(new Symbol('*').discard());
-		timesFactor.add(factor());
-		timesFactor.setAssembler(new TimesAssembler());
+		timesFactor.get(new Symbol('*').ok());
+		timesFactor.get(factor());
+		timesFactor.put(new TimesAssembler());
 
-		term.add(factor());
-		term.add(new Repetition(timesFactor));
+		term.get(factor());
+		term.get(new Repetition(timesFactor));
 		return term;
 	}
 }

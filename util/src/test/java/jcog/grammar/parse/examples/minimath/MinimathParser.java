@@ -47,8 +47,8 @@ public class MinimathParser {
 
 		if (e == null) {
 			e = new Sequence();
-			e.add(n());
-			e.add(new Repetition(m()));
+			e.get(n());
+			e.get(new Repetition(m()));
 		}
 		return e;
 	}
@@ -58,9 +58,9 @@ public class MinimathParser {
 	 */
 	protected static Parser m() {
 		Sequence s = new Sequence();
-		s.add(new Symbol('-').discard());
-		s.add(n());
-		s.setAssembler(new MinusAssembler());
+		s.get(new Symbol('-').ok());
+		s.get(n());
+		s.put(new MinusAssembler());
 		return s;
 	}
 
@@ -78,7 +78,7 @@ public class MinimathParser {
 	 * the token with its double value.
 	 */
 	protected static Parser n() {
-		return new Num().setAssembler(new NumAssembler());
+		return new Num().put(new NumAssembler());
 	}
 
 	/**

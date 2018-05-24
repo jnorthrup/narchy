@@ -20,7 +20,7 @@ public class NameAssembler implements IAssembler {
 	 *
 	 * @param   Assembly   the assembly to work on
 	 */
-	public void workOn(Assembly a) {
+	public void accept(Assembly a) {
 		Coffee c = new Coffee();
 		Token t = (Token) a.pop();
 		c.setName(t.sval().trim());
