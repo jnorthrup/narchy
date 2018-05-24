@@ -3,9 +3,9 @@ package jcog.grammar.parse.examples.sling;
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.examples.reserved.WordOrReservedState;
-import jcog.grammar.parse.examples.track.Track;
+import jcog.grammar.parse.examples.track.SeqEx;
 import jcog.grammar.parse.tokens.Num;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.Tokenizer;
@@ -72,7 +72,7 @@ import jcog.grammar.parse.tokens.Word;
  * @version 1.0 
  */
 public class SlingParser {
-	protected Sequence expression;
+	protected Seq expression;
 	protected Alternation statement;
 	protected Alternation baseElement;
 	protected WordOrReservedState wors;
@@ -84,7 +84,7 @@ public class SlingParser {
 	 *     assignment = variable '=' expression ';' ; 
 	 */
 	protected Parser assignment() {
-		Track t = new Track("assignment");
+		SeqEx t = new SeqEx("assignment");
 		t.get(variable());
 		t.get(new Symbol('=').ok());
 		t.get(expression());
@@ -137,8 +137,8 @@ public class SlingParser {
 	 * 
 	 *     divideElement  = '/' element;
 	 */
-	protected Track divideElement() {
-		Track t = new Track();
+	protected SeqEx divideElement() {
+		SeqEx t = new SeqEx();
 		t.get(new Symbol('/').ok());
 		t.get(element());
 		t.put(new FunctionAssembler(new Arithmetic('/')));
@@ -153,7 +153,7 @@ public class SlingParser {
 	protected Parser element() {
 
 		Alternation a = new Alternation("element");
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('(').ok());
 		s.get(expression());
 		s.get(new Symbol(')').ok());
@@ -171,7 +171,7 @@ public class SlingParser {
 	protected Parser expression() {
 
 		if (expression == null) {
-			expression = new Sequence("expression");
+			expression = new Seq("expression");
 			expression.get(term());
 			Alternation rest = new Alternation();
 			rest.get(plusTerm());
@@ -189,7 +189,7 @@ public class SlingParser {
 	 *       '{' statements '}';
 	 */
 	protected Parser forStatement() {
-		Track t = new Track();
+		SeqEx t = new SeqEx();
 		t.get(reserve("for"));
 		t.get(lParen());
 
@@ -233,8 +233,8 @@ public class SlingParser {
 	 * 
 	 *     minusTerm  = '-' term;
 	 */
-	protected Track minusTerm() {
-		Track t = new Track();
+	protected SeqEx minusTerm() {
+		SeqEx t = new SeqEx();
 		t.get(new Symbol('-').ok());
 		t.get(term());
 		t.put(new FunctionAssembler(new Arithmetic('-')));
@@ -247,7 +247,7 @@ public class SlingParser {
 	 *      negative = '-' baseElement; 
 	 */
 	protected Parser negative() {
-		Sequence s = new Sequence("negative baseElement");
+		Seq s = new Seq("negative baseElement");
 		s.get(new Symbol('-').ok());
 		s.get(baseElement());
 		s.put(new NegativeAssembler());
@@ -279,7 +279,7 @@ public class SlingParser {
 	 * argument function.
 	 */
 	protected Parser oneArg(String name, SlingFunction f) {
-		Track t = new Track(name);
+		SeqEx t = new SeqEx(name);
 		t.get(reserve(name));
 		t.get(lParen());
 		t.get(expression());
@@ -304,7 +304,7 @@ public class SlingParser {
 	 *     plotStatement = "plot" expression ';';
 	 */
 	protected Parser plotStatement() {
-		Track t = new Track();
+		SeqEx t = new SeqEx();
 		t.get(reserve("plot"));
 		t.get(expression());
 		t.get(semicolon());
@@ -317,8 +317,8 @@ public class SlingParser {
 	 * 
 	 *     plusTerm  = '+' term;
 	 */
-	protected Track plusTerm() {
-		Track t = new Track();
+	protected SeqEx plusTerm() {
+		SeqEx t = new SeqEx();
 		t.get(new Symbol('+').ok());
 		t.get(term());
 		t.put(new FunctionAssembler(new Arithmetic('+')));
@@ -337,8 +337,8 @@ public class SlingParser {
 	 * 
 	 *     remainderElement  = '%' element;
 	 */
-	protected Track remainderElement() {
-		Track t = new Track();
+	protected SeqEx remainderElement() {
+		SeqEx t = new SeqEx();
 		t.get(new Symbol('%').ok());
 		t.get(element());
 		t.put(new FunctionAssembler(new Arithmetic('%')));
@@ -390,7 +390,7 @@ public class SlingParser {
 	 * </code>.
 	 */
 	protected Parser scale() {
-		Track t = new Track("scale");
+		SeqEx t = new SeqEx("scale");
 		t.get(reserve("scale"));
 		t.get(lParen());
 
@@ -440,7 +440,7 @@ public class SlingParser {
 	 *     statements = statement statement*;
 	 */
 	protected Parser statements() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(statement());
 		s.get(new Repetition(statement()));
 		return s;
@@ -453,7 +453,7 @@ public class SlingParser {
 	 *                     remainderElement)*;
 	 */
 	protected Parser term() {
-		Sequence s = new Sequence("term");
+		Seq s = new Seq("term");
 		s.get(element());
 		Alternation a = new Alternation();
 		a.get(timesElement());
@@ -468,8 +468,8 @@ public class SlingParser {
 	 * 
 	 *     timesElement  = '*' element;
 	 */
-	protected Track timesElement() {
-		Track t = new Track();
+	protected SeqEx timesElement() {
+		SeqEx t = new SeqEx();
 		t.get(new Symbol('*').ok());
 		t.get(element());
 		t.put(new FunctionAssembler(new Arithmetic('*')));
@@ -496,7 +496,7 @@ public class SlingParser {
 	 * argument function.
 	 */
 	protected Parser twoArg(String name, SlingFunction f) {
-		Track t = new Track(name);
+		SeqEx t = new SeqEx(name);
 		t.get(reserve(name));
 		t.get(lParen());
 		t.get(expression());

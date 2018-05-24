@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.robot;
 
 import jcog.grammar.parse.Alternation;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.CaselessLiteral;
 import jcog.grammar.parse.tokens.TokenAssembly;
 import jcog.grammar.parse.tokens.Word;
@@ -21,9 +21,9 @@ public class RobotMonolithic {
 	 */
 	public static void main(String[] args) {
 		Alternation command = new Alternation();
-		Sequence pickCommand = new Sequence();
-		Sequence placeCommand = new Sequence();
-		Sequence scanCommand = new Sequence();
+		Seq pickCommand = new Seq();
+		Seq placeCommand = new Seq();
+		Seq scanCommand = new Seq();
 		Word location = new Word();
 
 		command.get(pickCommand);

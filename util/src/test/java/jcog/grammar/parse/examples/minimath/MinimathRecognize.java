@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.minimath;
 
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Num;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.TokenAssembly;
@@ -24,11 +24,11 @@ public class MinimathRecognize {
 	 * Just a little demo.
 	 */
 	public static void main(String args[]) {
-		Sequence e = new Sequence();
+		Seq e = new Seq();
 
 		e.get(new Num());
 
-		Sequence m = new Sequence();
+		Seq m = new Seq();
 		m.get(new Symbol('-'));
 		m.get(new Num());
 

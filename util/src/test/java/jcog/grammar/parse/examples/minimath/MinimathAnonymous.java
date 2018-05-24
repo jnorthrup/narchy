@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.minimath;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.IAssembler;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Num;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.Token;
@@ -23,7 +23,7 @@ public class MinimathAnonymous {
 	 * Just a little demo.
 	 */
 	public static void main(String args[]) {
-		Sequence e = new Sequence();
+		Seq e = new Seq();
 
 		Num n = new Num();
 		n.put(new IAssembler() {
@@ -35,7 +35,7 @@ public class MinimathAnonymous {
 
 		e.get(n);
 
-		Sequence m = new Sequence();
+		Seq m = new Seq();
 		m.get(new Symbol('-').ok());
 		m.get(n);
 		m.put(new IAssembler() {

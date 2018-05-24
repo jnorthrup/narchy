@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.mechanics;
 
 import jcog.grammar.parse.Alternation;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Literal;
 import jcog.grammar.parse.tokens.TokenAssembly;
 
@@ -25,7 +25,7 @@ public class ShowCycle {
 		Alternation ticks = new Alternation();
 		Literal tick = new Literal("tick");
 
-		ticks.get(tick).get(new Sequence().get(tick).get(ticks));
+		ticks.get(tick).get(new Seq().get(tick).get(ticks));
 
 		System.out.println(ticks.bestMatch(new TokenAssembly("tick tick tick tick")));
 

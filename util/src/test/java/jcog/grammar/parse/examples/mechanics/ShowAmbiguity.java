@@ -49,7 +49,7 @@ public class ShowAmbiguity {
 
 		Parser wordOrVolume = new Alternation().get(new Word()).get(volume);
 
-		Parser query = new Sequence().get(new Repetition(wordOrVolume)).get(new Symbol('?'));
+		Parser query = new Seq().get(new Repetition(wordOrVolume)).get(new Symbol('?'));
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("How many cups are in a gallon?"));

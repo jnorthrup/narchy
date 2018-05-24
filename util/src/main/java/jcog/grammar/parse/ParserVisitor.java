@@ -65,7 +65,7 @@ public abstract class ParserVisitor {
 	 *            a collection of previously visited parsers
 	 * 
 	 */
-	public abstract void visitSequence(Sequence s, Set<Parser> visited);
+	public abstract void visitSequence(Seq s, Set<Parser> visited);
 
 	/**
 	 * Visit a terminal.

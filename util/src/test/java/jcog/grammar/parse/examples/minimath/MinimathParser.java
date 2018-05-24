@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.minimath;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.examples.arithmetic.MinusAssembler;
 import jcog.grammar.parse.examples.arithmetic.NumAssembler;
 import jcog.grammar.parse.tokens.Num;
@@ -32,7 +32,7 @@ import jcog.grammar.parse.tokens.TokenAssembly;
  * @version 1.0 
  */
 public class MinimathParser {
-	protected static Sequence e;
+	protected static Seq e;
 
 	/**
 	 * Return a parser that will recognize a Minimath
@@ -46,7 +46,7 @@ public class MinimathParser {
 		// lazy-initialize e to prevent cycling
 
 		if (e == null) {
-			e = new Sequence();
+			e = new Seq();
 			e.get(n());
 			e.get(new Repetition(m()));
 		}
@@ -57,7 +57,7 @@ public class MinimathParser {
 	 * a parser for the rule: m = '-' Num;
 	 */
 	protected static Parser m() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('-').ok());
 		s.get(n());
 		s.put(new MinusAssembler());

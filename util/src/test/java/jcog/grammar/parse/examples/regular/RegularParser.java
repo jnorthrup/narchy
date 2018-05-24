@@ -44,7 +44,7 @@ import jcog.grammar.parse.chars.SpecificChar;
  */
 
 public class RegularParser {
-	protected Sequence expression;
+	protected Seq expression;
 
 	/**
 	 * Returns a parser that will recognize a regular
@@ -57,7 +57,7 @@ public class RegularParser {
 		if (expression == null) {
 
 			// expression = term orTerm*;
-			expression = new Sequence();
+			expression = new Seq();
 			expression.get(term());
 			expression.get(new Repetition(orTerm()));
 		}
@@ -116,7 +116,7 @@ public class RegularParser {
 	 * parsers and push an Alternation of them. 
 	 */
 	protected Parser orTerm() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new SpecificChar('|').ok());
 		s.get(term());
 		s.put(new OrAssembler());
@@ -132,7 +132,7 @@ public class RegularParser {
 		Alternation a = new Alternation();
 		a.get(letterOrDigit());
 
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new SpecificChar('(').ok());
 		s.get(expression());
 		s.get(new SpecificChar(')').ok());
@@ -150,7 +150,7 @@ public class RegularParser {
 	 * parser and push a Repetition of it.
 	 */
 	protected Parser phraseStar() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(phrase());
 		s.get(new SpecificChar('*').ok());
 		s.put(new StarAssembler());
@@ -174,7 +174,7 @@ public class RegularParser {
 	 *    term = factor nextFactor*; 
 	 */
 	protected Parser term() {
-		Sequence term = new Sequence();
+		Seq term = new Seq();
 		term.get(factor());
 		term.get(new Repetition(nextFactor()));
 		return term;

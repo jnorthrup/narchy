@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.robot;
 
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.CaselessLiteral;
 import jcog.grammar.parse.tokens.Word;
 
@@ -66,7 +66,7 @@ public class RobotParser {
 	 *     pickCommand  = "pick" "carrier" "from" location;
 	 */
 	protected Parser pickCommand() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new CaselessLiteral("pick"));
 		s.get(new CaselessLiteral("carrier"));
 		s.get(new CaselessLiteral("from"));
@@ -81,7 +81,7 @@ public class RobotParser {
 	 *     placeCommand = "place" "carrier" "at" location;
 	 */
 	protected Parser placeCommand() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new CaselessLiteral("place"));
 		s.get(new CaselessLiteral("carrier"));
 		s.get(new CaselessLiteral("at"));
@@ -96,7 +96,7 @@ public class RobotParser {
 	 *     scanCommand  = "scan" location;
 	 */
 	protected Parser scanCommand() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new CaselessLiteral("scan"));
 		s.get(location());
 		s.put(new ScanAssembler());

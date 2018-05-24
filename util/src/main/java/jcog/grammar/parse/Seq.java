@@ -25,15 +25,15 @@ import java.util.Set;
  * @version 1.0
  */
 
-public class Sequence extends CollectionParser {
+public class Seq extends CollectionParser {
 
 	/**
 	 * Constructs a nameless sequence.
 	 */
-	public Sequence() {
+	public Seq() {
 	}
 
-	public Sequence(Parser... p) {
+	public Seq(Parser... p) {
 		for (Parser x : p)
 			get(x);
 	}
@@ -44,7 +44,7 @@ public class Sequence extends CollectionParser {
 	 * @param name
 	 *            a name to be known by
 	 */
-	public Sequence(String name) {
+	public Seq(String name) {
 		super(name);
 	}
 
@@ -121,7 +121,7 @@ public class Sequence extends CollectionParser {
 		return leftChildren;
 	}
 
-	public Sequence see(String x) {
+	public Seq see(String x) {
 		get(new Literal(x).ok());
 		return this;
 	}

@@ -245,8 +245,8 @@ public class Structure implements Term {
 	 *            [] the terms of the list
 	 */
 
-	public static Structure list(Term[] terms) {
-		return new Structure(".", headAndTail(terms, emptyList));
+	public static Structure list(Term... terms) {
+		return (terms.length == 0) ? Structure.emptyList : new Structure(".", headAndTail(terms, emptyList));
 	}
 
 	/**

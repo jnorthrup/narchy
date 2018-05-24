@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.mechanics;
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 
 import java.util.Set;
 
@@ -22,7 +22,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class VerboseSequence extends Sequence {
+public class VerboseSequence extends Seq {
 	/**
 	 * Constructs a nameless VerboseSequence.
 	 */

@@ -37,9 +37,9 @@ public class Midiloop {
 	 *           expression
 	 */
 	public Parser expression() {
-		Sequence expression = new Sequence();
+		Seq expression = new Seq();
 
-		Sequence plusTerm = new Sequence();
+		Seq plusTerm = new Seq();
 		plusTerm.get(new Symbol('+').ok());
 		plusTerm.get(term());
 		plusTerm.put(new PlusAssembler());
@@ -60,7 +60,7 @@ public class Midiloop {
 	protected Parser factor() {
 		Alternation factor = new Alternation();
 
-		Sequence parenExpression = new Sequence();
+		Seq parenExpression = new Seq();
 		parenExpression.get(new Symbol('(').ok());
 		parenExpression.get(expression());
 		parenExpression.get(new Symbol(')').ok());
@@ -89,9 +89,9 @@ public class Midiloop {
 	 *           expressions containing just multiplication
 	 */
 	protected Parser term() {
-		Sequence term = new Sequence();
+		Seq term = new Seq();
 
-		Sequence timesFactor = new Sequence();
+		Seq timesFactor = new Seq();
 		timesFactor.get(new Symbol('*').ok());
 		timesFactor.get(factor());
 		timesFactor.put(new TimesAssembler());

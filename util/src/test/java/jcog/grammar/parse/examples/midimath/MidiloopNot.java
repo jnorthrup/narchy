@@ -29,7 +29,7 @@ import jcog.grammar.parse.tokens.TokenAssembly;
  * @version 1.0 
  */
 public class MidiloopNot {
-	protected static Sequence expression;
+	protected static Seq expression;
 
 	/**
 	 * Returns a parser that will recognize a Midimath
@@ -40,9 +40,9 @@ public class MidiloopNot {
 	 */
 	public Parser expression() {
 		if (expression == null) {
-			expression = new Sequence();
+			expression = new Seq();
 
-			Sequence plusTerm = new Sequence();
+			Seq plusTerm = new Seq();
 			plusTerm.get(new Symbol('+').ok());
 			plusTerm.get(term());
 			plusTerm.put(new PlusAssembler());
@@ -64,7 +64,7 @@ public class MidiloopNot {
 	protected Parser factor() {
 		Alternation factor = new Alternation();
 
-		Sequence parenExpression = new Sequence();
+		Seq parenExpression = new Seq();
 		parenExpression.get(new Symbol('(').ok());
 		parenExpression.get(expression());
 		parenExpression.get(new Symbol(')').ok());
@@ -91,9 +91,9 @@ public class MidiloopNot {
 	 *           expressions containing just multiplication
 	 */
 	protected Parser term() {
-		Sequence term = new Sequence();
+		Seq term = new Seq();
 
-		Sequence timesFactor = new Sequence();
+		Seq timesFactor = new Seq();
 		timesFactor.get(new Symbol('*').ok());
 		timesFactor.get(factor());
 		timesFactor.put(new TimesAssembler());

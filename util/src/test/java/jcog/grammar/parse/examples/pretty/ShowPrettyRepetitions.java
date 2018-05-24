@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.pretty;
 
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.TokenAssembly;
 import jcog.grammar.parse.tokens.Word;
 
@@ -44,8 +44,8 @@ public class ShowPrettyRepetitions {
 	 * </pre></blockquote>
 	 * 
 	 */
-	public static Sequence seq() {
-		Sequence seq = new Sequence("<seq>");
+	public static Seq seq() {
+		Seq seq = new Seq("<seq>");
 		seq.get(new Repetition(new Word(), "<rep1>"));
 		seq.get(new Repetition(new Word(), "<rep2>"));
 		return seq;

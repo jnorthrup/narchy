@@ -2,6 +2,7 @@ package jcog.grammar.parse;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public abstract class Parser {
 	/*
@@ -237,6 +238,13 @@ public abstract class Parser {
 	 */
 	public Parser put(Consumer<Assembly> assembler) {
 		this.assembler = assembler;
+		return this;
+	}
+	public Parser push(Function<Assembly,?> f) {
+		this.assembler = (x)->{
+			Object y = f.apply(x);
+			x.push(y);
+		};
 		return this;
 	}
 

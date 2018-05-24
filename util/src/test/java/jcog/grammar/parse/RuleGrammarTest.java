@@ -70,7 +70,7 @@ public class RuleGrammarTest {
 
 	@Test
 	public void builtInTerminalTypes() {
-		Sequence seq = (Sequence) resultRule("Num Int Word QuotedString");
+		Seq seq = (Seq) resultRule("Num Int Word QuotedString");
         assertTrue(seq.subparsers.get(0) instanceof Num);
         assertTrue(seq.subparsers.get(1) instanceof Int);
         assertTrue(seq.subparsers.get(2) instanceof Word);
@@ -81,14 +81,14 @@ public class RuleGrammarTest {
 	public void selfMadeTerminalTypes() {
 		targetGrammar.registerTerminal(UpperCaseWord.class);
 		targetGrammar.registerTerminal("UCW", UpperCaseWord.class);
-		Sequence seq = (Sequence) resultRule("UpperCaseWord UCW");
+		Seq seq = (Seq) resultRule("UpperCaseWord UCW");
         assertTrue(seq.subparsers.get(0) instanceof UpperCaseWord);
         assertTrue(seq.subparsers.get(1) instanceof UpperCaseWord);
 	}
 
 	@Test
 	public void sequence() {
-		Sequence seq = (Sequence) resultRule("\"a\" '<' \"b\"");
+		Seq seq = (Seq) resultRule("\"a\" '<' \"b\"");
         assertEquals(new CaselessLiteral("a"), seq.subparsers.get(0));
         assertEquals(new Symbol("<"), seq.subparsers.get(1));
         assertEquals(new CaselessLiteral("b"), seq.subparsers.get(2));
@@ -113,7 +113,7 @@ public class RuleGrammarTest {
 
 		alt = (Alternation) resultRule("a* | '+' '*'");
         assertTrue(alt.subparsers.get(0) instanceof Repetition);
-        assertTrue(alt.subparsers.get(1) instanceof Sequence);
+        assertTrue(alt.subparsers.get(1) instanceof Seq);
 	}
 
 	@Test
@@ -121,15 +121,15 @@ public class RuleGrammarTest {
 		RuleReference ref = (RuleReference) resultRule("(a)");
 		assertEquals(new RuleReference("a", targetGrammar), ref);
 
-		assertParserType("(a b c)", Sequence.class);
+		assertParserType("(a b c)", Seq.class);
 		assertParserType("(a*)", Repetition.class);
 		assertParserType("(a|b)", Alternation.class);
 	}
 
 	@Test
 	public void nestedParentheses() {
-		assertParserType("(a|b) c", Sequence.class);
-		assertParserType("a (b c)*", Sequence.class);
+		assertParserType("(a|b) c", Seq.class);
+		assertParserType("a (b c)*", Seq.class);
 		assertParserType("(a b) | (c d)*", Alternation.class);
 		assertParserType("(a b c d)*", Repetition.class);
 		assertParserType("(a b c d)+", Repetition.class);
@@ -138,7 +138,7 @@ public class RuleGrammarTest {
 
 	@Test
 	public void byDefaultConstantsAreNotDiscarded() {
-		Sequence ref = (Sequence) resultRule("'<' \"a\"");
+		Seq ref = (Seq) resultRule("'<' \"a\"");
 		assertFalse(((Terminal) ref.getChild(0)).isDiscarded());
 		assertFalse(((Terminal) ref.getChild(1)).isDiscarded());
 	}
@@ -146,14 +146,14 @@ public class RuleGrammarTest {
 	@Test
 	public void switchOnDefaultDiscardOfConstants() {
 		targetGrammar.discardAllConstants();
-		Sequence ref = (Sequence) resultRule("'<' \"a\"");
+		Seq ref = (Seq) resultRule("'<' \"a\"");
 		assertTrue(((Terminal) ref.getChild(0)).isDiscarded());
 		assertTrue(((Terminal) ref.getChild(1)).isDiscarded());
 	}
 
 	@Test
 	public void explicitConstantsDiscard() {
-		Sequence ref = (Sequence) resultRule("#'<' #\"a\"");
+		Seq ref = (Seq) resultRule("#'<' #\"a\"");
 		assertTrue(((Terminal) ref.getChild(0)).isDiscarded());
 		assertTrue(((Terminal) ref.getChild(1)).isDiscarded());
 	}

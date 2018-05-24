@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.introduction;
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Literal;
 import jcog.grammar.parse.tokens.TokenAssembly;
 
@@ -24,7 +24,7 @@ public class ShowComposite {
 		adjective.get(new Literal("steaming"));
 		adjective.get(new Literal("hot"));
 
-		Sequence good = new Sequence();
+		Seq good = new Seq();
 		good.get(new Repetition(adjective));
 		good.get(new Literal("coffee"));
 

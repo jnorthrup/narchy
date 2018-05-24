@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.midimath;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.examples.arithmetic.NumAssembler;
 import jcog.grammar.parse.examples.arithmetic.PlusAssembler;
 import jcog.grammar.parse.examples.arithmetic.TimesAssembler;
@@ -36,9 +36,9 @@ public class Midimath {
 	 *           expression
 	 */
 	public Parser expression() {
-		Sequence expression = new Sequence();
+		Seq expression = new Seq();
 
-		Sequence plusTerm = new Sequence();
+		Seq plusTerm = new Seq();
 		plusTerm.get(new Symbol('+').ok());
 		plusTerm.get(term());
 		plusTerm.put(new PlusAssembler());
@@ -64,12 +64,12 @@ public class Midimath {
 	 *           expressions containing just multiplication
 	 */
 	protected Parser term() {
-		Sequence term = new Sequence();
+		Seq term = new Seq();
 
 		Num n = new Num();
 		n.put(new NumAssembler());
 
-		Sequence timesNum = new Sequence();
+		Seq timesNum = new Seq();
 		timesNum.get(new Symbol('*').ok());
 		timesNum.get(n);
 		timesNum.put(new TimesAssembler());

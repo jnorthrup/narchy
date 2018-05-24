@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.mechanics;
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Num;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.TokenAssembly;
@@ -30,7 +30,7 @@ public class ShowPush {
 
 		Num num = new Num();
 
-		Parser coord = new Sequence().get(open).get(num).get(comma).get(num).get(comma).get(num).get(close);
+		Parser coord = new Seq().get(open).get(num).get(comma).get(num).get(comma).get(num).get(close);
 
 		Assembly out = coord.bestMatch(new TokenAssembly("(23.4, 34.5, 45.6)"));
 

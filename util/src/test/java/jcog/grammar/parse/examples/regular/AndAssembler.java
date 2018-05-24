@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.regular;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.IAssembler;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 
 /**
  * Pop two Parsers from the stack and push a new <code>
@@ -22,7 +22,7 @@ public class AndAssembler implements IAssembler {
 	 */
 	public void accept(Assembly a) {
 		Object top = a.pop();
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get((Parser) a.pop());
 		s.get((Parser) top);
 		a.push(s);

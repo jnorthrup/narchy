@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.mechanics;
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Literal;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.TokenAssembly;
@@ -29,7 +29,7 @@ public class ShowSequenceManual {
 		Parser world = new Literal("world");
 		Parser bang = new Symbol('!');
 
-		Parser s = new Sequence().get(hello).get(world).get(bang);
+		Parser s = new Seq().get(hello).get(world).get(bang);
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("Hello world!"));

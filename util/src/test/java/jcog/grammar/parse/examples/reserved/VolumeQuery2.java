@@ -26,7 +26,7 @@ public class VolumeQuery2 {
 
 		Parser a = new Alternation().get(new Word()).get(volume());
 
-		Parser s = new Sequence().get(new Repetition(a)).get(new Symbol('?'));
+		Parser s = new Seq().get(new Repetition(a)).get(new Symbol('?'));
 
 		return s;
 	}

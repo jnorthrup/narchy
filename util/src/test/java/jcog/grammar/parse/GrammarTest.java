@@ -115,7 +115,7 @@ public class GrammarTest {
         assertTrue(grammar.parse("HELLO hello HellO").isCompleteMatch());
         assertFalse(grammar.parse("hello 12.34").isCompleteMatch());
 
-        Sequence sequence = new Sequence();
+        Seq sequence = new Seq();
         sequence.get(new CaselessLiteral("hello"));
         sequence.get(new Num());
         grammar.addRule("referenced", sequence);
@@ -138,7 +138,7 @@ public class GrammarTest {
         grammar.addRule("unused", new Empty());
         assertCheckFails();
 
-        Sequence startClause = new Sequence();
+        Seq startClause = new Seq();
         startClause.get(new Int());
         startClause.get(new RuleReference("unused", grammar));
         grammar.addRule("mystart", startClause);
@@ -250,21 +250,21 @@ public class GrammarTest {
         command.get(new RuleReference("scanCommand", grammar));
         grammar.addRule("command", command);
 
-        Sequence pickCommand = new Sequence();
+        Seq pickCommand = new Seq();
         pickCommand.get(new CaselessLiteral("pick"));
         pickCommand.get(new CaselessLiteral("carrier"));
         pickCommand.get(new CaselessLiteral("from"));
         pickCommand.get(new RuleReference("location", grammar));
         grammar.addRule("pickCommand", pickCommand);
 
-        Sequence placeCommand = new Sequence();
+        Seq placeCommand = new Seq();
         placeCommand.get(new CaselessLiteral("place"));
         placeCommand.get(new CaselessLiteral("carrier"));
         placeCommand.get(new CaselessLiteral("at"));
         placeCommand.get(new RuleReference("location", grammar));
         grammar.addRule("placeCommand", placeCommand);
 
-        Sequence scanCommand = new Sequence();
+        Seq scanCommand = new Seq();
         scanCommand.get(new CaselessLiteral("scan"));
         scanCommand.get(new RuleReference("location", grammar));
         grammar.addRule("scanCommand", scanCommand);

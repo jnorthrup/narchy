@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.track;
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,11 +25,11 @@ import java.util.Set;
  * @version 1.0
  */
 
-public class Track extends Sequence {
+public class SeqEx extends Seq {
 	/**
 	 * Constructs a nameless Track.
 	 */
-	public Track() {
+	public SeqEx() {
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class Track extends Sequence {
 	 * @param name
 	 *            a name to be known by
 	 */
-	public Track(String name) {
+	public SeqEx(String name) {
 		super(name);
 	}
 
@@ -62,7 +62,8 @@ public class Track extends Sequence {
 
 		Set<Assembly> last = in;
 		Set<Assembly> out = in;
-		for (Parser p : subparsers) {
+		for (int i = 0, subparsersSize = subparsers.size(); i < subparsersSize; i++) {
+			Parser p = subparsers.get(i);
 			out = p.matchAndAssemble(last);
 			if (out.isEmpty()) {
 				if (inTrack) {

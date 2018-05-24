@@ -29,8 +29,7 @@ public class AtomAssembler implements IAssembler {
 		// remove quotes from quoted string
 		if (t.isQuotedString()) {
 			String s = t.sval();
-			String plain = s.substring(1, s.length() - 1);
-			a.push(new Atom(plain));
+			a.push(new Atom(s.substring(1, s.length() - 1)));
 		} else if (t.isNumber()) {
 			a.push(new NumberFact(t.nval()));
 		} else {

@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.tests;
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Literal;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.Word;
@@ -32,7 +32,7 @@ public class VolumeQuery {
 	 */
 	public static Parser query() {
 		Parser a = new Alternation().get(new Word()).get(volume());
-		Parser s = new Sequence().get(new Repetition(a)).get(new Symbol('?'));
+		Parser s = new Seq().get(new Repetition(a)).get(new Symbol('?'));
 		return s;
 	}
 

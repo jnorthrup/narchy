@@ -77,8 +77,8 @@ public class RuleGrammar extends Grammar {
 		return new RuleReference(ruleName, this);
 	}
 
-	private static Sequence seq(Parser... parsers) {
-		Sequence seq = new Sequence();
+	private static Seq seq(Parser... parsers) {
+		Seq seq = new Seq();
 		for (Parser each : parsers) {
 			seq.get(each);
 		}
@@ -101,9 +101,9 @@ public class RuleGrammar extends Grammar {
 		public void accept(Assembly a) {
 			Parser last = (Parser) a.pop();
 			Parser butlast = (Parser) a.pop();
-			Sequence seq;
-			if (last instanceof Sequence) {
-				seq = (Sequence) last;
+			Seq seq;
+			if (last instanceof Seq) {
+				seq = (Seq) last;
 			} else {
 				seq = seq(last);
 			}

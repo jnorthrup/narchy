@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 
 public class ArithmeticParser {
-	protected Sequence expression;
+	protected Seq expression;
 	protected Alternation factor;
 
 	/*
@@ -66,7 +66,7 @@ public class ArithmeticParser {
 	 * numbers from the stack and push their quotient.
 	 */
 	protected Parser divideFactor() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('/').ok());
 		s.get(factor());
 		s.put(new DivideAssembler());
@@ -83,7 +83,7 @@ public class ArithmeticParser {
 	 * exponentiating the lower number to the upper one.
 	 */
 	protected Parser expFactor() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('^').ok());
 		s.get(factor());
 		s.put(new ExpAssembler());
@@ -105,7 +105,7 @@ public class ArithmeticParser {
 		if (expression == null) {
 
 			// expression = term (plusTerm | minusTerm)*;
-			expression = new Sequence("expression");
+			expression = new Seq("expression");
 			expression.get(term());
 
 			Alternation a = new Alternation();
@@ -131,7 +131,7 @@ public class ArithmeticParser {
 		if (factor == null) {
 			factor = new Alternation("factor");
 
-			Sequence s = new Sequence();
+			Seq s = new Seq();
 			s.get(phrase());
 			s.get(expFactor());
 
@@ -150,7 +150,7 @@ public class ArithmeticParser {
 	 * numbers from the stack and push their difference.
 	 */
 	protected Parser minusTerm() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('-').ok());
 		s.get(term());
 		s.put(new MinusAssembler());
@@ -169,7 +169,7 @@ public class ArithmeticParser {
 	protected Parser phrase() {
 		Alternation phrase = new Alternation("phrase");
 
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('(').ok());
 		s.get(expression());
 		s.get(new Symbol(')').ok());
@@ -188,7 +188,7 @@ public class ArithmeticParser {
 	 * numbers from the stack and push their sum.
 	 */
 	protected Parser plusTerm() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('+').ok());
 		s.get(term());
 		s.put(new PlusAssembler());
@@ -212,7 +212,7 @@ public class ArithmeticParser {
 	 *    term = factor (timesFactor | divideFactor)*;
 	 */
 	protected Parser term() {
-		Sequence s = new Sequence("term");
+		Seq s = new Seq("term");
 		s.get(factor());
 
 		Alternation a = new Alternation();
@@ -232,7 +232,7 @@ public class ArithmeticParser {
 	 * numbers from the stack and push their product.
 	 */
 	protected Parser timesFactor() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('*').ok());
 		s.get(factor());
 		s.put(new TimesAssembler());

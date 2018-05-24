@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.minimath;
 
 import jcog.grammar.parse.Alternation;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Num;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.TokenAssembly;
@@ -30,7 +30,7 @@ public class MiniLeftRecursion {
 		Alternation e = new Alternation();
 		Num n = new Num();
 
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(e);
 		s.get(new Symbol('-').ok());
 		s.get(n);

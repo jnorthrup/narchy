@@ -9,6 +9,6 @@ import java.util.function.Consumer;
  * @param Assembly
  *            the assembly to work on
  */
-public interface IAssembler extends Consumer<Assembly> {
+@FunctionalInterface  public interface IAssembler extends Consumer<Assembly> {
 
 }

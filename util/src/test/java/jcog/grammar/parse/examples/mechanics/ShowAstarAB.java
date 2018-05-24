@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.mechanics;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.chars.CharacterAssembly;
 import jcog.grammar.parse.chars.SpecificChar;
 
@@ -27,9 +27,9 @@ public class ShowAstarAB {
 
 		Parser aStar = new Repetition(new SpecificChar('a'));
 
-		Parser ab = new Sequence().get(new SpecificChar('a')).get(new SpecificChar('b')); // ab
+		Parser ab = new Seq().get(new SpecificChar('a')).get(new SpecificChar('b')); // ab
 
-		Parser aStarAB = new Sequence().get(aStar).get(ab); // a*ab
+		Parser aStarAB = new Seq().get(aStar).get(ab); // a*ab
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new CharacterAssembly("aaaab"));

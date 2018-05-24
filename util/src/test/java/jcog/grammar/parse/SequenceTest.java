@@ -14,11 +14,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SequenceTest extends AbstractParsingTest {
 
-	Sequence sequence;
+	Seq sequence;
 
 	@BeforeEach
 	public void init() {
-		sequence = new Sequence();
+		sequence = new Seq();
 	}
 
 	@Test

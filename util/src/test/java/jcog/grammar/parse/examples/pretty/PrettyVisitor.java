@@ -64,7 +64,7 @@ public class PrettyVisitor extends ParserVisitor {
 	 * <code>PrettySequenceAssembler</code> object and visit the parser's
 	 * children.
 	 */
-	public void visitSequence(Sequence s, Set<Parser> visited) {
+	public void visitSequence(Seq s, Set<Parser> visited) {
 		if (visited.contains(s)) {
 			return;
 		}

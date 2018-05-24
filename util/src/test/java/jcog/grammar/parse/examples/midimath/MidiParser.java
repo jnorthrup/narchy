@@ -28,7 +28,7 @@ import jcog.grammar.parse.tokens.TokenAssembly;
  * @version 1.0 
  */
 public class MidiParser {
-	protected static Sequence expression;
+	protected static Seq expression;
 
 	/**
 	 * Returns a parser that will recognize a Midimath
@@ -39,7 +39,7 @@ public class MidiParser {
 	 */
 	public Parser expression() {
 		if (expression == null) {
-			expression = new Sequence();
+			expression = new Seq();
 			expression.get(term());
 			expression.get(new Repetition(minusTerm()));
 		}
@@ -64,7 +64,7 @@ public class MidiParser {
 	 * numbers from the stack and push their difference.
 	 */
 	protected Parser minusTerm() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('-').ok());
 		s.get(term());
 		s.put(new MinusAssembler());
@@ -82,7 +82,7 @@ public class MidiParser {
 	 */
 	protected Parser term() {
 
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('(').ok());
 		s.get(expression());
 		s.get(new Symbol(')').ok());

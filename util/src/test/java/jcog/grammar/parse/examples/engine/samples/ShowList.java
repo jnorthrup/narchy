@@ -26,7 +26,7 @@ public class ShowList {
 		Variable b = new Variable("B");
 		Variable c = new Variable("C");
 
-		Structure abc = Structure.list(new Term[] { a, b, c });
+		Structure abc = Structure.list(a, b, c);
 		System.out.println("\n... unifies with: " + abc);
 
 		abc.unify(snakes);

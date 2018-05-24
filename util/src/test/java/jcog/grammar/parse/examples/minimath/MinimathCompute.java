@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.minimath;
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.examples.arithmetic.MinusAssembler;
 import jcog.grammar.parse.examples.arithmetic.NumAssembler;
 import jcog.grammar.parse.tokens.Num;
@@ -31,14 +31,14 @@ public class MinimathCompute {
 	 * Just a little demo.
 	 */
 	public static void main(String args[]) {
-		Sequence e = new Sequence();
+		Seq e = new Seq();
 
 		Num n = new Num();
 		n.put(new NumAssembler());
 
 		e.get(n);
 
-		Sequence m = new Sequence();
+		Seq m = new Seq();
 		m.get(new Symbol('-').ok());
 		m.get(n);
 		m.put(new MinusAssembler());

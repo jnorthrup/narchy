@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.query;
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.examples.logic.ArithmeticAssembler;
 import jcog.grammar.parse.examples.logic.AtomAssembler;
 import jcog.grammar.parse.tokens.Num;
@@ -33,7 +33,7 @@ import jcog.grammar.parse.tokens.Word;
  * @version 1.0 
  */
 public class ComparisonParser {
-	protected Sequence expression;
+	protected Seq expression;
 	protected Speller speller;
 
 	/**
@@ -63,7 +63,7 @@ public class ComparisonParser {
 	 * Returns a parser that will recognize a comparison.
 	 */
 	public Parser comparison() {
-		Sequence s = new Sequence("comparison");
+		Seq s = new Seq("comparison");
 		s.get(arg());
 		s.get(operator());
 		s.get(arg());
@@ -75,7 +75,7 @@ public class ComparisonParser {
 	 * Recognize '/' followed by a factor.
 	 */
 	protected Parser divideFactor() {
-		Sequence s = new Sequence("divideFactor");
+		Seq s = new Seq("divideFactor");
 		s.get(new Symbol('/').ok());
 		s.get(factor());
 		s.put(new ArithmeticAssembler('/'));
@@ -94,7 +94,7 @@ public class ComparisonParser {
 		if (expression == null) {
 
 			// expression = term ('+' term | '-' term)*;
-			expression = new Sequence("expression");
+			expression = new Seq("expression");
 			expression.get(term());
 
 			// second part
@@ -115,7 +115,7 @@ public class ComparisonParser {
 		Alternation factor = new Alternation("factor");
 
 		//  '(' expression ')'
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('(').ok());
 		s.get(expression());
 		s.get(new Symbol(')').ok());
@@ -132,7 +132,7 @@ public class ComparisonParser {
 	 * Recognize '-' followed by a term.
 	 */
 	protected Parser minusTerm() {
-		Sequence s = new Sequence("minusTerm");
+		Seq s = new Seq("minusTerm");
 		s.get(new Symbol('-').ok());
 		s.get(term());
 		s.put(new ArithmeticAssembler('-'));
@@ -157,7 +157,7 @@ public class ComparisonParser {
 	 * Recognize '+' followed by a term.
 	 */
 	protected Parser plusTerm() {
-		Sequence s = new Sequence("plusTerm");
+		Seq s = new Seq("plusTerm");
 		s.get(new Symbol('+').ok());
 		s.get(term());
 		s.put(new ArithmeticAssembler('+'));
@@ -169,7 +169,7 @@ public class ComparisonParser {
 	 */
 	protected Parser term() {
 		// term = factor ('*' factor | '/' factor)*;
-		Sequence term = new Sequence("term");
+		Seq term = new Seq("term");
 
 		// first part
 		term.get(factor());
@@ -187,7 +187,7 @@ public class ComparisonParser {
 	 * Recognize '*' followed by a factor.
 	 */
 	protected Parser timesFactor() {
-		Sequence s = new Sequence("timesFactor");
+		Seq s = new Seq("timesFactor");
 		s.get(new Symbol('*').ok());
 		s.get(factor());
 		s.put(new ArithmeticAssembler('*'));

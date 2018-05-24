@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.robot;
 
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.CaselessLiteral;
 import jcog.grammar.parse.tokens.Word;
 
@@ -30,7 +30,7 @@ public class RobotRefactored {
 	}
 
 	protected Parser pickCommand() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new CaselessLiteral("pick"));
 		s.get(new CaselessLiteral("carrier"));
 		s.get(new CaselessLiteral("from"));
@@ -39,7 +39,7 @@ public class RobotRefactored {
 	}
 
 	protected Parser placeCommand() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new CaselessLiteral("place"));
 		s.get(new CaselessLiteral("carrier"));
 		s.get(new CaselessLiteral("at"));
@@ -48,7 +48,7 @@ public class RobotRefactored {
 	}
 
 	protected Parser scanCommand() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new CaselessLiteral("scan"));
 		s.get(location());
 		return s;

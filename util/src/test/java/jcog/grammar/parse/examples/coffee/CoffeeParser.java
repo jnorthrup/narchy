@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.coffee;
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Empty;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.*;
 
 /**
@@ -48,7 +48,7 @@ public class CoffeeParser {
 	public Parser coffee() {
 		Symbol comma = new Symbol(',');
 		comma.ok();
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(name());
 		s.get(comma);
 		s.get(roast());
@@ -80,7 +80,7 @@ public class CoffeeParser {
 	 * object.
 	 */
 	protected Parser formerName() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('(').ok());
 		s.get(new Word().put(new FormerNameAssembler()));
 		s.get(new Symbol(')').ok());
@@ -97,7 +97,7 @@ public class CoffeeParser {
 	 * assembler.
 	 */
 	protected Parser name() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Word().put(new NameAssembler()));
 		Alternation a = new Alternation();
 		a.get(formerName());
@@ -115,7 +115,7 @@ public class CoffeeParser {
 	 * object.
 	 */
 	protected Parser orFrench() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Symbol('/').ok());
 		s.get(new CaselessLiteral("french").ok());
 		s.put(new AlsoFrenchAssembler());
@@ -143,7 +143,7 @@ public class CoffeeParser {
 	 * assembler.
 	 */
 	protected Parser roast() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new Word().put(new RoastAssembler()));
 		Alternation a = new Alternation();
 		a.get(orFrench());

@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.minimath;
 
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Assembly;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.examples.arithmetic.MinusAssembler;
 import jcog.grammar.parse.examples.arithmetic.NumAssembler;
 import jcog.grammar.parse.tokens.Num;
@@ -36,7 +36,7 @@ public class MiniWrongAssociativity {
 		Num n = new Num();
 		n.put(new NumAssembler());
 
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(n);
 		s.get(new Symbol('-').ok());
 		s.get(e);

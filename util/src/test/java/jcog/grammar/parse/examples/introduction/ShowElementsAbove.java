@@ -27,7 +27,7 @@ public class ShowElementsAbove {
 	 */
 	public static void main(String args[]) {
 
-		Parser list = new Sequence().get(new Symbol('{')).get(new Repetition(new Word())).get(new Symbol('}').ok());
+		Parser list = new Seq().get(new Symbol('{')).get(new Repetition(new Word())).get(new Symbol('}').ok());
 
 		list.put(new IAssembler() {
 			public void accept(Assembly a) {

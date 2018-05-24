@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.regular;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
 import jcog.grammar.parse.Repetition;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.chars.CharacterAssembly;
 import jcog.grammar.parse.chars.Letter;
 
@@ -40,7 +40,7 @@ public class ShowRegularParser {
 
 		// four letters
 		Parser L = new Letter();
-		Parser L4 = new Sequence("LLLL").get(L).get(L).get(L).get(L);
+		Parser L4 = new Seq("LLLL").get(L).get(L).get(L).get(L);
 		showMatch(L4, "java");
 		showMatch(L4, "joe");
 		showMatch(new Repetition(L), "coffee");

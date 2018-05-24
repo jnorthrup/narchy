@@ -2,7 +2,7 @@ package jcog.grammar.parse.examples.tests;
 
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Literal;
 import jcog.grammar.parse.tokens.Num;
 import jcog.grammar.parse.tokens.Symbol;
@@ -41,7 +41,7 @@ public class Dangle {
 	 *     callCustomer = "callCustomer" '(' ')' ';';
 	 */
 	public static Parser callCustomer() {
-		Sequence s = new Sequence("<callCustomer>");
+		Seq s = new Seq("<callCustomer>");
 		s.get(new Literal("callCustomer"));
 		s.get(new Symbol('('));
 		s.get(new Symbol(')'));
@@ -55,7 +55,7 @@ public class Dangle {
 	 *     comparison   = '(' expression operator expression ')';
 	 */
 	public static Parser comparison() {
-		Sequence s = new Sequence("<comparison>");
+		Seq s = new Seq("<comparison>");
 		s.get(new Symbol('('));
 		s.get(expression());
 		s.get(operator());
@@ -82,7 +82,7 @@ public class Dangle {
 	 *     ifelse = "if" comparison statement "else" statement;
 	 */
 	public static Parser ifelse() {
-		Sequence s = new Sequence("<ifelse>");
+		Seq s = new Seq("<ifelse>");
 		s.get(new Literal("if"));
 		s.get(comparison());
 		s.get(statement());
@@ -97,7 +97,7 @@ public class Dangle {
 	 *     iff = "if" comparison statement;
 	 */
 	public static Parser iff() {
-		Sequence s = new Sequence("<iff>");
+		Seq s = new Seq("<iff>");
 		s.get(new Literal("if"));
 		s.get(comparison());
 		s.get(statement());
@@ -126,7 +126,7 @@ public class Dangle {
 	 *     sendBill     = "sendBill" '('')' ';';
 	 */
 	public static Parser sendBill() {
-		Sequence s = new Sequence("<sendBill>");
+		Seq s = new Seq("<sendBill>");
 		s.get(new Literal("sendBill"));
 		s.get(new Symbol('('));
 		s.get(new Symbol(')'));

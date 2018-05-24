@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.query;
 
 import jcog.grammar.parse.*;
-import jcog.grammar.parse.examples.track.Track;
+import jcog.grammar.parse.examples.track.SeqEx;
 import jcog.grammar.parse.tokens.CaselessLiteral;
 import jcog.grammar.parse.tokens.Symbol;
 import jcog.grammar.parse.tokens.Word;
@@ -69,12 +69,12 @@ public class JaqlParser {
 	 * The Jaql language uses this construction several 
 	 * times.
 	 */
-	protected static Sequence commaList(Parser p) {
-		Sequence commaP = new Track();
+	protected static Seq commaList(Parser p) {
+		Seq commaP = new SeqEx();
 		commaP.get(new Symbol(',').ok());
 		commaP.get(p);
 
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(p);
 		s.get(new Repetition(commaP));
 		return s;
@@ -124,7 +124,7 @@ public class JaqlParser {
 	 *         statement.
 	 */
 	public Parser select() {
-		Sequence s = new Track();
+		Seq s = new SeqEx();
 		s.get(new CaselessLiteral("select").ok());
 		s.get(selectTerms());
 		s.get(new CaselessLiteral("from").ok());
@@ -139,7 +139,7 @@ public class JaqlParser {
 	 */
 	protected Parser selectTerm() {
 		// wrap expression so we can add an assembler
-		Sequence s = new Sequence("selectTerm");
+		Seq s = new Seq("selectTerm");
 		s.get(comparisonParser().expression());
 		s.put(new SelectTermAssembler());
 		return s;
@@ -168,7 +168,7 @@ public class JaqlParser {
 	 * a comma-separated list of comparisons.
 	 */
 	protected Parser where() {
-		Sequence s = new Sequence();
+		Seq s = new Seq();
 		s.get(new CaselessLiteral("where").ok());
 		s.get(comparisons());
 		return s;

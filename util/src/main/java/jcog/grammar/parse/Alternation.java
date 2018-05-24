@@ -80,9 +80,8 @@ public class Alternation extends CollectionParser {
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
 		Set<Assembly> out = new ArrayUnenforcedSet<>();
-		for (Parser p : subparsers) {
-			out.addAll(p.matchAndAssemble(in));
-		}
+		for (int i = 0, subparsersSize = subparsers.size(); i < subparsersSize; i++)
+			out.addAll(subparsers.get(i).matchAndAssemble(in));
 		return out;
 	}
 

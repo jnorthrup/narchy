@@ -3,7 +3,7 @@ package jcog.grammar.parse.examples.mechanics;
 import jcog.grammar.parse.Alternation;
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;
-import jcog.grammar.parse.Sequence;
+import jcog.grammar.parse.Seq;
 import jcog.grammar.parse.tokens.Literal;
 import jcog.grammar.parse.tokens.TokenAssembly;
 
@@ -37,7 +37,7 @@ public class ShowVacation {
 
 		Parser enjoy = new Alternation().get(new Literal("swim").ok()).get(new Literal("hike").ok()).get(new Literal("relax").ok());
 
-		Parser vacation = new Sequence().get(new VerboseRepetition(prepare)).get(new VerboseRepetition(enjoy));
+		Parser vacation = new Seq().get(new VerboseRepetition(prepare)).get(new VerboseRepetition(enjoy));
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new TokenAssembly("plan pack hike relax"));
