@@ -3,6 +3,7 @@ package jcog.optimize;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.primitives.Primitives;
+import jcog.Util;
 import jcog.data.graph.ObjectGraph;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
@@ -356,6 +357,15 @@ public class Tweaks<X> {
     /** simple scalar eval */
     public Optimizing<X> optimize(FloatFunction<X> score) {
         return optimize(new Optimizing.Score<>(score));
+    }
+
+    /** multi-scalar - automatically named scores (score0, score1... ) */
+    public Optimizing<X> optimize(FloatFunction<X>... scores) {
+        final int[] j = {0};
+        return optimize(Util.map(
+                    s-> new Optimizing.Score<>("score" + (j[0]++), s),
+                    new Optimizing.Score[scores.length],
+                    scores));
     }
 
     public Optimizing<X> optimize(Optimizing.Optimal<X,?>... seeks) {

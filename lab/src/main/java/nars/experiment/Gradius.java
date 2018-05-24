@@ -8,6 +8,7 @@ import nars.concept.scalar.DigitizedScalar;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
+import static nars.$.$$;
 import static nars.$.p;
 
 /**
@@ -114,8 +115,8 @@ public class Gradius extends NAgentX {
         actionToggle($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
-        actionToggle($.inh("pause", id),
-                (b) -> g.paused = b);
+//        actionToggle($.inh("pause", id),
+//                (b) -> g.paused = b);
 
         //initBipolar();
         initToggle();
@@ -150,14 +151,12 @@ public class Gradius extends NAgentX {
     }
 
     void initToggle() {
-        actionToggle($.inh("up", id),
-                (b) -> g.keys[VK_UP] = b);
-        actionToggle($.inh("down", id),
-                (b) -> g.keys[VK_DOWN] = b);
-        actionToggle($.inh("left", id),
-                (b) -> g.keys[VK_LEFT] = b);
-        actionToggle($.inh("right", id),
+        actionPushButtonMutex($$("left"), $$("right"),
+                (b) -> g.keys[VK_LEFT] = b,
                 (b) -> g.keys[VK_RIGHT] = b);
+        actionPushButtonMutex($$("up"), $$("down"),
+                (b) -> g.keys[VK_UP] = b,
+                (b) -> g.keys[VK_DOWN] = b);
     }
 
     void initBipolar() {

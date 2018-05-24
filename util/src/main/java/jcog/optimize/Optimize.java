@@ -12,14 +12,13 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalS
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
-import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
+import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
@@ -27,8 +26,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
-
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Optimization solver wrapper w/ lambdas
@@ -39,15 +36,13 @@ public class Optimize<X> {
     /**
      * if a tweak's 'inc' (increment) is not provided,
      * use the known max/min range divided by this value as 'inc'
-     *
+     * <p>
      * this controls the exploration rate
      */
     static final float autoInc_default = 5f;
-
+    private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
     final List<Tweak<X, ?>> tweaks;
     final Supplier<X> subject;
-
-    private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
 
     protected Optimize(Supplier<X> subject, Tweaks<X> t) {
         this(subject, t, Map.of("autoInc", autoInc_default));
@@ -79,26 +74,26 @@ public class Optimize<X> {
      * @param data
      * @param maxIterations
      * @param repeats
-     * @param eval
+     * @param seeks
      * @param exe
      * @return
      */
     public Result<X> run(final ARFF data, int maxIterations, int repeats,
                          //FloatFunction<Supplier<X>> eval,
-                         Optimizing.Optimal<X,?>[] eval,
+                         Optimizing.Optimal<X, ?>[] seeks,
                          ExecutorService exe) {
 
 
         assert (repeats >= 1);
 
 
-        final int dim = tweaks.size();
+        final int numTweaks = tweaks.size();
 
-        double[] mid = new double[dim];
+        double[] mid = new double[numTweaks];
         //double[] sigma = new double[n];
-        double[] min = new double[dim];
-        double[] max = new double[dim];
-        double[] inc = new double[dim];
+        double[] min = new double[numTweaks];
+        double[] max = new double[numTweaks];
+        double[] inc = new double[numTweaks];
 //        double[] range = new double[dim];
 
         X example = subject.get();
@@ -118,82 +113,114 @@ public class Optimize<X> {
             i++;
         }
 
-        //TODO add the seeks to the experiment vector
-
-
-        FasterList<DoubleObjectPair<double[]>> experiments = new FasterList<>(maxIterations);
-
-
-        final double[] maxScore = {Double.NEGATIVE_INFINITY};
 
         ObjectiveFunction func = new ObjectiveFunction(point -> {
 
             double score;
-            try {
 
-                double sum = 0;
+            double sum = 0;
 
-                Supplier<X> x = () -> subject(point);
+            Supplier<X> x = () -> Optimize.this.subject(point);
 
-                List<Map<String,Object>> exp = new FasterList(repeats);
 
-                CountDownLatch c = new CountDownLatch(repeats);
-                List<Future<Map<String,Object>>> each = new FasterList(repeats);
-                for (int r = 0; r < repeats; r++) {
-                    each.add( exe.submit(()->{
-                        try {
-                            X y = x.get();
+            CountDownLatch c = new CountDownLatch(repeats);
+            List<Future<Map<String, Object>>> each = new FasterList(repeats);
+            for (int r = 0; r < repeats; r++) {
+                Future<Map<String, Object>> ee = exe.submit(() -> {
+                    try {
+                        X y = x.get();
 
-                            float subScore = 0;
-                            Map<String,Object> e = new HashMap();
-                            for (Optimizing.Optimal<X,?> o : eval) {
-                                ObjectFloatPair<?> xy = o.eval(y);
-                                e.put(o.id, xy.getOne());
-                                subScore += xy.getTwo();
-                            }
-
-                            e.put("_", subScore); //HACK
-
-                            return e;
-                        } finally {
-                            c.countDown();
+                        float subScore = 0;
+                        Map<String, Object> e = new LinkedHashMap(seeks.length); //lhm to maintain seek order
+                        for (Optimizing.Optimal<X, ?> o : seeks) {
+                            ObjectFloatPair<?> xy = o.eval(y);
+                            e.put(o.id, xy.getOne());
+                            subScore += xy.getTwo();
                         }
-                    }) );
-                }
 
-                c.await();
+                        e.put("_", subScore); //HACK
 
-                for (int r = 0; r < repeats; r++) {
-                    Map<String, Object> y = each.get(r).get();
-                    exp.add(y);
+                        return e;
 
-                    sum += (Float)y.get("_");
-                }
-
-                //TODO interplate and store the detected features
-
-                score = sum / repeats;
-
-            } catch (Exception e) {
-                logger.error("{} {} {}", this, point, e);
-                score = Float.NEGATIVE_INFINITY;
+                    } catch (Exception e) {
+                        logger.error("{} {} {}", Optimize.this, point, e);
+                        return null;
+                    } finally {
+                        c.countDown();
+                    }
+                });
+                each.add(ee);
             }
+
+            try {
+                c.await();
+            } catch (InterruptedException e) {
+                logger.error("interrupted waiting {}", e);
+                return Float.NEGATIVE_INFINITY;
+            }
+            int numSeeks = seeks.length;
+
+            DoubleArrayList seekMean = new DoubleArrayList(numSeeks);
+            for (int si = 0; si < numSeeks; si++)
+                seekMean.add(0);
+
+
+            int numResults = 0;
+            //TODO variance? etc
+
+            for (Future<Map<String, Object>> y : each) {
+
+                try {
+                    Map<String, Object> ee = y.get();
+                    if (ee != null) {
+                        //iterated in LHM-presered order
+                        int j = 0;
+                        for (Map.Entry<String, Object> entry : ee.entrySet()) {
+                            String k = entry.getKey();
+                            Object v = entry.getValue();
+                            if (k.equals("_")) {
+                                sum += (float) v;
+                            } else {
+                                seekMean.addAtIndex(j++, (float) v);
+                            }
+                        }
+                        assert (j == numSeeks);
+
+                        numResults++;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (numResults == 0)
+                return Float.NEGATIVE_INFINITY;
+
+
+            //TODO interplate and store the detected features
+
+            score = sum / numResults;
 
 
 //            if (trace)
 //                csv.out(ArrayUtils.add(point, 0, score));
-            MutableList p = new FasterList(tweaks.size()+1).with(score);
-            for (double x : point)
-                p.add(x);
-            data.add( p.toImmutable() );
+            FasterList p = new FasterList(numTweaks + numSeeks + 1);
 
-            maxScore[0] = Math.max(maxScore[0], score);
-//            System.out.println(
-//                    n4(score) + " / " + n4(maxScore[0]) + "\t" + n4(point)
-//            );
+            p.add(score);
 
-            experiments.add(pair(score, point));
-            experimentIteration(point, score);
+            for (double pp : point)
+                p.add(pp);
+
+            if (numSeeks > 1) {
+                //dont repeat a score column other than the master score if single objective
+
+                for (int si = 0; si < numSeeks; si++) {
+                    p.add(seekMean.get(si) / numResults);
+                }
+            }
+
+            data.add(p.toImmutable());
+
             return score;
         });
 
@@ -207,12 +234,12 @@ public class Optimize<X> {
         experimentStart();
 
         try {
-            solve(dim, func, mid, min, max, inc, maxIterations);
+            solve(numTweaks, func, mid, min, max, inc, maxIterations);
         } catch (Throwable t) {
             logger.info("solve {} {}", func, t);
         }
 
-        return new Result<>(data, experiments, tweaks);
+        return new Result<>(data, tweaks);
     }
 
     void solve(int dim, ObjectiveFunction func, double[] mid, double[] min, double[] max, double[] inc, int maxIterations) {
@@ -268,11 +295,6 @@ public class Optimize<X> {
     protected void experimentStart() {
     }
 
-    /**
-     * called after each iteration
-     */
-    protected void experimentIteration(double[] point, double score) {
-    }
 
     /**
      * builds an experiment subject (input)

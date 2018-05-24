@@ -42,6 +42,7 @@ import jcog.list.FasterList;
 import jcog.util.Reflect;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.impl.factory.Lists;
+import org.intelligentjava.machinelearning.decisiontree.FloatTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -519,7 +520,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
      */
     public boolean add(Object... point) {
         if (point.length != attribute_names.size())
-            throw new UnsupportedOperationException("row structure mismatch");
+            throw new UnsupportedOperationException("row structure mismatch: provided " + point.length + " != expected " + attribute_names.size());
 
         return add(Lists.immutable.of(point)); //TODO impl ImmutableList to cache hashcode
     }
@@ -554,6 +555,26 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             changed[0] |= add(p);
         });
         return changed[0];
+    }
+
+    public boolean isEmpty() {
+        return data.isEmpty();
+    }
+
+    @Deprecated public FloatTable<String> toFloatTable() {
+
+        FloatTable<String> data = new FloatTable<>(this.attrNames() );
+
+        int cols = data.cols.length;
+
+        for (ImmutableList exp : this.data) {
+            float[] r = new float[cols];
+            for (int i = 0; i < cols; i++)
+                r[i] = ((Number) exp.get(i)).floatValue();
+            data.add(r);
+        }
+
+        return data;
     }
 
     public enum AttributeType {

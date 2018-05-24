@@ -2,6 +2,7 @@ package nars;
 
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BeliefActionConcept;
@@ -364,14 +365,46 @@ public interface NAct {
         actionPushButton(t, (x)-> { on.value(x); return x; });
     }
 
+    default void actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
+        FloatSupplier thresh = () -> 0.75f;
+
+        boolean[] lr = new boolean[2];
+
+        actionPushButton(l, thresh, ll->{
+            boolean x = ll;
+            if (x && lr[1]) {
+                L.value(lr[0] = false);
+                R.value(lr[1] = false);
+                return false;
+            } else {
+                lr[0] = x;
+            }
+            L.value(x);
+            return x;
+        });
+        actionPushButton(r, thresh, rr->{
+            boolean x = rr;
+            if (x && lr[0]) {
+                L.value(lr[0] = false);
+                R.value(lr[1] = false);
+                return false;
+            } else {
+                lr[1] = x;
+            }
+            R.value(x);
+            return x;
+        });
+    }
+
     default void actionPushButton(@NotNull Term t, @NotNull BooleanToBooleanFunction on) {
-        float thresh =
-                //0.6f;
-                0.5f + nar().freqResolution.get();
+        actionPushButton(t, ()->0.5f + nar().freqResolution.get(), on);
+    }
+    default void actionPushButton(@NotNull Term t, FloatSupplier thresh, @NotNull BooleanToBooleanFunction on) {
+
         //0.5f;
 
         GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
-            boolean posOrNeg = f >= thresh;
+            boolean posOrNeg = f >= thresh.asFloat();
             return on.valueOf(posOrNeg) ? 1f : 0f;
         });
         b.resolution.set(1f);

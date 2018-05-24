@@ -58,8 +58,8 @@ public class Tweak<X,Y> {
 
 
     /** add this tweak to a schema that will collect its values */
-    public void defineIn(Schema schema) {
+    public void defineIn(Schema data) {
         //HACK default functionality for numeric types only
-        schema.defineNumeric(id);
+        data.defineNumeric(id);
     }
 }

@@ -192,8 +192,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
         final Term RIGHT = $.the("right"); //$.inh("right", id);
         final Term ROT = $.the("rotate"); //$.inh("rotCW", id);
 
-        actionPushButton(LEFT, () -> state.act(TetrisState.LEFT));
-        actionPushButton(RIGHT, () -> state.act(TetrisState.RIGHT));
+        actionPushButtonMutex(LEFT, RIGHT,
+                (b) -> state.act(TetrisState.LEFT, b),
+                (b) -> state.act(TetrisState.RIGHT, b));
+
         actionPushButton(ROT, () -> state.act(CW));
         //actionToggle($.p("rotCCW"), ()-> state.take_action(CCW));
     }
@@ -1397,8 +1399,12 @@ public class Tetris extends NAgentX implements Bitmap2D {
             return is_game_over;
         }
 
+        public boolean act(int theAction) {
+            return act(theAction, true);
+        }
+
         /* This code applies the action, but doesn't do the default fall of 1 square */
-        public synchronized boolean act(int theAction) {
+        public synchronized boolean act(int theAction, boolean enable) {
 
 
             int nextRotation = currentRotation;
@@ -1416,10 +1422,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
                     }
                     break;
                 case LEFT:
-                    nextX = currentX - 1;
+                    nextX = enable ? currentX - 1 : currentX;
                     break;
                 case RIGHT:
-                    nextX = currentX + 1;
+                    nextX = enable ? currentX + 1 : currentX;
                     break;
                 case FALL:
                     nextY = currentY;

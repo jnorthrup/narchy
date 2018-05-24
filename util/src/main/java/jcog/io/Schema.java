@@ -71,4 +71,8 @@ public class Schema {
         assert (prev == null);
         return this;
     }
+
+    public String[] attrNames() {
+        return attribute_names.toArray(new String[0]);
+    }
 }

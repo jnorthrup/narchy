@@ -62,7 +62,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 4;
 
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
@@ -143,8 +143,8 @@ public abstract class Param {
      * NAgent happiness automatic gain control time parameter
      * TODO verify this is applied based on time, not iterations
      */
-    public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.001f;
-    public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.002f;
+    public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.0002f;
+    public final static float HAPPINESS_RE_SENSITIZATION_RATE_FAST = 0.0004f;
 
 
 

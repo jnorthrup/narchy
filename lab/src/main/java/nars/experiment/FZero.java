@@ -3,10 +3,7 @@ package nars.experiment;
 import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
-import nars.$;
-import nars.NAR;
-import nars.NAgentX;
-import nars.Task;
+import nars.*;
 import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
@@ -368,33 +365,17 @@ public class FZero extends NAgentX {
 
     private void initToggle() {
 
-        actionPushButton($.the("left"), (b) -> {
-            if (b && fz.right) {
-                fz.left = fz.right = false;
-                return false;
-            } else {
-                fz.left = b;
-                return b;
-            }
-        });
-        actionPushButton($.the("right"), (b) -> {
-            if (b && fz.left) {
-                fz.left = fz.right = false;
-                return false;
-            } else {
-                fz.right = b;
-                return b;
-            }
-        });
-        actionToggle($.the("fwd"), (b) -> {
-            fz.thrust = b;
-        });
-        actionToggle($.the("brake"), () -> {
-            //fz.left = fz.right = false;
-            fz.vehicleMetrics[0][6] *= 0.9f;
-        });
-
+        this.actionPushButtonMutex(
+            $.the("left"), $.the("right"),
+            l-> fz.left = l, r-> fz.right = r
+        );
+        this.actionPushButtonMutex(
+            $.the("fwd"), $.the("brake"),
+            f-> fz.thrust = f,
+            b-> { if (b) { fz.vehicleMetrics[0][6] *= 0.9f; } }
+        );
     }
+
     private void initTankDiscrete() {
 
         actionToggle($.inh($.the("left"), id), (b) -> {

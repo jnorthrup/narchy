@@ -1,5 +1,6 @@
 package jcog.optimize;
 
+import jcog.io.Schema;
 import jcog.io.arff.ARFF;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -31,6 +32,10 @@ public class Optimizing<X> {
         }
 
         abstract ObjectFloatPair<Y> eval(X x); //observation + relative score
+
+        public void defineIn(Schema data) {
+            data.defineNumeric(id);
+        }
     }
 
     /** simple scalar Optimal */
@@ -38,9 +43,13 @@ public class Optimizing<X> {
 
         private final FloatFunction<X> func;
 
-        public Score(FloatFunction<X> f) {
-            super("score");
+        public Score(String name, FloatFunction<X> f) {
+            super(name);
             this.func = f;
+        }
+
+        public Score(FloatFunction<X> f) {
+            this("score", f);
         }
 
         @Override
@@ -59,6 +68,12 @@ public class Optimizing<X> {
         data = new ARFF();
         data.defineNumeric("score");
         tweaks.tweaks.forEach(t -> t.defineIn(data));
+
+        if (seeks.length > 1) {
+            //dont include repeat score column if single objective
+            for (Optimal o : seeks)
+                o.defineIn(data);
+        }
     }
 
     public Result<X> run(int iterations) {

@@ -2,8 +2,10 @@ package jcog.optimize;
 
 import jcog.math.FloatRange;
 import jcog.math.Range;
+import org.eclipse.collections.api.list.ImmutableList;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TweaksTest {
@@ -28,6 +30,9 @@ public class TweaksTest {
                     (1f/(1f+sub.tweakFloatSub)))
                     + floatRange.floatValue();
         }
+        public float score2() {
+            return (float)(Math.cos(floatRange.floatValue()/4f));
+        }
     }
 
     public static class SubModel {
@@ -36,7 +41,7 @@ public class TweaksTest {
     }
 
     @Test
-    public void test1() {
+    public void testSingleObjective() {
         Tweaks<Model> a = new Tweaks<>(Model::new).discover();
         a.tweaks.forEach(
                 System.out::println
@@ -44,10 +49,28 @@ public class TweaksTest {
         assertTrue(a.tweaks.size() >= 4);
 
         //assertEquals(4, a.all.size());
-        Result<Model> r = a.optimize((m)->m.score()).run(15);
+        Result<Model> r = a.optimize((m)->m.score()).run(25);
+        assertEquals(5, r.data.attrCount());
+
         r.print();
         r.tree(3, 4).print();
-        assertTrue(r.best().getOne() > 5f);
+        ImmutableList best = r.best();
+        assertTrue(((Number) best.get(0)).doubleValue() >= 5f);
+
+        r.data.print();
+    }
+
+    @Test
+    public void testMultiObjective() {
+        Tweaks<Model> a = new Tweaks<>(Model::new).discover();
+
+
+
+        Result<Model> r = a.optimize(m->m.score(), m->m.score2()).run(25);
+        assertEquals(7, r.data.attrCount());
+
+        r.print();
+        r.tree(3, 6).print();
 
         r.data.print();
     }
