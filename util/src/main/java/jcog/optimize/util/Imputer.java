@@ -37,11 +37,11 @@ public class Imputer {
     }
 
     /** results from an inpute invocation (imputation) */
-    class Imputing<X> {
+    public class Imputing<X> {
         X subject;
 
-        final Map<Tweak<X,?>,Object> log = new LinkedHashMap();
-        final List<String> issues = new FasterList();
+        public final Map<Tweak<X,?>,Object> log = new LinkedHashMap();
+        public final List<String> issues = new FasterList();
 
         Imputing(X subject, String... tags) {
             assert(tags.length > 0);

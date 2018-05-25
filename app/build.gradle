@@ -45,8 +45,10 @@ shadowJar {
     exclude '/*.txt'
     exclude '/*.html'
 
-
-    mainClassName = 'nars.GUI'
+//    exclude 'org/apache/lucene/codecs/lucene50/*'
+//    exclude 'org/apache/lucene/codecs/lucene60/*'
+//    exclude 'org/apache/lucene/codecs/lucene62/*'
+    mainClassName = 'nars.Shell'
 
 //   baseName = 'nars_app'
 //   classifier = null

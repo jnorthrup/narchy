@@ -2,6 +2,7 @@ package jcog.optimize;
 
 import jcog.math.FloatRange;
 import jcog.math.Range;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.junit.jupiter.api.Test;
 
@@ -30,9 +31,11 @@ public class TweaksTest {
                     (1f/(1f+sub.tweakFloatSub)))
                     + floatRange.floatValue();
         }
+
         public float score2() {
             return (float)(Math.cos(floatRange.floatValue()/4f));
         }
+
     }
 
     public static class SubModel {
@@ -66,7 +69,7 @@ public class TweaksTest {
 
 
 
-        Optimizing.Result r = a.optimize(m->m.score(), m->m.score2()).run(25);
+        Optimizing.Result r = a.optimize((m->m), ((FloatFunction<Model>)( m->m.score())), m->m.score2()).run(25);
         assertEquals(7, r.data.attrCount());
 
         r.print();

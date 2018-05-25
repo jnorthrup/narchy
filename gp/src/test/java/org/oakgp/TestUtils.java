@@ -59,7 +59,7 @@ public class TestUtils {
 
     public static void assertConstant(Object expectedValue, Node node) {
         assertTrue(node instanceof ConstantNode);
-        assertEquals(expectedValue, ((ConstantNode) node).eval(null));
+        assertEquals(expectedValue, node.eval(null));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

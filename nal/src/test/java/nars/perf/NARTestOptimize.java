@@ -90,8 +90,12 @@ public class NARTestOptimize {
                         NAL8Test.class
                 ))), new Optimizing.Score<>("completeFast", 1f, t->
                     t!=null ? t.test.score : 0
-                ), new Optimizing.Score<>("deriveUniquely", 0.5f, t->
-                    t!=null ? 1f/(1f+t.test.nar.emotion.deriveFailDerivationDuplicate.getValue().floatValue()) : 0
+                ), new Optimizing.Score<>("deriveUniquely", 0.25f, t->
+                    t!=null ? 1f/(1f+(
+                            t.test.nar.emotion.deriveFailDerivationDuplicate.getValue().floatValue()
+                                    +
+                            t.test.nar.emotion.deriveFailParentDuplicate.getValue().floatValue()
+                    )) : 0
                 ));
 
         opt.saveOnShutdown("/tmp/" + NARTestOptimize.class.getName() + "_" + System.currentTimeMillis() + ".arff");
@@ -100,7 +104,7 @@ public class NARTestOptimize {
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         while (true) {
-            Optimizing.Result r = opt.run( /*32*1024*/ 64, 20, pool);
+            Optimizing.Result r = opt.run( /*32*1024*/ 128, 40, pool);
         }
 
 

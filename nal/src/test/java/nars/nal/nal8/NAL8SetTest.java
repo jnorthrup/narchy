@@ -1,6 +1,8 @@
 package nars.nal.nal8;
 
+import nars.NARS;
 import nars.nal.nal7.NAL7Test;
+import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -71,7 +73,6 @@ public class NAL8SetTest extends NALTest {
                 .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
     }
 
-    @Disabled
     @Test
     public void testDiffGoal1Pos1st() {
         test
@@ -80,4 +81,106 @@ public class NAL8SetTest extends NALTest {
                 .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
     }
 
+    @Test
+    public void testGoalDiffBeliefFirst() {
+        test
+                .input("(a-->g)!")
+                .input("((a~b)-->g).")
+                .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
+    }
+
+    @Test
+    public void testGoalDiffBeliefFirstInv() {
+        test
+                .input("(a-->g)!")
+                .input("--((a~b)-->g).") //no difference
+                .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
+    }
+    @Test
+    public void testGoalDiffBeliefSecondInv() {
+        test
+                .input("(a-->g)!")
+                .input("--((b~a)-->g).") //no difference
+                .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
+    }
+    @Test
+    public void testGoalDiffBeliefSecond() {
+        test
+                .input("(b-->g)!")
+                .input("--((a~b)-->g).") //no difference
+                .mustGoal(cycles,"(a-->g)", 1f, 0.81f);
+    }
+
+    static class TestGoalDiff {
+
+        final static String X = ("X");
+        final static String Xe = ("(X-->A)");
+        final static String Xi = ("(A-->X)");
+        final static String Y = ("Y");
+        final static String Ye = ("(Y-->A)");
+        final static String Yi = ("(A-->Y)");
+
+        @Test public void test1() {
+            for (boolean beliefPos : new boolean[] {true, false} ) {
+                float f = beliefPos ? 1f : 0f;
+                for (boolean fwd : new boolean[]{true, false}) {
+                    testGoalDiff(false, beliefPos, true, fwd, f, 0.81f);
+                }
+            }
+            testGoalDiff(true, true, true, true, 0, 0.81f);
+            testGoalDiff(true, false, true, false, 1, 0.81f);
+        }
+
+        void testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, float f, float c) {
+            //extension
+            testGoalDiff(goalPolarity, beliefPolarity, diffIsGoal, diffIsFwd,
+            true, f, c);
+
+//            //intension
+//            testGoalDiff(goalPolarity, beliefPolarity, diffIsGoal, diffIsFwd,
+//                    false, f, c);
+        }
+
+        TestNAR testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, boolean diffIsEx, float f, float c) {
+            String goalTerm, beliefTerm;
+            String first, second;
+            if (diffIsFwd) {
+                first = X;
+                second = Y;
+            } else {
+                first = Y;
+                second = X;
+            }
+            String diff = (diffIsEx) ?
+                    "((" + first + "~" + second + ")-->A)" :
+                    "(A-->(" + first + "-" + second + "))";
+            String XX = diffIsEx ? Xe : Xi;
+            String YY = diffIsEx ? Ye : Yi;
+            if (diffIsGoal) {
+                goalTerm = diff;
+                beliefTerm = XX;
+            } else {
+                beliefTerm = diff;
+                goalTerm = XX;
+            }
+            if (!goalPolarity)
+                goalTerm = "(--," + goalTerm + ")";
+            if (!beliefPolarity)
+                beliefTerm = "(--," + beliefTerm + ")";
+
+            String goalTask = goalTerm + "!";
+            String beliefTask = beliefTerm + ".";
+
+            String expectedTask = YY + "!";
+            if (f < 0.5f) expectedTask = "(--," + expectedTask + ")";
+
+            System.out.println(goalTask + "\t" + beliefTask + "\t=>\t" + expectedTask);
+
+            return new TestNAR(NARS.tmp(3))
+                    .input(goalTask)
+                    .input(beliefTask) //no difference
+                    .mustGoal(cycles, YY, f, c)
+                    .run(16);
+        }
+    }
 }

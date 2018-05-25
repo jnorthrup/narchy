@@ -58,7 +58,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -204,8 +203,9 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(0.5f); //nyquist alert
-        n.timeFocus.set(8);
+        n.dtDither.set(0.1f); //nyquist alert
+        n.timeFocus.set(4);
+
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
@@ -298,11 +298,11 @@ abstract public class NAgentX extends NAgent {
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 4, 32);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 8, 64);
 
-        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 4, 32);
+        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 8, 64);
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(8, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(32, n);
 
 //        RelationClustering relCluster = new RelationClustering(n,
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
@@ -376,6 +376,8 @@ abstract public class NAgentX extends NAgent {
 
 
         NAgent a = init.apply(n);
+        a.motivation.set(0.5f);
+
         n.on(a);
         n.synch();
 

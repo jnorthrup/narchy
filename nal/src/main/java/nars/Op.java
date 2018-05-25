@@ -448,6 +448,10 @@ public enum Op {
     ;
 
 
+    /** does this help?  Op.values() bytecode = INVOKESTATIC
+     * but accessing this is GETSTATIC*/
+    public static final Op[] ops = Op.values();
+
     public static final String DISJstr = "||";
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
     public static final int FuncBits = Op.or(Op.ATOM, Op.INH, Op.PROD);
@@ -2241,8 +2245,5 @@ public enum Op {
 //            return y;
 //        }
 
-    /** does this help?  Op.values() bytecode = INVOKESTATIC
-     * but accessing this is GETSTATIC*/
-    public static final Op[] ops = Op.values();
 
 }

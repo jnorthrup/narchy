@@ -1,5 +1,7 @@
 package nars.util.term.builder;
 
+import jcog.Util;
+import jcog.memoize.HijackMemoize;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -8,6 +10,9 @@ import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 import nars.util.term.InternedSubterms;
 import nars.util.term.SubtermsCache;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 import static nars.time.Tense.DTERNAL;
 
@@ -18,13 +23,30 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     //TODO Atom Cache
 
-    public final HijackTermCache termCache = new HijackTermCache(128 * 1024, 3);
-    public final HijackTermCache termTemporalCache = new HijackTermCache(64 * 1024, 3);
+
+
+    private HijackTermCache newOpCache(int capacity) {
+        return new HijackTermCache(capacity , 3);
+    }
+
+    final HijackTermCache[] termCache;
+    final HijackTermCache[] termTemporalCache;
+    {
+        termCache = new HijackTermCache[Op.ops.length];
+        termTemporalCache = new HijackTermCache[Op.ops.length];
+        for (int i = 0; i < Op.ops.length; i++) {
+            if (Op.ops[i].atomic) continue;
+            termCache[i] = newOpCache(8 * 1024);
+            termTemporalCache[i] = newOpCache(8 * 1024);
+        }
+    }
+
+
     public final SubtermsCache subtermCache = new SubtermsCache(128 * 1024, 3);
 
     @Override public final Term newCompound(Op op, int dt, Term[] u) {
         return internable(op, dt, u) ?
-                (dt == DTERNAL ? termCache : termTemporalCache).apply(new InternedCompound(op, dt, u)) :
+                (dt == DTERNAL ? termCache : termTemporalCache)[op.id].apply(new InternedCompound(op, dt, u)) :
                 super.newCompound(op, dt, u);
     }
 
@@ -68,8 +90,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     public String summary() {
         return  "subterm cache: " + subtermCache.summary() + "\n" +
-                "compound cache: " + termCache.summary() + "\n" +
-                "termporal cache: " + termTemporalCache.summary() + "\n"
+                "compound cache: " + summary(termCache, termCache) + "\n" +
+                "termporal cache: " + summary(termCache, termTemporalCache) + "\n"
                 ;
+    }
+
+    @NotNull
+    public static String summary(HijackTermCache[] termCache, HijackTermCache[] termTemporalCache2) {
+        return Arrays.toString(Util.map(HijackMemoize::summary, new String[termCache.length], termTemporalCache2));
     }
 }

@@ -15,7 +15,6 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.Texts;
 import jdk.jshell.JShell;
-import nars.gui.NARui;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
@@ -60,22 +59,24 @@ public class Shell {
             System.out.println("Usage:");
             System.out.println("  gui\t\tstart gui");
             System.out.println("  telnet <port>\t\tstart telnet server on given port");
+            System.out.println("  http <port>\t\tstart http server on given port");
             System.out.println("  \"<narsese>\"\t\texecute narsese command"); //daemonize?
-            System.out.println("Reading narsese from stdin..\n"); //daemonize?
+            //System.out.println("Reading narsese from stdin..\n"); //daemonize?
             narseseStdin();
 
             //System.out.println("  js \"<javascript>\"\t\texecute NARjs code");
         } else {
             switch (argv[0]) {
                 case "gui":
-                    NAR ui = NARchy.ui();
-                    ui.startFPS(INITIAL_FPS);
-                    ui.runLater(() -> {
-                        SpaceGraph.window(
-                                NARui.top(ui)
-                                //((Grid)Vis.reflect(ui.services)).aspect(0.25f)
-                                , 1024, 800);
-                    });
+                    GUI.main(new String[] { });
+//                    NAR ui = NARchy.ui();
+//                    ui.startFPS(INITIAL_FPS);
+//                    ui.runLater(() -> {
+//                        SpaceGraph.window(
+//                                NARui.top(ui)
+//                                //((Grid)Vis.reflect(ui.services)).aspect(0.25f)
+//                                , 1024, 800);
+//                    });
 
                     break;
                 case "telnet":

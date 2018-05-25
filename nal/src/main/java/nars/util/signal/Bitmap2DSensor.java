@@ -285,6 +285,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
                 this.lastPixel = end;
             }
 
+//            float priEach =
+//                    //1f/totalPixels;
+//                    (float) (1/Math.sqrt(totalPixels));
+//            Consumer<Task> pixelBudgeter = x -> x.pri(priEach);
+//            s = (s.peek(pixelBudgeter));
+
             in.input(s);
 
             //System.out.println(value + " " + fraction + " "+ start + " " + end);

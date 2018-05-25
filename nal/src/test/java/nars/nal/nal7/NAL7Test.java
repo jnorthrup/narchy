@@ -1404,12 +1404,9 @@ public class NAL7Test extends NALTest {
         Term d = $("--(a &&+3 --c)");
         assertEquals(0, d.dtRange());
         d.events(m::add);
-        System.out.println(m);
 
         List l = $.newArrayList();
         $("(--(a &&+3 --c) &&+4 (e))").events(l::add);
-        System.out.println(l);
-        System.out.println();
 
         test
                 .inputAt(1, "(--(a &&+3 --c) &&+4 (e)). :|:")

@@ -362,7 +362,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         int firstFireOffset = (int) (firstDelay / resolution);
         int firstFireRounds = Math.round(((float)firstDelay) / (resolution * wheels));
 
-        TimedFuture<V> r = new OneTimedFuture<>(firstFireOffset, firstFireRounds, callable);
+        TimedFuture<V> r = new OneTimedFuture<>(firstFireOffset+1, firstFireRounds, callable);
         // We always add +1 because we'd like to keep to the right boundary of event on execution, not to the left:
         //
         // For example:

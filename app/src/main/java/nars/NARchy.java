@@ -73,7 +73,7 @@ public class NARchy extends NARS {
 
     public static NAR ui() {
         /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
-        NAR nar = ui();
+        NAR nar = core();
         //auxiliary modules, load in background thread
         nar.runLater(()->{
 

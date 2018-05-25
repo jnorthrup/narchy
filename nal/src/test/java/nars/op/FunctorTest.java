@@ -1,4 +1,4 @@
-package nars.nal.nal8;
+package nars.op;
 
 import nars.NAR;
 import nars.NARS;

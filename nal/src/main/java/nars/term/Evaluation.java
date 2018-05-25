@@ -116,51 +116,46 @@ public final class Evaluation {
 
         proc.clear();
 
-        while (pp.hasNext()) {
+        nextPermute: while (pp.hasNext()) {
             Predicate<VersionMap<Term, Term>>[] n = pp.next();
             assert (n.length > 0);
 
             int start = v.now();
-            boolean fail = false;
+
             for (Predicate p : n) {
                 if (!p.test(subst)) {
-                    fail = true;
-                    break;
+                    break nextPermute;
                 }
             }
 
-            if (!fail) {
+            @Nullable Term y = x.replace(subst);
 
-                @Nullable Term y = x.replace(subst);
+            if (y != null && !y.equals(x)) {
 
-                if (y != null && !y.equals(x)) {
+                Term z = y.eval(context);
+                if (z  == True || z == False) {
+                    //determined absolutely true or false: implies that this is the answer to a question
+                    Term zz = $.func(TRUE, y).negIf(z == False).normalize();
+                    if (zz!=null && !zz.equals(x))
+                        each.test(zz);
 
-                    Term z = y.eval(context);
-                    if (z  == True || z == False) {
-                        if (z != Null) {
-                            //determined absolutely true or false: implies that this is the answer to a question
-                            Term zz = $.func(TRUE, y).negIf(z == False).normalize();
-                            if (zz!=null && !zz.equals(x))
-                                each.test(zz);
+                    continue;
+                } else {
+                    y = z; //continue
+                }
+                if (proc.isEmpty()) {
+
+                    if (y!=null) {
+                        y = y.normalize(); //TODO optional
+
+                        if (!y.equals(x)) {
+                            if (!each.test(y))
+                                return false;
                         }
-                        continue;
-                    } else {
-                        y = z; //continue
                     }
-                    if (proc.isEmpty()) {
-
-                        if (y!=null) {
-                            y = y.normalize(); //TODO optional
-
-                            if (!y.equals(x)) {
-                                if (!each.test(y))
-                                    return false;
-                            }
-                        }
-                    } else {
-                        //recurse, new proc added
-                        return get(y, context, each);
-                    }
+                } else {
+                    //recurse, new proc added
+                    return get(y, context, each);
                 }
             }
 

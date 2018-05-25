@@ -354,6 +354,13 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
+    DecomposePositivePositiveNegative() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.decompose(T, B, true, true, false, minConf);
+        }
+    },
+
     DecomposeNegativePositivePositive() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
