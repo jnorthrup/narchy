@@ -387,9 +387,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public SignalTask add(Truth value, long start, long end, int dur, NAR nar) {
 
         value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
-        SignalTask x = series.add(term, punc(), start,
-                //end+nar.dtDither,
-                end + dur,
+        SignalTask x = series.add(term, punc(), start, end,
                 value, dur, nar);
 
         if (x!=null)
@@ -404,18 +402,22 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         //finds any tasks which have completely entered the past and contradict the sensor table
         if (!series.isEmpty()) {
-            long sstart = series.start();
-            long send = series.end();
+            try {
+                long sstart = series.start();
+                long send = series.end();
 
 
-            List<Task> deleteAfter = new FasterList(4);
-            temporal.whileEach(sstart, send, t -> {
-               if (t.end() < send) { //dont delete if future predictive component
-                   deleteAfter.add(t);
-               }
-               return true;
-            });
-            deleteAfter.forEach(temporal::removeTask);
+                List<Task> deleteAfter = new FasterList(4);
+                temporal.whileEach(sstart, send, t -> {
+                    if (t.end() < send) { //dont delete if future predictive component
+                        deleteAfter.add(t);
+                    }
+                    return true;
+                });
+                deleteAfter.forEach(temporal::removeTask);
+            } catch (NoSuchElementException e) {
+                //must have gotten emptied while cleaning
+            }
         }
     }
 

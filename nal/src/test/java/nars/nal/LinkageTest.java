@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LinkageTest extends NALTest {
 
-    final int runCycles = 500;
+    final int runCycles = 70;
 
 
     void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {
@@ -341,7 +341,7 @@ public class LinkageTest extends NALTest {
     public void Indirect_Linkage_NAL6_second_level_variable_unification() throws Exception {
         //ProperlyLinkedIndirectlyTest("(&&, <#1 --> lock>, <<$2 --> key> ==> <#1 --> (/, open, $2, _)>>)", "<{key1} --> key>");
         ProperlyLinkedIndirectlyTest(
-                "(&&, <#1 --> lock>, <<$2 --> key> ==> ($2, #1):open>)",
+                "(<#1 --> lock> && <<$2 --> key> ==> ($2, #1):open>)",
                 "<{key1} --> key>");
     }
 

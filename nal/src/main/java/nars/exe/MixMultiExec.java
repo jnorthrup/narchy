@@ -2,7 +2,6 @@ package nars.exe;
 
 import jcog.Service;
 import jcog.TODO;
-import jcog.Util;
 import jcog.exe.valve.AbstractWork;
 import jcog.exe.valve.InstrumentedWork;
 import jcog.exe.valve.Sharing;
@@ -43,10 +42,10 @@ public class MixMultiExec extends AbstractExec {
 
     Revaluator revaluator;
 
-    public MixMultiExec(int conceptsCapacity) {
+    public MixMultiExec(int conceptsCapacity, int threads) {
         super(conceptsCapacity);
 
-        cpu = new TimeSlicing<>("CPU", Util.concurrencyDefault(2)) {
+        cpu = new TimeSlicing<>("CPU", threads) {
             @Override
             public TimeSlicing commit() {
                 this.forEach((InstrumentedWork s) -> {
@@ -71,7 +70,7 @@ public class MixMultiExec extends AbstractExec {
 
                 super.commit();
 
-                System.out.println(this);
+                //System.out.println(this);
 
                 return this;
             }

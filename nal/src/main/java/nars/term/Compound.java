@@ -21,7 +21,6 @@
 package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.WTF;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.$;
@@ -1019,7 +1018,7 @@ public interface Compound extends Term, IPair, Subterms {
         Term term = unneg().root(); //unneg just in case
 
         Op op = term.op();
-        assert (op != NEG);
+        assert (op != NEG): this + " concept() to NEG: " + unneg().root();
         if (!op.conceptualizable)
             return Null;
 

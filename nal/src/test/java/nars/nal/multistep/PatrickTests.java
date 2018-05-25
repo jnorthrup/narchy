@@ -114,6 +114,7 @@ public class PatrickTests extends NALTest {
         */
 
 
+
         TestNAR tt = test;
         //Param.TRACE = true;
 
@@ -161,6 +162,7 @@ public class PatrickTests extends NALTest {
                 t -> t > 0  //some time after zero
         );
         //tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, t-> t==ETERNAL || (t>dur/2 || t <-dur/2) );
+
 
 
 

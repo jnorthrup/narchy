@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static nars.Op.CONJ;
-import static nars.Op.PROD;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -89,7 +88,7 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         int tcs = tc.size();
         if (tcs > 0) {
-            return new TermlinkTemplates(((FasterList<Term>) (tc.list)).toArrayRecycled(Term[]::new)); //store as list for compactness and fast iteration
+            return new TermlinkTemplates(tc.list.toArrayRecycled(Term[]::new)); //store as list for compactness and fast iteration
         }
 
 
@@ -104,18 +103,23 @@ public class TermlinkTemplates extends FasterList<Term> {
         if (x == Op.imExt || x == Op.imInt)
             return; //NO
 
+        Op xo = x.op();
 
-        if (((depth > 0) || selfTermLink(x)) && !tc.add(x))
-            return; //already added
 
-        if ((++depth >= maxDepth) || !templateRecurseInto(root, depth, x))
+        if (depth > 0)
+            tc.add(x);
+//        if (((depth > 0) || selfTermLink(x))/* && !tc.add(x)*/) //tc.add condition isnt valid if the subterm appears in a different level it may prevent its subterms from being included
+//            return; //already added
+
+        if ((++depth >= maxDepth) || xo.atomic || !xo.conceptualizable)
             return;
 
-        Subterms bb = x.subterms();
 
-        if (x.op() == CONJ && bb.hasAny(CONJ)) {
+        Subterms bb = x.subterms();
+        int nextDepth = depth;
+
+        if (xo == CONJ && bb.hasAny(CONJ)) {
             //special case: decompose complex conj directly to individual events
-            int nextDepth = depth+1;
             x.eventsWhile((when,what) -> {
                 templates(what.unneg(), tc, nextDepth, root, maxDepth);
                 return true;
@@ -131,49 +135,46 @@ public class TermlinkTemplates extends FasterList<Term> {
 
 //        int bs = bb.subs();
 //        if (bs > 0) {
-        int nextDepth = depth;
         bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
 //        }
     }
 
-    /**
-     * whether to recurse templates past a certain subterm.
-     * implements specific structural exclusions
-     */
-    private static boolean templateRecurseInto(Term root, int depth, Term subterm) {
-        Op s = subterm.op();
-        if (!s.conceptualizable || s.atomic)
-            return false;
-
-
-//        Op r = root.op();
-//        if (r == INH || r == SIM) {
-//            if (depth >= 2) {
-//                if (s.isAny(Op.SetBits))
-//                    return false;
-//            }
-
-//            if (depth > 2) {
-//                if (s.isAny(Op.SectBits))
-//                    return false;
-//            }
-//        }
-
-//        if (r == IMPL) {
-//            if (depth > 2) {
-//                if (s.isAny())
-//                    return false;
-//            }
-//        }
+//    /**
+//     * whether to recurse templates past a certain subterm.
+//     * implements specific structural exclusions
+//     */
+//    private static boolean templateRecurseInto(Term root, int depth, Term subterm) {
+//        Op s = subterm.op();
+//        return !(s.atomic || !s.conceptualizable);
 //
-//        if ((r == IMPL || r == CONJ) ) {
-//            if (depth >= 2)
-//                if (s.isAny(PROD.bit | Op.SetBits | Op.SectBits ))
-//                    return false;
+////        Op r = root.op();
+////        if (r == INH || r == SIM) {
+////            if (depth >= 2) {
+////                if (s.isAny(Op.SetBits))
+////                    return false;
+////            }
 //
-//        }
-        return depth <= 2 || s != PROD;
-    }
+////            if (depth > 2) {
+////                if (s.isAny(Op.SectBits))
+////                    return false;
+////            }
+////        }
+//
+////        if (r == IMPL) {
+////            if (depth > 2) {
+////                if (s.isAny())
+////                    return false;
+////            }
+////        }
+////
+////        if ((r == IMPL || r == CONJ) ) {
+////            if (depth >= 2)
+////                if (s.isAny(PROD.bit | Op.SetBits | Op.SectBits ))
+////                    return false;
+////
+////        }
+////        return depth <= 2 || s != PROD;
+//    }
 
     /**
      * determines ability to structural transform, so those terms which have no structural transforms should not link to themselves
@@ -254,7 +255,7 @@ public class TermlinkTemplates extends FasterList<Term> {
             case CONJ:
                 //if (x.hasAny(Op.INH))
                 //return 3; else
-                return 2;
+                return 3;
 
 
             default:

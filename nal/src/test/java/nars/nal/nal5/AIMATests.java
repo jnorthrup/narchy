@@ -18,15 +18,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AIMATests {
 
-    final NAR n = NARS.tmp(6);
 
 
 
     @ParameterizedTest
     @ValueSource(doubles = { 0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5 })
     public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
+        final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(16);
+        n.termVolumeMax.set(11);
         n.freqResolution.set((float)truthRes);
 
         n.believe("(P ==> Q)",
@@ -37,12 +37,13 @@ public class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(n, true, "Q", 150);
+        assertBelief(n, true, "Q", 350);
 
     }
 
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
+        final NAR n = NARS.tmp(6);
 
         n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);

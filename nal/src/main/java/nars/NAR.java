@@ -1051,19 +1051,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-//    /**
-//     * activate the concept and other features (termlinks, etc)
-//     *
-//     * @param link whether to activate termlinks recursively
-//     */
-//    @Nullable
-//    public abstract Concept activate(@NotNull Termed<?> termed, @Nullable Activation activation);
-//
-//    @Nullable
-//    final public Concept activate(@NotNull Termed<?> termed, @NotNull Budgeted b) {
-//        return activate(termed, new Activation(b, 1f));
-//    }
-
     public Stream<Activate> conceptsActive() {
         return exe.active();
     }
@@ -1218,13 +1205,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 total.increment();
 
                 byte[] b = IO.taskToBytes(x);
-                if (Param.DEBUG) {
-                    //HACK temporary until this is debugged
-                    Task xx = IO.taskFromBytes(b);
-                    if (xx == null || !xx.equals(x)) {
-                        throw new RuntimeException("task serialization problem: " + x + " != " + xx);
-                    }
-                }
+//                if (Param.DEBUG) {
+//                    //HACK temporary until this is debugged
+//                    Task xx = IO.taskFromBytes(b);
+//                    if (xx == null || !xx.equals(x)) {
+//                        throw new RuntimeException("task serialization problem: " + x + " != " + xx);
+//                    }
+//                }
 
                 try {
                     oo.write(b);
@@ -1637,7 +1624,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public Concept activate(Termed t, float activationApplied) {
         Concept c = concept(t, true /*false */ /* true */);
         if (c != null)
-            exe.activate(c, activationApplied);
+            exe.activate(c, activationApplied * activateConceptRate.floatValue());
         return c;
     }
 

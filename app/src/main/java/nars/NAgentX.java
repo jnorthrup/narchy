@@ -3,6 +3,7 @@ package nars;
 import jcog.Util;
 import jcog.exe.Exe;
 import jcog.exe.Loop;
+import jcog.math.random.SplitMix64Random;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.derive.Derivers;
@@ -123,7 +124,7 @@ abstract public class NAgentX extends NAgent {
                 narFPS;
 
         RealTime clock =
-                new RealTime.MS(true);
+                new RealTime.MS(false);
 //                clockFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
 //                        new RealTime.CS(true) :
 //                        new RealTime.DSHalf(true);
@@ -164,10 +165,10 @@ abstract public class NAgentX extends NAgent {
 //                )
 
                 .exe(new WorkerMultiExec(
-                        new Focus.DefaultRevaluator(),
-                        //new Focus.AERevaluator(new SplitMix64Random(1)),
-                        Util.concurrencyDefault(2),
-                        512, 2048) {
+                             //new Focus.DefaultRevaluator(),
+                             new Focus.AERevaluator(new SplitMix64Random(1)),
+                             Util.concurrencyDefault(2),
+                             256, 2048) {
 //                        {
 //                            Exe.setExecutor(this);
 //                        }
@@ -184,7 +185,7 @@ abstract public class NAgentX extends NAgent {
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
-                        new HijackConceptIndex(32 * 1024 ,  4)
+                        new HijackConceptIndex(32 * 1024, 4)
                         //new MapConceptIndex(new ConcurrentOpenHashMap<>())
                         //new MapConceptIndex(new CustomConcurrentHashMap<>(STRONG, EQUALS, SOFT, EQUALS, 128*1024))
                 )
@@ -204,13 +205,13 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(2 /* ms */);
-        n.timeFocus.set(16);
+        //n.dtDither.set(2 /* ms */);
+        n.timeFocus.set(6);
 
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(40);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
@@ -223,6 +224,13 @@ abstract public class NAgentX extends NAgent {
         n.questPriDefault.set(0.5f * priFactor);
 
         n.activateConceptRate.set(0.25f);
+
+        try {
+            InterNAR i = new InterNAR(n, 8, 0);
+            i.runFPS(2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //        new RLBooster(a, HaiQAgent::new, 1);
 
@@ -299,7 +307,7 @@ abstract public class NAgentX extends NAgent {
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t->true), 8, 64);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 8, 64);
 
         //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t -> true), 8, 64);
 
@@ -751,7 +759,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable String id, C bc) {
-        return senseCamera((Term)(id != null ? $$(id) : null), bc);
+        return senseCamera((Term) (id != null ? $$(id) : null), bc);
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Term id, C bc) {
@@ -774,7 +782,7 @@ abstract public class NAgentX extends NAgent {
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
         sensorCam.add(c);
-        nar().runLater(()-> {
+        nar().runLater(() -> {
             c.readAdaptively(this);
         });
         return c;

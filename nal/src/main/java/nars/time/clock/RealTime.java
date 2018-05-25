@@ -18,6 +18,9 @@ public abstract class RealTime extends Time {
 
 
     private final int unitsPerSecond;
+
+    public final long t0;
+
     /*volatile */ long t;
     private long start;
 
@@ -26,14 +29,18 @@ public abstract class RealTime extends Time {
     final AtomicLong nextStamp = new AtomicLong(seed);
 
     private int dur = 1;
-    private long t0;
+    private long last;
 
 
 
     protected RealTime(int unitsPerSecond, boolean relativeToStart) {
         super();
         this.unitsPerSecond = unitsPerSecond;
-        this.t = this.t0 = this.start = relativeToStart ? realtime() : 0L;
+
+        long now = realtime();
+        this.t0 = relativeToStart ? 0 : now;
+        this.t = this.last = this.start = relativeToStart ? now : 0L;
+
         reset();
     }
 
@@ -61,7 +68,7 @@ public abstract class RealTime extends Time {
     @Override
     public final void cycle(NAR n) {
         super.cycle(n);
-        t0 = t;
+        last = t;
         t = (realtime()-start);
     }
 
@@ -83,7 +90,7 @@ public abstract class RealTime extends Time {
 
     @Override
     public long sinceLast() {
-        return t - t0;
+        return t - last;
     }
 
     @NotNull

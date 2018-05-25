@@ -1057,9 +1057,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
 
         boolean cmd = isCommand();
-        if (!cmd) {
-            queue.add(new TaskAddTask(this)); //probably should be added first
-        }
+
 
         Term x = term();
         if (!x.equals(y)) {
@@ -1096,7 +1094,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     }
 
                 } else{
-                    //belief or goal boolean, wtf. obvious
+                    //belief or goal boolean verified truth
+                    y = Operator.arg(y, 0);
+                    if (!y.equals(x)) {
+                        Task tc = clone(this, y, truth(), punc());
+                        if (!equals(tc)) {
+                            queue.add(new TaskAddTask(tc));
+                        }
+                    }
                     return;
                 }
             } else {
@@ -1136,6 +1141,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     }
                 }
             }
+        }
+
+        if (!cmd) {
+            queue.add(new TaskAddTask(this)); //probably should be added first
         }
 
         //invoke possible Operation

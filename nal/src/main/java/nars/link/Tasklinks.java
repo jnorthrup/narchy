@@ -36,6 +36,10 @@ public class Tasklinks {
 //        return linkTask(t, t.priElseZero(), src, nar);
 //    }
 
+    public static TaskLink.GeneralTaskLink linkTask(Task t, /*Task*/Concept src, NAR nar) {
+        return linkTask(t, t.priElseZero(), src, nar);
+    }
+
     /** create source tasklink */
     public static TaskLink.GeneralTaskLink linkTask(Task t, final float _pri, /*Task*/Concept src, NAR nar) {
 

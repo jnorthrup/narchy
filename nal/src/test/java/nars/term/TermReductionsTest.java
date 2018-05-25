@@ -17,6 +17,7 @@ import static nars.Op.*;
 import static nars.term.TermTest.assertValid;
 import static nars.term.TermTest.assertValidTermValidConceptInvalidTaskContent;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
@@ -1199,8 +1200,26 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    public void testCoNegatedDifference() {
-        //..
+    public void testCoNegatedDifference() throws Narsese.NarseseException {
+        // -x - -y = -x + y = y - x
+        //((--,X)-(--,Y)) => (Y-X)
+
+        NAR n = NARS.shell();
+        n.believe("X", 1.0f, 0.9f);
+        n.believe("Y", 0.5f, 0.9f);
+        tryDiff(n, "(X~Y)", "%.50;.81%");
+        tryDiff(n, "(Y~X)", "%0.0;.81%");
+
+        assertEquals("", n.beliefTruth("(Y~X)", ETERNAL).toString());
+        assertEquals("", n.beliefTruth("((--,X)~(--,Y))", ETERNAL).toString());
+
+        // -X - Y
+        // X - -Y
+    }
+
+    public void tryDiff(NAR n, String term, String truthExpected) throws Narsese.NarseseException {
+        assertEquals(truthExpected, n.beliefTruth(term, ETERNAL).toString(), term::toString);
+
     }
 
     @Test

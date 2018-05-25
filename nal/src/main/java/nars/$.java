@@ -221,7 +221,7 @@ public enum $ {
      * function ((a,b)==>c) aka: c(a,b)
      */
     public static Term func(Atomic opTerm, Term... arg) {
-        return INH.the($.p(arg), opTerm);
+        return INH.the(PROD.the(arg), opTerm);
     }
 
 

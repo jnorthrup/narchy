@@ -8,6 +8,7 @@ import jcog.version.Versioning;
 import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.concept.Operator;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -27,6 +28,7 @@ import static nars.Op.*;
 public final class Evaluation {
 
     public static final Atom TRUE = (Atom) Atomic.the("true");
+    public static final Atom FALSE = (Atom) Atomic.the("false");
 
     static final ThreadLocal<Evaluation> solving = ThreadLocal.withInitial(Evaluation::new);
 
@@ -59,7 +61,11 @@ public final class Evaluation {
 
     public static Set<Term> solveAll(Term x, NAR n) {
         Set<Term> all = new UnifiedSet<>(4);
-        solve(x, n.functors, (y) -> { all.add(y); return true; });
+        solve(x, n.functors, (y) -> {
+            if ((Operator.func(y).equals(Evaluation.TRUE))) {
+                y = Operator.arg(y, 0); //unwrap
+            }
+            all.add(y); return true; });
         return !all.isEmpty() ? all : Set.of(x);
     }
 
@@ -72,9 +78,14 @@ public final class Evaluation {
         Evaluation s = Evaluation.clear();
 
         Term y = x.eval(context);
-        if (y.op().atomic)
-            return each.test(y);
-        else {
+        if (y.op().atomic) {
+            if (y == True) {
+                y = ($.func(TRUE,x));
+            } else if (y == False) {
+                y = ($.func(TRUE, x.neg()));
+            }
+        return each.test(y);
+    } else {
             return s.get(y, context, each);
         }
     }

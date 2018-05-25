@@ -1,7 +1,10 @@
 package nars.concept.dynamic;
 
 import nars.NAR;
+import nars.Param;
 import nars.Task;
+import nars.concept.Concept;
+import nars.link.Tasklinks;
 import nars.table.TemporalBeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -43,6 +46,14 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         DynTruth yy = model.eval(template, beliefOrGoal, start, end, nar);
         if (yy != null) {
             Task generated = yy.task(template, model, beliefOrGoal, nar);
+
+            //link to the dynamicaly generated task
+            if (generated!=null && Param.TASKLINK_DYN_GENERATED_TASKS) {
+                Concept c = generated.concept(nar, true);
+                if (c != null) {
+                    Tasklinks.linkTask(generated, c, nar);
+                }
+            }
 
 //            if (generated!=null) {
 //                //cache this generated belief, allowing it to revise with others in the future

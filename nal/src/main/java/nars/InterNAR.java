@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.Util;
+import jcog.math.FloatRange;
 import jcog.net.UDPeer;
 import jcog.util.TriConsumer;
 import nars.bag.leak.TaskLeak;
@@ -9,6 +10,7 @@ import nars.control.channel.CauseChannel;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.time.clock.RealTime;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +32,9 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
     public final TaskLeak buffer;
 
     public final MyUDPeer peer;
-    private final CauseChannel<ITask> recv;
+    protected final CauseChannel<ITask> recv;
 
+    public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
 
     /**
      * @param nar
@@ -54,6 +57,8 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
      */
     public InterNAR(NAR nar, float outRate, int port, boolean discover) {
         super(nar);
+
+        assert(nar.time instanceof RealTime.MS && ((RealTime.MS)nar.time).t0 !=0 );
 
         try {
             peer = new MyUDPeer(port, discover);
@@ -170,6 +175,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         }
         x.budget(nar);
 
+        x.priMult(incomingPriMult.floatValue());
         //System.out.println(me + " RECV " + x + " " + Arrays.toString(x.stamp()) + " from " + m.origin());
         logger.debug("recv {} from {}", x, from);
         recv.input(x);
@@ -184,13 +190,14 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         @Override
         protected void receive(UDProfile from, Msg m) {
 
-            Task x = IO.taskFromBytes(m.data());
-            if (x == null) {
-                super.logger.warn("received invalid task {} {}", from, m);
+            try {
+                Task x = IO.taskFromBytes(m.data());
+                InterNAR.this.receive(from, m, x);
+            } catch (Exception e) {
+                logger.warn("receive {} from {}: {}", m, from, e.getMessage());
                 return;
             }
 
-            InterNAR.this.receive(from, m, x);
         }
     }
 }

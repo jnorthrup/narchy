@@ -163,13 +163,19 @@ public class MatrixDeriver extends Deriver {
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
+        if (!commit(nar, tasklinks, termlinks)) {
+            //if no tasklinks:
+            conceptActivation.priSet(0); //drain and fwd to subterms
+            concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
+            return;
+        }
+
         /** conceptualize templates first, even if no tasklinks or termlinks */
         Concept[] templates = templates(concept, nar);
 
 
 
-        if (!commit(nar, tasklinks, termlinks))
-            return;
+
 
 
         int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };

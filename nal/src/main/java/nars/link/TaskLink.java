@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 
+import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -45,6 +46,8 @@ public interface TaskLink extends Priority, Termed {
             this.when = when;
 
             this.term = term;
+            assert(term.op().conceptualizable && term.op()!=NEG);
+
             //this.term = IO.termToBytes(term);
             this.hash = Util.hashCombine(term.hashCode(), punc, Long.hashCode(when));
         }
@@ -56,7 +59,7 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public String toString() {
-            return term().toString() +
+            return term.toString() +
                    Character.valueOf((char)punc) +
                    (when!=ETERNAL ? ("@" + when) : "");
         }
@@ -80,7 +83,7 @@ public interface TaskLink extends Priority, Termed {
 
         public Task get(NAR n) {
 
-            Term t = term().unneg();
+            Term t = term;
             Concept c = n.conceptualize(t);
             if (c == null)
                 return null;

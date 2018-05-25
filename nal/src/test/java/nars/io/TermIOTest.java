@@ -35,15 +35,15 @@ public class TermIOTest {
 
     final NAR nar = NARS.shell();
 
-    void assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException {
+    void assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException, IOException {
         assertEqualSerialize($.$(orig).term());
     }
 
-    void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException {
+    void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException, IOException {
         assertEqualSerialize((Object)nar.inputTask(orig));
     }
 
-    static byte[] assertEqualSerialize(@NotNull Object orig) {
+    static byte[] assertEqualSerialize(@NotNull Object orig) throws IOException {
         //final IO.DefaultCodec codec = new IO.DefaultCodec(nar.index);
 
 
@@ -97,7 +97,7 @@ public class TermIOTest {
 
     //    /* https://github.com/RuedigerMoeller/fast-serialization/wiki/Serialization*/
     @Test
-    public void testTermSerialization() throws Narsese.NarseseException {
+    public void testTermSerialization() throws Narsese.NarseseException, IOException {
 
         assertEqualSerialize("<a-->b>" /* term, not the concept */);
         assertEqualSerialize("<aa-->b>" /* term, not the concept */);
@@ -107,7 +107,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testNegationSerialization() throws Narsese.NarseseException {
+    public void testNegationSerialization() throws Narsese.NarseseException, IOException {
         assertEqualSerialize("--x");
 
         //neg op serializes one byte less than a similar PROD compound
@@ -117,7 +117,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testTemporalSerialization() throws Narsese.NarseseException {
+    public void testTemporalSerialization() throws Narsese.NarseseException, IOException {
 
         assertEqualSerialize("(a &&+1 b)" /* term, not the concept */);
         assertEqualSerialize("(a &&+1 (a &&+1 a))" /* term, not the concept */);
@@ -131,7 +131,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testImageSerialization() throws Narsese.NarseseException {
+    public void testImageSerialization() throws Narsese.NarseseException, IOException {
         assertEqualSerialize("/");
         assertEqualSerialize("\\");
         assertEqualSerialize("(a,/,1)");
@@ -142,7 +142,7 @@ public class TermIOTest {
         assertEqualSerialize("((a,\\,1)--> y)");
     }
 
-    @Test public void testUnnormalizedVariableSerialization() throws Narsese.NarseseException {
+    @Test public void testUnnormalizedVariableSerialization() throws Narsese.NarseseException, IOException {
         assertEqualSerialize("#abc");
         assertEqualSerialize("$abc");
         assertEqualSerialize("?abc");
@@ -150,7 +150,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testAnonSerialization() {
+    public void testAnonSerialization() throws IOException {
 
         Term[] anons = new Term[] {
                 $.v(VAR_DEP, (byte)1),
@@ -183,17 +183,17 @@ public class TermIOTest {
     }
 
     @Test
-    public void testTermSerialization2() throws Narsese.NarseseException {
+    public void testTermSerialization2() throws Narsese.NarseseException, IOException {
         assertTermEqualSerialize("(a-->(be))");
     }
 
     @Test
-    public void testTermSerialization3() throws Narsese.NarseseException {
+    public void testTermSerialization3() throws Narsese.NarseseException, IOException {
         assertTermEqualSerialize("(#1 --> b)");
     }
 
     @Test
-    public void testTermSerialization3_2() throws Narsese.NarseseException {
+    public void testTermSerialization3_2() throws Narsese.NarseseException, IOException {
         //multiple variables
 
         Variable q = $.varQuery(1);
@@ -212,7 +212,7 @@ public class TermIOTest {
 
     }
 
-    static void assertTermEqualSerialize(String s) throws Narsese.NarseseException {
+    static void assertTermEqualSerialize(String s) throws Narsese.NarseseException, IOException {
         Termed t = $.$(s);
         assertTrue(t.isNormalized());
         assertTrue(t.term().isNormalized());
@@ -220,7 +220,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testTaskSerialization() throws Narsese.NarseseException {
+    public void testTaskSerialization() throws Narsese.NarseseException, IOException {
         assertEqualTask("(a-->b).");
         assertEqualTask("(a-->(b,c))!");
         assertEqualTask("(a-->(b==>c))?");
@@ -247,7 +247,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testTaskSerialization2() throws Narsese.NarseseException {
+    public void testTaskSerialization2() throws Narsese.NarseseException, IOException {
         assertEqualSerialize((Object)nar.inputTask("$0.3 (a-->(bd))! %1.0;0.8%"));
     }
 

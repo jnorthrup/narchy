@@ -487,14 +487,8 @@ public class IO {
     /**
      * WARNING
      */
-    @Nullable
-    public static Task taskFromBytes(byte[] b) {
-        try {
-            return IO.readTask(input(b));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public static Task taskFromBytes(byte[] b) throws IOException {
+        return IO.readTask(input(b));
     }
 
     /**
