@@ -128,7 +128,8 @@ public class TemporalInductionTest {
         //least relevant
         assertEquals(
                 //"(b-->a). 0 %1.0;.90%"
-                "(b-->a). 0 %.83;.92%"
+                //"(b-->a). 0 %.83;.92%"
+                "(b-->a). 0 %.86;.91%"
                 , n.belief(c.term(), 0).toStringWithoutBudget());
 
     }

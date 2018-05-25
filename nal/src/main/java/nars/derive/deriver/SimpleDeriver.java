@@ -92,21 +92,24 @@ public class SimpleDeriver extends Deriver {
 
         source.accept(a -> {
 
-            Concept c = a.get();
+            Concept concept = a.get();
 
-            Concept[] templates = templates(c, nar);
+            Concept[] templates = templates(concept, nar);
 
-            LinkModel model = linking.apply(c, d);
+            LinkModel model = linking.apply(concept, d);
 
             Iterable<TaskLink> tasklinks = model.tasklinks(tasklinksPerConcept.intValue());
             Supplier<PriReference<Term>> termlinker = model.termlinks();
 
             int termlinks = /*Util.lerp(cPri, 1, */termlinksPerConcept.intValue();
+            float taskPriSum = 0;
             for (TaskLink tasklink : tasklinks) {
 
 
                 Task task = tasklink.get(nar);
                 if (task != null) {
+
+                    taskPriSum += task.priElseZero();
 
                     activate(tasklink, templates, d.random);
 
@@ -127,6 +130,9 @@ public class SimpleDeriver extends Deriver {
                 }
 
             }
+
+            if (taskPriSum > 0)
+                concept.templates().linkAndActivate(concept, taskPriSum, nar);
 
             return ii[0]-- > 0;
         });

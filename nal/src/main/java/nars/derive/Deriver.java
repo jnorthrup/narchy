@@ -2,6 +2,7 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.bag.Bag;
+import jcog.math.FloatRange;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
@@ -17,6 +18,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.Causable;
 import nars.link.TaskLink;
 import nars.link.Tasklinks;
+import nars.link.TermlinkTemplates;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -124,7 +126,12 @@ abstract public class Deriver extends Causable {
     }
 
     protected Concept[] templates(Concept concept, NAR nar) {
-        return concept.templates().concepts(nar, true);
+        TermlinkTemplates t = concept.templates();
+
+        Concept[] templates = t.concepts(nar, true);
+        //activate the task concept termlink templates
+
+        return templates;
     }
 
 
@@ -141,6 +148,11 @@ abstract public class Deriver extends Causable {
     }
 
 
+    public final FloatRange sustain = new FloatRange(0f, 0f, 0.99f);
+    public int dur() {
+
+        return Math.round((nar.dur() * (1/(1- sustain.floatValue()))));
+    }
 }
 
 

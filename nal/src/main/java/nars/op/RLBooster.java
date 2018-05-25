@@ -127,9 +127,10 @@ public class RLBooster implements Consumer<NAR> {
 
 
         NAR nar = env.nar();
-        long start = env.last;
-        long end = env.now;
-        //int dur = nar.dur();
+        int dur = nar.dur();
+        long start = env.now - dur/2;
+        long end = env.now + dur/2;
+
         List<Task> e = new FasterList(actions.length);
         for (int o = 0; o < actions.length; o++) {
             Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf.floatValue()) : null;

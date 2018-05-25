@@ -89,35 +89,35 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return a.term().equals(b.term());
     }
 
-    static @Nullable Task eviMax(@Nullable Task a, @Nullable Task b, long start, long end) {
-        if (b == null) {
-            return a;
-        } else {
-            if (a == null) {
-                return b;
-            } else {
-                boolean ae = a.isEternal();
-                boolean be = b.isEternal();
-                if (!ae && !be) {
-                    return (Revision.eviInteg(a, start, end, 1) >=
-                            Revision.eviInteg(b, start, end, 1)) ?
-                            a : b;
-                } else if (ae && be) {
-                    return a.evi() >= b.evi() ? a : b;
-                } else {
-                    //compare eternal vs. temporal
-                    if (start == ETERNAL) {
-                        //prefer the eternal result
-                        return ae ? a : b;
-                    } else {
-                        //prefer the temporal result
-                        return ae ? b : a;
-                    }
-
-                }
-            }
-        }
-    }
+//    static @Nullable Task eviMax(@Nullable Task a, @Nullable Task b, long start, long end) {
+//        if (b == null) {
+//            return a;
+//        } else {
+//            if (a == null) {
+//                return b;
+//            } else {
+//                boolean ae = a.isEternal();
+//                boolean be = b.isEternal();
+//                if (!ae && !be) {
+//                    return (Revision.eviInteg(a, start, end, 1) >=
+//                            Revision.eviInteg(b, start, end, 1)) ?
+//                            a : b;
+//                } else if (ae && be) {
+//                    return a.evi() >= b.evi() ? a : b;
+//                } else {
+//                    //compare eternal vs. temporal
+//                    if (start == ETERNAL) {
+//                        //prefer the eternal result
+//                        return ae ? a : b;
+//                    } else {
+//                        //prefer the temporal result
+//                        return ae ? b : a;
+//                    }
+//
+//                }
+//            }
+//        }
+//    }
 
     /**
      * see equals()

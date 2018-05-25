@@ -166,6 +166,8 @@ public class MatrixDeriver extends Deriver {
         /** conceptualize templates first, even if no tasklinks or termlinks */
         Concept[] templates = templates(concept, nar);
 
+
+
         if (!commit(nar, tasklinks, termlinks))
             return;
 
@@ -176,11 +178,13 @@ public class MatrixDeriver extends Deriver {
 
         int nTermLinks = termlinks.size();
         int nTaskLinks = tasklinks.size();
+        final float[] taskPriSum = {0};
         tasklinks.sample(rng, Math.min(_tasklinks, nTaskLinks), tasklink -> {
 
             Task task = tasklink.get(nar);
             if (task != null) {
 
+                taskPriSum[0] += task.priElseZero();
                 //active even if there are no termlinks yet, it may create them
                 activate(tasklink, templates, rng);
 
@@ -195,12 +199,14 @@ public class MatrixDeriver extends Deriver {
                     });
                 }
             } else {
-                //tasklink.delete();
+                tasklink.delete();
             }
 
             return (--conceptTTL[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
         });
 
+        if (taskPriSum[0] > 0)
+            concept.templates().linkAndActivate(concept, taskPriSum[0], nar);
     }
 
 

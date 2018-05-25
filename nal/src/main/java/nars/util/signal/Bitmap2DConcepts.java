@@ -94,20 +94,19 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
     }
 
     /** streams (potentially) all pixels */
-    public final Stream<Task> stream(FloatFloatToObjectFunction<Truth> truther, NAR nar) {
-        return stream(truther, 0, area, nar);
+    public final Stream<Task> stream(FloatFloatToObjectFunction<Truth> truther, int dur, NAR nar) {
+        return stream(truther, 0, area, dur, nar);
     }
 
     /** stream of tasks containing changes in all updated pixels */
-    public Stream<Task> stream(FloatFloatToObjectFunction<Truth> truther, int start, int end, NAR nar) {
+    public Stream<Task> stream(FloatFloatToObjectFunction<Truth> truther, int start, int end, int dur, NAR nar) {
 
         long now = nar.time();
-        int dur = nar.dur();
 
         long tStart = now - dur/2;
         long tEnd = now + dur/2;
         return IntStream.range(start, end)
-                .mapToObj(i -> get(i).update(tStart, tEnd, truther, nar.dur(), nar))
+                .mapToObj(i -> get(i).update(tStart, tEnd, truther, dur, nar))
                 //.filter(Objects::nonNull)
         ;
     }

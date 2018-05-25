@@ -43,6 +43,7 @@ abstract public class Causable extends NARService {
         can = new Can(term().toString());
         if (nar != null)
             nar.on(this);
+        this.nar = nar;
     }
 
     @Override

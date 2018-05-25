@@ -149,7 +149,7 @@ public abstract class Param {
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */
-    public final FloatRange timeFocus = new FloatRange(0.5f, 0, 10);
+    public final FloatRange timeFocus = new FloatRange(1f, 0, 10);
 
     /** creates instance of the default truthpolation implementation */
     public static TruthPolation truth(long start, long end, int dur) {
@@ -183,7 +183,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(256, 0, 2048);
+    public final IntRange deriveTTL = new IntRange(512, 0, 2048);
 
 
     /** estimate */
@@ -257,14 +257,17 @@ public abstract class Param {
      * set to zero to disable dithering.  typically the value will be 0..1.0.
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
-    public final FloatRange dtDither = new FloatRange(0f, 0f, 8f);
+    public final IntRange dtDither = new IntRange(1, 1, 1024);
 
     public int dtDitherCycles() {
-        float dd = dtDither.floatValue();
-        return dd > 0 ? Math.max(1, Math.round(dd * dur())) : 1;
+        return dtDither.intValue();
+//        float dd = dtDither.floatValue();
+//        return dd > 0 ? Math.max(1, Math.round(dd * dur())) : 1;
     }
 
     abstract int dur();
+
+
     abstract long time();
 
 

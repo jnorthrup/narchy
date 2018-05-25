@@ -3,6 +3,9 @@ package nars;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;
+import jcog.event.ListTopic;
+import jcog.event.On;
+import jcog.event.Topic;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.*;
@@ -61,6 +64,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     @Deprecated public final Set<Bitmap2DSensor<?>> sensorCam = new LinkedHashSet<>();
 
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
+    final Topic<NAR> frame = new ListTopic();
 
     /** list of concepts involved in this agent */
     private final List<Concept> concepts = new FasterList();
@@ -93,7 +97,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public boolean trace;
 
-    public long now = ETERNAL, last = ETERNAL; //not started
+    public long now = ETERNAL; //not started
 
 
     /**
@@ -111,6 +115,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     /** non-null if an independent loop process has started */
     private volatile Loop loop = null;
+    public int sensorDur;
+    private long last;
 
     protected NAgent(NAR nar) {
         this("", nar);
@@ -336,8 +342,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             });
 
             this.in = nar.newChannel(this);
-            this.now = nar.time();
-            this.last = now - nar.dur(); //head-start
+            this.now = nar.time() - nar.dur(); //head-start;
+
 
 
             //initialize concepts list
@@ -376,24 +382,28 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
 
-    @Override
-    public void run() {
+    /** runs a frame */
+    @Override public void run() {
         if (!enabled.get())
             return;
 
-        this.last = this.now;
-        this.now = nar.time();
+        long last = this.now;
+        this.last = last;
+        long now = nar.time();
         if (now <= last)
             return;
+        this.now = now;
 
-        int dur = Math.max(nar.dur(), (int)(now - last)); //stretched perceptual duration to the NAgent's effective framerate
+        this.sensorDur = Math.max(nar.dur(), (int)(now - last)); //stretched perceptual duration to the NAgent's effective framerate
 
         reward = act();
 
-        happy.update(last, now, dur, nar);
+        frame.emit(nar);
+
+        happy.update(last, now, sensorDur, nar);
 
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
-        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, dur, nar)));
+        sensors.forEach((key, value) -> value.input(key.update(last, now, truther, sensorDur, nar)));
 
         always( motivation.floatValue() );
 
@@ -401,7 +411,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
         ArrayUtils.shuffle(aa, random()); //fair chance of ordering to all motors
         for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
-            Stream<ITask> s = ac.getKey().update(last, now, dur, NAgent.this.nar);
+            Stream<ITask> s = ac.getKey().update(last, now, sensorDur, NAgent.this.nar);
             if (s != null)
                 ac.getValue().input(s);
         }
@@ -788,12 +798,13 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         return nar.confDefault(BELIEF);
     }
 
+
     @Override
-    public DurService onFrame(Consumer/*<NAR>*/ each) {
+    public On onFrame(Consumer/*<NAR>*/ each) {
         if (each instanceof DigitizedScalar) {
             senseNums.add((DigitizedScalar)each);
         }
-        return DurService.on(nar, ()->{ if (enabled.get()) each.accept(nar); });
+        return frame.on(each);
     }
 
     public DurService onFrame(Runnable each) {

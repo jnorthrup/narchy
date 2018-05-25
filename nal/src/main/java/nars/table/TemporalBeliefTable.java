@@ -39,10 +39,7 @@ public interface TemporalBeliefTable extends TaskTable {
                 //t.minDistanceTo(start, end) / ((float)dur);
                 //t.maxDistanceTo(start, end);
         float ownEvi =
-                Revision.eviInteg(t, t.start(), t.end(),
-                        //1);
-                        dur);
-                //0;
+                Revision.eviInteg(t, t.start(), t.end(), dur);
 
         //the ownEvi * 0.5 might be somewhat of an analog of the HORIZON parameter, reducing the strength of old evidence in relation to newer
 //        return (1 + focusedEvi) * (1 + ownEvi * 0.5f) / (1 + absDistance);

@@ -101,7 +101,8 @@ abstract public class NAgentX extends NAgent {
     public static TimeAware runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
         try {
-            Exe.setProfiler(new Exe.UDPeerProfiler());
+            Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
+//            Exe.setProfiler(prof);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -203,8 +204,8 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
-        n.dtDither.set(0.1f); //nyquist alert
-        n.timeFocus.set(4);
+        n.dtDither.set(2 /* ms */);
+        n.timeFocus.set(16);
 
 
         n.confMin.set(0.01f);
@@ -773,7 +774,9 @@ abstract public class NAgentX extends NAgent {
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
         sensorCam.add(c);
-        c.readAdaptively();
+        nar().runLater(()-> {
+            c.readAdaptively(this);
+        });
         return c;
     }
 

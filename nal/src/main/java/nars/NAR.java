@@ -1443,6 +1443,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     };
 
 
+
+
 //    /**
 //     * bins a range of values into N equal levels
 //     */

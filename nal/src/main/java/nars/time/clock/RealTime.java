@@ -100,7 +100,7 @@ public abstract class RealTime extends Time {
     }
 
     public Time durSeconds(double seconds) {
-        return dur((int) Math.ceil(secondsToUnits(seconds)));
+        return dur(Math.max(1, (int) Math.ceil(secondsToUnits(seconds))));
     }
 
 

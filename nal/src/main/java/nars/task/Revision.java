@@ -223,7 +223,7 @@ public class Revision {
             }
         }
 
-        dt = Tense.dither(dt, nar.dtDitherCycles());
+        dt = Tense.dither(dt, nar);
 
         Term a0 = a.sub(0);
         Term a1 = a.sub(1);
@@ -331,14 +331,12 @@ public class Revision {
      */
     @Nullable
     public static Task mergeTasks(NAR nar, TaskRegion... tt) {
+        assert(tt.length>1);
         long[] u = Tense.union(tt);
-        return mergeTasks(nar, 0, u[0], u[1], true, tt);
+        return mergeTasks(nar, nar.dur(), u[0], u[1], true, tt);
     }
 
-    @Nullable
-    public static Task mergeTasks(NAR nar, long start, long end, TaskRegion... tt) {
-        return mergeTasks(nar, nar.dur(), start, end, false, tt);
-    }
+
 
     @Nullable
     public static Task mergeTasks(NAR nar, int dur, long start, long end, boolean forceProjection, TaskRegion... tasks) {
@@ -632,7 +630,7 @@ public class Revision {
 
         if (x.term().equals(y.term()) && !Stamp.overlapsAny(x, y)) {
             //try to revise
-            Task xy = mergeTasks(nar, start, end, x, y);
+            Task xy = mergeTasks(nar, nar.dur(), start, end, true, x, y);
             if (xy != null && (filter == null || filter.test(xy)))
                 top.accept(xy);
         }

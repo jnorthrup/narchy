@@ -772,9 +772,9 @@ public interface NAct {
                 //System.out.println(Pb + "," + Nb + " <- " + g[0] + ";" + c[0] + ", " + g[1] + ';' + c[1]);
 
                 long lastFb = lastFeedback[0];
+                lastFeedback[0] = now;
                 CC[0].feedback(Pb, Pg, lastFb, now, n);
                 CC[1].feedback(Nb, Ng, lastFb, now, n);
-                lastFeedback[0] = now;
 
 
             }

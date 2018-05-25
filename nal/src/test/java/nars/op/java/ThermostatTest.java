@@ -35,7 +35,7 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.dtDither.set(0f);
+        n.dtDither.set(0);
         n.timeFocus.set(2);
         n.termVolumeMax.set(18);
         n.freqResolution.set(0.1f);

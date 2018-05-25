@@ -1,9 +1,9 @@
 package nars.gui;
 
+import jcog.event.Ons;
 import nars.NAR;
 import nars.NAgent;
 import nars.concept.Concept;
-import nars.control.DurService;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
@@ -11,10 +11,10 @@ import spacegraph.space2d.widget.meter.Plot2D;
 
 public class EmotionPlot extends Gridding {
 
-//    private final int plotHistory;
-    @Deprecated
-    private DurService on; //TODO use DurSurface
     Plot2D plot1, plot2, plot3;
+    //    private final int plotHistory;
+
+    private Ons on;
 
     public EmotionPlot(int plotHistory, NAgent a) {
         this(plotHistory, a, a.nar());
@@ -63,11 +63,11 @@ public class EmotionPlot extends Gridding {
 //            plot4.add("Sad", nar.emotion.sad::getSum);
 //                plot4.add("Errr", ()->nar.emotion.errr.getSum());
 
-        on = a.onFrame((aa)->{
-            plot1.update();
-            plot2.update();
-            plot3.update();
-        });
+        Ons ons = new Ons(
+                a.onFrame(n -> plot1.update()),
+                a.onFrame(n -> plot2.update()),
+                a.onFrame(n -> plot3.update()));
+        this.on = ons;
     }
 
     @Override

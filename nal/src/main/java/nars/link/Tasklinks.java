@@ -44,18 +44,12 @@ public class Tasklinks {
 
 
         float taskLinkPri = pri;
-        float conceptPri = pri * nar.activateConceptRate.floatValue();
 
         TaskLink.GeneralTaskLink link = new TaskLink.GeneralTaskLink(t, nar, taskLinkPri);
 
         linkTask(link, src.tasklinks(), null);
 
 
-        //activate the task's concept
-        nar.activate(src, conceptPri);
-
-        //activate the task concept termlink templates
-        src.templates().linkAndActivate(src, taskLinkPri, nar);
 
         {
             //adjust the cause values according to the input's actual demand

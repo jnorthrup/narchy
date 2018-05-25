@@ -293,7 +293,12 @@ public class TermlinkTemplates extends FasterList<Term> {
     /**
      * link and activate the templates
      */
-    public void linkAndActivate(Concept src, float budgeted, NAR nar) {
+    public void linkAndActivate(Concept src, float pri, NAR nar) {
+
+        //activate the task's concept
+//        float conceptPri = pri * nar.activateConceptRate.floatValue();
+//        nar.activate(src, conceptPri);
+
         int n = this.size();
         if (n == 0)
             return;
@@ -305,8 +310,8 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         float balance = nar.termlinkBalance.floatValue();
         float budgetedForward = concepts == 0 ? 0 :
-                Math.max(Prioritized.EPSILON, budgeted * (1f - balance) / concepts); //concept targets (subset of all targets)
-        float budgetedReverse = Math.max(Prioritized.EPSILON, budgeted * balance / n); //all targets
+                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts); //concept targets (subset of all targets)
+        float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n); //all targets
 
         for (int i = 0; i < n; i++) {
             Term tgtTerm = get(i);

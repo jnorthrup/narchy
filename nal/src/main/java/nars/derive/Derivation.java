@@ -540,7 +540,7 @@ public class Derivation extends PreDerivation {
         long now = nar.time();
         if (now != this.time) {
             this.time = now;
-            this.dur = nar.dur();
+            this.dur = deri.dur();
             this.ditherTime = nar.dtDitherCycles();
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();

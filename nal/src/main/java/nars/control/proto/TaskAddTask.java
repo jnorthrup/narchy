@@ -50,6 +50,7 @@ public class TaskAddTask extends NativeTask {
 
 
         if (((TaskConcept) c).add(task, n)) {
+            n.activate(c, pri);
             return new TaskLinkTask(task, pri, c);
         } else {
             return null;

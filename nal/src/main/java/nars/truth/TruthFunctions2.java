@@ -68,20 +68,20 @@ public enum TruthFunctions2 { ;
      */
     @Nullable public static Truth desireNew(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
-        //float c = and(goal.conf(), belief.conf(), belief.freq());
-        float c = and(goal.conf(), belief.conf());
+        float c = and(goal.conf(), belief.conf(), belief.freq());
+        //float c = and(goal.conf(), belief.conf());
         if (!strong)
             c *= TruthFunctions.w2c(1.0f);
 
         if (c >= minConf) {
 
-            //instead of the original's f = and(aFreq,bFreq),
-            //this does not discriminate against negative goals but instead
-            //pulls the frequency toward 0.5 in proportion to (1- bFreq)
-            float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
+//            //instead of the original's f = and(aFreq,bFreq),
+//            //this does not discriminate against negative goals but instead
+//            //pulls the frequency toward 0.5 in proportion to (1- bFreq)
+//            float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
 
             //this uses the task's frequency as-is
-            //float f = goal.freq();
+            float f = goal.freq();
 
             return $.t(f, c);
 

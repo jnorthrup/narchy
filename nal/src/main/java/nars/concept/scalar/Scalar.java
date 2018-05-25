@@ -58,17 +58,6 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
 
     }
 
-    public final DurService auto(NAR n) {
-        return auto(n, 1);
-    }
-
-    public DurService auto(NAR n, float durs) {
-        FloatFloatToObjectFunction<Truth> truther =
-            (prev, next) -> $.t(next, n.confDefault(BELIEF));
-
-        return DurService.on(n, nn->
-                nn.input(update(truther, n))).durs(durs);
-    }
 
     /**
      * returns a new stamp for a sensor task
@@ -90,8 +79,19 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         return currentValue;
     }
 
+    @Deprecated public final DurService auto(NAR n) {
+        return auto(n, 1);
+    }
 
-    public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
+    @Deprecated public DurService auto(NAR n, float durs) {
+        FloatFloatToObjectFunction<Truth> truther =
+                (prev, next) -> $.t(next, n.confDefault(BELIEF));
+
+        return DurService.on(n, nn->
+                nn.input(update(truther, n))).durs(durs);
+    }
+
+    @Nullable @Deprecated public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
         return update(truther, n.time(), n.dur(), n);
     }
 

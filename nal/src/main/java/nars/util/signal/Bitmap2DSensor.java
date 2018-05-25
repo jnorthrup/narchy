@@ -4,6 +4,7 @@ import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
+import nars.NAgent;
 import nars.Task;
 import nars.concept.scalar.Scalar;
 import nars.control.DurService;
@@ -53,28 +54,37 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
 
     public void input() {
-        input(SET);
+        input(dur(), SET);
     }
 
     /** manually inputs the contents of the current frame */
-    public void input(FloatFloatToObjectFunction<Truth> mode) {
-        nar.input( stream(mode, nar) );
+    public void input(int dur, FloatFloatToObjectFunction<Truth> mode) {
+        nar.input( stream(mode, dur, nar) );
     }
 
     /** attaches a reading service to the NAR */
     public Bitmap2DReader readAdaptively() {
-        return new Bitmap2DReader(nar);
+        return new Bitmap2DReader();
     }
 
+    protected int dur() {
+        return nar.dur();
+    }
+
+    public Bitmap2DReader readAdaptively(NAgent agent) {
+        return new Bitmap2DReader() {
+            protected int dur() {
+                return Math.max(super.dur(), agent.sensorDur);
+            }
+        };
+    }
 
     public DurService readDirectEachDuration() {
         return readDirectEachDuration(SET);
     }
 
     public DurService readDirectEachDuration(FloatFloatToObjectFunction<Truth> mode) {
-        return DurService.on(nar, (nn)->{
-            input(mode);
-        });
+        return DurService.on(nar, (nn)-> input(nar.dur(), mode));
     }
 
     final FloatFloatToObjectFunction<Truth> SET;
@@ -166,7 +176,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     /** service for progressively (AIKR) reading this sensor */
     private class Bitmap2DReader extends Causable {
 
-        private final NAR n;
         private int lastPixel;
         private long lastUpdate;
 
@@ -195,14 +204,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
         FloatFloatToObjectFunction<Truth> mode;
 
-        public Bitmap2DReader(NAR n) {
-            super(n);
-            this.n = n;
-            lastUpdate = n.time();
+        public Bitmap2DReader() {
+            super(Bitmap2DSensor.this.nar);
+            lastUpdate = Bitmap2DSensor.this.nar.time();
             pixelsRemainPerUpdate = area;
-            in = n.newChannel(Bitmap2DSensor.this);
+            in = nar.newChannel(Bitmap2DSensor.this);
             pixelsProcessed = new DescriptiveStatistics(8);
-            conf = n.confDefault(BELIEF);
+            conf = nar.confDefault(BELIEF);
             mode = (p, v) -> Scalar.SET.apply(() -> conf).value(p, v);
         }
 
@@ -212,10 +220,15 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         }
 
 
+        protected int dur() {
+            return Bitmap2DSensor.this.dur();
+        }
+
         @Override
         protected int next(NAR nar, int work) {
 
-            conf = n.confDefault(BELIEF);
+            int dur = this.dur();
+            conf = nar.confDefault(BELIEF);
 
             int totalPixels = area;
 
@@ -276,12 +289,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
                 //wrap around
                 int extra = end - totalPixels;
                 s = Stream.concat(
-                        stream(mode, start, totalPixels, nar), //last 'half'
-                        stream(mode, 0, extra, nar) //first half after wrap around
+                        stream(mode, start, totalPixels, dur, nar), //last 'half'
+                        stream(mode, 0, extra, dur, nar) //first half after wrap around
                 );
                 this.lastPixel = extra;
             } else {
-                s = Bitmap2DSensor.this.stream(mode, start, end, nar);
+                s = Bitmap2DSensor.this.stream(mode, start, end, dur, nar);
                 this.lastPixel = end;
             }
 

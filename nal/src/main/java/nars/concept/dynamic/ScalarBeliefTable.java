@@ -387,7 +387,10 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
     public SignalTask add(Truth value, long start, long end, int dur, NAR nar) {
 
         value = value.ditherFreq(Math.max(nar.freqResolution.asFloat(), res.asFloat()));
-        SignalTask x = series.add(term, punc(), start, end, value, dur, nar);
+        SignalTask x = series.add(term, punc(), start,
+                //end+nar.dtDither,
+                end + dur,
+                value, dur, nar);
 
         if (x!=null)
             x.pri(pri.asFloat());

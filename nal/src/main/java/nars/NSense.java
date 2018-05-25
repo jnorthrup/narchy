@@ -1,10 +1,10 @@
 package nars;
 
 import jcog.Util;
+import jcog.event.On;
 import jcog.math.*;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
-import nars.control.DurService;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
@@ -214,7 +214,7 @@ public interface NSense {
         return fs;
     }
 
-    DurService onFrame(Consumer r);
+    On onFrame(Consumer r);
 
     @NotNull
     default DigitizedScalar senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, DigitizedScalar.ScalarEncoder model)  {
