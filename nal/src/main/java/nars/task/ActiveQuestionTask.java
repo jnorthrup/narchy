@@ -35,8 +35,7 @@ import static nars.Op.*;
  */
 public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Task> {
 
-    private @NotNull
-    final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
+    private final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
 
     final ArrayBag<Task, PriReference<Task>> answers;
     private On onTask;
@@ -51,11 +50,11 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         this(q.term(), q.punc(), q.mid() /*, q.end()*/, history, nar, eachAnswer);
     }
 
-    public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, @NotNull Consumer<Task> eachAnswer) {
+    public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, Consumer<Task> eachAnswer) {
         this(term, punc, occ, history, nar, (q, a) -> eachAnswer.accept(a));
     }
 
-    public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, @NotNull BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
+    public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar,  BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
         super(term.the(), punc, null, nar.time(), occ, occ, nar.evidence());
 
         budget(nar);
@@ -76,6 +75,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     @Override
     public void accept(Task t) {
         byte tp = t.punc();
+
         if (((punc == QUESTION && tp == BELIEF) || (punc == QUEST && tp == GOAL))) {
             MySubUnify u = new MySubUnify(random, ttl);
             u.unify(term(), t.term(), true);
@@ -83,6 +83,8 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
                 onAnswer(t);
             }
         }
+
+        //TODO stamp matching acceptance condition
     }
 
     private static class MySubUnify extends Unify {
@@ -105,11 +107,17 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
     @Override
     public boolean delete() {
-        if (this.onTask != null) {
-            this.onTask.off();
-            this.onTask = null;
-        }
+        off();
         return super.delete();
+    }
+
+    public void off() {
+        synchronized (this) {
+            if (this.onTask != null) {
+                this.onTask.off();
+                this.onTask = null;
+            }
+        }
     }
 
     ArrayBag<Task, PriReference<Task>> newBag(int history) {

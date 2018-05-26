@@ -13,6 +13,7 @@ import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,7 +42,12 @@ public abstract class TermBuilder {
 
     abstract protected Term newCompound(Op o, int dt, Term[] u);
 
-    abstract public Subterms newSubterms(Term... s);
+
+    public final Subterms newSubterms(Term... s) {
+        return newSubterms(null, s);
+    }
+
+    abstract public Subterms newSubterms(@Nullable Op inOp, Term... s);
 
 
     public Subterms subterms(Collection<Term> s) {
@@ -118,7 +124,7 @@ public abstract class TermBuilder {
                     return new CachedUnitCompound(o, u[0]);
             }
         } else {
-            return theCompound(o, dt, newSubterms(u));
+            return theCompound(o, dt, newSubterms(o, u));
         }
     }
 

@@ -16,6 +16,7 @@ import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
 import nars.nal.nal8.NAL8Test;
 import nars.util.NALTest;
+import org.intelligentjava.machinelearning.decisiontree.DecisionTree;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -113,10 +114,17 @@ public class NARTestOptimize {
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         while (true) {
-            Optimizing.Result r = opt.run( /*32*1024*/ 32, 4, pool);
+            Optimizing.Result r = opt.run( /*32*1024*/ 8, 16, pool);
+
+            System.out.println();
+            System.out.println();
             System.out.println();
 
-            r.cull(0f, 0.7f);
+//            r.cull(0f, 0.7f);
+
+            for (DecisionTree d : r.forest(4, 3))
+                d.print();
+
             r.tree(4, 8).print();
 
         }

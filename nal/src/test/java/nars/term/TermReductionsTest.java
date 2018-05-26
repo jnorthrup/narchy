@@ -1204,17 +1204,32 @@ public class TermReductionsTest extends NarseseTest {
         // -x - -y = -x + y = y - x
         //((--,X)-(--,Y)) => (Y-X)
 
-        NAR n = NARS.shell();
-        n.believe("X", 1.0f, 0.9f);
-        n.believe("Y", 0.5f, 0.9f);
-        tryDiff(n, "(X~Y)", "%.50;.81%");
-        tryDiff(n, "(Y~X)", "%0.0;.81%");
 
-        assertEquals("", n.beliefTruth("(Y~X)", ETERNAL).toString());
-        assertEquals("", n.beliefTruth("((--,X)~(--,Y))", ETERNAL).toString());
+        {
+            NAR n = NARS.shell();
+            n.believe("X", 1.0f, 0.9f);
+            n.believe("Y", 0.5f, 0.9f);
+            tryDiff(n, "(X~Y)", "%.50;.81%");
+            tryDiff(n, "((--,Y)~(--,X))", "%.50;.81%");
+            tryDiff(n, "(Y~X)", "%0.0;.81%");
+            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.81%");
+        }
+        {
+            NAR n = NARS.shell();
+            n.believe("X", 1.0f, 0.9f);
+            n.believe("Y", 0.75f, 0.9f);
+            tryDiff(n, "(X~Y)", "%.25;.81%");
 
-        // -X - Y
-        // X - -Y
+            tryDiff(n, "((--,Y)~(--,X))", "%.25;.81%");
+
+            tryDiff(n, "(Y~X)", "%0.0;.81%");
+            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.81%");
+        }
+        assertReduction("(Y~X)", "((--,X)~(--,Y))");
+        assertReduction("(X~Y)", "((--,Y)~(--,X))");
+        assertReduction("((Y~X)-->A)", "(((--,X)~(--,Y))-->A)");
+        assertReduction("(A-->(Y-X))", "(A-->((--,X)-(--,Y)))");
+
     }
 
     public void tryDiff(NAR n, String term, String truthExpected) throws Narsese.NarseseException {

@@ -238,45 +238,58 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * call this directly instead of taskContentValid if the level, volume, and normalization have already been tested.
      * these can all be tested prenormalization, because normalization will not affect the result
      */
-    static boolean validTaskCompound(Term t, boolean safe) {
+    static boolean validTaskCompound(Term x, boolean safe) {
+
+        Op xo = x.op();
+        if (xo.atomic) {
+            if (xo.conceptualizable)
+                return true;
+            return false; //var or else
+        }
+
         /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
-
-//        if (t.varDep()==1) {
-//            return fail(t, "singular dependent variable", safe);
-//        }
-
-        switch (t.varIndep()) {
+        switch (x.varIndep()) {
             case 0:
-                break;  //OK
+                return true;  //OK
             case 1:
-                return fail(t, "singular independent variable", safe);
+                return fail(x, "singular independent variable", safe);
             default:
-                if (!t.hasAny(Op.StatementBits)) {
-                    return fail(t, "InDep variables must be subterms of statements", safe);
+                if (!x.hasAny(Op.StatementBits)) {
+                    return fail(x, "InDep variables must be subterms of statements", safe);
                 } else {
+                    if (xo.statement)
+                        return validIndepBalanced(x, safe);
+                    else
+                        return x.subterms().AND(s -> validTaskCompound(s, safe));
+                }
+        }
 
+    }
 
-                    //Trie<ByteList, ByteSet> m = new Trie(Tries.TRIE_SEQUENCER_BYTE_LIST);
-                    FasterList</* length, */ ByteList> statements = new FasterList<>(4);
-                    ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
+    @Nullable
+    static boolean validIndepBalanced(Term t, boolean safe) {
 
-                    t.pathsTo(
-                            x -> {
-                                Op xo = x.op();
-                                return (xo.statement && x.varIndep() > 0) || (xo == VAR_INDEP) ? x : null;
-                            },
-                            x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
-                            (ByteList path, Term indepVarOrStatement) -> {
-                                if (path.isEmpty())
-                                    return true; //skip the input term
+        //Trie<ByteList, ByteSet> m = new Trie(Tries.TRIE_SEQUENCER_BYTE_LIST);
+        FasterList</* length, */ ByteList> statements = new FasterList<>(4);
+        ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
 
-                                if (indepVarOrStatement.op() == VAR_INDEP) {
-                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
-                                            () -> new FasterList<>(2))
-                                            .add(path.toImmutable());
-                                } else {
-                                    statements.add(path.toImmutable());
-                                }
+        t.pathsTo(
+                x -> {
+                    Op xo = x.op();
+                    return (xo.statement && x.varIndep() > 0) || (xo == VAR_INDEP) ? x : null;
+                },
+                x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
+                (ByteList path, Term indepVarOrStatement) -> {
+                    if (path.isEmpty())
+                        return true; //skip the input term
+
+                    if (indepVarOrStatement.op() == VAR_INDEP) {
+                        indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
+                                () -> new FasterList<>(2))
+                                .add(path.toImmutable());
+                    } else {
+                        statements.add(path.toImmutable());
+                    }
 //
 //                        Term t = null; //root
 //                        int pathLength = path.size();
@@ -291,72 +304,66 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //                            }
 //                        }
 
-                                return true;
-                            });
+                    return true;
+                });
 
-                    if (indepVarPaths.anySatisfy(p -> p.size() < 2))
-                        return false; //there is an indep variable that appears only once
+        if (indepVarPaths.anySatisfy(p -> p.size() < 2))
+            return false; //there is an indep variable that appears only once
 
-                    if (statements.size() > 1) {
-                        statements.sortThisByInt(PrimitiveIterable::size);
-                        //Comparator.comparingInt(PrimitiveIterable::size));
-                    }
-
-
-                    boolean rootIsStatement = t.op().statement;
-                    if (!indepVarPaths.allSatisfy((varPaths) -> {
-
-                        ByteByteHashMap count = new ByteByteHashMap();
-
-
-                        //byte 1 = which statement path, byte 2 = length down it
-                        int numVarPaths = varPaths.size();
-                        for (byte varPath = 0; varPath < numVarPaths; varPath++) {
-
-
-                            ByteList p = varPaths.get(varPath);
-                            if (rootIsStatement) {
-                                byte branch = p.get(0);
-                                if (Util.branchOr((byte) -1, count, branch) == 3)
-                                    return true; //valid
-                            }
-
-                            int pSize = p.size();
-                            byte statementNum = -1;
-
-
-                            nextStatement:
-                            for (int i1 = 0, statementsSize = statements.size(); i1 < statementsSize; i1++) {
-                                ByteList statement = statements.get(i1);
-                                statementNum++;
-                                int statementPathLength = statement.size();
-                                if (statementPathLength > pSize)
-                                    break; //since its sorted we know we dont have to try the remaining paths that go to deeper siblings
-
-                                for (int i = 0; i < statementPathLength; i++) {
-                                    if (p.get(i) != statement.get(i))
-                                        break nextStatement; //mismatch
-                                }
-
-                                byte lastBranch = p.get(statementPathLength);
-                                assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating term: " + t;
-
-                                //match
-                                if (Util.branchOr(statementNum, count, lastBranch) == 3) {
-                                    return true; //VALID
-                                }
-                            }
-                        }
-                        return false;
-                    })) {
-                        return fail(t, "InDep variables must be balanced across a statement", safe);
-                    }
-
-
-                }
+        if (statements.size() > 1) {
+            statements.sortThisByInt(PrimitiveIterable::size);
+            //Comparator.comparingInt(PrimitiveIterable::size));
         }
 
 
+        boolean rootIsStatement = t.op().statement;
+        if (!indepVarPaths.allSatisfy((varPaths) -> {
+
+            ByteByteHashMap count = new ByteByteHashMap();
+
+
+            //byte 1 = which statement path, byte 2 = length down it
+            int numVarPaths = varPaths.size();
+            for (byte varPath = 0; varPath < numVarPaths; varPath++) {
+
+
+                ByteList p = varPaths.get(varPath);
+                if (rootIsStatement) {
+                    byte branch = p.get(0);
+                    if (Util.branchOr((byte) -1, count, branch) == 3)
+                        return true; //valid
+                }
+
+                int pSize = p.size();
+                byte statementNum = -1;
+
+
+                nextStatement:
+                for (int i1 = 0, statementsSize = statements.size(); i1 < statementsSize; i1++) {
+                    ByteList statement = statements.get(i1);
+                    statementNum++;
+                    int statementPathLength = statement.size();
+                    if (statementPathLength > pSize)
+                        break; //since its sorted we know we dont have to try the remaining paths that go to deeper siblings
+
+                    for (int i = 0; i < statementPathLength; i++) {
+                        if (p.get(i) != statement.get(i))
+                            break nextStatement; //mismatch
+                    }
+
+                    byte lastBranch = p.get(statementPathLength);
+                    assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating term: " + t;
+
+                    //match
+                    if (Util.branchOr(statementNum, count, lastBranch) == 3) {
+                        return true; //VALID
+                    }
+                }
+            }
+            return false;
+        })) {
+            return fail(t, "InDep variables must be balanced across a statement", safe);
+        }
         return true;
     }
 

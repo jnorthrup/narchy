@@ -51,10 +51,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -574,6 +571,31 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         }
 
         return data;
+    }
+
+    public FloatTable<String> toFloatTable(int... columns) {
+
+        Arrays.sort(columns);
+
+        int n = columns.length;
+        String[] names = new String[n];
+        int i = 0;
+        for (int c : columns) {
+            names[i++] = attrName(c);
+        }
+        FloatTable<String> data = new FloatTable<>(names);
+
+
+        for (ImmutableList exp : this.data) {
+            float[] r = new float[n];
+            int k = 0;
+            for (int c : columns)
+                r[k++] = ((Number) exp.get(c)).floatValue();
+            data.add(r);
+        }
+
+        return data;
+
     }
 
     public enum AttributeType {

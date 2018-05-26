@@ -13,7 +13,7 @@ public class HeapTermBuilder extends TermBuilder {
     }
 
     @Override
-    public Subterms newSubterms(Term... s) {
+    public Subterms newSubterms(Op inOp, Term... s) {
         return subtermsInstance(s);
     }
 }

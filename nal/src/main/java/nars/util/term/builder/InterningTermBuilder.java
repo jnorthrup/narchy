@@ -8,12 +8,11 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
-import nars.util.term.InternedSubterms;
-import nars.util.term.SubtermsCache;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
+import static nars.Op.PROD;
 import static nars.time.Tense.DTERNAL;
 
 /** can intern subterms, compounds, and temporal compounds.
@@ -31,6 +30,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     final HijackTermCache[] termCache;
     final HijackTermCache[] termTemporalCache;
+    //public final SubtermsCache subtermCache = new SubtermsCache(128 * 1024, 3);
     {
         termCache = new HijackTermCache[Op.ops.length];
         termTemporalCache = new HijackTermCache[Op.ops.length];
@@ -42,7 +42,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    public final SubtermsCache subtermCache = new SubtermsCache(128 * 1024, 3);
+
 
     @Override public final Term newCompound(Op op, int dt, Term[] u) {
         return internable(op, dt, u) ?
@@ -50,13 +50,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 super.newCompound(op, dt, u);
     }
 
-    @Override public Subterms newSubterms(Term... s) {
-        //return The.Subterms.the.apply(s);
-        //return compound(PROD, s).subterms();
-        if (internable(s))
-            return subtermCache.apply(new InternedSubterms(s));
-        else
-            return super.newSubterms(s);
+    @Override public Subterms newSubterms(Op inOp, Term... s) {
+        if (inOp!=PROD && internable(s)) {
+            return compound(PROD, s).subterms();
+
+            //return subtermCache.apply(new InternedSubterms(s));
+        } else
+            return super.newSubterms(inOp, s);
+
     }
 
     protected boolean internable(Op op, int dt, Term[] u) {
@@ -89,7 +90,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public String summary() {
-        return  "subterm cache: " + subtermCache.summary() + "\n" +
+        return  //"subterm cache: " + subtermCache.summary() + "\n" +
                 "compound cache: " + summary(termCache, termCache) + "\n" +
                 "termporal cache: " + summary(termCache, termTemporalCache) + "\n"
                 ;

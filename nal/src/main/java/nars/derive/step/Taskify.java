@@ -1,10 +1,7 @@
 package nars.derive.step;
 
 import jcog.Util;
-import nars.$;
-import nars.NAR;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.derive.Derivation;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.task.DebugDerivedTask;
@@ -13,6 +10,7 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.util.term.transform.VariableTransform;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +66,17 @@ public class Taskify extends AbstractPred<Derivation> {
         Truth tru = d.concTruth;
 
         Term x0 = d.derivedTerm;
-        Term x = d.anon.get(x0).normalize();
+
+        if (x0.hasAny(Op.VAR_INDEP)) {
+            x0 = x0.normalize(); //prenormalize for validTaskCompound check
+            if (!Task.validTaskCompound(x0, true)){
+                //try converting indep to dep
+                x0 = x0.transform(VariableTransform.indepToDepVar).normalize();
+            }
+        }
+
+        Term x1 = d.anon.get(x0);
+        Term x = x1.normalize();
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;
@@ -85,6 +93,8 @@ public class Taskify extends AbstractPred<Derivation> {
             d.nar.emotion.deriveFailParentDuplicate.increment();
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
+
+
 
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 

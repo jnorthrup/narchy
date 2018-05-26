@@ -90,6 +90,15 @@ public interface TermTransform extends Evaluation.TermContext {
         }
     };
 
+    TermTransform indepToDepVar = new TermTransform() {
+        @Override public Term transformAtomic(Term atomic) {
+            return atomic.op() != VAR_INDEP ?
+                    atomic
+                    :
+                    Op.Imdex;
+        }
+    };
+
     TermTransform anyVarToQueryVar = new TermTransform() {
         @Override
         public Term transformAtomic(Term atomic) {

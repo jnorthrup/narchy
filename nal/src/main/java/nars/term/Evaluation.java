@@ -78,16 +78,22 @@ public final class Evaluation {
         Evaluation s = Evaluation.clear();
 
         Term y = x.eval(context);
-        if (y.op().atomic) {
-            if (y == True) {
-                y = ($.func(TRUE,x));
-            } else if (y == False) {
-                y = ($.func(TRUE, x.neg()));
+//        if (y.equals(x)) {
+//            return each.test(True);
+//        } else if (y.op().atomic) {
+//            return each.test(y);
+//        } else {
+//
+//
+
+            if ((y == True) || (y == False)) {
+                return each.test($.func(TRUE, x.negIf(y!=True)));
             }
-        return each.test(y);
-    } else {
+
+//        return each.test(y);
+//        } else {
             return s.get(y, context, each);
-        }
+//        }
     }
 
     public static Evaluation clear() {
@@ -127,15 +133,19 @@ public final class Evaluation {
 
         proc.clear();
 
+        int start = v.now();
+
         nextPermute: while (pp.hasNext()) {
+
+            v.revert(start);
+
             Predicate<VersionMap<Term, Term>>[] n = pp.next();
             assert (n.length > 0);
 
-            int start = v.now();
-
             for (Predicate p : n) {
                 if (!p.test(subst)) {
-                    break nextPermute;
+                    v.revert(start);
+                    continue nextPermute;
                 }
             }
 
@@ -143,21 +153,42 @@ public final class Evaluation {
 
             if (y != null && !y.equals(x)) {
 
-                Term z = y.eval(context);
-                if (z  == True || z == False) {
-                    //determined absolutely true or false: implies that this is the answer to a question
-                    Term zz = $.func(TRUE, y).negIf(z == False).normalize();
-                    if (zz!=null && !zz.equals(x))
-                        each.test(zz);
+                Term z;
+                if (!y.hasAny(Op.BOOL))
+                    z = y.eval(context);
+                else
+                    z = y; //continue
 
-                    continue;
+                if (z  == True || z == False || z.hasAny(Op.BOOL)) {
+                    boolean hasFalse = z == False || z.ORrecurse(t -> t == False); //TODO can be found faster with smart recursive descent
+                    if (hasFalse)
+                        z = False; //TODO maybe record what part causes the falsity
+
+                    //determined absolutely true or false: implies that this is the answer to a question
+                    if (z == False) {
+                        y = y.neg();
+                    }
+                    Term zz = $.func(TRUE, y);
+                    if (zz!=null && !zz.equals(x))
+                        if (!each.test(zz))
+                            return false;
+
+//                    if (hasFalse) {
+//                        continue; //filter false possiblities
+//                    }
+
                 } else {
-                    y = z; //continue
+                    if (z!=null)
+                        y = z;
                 }
                 if (proc.isEmpty()) {
 
                     if (y!=null) {
-                        y = y.normalize(); //TODO optional
+                        if (y == True)
+                            y = x;
+                        else if (y == False)
+                            y = x.neg();
+                        //y = y.normalize(); //TODO optional
 
                         if (!y.equals(x)) {
                             if (!each.test(y))
@@ -170,7 +201,6 @@ public final class Evaluation {
                 }
             }
 
-            v.revert(start);
         }
 
 

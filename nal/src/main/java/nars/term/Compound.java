@@ -49,6 +49,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.term.Evaluation.TRUE;
 import static nars.time.Tense.*;
 
 /**
@@ -857,8 +858,8 @@ public interface Compound extends Term, IPair, Subterms {
                 } else {
                     if (yi == Null)
                         return Null;
-                    if (yi == False && (o == CONJ))
-                        return False; //short-circuit fast fail
+//                    if (yi == False && (o == CONJ))
+//                        return False; //short-circuit fast fail
 
                     if (yi instanceof EllipsisMatch) {
                         int ys = yi.subs();

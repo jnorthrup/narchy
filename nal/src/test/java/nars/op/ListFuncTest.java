@@ -63,7 +63,7 @@ public class ListFuncTest {
                 Evaluation.solveAll($$("append(x,y,(x,y))"), n));
 
         assertEquals(
-                Set.of(False),
+                Set.of($$("(--,append((x),(y),(x,y,z)))")),
                 Evaluation.solveAll($$("append((x),(y),(x,y,z))"), n));
 
     }

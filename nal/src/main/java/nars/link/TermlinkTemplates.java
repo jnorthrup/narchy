@@ -255,7 +255,7 @@ public class TermlinkTemplates extends FasterList<Term> {
             case CONJ:
                 //if (x.hasAny(Op.INH))
                 //return 3; else
-                return 3;
+                return 2;
 
 
             default:

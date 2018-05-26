@@ -3,12 +3,14 @@ package jcog.optimize;
 import com.google.common.base.Joiner;
 import jcog.io.Schema;
 import jcog.io.arff.ARFF;
+import jcog.list.FasterList;
 import jcog.math.Quantiler;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
+import org.intelligentjava.machinelearning.decisiontree.DecisionTree;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,6 +195,20 @@ public class Optimizing<X,Y> {
                 float v = ((Number) r.get(0)).floatValue();
                 return (v <= maxValue && v >= minValue);
             });
+        }
+
+        public List<DecisionTree> forest(int discretization, int maxDepth) {
+            if (data.isEmpty())
+                return null;
+
+            List<DecisionTree> l = new FasterList();
+            int attrCount = data.attrCount();
+            for (int i = 1; i < attrCount; i++) {
+                l.add(
+                        new RealDecisionTree(data.toFloatTable(0, i),
+                                0 /* score */, maxDepth, discretization));
+            }
+            return l;
         }
     }
 }

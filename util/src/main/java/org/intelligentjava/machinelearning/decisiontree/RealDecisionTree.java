@@ -52,8 +52,10 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
     public RealDecisionTree(FloatTable<String> table, int predictCol, int maxDepth, String... rangeLabels) {
         super();
 
-        this.table = table;
+        assert(maxDepth > 1);
         assert(table.size() > 0);
+
+        this.table = table;
 
         int discretization = rangeLabels.length;
         assert (discretization > 1);
