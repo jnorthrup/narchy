@@ -405,6 +405,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
         sensors.forEach((key, value) -> value.input(key.update(last, now, truther, sensorDur, nar)));
 
+        //nar.goal(happy.filter[0].term, Tense.Present, 1f, nar.confDefault(GOAL));
         always( motivation.floatValue() );
 
         //HACK TODO compile this to re-used array on init like before

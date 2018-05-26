@@ -10,18 +10,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
+public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
-    final Y[] emptyArray;
+    final T[] emptyArray;
 
-    final Map<X, Y> map =
+    final Map<X, T> map =
             //new ConcurrentHashMap<>();
             new ConcurrentOpenHashMap<>();
 
-    volatile Y[] list = null;
+    volatile T[] list = null;
 
 
-    public ConcurrentFastIteratingHashMap(Y[] emptyArray) {
+    public ConcurrentFastIteratingHashMap(T[] emptyArray) {
         this.emptyArray = emptyArray;
     }
 
@@ -30,8 +30,8 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
      * a near atomic invalidation of the list after the hashmap method returns
      */
     @Override
-    public Y putIfAbsent(X key, Y value) {
-        Y r;
+    public T putIfAbsent(X key, T value) {
+        T r;
         if ((r = map.putIfAbsent(key, value)) == null) {
             invalidate();
             return null;
@@ -44,8 +44,8 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
      * a near atomic invalidation of the list after the hashmap method returns
      */
     @Override
-    public Y remove(Object key) {
-        Y r = map.remove(key);
+    public T remove(Object key) {
+        T r = map.remove(key);
         if (r != null)
             invalidate();
         return r;
@@ -76,25 +76,28 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
         return map.isEmpty();
     }
 
+    public List<T> asList() {
+        return new MyAbstractList();
+    }
     /**
      * this is the fast value iterating method
      */
-    public void forEachValue(Consumer<? super Y> action) {
-        Y[] x = valueArray();
-        for (Y t : x)
+    public void forEachValue(Consumer<? super T> action) {
+        T[] x = valueArray();
+        for (T t : x)
             action.accept(t);
     }
 
     @Override
-    public Y compute(X key, BiFunction<? super X, ? super Y, ? extends Y> remappingFunction) {
+    public T compute(X key, BiFunction<? super X, ? super T, ? extends T> remappingFunction) {
         throw new TODO();
     }
 
     @Override
-    public Y computeIfAbsent(X key, Function<? super X, ? extends Y> mappingFunction) {
+    public T computeIfAbsent(X key, Function<? super X, ? extends T> mappingFunction) {
         final boolean[] changed = {false};
-        Y prev = map.computeIfAbsent(key, (p) -> {
-            Y next = mappingFunction.apply(p);
+        T prev = map.computeIfAbsent(key, (p) -> {
+            T next = mappingFunction.apply(p);
             if (next != p)
                 changed[0] = true;
             return next;
@@ -111,8 +114,8 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
         list = null;
     }
 
-    public boolean whileEachValue(Predicate<? super Y> action) {
-        Y[] x = valueArray();
+    public boolean whileEachValue(Predicate<? super T> action) {
+        T[] x = valueArray();
         for (int i = 0, xLength = x.length; i < xLength; i++) {
             if (!action.test(x[i]))
                 return false;
@@ -120,8 +123,8 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
         return true;
     }
 
-    public boolean whileEachValueReverse(Predicate<? super Y> action) {
-        Y[] x = valueArray();
+    public boolean whileEachValueReverse(Predicate<? super T> action) {
+        T[] x = valueArray();
         for (int i = x.length - 1; i >= 0; i--) {
             if (!action.test(x[i]))
                 return false;
@@ -130,12 +133,12 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     @Override
-    public Y get(Object key) {
+    public T get(Object key) {
         return map.get(key);
     }
 
     @Override
-    public Set<Entry<X, Y>> entrySet() {
+    public Set<Entry<X, T>> entrySet() {
         return map.entrySet();
     }
 
@@ -145,7 +148,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     @Override
-    public Collection<Y> values() {
+    public Collection<T> values() {
         //return map.values();
         return new FasterList(list);
     }
@@ -161,13 +164,13 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
     }
 
 
-    public Iterator<Y> valueIterator() {
+    public Iterator<T> valueIterator() {
         return ArrayIterator.get(valueArray());
     }
 
 
-    public Y[] valueArray() {
-        Y[] x = list;
+    public T[] valueArray() {
+        T[] x = list;
         if (x == null) {
             return this.list = updateValues();
         } else {
@@ -175,22 +178,22 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
         }
     }
 
-    public Y[] updateValues() {
+    public T[] updateValues() {
         //return map.values().toArray(emptyArray);
 
         //for CncurrentOpenHashMap:
-        return ((FasterList<Y>)(((ConcurrentOpenHashMap<?,Y>)map)
+        return ((FasterList<T>)(((ConcurrentOpenHashMap<?, T>)map)
                 .values(this.emptyArray)))
                 .toArrayRecycled(i -> Arrays.copyOf(emptyArray, i));
     }
 
 
     @Override
-    public Y put(X key, Y value) {
+    public T put(X key, T value) {
         return map.put(key, value);
     }
 
-    public boolean removeIf(Predicate<? super Y> filter) {
+    public boolean removeIf(Predicate<? super T> filter) {
         FasterList toRemove = new FasterList(1);
         map.forEach((k,v)->{
             if (filter.test(v))
@@ -201,5 +204,22 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y> {
         toRemove.forEach(map::remove /* direct, not the .remove() which automatically invalidates */);
         invalidate();
         return true;
+    }
+
+    private class MyAbstractList extends AbstractList {
+
+        @Override
+        public int size() {
+            return ConcurrentFastIteratingHashMap.this.size();
+        }
+
+        @Override
+        public T get(int i) {
+            T[] l = ConcurrentFastIteratingHashMap.this.list;
+            if (l!=null && l.length > i)
+                return l[i];
+            else
+                return null;
+        }
     }
 }

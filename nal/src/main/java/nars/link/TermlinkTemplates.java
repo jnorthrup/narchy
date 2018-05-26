@@ -228,29 +228,40 @@ public class TermlinkTemplates extends FasterList<Term> {
             case SETi:
                 return 2;
 
-            case DIFFe:
-            case DIFFi:
             case SECTi:
             case SECTe:
+                return 2;
+
+            case DIFFe:
+            case DIFFi:
                 return 2;
 
 
             case SIM:
 //                Subterms xx = x.subterms();
-//                if (xx.hasAny(Op.VariableBits) ||
-//                        (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits))))
+//                if (xx.hasAny(Op.VariableBits) )
+////                        (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits))))
 //                    return 3;
 //                else
-                    return 3;
+                return 2;
 
             case INH:
-                return 3;
+                if (x.subterms().OR(xx -> xx.isAny(Op.SetBits | Op.SectBits)))
+                    return 3;
+                else
+                    return 2;
 
             case IMPL:
-                if (x./*subterms().*/hasAll(Op.CONJ.bit | Op.INH.bit))
-                    return 4;
+                if (x./*subterms().*/hasAny(Op.CONJ.bit )) {
+                    if (x.hasAny(Op.INH.bit))
+                        return 4;
+                    else
+                        return 3;
+                }
+//                else if (x./*subterms().*/hasAny(Op.CONJ.bit ))
+//                    return 3;
                 else
-                    return 3;
+                    return 2;
 
             case CONJ:
                 //if (x.hasAny(Op.INH))

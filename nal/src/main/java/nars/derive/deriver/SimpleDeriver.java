@@ -56,16 +56,19 @@ public class SimpleDeriver extends Deriver {
     }
 
     /** randomly samples from list of concepts */
-    public static SimpleDeriver forConcepts(NAR n, List<Concept> concepts) {
+    public static SimpleDeriver forConcepts(NAR n, List<Concept> concepts, Consumer<Collection<Task>> target) {
         int cc = concepts.size();
         assert(cc>0);
         Random rng = n.random();
         Consumer<Predicate<Activate>> forEach = x -> {
-            while (x.test(new Activate(concepts.get(rng.nextInt(cc)), 1f))) ;
+            Concept c = concepts.get(rng.nextInt(cc));
+            if (c==null)
+                return;
+            while (x.test(new Activate(c, 1f))) ;
         };
         PremiseDeriverRuleSet rules = Derivers.nal(1, 8, n);
 
-        return new SimpleDeriver(forEach, n::input, rules, GlobalTermLinker);
+        return new SimpleDeriver(forEach, target, rules, GlobalTermLinker);
     }
 
     public static SimpleDeriver forTasks(NAR n, List<Task> tasks) {
@@ -91,6 +94,8 @@ public class SimpleDeriver extends Deriver {
         int matchTTL = deriveTTL / 4;
 
         source.accept(a -> {
+            if (a == null)
+                return true;
 
             Concept concept = a.get();
 

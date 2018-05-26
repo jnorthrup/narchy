@@ -92,11 +92,11 @@ public class AIMATests {
 
 //        n.run(200);
 //        n.clear();
-        n.question($.$$(
-                "Criminal(?x)"
+//        n.question($.$$(
+//                "Criminal(?x)"
 //        ));
-//        n.question($.$(
-//                "Criminal:?x"
+        n.question($.$(
+                "Criminal:?x"
 
         ), ETERNAL, (q,a)->{
             System.out.println(a);

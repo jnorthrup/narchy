@@ -56,7 +56,7 @@ public abstract class Param {
     /** warning: can interfere with expected test results */
     public static final boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
 
-    public static final boolean TASKLINK_DYN_GENERATED_TASKS = true;
+    //public static final boolean TASKLINK_DYN_GENERATED_TASKS = true;
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
@@ -65,6 +65,9 @@ public abstract class Param {
 
     @Range(min=1, max=32)
     public static int TEMPORAL_SOLVER_ITERATIONS = 4;
+
+    /** full causal feedback: applied as mult to every task on input */
+    public static boolean CAUSE_MULTIPLY_EVERY_TASK = false;
 
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
@@ -151,7 +154,7 @@ public abstract class Param {
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */
-    public final FloatRange timeFocus = new FloatRange(1f, 0, 10);
+    public final FloatRange timeFocus = new FloatRange(0.5f, 0, 10);
 
     /** creates instance of the default truthpolation implementation */
     public static TruthPolation truth(long start, long end, int dur) {
@@ -212,7 +215,7 @@ public abstract class Param {
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 5;
+    public static int TTL_DERIVE_TASK_SUCCESS = 4;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation

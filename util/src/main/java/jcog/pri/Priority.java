@@ -133,6 +133,13 @@ public interface Priority extends Prioritized {
             return Float.NaN;
     }
 
+    default float priMult(float factor, float min) {
+        float p = pri();
+        if (p == p)
+            return priSet(Math.max(min, p * /*notNaNOrNeg*/(factor)));
+        else
+            return Float.NaN;
+    }
 
 
     /** assumes 1 max value (Plink not NLink) */

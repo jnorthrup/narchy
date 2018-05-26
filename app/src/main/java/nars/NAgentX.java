@@ -16,7 +16,6 @@ import nars.gui.graph.DynamicConceptSpace;
 import nars.index.concept.CaffeineIndex;
 import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
-import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -333,7 +332,7 @@ abstract public class NAgentX extends NAgent {
         Inperience inp = new Inperience(n, 32);
 //
 
-        Abbreviation abb = new Abbreviation(n, "z", 3, 8, 0.5f, 8);
+        //Abbreviation abb = new Abbreviation(n, "z", 3, 8, 0.5f, 8);
 
         //reflect.ReflectSimilarToTaskTerm refSim = new reflect.ReflectSimilarToTaskTerm(16, n);
         //reflect.ReflectClonedTask refTask = new reflect.ReflectClonedTask(16, n);

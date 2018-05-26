@@ -178,6 +178,16 @@ public class NAL4Test extends NALTest {
             .input("((1,1)-->x).")
             .mustOutput(CYCLES, "((0,1)-->(1,1))", QUESTION);
     }
+
+    @ValueSource(bytes={QUESTION, QUEST})
+    @ParameterizedTest
+    public void testTransformRawQuestionSubj(byte punc) {
+        test
+                .input("(a,b)" + Character.valueOf((char)punc))
+                .mustOutput(CYCLES, "(b-->(?1,a,/))", punc)
+                .mustOutput(CYCLES, "(a-->(?1,/,b))", punc)
+        ;
+    }
 }
 //package nars.nal.nal4;
 //

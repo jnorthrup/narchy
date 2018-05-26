@@ -39,24 +39,6 @@ public class NALSchema {
                 data(n, data, QUESTION, pointGenerator)
         );
     }
-    public static SimpleDeriver askActive(NAR n, ARFF data, Function<Term[], Term> pointGenerator) {
-        Task[] questions = data(n, data, QUESTION, pointGenerator).toArray(Task[]::new);
-        List<Concept> concepts = new FasterList(questions.length);
-        for (Task q : questions) {
-
-            n.input(q);
-
-            Concept qc = q.concept(n, true);
-            if (qc!=null) {
-                concepts.add(qc);
-            } else {
-                throw new RuntimeException("null question concept: " + q);
-            }
-        }
-
-        return SimpleDeriver.forConcepts(n, concepts);
-
-    }
 
     /** raw product representation of the row */
     public static Function<Term[], Term> raw = $::p;

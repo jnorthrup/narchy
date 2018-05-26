@@ -6,6 +6,8 @@ import jcog.list.FasterList;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Task;
+import nars.task.util.DialogTask;
 import nars.truth.Stamp;
 import nars.util.NALSchema;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Random;
 
+import static nars.Op.QUESTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NALSchemaTest {
@@ -92,15 +95,20 @@ public class NALSchemaTest {
             }
         });
 
-        n.log();
+        //n.log();
 
         NALSchema.believe(n, dataset, NALSchema.predictsLast);
 
         //Schema.ask
-        NALSchema.askActive(n, validation,
-                NALSchema.predictsLast
-                //Schema.typed(Schema.predictsLast, dataset)
-        );
+        //Schema.typed(Schema.predictsLast, dataset)
+        Task[] questions1 = NALSchema.data(n, validation, QUESTION, NALSchema.predictsLast).toArray(Task[]::new);
+        new DialogTask(n, questions1) {
+            @Override
+            protected boolean onTask(Task x) {
+                System.out.println(x);
+                return true;
+            }
+        };
         for (String h : hints) {
             try {
                 n.input(h);

@@ -31,9 +31,7 @@ package jcog.data.map;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -115,4 +113,9 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
     public <T1> T1[] toArray(@NotNull T1[] a) {
         return super.toArray(a);
     }
+
+    public List<T> asList() {
+        return map.asList();
+    }
+
 }

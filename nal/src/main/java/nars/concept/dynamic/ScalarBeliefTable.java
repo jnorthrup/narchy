@@ -7,8 +7,7 @@ import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.control.proto.TaskLinkTask;
-import nars.link.TaskLink;
+import nars.control.proto.TaskAddTask;
 import nars.table.TemporalBeliefTable;
 import nars.task.ITask;
 import nars.task.signal.SignalTask;
@@ -443,41 +442,47 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         return false;
     }
 
-    static class ScalarSignalTask extends SignalTask {
+    static final class ScalarSignalTask extends SignalTask {
 
-        /** the tasklink, so it can be removed if this task is stretched (replaced by another and its tasklink) */
-        private TaskLink.GeneralTaskLink link;
+//        /** the tasklink, so it can be removed if this task is stretched (replaced by another and its tasklink) */
+//        private TaskLink.GeneralTaskLink link;
 
-        public ScalarSignalTask(Term term, byte punc, Truth value, long start, long end, long stamp) {
+        ScalarSignalTask(Term term, byte punc, Truth value, long start, long end, long stamp) {
             super(term, punc, value, start, end, stamp);
         }
 
         @Override
-        public boolean delete() {
-            if (super.delete()) {
-                TaskLink.GeneralTaskLink l = link;
-                if (l!=null) {
-                    l.delete();
-                    link = null;
-                }
-                return true;
-            }
+        public ITask inputStrategy(Task result) {
+            return new TaskAddTaskAuto(result);
+        }
 
-            return false;
+        //        @Override
+//        public boolean delete() {
+//            if (super.delete()) {
+//                TaskLink.GeneralTaskLink l = link;
+//                if (l!=null) {
+//                    l.delete();
+//                    link = null;
+//                }
+//                return true;
+//            }
+//
+//            return false;
+//        }
+
+
+    }
+
+    private static final class TaskAddTaskAuto extends TaskAddTask {
+
+        TaskAddTaskAuto(Task result) {
+            super(result);
         }
 
         @Override
-        public ITask next(NAR n) {
-            float pri = this.pri();
-            if (pri!=pri)
-                return null; //deleted before it could be processed
-
-            n.emotion.onInput(this, n);
-
-            //only activate
-            return new TaskLinkTask(this, pri);
+        protected boolean add(NAR n, TaskConcept c) {
+            return true; //pretend as if already added
         }
-
     }
 
     @Override

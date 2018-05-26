@@ -1,5 +1,6 @@
 package jcog;
 
+import jcog.event.Off;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executor;
@@ -8,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static jcog.Services.ServiceState.Deleted;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
-public abstract class Service<C> extends AtomicReference<Services.ServiceState> {
+public abstract class Service<C> extends AtomicReference<Services.ServiceState> implements Off {
 
     public boolean isOn() {
         return get() == Services.ServiceState.On;

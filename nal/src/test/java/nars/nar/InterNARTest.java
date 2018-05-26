@@ -31,8 +31,8 @@ public class InterNARTest {
         int preCycles = 1;
         int postCycles = 100;
 
-        NAR a = NARS.threadSafe(1).named("a");
-        NAR b = NARS.threadSafe(1).named("b");
+        NAR a = NARS.realtime(10f).get().named("a");
+        NAR b = NARS.realtime(10f).get().named("b");
 
 
         beforeConnect.accept(a, b);

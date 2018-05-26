@@ -49,11 +49,15 @@ public class TaskAddTask extends NativeTask {
 
 
 
-        if (((TaskConcept) c).add(task, n)) {
+        if (add(n, (TaskConcept) c)) {
             n.activate(c, pri);
             return new TaskLinkTask(task, pri, c);
         } else {
             return null;
         }
+    }
+
+    protected boolean add(NAR n, TaskConcept c) {
+        return c.add(task, n);
     }
 }

@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 /**
  * Represents the active state of a topic stream
  */
-abstract public class On<V> {
+abstract public class On<V> implements Off {
 
     public final Consumer<Consumer<V>> disconnector;
 

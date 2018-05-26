@@ -5,6 +5,7 @@ import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
+import jcog.pri.Pri;
 import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
@@ -1029,6 +1030,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     default ITask next(NAR n) {
 
+        if (Param.CAUSE_MULTIPLY_EVERY_TASK) {
+            float amp = n.amp(this);
+            priMult(amp, Pri.EPSILON);
+        }
+
+
         Term x = term();
 
         //invoke dynamic functors and apply aliases
@@ -1049,12 +1056,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 return yy.iterator().next();
             default:
                 //HACK use some kind of iterator
-                return new NativeTask.NARTask((nn) ->
-                        yy.forEach(z -> {
-                            ITask zz = z;
-                            while ((zz = zz.next(nn))!=null) { }
-                        })
-                );
+                return new NativeTask.NARTask((nn) -> yy.forEach(z -> z.run(nn)));
         }
 
     }
@@ -1087,7 +1089,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                         //delete();
                         float pBeforeDrain = priElseZero();
                         pri(0); //drain pri from here
-                        queue.add(new TaskAddTask(result));
+                        queue.add(inputStrategy(result));
                         //HACK tasklink question to answer
                         queue.add(new NativeTask.NARTask(nn -> {
                             Tasklinks.linkTask(
@@ -1106,7 +1108,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     if (!y.equals(x)) {
                         Task tc = clone(this, y, truth(), punc());
                         if (!equals(tc)) {
-                            queue.add(new TaskAddTask(tc));
+                            queue.add(inputStrategy(tc));
                         }
                     }
                     return;
@@ -1135,7 +1137,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
                     if (result!=null) {
                         pri(0); //drain pri from here
-                        queue.add(new TaskAddTask(result));
+                        queue.add(inputStrategy(result));
 
 //                        //HACK tasklink question to answer
 //                        queue.add(new NativeTask.NARTask(nn -> {
@@ -1151,7 +1153,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
 
         if (!cmd) {
-            queue.add(new TaskAddTask(this)); //probably should be added first
+            queue.add(inputStrategy(this)); //probably should be added first
         }
 
         //invoke possible Operation
@@ -1189,6 +1191,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             n.out(term());
         }
 
+    }
+
+    default ITask inputStrategy(Task result) {
+        return new TaskAddTask(result);
     }
 
 //    @Override
