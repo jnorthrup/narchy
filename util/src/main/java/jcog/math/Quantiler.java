@@ -75,6 +75,7 @@ public class Quantiler {
      * Assimilate a new value from the stream.
      */
     public void add(float datum) {
+
         dbuf[nd++] = datum;
         if (datum < q0) {
             q0 = datum;
@@ -137,8 +138,10 @@ public class Quantiler {
             told = tnew;
             qold = qnew;
         }
-        this.qile = newqile;
+
         Arrays.fill(this.qileNext = qile, 0f);
+        this.qile = newqile;
+
         nt += nd;
         nd = 0;
     }
@@ -166,4 +169,6 @@ public class Quantiler {
         float q = qjl + (((qile[jl + 1] - qjl) * (p - pjl)) / (pval[jl + 1] - pjl));
         return Math.max(qile[0], Math.min(qile[nq - 1], q));
     }
+
+
 }

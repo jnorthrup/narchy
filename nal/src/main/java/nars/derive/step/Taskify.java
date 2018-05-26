@@ -74,6 +74,12 @@ public class Taskify extends AbstractPred<Derivation> {
         byte punc = d.concPunc;
         assert (punc != 0) : "no punctuation assigned";
 
+        if (tru!=null && tru.conf() < d.confMin) {
+            //d.nar.emotion.deriveFailEvidence.increment();
+            //return spam(d, Param.TTL_DERIVE_INSUFFICIENT_EVIDENCE);
+            return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
+        }
+
         if (same(x, punc, tru, occ, d._task, d.nar) ||
                 (d._belief != null && same(x, punc, tru, occ, d._belief, d.nar))) {
             d.nar.emotion.deriveFailParentDuplicate.increment();

@@ -3,6 +3,7 @@ package jcog.optimize;
 import com.google.common.base.Joiner;
 import jcog.io.Schema;
 import jcog.io.arff.ARFF;
+import jcog.math.Quantiler;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -175,5 +176,23 @@ public class Optimizing<X,Y> {
         }
 
 
+        /** remove entries below a given percentile */
+        public void cull(float minPct, float maxPct) {
+
+            int n = data.data.size();
+            if (n < 6)
+                return;
+
+            Quantiler q = new Quantiler((int) Math.ceil((n-1)/2f));
+            data.forEach(r -> {
+                q.add( ((Number)r.get(0)).floatValue() );
+            });
+            float minValue = q.quantile(minPct);
+            float maxValue = q.quantile(maxPct);
+            data.data.removeIf(r -> {
+                float v = ((Number) r.get(0)).floatValue();
+                return (v <= maxValue && v >= minValue);
+            });
+        }
     }
 }

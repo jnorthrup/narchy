@@ -30,6 +30,7 @@ public class NAL7Test extends NALTest {
     public void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.termVolumeMax.set(18);
+        test.nar.confMin.set(0.2f);
     }
 
 //    private static final Path tmpDir;
@@ -616,11 +617,13 @@ public class NAL7Test extends NALTest {
 
     @Test
     public void induction_on_events_composition1() {
+        test.nar.confMin.set(0.1f);
         compositionTest(1, 5);
     }
 
     @Test
     public void induction_on_events_composition2() {
+        test.nar.confMin.set(0.1f);
         compositionTest(1, 7);
     }
 

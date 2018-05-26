@@ -1,6 +1,6 @@
 package org.intelligentjava.machinelearning.decisiontree;
 
-import jcog.learn.gng.Gasolinear;
+import jcog.learn.QuantileDiscretize1D;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.intelligentjava.machinelearning.decisiontree.feature.DiscretizedScalarFeature;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +65,10 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
             return p;
         };
 
-        this.cols = IntStream.range(0, table.cols.length).mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x], discretization, new Gasolinear()))
+        this.cols = IntStream.range(0, table.cols.length).mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x], discretization,
+                //new Gasolinear()
+                new QuantileDiscretize1D()
+        ))
                 .toArray(DiscretizedScalarFeature[]::new);
 
         switch (discretization) {

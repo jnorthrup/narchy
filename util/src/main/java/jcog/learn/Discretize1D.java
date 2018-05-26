@@ -3,7 +3,7 @@ package jcog.learn;
 public interface Discretize1D  {
 
     default void reset(int levels) {
-        reset(levels, 0, 1);
+        reset(levels, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY);
     }
 
     void reset(int levels, double min, double max);
@@ -16,4 +16,5 @@ public interface Discretize1D  {
 
     /** estimates the value of an index */
     double value(int v);
+
 }
