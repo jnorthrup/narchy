@@ -27,11 +27,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
-    private final boolean daemon = false;
+    private boolean daemon = false;
 
     public int size() {
         return model.size();
     }
+
 
     abstract static class WheelModel {
         public final int wheels;

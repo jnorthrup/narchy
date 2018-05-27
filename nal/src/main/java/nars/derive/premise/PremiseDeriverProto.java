@@ -614,8 +614,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         if ((goalTruth != null) && (goalTruthOp == null)) {
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
         }
-        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : "_";
-        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : "_";
+        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : "()";
+        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : "()";
 
 
 

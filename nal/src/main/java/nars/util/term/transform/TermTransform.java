@@ -1,6 +1,6 @@
 package nars.util.term.transform;
 
-import nars.$;
+import jcog.Texts;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
@@ -8,8 +8,11 @@ import nars.term.Compound;
 import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.var.NormalizedVariable;
+import nars.term.var.UnnormalizedVariable;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -81,33 +84,37 @@ public interface TermTransform extends Evaluation.TermContext {
     /**
      * change all query variables to dep vars by use of Op.imdex
      */
-    TermTransform queryToDepVar = new TermTransform() {
-        @Override public Term transformAtomic(Term atomic) {
-            return atomic.op() != VAR_QUERY ?
-                    atomic
-                    :
-                    Op.Imdex;
-        }
-    };
+    TermTransform queryToDepVar = variableTransform(VAR_QUERY, VAR_DEP);
 
-    TermTransform indepToDepVar = new TermTransform() {
-        @Override public Term transformAtomic(Term atomic) {
-            return atomic.op() != VAR_INDEP ?
-                    atomic
-                    :
-                    Op.Imdex;
-        }
-    };
+    static TermTransform
+    variableTransform(Op from, Op to) {
 
-    TermTransform anyVarToQueryVar = new TermTransform() {
-        @Override
-        public Term transformAtomic(Term atomic) {
-            Op a = atomic.op();
-            return (a.var && a!= VAR_QUERY) ?
-                    $.varQuery((((NormalizedVariable) atomic).anonNum())) :
-                    atomic;
-        }
-    };
+        return new TermTransform() {
+
+            final Map<Term,Term> x = new UnifiedMap(0);
+
+            @Override
+            public Term transformAtomic(Term atomic) {
+                if (atomic.op() != from)
+                    return atomic;
+                return x.computeIfAbsent(atomic, (a)->{
+                    return new UnnormalizedVariable(to, Texts.quote(a.toString()));
+                });
+            }
+        };
+    }
+
+    TermTransform indepToDepVar = variableTransform(VAR_INDEP, VAR_DEP);
+
+//    TermTransform anyVarToQueryVar = new TermTransform() {
+//        @Override
+//        public Term transformAtomic(Term atomic) {
+//            Op a = atomic.op();
+//            return (a.var && a!= VAR_QUERY) ?
+//                    $.varQuery((((NormalizedVariable) atomic).anonNum())) :
+//                    atomic;
+//        }
+//    };
     /**
      * operates transparently through negation subterms
      */

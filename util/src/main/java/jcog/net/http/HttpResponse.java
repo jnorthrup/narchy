@@ -210,7 +210,10 @@ class HttpResponse {
         headerString.append("\r\n");
 
         if (!sendFile) {
-            headerString.append("Content-Type: text/plain; charset=UTF-8\r\n");
+            headerString.append("Content-Type: ");
+            String contentType = statusMessage.startsWith("<html") ? "text/html" : "text/plain"; //HACK
+            headerString.append(contentType);
+            headerString.append(" charset=UTF-8\r\n");
 
             if (sendStatusAsContent) {
                 headerString.append("Content-Length: ");

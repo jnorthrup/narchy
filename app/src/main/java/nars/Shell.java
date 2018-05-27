@@ -15,6 +15,7 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.Texts;
 import jdk.jshell.JShell;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
@@ -52,10 +53,10 @@ public class Shell {
         }
     };
 
-    public static void main(String[] argv) {
+    public static void main(String[] args) throws IOException {
 
 
-        if (argv.length == 0) {
+        if (args.length == 0) {
             System.out.println("Usage:");
             System.out.println("  gui\t\tstart gui");
             System.out.println("  telnet <port>\t\tstart telnet server on given port");
@@ -66,21 +67,19 @@ public class Shell {
 
             //System.out.println("  js \"<javascript>\"\t\texecute NARjs code");
         } else {
-            switch (argv[0]) {
-                case "gui":
-                    GUI.main(new String[] { });
-//                    NAR ui = NARchy.ui();
-//                    ui.startFPS(INITIAL_FPS);
-//                    ui.runLater(() -> {
-//                        SpaceGraph.window(
-//                                NARui.top(ui)
-//                                //((Grid)Vis.reflect(ui.services)).aspect(0.25f)
-//                                , 1024, 800);
-//                    });
 
+            args = ArrayUtils.subarray(args, 1, args.length);
+
+            switch (args[0]) {
+                case "web":
+                    Web.main(args);
+                    break;
+
+                case "gui":
+                    GUI.main(args);
                     break;
                 case "telnet":
-                    int port = Texts.i(argv[1]);
+                    int port = Texts.i(args[0]);
 
                     NAR n = NARchy.core();
                     new Thread(() -> {
@@ -96,8 +95,9 @@ public class Shell {
 
                 default:
 
-                    if (argv.length > 1) {
-                        narsese(() -> argv[1]);
+                    if (args.length > 1) {
+                        String[] finalArgs = args;
+                        narsese(() -> finalArgs[1]);
                     } else {
                         //stdin
                         narseseStdin();

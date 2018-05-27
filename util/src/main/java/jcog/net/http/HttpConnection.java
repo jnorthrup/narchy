@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 /**
  * @author Joris
  */
-class HttpConnection {
+public class HttpConnection {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(HttpConnection.class);
     private static final int RAWHEAD_SIZE = 512;

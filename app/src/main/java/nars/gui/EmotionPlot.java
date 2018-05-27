@@ -25,22 +25,14 @@ public class EmotionPlot extends Gridding {
 
         NAR nar = x;
 
-//        this.plotHistory = plotHistory;
-        plot1 = new Plot2D(plotHistory, Plot2D.Line);
-        plot2 = new Plot2D(plotHistory, Plot2D.Line);
-        plot3 = new Plot2D(plotHistory, Plot2D.Line);
-
-//            TextEdit console = new TextEdit(20, 3);
-//            console.textBox.setCaretWarp(true);
-        set(plot1, plot2, plot3);
-
-        //plot1.add("Conf", nar.emotion.confident::getSum);
-        plot2.add("Busy", nar.emotion.busyVol::getSum);
-
-        plot1.add("Dex+0", () -> a.dexterity(a.now)/*, 0f, 1f*/);
-        plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar().dur()));
-        plot1.add("Dex+4", () -> a.dexterity(a.now + 4 * a.nar().dur()));
-
+        set(
+            plot1 = new Plot2D(plotHistory, Plot2D.Line)
+                    .add("Dex+0", () -> a.dexterity(a.now)/*, 0f, 1f*/)
+                    .add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar().dur()))
+                    .add("Dex+4", () -> a.dexterity(a.now + 4 * a.nar().dur())),
+            plot2 = new Plot2D(plotHistory, Plot2D.Line)
+                    .add("Busy", nar.emotion.busyVol::getSum),
+            plot3 = new Plot2D(plotHistory, Plot2D.Line));
         a.happy.forEach(h -> {
             @Nullable Concept hc = nar.concept(h);
             plot3.add(h.toString(), () -> {
@@ -51,6 +43,11 @@ public class EmotionPlot extends Gridding {
 //                    return hc.goals().freq(a.now, a.nar);
 //                }, 0, 1f);
         });
+
+        //plot1.add("Conf", nar.emotion.confident::getSum);
+
+
+
 
 //            plot4.add("Sad", () -> {
 //                return a.sad.beliefs().freq(a.now, a.nar);
