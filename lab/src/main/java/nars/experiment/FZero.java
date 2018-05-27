@@ -1,16 +1,16 @@
 package nars.experiment;
 
-import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NAgentX;
+import nars.Task;
 import nars.concept.scalar.DemultiplexedScalar;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.concept.scalar.SwitchAction;
 import nars.gui.NARui;
-import nars.op.AutoConceptualizer;
-import nars.term.Term;
 import nars.time.Tense;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
@@ -25,7 +25,6 @@ import java.awt.image.BufferedImage;
 
 import static com.google.common.collect.Iterables.concat;
 import static nars.Op.INH;
-import static nars.Op.QUESTION;
 
 /**
  * Created by me on 3/21/17.
@@ -70,10 +69,10 @@ public class FZero extends NAgentX {
 
         Bitmap2DConcepts<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
-                24, 16
+                24, 24
                 //10,4
                 //16,8
-        )/*.blur()*/).resolution(0.02f);
+        )/*.blur()*/).resolution(0.05f);
         //c.pixelPri.set(0.05f);
 
 //        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
@@ -83,13 +82,13 @@ public class FZero extends NAgentX {
 //        )/*.blur()*/).modeDiffer().resolution(0.1f);
 
 
-        new AutoConceptualizer(Lists.newArrayList(c.iter.iterator() ), true, 4, nar) {
-            @Override
-            protected void onFeature(Term feature) {
-//                System.out.println(feature);
-                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
-            }
-        };
+//        new AutoConceptualizer(Lists.newArrayList(c.iter.iterator() ), true, 4, nar) {
+//            @Override
+//            protected void onFeature(Term feature) {
+////                System.out.println(feature);
+//                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
+//            }
+//        };
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
 

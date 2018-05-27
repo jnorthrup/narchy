@@ -336,8 +336,8 @@ public enum $ {
      * @param pred The second component
      * @return A compound generated or null
      */
-    public static <T extends Term> T inst(@NotNull Term subj, Term pred) {
-        return (T) INH.the(SETe.the(subj), pred);
+    public static Term inst(Term subj, Term pred) {
+        return INH.the(SETe.the(subj), pred);
     }
 
     public static <T extends Term> T instprop(@NotNull Term subject, @NotNull Term predicate) {

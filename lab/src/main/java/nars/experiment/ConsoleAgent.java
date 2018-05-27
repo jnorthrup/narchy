@@ -323,7 +323,7 @@ public abstract class ConsoleAgent extends NAgentX {
                 }
 
                 beliefs[cx][cy].set(
-                        $.inst(terms[cx][cy], $.the(String.valueOf(value))),
+                        nar.conceptualize($.inst(terms[cx][cy], $.the(String.valueOf(value)))),
                         $.t(1f, 0.9f),
                         () -> nar.time.nextStamp(),
                         nar.time(), nar.dur(), nar);

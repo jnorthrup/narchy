@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.memoize.HijackMemoize;
 import nars.Op;
 import nars.The;
-import nars.concept.Operator;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.util.term.HijackTermCache;
@@ -71,19 +70,21 @@ public class InterningTermBuilder extends HeapTermBuilder {
             return false;
 
         for (Term x : subterms) {
-            if (x instanceof Operator)
-                x = ((Operator)x).term;
+
 
 //            if (!(x instanceof The)) {
 //                //HACK caching these interferes with unification.  instead fix unification then allow caching of these
 //                return false;
 //            }
+
+            if (x.hasAny(Op.Temporal))
+                return false;
+
             if (!x.ANDrecurse(xx -> xx instanceof The)) {
                 return false;
             }
 
-            if (x.hasAny(Op.Temporal))
-                return false;
+
 //            switch (x.dt()) {
 //                case DTERNAL:
 //                case 0:

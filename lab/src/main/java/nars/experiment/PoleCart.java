@@ -1,16 +1,20 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatPolarNormalized;
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
 import nars.NAgentX;
 import nars.concept.Concept;
-import nars.concept.scalar.Scalar;
+import nars.concept.scalar.DigitizedScalar;
 import nars.gui.NARui;
+import nars.term.atom.Int;
 import nars.util.signal.BeliefPredict;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 
 import javax.swing.*;
@@ -96,8 +100,8 @@ public class PoleCart extends NAgentX {
 
     // Define the Engine
     // Define InputVariable1 Theta(t) {angle with perpendicular}
-    Concept angX;
-    Scalar angY;
+    @NotNull DigitizedScalar angX;
+    @NotNull DigitizedScalar angY;
     // Define InputVariable1 x(t) {angular velocity}
     Concept angVel;
     // OutputVariable {force to be applied}
@@ -138,10 +142,18 @@ public class PoleCart extends NAgentX {
 
         //angle
 
-        this.angX = senseNumber($.the("angX"),
-                () -> (float) (0.5f + 0.5f * (Math.sin(angle))));
-        this.angY = senseNumber($.the("angY"),
-                () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
+        FloatSupplier angXval = () -> (float) (0.5f + 0.5f * (Math.sin(angle)));
+        FloatSupplier angYval = () -> (float) (0.5f + 0.5f * (Math.cos(angle)));
+//        this.angX = senseNumber($.the("angX"),
+//                angXval);
+        angX = senseNumber(a->$.inst(Int.the(a),$.the("angX")), angXval, 2, DigitizedScalar.FuzzyNeedle);
+
+
+        //this.angY = senseNumber($.the("angY"), angYval);
+        angY = senseNumber(a->$.inst(Int.the(a), $.the("angY")), angYval, 2, DigitizedScalar.FuzzyNeedle);
+
+        angX.resolution(0.02f);
+        angY.resolution(0.02f);
 
         //angular velocity
         this.angVel = senseNumber($.the("angVel"),
@@ -195,12 +207,12 @@ public class PoleCart extends NAgentX {
         );
 
 
-        Iterable<Concept> sensors = java.util.List.of(
+        Iterable<Concept> sensors = Iterables.concat(java.util.List.of(
                 x, xVel,
-                angX, angY,
+
                 angVel
                 //,dAngVel
-        );
+        ), angX, angY);
 
 
 //        AutoConceptualizer ae = new AutoConceptualizer(sensors, true, 8, nar) {

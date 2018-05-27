@@ -88,7 +88,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public FloatRange curiosity;
 
     /** dampens the dynamically normalized happiness range toward sadness as a motivation strategy */
-    public final FloatRange depress = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange depress = new FloatRange(0f, 0f, 1f);
 
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
