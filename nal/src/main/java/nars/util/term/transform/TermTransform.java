@@ -9,10 +9,7 @@ import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.UnnormalizedVariable;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -85,26 +82,21 @@ public interface TermTransform extends Evaluation.TermContext {
      * change all query variables to dep vars by use of Op.imdex
      */
     TermTransform queryToDepVar = variableTransform(VAR_QUERY, VAR_DEP);
+    TermTransform indepToDepVar = variableTransform(VAR_INDEP, VAR_DEP);
 
-    static TermTransform
+    private static TermTransform
     variableTransform(Op from, Op to) {
-
         return new TermTransform() {
-
-            final Map<Term,Term> x = new UnifiedMap(0);
-
             @Override
             public Term transformAtomic(Term atomic) {
                 if (atomic.op() != from)
                     return atomic;
-                return x.computeIfAbsent(atomic, (a)->{
-                    return new UnnormalizedVariable(to, Texts.quote(a.toString()));
-                });
+                else
+                    return new UnnormalizedVariable(to, Texts.quote(atomic.toString()));
             }
         };
     }
 
-    TermTransform indepToDepVar = variableTransform(VAR_INDEP, VAR_DEP);
 
 //    TermTransform anyVarToQueryVar = new TermTransform() {
 //        @Override
