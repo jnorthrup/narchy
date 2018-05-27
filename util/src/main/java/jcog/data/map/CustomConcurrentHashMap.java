@@ -1011,6 +1011,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * Removes node if its key or value are null.
      */
     final void removeIfReclaimed(Node r) {
+        reclaim((V) r.getValue());
         int hash = r.getLocator();
         Segment seg = traversalSegment(hash);
         if (seg != null) {
@@ -1041,6 +1042,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 seg.unlock();
             }
         }
+    }
+
+    protected void reclaim(V value) {
+
     }
 
     /**

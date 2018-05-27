@@ -71,7 +71,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
         public final X x;
         private final int hash;
-        private float pri;
+        private volatile float pri;
 
         public SoftPair(X x, Y y, float pri) {
             super(y);

@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Joris
@@ -331,9 +332,25 @@ class WebSocketSelector extends WebSocketAdapter {
      * @author Joris
      */
     static class ServerWebSocketImpl extends WebSocketImpl {
+
+        final static AtomicInteger serial = new AtomicInteger();
+
+        private final int hash;
+
         ServerWebSocketImpl(WebSocketListener listener) {
             // Draft_17 corresponds to Sec-WebSocket-Version: 13 which is RFC 6455
             super(listener, List.of(new Draft_6455()));
+            this.hash = serial.incrementAndGet();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this == obj;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
         }
     }
 }

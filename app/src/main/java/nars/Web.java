@@ -1,26 +1,33 @@
 package nars;
 
 import jcog.Texts;
+import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
-import org.eclipse.collections.api.tuple.Pair;
+import nars.index.concept.MaplikeConceptIndex;
+import nars.index.concept.ProxyConceptIndex;
 import org.java_websocket.WebSocket;
+import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.handshake.ServerHandshake;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.channels.SelectionKey;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+import static jcog.data.map.CustomConcurrentHashMap.*;
 
 public class Web implements HttpModel {
 
     static final int DEFAULT_PORT = 60606;
 
-    final CustomConcurrentHashMap<Pair<InetSocketAddress, String>,NAR> nar = new CustomConcurrentHashMap<>(
-            CustomConcurrentHashMap.STRONG, CustomConcurrentHashMap.EQUALS,
-            CustomConcurrentHashMap.WEAK, CustomConcurrentHashMap.IDENTITY,
-            16
-    );
+
+    private final NAR nar;
+    private final MaplikeConceptIndex idxAdapter;
 
     @Override
     public void response(HttpConnection h) {
@@ -43,12 +50,68 @@ public class Web implements HttpModel {
                 "  </html>");
     }
 
+    final CustomConcurrentHashMap<WebSocket,NAR> reasoners = new CustomConcurrentHashMap<>(
+        WEAK, IDENTITY, STRONG, IDENTITY, 64
+    ) {
+        @Override
+        protected void reclaim(NAR value) {
+            value.stop();
+        }
+    };
+
     @Override
-    public void wssOpen(WebSocket ws, ClientHandshake handshake) {
-        System.out.println(ws.getAttachment() + " " + ws.getAttachment().getClass());
+    public boolean wssConnect(SelectionKey key) {
+        return true;
     }
 
-    public static void main(String[] args) throws IOException {
+    @Override
+    public void wssOpen(WebSocket ws, ClientHandshake handshake) {
+
+        NAR n = reasoners.computeIfAbsent(ws, (Function<WebSocket,NAR>)this::reasoner);
+        ws.setAttachment(n);
+        //System.out.println(ws.getAttachment() + " " + ws.getAttachment().getClass());
+    }
+
+    private NAR reasoner(WebSocket ws) {
+        NAR n = new NARS().withNAL(1,8).index(idxAdapter).get();
+        int initialFPS = 5;
+        n.startFPS(initialFPS);
+        try {
+            n.input("a:b.");
+            n.input("b:c.");
+        } catch (Narsese.NarseseException e) {
+            e.printStackTrace();
+        }
+        n.onTask(new WebSocketLogger(ws, n, initialFPS));
+//        n.log(new Appendable() {
+//
+//            @Override
+//            public Appendable append(CharSequence charSequence) throws IOException {
+//                ws.send(charSequence.toString());
+//                return this;
+//            }
+//
+//            @Override
+//            public Appendable append(CharSequence charSequence, int i, int i1) throws IOException {
+//                append(charSequence.subSequence(i, i1));
+//                return null;
+//            }
+//
+//            @Override
+//            public Appendable append(char c) throws IOException {
+//                append(String.valueOf(c));
+//                return null;
+//            }
+//        });
+        return n;
+    }
+
+    public Web() {
+        this.nar = NARchy.core();
+        this.idxAdapter = new ProxyConceptIndex(nar.concepts);
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
         int port;
         if (args.length > 0) {
             port = Texts.i(args[0]);
@@ -56,8 +119,76 @@ public class Web implements HttpModel {
             port = DEFAULT_PORT;
         }
 
-        NAR n = NARchy.core();
+
+
         jcog.net.http.HttpServer h = new HttpServer("0.0.0.0", port, new Web());
         h.runFPS(10f);
+
+
+        Util.sleep(200);
+        WebSocketClient c = test(h);
+        Util.sleep(500);
+        c.closeBlocking();
+    }
+
+    protected static WebSocketClient test(HttpServer h) throws InterruptedException {
+        WebSocketClient c = new WebSocketClient(URI.create("ws://localhost:60606") /*h.getURI()*/) {
+            @Override
+            public void onOpen(ServerHandshake handshakedata) {
+                System.out.println(handshakedata);
+            }
+
+            @Override
+            public void onMessage(String message) {
+                System.out.println(message);
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+
+            }
+
+            @Override
+            public void onError(Exception ex) {
+
+            }
+        };
+        c.connectBlocking();
+        return c;
+    }
+
+    private static class WebSocketLogger implements Consumer<Task> {
+
+        private final NAR n;
+        private final int initialFPS;
+        volatile WebSocket w;
+
+        public WebSocketLogger(WebSocket ws, NAR n, int initialFPS) {
+            this.n = n;
+            this.initialFPS = initialFPS;
+            w = ws;
+        }
+
+        @Override
+        public void accept(Task t) {
+            if (w!=null && w.isOpen()) {
+                if (!n.loop.isRunning())
+                    n.startFPS(initialFPS);
+
+                try {
+                    w.send(t.toString(true).toString());
+                } catch (Exception e) {
+                    w = null; //remove reference to websocket allowing it to be reclaimed
+                    n.stop();
+                    w.close();
+                }
+            } else {
+                //if it was already running
+                if (n.loop.isRunning()) {
+                    w = null;  //remove reference to websocket allowing it to be reclaimed
+                    n.stop();
+                }
+            }
+        }
     }
 }

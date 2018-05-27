@@ -114,7 +114,7 @@ public class NARTestOptimize {
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         while (true) {
-            Optimizing.Result r = opt.run( /*32*1024*/ 8, 16, pool);
+            Optimizing.Result r = opt.run( /*32*1024*/ 32, 32, pool);
 
             System.out.println();
             System.out.println();
@@ -125,7 +125,7 @@ public class NARTestOptimize {
             for (DecisionTree d : r.forest(4, 3))
                 d.print();
 
-            r.tree(4, 8).print();
+            r.tree(3, 10).print();
 
         }
 

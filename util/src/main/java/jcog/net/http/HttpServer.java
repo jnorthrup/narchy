@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -193,5 +194,14 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
     @Override
     public final void response(HttpConnection h) {
         model.response(h);
+    }
+
+    /** local address uri */
+    public URI getURI() {
+        try {
+            return URI.create("ws://" + ssChannel.getLocalAddress());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

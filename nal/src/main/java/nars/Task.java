@@ -662,7 +662,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     @Nullable
     default Appendable toString(boolean showStamp) {
-        return appendTo(new StringBuilder(32), showStamp);
+        return appendTo(new StringBuilder(128), showStamp);
     }
 
     @Nullable
