@@ -57,13 +57,13 @@ public class TruthWave {
 
     public TruthWave(@NotNull BeliefTable b, @NotNull TimeAware n) {
         this(b.size());
-        set(b, n.time(), n.dur(), n, Long.MIN_VALUE, Long.MAX_VALUE);
+        set(b, n.time(), n.dur(), Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
     /**
      * clears and fills this wave with the data from a table
      */
-    public void set(BeliefTable b, long now, int dur, TimeAware timeAware, long minT, long maxT) {
+    public void set(BeliefTable b, long now, int dur, long minT, long maxT) {
         int s = b.size();
         if (s == 0) {
             this.current = null;
@@ -88,7 +88,7 @@ public class TruthWave {
             long xe = x.end();
 
             int j = (size[0]++) * ENTRY_SIZE;
-            load(t, j, xs, xe, x);
+            load(t, j, minT, maxT, xs, xe, x);
 
             if (xs < st[0]) st[0] = xs;
             if (xe > en[0]) en[0] = xe;
@@ -100,9 +100,11 @@ public class TruthWave {
         this.end = en[0];
     }
 
-    static void load(float[] array, int index, long start, long end, @Nullable Truthed truth) {
-        array[index++] = start == Tense.ETERNAL ? Float.NaN : start;
-        array[index++] = end == Tense.ETERNAL ? Float.NaN : end;
+    static void load(float[] array, int index, long absStart, long absEnd, long start, long end, @Nullable Truthed truth) {
+
+        long range = absEnd - absStart;
+        array[index++] = start == Tense.ETERNAL ? Float.NaN : ((float)(start-absStart))/range;
+        array[index++] = end == Tense.ETERNAL ? Float.NaN : ((float)(end-absStart))/range;
         if (truth != null) {
             array[index++] = truth.freq();
             array[index/*++*/] = truth.conf();
@@ -128,7 +130,7 @@ public class TruthWave {
     /**
      * fills the wave with evenly sampled points in a time range
      */
-    public void project(Concept c, boolean beliefOrGoal, long minT, long maxT, int dur, int points, NAR nar) {
+    public void project(Concept c, boolean beliefOrGoal, long minT, long maxT, int points, NAR nar) {
         clear();
 
         if (minT == maxT) {
@@ -137,20 +139,21 @@ public class TruthWave {
         size(points);
 
         float dt = (maxT - minT) / ((float) points+1);
-        float t = minT + dt/2f;
+        long t = minT ;
         float[] data = this.truth;
         int j = 0;
         byte punc = beliefOrGoal ? BELIEF : GOAL;
         BeliefTable table = (BeliefTable) c.table(punc);
         for (int i = 0; i < points; i++) {
-            long a = (long) Math.floor(t - dt/2);
-            long b = (long) Math.ceil(t + dt/2);
+            long a = Math.round(t - dt/2);
+            long b = Math.round(t + dt/2);
 
             Truth tr = table.truth(a, b, nar); //range;
 
             load(data, (j++) * ENTRY_SIZE,
                     //mid, mid,
                     //table.truth(mid, nar) //point
+                    minT, maxT,
                     a, b,
                     tr
             );
@@ -177,7 +180,7 @@ public class TruthWave {
     /**
      * returns 2 element array
      */
-    public float[] range(int dim) {
+    public float[] range() {
         final float[] min = {Float.MAX_VALUE};
         final float[] max = {Float.MIN_VALUE};
         forEach((f, c, start, end) -> {
@@ -190,19 +193,22 @@ public class TruthWave {
 
     @FunctionalInterface
     public interface TruthWaveVisitor {
-        void onTruth(float f, float c, float start, float end);
+        void onTruth(float f, float c, long start, long end);
     }
 
     public final void forEach(@NotNull TruthWaveVisitor v) {
         int n = this.size;
         float[] t = this.truth;
         int j = 0;
+        long totalRange = this.end-this.start;
         for (int i = 0; i < n; i++) {
             float s = t[j++];
             float e = t[j++];
             float f = t[j++];
             float c = t[j++];
-            v.onTruth(f, c, s, e);
+            long S = this.start + Math.round(totalRange * s);
+            long E = this.start + Math.round(totalRange * e);
+            v.onTruth(f, c, S, E);
         }
     }
 

@@ -24,8 +24,8 @@ public class AtomicRoulette<X> {
 
     public final FastCoWList<X> choice;
 
-    private final BlockingQueue<X> onQueue = Util.blockingQueue(16);
-    private final BlockingQueue<X> offQueue = Util.blockingQueue(16);
+    private final BlockingQueue<X> onQueue = Util.blockingQueue(512);
+    private final BlockingQueue<X> offQueue = Util.blockingQueue(512);
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
     private final AtomicInteger priTotal = new AtomicInteger(0);

@@ -5,6 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.scalar.DigitizedScalar;
+import nars.term.Term;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
@@ -31,18 +32,40 @@ public class Gradius extends NAgentX {
 
 
         //senseCamera((x,y)->$.p($.the("SW"), $.the(x), $.the(y)),
-        senseCamera((x,y)->$.p($.the("SW"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
-                        new Scale(() -> g.image, 25, 25)
-                    .window(0, 0, 0.5f, 0.5f)).resolution(0.05f);
-        senseCamera((x,y)->$.p($.the("NW"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
-                new Scale(() -> g.image, 25, 25)
-                    .window(0.5f, 0, 1f, 0.5f)).resolution(0.05f);
-        senseCamera((x,y)->$.p($.the("SE"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
-                new Scale(() -> g.image, 25, 25)
-                    .window(0, 0.5f, 0.5f, 1f)).resolution(0.05f);
-        senseCamera((x,y)->$.p($.the("NE"), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
-                new Scale(() -> g.image, 25, 25)
-                    .window(0.5f, 0.5f, 1f, 1f)).resolution(0.05f);
+
+        int dx = 4, dy = 4;
+        int px = 8, py = 8;
+
+        for (int i = 0; i < dx; i++)
+            for (int j = 0; j < dy; j++) {
+                int ii = i;
+                int jj = j;
+                Term subSection = $.p(id, $.the(ii), $.the(jj));
+                senseCamera((x, y) ->
+                                    $.p(
+                                        subSection,
+                                            $.p(x, y)
+
+//                            $.pRadix(x, 4, 32),
+//                            $.pRadix(y, 4, 32)
+                                ),
+                        new Scale(() -> g.image, px, py)
+                                .window(
+                                        i * (1f / dx), j * (1f / dy),
+                                        (i + 1) * (1f / dx), (j + 1) * (1f / dy)))
+                        .resolution(0.05f);
+            }
+
+
+//        senseCamera((x,y)->$.p($.p(1,0), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
+//                new Scale(() -> g.image, 25, 25)
+//                    .window(0.5f, 0, 1f, 0.5f)).resolution(0.05f);
+//        senseCamera((x,y)->$.p($.p(0,1), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
+//                new Scale(() -> g.image, 25, 25)
+//                    .window(0, 0.5f, 0.5f, 1f)).resolution(0.05f);
+//        senseCamera((x,y)->$.p($.p(1,1), $.pRadix(x, 4, 32), $.pRadix(y, 4, 32)),
+//                new Scale(() -> g.image, 25, 25)
+//                    .window(0.5f, 0.5f, 1f, 1f)).resolution(0.05f);
 
         //Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 50, 50)).resolution(0.05f);
 

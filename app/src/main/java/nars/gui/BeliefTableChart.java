@@ -109,7 +109,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         gl.glBegin(GL2.GL_LINE_STRIP);
 
         float dt = ((maxT - minT)/((float)wave.capacity()));
-        float dMargin = dt/8;
+        int dMargin = Math.round(dt/8);
         wave.forEach((freq, conf, start, end) -> {
 
             boolean eternal = (start != start);
@@ -150,9 +150,9 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         gl.glEnd();
     }
 
-    private static float xTime(long minT, long maxT, float o) {
+    private static float xTime(long minT, long maxT, long o) {
         if (minT == maxT) return 0.5f;
-        return (Math.min(maxT, Math.max(minT, o)) - minT) / (maxT - minT);
+        return ((float)(Math.min(maxT, Math.max(minT, o)) - minT)) / (maxT - minT)*2;
     }
 
 
@@ -204,15 +204,15 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             long nowEnd = now + dur / 2;
             long nowStart = now - dur / 2;
             BeliefTable ccb = cc.beliefs();
-            this.beliefs.set(ccb, now, dur, nar, minT, maxT);
+            this.beliefs.set(ccb, now, dur, minT, maxT);
             this.beliefs.current = ccb.truth(nowStart, nowEnd, nar);
             BeliefTable ccg = cc.goals();
-            this.goals.set(ccg, now, dur, nar, minT, maxT);
+            this.goals.set(ccg, now, dur, minT, maxT);
             this.goals.current = ccg.truth(nowStart, nowEnd, nar);
 
             if (projections > 0 && minT != maxT) {
-                beliefProj.project(cc, true, minT, maxT, dur, projections, nar);
-                goalProj.project(cc, false, minT, maxT, dur, projections, nar);
+                beliefProj.project(cc, true, minT, maxT, projections, nar);
+                goalProj.project(cc, false, minT, maxT, projections, nar);
             }
 
         }
@@ -445,7 +445,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     }
 
     private void renderWave(float nowX, long minT, long maxT, GL2 gl, TruthWave wave, boolean beliefOrGoal) {
-        float[] confMinMax = wave.range(1);
+        float[] confMinMax = wave.range();
         if (confMinMax[0] == confMinMax[1]) {
             confMinMax[0] = 0;
             confMinMax[1] = 1;
