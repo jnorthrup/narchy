@@ -259,14 +259,14 @@ public class NARS {
             );
 
             nar.termlinkBalance.set(0.5f);
-            nar.termVolumeMax.set(30f);
+            nar.termVolumeMax.set(31f);
 
             //nar.confMin.setValue(0.05f);
 
             nar.beliefPriDefault.set(0.5f);
-            nar.questionPriDefault.set(0.1f);
+            nar.questionPriDefault.set(0.2f);
             nar.goalPriDefault.set(0.5f);
-            nar.questPriDefault.set(0.1f);
+            nar.questPriDefault.set(0.2f);
 
             //nar.emotion.want(Perceive, -0.1f);
 

@@ -15,7 +15,11 @@ public class NAL3Test extends NALTest {
 
     public static final int cycles = 300;
     
-    @Override protected NAR nar() { return NARS.tmp(3); }
+    @Override protected NAR nar() {
+        NAR n= NARS.tmp(3);
+        n.termVolumeMax.set(8);
+        return n;
+    }
 
     @Test
     public void compound_composition_two_premises() {

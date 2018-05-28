@@ -7,6 +7,8 @@ import nars.derive.Derivation;
 import nars.derive.DeriverBudgeting;
 import nars.truth.Truth;
 
+import static nars.truth.TruthFunctions.w2cSafe;
+
 /** TODO parameterize, modularize, refactor etc */
 public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
@@ -105,15 +107,15 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
             boolean single = d.single;
             float pEvi = single ? d.premiseEviSingle : d.premiseEviDouble;
             if (pEvi > 0) {
-                //float pConf = w2cSafe(pEvi);
+                float pConf = w2cSafe(pEvi);
 
-                float dEvi = derivedTruth.evi();
-                //float dConf = derivedTruth.conf();
+                //float dEvi = derivedTruth.evi();
+                float dConf = derivedTruth.conf();
                 if (single)
-                    pEvi *=2; //count the derived confidence twice to be fair to comparison against the combined evidence of 2 parents
+                    dConf /=2; //count the derived confidence twice to be fair to comparison against the combined evidence of 2 parents
 
-                //float eviFactor = dConf / pConf; //allow > 1
-                float eviFactor = dEvi / pEvi; //allow > 1
+                float eviFactor = dConf / pConf; //allow > 1
+                //float eviFactor = dEvi / pEvi; //allow > 1
                 factor *= Util.lerp(evidenceImportance.floatValue(), 1, eviFactor);
             }
 

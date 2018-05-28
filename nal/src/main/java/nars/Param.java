@@ -55,16 +55,17 @@ public abstract class Param {
 
     /** warning: can interfere with expected test results */
     public static final boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
+    public static final boolean TASKLINK_DYN_GENERATED_TASKS = true;
 
     //public static final boolean TASKLINK_DYN_GENERATED_TASKS = true;
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 1.5f;
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 6;
 
     /** full causal feedback: applied as mult to every task on input */
     public static boolean CAUSE_MULTIPLY_EVERY_TASK = false;
@@ -188,7 +189,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(512, 0, 2048);
+    public final IntRange deriveTTL = new IntRange(256, 0, 2048);
 
 
     /** estimate */

@@ -138,6 +138,11 @@ public class SimpleDeriver extends Deriver {
 
             if (taskPriSum > 0)
                 concept.templates().linkAndActivate(concept, taskPriSum, nar);
+            else {
+                //if no tasklinks:
+                //conceptActivation.priSet(0); //drain and fwd to subterms
+                concept.templates().linkAndActivate(concept, a.pri(), nar);
+            }
 
             return ii[0]-- > 0;
         });

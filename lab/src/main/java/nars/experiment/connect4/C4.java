@@ -40,7 +40,7 @@ public class C4 {
             n.goalPriDefault.set(0.75f);
             this.n = n;
 
-            Deriver.derivers(n).forEach(d -> ((MatrixDeriver)d).conceptsPerIteration.set(2));
+            Deriver.derivers(n).forEach(d -> ((MatrixDeriver)d).conceptsPerIteration.set(4));
 
 
             //n.log(System.out, (t)->((Task)t).pri() >= 0.7f);
@@ -56,7 +56,7 @@ public class C4 {
             play.init(game, whoAmI);
             this.play = play;
 
-            n.startFPS(40f);
+            n.startFPS(10f);
 
             opponent = play.player == 1 ? 2 : 1;
 

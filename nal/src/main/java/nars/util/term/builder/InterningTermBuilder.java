@@ -36,7 +36,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         termTemporalCache = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
             if (Op.ops[i].atomic) continue;
-            termCache[i] = newOpCache(8 * 1024);
+            termCache[i] = newOpCache(16 * 1024);
             termTemporalCache[i] = newOpCache(8 * 1024);
         }
     }

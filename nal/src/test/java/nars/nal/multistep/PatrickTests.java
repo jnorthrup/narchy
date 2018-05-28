@@ -157,7 +157,7 @@ public class PatrickTests extends NALTest {
         );
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
-                0.3f,
+                0.2f,
                 //when it decides
                 t -> t > 0  //some time after zero
         );

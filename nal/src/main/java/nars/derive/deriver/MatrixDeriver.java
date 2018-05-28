@@ -165,7 +165,7 @@ public class MatrixDeriver extends Deriver {
 
         if (!commit(nar, tasklinks, termlinks)) {
             //if no tasklinks:
-            conceptActivation.priSet(0); //drain and fwd to subterms
+            //conceptActivation.priSet(0); //drain and fwd to subterms
             concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
             return;
         }

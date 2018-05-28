@@ -341,8 +341,8 @@ public class LinkageTest extends NALTest {
     public void Indirect_Linkage_NAL6_second_level_variable_unification() throws Exception {
         //ProperlyLinkedIndirectlyTest("(&&, <#1 --> lock>, <<$2 --> key> ==> <#1 --> (/, open, $2, _)>>)", "<{key1} --> key>");
         ProperlyLinkedIndirectlyTest(
-                "(<#1 --> lock> && <<$2 --> key> ==> ($2, #1):open>)",
-                "<{key1} --> key>");
+                "(lock:#1 && (key:$2 ==> ($2, #1):open))",
+                "key:{key1}");
     }
 
 //    @Test

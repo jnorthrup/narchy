@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Joris
  */
-class WebSocketSelector extends WebSocketAdapter {
+public class WebSocketSelector extends WebSocketAdapter {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger("jcog/net/http");
     private final MultithreadConcurrentQueue<NewChannel> newChannels = new MultithreadConcurrentQueue(1024);
     private final HttpModel listener;
@@ -172,7 +172,8 @@ class WebSocketSelector extends WebSocketAdapter {
 
                         // an other thread may cancel the key
                     } catch (IOException ex) {
-                        log.warn("IOException while parsing selector {}", ex);
+                        //log.warn("IOException while parsing selector {}", ex);
+                        conn.close();
                         key.cancel();
                         it.remove();
 
@@ -331,7 +332,7 @@ class WebSocketSelector extends WebSocketAdapter {
     /**
      * @author Joris
      */
-    static class ServerWebSocketImpl extends WebSocketImpl {
+    public static class ServerWebSocketImpl extends WebSocketImpl {
 
         final static AtomicInteger serial = new AtomicInteger();
 

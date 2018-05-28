@@ -167,7 +167,7 @@ abstract public class NAgentX extends NAgent {
                              //new Focus.DefaultRevaluator(),
                              new Focus.AERevaluator(new SplitMix64Random(1)),
                              Util.concurrencyDefault(2),
-                             256, 2048) {
+                             1024, 2048) {
 //                        {
 //                            Exe.setExecutor(this);
 //                        }
@@ -205,7 +205,7 @@ abstract public class NAgentX extends NAgent {
         n.dtMergeOrChoose.set(true);
         //0.5f //nyquist
         //n.dtDither.set(2 /* ms */);
-        n.timeFocus.set(6);
+        n.timeFocus.set(4);
 
 
         n.confMin.set(0.01f);
@@ -216,17 +216,18 @@ abstract public class NAgentX extends NAgent {
         n.goalConfDefault.set(0.9f);
 
 
-        float priFactor = 0.5f;
+        float priFactor = 0.25f;
         n.beliefPriDefault.set(0.5f * priFactor);
         n.goalPriDefault.set(1f * priFactor);
-        n.questionPriDefault.set(0.5f * priFactor);
-        n.questPriDefault.set(0.5f * priFactor);
+        n.questionPriDefault.set(0.25f * priFactor);
+        n.questPriDefault.set(0.25f * priFactor);
 
-        n.activateConceptRate.set(0.25f);
+        n.activateConceptRate.set(0.3f);
+        n.forgetRate.set(0.75f);
 
         try {
             InterNAR i = new InterNAR(n, 8, 0);
-            i.runFPS(2);
+            i.runFPS(4);
         } catch (Exception e) {
             e.printStackTrace();
         }

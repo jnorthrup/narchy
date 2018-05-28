@@ -240,16 +240,16 @@ public class TermlinkTemplates extends FasterList<Term> {
             case SIM: {
                 Subterms xx = x.subterms();
                 if (xx.hasAny(Op.VariableBits))
-//                        (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits))))
+//                if (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits)))
                     return 3;
-                else
+//                else
                     return 2;
             }
 
             case INH: {
-                if (x.subterms().OR(xx -> xx.isAny(Op.SetBits | Op.SectBits)))
-                    return 3;
-                else
+//                if (x.subterms().OR(xx -> xx.isAny(SetBits | Op.SectBits)))
+//                    return 3;
+//                else
                     return 2;
             }
 
@@ -266,7 +266,7 @@ public class TermlinkTemplates extends FasterList<Term> {
 //                    return 2;
 
             case CONJ:
-                if (x.hasAny(Op.INH))
+                if (x.hasAny(Op.INH) && x.hasAny(Op.VariableBits))
                     return 3;
                 return 2;
 

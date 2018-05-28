@@ -10,6 +10,7 @@ import nars.index.concept.MaplikeConceptIndex;
 import nars.index.concept.ProxyConceptIndex;
 import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -27,7 +28,7 @@ public class Web implements HttpModel {
 
 
     private final NAR nar;
-    private final MaplikeConceptIndex idxAdapter;
+    private final MaplikeConceptIndex sharedIndexAdapter;
 
     @Override
     public void response(HttpConnection h) {
@@ -56,16 +57,23 @@ public class Web implements HttpModel {
         @Override
         protected void reclaim(NAR value) {
             value.stop();
+            value.reset();
         }
     };
 
     @Override
     public boolean wssConnect(SelectionKey key) {
+//        ((WebSocketSelector.ServerWebSocketImpl)key.attachment()).
         return true;
     }
 
     @Override
     public void wssOpen(WebSocket ws, ClientHandshake handshake) {
+
+        if(ws.getResourceDescriptor().equals("/")) {
+            ws.close(CloseFrame.REFUSE);
+            return;
+        }
 
         NAR n = reasoners.computeIfAbsent(ws, (Function<WebSocket,NAR>)this::reasoner);
         ws.setAttachment(n);
@@ -73,7 +81,13 @@ public class Web implements HttpModel {
     }
 
     private NAR reasoner(WebSocket ws) {
-        NAR n = new NARS().withNAL(1,8).index(idxAdapter).get();
+        NAR n = new NARS().withNAL(1,8).index(sharedIndexAdapter).get();
+
+        String path = ws.getResourceDescriptor();
+        assert(path.charAt(0)=='/');
+        path = path.substring(1);
+        n.named(path);
+
         int initialFPS = 5;
         n.startFPS(initialFPS);
         try {
@@ -108,7 +122,7 @@ public class Web implements HttpModel {
 
     public Web() {
         this.nar = NARchy.core();
-        this.idxAdapter = new ProxyConceptIndex(nar.concepts);
+        this.sharedIndexAdapter = new ProxyConceptIndex(nar.concepts);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -125,36 +139,47 @@ public class Web implements HttpModel {
         h.runFPS(10f);
 
 
-        Util.sleep(200);
-        WebSocketClient c = test(h);
+        Util.sleep(100);
+
+        WebClient c1 = new WebClient(URI.create("ws://localhost:60606/a"));
+        WebClient c2 = new WebClient(URI.create("ws://localhost:60606/b"));
+
         Util.sleep(500);
-        c.closeBlocking();
+        c1.closeBlocking();
+        c2.closeBlocking();
     }
 
-    protected static WebSocketClient test(HttpServer h) throws InterruptedException {
-        WebSocketClient c = new WebSocketClient(URI.create("ws://localhost:60606") /*h.getURI()*/) {
-            @Override
-            public void onOpen(ServerHandshake handshakedata) {
-                System.out.println(handshakedata);
+    public static class WebClient extends WebSocketClient {
+
+        public WebClient(URI serverUri) {
+            super(serverUri);
+            try {
+                connectBlocking();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+            //connect();
+        }
 
-            @Override
-            public void onMessage(String message) {
-                System.out.println(message);
-            }
+        @Override
+        public void onOpen(ServerHandshake handshakedata) {
+            //System.out.println(handshakedata);
+        }
 
-            @Override
-            public void onClose(int code, String reason, boolean remote) {
+        @Override
+        public void onMessage(String message) {
+            System.out.println(message);
+        }
 
-            }
+        @Override
+        public void onClose(int code, String reason, boolean remote) {
 
-            @Override
-            public void onError(Exception ex) {
+        }
 
-            }
-        };
-        c.connectBlocking();
-        return c;
+        @Override
+        public void onError(Exception ex) {
+
+        }
     }
 
     private static class WebSocketLogger implements Consumer<Task> {

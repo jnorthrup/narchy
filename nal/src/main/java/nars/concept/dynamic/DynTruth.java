@@ -50,16 +50,21 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         int s = size;
         assert (s > 0);
 
-        if (s > 1) {
-            //float f = 1f / s;
-            //            for (Task x : e) {
-            //                BudgetMerge.plusBlend.apply(b, x.budget(), f);
-            //            }
-            //            return b;
-            //return e.maxValue(Task::priElseZero); //use the maximum of their truths
+        if (s > 1 /* and all differ, because if they are equal then the average will be regardless of their relative rank */) {
+            if (anySatisfy(t->t.start()==ETERNAL)) //HACK if any are eternal, calculate simply
+                return meanValue(DynTruth::pri); //average value
 
-            //TODO sum weighted by evidence
-            return meanValue(DynTruth::pri); //average value
+            double total = 0;
+            double totalEvi = 0;
+            //sum weighted by evidence (integral?)
+            for (TaskRegion d : this) {
+                float p = DynTruth.pri(d);
+                float e = ((Task)d).conf() /*evi()*/ * d.range(); //Revision.eeviInteg( ((Task)d), s,e, dur );
+                total += p * e;
+                totalEvi += e;
+            }
+            return (float)(total / totalEvi);
+
         } else {
             return pri(get(0));
         }
@@ -123,14 +128,14 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             if (size() > 1) {
                 if (superterm.op() == CONJ) {
                     long min = TIMELESS;
-                    long maxRange = 0;
+                    long minRange = 0;
                     boolean eternals = false;
                     for (int i = 0, thisSize = size(); i < thisSize; i++) {
                         LongInterval ii = get(i);
                         long iis = ii.start();
                         if (iis != ETERNAL) {
                             min = Math.min(min, iis);
-                            maxRange = Math.max(maxRange, ii.end() - iis);
+                            minRange = Math.min(minRange, ii.end() - iis);
                         } else {
                             eternals = true;
                         }
@@ -144,20 +149,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 //                        start = end = ETERNAL; //all eternal
 //                    else {
                         start = min;
-                        end = (min + maxRange);
+                        end = (min + minRange);
                     }
 //                    }
 
                 } else {
-                    //dilute the evidence in proportion to temporal sparseness for non-temporal results
-
-//                    EviDensity se = new EviDensity(nar.dur(), this);
-//                    evi = se.factor(evi);
-//                    if (evi!=evi || evi < eviMin)
-//                        return null;
-//                    start = se.unionStart;
-//                    end = se.unionEnd;
-
                     long[] u = Tense.union(this.array());
                     start = u[0]; end = u[1];
                 }

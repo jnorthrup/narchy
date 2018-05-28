@@ -22,7 +22,7 @@ public class NAL2Test extends NALTest {
     protected NAR nar() {
 
         NAR n = NARS.tmp(2);
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(14);
         return n;
     }
 

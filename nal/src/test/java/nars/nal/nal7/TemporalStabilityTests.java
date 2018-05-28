@@ -162,7 +162,7 @@ public class TemporalStabilityTests {
         //
 
         @NotNull NAR n = NARS.tmp();
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(16);
 
         int time = CYCLES;
         T1 a = new T1(linkedimpl, 1, 2, 5, 10);

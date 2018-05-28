@@ -326,6 +326,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             logger.info("reset");
 
+            //if (running)...
+
+
         }
 
     }
