@@ -1047,27 +1047,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             //this might be overkill
             Evaluation.solve(x, n.functors,
                     z -> {
-
-
-                        if (z == True || z == False || z.hasAny(Op.BOOL)) {
-                            boolean hasFalse = z == False || z.ORrecurse(t -> t == False); //TODO can be found faster with smart recursive descent
-                            if (hasFalse)
-                                z = False; //TODO maybe record what part causes the falsity
-
-                            //determined absolutely true or false: implies that this is the answer to a question
-                            z = $.func(TRUE, z == False ? x.neg() : x);
-//
-//
-//                if (_y_y != null && !_y_y.equals(y))
-//                    if (!each.test(_y_y))
-//                        return false;
-
-//                    if (hasFalse) {
-//                        continue; //filter false possiblities
-//                    }
-
-                        }
-
                         preProcess(n, z, yy);
                         return true;
                     });
@@ -1085,7 +1064,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
     }
 
-    @Nullable
     default void preProcess(NAR n, Term y, Collection<ITask> queue) {
 
 

@@ -614,14 +614,14 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         if ((goalTruth != null) && (goalTruthOp == null)) {
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
         }
-        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : "()";
-        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : "()";
+        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
+        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
 
 
 
         FasterList<Term> args = new FasterList(4);
-        args.add(intern($.the(beliefLabel), index));
-        args.add(intern($.the(goalLabel), index));
+        args.add(intern(beliefLabel!=null ? Atomic.the(beliefLabel) : Op.EmptyProduct, index));
+        args.add(intern(goalLabel!=null ? Atomic.the(goalLabel) : Op.EmptyProduct, index));
         if (puncOverride != 0)
             args.add($.quote(((char) puncOverride)));
 

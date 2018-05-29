@@ -12,7 +12,7 @@ import static nars.time.Tense.DTERNAL;
 public class CompoundLight implements Compound {
 
     final Subterms subs;
-    private final Op op;
+    private final byte op;
     private final int hash;
 
     public CompoundLight(Op o, Term... s) {
@@ -20,7 +20,7 @@ public class CompoundLight implements Compound {
     }
 
     public CompoundLight(Op o, Subterms s) {
-        this.op = o;
+        this.op = o.id;
         this.subs = s;
         this.hash = s.hashWith(o);
     }
@@ -43,7 +43,7 @@ public class CompoundLight implements Compound {
 
     @Override
     public final Op op() {
-        return op;
+        return Op.ops[op];
     }
 
     @Override
@@ -53,7 +53,7 @@ public class CompoundLight implements Compound {
 
     @Override
     public Term the() {
-        return op.compound(DTERNAL, arrayShared());
+        return op().compound(DTERNAL, arrayShared());
 //        /throw new UnsupportedOperationException();
     }
 

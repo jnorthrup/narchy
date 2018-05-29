@@ -607,6 +607,8 @@ public interface Term extends Termed, Comparable<Termed> {
      */
 
     default Term eval(Evaluation.TermContext context, Random rng) {
+        if (!Evaluation.possiblyNeedsEval(this))
+            return this;
         return Evaluation.solveAny(this, context, rng);// context.applyTermIfPossible(this, null, 0);
 //        return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
     }

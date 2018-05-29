@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 
-public final class Evaluation {
+public class Evaluation {
 
     public static final Atom TRUE = (Atom) Atomic.the("\"" + True + '"');
 
@@ -73,6 +73,7 @@ public final class Evaluation {
 //                y = Operator.arg(y, 0); //unwrap
 //            }
             all.add(y);
+
             return true;
         });
         return !all.isEmpty() ? all : ArrayHashSet.EMPTY;
@@ -84,21 +85,10 @@ public final class Evaluation {
         if (y == null)
             return each.test(x); // no change
 
-//        if (y.equals(x)) {
-//            return each.test(True);
-//        } else if (y.op().atomic) {
-//            return each.test(y);
-//        } else {
-//
-//
-
         Evaluation s = Evaluation.clear();
+        ///new Evaluation();
 
-
-//        return each.test(y);
-//        } else {
         return s.get(y, each);
-//        }
     }
 
     @Nullable
@@ -107,16 +97,11 @@ public final class Evaluation {
         if (!possiblyNeedsEval(x))
             return null;
 
-
         MyFunctorResolver ft = new MyFunctorResolver(context);
         Term y = x.transform(ft);
 
         if (y == Null) {
             return Null;
-        }
-
-        if ((y == True) || (y == False)) {
-            return $.func(TRUE, x.negIf(y != True));
         }
 
         if (!ft.hasFunctor) {
@@ -136,8 +121,8 @@ public final class Evaluation {
         return e;
     }
 
-    public static Term solveAny(Term term, TermContext context, Random random) {
-        ArrayHashSet<Term> results = solveAll(term, context);
+    public static Term solveAny(Term x, TermContext context, Random random) {
+        ArrayHashSet<Term> results = solveAll(x, context);
         return results.get(random);
     }
 
@@ -193,7 +178,7 @@ public final class Evaluation {
 
         for (int i = 0, n = uu.subs(); i < n; i++) {
             Term xi = xy != null ? xy[i] : uu.sub(i);
-            Term yi = eval(xi);
+            Term yi = possiblyNeedsEval(xi) ? eval(xi) : xi;
             if (xi != yi) {
                 if (yi == null) {
                     //nothing
@@ -266,9 +251,9 @@ public final class Evaluation {
     public boolean get(Term _x, Predicate<Term> each) {
         Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
 
-        Term z2 = eval(_x);
-
-        Term x = z2;
+        Term x = eval(_x);
+        if (x.hasAny(Op.BOOL))
+            x = boolFilter(_x, x);
 
         int np = proc.size();
 
@@ -316,116 +301,134 @@ public final class Evaluation {
 
             Term z = eval(y);
 
+            if (z.hasAny(Op.BOOL))
+                z = boolFilter(y, z);
+
+            if (z != null && !each.test(z))
+                return false;
 
             if (np < proc.size()) { //proc added
-                int before= v.now();
+                int before = v.now();
                 if (!get(z, each)) //recurse
                     return false;
                 v.revert(before);
             }
 
-            if (!each.test(z))
-                return false;
         }
 
 
         return true;
     }
 
-    public void replace(Term x, Term xx) {
-        replace(subst(x, xx));
+    protected Term boolFilter(Term y, Term z) {
+        if (z == Null)
+            return Null;
+        if (z == True || z == False || z.hasAny(Op.BOOL)) {
+            boolean hasFalse = z == False || z.ORrecurse(t -> t == False); //TODO can be found faster with smart recursive descent
+//            if (hasFalse)
+//                z = False; //TODO maybe record what part causes the falsity
+
+            //determined absolutely true or false: implies that this is the answer to a question
+            //return $.func(TRUE, z == False ? y.neg() : y);
+            return hasFalse ? False : True;
+        }
+        return z;
     }
 
-    public void replace(Term x, Term xx, Term y, Term yy) {
-        replace(subst(x, xx, y, yy));
-    }
+        public void replace (Term x, Term xx){
+            replace(subst(x, xx));
+        }
 
-    public void replace(Predicate... r) {
-        proc.add(r);
-    }
+        public void replace (Term x, Term xx, Term y, Term yy){
+            replace(subst(x, xx, y, yy));
+        }
 
-    private Predicate<VersionMap<Term, Term>> subst(Term x, Term xx) {
-        return (m) -> {
-            Term px = m.get(x);
-            if (px != null) {
-                return px.equals(xx); //set to other value, return true iff equal
-            } else {
-                m.tryPut(x, xx);
-                return true;
-            }
-        };
-    }
+        public void replace (Predicate...r){
+            proc.add(r);
+        }
 
-    public Predicate<VersionMap<Term, Term>> subst(Term x, Term xx, Term y, Term yy) {
-        return (m) -> subst(x, xx).test(m) && subst(y, yy).test(m);
-    }
+        private Predicate<VersionMap<Term, Term>> subst (Term x, Term xx){
+            return (m) -> {
+                Term px = m.get(x);
+                if (px != null) {
+                    return px.equals(xx); //set to other value, return true iff equal
+                } else {
+                    m.tryPut(x, xx);
+                    return true;
+                }
+            };
+        }
 
-    /**
-     * interface necessary for evaluating terms
-     */
-    public interface TermContext extends Function<Term, Termed> {
-
+        public Predicate<VersionMap<Term, Term>> subst (Term x, Term xx, Term y, Term yy){
+            return (m) -> subst(x, xx).test(m) && subst(y, yy).test(m);
+        }
 
         /**
-         * elides superfluous .term() call
+         * interface necessary for evaluating terms
          */
-        default Term applyTermIfPossible(/*@NotNull*/ Term x, Op supertermOp, int subterm) {
+        public interface TermContext extends Function<Term, Termed> {
+
+
+            /**
+             * elides superfluous .term() call
+             */
+            default Term applyTermIfPossible(/*@NotNull*/ Term x, Op supertermOp, int subterm) {
 
 //            if (x instanceof Compound) {
 //                return applyCompound((Compound) x, supertermOp, subterm);
 //            }
 
 
-            Termed y = apply(x);
-            return y != null ? y.term() : x;
-        }
-
-
-        class MapTermContext implements TermContext {
-            private final ImmutableMap<Term, Term> resolvedImm;
-
-            public MapTermContext(MutableMap<Term, Term> resolved) {
-                this(resolved.toImmutable());
+                Termed y = apply(x);
+                return y != null ? y.term() : x;
             }
 
-            public MapTermContext(ImmutableMap<Term, Term> resolvedImm) {
-                this.resolvedImm = resolvedImm;
+
+            class MapTermContext implements TermContext {
+                private final ImmutableMap<Term, Term> resolvedImm;
+
+                public MapTermContext(MutableMap<Term, Term> resolved) {
+                    this(resolved.toImmutable());
+                }
+
+                public MapTermContext(ImmutableMap<Term, Term> resolvedImm) {
+                    this.resolvedImm = resolvedImm;
+                }
+
+                @Override
+                public Termed apply(Term term) {
+                    if (term.op() == ATOM) {
+                        Term r = resolvedImm.get(term);
+                        if (r != null)
+                            return r;
+                    }
+                    return term;
+                }
+            }
+        }
+
+        private static class MyFunctorResolver implements TermTransform {
+            private final TermContext context;
+
+            public boolean hasFunctor;
+
+            public MyFunctorResolver(TermContext context) {
+                this.context = context;
             }
 
             @Override
-            public Termed apply(Term term) {
-                if (term.op() == ATOM) {
-                    Term r = resolvedImm.get(term);
-                    if (r != null)
-                        return r;
+            public @Nullable Termed transformAtomic(Term z) {
+                if (z instanceof Functor)
+                    hasFunctor = true; //already has it
+
+                if (z.op() == ATOM) {
+                    Term zz = context.applyTermIfPossible(z, null, 0);
+                    if (zz instanceof Functor)
+                        hasFunctor = true;
+                    return zz;
                 }
-                return term;
+                return z;
             }
+
         }
     }
-
-    private static class MyFunctorResolver implements TermTransform {
-        private final TermContext context;
-
-        public boolean hasFunctor;
-
-        public MyFunctorResolver(TermContext context) {
-            this.context = context;
-        }
-
-        @Override
-        public @Nullable Termed transformAtomic(Term z) {
-            if (z instanceof Functor)
-                hasFunctor = true; //already has it
-
-            if (z.op() == ATOM) {
-                Term zz = context.applyTermIfPossible(z, null, 0);
-                if (zz instanceof Functor)
-                    hasFunctor = true;
-                return zz;
-            }
-            return z;
-        }
-
-    }
-}

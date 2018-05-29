@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
+import nars.term.atom.Atomic;
 import nars.util.TimeAware;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
@@ -264,8 +265,12 @@ public class Arkancide extends NAgentX {
         });
     }
     private void initToggle() {
-        actionPushButton($.the("L"), () -> noid.paddle.move(-paddleSpeed));
-        actionPushButton($.the("R"), () -> noid.paddle.move(+paddleSpeed));
+        actionPushButtonMutex(Atomic.the("L"), Atomic.the("R"),
+                (b) -> { if (b) noid.paddle.move(-paddleSpeed); },
+                (b) -> { if (b) noid.paddle.move(+paddleSpeed); }
+                );
+//        actionPushButton($.the("L"), );
+//        actionPushButton($.the("R"), () -> noid.paddle.move(+paddleSpeed));
     }
     private void initUnipolar() {
         actionUnipolar($.the("L"), (u)-> noid.paddle.move(-paddleSpeed*u) ? u : 0);
