@@ -165,10 +165,6 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
         return ref.opX();
     }
 
-    @Override
-    public Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
-        return ref.evalSafe(context, supertermOp, subterm, remain);
-    }
 
     @Override
     public Term dt(int dt) {

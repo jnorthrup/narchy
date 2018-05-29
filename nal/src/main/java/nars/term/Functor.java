@@ -354,9 +354,9 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
     public abstract static class FunctorResolver implements Evaluation.TermContext {
 
         @Override
-        public Term applyTermIfPossible(Term x, Op supertermOp, int subterm) {
+        public Term applyTermIfPossible(Term x, @Nullable Op superTermOp, int subterm) {
             //only need to resolve for the predicate subterm of an INH
-            if (subterm==1 && supertermOp==INH && x.op()==ATOM) {
+            if ((superTermOp == null || (subterm==1 && superTermOp==INH)) && x.op()==ATOM) {
                 Termed y = apply(x);
                 if (y != null) {
                     Term yt = y.term();
@@ -518,13 +518,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else {
                     //verify
                     Term XY = compute(x, param);
-                    if (XY==null || XY.equals(y)) {
-                        //equal
+                    if (XY==null) {
                         return null; //unchanged
-                        //return True;
                     } else {
-                        //inequal
-                        return False;
+                        return XY.equals(y) ? True  : False;
                     }
                 }
             }

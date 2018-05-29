@@ -60,12 +60,6 @@ public class EllipsisMatch extends CompoundLight {
     }
 
     @Override
-    public Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
-        //dont eval until it's unwrapped
-        return this;
-    }
-
-    @Override
     public @Nullable Term transform(TermTransform t) {
         //dont eval until it's unwrapped
         return this;

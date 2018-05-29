@@ -68,7 +68,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     }
 
     @Override
-    public void init(@NotNull NAR nar) {
+    public void init(NAR nar) {
         super.init(nar);
 
         nar.onCycle(this);
@@ -152,7 +152,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     /**
      * since the terms are sorted by a volume-byte prefix, we can scan for removals in the higher indices of this node
      */
-    private MyConcurrentRadixTree.Node volumeWeightedRoot(@NotNull Random rng) {
+    private MyConcurrentRadixTree.Node volumeWeightedRoot(Random rng) {
 
         List<MyConcurrentRadixTree.Node> l = concepts.root.getOutgoingEdges();
         int levels = l.size();
@@ -195,7 +195,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         return concepts.get(k);
     }
 
-    protected @NotNull Termed _get(TermBytes k, Term finalT) {
+    protected Termed _get(TermBytes k, Term finalT) {
         return concepts.putIfAbsent(k, () -> nar.conceptBuilder.apply(finalT, null));
     }
 
@@ -208,7 +208,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     @Override
     public void set(Term src, Termed target) {
 
-        @NotNull TermBytes k = key(src);
+        TermBytes k = key(src);
 
         concepts.acquireWriteLock();
         try {
@@ -227,7 +227,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     }
 
     @Override
-    public void forEach(@NotNull Consumer<? super Termed> c) {
+    public void forEach(Consumer<? super Termed> c) {
         concepts.forEach(c);
     }
 
@@ -238,14 +238,14 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
 
     @Override
-    public @NotNull String summary() {
+    public String summary() {
         //return ((nar.random.nextFloat() < SIZE_UPDATE_PROB) ? (this.lastSize = size()) : ("~" + lastSize)) + " terms";
         return concepts.sizeEst() + " concepts";
     }
 
 
     @Override
-    public void remove(@NotNull Term entry) {
+    public void remove(Term entry) {
         TermBytes k = key(entry);
         Termed result = concepts.get(k);
         if (result != null) {
@@ -254,7 +254,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     }
 
 
-    protected void onRemoval(@NotNull Concept value) {
+    protected void onRemoval(Concept value) {
         onRemove(value);
     }
 
@@ -278,7 +278,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 //        }
 //
 //        @Override
-//        public @Nullable Termed get(@NotNull Term t, boolean createIfMissing) {
+//        public @Nullable Termed get(Term t, boolean createIfMissing) {
 //
 //            Object o = L1.computeIfAbsent2(t,
 //                    createIfMissing ?
@@ -302,7 +302,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 //        }
 //
 //        @Override
-//        public @NotNull String summary() {
+//        public String summary() {
 //            return super.summary() + "\t, L1:" + L1.summary(true);
 //        }
 //

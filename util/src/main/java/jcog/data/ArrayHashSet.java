@@ -248,7 +248,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     public X remove(Random random) {
         int s = size();
         if (s == 0) return null;
-        int index = random.nextInt(s);
+        int index = s == 1 ? 0 : random.nextInt(s);
         X removed;
         remove(removed = list.remove(index));
         return removed;

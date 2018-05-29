@@ -40,6 +40,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
+import static nars.term.Evaluation.TRUE;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -49,46 +50,16 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priority {
 
 
-    static boolean equal(Task thiz, Object that) {
-        return (thiz == that) ||
-                ((that instanceof Task && thiz.hashCode() == that.hashCode() && Task.equal(thiz, (Task)that)));
-    }
-
+    Task[] EmptyArray = new Task[0];
     /**
-     * assumes identity and hash have been tested already.
-     * <p>
-     * if evidence is of length 1 (such as input or signal tasks,), the system
-     * assumes that its ID is unique (or most likely unique)
-     * and this becomes the only identity condition.
-     * (start/stop and truth are not considered for equality)
-     * this allows these values to mutate dynamically
-     * while the system runs without causing hash or equality
-     * inconsistency.  see hash()
+     * sloppy pre-sort of premises by task/task_term,
+     * to maximize sequential repeat of derived task term
      */
-    static boolean equal(Task a, Task b) {
-
-        if (a.punc() != b.punc())
-            return false;
-
-        long[] evidence = a.stamp();
-        if ((!Arrays.equals(evidence, b.stamp())))
-            return false;
-
-//        if (evidence.length > 1) {
-            Truth at = a.truth();
-            Truth bt = b.truth();
-            if (at == null) {
-                if (bt != null) return false;
-            } else {
-                if (bt == null || !at.equals(bt)) return false;
-            }
-
-            if ((a.start() != b.start()) || (a.end() != b.end()))
-                return false;
-//        }
-
-        return a.term().equals(b.term());
-    }
+    Comparator<? super Premise> sortByTaskSloppy =
+            Comparator
+                    .comparingInt((Premise a) -> a.task.hashCode())
+                    .thenComparingInt((Premise a) -> a.task.term().hashCode())
+                    .thenComparingInt((Premise a) -> System.identityHashCode(a.task));
 
 //    static @Nullable Task eviMax(@Nullable Task a, @Nullable Task b, long start, long end) {
 //        if (b == null) {
@@ -119,6 +90,47 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //            }
 //        }
 //    }
+
+    static boolean equal(Task thiz, Object that) {
+        return (thiz == that) ||
+                ((that instanceof Task && thiz.hashCode() == that.hashCode() && Task.equal(thiz, (Task) that)));
+    }
+
+    /**
+     * assumes identity and hash have been tested already.
+     * <p>
+     * if evidence is of length 1 (such as input or signal tasks,), the system
+     * assumes that its ID is unique (or most likely unique)
+     * and this becomes the only identity condition.
+     * (start/stop and truth are not considered for equality)
+     * this allows these values to mutate dynamically
+     * while the system runs without causing hash or equality
+     * inconsistency.  see hash()
+     */
+    static boolean equal(Task a, Task b) {
+
+        if (a.punc() != b.punc())
+            return false;
+
+        long[] evidence = a.stamp();
+        if ((!Arrays.equals(evidence, b.stamp())))
+            return false;
+
+//        if (evidence.length > 1) {
+        Truth at = a.truth();
+        Truth bt = b.truth();
+        if (at == null) {
+            if (bt != null) return false;
+        } else {
+            if (bt == null || !at.equals(bt)) return false;
+        }
+
+        if ((a.start() != b.start()) || (a.end() != b.end()))
+            return false;
+//        }
+
+        return a.term().equals(b.term());
+    }
 
     /**
      * see equals()
@@ -385,7 +397,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
-    @Nullable static Task clone(Task x) {
+    @Nullable
+    static Task clone(Task x) {
         return clone(x, x.punc());
     }
 
@@ -521,6 +534,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return eternalized(tx, 1);
     }
 
+
+    //    @Nullable
+//    static boolean taskStatementValid(/*@NotNull*/Compound t, boolean safe) {
+//        return taskStatementValid(t, (byte) 0, safe); //ignore the punctuation-specific conditions
+//    }
+
     static Task eternalized(Task x, float eviFactor) {
         if (x == null)
             return null;
@@ -546,18 +565,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     }
 
-
-
     @Override
     default float freqMin() {
         return freq();
     }
-
-
-    //    @Nullable
-//    static boolean taskStatementValid(/*@NotNull*/Compound t, boolean safe) {
-//        return taskStatementValid(t, (byte) 0, safe); //ignore the punctuation-specific conditions
-//    }
 
     @Override
     default float freqMean() {
@@ -581,7 +592,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     /**
      * POINT EVIDENCE
-     *
+     * <p>
      * amount of evidence measured at a given point in time with a given duration window
      * <p>
      * WARNING check that you arent calling this with (start,end) values
@@ -616,6 +627,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     }
 
+//    /**
+//     * called if this task is entered into a concept's belief tables
+//     * TODO what about for questions/quests
+//     */
+//    void feedback(TruthDelta delta, float deltaConfidence, float deltaSatisfaction, NAR nar);
+//
+
     @Override
     @NotNull
     default Task task() {
@@ -626,28 +644,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return (punc() == QUESTION);
     }
 
-//    /**
-//     * called if this task is entered into a concept's belief tables
-//     * TODO what about for questions/quests
-//     */
-//    void feedback(TruthDelta delta, float deltaConfidence, float deltaSatisfaction, NAR nar);
-//
-
-    default boolean isBelief() {
-        return (punc() == BELIEF);
-    }
-
-    default boolean isGoal() {
-        return (punc() == GOAL);
-    }
-
 //    /** allows for budget feedback that occurrs on revision */
 //    default boolean onRevision(Task conclusion) {
 //        return true;
 //    }
 
-    default boolean isQuest() {
-        return (punc() == QUEST);
+    default boolean isBelief() {
+        return (punc() == BELIEF);
     }
 
 //    @Nullable
@@ -655,6 +658,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //        sb.append(appendTo(null));
 //        return sb;
 //    }
+
+    default boolean isGoal() {
+        return (punc() == GOAL);
+    }
+
+    default boolean isQuest() {
+        return (punc() == QUEST);
+    }
 
     default boolean isCommand() {
         return (punc() == COMMAND);
@@ -674,17 +685,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //                    (this, "unconceptualized");
 //        }
     }
-
-    Task[] EmptyArray = new Task[0];
-
-
-    /** sloppy pre-sort of premises by task/task_term,
-     *  to maximize sequential repeat of derived task term */
-    Comparator<? super Premise> sortByTaskSloppy =
-            Comparator
-                    .comparingInt((Premise a) -> a.task.hashCode())
-                    .thenComparingInt((Premise a) -> a.task.term().hashCode())
-                    .thenComparingInt((Premise a) -> System.identityHashCode(a.task));
 
 
 //    @NotNull
@@ -936,13 +936,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default Truth truth(long targetStart, long targetEnd, int dur) {
 
 
-
         float eve = Revision.eviAvg(this, targetStart, targetEnd, dur);
 
         if (eve > Param.TRUTH_MIN_EVI) {
             return new PreciseTruth(
-                freq() /* TODO interpolate frequency wave */,
-                eve, false);
+                    freq() /* TODO interpolate frequency wave */,
+                    eve, false);
 
             //quantum entropy uncertainty:
 //                float ff = freq();
@@ -970,7 +969,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             return this;
 
         List ll = log(true);
-        if (ll!=null)
+        if (ll != null)
             ll.add(entry);
 
         return this;
@@ -1037,18 +1036,44 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
 
         Term x = term();
-
-        //invoke dynamic functors and apply aliases
-        //Term y = x.eval(n.concepts.functors);
-
-        //this might be overkill
         Set<ITask> yy = new LinkedHashSet<>(4);
-        Evaluation.solve(x, n.functors,
-                _y -> {
-                    preProcess(n, _y, yy);
-                    return true;
-                });
 
+        if (!Evaluation.possiblyNeedsEval(x)) {
+            preProcess(n, x, yy);
+        } else {
+            //invoke dynamic functors and apply aliases
+            //Term y = x.eval(n.concepts.functors);
+
+            //this might be overkill
+            Evaluation.solve(x, n.functors,
+                    z -> {
+
+
+                        if (z == True || z == False || z.hasAny(Op.BOOL)) {
+                            boolean hasFalse = z == False || z.ORrecurse(t -> t == False); //TODO can be found faster with smart recursive descent
+                            if (hasFalse)
+                                z = False; //TODO maybe record what part causes the falsity
+
+                            //determined absolutely true or false: implies that this is the answer to a question
+                            z = $.func(TRUE, z == False ? x.neg() : x);
+//
+//
+//                if (_y_y != null && !_y_y.equals(y))
+//                    if (!each.test(_y_y))
+//                        return false;
+
+//                    if (hasFalse) {
+//                        continue; //filter false possiblities
+//                    }
+
+                        }
+
+                        preProcess(n, z, yy);
+                        return true;
+                    });
+
+
+        }
         switch (yy.size()) {
             case 0:
                 return null;
@@ -1058,7 +1083,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 //HACK use some kind of iterator
                 return new NativeTask.NARTask((nn) -> yy.forEach(z -> z.run(nn)));
         }
-
     }
 
     @Nullable
@@ -1074,7 +1098,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             //clone a new task because it has changed
 
 
-            if (Operator.func(y).equals(Evaluation.TRUE)) {
+            if (Operator.func(y).equals(TRUE)) {
                 if (isQuestionOrQuest()) {
 
                     y = Operator.arg(y, 0); //unwrap
@@ -1102,7 +1126,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                         //TODO maybe print error, at least in debug mode
                     }
 
-                } else{
+                } else {
                     //belief or goal boolean verified truth
                     y = Operator.arg(y, 0);
                     if (!y.equals(x)) {
@@ -1123,19 +1147,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                            it would be the only one.
                          */
                 //TODO see if a TaskProxy would work here
-                if (yy!=null) {
+                if (yy != null) {
                     Term yyz = yy.getOne();
                     @Nullable Task result;
 //                    if (yyz.subterms().OR(qx -> qx.op().var)) {
-                        //still seem to be variables, continue as a revised question
-                        result = clone(this, yyz.negIf(yy.getTwo()));
+                    //still seem to be variables, continue as a revised question
+                    result = clone(this, yyz.negIf(yy.getTwo()));
 //                    } else {
 //                        //top-level variables seem eliminated. convert to belief with default truth
 //                        byte p = isQuestion() ? BELIEF : GOAL;
 //                        result = clone(this, yyz.negIf(yy.getTwo()), $.t(1,n.confDefault(p)), p);
 //                    }
 
-                    if (result!=null) {
+                    if (result != null) {
                         pri(0); //drain pri from here
                         queue.add(inputStrategy(result));
 
@@ -1210,24 +1234,23 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //    }
 
 
-
     /**
      * TODO cause should be merged if possible when merging tasks in belief table or otherwise
      */
     short[] cause();
 
 
-
-
-    /** evaluate the midpoint value of every pair of times, and then multiply by x area between them */
+    /**
+     * evaluate the midpoint value of every pair of times, and then multiply by x area between them
+     */
     default float eviIntegRectMid(long dur, long... times) {
         float e = 0;
         for (int i = 1, timesLength = times.length; i < timesLength; i++) {
-            long a = times[i-1];
+            long a = times[i - 1];
             long b = times[i];
-            assert(b>a);
-            long ab = (a+b)/2L;
-            e += (b-a) * evi(ab, dur);
+            assert (b > a);
+            long ab = (a + b) / 2L;
+            e += (b - a) * evi(ab, dur);
         }
         return e;
     }
@@ -1254,7 +1277,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         assert (first < last
                 && first != ETERNAL && first != XTERNAL
-                /*&& last != ETERNAL */&& last != XTERNAL);
+                /*&& last != ETERNAL */ && last != XTERNAL);
 
         float X = 1 + (last - first);
         float dx = X / n;
@@ -1287,7 +1310,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return pri(defaultPrioritizer.priDefault(punc()));
     }
 
-    /** computes the average frequency during the given interval */
+    /**
+     * computes the average frequency during the given interval
+     */
     float freq(long start, long end);
 
 //    default float freqMean(int dur, long... when) {

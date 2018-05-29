@@ -69,8 +69,14 @@ public interface ArraySet<X> extends Set<X> {
 
 	default X get(Random random) {
 		int s = size();
-		if (s == 0) return null;
-		return get(random.nextInt(s));
+		switch (s) {
+			case 0:
+				return null;
+			case 1:
+				return get(0);
+			default:
+				return get(random.nextInt(s));
+		}
 	}
 
 	X remove(Random random);

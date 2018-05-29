@@ -26,7 +26,6 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.The;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -58,6 +57,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -606,13 +606,14 @@ public interface Term extends Termed, Comparable<Termed> {
      * for safety, dont override this method. override evalSafe
      */
 
-    default Term eval(Evaluation.TermContext context) {
-        return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
+    default Term eval(Evaluation.TermContext context, Random rng) {
+        return Evaluation.solveAny(this, context, rng);// context.applyTermIfPossible(this, null, 0);
+//        return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
     }
 
 
     default Term eval(NAR nar) {
-        return eval(nar.functors);
+        return eval(nar.functors, nar.random());
     }
 
 //    default MutableSet<LongObjectPair<Term>> eventSet(long offset) {
@@ -625,16 +626,16 @@ public interface Term extends Termed, Comparable<Termed> {
 //        return events;
 //    }
 
-    /**
-     * @param context
-     * @param whichSubterm current subterm index being evaluated
-     * @param remain       recursion limit (valid until decreases to zero)
-     * @return
-     */
-    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int whichSubterm, int remain) {
-        return /*remain <= 0 ? Null : */
-                context.applyTermIfPossible(this, supertermOp, whichSubterm);
-    }
+//    /**
+//     * @param context
+//     * @param whichSubterm current subterm index being evaluated
+//     * @param remain       recursion limit (valid until decreases to zero)
+//     * @return
+//     */
+//    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int whichSubterm, int remain) {
+//        return /*remain <= 0 ? Null : */
+//                context.applyTermIfPossible(this, supertermOp, whichSubterm);
+//    }
 
     /**
      * includes itself in the count unless it's a CONJ sequence in which case it becomes the sum of the subterms event counts

@@ -66,15 +66,6 @@ abstract public class Bool extends AtomicConst implements The {
         return Null;
     }
 
-    @Override
-    public final Term eval(Evaluation.TermContext context) {
-        return this;
-    }
-
-    @Override
-    public final Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
-        return this;
-    }
 
     @Override
     public final boolean unify(Term y, Unify subst) {

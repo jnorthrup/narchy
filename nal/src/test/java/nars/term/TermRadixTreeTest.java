@@ -1,16 +1,16 @@
 package nars.term;
 
+import jcog.data.byt.AbstractBytes;
 import nars.NARS;
 import nars.Narsese;
 import nars.index.concept.TreeConceptIndex;
-import nars.util.TimeAware;
+import nars.term.atom.Atomic;
 import nars.util.term.TermBytes;
 import nars.util.term.TermRadixTree;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.function.Function;
 
 import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,21 +25,24 @@ public class TermRadixTreeTest {
 
         TermRadixTree tree = new TermRadixTree();
 
-        Function<Term, Term> cb = (t)->t;
-
-        tree.computeIfAbsent(TermBytes.termByVolume($("concept")), cb);
-        tree.computeIfAbsent(TermBytes.termByVolume($("term")), cb);
-        tree.computeIfAbsent(TermBytes.termByVolume($("termutator")), cb);
+        AbstractBytes s4 = TermBytes.termByVolume($("concept"));
+        tree.putIfAbsent(s4, (Atomic.the(s4.toString())));
+        AbstractBytes s3 = TermBytes.termByVolume($("term"));
+        tree.putIfAbsent(s3, (Atomic.the(s3.toString())));
+        AbstractBytes s2 = TermBytes.termByVolume($("termutator"));
+        tree.putIfAbsent(s2, (Atomic.the(s2.toString())));
         //tree.print(System.out);
 
         assertNotNull(tree.get(TermBytes.termByVolume($("term"))));
         assertNull(tree.get(TermBytes.termByVolume($("xerm"))));
         assertNull(tree.get(TermBytes.termByVolume($("te")))); //partial
 
-        assertNotNull(tree.computeIfAbsent(TermBytes.termByVolume($("term")), cb));
+        AbstractBytes s1 = TermBytes.termByVolume($("term"));
+        assertNotNull(tree.putIfAbsent(s1, (Atomic.the(s1.toString()))));
         assertEquals(3, tree.size());
 
-        assertNotNull(tree.computeIfAbsent(TermBytes.termByVolume($("termunator")), cb));
+        AbstractBytes s = TermBytes.termByVolume($("termunator"));
+        assertNotNull(tree.putIfAbsent(s, (Atomic.the(s.toString()))));
 
         tree.prettyPrint(System.out);
 
@@ -56,7 +59,7 @@ public class TermRadixTreeTest {
     public void testCompoundInsertion() throws Narsese.NarseseException {
 
         TreeConceptIndex index;
-        TimeAware timeAware = new NARS().index(
+        new NARS().index(
             index = new TreeConceptIndex(1000)
         ).get();
 

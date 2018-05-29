@@ -10,7 +10,6 @@ import jcog.math.Longerval;
 import nars.*;
 import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
-import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -102,15 +101,6 @@ public class Int implements Intlike, The {
         out.write(bytesCached);
     }
 
-    @Override
-    public final Term eval(Evaluation.TermContext context) {
-        return this;
-    }
-
-    @Override
-    public final Term evalSafe(Evaluation.TermContext context, Op supertermOp, int subterm, int remain) {
-        return this;
-    }
 
     @Override
     public Range range() {

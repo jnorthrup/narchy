@@ -1,5 +1,6 @@
 package nars.term;
 
+import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.util.ArrayIterator;
 import jcog.util.CartesianIterator;
@@ -8,16 +9,19 @@ import jcog.version.Versioning;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.concept.Operator;
+import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.control.AbstractPred;
+import nars.unify.match.EllipsisMatch;
+import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,8 +31,7 @@ import static nars.Op.*;
 
 public final class Evaluation {
 
-    public static final Atom TRUE = (Atom) Atomic.the("true");
-    public static final Atom FALSE = (Atom) Atomic.the("false");
+    public static final Atom TRUE = (Atom) Atomic.the("\"" + True + '"');
 
     static final ThreadLocal<Evaluation> solving = ThreadLocal.withInitial(Evaluation::new);
 
@@ -59,25 +62,28 @@ public final class Evaluation {
         return null;
     }
 
-    public static Set<Term> solveAll(Term x, NAR n) {
-        Set<Term> all = new UnifiedSet<>(4);
-        solve(x, n.functors, (y) -> {
-            if ((Operator.func(y).equals(Evaluation.TRUE))) {
-                y = Operator.arg(y, 0); //unwrap
-            }
-            all.add(y); return true; });
-        return !all.isEmpty() ? all : Set.of(x);
+    public static Set<Term> solveAll(Term x, NAR nar) {
+        return solveAll(x, nar.functors);
+    }
+
+    public static ArrayHashSet<Term> solveAll(Term x, TermContext context) {
+        ArrayHashSet<Term> all = new ArrayHashSet<>();
+        solve(x, context, (y) -> {
+//            if ((Operator.func(y).equals(Evaluation.TRUE))) {
+//                y = Operator.arg(y, 0); //unwrap
+//            }
+            all.add(y);
+            return true;
+        });
+        return !all.isEmpty() ? all : ArrayHashSet.EMPTY;
     }
 
     public static boolean solve(Term x, TermContext context, Predicate<Term> each) {
-        if (!x.hasAll(Op.FuncBits)) {
-            each.test(x);
-            return false;
-        }
 
-        Evaluation s = Evaluation.clear();
+        Term y = needsEvaluation(x, context);
+        if (y == null)
+            return each.test(x); // no change
 
-        Term y = x.eval(context);
 //        if (y.equals(x)) {
 //            return each.test(True);
 //        } else if (y.op().atomic) {
@@ -86,14 +92,42 @@ public final class Evaluation {
 //
 //
 
-            if ((y == True) || (y == False)) {
-                return each.test($.func(TRUE, x.negIf(y!=True)));
-            }
+        Evaluation s = Evaluation.clear();
+
 
 //        return each.test(y);
 //        } else {
-            return s.get(y, context, each);
+        return s.get(y, each);
 //        }
+    }
+
+    @Nullable
+    private static Term needsEvaluation(Term x, TermContext context) {
+
+        if (!possiblyNeedsEval(x))
+            return null;
+
+
+        MyFunctorResolver ft = new MyFunctorResolver(context);
+        Term y = x.transform(ft);
+
+        if (y == Null) {
+            return Null;
+        }
+
+        if ((y == True) || (y == False)) {
+            return $.func(TRUE, x.negIf(y != True));
+        }
+
+        if (!ft.hasFunctor) {
+            return null;
+        }
+
+        return y;
+    }
+
+    public static boolean possiblyNeedsEval(Term x) {
+        return x.hasAll(Op.FuncBits);
     }
 
     public static Evaluation clear() {
@@ -102,20 +136,147 @@ public final class Evaluation {
         return e;
     }
 
+    public static Term solveAny(Term term, TermContext context, Random random) {
+        ArrayHashSet<Term> results = solveAll(term, context);
+        return results.get(random);
+    }
+
+    static protected Term eval(Term c) {
+//
+//        if (!c.hasAll(Op.FuncBits))
+//            return c;
+//
+////        if (!(_context instanceof Evaluation.TermContext.MapTermContext)) {
+//        //pre-resolve functors
+//        UnifiedMap<Term, Term> resolved = new UnifiedMap<>(4);
+//        c.recurseTerms(t -> t.hasAny(ATOM), t -> {
+//            if (t.op() == ATOM) {
+//                resolved.computeIfAbsent(t, tt -> {
+//                    Termed ttt = apply(tt);
+//                    if ((ttt instanceof Functor || ttt instanceof Operator)) {
+//                        return ttt.term();
+//                    } else {
+//                        return null; //dont map
+//                    }
+//                });
+//            }
+//            return true;
+//        }, null);
+//        if (resolved.isEmpty())
+//            return c;
+
+//            context = new Evaluation.TermContext.MapTermContext(resolved);
+//        } else {
+//            //re-use existing pre-solved Context
+//            context = _context;
+//        }
+
+
+
+
+        /*if (hasAll(opBits))*/
+
+
+//        Termed ff = context.applyIfPossible(this);
+//        if (!ff.equals(this))
+//            return ff.term();
+
+        /*if (subterms().hasAll(opBits))*/
+
+        Subterms uu = c.subterms();
+        Term[] xy = null;
+        //any contained evaluables
+        Op o = c.op();
+        //int possiblyFunctional = o == INH ? Op.funcInnerBits : Op.funcBits;
+        //boolean recurseIfChanged = false;
+        int ellipsisAdds = 0, ellipsisRemoves = 0;
+
+        for (int i = 0, n = uu.subs(); i < n; i++) {
+            Term xi = xy != null ? xy[i] : uu.sub(i);
+            Term yi = eval(xi);
+            if (xi != yi) {
+                if (yi == null) {
+                    //nothing
+                } else {
+                    if (yi == Null)
+                        return Null;
+//                    if (yi == False && (o == CONJ))
+//                        return False; //short-circuit fast fail
+
+                    if (yi instanceof EllipsisMatch) {
+                        int ys = yi.subs();
+                        ellipsisAdds += ys;
+                        ellipsisRemoves++;
+                    }
+
+                    if (xi.getClass() != yi.getClass() || !xi.equals(yi)) {
+                        if (xy == null) {
+                            xy = ((Compound) c).arrayClone(); //begin clone copy
+                        }
+                        xy[i] = yi;
+                    }
+                }
+            }
+        }
+
+
+        Term u;
+        if (xy != null) {
+            if (ellipsisAdds > 0) {
+                //flatten ellipsis
+                xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
+            }
+
+            u = o.compound(c.dt(), xy);
+            o = u.op(); //refresh root operator in case it has changed
+            uu = u.subterms(); //refresh subterms
+        } else {
+            u = c;
+        }
+
+
+        //recursively compute contained subterm functors
+        //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
+        if (o == INH && uu.hasAll(Op.FuncInnerBits)) {
+            Term pred, subj;
+            if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
+
+                Term v = ((Function<Subterms, Term>) pred).apply(subj.subterms());
+                if (v instanceof AbstractPred) {
+                    u = $.the(((Predicate) v).test(null));
+                } else if (v == null) {
+                    //null means to keep 'u' unchanged same
+                } else {
+                    u = v; //continue with the evaluation result
+                }
+            }
+        }
+
+        if (u != c && (u.equals(c) && u.getClass() == c.getClass()))
+            return c; //return to this instance, undoing any substitutions necessary to reach this eval
+
+        return u;
+    }
+
     private void reset() {
         proc.clear();
         v.reset();
     }
 
-    public boolean get(Term x, TermContext context, Predicate<Term> each) {
+    public boolean get(Term _x, Predicate<Term> each) {
         Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
 
+        Term z2 = eval(_x);
+
+        Term x = z2;
+
         int np = proc.size();
+
         switch (np) {
             case 0:
                 //return Collections.singleton(x); //TODO do any substitutions need applied?
-                each.test(x);
-                return true;
+                return each.test(x);
+
 //            case 1:
 //                //length=1 special case doesnt need cartesian product
 //                pp = Iterators.singletonIterator(proc.get(0)); //<- not working right
@@ -131,11 +292,12 @@ public final class Evaluation {
             }
         }
 
-        proc.clear();
-
         int start = v.now();
 
-        nextPermute: while (pp.hasNext()) {
+        nextPermute:
+        while (pp.hasNext()) {
+
+            Term y;
 
             v.revert(start);
 
@@ -144,62 +306,52 @@ public final class Evaluation {
 
             for (Predicate p : n) {
                 if (!p.test(subst)) {
-                    v.revert(start);
                     continue nextPermute;
                 }
             }
 
-            @Nullable Term y = x.replace(subst);
-
-            if (y != null && !y.equals(x)) {
-
-                Term z;
-                if (!y.hasAny(Op.BOOL))
-                    z = y.eval(context);
-                else
-                    z = y; //continue
-
-                if (z  == True || z == False || z.hasAny(Op.BOOL)) {
-                    boolean hasFalse = z == False || z.ORrecurse(t -> t == False); //TODO can be found faster with smart recursive descent
-                    if (hasFalse)
-                        z = False; //TODO maybe record what part causes the falsity
-
-                    //determined absolutely true or false: implies that this is the answer to a question
-                    if (z == False) {
-                        y = y.neg();
-                    }
-                    Term zz = $.func(TRUE, y);
-                    if (zz!=null && !zz.equals(x))
-                        if (!each.test(zz))
-                            return false;
-
-//                    if (hasFalse) {
-//                        continue; //filter false possiblities
-//                    }
-
-                } else {
-                    if (z!=null)
-                        y = z;
-                }
-                if (proc.isEmpty()) {
-
-                    if (y!=null) {
-                        if (y == True)
-                            y = x;
-                        else if (y == False)
-                            y = x.neg();
-                        //y = y.normalize(); //TODO optional
-
-                        if (!y.equals(x)) {
-                            if (!each.test(y))
-                                return false;
-                        }
-                    }
-                } else {
-                    //recurse, new proc added
-                    return get(y, context, each);
-                }
+            y = x.replace(subst);
+            if (y == null) {
+                continue;
             }
+
+
+            Term z1 = eval(y);
+
+            Term z = z1;
+
+
+            if (np < proc.size()) //proc added
+                return get(z, each); //recurse
+
+            if (!each.test(z))
+                return false;
+
+
+//            if (y != null && !y.equals(x)) {
+//
+//                solve(y, context, (z->{
+//
+//                    if (proc.isEmpty()) {
+//
+//
+//                            if (z == True)
+//                                return each.test(y);
+//                            else if (z == False)
+//                                return each.test(y.neg());
+//                            else
+//                                return each.test(z);
+//
+//                    } else {
+//                        //recurse, new proc added
+//                        return solve(z, context, each);
+//                        //return get(z, context, each);
+//                    }
+//                }));
+//
+//
+//
+//            }
 
         }
 
@@ -245,6 +397,12 @@ public final class Evaluation {
          * elides superfluous .term() call
          */
         default Term applyTermIfPossible(/*@NotNull*/ Term x, Op supertermOp, int subterm) {
+
+//            if (x instanceof Compound) {
+//                return applyCompound((Compound) x, supertermOp, subterm);
+//            }
+
+
             Termed y = apply(x);
             return y != null ? y.term() : x;
         }
@@ -271,5 +429,30 @@ public final class Evaluation {
                 return term;
             }
         }
+    }
+
+    private static class MyFunctorResolver implements TermTransform {
+        private final TermContext context;
+
+        public boolean hasFunctor;
+
+        public MyFunctorResolver(TermContext context) {
+            this.context = context;
+        }
+
+        @Override
+        public @Nullable Termed transformAtomic(Term z) {
+            if (z instanceof Functor)
+                hasFunctor = true; //already has it
+
+            if (z.op() == ATOM) {
+                Term zz = context.applyTermIfPossible(z, null, 0);
+                if (zz instanceof Functor)
+                    hasFunctor = true;
+                return zz;
+            }
+            return z;
+        }
+
     }
 }

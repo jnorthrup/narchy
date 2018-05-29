@@ -23,33 +23,26 @@ package nars.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
-import nars.$;
 import nars.IO;
 import nars.Op;
-import nars.concept.Operator;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.anon.Anon;
 import nars.term.compound.UnitCompound;
-import nars.term.control.AbstractPred;
 import nars.unify.Unify;
-import nars.unify.match.EllipsisMatch;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.Evaluation.TRUE;
 import static nars.time.Tense.*;
 
 /**
@@ -793,128 +786,6 @@ public interface Compound extends Term, IPair, Subterms {
         }
     }
 
-    /*@NotNull*/
-    @Override
-    default Term evalSafe(Evaluation.TermContext _context, Op supertermOp, int subterm, int remain) {
-
-        if (remain-- < 0)
-            return this; //recursion limit
-
-        if (!hasAll(Op.FuncBits))
-            return this;
-
-        Evaluation.TermContext context;
-//        if (!(_context instanceof Evaluation.TermContext.MapTermContext)) {
-        //pre-resolve functors
-        UnifiedMap<Term, Term> resolved = new UnifiedMap<>(4);
-        recurseTerms(t -> t.hasAny(ATOM), t -> {
-            if (t.op() == ATOM) {
-                resolved.computeIfAbsent(t, tt -> {
-                    Termed ttt = _context.apply(tt);
-                    if ((ttt instanceof Functor || ttt instanceof Operator)) {
-                        return ttt.term();
-                    } else {
-                        return null; //dont map
-                    }
-                });
-            }
-            return true;
-        }, null);
-        if (resolved.isEmpty())
-            return this;
-
-        context = new Evaluation.TermContext.MapTermContext(resolved);
-//        } else {
-//            //re-use existing pre-solved Context
-//            context = _context;
-//        }
-
-
-
-
-        /*if (hasAll(opBits))*/
-
-
-//        Termed ff = context.applyIfPossible(this);
-//        if (!ff.equals(this))
-//            return ff.term();
-
-        /*if (subterms().hasAll(opBits))*/
-
-        Subterms uu = subterms();
-        Term[] xy = null;
-        //any contained evaluables
-        Op o = op();
-        //int possiblyFunctional = o == INH ? Op.funcInnerBits : Op.funcBits;
-        //boolean recurseIfChanged = false;
-        int ellipsisAdds = 0, ellipsisRemoves = 0;
-
-        for (int i = 0, n = uu.subs(); i < n; i++) {
-            Term xi = xy != null ? xy[i] : uu.sub(i);
-            Term yi = xi.evalSafe(context, o, i, remain);
-            if (xi != yi) {
-                if (yi == null) {
-                    //nothing
-                } else {
-                    if (yi == Null)
-                        return Null;
-//                    if (yi == False && (o == CONJ))
-//                        return False; //short-circuit fast fail
-
-                    if (yi instanceof EllipsisMatch) {
-                        int ys = yi.subs();
-                        ellipsisAdds += ys;
-                        ellipsisRemoves++;
-                    }
-
-                    if (xi.getClass() != yi.getClass() || !xi.equals(yi)) {
-                        if (xy == null) {
-                            xy = arrayClone(); //begin clone copy
-                        }
-                        xy[i] = yi;
-                    }
-                }
-            }
-        }
-
-
-        Term u;
-        if (xy != null) {
-            if (ellipsisAdds > 0) {
-                //flatten ellipsis
-                xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
-            }
-
-            u = o.compound(dt(), xy);
-            o = u.op(); //refresh root operator in case it has changed
-            uu = u.subterms(); //refresh subterms
-        } else {
-            u = this;
-        }
-
-
-        //recursively compute contained subterm functors
-        //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
-        if (o == INH && uu.hasAll(Op.FuncInnerBits)) {
-            Term pred, subj;
-            if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
-
-                Term v = ((Function<Subterms, Term>) pred).apply(subj.subterms());
-                if (v instanceof AbstractPred) {
-                    u = $.the(((Predicate) v).test(null));
-                } else if (v == null) {
-                    //null means to keep 'u' unchanged same
-                } else {
-                    u = v; //continue with the evaluation result
-                }
-            }
-        }
-
-        if (u != this && (u.equals(this) && u.getClass() == getClass()))
-            return this; //return to this instance, undoing any substitutions necessary to reach this eval
-
-        return u;
-    }
 
 
     @Override
