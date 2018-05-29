@@ -84,6 +84,13 @@ public final class Termify extends AbstractPred<Derivation> {
         Term c2;
         if (d.temporal) {
 
+            boolean unwrapNeg;
+            if (c1.op()==NEG) {
+                unwrapNeg = true;
+                c1 = c1.unneg();
+            } else {
+                unwrapNeg = false;
+            }
             Pair<Term, long[]> timing = time.solve(d, c1);
             if (timing == null)
                 return false;
@@ -117,6 +124,8 @@ public final class Termify extends AbstractPred<Derivation> {
             }
 
 
+            if (unwrapNeg)
+                c2 = c2.neg();
 
             d.concOcc = occ;
 

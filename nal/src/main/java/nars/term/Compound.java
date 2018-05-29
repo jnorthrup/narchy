@@ -28,7 +28,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.anon.Anon;
-import nars.term.compound.UnitCompound;
 import nars.unify.Unify;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
@@ -804,9 +803,9 @@ public interface Compound extends Term, IPair, Subterms {
         );
 
         if (varOffset == 0 && y instanceof Compound) {
-            if (!(y instanceof UnitCompound)) {
+            //if (!(y instanceof UnitCompound)) {
                 y.subterms().setNormalized();
-            }
+            //}
         }
 
         return y;

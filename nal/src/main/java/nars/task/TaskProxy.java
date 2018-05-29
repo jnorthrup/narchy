@@ -47,6 +47,7 @@ public class TaskProxy implements Task {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null) return false;
         return Task.equal(this, (Task) obj);
     }
 

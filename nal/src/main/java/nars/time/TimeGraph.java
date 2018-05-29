@@ -64,7 +64,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             .build();
 
 
-    private boolean autoNeg = true;
+    protected boolean autoNeg = true;
 
 
 

@@ -20,6 +20,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -169,20 +170,19 @@ public class Occurrify extends TimeGraph {
 
     public Occurrify reset() {
         clear();
-        expanded.clear();
-        seen.clear();
+
         autoNeg(false);
         return this;
     }
 
+    Task curTask, curBelief;
+    boolean curSingle;
+    long curTime = ETERNAL;
 
     public Occurrify reset(boolean autoNeg) {
-        reset();
-
         Task task = d.task;
         boolean single = d.single;
         Task belief = !single ? d.belief : null;
-
         Term bb = !single ? belief.term() : d.beliefTerm;
 
         //disable autoneg if no negations appear in the premise
@@ -190,7 +190,23 @@ public class Occurrify extends TimeGraph {
             autoNeg = true;
         }
 
-        this.autoNeg(autoNeg);
+        //clear these regardless:
+        expanded.clear();
+        seen.clear();
+
+        long now = d.time;
+        if (curTime == now && Objects.equals(d.task,curTask) && Objects.equals(d.belief, curBelief) && curSingle == single && autoNeg == this.autoNeg  ) {
+            return this; //no updates necessary
+        } else {
+            reset();
+            this.autoNeg(autoNeg);
+            this.curTask= task;
+             this.curBelief= belief;
+             this.curSingle = single;
+             this.curTime = now;
+        }
+
+
 
         if (single) {
             know(task, d.taskAt);
