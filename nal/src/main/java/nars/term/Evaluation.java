@@ -311,48 +311,21 @@ public final class Evaluation {
             }
 
             y = x.replace(subst);
-            if (y == null) {
+            if (y == null)
                 continue;
+
+            Term z = eval(y);
+
+
+            if (np < proc.size()) { //proc added
+                int before= v.now();
+                if (!get(z, each)) //recurse
+                    return false;
+                v.revert(before);
             }
-
-
-            Term z1 = eval(y);
-
-            Term z = z1;
-
-
-            if (np < proc.size()) //proc added
-                return get(z, each); //recurse
 
             if (!each.test(z))
                 return false;
-
-
-//            if (y != null && !y.equals(x)) {
-//
-//                solve(y, context, (z->{
-//
-//                    if (proc.isEmpty()) {
-//
-//
-//                            if (z == True)
-//                                return each.test(y);
-//                            else if (z == False)
-//                                return each.test(y.neg());
-//                            else
-//                                return each.test(z);
-//
-//                    } else {
-//                        //recurse, new proc added
-//                        return solve(z, context, each);
-//                        //return get(z, context, each);
-//                    }
-//                }));
-//
-//
-//
-//            }
-
         }
 
 

@@ -1,10 +1,15 @@
 package nars.term;
 
+import jcog.data.byt.ArrayBytes;
+import jcog.data.byt.ConcatBytes;
 import jcog.tree.radix.MyConcurrentRadixTree;
+import nars.$;
 import nars.Narsese;
 import nars.index.concept.TreeConceptIndex;
+import nars.util.term.TermRadixTree;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static nars.$.$;
@@ -16,6 +21,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class TreeConceptIndexTest {
 
+    @Test public void testTermIndex() {
+        TermRadixTree<Term> t = new TermRadixTree<>();
+        byte[] a = t.key($.func("x", $.the("y"))).array();
+        System.out.println(Arrays.toString(a));
+        t.put($.func("x", $.the("y")), $.the(1));
+        t.put($.func("x", $.the("z")), $.the(2));
+        Term y = t.get(
+                new ArrayBytes(a)
+        );
+        assertEquals($.the(1), y);
+
+        Term yy = t.get(new ConcatBytes(
+                    new ArrayBytes((byte)2, (byte)2, (byte)8, (byte)1),
+                    new ArrayBytes((byte)0, (byte)0, (byte)1, (byte)121,
+                                   (byte)0, (byte)0, (byte)1, (byte)120
+                    )
+                ));
+        assertEquals($.the(1), yy);
+
+
+        System.out.println(t.prettyPrint());
+
+    }
     @Test
     public void testVolumeSubTrees() throws Narsese.NarseseException {
         TreeConceptIndex t = new TreeConceptIndex( 128);

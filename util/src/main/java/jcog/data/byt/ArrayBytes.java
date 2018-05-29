@@ -12,7 +12,7 @@ public class ArrayBytes implements AbstractBytes, Serializable, Comparable<Array
 
     public final byte[] bytes;
 
-    public ArrayBytes(byte[] bytes) {
+    public ArrayBytes(byte... bytes) {
         this.bytes = bytes;
     }
 

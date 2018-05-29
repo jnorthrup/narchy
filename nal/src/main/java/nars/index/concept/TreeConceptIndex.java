@@ -1,6 +1,7 @@
 package nars.index.concept;
 
 import com.google.common.collect.Streams;
+import jcog.data.byt.AbstractBytes;
 import jcog.tree.radix.MyConcurrentRadixTree;
 import nars.NAR;
 import nars.concept.Concept;
@@ -9,7 +10,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.util.term.TermBytes;
 import nars.util.term.TermRadixTree;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -26,14 +26,17 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     float descentRate = 0.5f;
     //int iterationLimit = -1; //TODO tune iterationLimit by the overflow amount
 
-    @NotNull
-    public final TermRadixTree concepts;
+    public final TermRadixTree<Termed> concepts;
 
     int sizeLimit;
 
     public TreeConceptIndex(int sizeLimit) {
 
-        this.concepts = new TermRadixTree() {
+        this.concepts = new TermRadixTree<>() {
+
+            @Override public AbstractBytes key(Object k) {
+                return TermBytes.termByVolume(((Termed)k).term());
+            }
 
             @Override
             public boolean onRemove(Termed r) {
@@ -186,7 +189,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     @Override
     public @Nullable Termed get(Term t, boolean createIfMissing) {
-        TermBytes k = TermRadixTree.key(t);
+        TermBytes k = (TermBytes) key(t);
 
         return createIfMissing ? _get(k, t) : _get(k);
     }
@@ -199,16 +202,15 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         return concepts.putIfAbsent(k, () -> nar.conceptBuilder.apply(finalT, null));
     }
 
-    @NotNull
-    public static TermBytes key(Term t) {
-        return TermRadixTree.key(t);
+    public AbstractBytes key(Term t) {
+        return concepts.key(t);
     }
 
 
     @Override
     public void set(Term src, Termed target) {
 
-        TermBytes k = key(src);
+        AbstractBytes k = key(src);
 
         concepts.acquireWriteLock();
         try {
@@ -246,7 +248,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     @Override
     public void remove(Term entry) {
-        TermBytes k = key(entry);
+        AbstractBytes k = key(entry);
         Termed result = concepts.get(k);
         if (result != null) {
             concepts.remove(k);

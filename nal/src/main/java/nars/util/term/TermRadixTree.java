@@ -1,26 +1,34 @@
 package nars.util.term;
 
+import jcog.data.byt.AbstractBytes;
+import jcog.data.byt.ArrayBytes;
 import jcog.tree.radix.MyConcurrentRadixTree;
+import nars.IO;
+import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * String interner that maps strings to integers and resolves them
  * bidirectionally with a globally shared Atomic concept
  */
-public class TermRadixTree extends MyConcurrentRadixTree<Termed> {
+public class TermRadixTree<X> extends MyConcurrentRadixTree<X> {
 
     @Override
-    public Termed put(Termed value) {
+    public X put(X value) {
         return put(key(value), value);
     }
 
-    @NotNull
-    public static TermBytes key(Termed value) {
-        return TermBytes.termByVolume(value.term());
+
+    public X put(Term key, X value) {
+        return put(key(key), value);
     }
 
-    public Termed get(TermBytes term) {
+    /** must override if X is not instanceof Termed */
+    public AbstractBytes key(Object k) {
+        return new ArrayBytes(IO.termToBytes(((Termed) k).term()));
+    }
+
+    public X get(AbstractBytes term) {
         return getValueForExactKey(term);
     }
 
