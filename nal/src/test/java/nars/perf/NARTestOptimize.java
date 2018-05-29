@@ -6,7 +6,6 @@ import jcog.optimize.Tweaks;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
-import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
@@ -19,13 +18,13 @@ import nars.util.NALTest;
 import org.intelligentjava.machinelearning.decisiontree.DecisionTree;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-import static nars.perf.JUnitNAR.*;
+import static nars.perf.JUnitNAR.randomTest;
+import static nars.perf.JUnitNAR.test;
 
 public class NARTestOptimize {
 
@@ -68,18 +67,19 @@ public class NARTestOptimize {
 
             @Override
             protected boolean includeField(Field f) {
-                return
-                        !Modifier.isStatic(f.getModifiers()) &&
-                                !excludeFields.contains(f.getName());
+//                return
+//                        !Modifier.isStatic(f.getModifiers()) &&
+//                                !excludeFields.contains(f.getName());
+                return f.getName().equals("activateConceptRate");
             }
 
         })
-                .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
-                        n.emotion.want(MetaGoal.Perceive, p)
-                )
-                .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
-                        n.emotion.want(MetaGoal.Believe, p)
-                )
+//                .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+//                        n.emotion.want(MetaGoal.Perceive, p)
+//                )
+//                .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+//                        n.emotion.want(MetaGoal.Believe, p)
+//                )
                 .optimize((Function<NAR,NALTest>)(s-> test(s, randomTest(
                         NAL1Test.class,
                         NAL1MultistepTest.class,

@@ -100,14 +100,16 @@ public class TermlinkTemplates extends FasterList<Term> {
      */
     static void templates(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
-        if (x == Op.imExt || x == Op.imInt)
-            return; //NO
 
         Op xo = x.op();
 
 
-        if (depth > 0)
+        if (depth > 0) {
+            if (x == Op.imExt || x == Op.imInt)
+                return; //NO
+
             tc.add(x);
+        }
 //        if (((depth > 0) || selfTermLink(x))/* && !tc.add(x)*/) //tc.add condition isnt valid if the subterm appears in a different level it may prevent its subterms from being included
 //            return; //already added
 
@@ -238,11 +240,11 @@ public class TermlinkTemplates extends FasterList<Term> {
 
 
             case SIM: {
-                Subterms xx = x.subterms();
+              Subterms xx = x.subterms();
                 if (xx.hasAny(Op.VariableBits))
 //                if (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits)))
                     return 3;
-//                else
+                else
                     return 2;
             }
 
@@ -266,7 +268,9 @@ public class TermlinkTemplates extends FasterList<Term> {
 //                    return 2;
 
             case CONJ:
-                if (x.hasAny(Op.INH) && x.hasAny(Op.VariableBits))
+//                if (x.hasAny(Op.INH) && x.hasAny(Op.VariableBits))
+//                    return 3;
+                if (x.hasAny(Op.IMPL))
                     return 3;
                 return 2;
 
