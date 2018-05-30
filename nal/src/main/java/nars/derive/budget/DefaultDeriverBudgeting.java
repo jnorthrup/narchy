@@ -17,7 +17,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
 
     /** how important is it to retain evidence.
      * leniency towards uncertain derivations */
-    public final FloatRange evidenceImportance = new FloatRange(0.75f, 0f, 1f);
+    public final FloatRange evidenceImportance = new FloatRange(1f, 0f, 1f);
 
     @Override
     public float pri(Task t, Derivation d) {

@@ -6,6 +6,7 @@ import jcog.optimize.Tweaks;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
+import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
@@ -18,6 +19,7 @@ import nars.util.NALTest;
 import org.intelligentjava.machinelearning.decisiontree.DecisionTree;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,19 +69,22 @@ public class NARTestOptimize {
 
             @Override
             protected boolean includeField(Field f) {
-//                return
-//                        !Modifier.isStatic(f.getModifiers()) &&
-//                                !excludeFields.contains(f.getName());
-                return f.getName().equals("activateConceptRate");
+                return
+                        !Modifier.isStatic(f.getModifiers()) &&
+                                !excludeFields.contains(f.getName());
+//                return f.getName().equals("activateConceptRate")
+//                       ||
+//                       f.getName().equals("forgetRate")
+//                       ;
             }
 
         })
-//                .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
-//                        n.emotion.want(MetaGoal.Perceive, p)
-//                )
-//                .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
-//                        n.emotion.want(MetaGoal.Believe, p)
-//                )
+                .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+                        n.emotion.want(MetaGoal.Perceive, p)
+                )
+                .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+                        n.emotion.want(MetaGoal.Believe, p)
+                )
                 .optimize((Function<NAR,NALTest>)(s-> test(s, randomTest(
                         NAL1Test.class,
                         NAL1MultistepTest.class,
@@ -114,7 +119,7 @@ public class NARTestOptimize {
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         while (true) {
-            Optimizing.Result r = opt.run( /*32*1024*/ 32, 32, pool);
+            Optimizing.Result r = opt.run( /*32*1024*/ 16, 32, pool);
 
             System.out.println();
             System.out.println();
@@ -125,7 +130,7 @@ public class NARTestOptimize {
             for (DecisionTree d : r.forest(4, 3))
                 d.print();
 
-            r.tree(3, 10).print();
+            r.tree(3, 8).print();
 
         }
 

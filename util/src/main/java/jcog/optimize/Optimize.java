@@ -4,6 +4,7 @@ import jcog.io.arff.ARFF;
 import jcog.list.FasterList;
 import jcog.optimize.tweak.TweakFloat;
 import jcog.optimize.util.MyCMAESOptimizer;
+import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.SimpleBounds;
@@ -228,14 +229,18 @@ public class Optimize<X> {
     void solve(int dim, ObjectiveFunction func, double[] mid, double[] min, double[] max, double[] inc, int maxIterations) {
         if (dim == 1) {
             //use a solver capable of 1 dim
-            new SimplexOptimizer(1e-10, 1e-30).optimize(
-                    new MaxEval(maxIterations),
-                    func,
-                    GoalType.MAXIMIZE,
-                    new InitialGuess(mid),
-                    //new NelderMeadSimplex(inc)
-                    new MultiDirectionalSimplex(inc)
-            );
+            try {
+                new SimplexOptimizer(1e-10, 1e-30).optimize(
+                        new MaxEval(maxIterations),
+                        func,
+                        GoalType.MAXIMIZE,
+                        new InitialGuess(mid),
+                        //new NelderMeadSimplex(inc)
+                        new MultiDirectionalSimplex(inc)
+                );
+            } catch (TooManyEvaluationsException e) {
+                //done
+            }
         } else {
 
             int popSize =

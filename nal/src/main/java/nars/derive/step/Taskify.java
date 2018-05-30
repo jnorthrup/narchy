@@ -42,7 +42,7 @@ public class Taskify extends AbstractPred<Derivation> {
         if ((x != null) && x.unneg().op().conceptualizable) {
 
             if (!x.hasAny(PatternsOrBool)) {
-                if ((punc == BELIEF || punc == GOAL) && x.hasXternal())
+                if ((punc == BELIEF || punc == GOAL) && (x.hasXternal() || x.varQuery()>0))
                     return false;
 
                 return true;

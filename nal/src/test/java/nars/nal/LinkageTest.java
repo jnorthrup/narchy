@@ -118,7 +118,6 @@ public class LinkageTest extends NALTest {
         assertTrue(p21, why(nar, premise2, premise1));
 
 
-        System.err.println(premise1 + " not linked with " + premise2);
 
         int numNodes = g.nodeCount();
         assertTrue(numNodes > 0);
@@ -364,6 +363,17 @@ public class LinkageTest extends NALTest {
     public void Indirect_Linkage_Layer2_Basic_WithVar() throws Exception {
         ProperlyLinkedIndirectlyTest("<#1 --> <b --> <k --> x>>>", "<k --> x>");
     }
+
+    @Test
+    public void Indirect_Linkage_Inh_WithSect() throws Exception {
+        ProperlyLinkedIndirectlyTest("(a-->b)", "(a --> (b & c))");
+    }
+
+    @Test
+    public void Indirect_Linkage_Inh_WithSectVar() throws Exception {
+        ProperlyLinkedIndirectlyTest("(#1-->b)", "<a --> (b & c)>");
+    }
+
 
     @Test
     @Disabled /* requires inheritance to have termlink templates to level 2, but this doesnt seem critical otherwise */

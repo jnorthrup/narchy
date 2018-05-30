@@ -196,11 +196,11 @@ public class TermLinkTest {
                 "[(a,b), a, b, #1]");
     }
 
-    @Test
-    public void testTemplatesAreEternal() throws Narsese.NarseseException {
-        testTemplates("a:(x ==>+1 y)",
-                "[(x==>y), a, x, y]");
-    }
+//    @Test
+//    public void testTemplatesAreEternal() throws Narsese.NarseseException {
+//        testTemplates("a:(x ==>+1 y)",
+//                "[(x==>y), a, x, y]");
+//    }
 
     void testTemplates(String term, String expect) throws Narsese.NarseseException {
         //n.believe(term + ".");

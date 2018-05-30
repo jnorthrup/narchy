@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static nars.Op.CONJ;
+import static nars.Op.SetBits;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -240,17 +241,18 @@ public class TermlinkTemplates extends FasterList<Term> {
 
 
             case SIM: {
-              Subterms xx = x.subterms();
-                if (xx.hasAny(Op.VariableBits))
+//              Subterms xx = x.subterms();
+//                if (xx.hasAny(Op.VariableBits))
 //                if (xx.hasAny(SetBits) && (xx.sub(0).isAny(SetBits) || xx.sub(1).isAny(SetBits)))
+                if (x.subterms().OR(xx -> xx.isAny(SetBits | Op.SectBits | Op.PROD.bit)))
                     return 3;
                 else
                     return 2;
             }
 
             case INH: {
-//                if (x.subterms().OR(xx -> xx.isAny(SetBits | Op.SectBits)))
-//                    return 3;
+                if (x.subterms().OR(xx -> xx.isAny(SetBits | Op.SectBits | Op.PROD.bit)))
+                    return 3;
 //                else
                     return 2;
             }
