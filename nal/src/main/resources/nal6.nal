@@ -261,7 +261,7 @@
 //SUSPECT
     S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositiveNegativeNegative)
         //S, (||,S,A..+) |- (||,A..+), (Belief:DecomposeNegativePositivePositive)
-    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposePositiveNegativeNegativeN)
+    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativeNegativeNegative)
         //S, (||,(--,%S),A..+) |- (||,A..+), (Belief:DecomposePositivePositivePositive)
 
 
@@ -359,6 +359,7 @@
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
     //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+        C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN)
 
     //Conj and Disj Question Decomposition
     X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)

@@ -5,13 +5,12 @@ import nars.nal.nal7.NAL7Test;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-/** tests NAL8 interactions with &,|,~,-, etc.. */
-public class NAL8SetTest extends NALTest {
+/** tests goals involving &,|,~,-, etc.. */
+public class NAL8DecomposedGoalTest extends NALTest {
 
-    public static final int cycles = 1530;
+    public static final int cycles = 50;
 
 
     @BeforeEach
@@ -46,15 +45,38 @@ public class NAL8SetTest extends NALTest {
                 .mustGoal(cycles,"(a-->g)", 1f, 0.81f);
     }
 
-    @Test @Disabled
-    public void testMutexNegConj() {
+    @Test
+    public void testDisj() {
         test
-                .input("(||, --(a&|b), a, b,(--a &| --b))!")
-                .input("a.")
-                .mustGoal(cycles,"--b", 1f, 0.81f);
+                .input("(||,a,b)!")
+                .input("--a.")
+                .mustGoal(cycles,"b", 1f, 0.81f);
     }
 
-    @Disabled
+    @Test
+    public void testDisjNeg() {
+        test
+                .input("(||,a,--b)!")
+                .input("--a.")
+                .mustGoal(cycles,"b", 0f, 0.81f);
+    }
+
+    @Test
+    public void testAndConj() {
+        test
+                .input("(&&,a,b)!")
+                .input("a.")
+                .mustGoal(cycles,"b", 1f, 0.81f);
+    }
+
+//    @Test
+//    public void testMutexNegConj2() {
+//        test
+//                .input("(||, --(a&|b), a, b,(--a &| --b))!")
+//                .input("a.")
+//                .mustGoal(cycles,"--b", 1f, 0.81f);
+//    }
+
     @Test
     public void testMutexDiffGoal1Neg() {
         test
@@ -63,7 +85,6 @@ public class NAL8SetTest extends NALTest {
                 .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
     }
 
-    @Disabled
     @Test
     public void testIntersectGoal1Neg() {
         test
@@ -81,35 +102,8 @@ public class NAL8SetTest extends NALTest {
                 .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
     }
 
-    @Test
-    public void testGoalDiffBeliefFirst() {
-        test
-                .input("(a-->g)!")
-                .input("((a~b)-->g).")
-                .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
-    }
 
-    @Test
-    public void testGoalDiffBeliefFirstInv() {
-        test
-                .input("(a-->g)!")
-                .input("--((a~b)-->g).") //no difference
-                .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
-    }
-    @Test
-    public void testGoalDiffBeliefSecondInv() {
-        test
-                .input("(a-->g)!")
-                .input("--((b~a)-->g).") //no difference
-                .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
-    }
-    @Test
-    public void testGoalDiffBeliefSecond() {
-        test
-                .input("(b-->g)!")
-                .input("--((a~b)-->g).") //no difference
-                .mustGoal(cycles,"(a-->g)", 1f, 0.81f);
-    }
+
 
     static class TestGoalDiff {
 

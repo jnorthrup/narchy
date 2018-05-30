@@ -45,8 +45,8 @@ public class AIMATests {
     public void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.05f);
+        n.freqResolution.set(0.02f);
+        n.confResolution.set(0.02f);
 //        n.activationRate.set(0.1f);
 //        n.confMin.set(0.02f);
 //        n.questionPriDefault.set(0.7f);
@@ -103,7 +103,7 @@ public class AIMATests {
         });
         //
         //n.log();
-        n.run(3500);
+        n.run(4500);
 //        n.concept($.$("Criminal")).print();
 //        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {
