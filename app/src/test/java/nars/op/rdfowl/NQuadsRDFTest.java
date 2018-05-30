@@ -23,7 +23,7 @@ public class NQuadsRDFTest {
     public void test1() throws Exception {
         final NAR n = NARS.tmp();
         n.log();
-        NQuadsRDF.input(n, "<http:
+        NQuadsRDF.input(n, "<http://example.org/#spiderman> <http://xmlns.com/foaf/0.1/name> \"Человек-паук\"@ru .");
         n.run(1);
         assertTrue(n.concepts.size() > 2);
     }

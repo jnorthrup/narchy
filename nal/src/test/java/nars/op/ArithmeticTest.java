@@ -68,8 +68,8 @@ public class ArithmeticTest {
     @Test
     public void test1() throws Narsese.NarseseException {
         assertEquals(
+                //"((#1,add(#1,1))&&(#1<->2))",
                 "((#1,add(#1,1))&&(#1<->2))",
-                
                 
                 
                 ArithmeticIntroduction.apply($.$("(2,3)"), true, rng).toString());
@@ -89,30 +89,57 @@ public class ArithmeticTest {
 
     }
 
+    @Test public void testEqBackSubstitution() throws Narsese.NarseseException {
+        NAR n = NARS.tmp();
+        n.termVolumeMax.set(12);
+        TestNAR t = new TestNAR(n);
+        //t.log();
+        t.mustBelieve(100, "((#1,4)&&(#1,3))", 1f, 0.9f);
+        n.input("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2)).");
+        t.test();
+    }
+    @Test public void testSimBackSubstitution() throws Narsese.NarseseException {
+        NAR n = NARS.tmp();
+        n.termVolumeMax.set(14);
+        TestNAR t = new TestNAR(n);
+        //t.mustBelieve(100, "((#1,4)&&(#1,3))", 1f, 0.9f);
+        //n.input("(&&,(#1,add(#2,1)),(#1,#2),(#2 <-> 3)).");
+        n.input("(&&,(#1,#2),(#2 <-> 3)).");
+        t.mustBelieve(100, "(#1,3)", 1f, 0.81f);
+        t.test();
+    }
+
+    @Test public void testSimBackSubstitution2() throws Narsese.NarseseException {
+        NAR n = NARS.tmp();
+        n.termVolumeMax.set(14);
+        TestNAR t = new TestNAR(n);
+        n.input("(&&,(#1,add(#2,1)),(#1,#2),(#2 <-> 3)).");
+        t.mustBelieve(100, "((#1,4)&&(#1,3))", 1f, 0.81f);
+        t.test();
+    }
+
     @Test
     public void testCompleteAddInduction() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        new ArithmeticIntroduction(16, n);
+        new ArithmeticIntroduction(8, n);
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
+        n.termVolumeMax.set(12);
+        //t.log();
 
 
-
-
-
-
-        t.believe("(a,1)");
+//        t.believe("(a,1)");
         t.believe("(a,2)");
         t.believe("(a,3)");
         t.believe("(a,4)");
-        t.ask("(a,#x)");
-        t.mustBelieve(1000,
-                
-                
-                "((a,add($1,1))==>(#1<->4))",
-                1f, 0.81f);
-        t.mustBelieve(100, "(a,5)", 1f, 0.5f);
+//        t.ask("(a,5)");
+//        t.mustBelieve(1000,
+//
+//
+//                "((a,add($1,1))==>(#1<->4))",
+//                1f, 0.81f);
+        t.mustBelieve(500, "(a,5)", 1f, 0.5f);
         t.test();
     }
 

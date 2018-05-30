@@ -12,10 +12,7 @@ import nars.op.data.reflect;
 import nars.op.java.Opjects;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Terms;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import nars.term.compound.util.Conj;
@@ -45,6 +42,49 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * https:
  */
 public class Builtin {
+
+    public static final Functor.InlineCommutiveBinaryBidiFunctor EQUAL = new Functor.InlineCommutiveBinaryBidiFunctor("equal") {
+
+        @Override
+        protected Term apply2(Term x, Term y) {
+            boolean xVar = x.op().var;
+            boolean yVar = y.op().var;
+            if (xVar ^ yVar) {
+                if (xVar) {
+                    Evaluation.the().replace(x, y);
+                    return null;
+                } else {
+                    Evaluation.the().replace(y, x);
+                    return null;
+                }
+            }
+
+            return super.apply2(x, y);
+        }
+
+
+        @Override
+        protected Term compute(Term x, Term y) {
+            if (x.equals(y))
+                return True;
+
+            if (x.hasVars() || y.hasVars())
+                return null;
+
+            return False;
+        }
+
+        @Override
+        protected Term computeFromXY(Term x, Term y, Term xy) {
+            return null;
+        }
+
+        @Override
+        protected Term computeXfromYandXY(Term x, Term y, Term xy) {
+            return xy == True ? y : null;
+        }
+
+    };
 
     public static final Concept[] statik = {
 
@@ -204,30 +244,7 @@ public class Builtin {
                 }
             },
 
-            new Functor.InlineCommutiveBinaryBidiFunctor("equal") {
-
-                @Override
-                protected Term compute(Term x, Term y) {
-                    if (x.equals(y))
-                        return True; 
-
-                    if (x.hasVars() || y.hasVars())
-                        return null; 
-
-                    return False; 
-                }
-
-                @Override
-                protected Term computeFromXY(Term x, Term y, Term xy) {
-                    return null;
-                }
-
-                @Override
-                protected Term computeXfromYandXY(Term x, Term y, Term xy) {
-                    return xy == True ? y : null;
-                }
-
-            },
+            EQUAL,
 
             Functor.f2("if", (condition, conseq) -> {
                 if (condition.hasVars()) return null; 

@@ -41,21 +41,11 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 public abstract class Unify extends Versioning implements Subst {
 
     protected final static Logger logger = LoggerFactory.getLogger(Unify.class);
-
-    public Random random;
-
     @Nullable
     public final Op type;
-
-
     public final Set<Termutator> termutes = new LinkedHashSet(8);
-
-
-
-
-
     public final VersionMap<Variable, Term> xy;
-
+    public Random random;
     /**
      * temporal tolerance; if -1, then it is not tested
      */
@@ -67,11 +57,6 @@ public abstract class Unify extends Versioning implements Subst {
     public boolean varSymmetric = true;
 
 
-
-
-
-
-
     /**
      * @param type   if null, unifies any variable type.  if non-null, only unifies that type
      * @param random
@@ -79,7 +64,7 @@ public abstract class Unify extends Versioning implements Subst {
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
         this(type, random, stackMax, initialTTL,
                 new TermHashMap()
-                
+
         );
     }
 
@@ -87,13 +72,11 @@ public abstract class Unify extends Versioning implements Subst {
         super(stackMax, initialTTL);
 
 
-
         this.random = random;
         this.type = type;
 
         xy = new ConstrainedVersionMap(this, termMap);
-        
-        
+
 
     }
 
@@ -113,33 +96,6 @@ public abstract class Unify extends Versioning implements Subst {
     public abstract void tryMatch();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public final boolean tryMutate(Termutator[] chain, int next) {
 
         if (++next < chain.length) {
@@ -150,44 +106,21 @@ public abstract class Unify extends Versioning implements Subst {
             chain[next].mutate(this, chain, next);
 
         } else {
-            tryMatch(); 
+            tryMatch();
         }
         return true;
     }
 
 
-    /** only really useful with atom/variable parameters.  compounds arent unified here like apply() will */
+    /**
+     * only really useful with atom/variable parameters.  compounds arent unified here like apply() will
+     */
     @Nullable
     @Override
     public final Term xy(Term x0) {
         if (!(x0 instanceof Variable))
             return null;
         return xy.get(x0);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -204,16 +137,6 @@ public abstract class Unify extends Versioning implements Subst {
     public Unify unify(Term x, Term y, boolean finish) {
 
 
-        
-
-
-
-
-
-
-        
-        
-
         if (x.unify(y, this)) {
             if (finish) {
                 tryMatches();
@@ -224,82 +147,28 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     void tryMatches() {
         int ts = termutes.size();
         if (ts > 0) {
 
-            
+
             Termutator[] t = termutes.toArray(new Termutator[ts]);
 
             termutes.clear();
 
-            
+
             if (ts > 1)
                 Util.shuffle(t, random);
 
-            tryMutate(t, -1); 
+            tryMutate(t, -1);
 
         } else {
-            
+
             tryMatch();
         }
 
 
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
 
     @Override
@@ -314,8 +183,8 @@ public abstract class Unify extends Versioning implements Subst {
     public final boolean matchType(Op oy) {
         Op t = this.type;
         return t == null ?
-                oy.var : 
-                oy == t; 
+                oy.var :
+                oy == t;
     }
 
     @Override
@@ -331,33 +200,12 @@ public abstract class Unify extends Versioning implements Subst {
     public final boolean putXY(final Variable x, Term y) {
 
         if (y.containsRecursively(x)) {
-            
 
 
-
-                    return false; 
-
-
-
-
-
-
-
-
-
-                
-
+            return false;
 
 
         }
-
-
-
-
-
-
-
-
 
 
         return replaceXY(x, y);
@@ -365,21 +213,9 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-
     public final boolean replaceXY(final Variable x, final Term y) {
         return xy.tryPut(x, y);
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -389,10 +225,12 @@ public abstract class Unify extends Versioning implements Subst {
         return !x.hasAny(type == null ? Op.varBits : type.bit);
     }
 
-    /** counts the number of variables are unifiable in the given term */
+    /**
+     * counts the number of variables are unifiable in the given term
+     */
     public int vars(Termlike x) {
         if (type == null) {
-            return x.vars(); 
+            return x.vars();
         } else {
             return x.subs(type);
         }
@@ -406,75 +244,33 @@ public abstract class Unify extends Versioning implements Subst {
         }
     }
 
+    public boolean constrain(MatchConstraint m) {
+        return constrain(m.x, m);
+    }
+
+    public boolean constrain(Variable target, MatchConstraint... mm) {
+        Versioned<Term> v = xy.getOrCreateIfAbsent(target);
+        for (MatchConstraint m : mm) {
+            if (!((ConstrainedVersionedTerm) v).constrain(m)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private class ConstrainedVersionMap extends VersionMap<Variable, Term> {
-        public ConstrainedVersionMap(Versioning versioning, Map<Variable,Versioned<Term>> termMap) {
+        public ConstrainedVersionMap(Versioning versioning, Map<Variable, Versioned<Term>> termMap) {
             super(versioning,
-                    
+
                     termMap,
                     1);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         @Override
         protected Versioned newEntry(Variable x) {
             return new ConstrainedVersionedTerm();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -516,21 +312,6 @@ public abstract class Unify extends Versioning implements Subst {
             return c.set(m) != null;
         }
 
-    }
-
-
-    public boolean constrain(MatchConstraint m) {
-        return constrain(m.x, m);
-    }
-
-    public boolean constrain(Variable target, MatchConstraint... mm) {
-        Versioned<Term> v = xy.getOrCreateIfAbsent(target);
-        for (MatchConstraint m : mm) {
-            if (!((ConstrainedVersionedTerm) v).constrain(m)) {
-                return false;
-            }
-        }
-        return true;
     }
 
 }

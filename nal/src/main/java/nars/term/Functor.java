@@ -623,7 +623,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         protected Term apply2(Term x, Term y) {
             
             if ((x.op().var || y.op().var) && x.compareTo(y) > 0) {
-                return $.func((Atomic)term(), y, x);
+                return $.func((Atomic) term(), y, x);
             }
             return super.apply2(x, y);
         }

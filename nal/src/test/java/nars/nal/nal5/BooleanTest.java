@@ -46,7 +46,7 @@ public class BooleanTest {
 
         NAR d = NARS.tmp();
         d.freqResolution.set(0.02f);
-        d.termVolumeMax.set(28);
+        d.termVolumeMax.set(14);
 
 
 
@@ -74,7 +74,7 @@ public class BooleanTest {
 
 
 
-        d.run(1024);
+        d.run(512);
 
         System.out.println(i + " " + j + " ");
         for (int k = 0, outcomesLength = outcomes.length; k < outcomesLength; k++) {
@@ -84,7 +84,7 @@ public class BooleanTest {
             @Nullable Task t = d.belief(dc.term(), d.time());
             Truth b = t != null ? t.truth() : null;
 
-            System.out.println("\t" + s + "\t" + b + "\t" + outcomes[k]);
+            System.out.println("\t" + dc.term() + "\t" + s + "\t" + b + "\t" + outcomes[k]);
 
 
             int ex = -1, ey = -1;
@@ -106,15 +106,19 @@ public class BooleanTest {
                     ey = 1;
                     break;
             }
-            boolean thisone = ((ex == i) && (ey == j));
-            if (thisone && b == null)
-                fail("unrecognized true case");
+            boolean positive = ((ex == i) && (ey == j));
+            if (positive != (b != null)) {
+                if (positive)
+                    fail("unrecognized true case");
+                else if (b.conf() > confThresh)
+                    fail("invalid false impl subj deriving a pred");
+            }
 
 
-            if (thisone && b.isNegative() && b.conf() > confThresh)
+            if (positive && b.isNegative() && b.conf() > confThresh)
                 fail("wrong true case:\n" + t.proof());
 
-            if (!thisone && b != null && b.isPositive() && b.conf() > confThresh)
+            if (!positive && b != null && b.isPositive() && b.conf() > confThresh)
                 fail("wrong false case:\n" + t.proof());
 
         }

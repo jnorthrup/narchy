@@ -10,6 +10,7 @@
   Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:Weak)
   Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
 
+  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
   //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Strong)
   //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Strong)

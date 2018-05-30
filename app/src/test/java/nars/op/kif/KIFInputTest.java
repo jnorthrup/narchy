@@ -24,10 +24,10 @@ class KIFInputTest {
     public void testSUMOViaMemory() {
         String sumo =
                 "Transportation";
-        
-        
-        
-        String inURL = "file:
+        //"People";
+        //"Merge";
+        //"Law";
+        String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.shell();
         n.memory.on(KIFInput.load);
@@ -35,9 +35,9 @@ class KIFInputTest {
 
         Term I = $$(inURL);
         Term O =
-                
-                
-                Atomic.the("file:
+                //n.self();
+                //Atomic.the("stdout");
+                Atomic.the("file:///tmp/x.nalz");
 
         Runnable r = n.memory.copy(I, O);
         r.run();
@@ -49,10 +49,10 @@ class KIFInputTest {
     public void testSUMOViaMemory2() {
         String sumo =
                 "Merge";
-        
-        
-        
-        String inURL = "file:
+        //"People";
+        //"Merge";
+        //"Law";
+        String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.
                 tmp();
@@ -63,8 +63,8 @@ class KIFInputTest {
 
         Term I = $.quote(inURL);
         Term O =
-                
-                
+                //Atomic.the("stdout");
+                //Atomic.the("file:///tmp/x.nal");
                 n.self();
 
         n.log();
@@ -101,7 +101,7 @@ class KIFInputTest {
 
     @Test
     public void testGenerate() {
-        String sumoDir = "file:
+        String sumoDir = "file:///home/me/sumo/";
 
         NAR n = NARS.shell();
 
@@ -112,11 +112,11 @@ class KIFInputTest {
             if (!ii.endsWith(".kif"))
                 return;
 
-            if (ii.startsWith("WorldAirports")) 
+            if (ii.startsWith("WorldAirports")) //exclusions
                 return;
 
             String name = ii.substring(ii.lastIndexOf('/') + 1, ii.lastIndexOf('.'));
-            Term O = Atomic.the("file:
+            Term O = Atomic.the("file:///tmp/sumo/" + name + ".kif.nalz");
             Runnable r = n.memory.copy(I, O);
             r.run();
         });
@@ -134,10 +134,10 @@ class KIFInputTest {
         n.beliefPriDefault.set(0.05f);
         n.activateConceptRate.set(0.01f);
 
-        n.input("load(\"file:
-        n.input("load(\"file:
-        n.input("load(\"file:
-        n.input("load(\"file:
+        n.input("load(\"file:///tmp/sumo/Merge.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/Mid-level-ontology.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/FinancialOntology.kif.nalz\");");
+        n.input("load(\"file:///tmp/sumo/Economy.kif.nalz\");");
         n.run(1);
         System.err.println(n.concepts.size() + " concepts");
         n.clear();

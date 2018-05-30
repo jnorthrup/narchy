@@ -103,8 +103,12 @@ public class ArithmeticIntroduction extends LeakBack {
             yy = yy.replace(s0, s1);
         }
 
+        Term equality =
+                SIM.the(baseTerm, V);
+                /** $.func(Builtin.EQUAL, Terms.sorted(baseTerm, V)); */
+
         Term y =
-                CONJ.the(yy, eternal ? DTERNAL : 0, SIM.the(baseTerm, V));
+                CONJ.the(yy, eternal ? DTERNAL : 0, equality);
                 
                 
 
