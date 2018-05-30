@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static nars.Op.CONJ;
-import static nars.Op.SetBits;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -40,7 +39,7 @@ public class TermlinkTemplates extends FasterList<Term> {
         if (size > 1)
             sortThisByBoolean((t) -> !conceptualizable(t));
 
-        
+
         int lastConcept = size - 1;
         for (; lastConcept >= 0; lastConcept--) {
             if (conceptualizable(get(lastConcept)))
@@ -60,7 +59,6 @@ public class TermlinkTemplates extends FasterList<Term> {
             return EMPTY;
 
 
-
         ArrayHashSet<Term> tc =
                 new ArrayHashSet<>(term.volume() /* estimate */);
 
@@ -71,25 +69,15 @@ public class TermlinkTemplates extends FasterList<Term> {
         }
 
         templates(term, tc, 0,
-                
-                
+
+
                 term, layers(term)
         );
 
 
-
-
-
-
-
-
-
-
-
-
         int tcs = tc.size();
         if (tcs > 0) {
-            return new TermlinkTemplates(tc.list.toArrayRecycled(Term[]::new)); 
+            return new TermlinkTemplates(tc.list.toArrayRecycled(Term[]::new));
         }
 
 
@@ -107,11 +95,10 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         if (depth > 0) {
             if (x == Op.imExt || x == Op.imInt)
-                return; 
+                return;
 
             tc.add(x);
         }
-
 
 
         if ((++depth >= maxDepth) || xo.atomic || !xo.conceptualizable)
@@ -122,8 +109,8 @@ public class TermlinkTemplates extends FasterList<Term> {
         int nextDepth = depth;
 
         if (xo == CONJ && bb.hasAny(CONJ)) {
-            
-            x.eventsWhile((when,what) -> {
+
+            x.eventsWhile((when, what) -> {
                 templates(what.unneg(), tc, nextDepth, root, maxDepth);
                 return true;
             }, 0, true, true, true, 0);
@@ -131,92 +118,10 @@ public class TermlinkTemplates extends FasterList<Term> {
         }
 
 
-
-
-
-
-
-
-
         bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * determines ability to structural transform, so those terms which have no structural transforms should not link to themselves
-     */
-    static boolean selfTermLink(Term b) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        return false;
-        
-        
-    }
 
     /**
      * includes the host as layer 0, so if this returns 1 it will only include the host
@@ -243,35 +148,29 @@ public class TermlinkTemplates extends FasterList<Term> {
             case SIM: {
 
 
-
-                if (x.subterms().OR(xx -> xx.isAny(SetBits | Op.SectBits | Op.PROD.bit)))
-                    return 3;
-                else
+//                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
+//                    return 3;
+//                else
                     return 2;
             }
 
             case INH: {
-                if (x.subterms().OR(xx -> xx.isAny(SetBits | Op.SectBits | Op.PROD.bit)))
-                    return 3;
+//                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
+//                    return 3;
 
-                    return 2;
+                return 2;
             }
 
             case IMPL:
-                if (x./*subterms().*/hasAny(Op.CONJ.bit )) {
-                    if (x.hasAny(Op.INH.bit))
-                        return 4;
-                    else
+//                if (x./*subterms().*/hasAny(Op.CONJ.bit)) {
+//                    if (x.hasAny(Op.INH.bit))
+//                        return 4;
+//                    else
                         return 3;
-                }
-
-
-
+//                }
 
 
             case CONJ:
-
-
                 if (x.hasAny(Op.IMPL))
                     return 3;
                 return 2;
@@ -302,7 +201,7 @@ public class TermlinkTemplates extends FasterList<Term> {
                 nulls++;
         }
         if (nulls == concepts)
-            return Concept.EmptyArray; 
+            return Concept.EmptyArray;
         else if (nulls > 0) {
             return ArrayUtils.removeNulls(x, Concept[]::new);
         } else {
@@ -314,9 +213,6 @@ public class TermlinkTemplates extends FasterList<Term> {
      * link and activate the templates
      */
     public void linkAndActivate(Concept src, float pri, NAR nar) {
-
-        
-
 
 
         int n = this.size();
@@ -330,8 +226,8 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         float balance = nar.termlinkBalance.floatValue();
         float budgetedForward = concepts == 0 ? 0 :
-                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts); 
-        float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n); 
+                Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
+        float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n);
 
         for (int i = 0; i < n; i++) {
             Term tgtTerm = get(i);
@@ -343,14 +239,14 @@ public class TermlinkTemplates extends FasterList<Term> {
 
                 if (tgt != null) {
 
-                    
+
                     tgt.termlinks().put(
                             new PLink<>(srcTerm, budgetedForward), refund
                     );
 
                     nar.activate(tgt, budgetedForward);
 
-                    tgtTerm = tgt.term(); 
+                    tgtTerm = tgt.term();
                 }
 
             } else {

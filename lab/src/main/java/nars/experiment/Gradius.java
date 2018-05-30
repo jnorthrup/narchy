@@ -19,21 +19,18 @@ public class Gradius extends NAgentX {
 
 
     private final Gradius4K g;
+    int lastScore;
 
     public Gradius(NAR nar) {
-        
+
         super("g", nar);
 
         this.g = new Gradius4K();
 
         g.updateMS = 20;
 
-        
 
-
-        
-
-        int dx = 4, dy = 4;
+        int dx = 3, dy = 2;
         int px = 8, py = 8;
 
         for (int i = 0; i < dx; i++)
@@ -42,10 +39,9 @@ public class Gradius extends NAgentX {
                 int jj = j;
                 Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
-                                    $.p(
+                                $.p(
                                         subSection,
-                                            $.p(x, y)
-
+                                        $.p(x, y)
 
 
                                 ),
@@ -53,85 +49,20 @@ public class Gradius extends NAgentX {
                                 .window(
                                         i * (1f / dx), j * (1f / dy),
                                         (i + 1) * (1f / dx), (j + 1) * (1f / dy)))
-                        .resolution(0.05f);
+                        .resolution(0.02f);
             }
 
 
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-        
-
-
-
-
-        
-
         float width = g.getWidth();
         float height = g.getHeight();
-        senseNumber((level)->(p($.the("Y"), $.the(level))),
-                ()->g.player[OBJ_Y] / height,
+        senseNumber((level) -> (p($.the("Y"), $.the(level))),
+                () -> g.player[OBJ_Y] / height,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
-        senseNumber((level)->(p($.the("X"), $.the(level))),
-                ()->g.player[OBJ_X] / width,
+        senseNumber((level) -> (p($.the("X"), $.the(level))),
+                () -> g.player[OBJ_X] / width,
                 2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         actionToggle($.inh("fire", id),
@@ -141,35 +72,14 @@ public class Gradius extends NAgentX {
 //                (b) -> g.paused = b);
 
 
-        
         initToggle();
 
 
+    }
 
+    public static void main(String[] args) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        NAgentX.runRT(Gradius::new, 20f);
 
     }
 
@@ -183,44 +93,47 @@ public class Gradius extends NAgentX {
     }
 
     void initBipolar() {
-        
+
         float thresh = 0.1f;
         actionBipolar(p($.the("y"), id), (dy) -> {
             if (dy < -thresh) {
-                g.keys[VK_UP] = false; g.keys[VK_DOWN] = true;
+                g.keys[VK_UP] = false;
+                g.keys[VK_DOWN] = true;
                 return -1f;
             } else if (dy > +thresh) {
-                g.keys[VK_UP] = true; g.keys[VK_DOWN] = false;
+                g.keys[VK_UP] = true;
+                g.keys[VK_DOWN] = false;
                 return 1f;
             } else {
-                g.keys[VK_UP] = false; g.keys[VK_DOWN] = false;
+                g.keys[VK_UP] = false;
+                g.keys[VK_DOWN] = false;
                 return 0;
             }
-            
+
         });
         actionBipolar(p($.the("x"), id), (dx) -> {
-           if (dx < -thresh) {
-               g.keys[VK_LEFT] = false; g.keys[VK_RIGHT] = true;
-               return -1f;
-           } else if (dx > +thresh) {
-               g.keys[VK_LEFT] = true; g.keys[VK_RIGHT] = false;
-               return 1f;
-           } else {
-               g.keys[VK_LEFT] = false; g.keys[VK_RIGHT] = false;
-               return 0f;
-           }
-           
-       });
+            if (dx < -thresh) {
+                g.keys[VK_LEFT] = false;
+                g.keys[VK_RIGHT] = true;
+                return -1f;
+            } else if (dx > +thresh) {
+                g.keys[VK_LEFT] = true;
+                g.keys[VK_RIGHT] = false;
+                return 1f;
+            } else {
+                g.keys[VK_LEFT] = false;
+                g.keys[VK_RIGHT] = false;
+                return 0f;
+            }
+
+        });
     }
-
-
-    int lastScore;
 
     @Override
     protected float act() {
 
         if (g.paused)
-            return 0; 
+            return 0;
 
         int nextScore = g.score;
 
@@ -233,12 +146,6 @@ public class Gradius extends NAgentX {
             return -1f;
         else
             return r;
-    }
-
-    public static void main(String[] args) {
-
-        NAgentX.runRT(Gradius::new, 20f);
-
     }
 
 }

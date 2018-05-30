@@ -33,7 +33,7 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 2;
+    float fwdSpeed = 4;
     float rotSpeed = 0.09f;
     static float fps = 20f;
 

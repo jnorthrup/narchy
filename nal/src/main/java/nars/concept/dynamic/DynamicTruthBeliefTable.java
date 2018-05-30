@@ -44,7 +44,7 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         if (template == null)
             template = term;
 
-        DynTruth yy = model.eval(template, beliefOrGoal, start, end, nar);
+        DynTruth yy = model.eval(template, beliefOrGoal, start,end, true /* dont force projection */, nar);
         if (yy != null) {
             Task generated = yy.task(template, model, beliefOrGoal, nar);
 
@@ -84,7 +84,8 @@ public class DynamicTruthBeliefTable extends DynamicBeliefTable {
         if (template == null)
             template = term;
 
-        DynTruth d = model.eval(template, beliefOrGoal, start, end, nar);
+        DynTruth d = model.eval(template, beliefOrGoal, start, end,
+                false /* force projection to the specific time */, nar);
         if (d!=null)
             return d.truth(template, model, beliefOrGoal, nar);
         else

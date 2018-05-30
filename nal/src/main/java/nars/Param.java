@@ -26,24 +26,10 @@ import static nars.time.Tense.XTERNAL;
  */
 public abstract class Param {
 
-
-    /**
-     * must be big enough to support as many layers of compound terms as exist in an eval
-     */
-    public static final int MAX_EVAL_RECURSION = 32;
-
-
-
-
-
-
     /**
      * allow leaking of internal Term[] arrays for read-only purposes
      */
     public static final boolean TERM_ARRAY_SHARE = true;
-
-    /** softmax roulette parameter in trie deriver fork decisions */
-    public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
 
 
     public static final boolean FILTER_DYNAMIC_MATCHES = true;

@@ -29,7 +29,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
 
     @Nullable
-    public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, NAR n) {
+    public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean timeFlexible, NAR n) {
 
         assert(superterm.op()!=NEG);
 
@@ -62,7 +62,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 if (bt != null) {
 
                     /** project to a specific time, and apply negation if necessary */
-                    bt = Task.project(true, bt, subStart, subEnd, n, negated);
+                    bt = Task.project(timeFlexible, bt, subStart, subEnd, n, negated);
 
                 } else {
                     

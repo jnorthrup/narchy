@@ -59,7 +59,7 @@ public class Premise {
     /** variable types unifiable in premise formation */
     final static int var =
             Op.VAR_QUERY.bit;
-            
+
             
 
     /**

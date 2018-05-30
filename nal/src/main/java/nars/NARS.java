@@ -255,20 +255,17 @@ public class NARS {
         protected void init(NAR nar) {
 
             nar.activateConceptRate.set(
-                Util.unitize(5f/Math.sqrt(((AbstractExec)nar.exe).active.capacity()))
+                Util.unitize(3f/Math.sqrt(((AbstractExec)nar.exe).active.capacity()))
             );
 
             nar.termlinkBalance.set(0.5f);
-            nar.termVolumeMax.set(31f);
-
-            
+            nar.termVolumeMax.set(24);
 
             nar.beliefPriDefault.set(0.5f);
             nar.questionPriDefault.set(0.2f);
             nar.goalPriDefault.set(0.5f);
             nar.questPriDefault.set(0.2f);
 
-            
 
         }
     }

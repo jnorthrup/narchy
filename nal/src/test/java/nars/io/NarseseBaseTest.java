@@ -355,14 +355,14 @@ public class NarseseBaseTest extends NarseseTest {
     public void testQueryVariableTask() throws Narsese.NarseseException {
         String term = "hear(Time,(the,?x))";
         assertEquals("hear(Time,(the,?x))", term(term).toString());
-        assertEquals("$.50 hear(Time,(the,?1))?", task(term + "?").toString());
+        assertEquals("hear(Time,(the,?1))?", task(term + "?").toStringWithoutBudget());
     }
 
     @Test
     public void testQueryVariableTaskQuotes() throws Narsese.NarseseException {
         String term = "hear(\"Time\",(\"the\",?x))";
         assertEquals("hear(\"Time\",(\"the\",?x))", term(term).toString());
-        assertEquals("$.50 hear(\"Time\",(\"the\",?1))?", task(term + "?").toString());
+        assertEquals("hear(\"Time\",(\"the\",?1))?", task(term + "?").toStringWithoutBudget());
     }
 
     @Test
